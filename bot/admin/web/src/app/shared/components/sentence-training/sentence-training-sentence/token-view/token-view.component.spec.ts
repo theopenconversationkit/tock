@@ -17,6 +17,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TokenViewComponent } from './token-view.component';
+import { TestSharedModule } from '../../../../test-shared.module';
+import { StateService } from '../../../../../core-nlp/state.service';
+import { StateServiceMock } from '../../../../test-shared/state-service.mock';
+import { Token } from './token.model';
+import { SentenceTrainingService } from '../../sentence-training.service';
+import { of } from 'rxjs';
 
 describe('TokenViewComponent', () => {
   let component: TokenViewComponent;
@@ -24,12 +30,19 @@ describe('TokenViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TokenViewComponent ]
-    })
-    .compileComponents();
+      declarations: [TokenViewComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        { provide: SentenceTrainingService, useValue: { communication: of({}), documentClick: () => {} } }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TokenViewComponent);
     component = fixture.componentInstance;
+
+    component.token = new Token(0, 'hello', null as any);
+
     fixture.detectChanges();
   });
 

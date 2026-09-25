@@ -23,14 +23,13 @@ import ai.tock.bot.engine.message.Choice
  *
  */
 class LogoutButton : Button(ButtonType.account_unlink) {
-    override fun toChoice(): Choice {
-        return Choice(
+    override fun toChoice(): Choice =
+        Choice(
             SendChoice.LOGOUT_INTENT,
             mapOf(
                 SendChoice.TITLE_PARAMETER to "Logout",
             ),
         )
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -38,7 +37,5 @@ class LogoutButton : Button(ButtonType.account_unlink) {
         return true
     }
 
-    override fun hashCode(): Int {
-        return javaClass.hashCode()
-    }
+    override fun hashCode(): Int = javaClass.hashCode()
 }

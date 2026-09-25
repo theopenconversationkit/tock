@@ -91,7 +91,9 @@ data class BotBusMockLog(
         elementIndex: Int,
         title: String,
     ): Choice? =
-        genericMessage()?.subElements?.get(elementIndex)
+        genericMessage()
+            ?.subElements
+            ?.get(elementIndex)
             ?.choices
             ?.find(hasTitle(title))
 
@@ -99,7 +101,8 @@ data class BotBusMockLog(
      * Retrieve choice member of main part of generic message with expected title
      */
     fun choice(title: String): Choice? =
-        genericMessage()?.choices
+        genericMessage()
+            ?.choices
             ?.find(hasTitle(title))
 
     private fun hasTitle(title: String): (Choice) -> Boolean = { it.parameters[SendChoice.TITLE_PARAMETER] == title }

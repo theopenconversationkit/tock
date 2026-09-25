@@ -68,57 +68,49 @@ internal object MediaConverter {
         return listOf(iadvizeMessageOnConnector)
     }
 
-    private fun BotBus.actionToQuickReplies(actions: List<MediaAction>): MutableList<QuickReply> {
-        return actions.filter { isQuickReply(it) }
+    private fun BotBus.actionToQuickReplies(actions: List<MediaAction>): MutableList<QuickReply> =
+        actions
+            .filter { isQuickReply(it) }
             .map { toQuickReplies(it) }
             .toMutableList()
-    }
 
-    private fun BotBus.suggestionToQuickReplies(suggestions: List<CharSequence>): MutableList<QuickReply> {
-        return suggestions.map { toQuickReplies(it) }
+    private fun BotBus.suggestionToQuickReplies(suggestions: List<CharSequence>): MutableList<QuickReply> =
+        suggestions
+            .map { toQuickReplies(it) }
             .toMutableList()
-    }
 
-    private fun isQuickReply(action: MediaAction): Boolean {
-        return action.url == null
-    }
+    private fun isQuickReply(action: MediaAction): Boolean = action.url == null
 
-    private fun BotBus.toQuickReplies(action: MediaAction): QuickReply {
-        return QuickReply(translate(action.title).toString())
-    }
+    private fun BotBus.toQuickReplies(action: MediaAction): QuickReply = QuickReply(translate(action.title).toString())
 
-    private fun BotBus.toQuickReplies(suggestion: CharSequence): QuickReply {
-        return QuickReply(translate(suggestion).toString())
-    }
+    private fun BotBus.toQuickReplies(suggestion: CharSequence): QuickReply = QuickReply(translate(suggestion).toString())
 
-    private fun BotBus.toActions(actions: List<MediaAction>): List<Action> {
-        return actions.filter { it.url != null }
+    private fun BotBus.toActions(actions: List<MediaAction>): List<Action> =
+        actions
+            .filter { it.url != null }
             .map {
                 Action(translate(it.title).toString(), it.url!!)
             }
-    }
 
-    private fun BotBus.toImage(file: MediaFile?): Image? {
-        return if (image.equals(file?.type)) {
+    private fun BotBus.toImage(file: MediaFile?): Image? =
+        if (image.equals(file?.type)) {
             // if equals true, file cannot be null
             Image(file!!.url, file.name)
         } else {
             null
         }
-    }
 
     private fun getPayload(
         title: String,
         text: String,
         image: Image?,
         actions: List<Action>,
-    ): Payload {
-        return if ((title.isNotBlank() xor text.isNotBlank()) && image == null && actions.isEmpty()) {
+    ): Payload =
+        if ((title.isNotBlank() xor text.isNotBlank()) && image == null && actions.isEmpty()) {
             // There are only one between title and text, and no image, and no action
             // create a TextPayload by combine title and text, but only one is not empty
             TextPayload(title + text)
         } else {
             GenericCardPayload(title, text, image, actions)
         }
-    }
 }

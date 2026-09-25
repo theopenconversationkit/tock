@@ -18,6 +18,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NbDialogRef } from '@nebular/theme';
 
 import { NlpStatsDisplayComponent } from './nlp-stats-display.component';
+import { TestSharedModule } from '../../../shared/test-shared.module';
 
 describe('NlpStatsDisplayComponent', () => {
   let component: NlpStatsDisplayComponent;
@@ -26,6 +27,7 @@ describe('NlpStatsDisplayComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [NlpStatsDisplayComponent],
+      imports: [TestSharedModule],
       providers: [{ provide: NbDialogRef, useValue: { close: () => {} } }]
     }).compileComponents();
 

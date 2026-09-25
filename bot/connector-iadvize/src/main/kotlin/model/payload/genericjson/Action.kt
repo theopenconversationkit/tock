@@ -16,6 +16,9 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson
 
-data class Action(val name: String, val url: String) {
+data class Action(
+    val name: String,
+    val url: String,
+) {
     val type: String = "LINK"
 }

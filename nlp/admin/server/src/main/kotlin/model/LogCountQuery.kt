@@ -20,7 +20,11 @@ import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQuery
 import org.litote.kmongo.Id
 
-data class LogCountQuery(val minCount: Int = 1, val intentName: String? = null, val validated: Boolean? = null) : PaginatedQuery() {
+data class LogCountQuery(
+    val minCount: Int = 1,
+    val intentName: String? = null,
+    val validated: Boolean? = null,
+) : PaginatedQuery() {
     fun toRequestLogStatQuery(applicationId: Id<ApplicationDefinition>): ParseRequestLogCountQuery =
         ParseRequestLogCountQuery(
             applicationId,

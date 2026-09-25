@@ -18,6 +18,8 @@ package ai.tock.bot.connector.iadvize.model.response.conversation
 
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
 
-data class RepliesResponse(val replies: MutableList<IadvizeReply> = mutableListOf()) : IadvizeResponse {
+data class RepliesResponse(
+    val replies: MutableList<IadvizeReply> = mutableListOf(),
+) : IadvizeResponse {
     constructor(iadvizeReply: IadvizeReply) : this(mutableListOf(iadvizeReply))
 }

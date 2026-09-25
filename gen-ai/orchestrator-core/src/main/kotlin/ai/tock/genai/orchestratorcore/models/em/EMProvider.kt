@@ -24,8 +24,6 @@ enum class EMProvider {
     ;
 
     companion object {
-        fun findByName(provider: String): EMProvider? {
-            return entries.firstOrNull { it.name == provider }
-        }
+        fun findByName(provider: String): EMProvider? = entries.firstOrNull { it.name == provider }
     }
 }

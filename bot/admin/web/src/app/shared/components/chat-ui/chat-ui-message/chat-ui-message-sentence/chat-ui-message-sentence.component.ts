@@ -18,9 +18,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BotMessage, Sentence } from '../../../../model/dialog-data';
 
 @Component({
-  selector: 'tock-chat-ui-message-sentence',
-  templateUrl: './chat-ui-message-sentence.component.html',
-  styleUrls: ['./chat-ui-message-sentence.component.scss']
+    selector: 'tock-chat-ui-message-sentence',
+    templateUrl: './chat-ui-message-sentence.component.html',
+    styleUrls: ['./chat-ui-message-sentence.component.scss'],
+    standalone: false
 })
 export class ChatUiMessageSentenceComponent {
   @Input() sentence: Sentence;

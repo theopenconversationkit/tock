@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
-import { Directive, ElementRef, EventEmitter, HostListener, Inject, OnDestroy, OnInit, Output, Renderer2 } from '@angular/core';
+
+import { Directive, ElementRef, EventEmitter, HostListener, Inject, OnDestroy, OnInit, Output, Renderer2, DOCUMENT } from '@angular/core';
 import { NbThemeService, NbToastrService } from '@nebular/theme';
 import { Subscription } from 'rxjs';
 
 @Directive({
-  selector: '[tockFullscreen]',
-  exportAs: 'fullscreen'
+    selector: '[tockFullscreen]',
+    exportAs: 'fullscreen',
+    standalone: false
 })
 export class FullscreenDirective implements OnInit, OnDestroy {
   @Output() onFullscreenChange = new EventEmitter<boolean>();

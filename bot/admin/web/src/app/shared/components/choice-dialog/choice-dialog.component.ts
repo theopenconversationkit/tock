@@ -18,9 +18,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 
 @Component({
-  selector: 'tock-choice-dialog',
-  templateUrl: './choice-dialog.component.html',
-  styleUrls: ['./choice-dialog.component.scss']
+    selector: 'tock-choice-dialog',
+    templateUrl: './choice-dialog.component.html',
+    styleUrls: ['./choice-dialog.component.scss'],
+    standalone: false
 })
 export class ChoiceDialogComponent implements OnInit {
   @Input() modalStatus: string = 'primary';

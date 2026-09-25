@@ -44,12 +44,13 @@ import { DisplayUserDataComponent } from './user/display-user-data/display-user-
 import { MomentModule } from 'ngx-moment';
 import { ConfigurationTabsComponent } from './configuration-tabs.component';
 import { NamespacesComponent } from './namespace/namespaces.component';
-import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { JsonEditorComponent } from 'ang-jsoneditor';
 import { ApplicationConfig } from './application.config';
 import { CreateNamespaceComponent } from './namespace/create-namespace/create-namespace.component';
 import { ApplicationsRoutingModule } from './applications-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BotSharedModule } from '../shared/bot-shared.module';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @Injectable()
 export class NlpApplicationConfig implements ApplicationConfig {
@@ -82,10 +83,11 @@ export class NlpApplicationConfig implements ApplicationConfig {
     NbIconModule,
     NbToggleModule,
     NbInputModule,
-    NgJsonEditorModule,
+    JsonEditorComponent,
     NbDialogModule.forRoot(),
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TranslocoModule
   ],
   declarations: [
     ApplicationsComponent,
@@ -103,7 +105,10 @@ export class NlpApplicationConfig implements ApplicationConfig {
       provide: ApplicationConfig,
       useClass: NlpApplicationConfig
     },
-    ApplicationsResolver
+    ApplicationsResolver,
+    provideTranslocoScope({
+      scope: 'applications'
+    })
   ]
 })
 export class ApplicationsModule {}

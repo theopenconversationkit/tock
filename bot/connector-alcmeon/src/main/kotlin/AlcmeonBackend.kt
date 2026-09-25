@@ -22,7 +22,9 @@ const val whatsappBackend = "whatsapp"
 @Suppress("ktlint:standard:property-naming")
 const val facebookBackend = "facebook"
 
-enum class AlcmeonBackend(val backendId: String) {
+enum class AlcmeonBackend(
+    val backendId: String,
+) {
     WHATSAPP(whatsappBackend),
     FACEBOOK(facebookBackend),
     ;

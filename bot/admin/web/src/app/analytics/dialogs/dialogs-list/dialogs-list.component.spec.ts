@@ -17,6 +17,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DialogsListComponent } from './dialogs-list.component';
+import { TestSharedModule } from '../../../shared/test-shared.module';
+import { StateService } from '../../../core-nlp/state.service';
+import { StateServiceMock } from '../../../shared/test-shared/state-service.mock';
+import { AnalyticsService } from '../../analytics.service';
+import { of } from 'rxjs';
 
 describe('DialogsListComponent', () => {
   let component: DialogsListComponent;
@@ -24,9 +29,13 @@ describe('DialogsListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DialogsListComponent ]
-    })
-    .compileComponents();
+      declarations: [DialogsListComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        { provide: AnalyticsService, useValue: { dialogs: () => of({ rows: [], total: 0 }) } }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DialogsListComponent);
     component = fixture.componentInstance;

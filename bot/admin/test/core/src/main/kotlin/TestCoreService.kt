@@ -105,7 +105,7 @@ class TestCoreService : TestService {
                 saveAndExecuteTestPlan(context.organization, testPlan, newId())
             }
 
-            /**
+            /*
              * Triggered on click on "Launch" button.
              */
             blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->

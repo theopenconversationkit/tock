@@ -28,9 +28,10 @@ interface FaqFilterForm {
 }
 
 @Component({
-  selector: 'tock-faq-management-filters',
-  templateUrl: './faq-management-filters.component.html',
-  styleUrls: ['./faq-management-filters.component.scss']
+    selector: 'tock-faq-management-filters',
+    templateUrl: './faq-management-filters.component.html',
+    styleUrls: ['./faq-management-filters.component.scss'],
+    standalone: false
 })
 export class FaqManagementFiltersComponent implements OnInit, OnDestroy {
   @Input() tagsCache: string[];

@@ -69,8 +69,7 @@ internal object DucklingClient {
                 longProperty("tock_duckling_request_timeout_ms", 4000),
                 logger,
                 circuitBreaker = true,
-            )
-                .baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
+            ).baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
                 .addConverterFactory(RawJsonBodyConverterFactory)
                 .build()
 
@@ -78,9 +77,7 @@ internal object DucklingClient {
     }
 
     object JacksonJsonArrayConverter : Converter<ResponseBody, JSONValue> {
-        override fun convert(value: ResponseBody): JSONValue {
-            return JSONValue(JsonArray(value.string()))
-        }
+        override fun convert(value: ResponseBody): JSONValue = JSONValue(JsonArray(value.string()))
     }
 
     object RawJsonBodyConverterFactory : Converter.Factory() {
@@ -88,26 +85,20 @@ internal object DucklingClient {
             type: Type,
             annotations: Array<out Annotation>,
             retrofit: Retrofit,
-        ): Converter<ResponseBody, *> {
-            return JacksonJsonArrayConverter
-        }
+        ): Converter<ResponseBody, *> = JacksonJsonArrayConverter
 
         override fun requestBodyConverter(
             type: Type,
             parameterAnnotations: Array<out Annotation>,
             methodAnnotations: Array<out Annotation>,
             retrofit: Retrofit,
-        ): Converter<*, RequestBody>? {
-            return jacksonConverterFactory.requestBodyConverter(type, parameterAnnotations, methodAnnotations, retrofit)
-        }
+        ): Converter<*, RequestBody>? = jacksonConverterFactory.requestBodyConverter(type, parameterAnnotations, methodAnnotations, retrofit)
 
         override fun stringConverter(
             type: Type,
             annotations: Array<out Annotation>,
             retrofit: Retrofit,
-        ): Converter<*, String>? {
-            return jacksonConverterFactory.stringConverter(type, annotations, retrofit)
-        }
+        ): Converter<*, String>? = jacksonConverterFactory.stringConverter(type, annotations, retrofit)
     }
 
     fun parse(
@@ -122,12 +113,11 @@ internal object DucklingClient {
         return service.parse(ParseRequest(language, dimensions, referenceDate, referenceTimezone, text)).execute().body()
     }
 
-    fun healthcheck(): Boolean {
-        return try {
+    fun healthcheck(): Boolean =
+        try {
             service.healthcheck().execute().isSuccessful
         } catch (t: Throwable) {
             logger.info(t)
             false
         }
-    }
 }

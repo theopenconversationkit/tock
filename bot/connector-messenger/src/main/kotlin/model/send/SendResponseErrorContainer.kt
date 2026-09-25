@@ -19,4 +19,6 @@ package ai.tock.bot.connector.messenger.model.send
 /**
  *
  */
-data class SendResponseErrorContainer(val error: SendResponseError?)
+data class SendResponseErrorContainer(
+    val error: SendResponseError?,
+)

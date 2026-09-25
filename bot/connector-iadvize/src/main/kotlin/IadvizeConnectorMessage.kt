@@ -27,7 +27,9 @@ import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.GenericMessage
 import com.fasterxml.jackson.annotation.JsonIgnore
 
-data class IadvizeConnectorMessage(val replies: List<IadvizeReply>) : ConnectorMessage {
+data class IadvizeConnectorMessage(
+    val replies: List<IadvizeReply>,
+) : ConnectorMessage {
     override val connectorType: ConnectorType
         @JsonIgnore get() = IadvizeConnectorProvider.connectorType
 
@@ -45,15 +47,13 @@ data class IadvizeConnectorMessage(val replies: List<IadvizeReply>) : ConnectorM
             } else {
                 replies
             }
-        )
-            .filterIsInstance<IadvizeMessage>()
+        ).filterIsInstance<IadvizeMessage>()
             .map { message ->
                 GenericMessage(
                     connectorType = connectorType,
                     texts = mapOf("text" to (message.payload as TextPayload).value.toString()),
                     choices = message.quickReplies.map { Choice.fromText(it.value) },
                 )
-            }
-            .firstOrNull()
+            }.firstOrNull()
     }
 }

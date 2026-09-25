@@ -1,20 +1,5 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<div *ngIf="!exportAlexa && !tokenizerProperties">
+@if (!exportAlexa && !tokenizerProperties) {
+<div>
   <button
     nbButton
     outline
@@ -22,7 +7,7 @@
     status="primary"
     (click)="showUploadDumpPanel()"
   >
-    Upload Dump
+    {{ 'applications.application-advanced-options.uploadDumpButton' | transloco }}
   </button>
   &nbsp;
   <button
@@ -32,7 +17,7 @@
     status="primary"
     (click)="triggerBuild()"
   >
-    Trigger Build
+    {{ 'applications.application-advanced-options.triggerBuildButton' | transloco }}
   </button>
   &nbsp;
   <button
@@ -42,7 +27,7 @@
     status="primary"
     (click)="displayConfiguration()"
   >
-    NLU Engine configuration
+    {{ 'applications.application-advanced-options.nluEngineConfigurationButton' | transloco }}
   </button>
   &nbsp;
   <button
@@ -52,26 +37,24 @@
     status="primary"
     (click)="exportAlexa = true"
   >
-    Alexa Export
+    {{ 'applications.application-advanced-options.alexaExportButton' | transloco }}
   </button>
 </div>
-
-<nb-card *ngIf="exportAlexa">
+} @if (exportAlexa) {
+<nb-card>
   <nb-card-body>
     <div class="d-flex">
       <nb-select
-        placeholder="select Locale to export"
+        [placeholder]="'applications.application-advanced-options.selectLocalePlaceholder' | transloco"
         [(ngModel)]="alexaLocale"
         class="mr-3"
       >
-        <nb-option
-          *ngFor="let locale of application.supportedLocales"
-          [value]="locale"
-        >
+        @for (locale of application.supportedLocales; track locale) {
+        <nb-option [value]="locale">
           {{ state.localeName(locale) }}
         </nb-option>
+        }
       </nb-select>
-
       <button
         nbButton
         outline
@@ -79,7 +62,7 @@
         size="small"
         (click)="exportAlexa = false"
       >
-        Cancel
+        {{ 'applications.application-advanced-options.cancelButton' | transloco }}
       </button>
       <button
         nbButton
@@ -88,43 +71,41 @@
         style="margin-left: 10px"
         (click)="downloadAlexaExport()"
       >
-        Export
+        {{ 'applications.application-advanced-options.exportButton' | transloco }}
       </button>
     </div>
   </nb-card-body>
 </nb-card>
-
-<nb-card *ngIf="tokenizerProperties">
+} @if (tokenizerProperties) {
+<nb-card>
   <nb-card-body>
     <div class="mb-2">
-      <label>Tokenizer properties</label>
+      <label>{{ 'applications.application-advanced-options.tokenizerPropertiesLabel' | transloco }}</label>
       <textarea
         nbInput
         fullWidth
         [(ngModel)]="tokenizerProperties"
-        placeholder="Tokenizer properties"
+        [placeholder]="'applications.application-advanced-options.tokenizerPropertiesPlaceholder' | transloco"
         rows="3"
       ></textarea>
     </div>
-
     <div class="mb-2">
-      <label>Intent Classifier properties</label>
+      <label>{{ 'applications.application-advanced-options.intentClassifierPropertiesLabel' | transloco }}</label>
       <textarea
         nbInput
         fullWidth
         [(ngModel)]="intentClassifierProperties"
-        placeholder="Intent Classifier properties"
+        [placeholder]="'applications.application-advanced-options.intentClassifierPropertiesPlaceholder' | transloco"
         rows="3"
       ></textarea>
     </div>
-
     <div class="mb-2">
-      <label>Entity Classifier properties</label>
+      <label>{{ 'applications.application-advanced-options.entityClassifierPropertiesLabel' | transloco }}</label>
       <textarea
         nbInput
         fullWidth
         [(ngModel)]="entityClassifierProperties"
-        placeholder="Entity Classifier properties"
+        [placeholder]="'applications.application-advanced-options.entityClassifierPropertiesPlaceholder' | transloco"
         rows="3"
       ></textarea>
     </div>
@@ -137,7 +118,7 @@
       size="small"
       (click)="tokenizerProperties = null; intentClassifierProperties = null; entityClassifierProperties = null"
     >
-      Cancel
+      {{ 'applications.application-advanced-options.cancelButton' | transloco }}
     </button>
     <button
       nbButton
@@ -146,7 +127,8 @@
       (click)="updateConfiguration()"
       style="margin-left: 10px"
     >
-      Update Configuration
+      {{ 'applications.application-advanced-options.updateConfigurationButton' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>
+}

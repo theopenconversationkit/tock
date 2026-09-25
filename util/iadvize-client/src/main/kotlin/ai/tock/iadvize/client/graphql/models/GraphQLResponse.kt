@@ -38,9 +38,7 @@ data class GraphQLError(
     @JsonProperty("locations")
     val locations: List<GraphQLErrorLocation>,
 ) {
-    override fun toString(): String {
-        return "GraphQLError{ message='$message', path=$path, locations=$locations }"
-    }
+    override fun toString(): String = "GraphQLError{ message='$message', path=$path, locations=$locations }"
 }
 
 data class GraphQLErrorLocation(
@@ -49,7 +47,5 @@ data class GraphQLErrorLocation(
     @JsonProperty("column")
     val column: Number,
 ) {
-    override fun toString(): String {
-        return "GraphQLErrorLocation{ line=$line, column=$column }"
-    }
+    override fun toString(): String = "GraphQLErrorLocation{ line=$line, column=$column }"
 }

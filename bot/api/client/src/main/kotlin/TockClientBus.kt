@@ -136,27 +136,33 @@ class TockClientBus(
 
             answer(
                 when (text) {
-                    is String ->
+                    is String -> {
                         Sentence(
                             I18nText(text = text, toBeTranslated = true),
                             delay = delay,
                             suggestions = suggestions,
                         )
+                    }
 
-                    is I18nText -> Sentence(text, delay = delay, suggestions = suggestions)
-                    is TranslatedSequence ->
+                    is I18nText -> {
+                        Sentence(text, delay = delay, suggestions = suggestions)
+                    }
+
+                    is TranslatedSequence -> {
                         Sentence(
                             I18nText(text.toString(), toBeTranslated = false),
                             delay = delay,
                             suggestions = suggestions,
                         )
+                    }
 
-                    else ->
+                    else -> {
                         Sentence(
                             I18nText(text.toString(), toBeTranslated = true),
                             delay = delay,
                             suggestions = suggestions,
                         )
+                    }
                 },
                 lastResponse,
             )

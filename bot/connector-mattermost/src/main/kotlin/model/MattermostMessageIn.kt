@@ -40,9 +40,7 @@ data class MattermostMessageIn(
     @get:JsonProperty("user_name")
     val userName: String,
 ) : MattermostConnectorMessage() {
-    fun getRealMessage(): String {
-        return this.text.replace("${this.triggerWord} ", "")
-    }
+    fun getRealMessage(): String = this.text.replace("${this.triggerWord} ", "")
 
     override fun toGenericMessage(): GenericMessage =
         GenericMessage(

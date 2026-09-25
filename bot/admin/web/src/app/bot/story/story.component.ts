@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { saveAs } from 'file-saver-es';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange, SimpleChanges } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
@@ -39,45 +23,26 @@ import { DialogService } from '../../core-nlp/dialog.service';
 import { SelectBotConfigurationDialogComponent } from '../../configuration/bot-configurations/selection-dialog/select-bot-configuration-dialog.component';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { getExportFileName } from '../../shared/utils';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-story',
-  templateUrl: './story.component.html',
-  styleUrls: ['./story.component.scss']
+    selector: 'tock-story',
+    templateUrl: './story.component.html',
+    styleUrls: ['./story.component.scss'],
+    standalone: false
 })
 export class StoryComponent implements OnChanges {
-  @Input()
-  story: StoryDefinitionConfiguration = null;
-
-  @Input()
-  storyNode: StoryNode = null;
-
-  @Input()
-  storyTag: string = '';
-
-  @Input()
-  fullDisplay = false;
-
-  @Input()
-  displaySteps = false;
-
-  @Input()
-  botId: string = null;
-
-  @Input()
-  displayCancel = false;
-
-  @Output()
-  delete = new EventEmitter<string>();
-
-  @Input()
-  submit = new AnswerController();
-
-  @Input()
-  displayCount = true;
-
-  @Output()
-  closeStory = new EventEmitter<boolean>();
+  @Input() story: StoryDefinitionConfiguration = null;
+  @Input() storyNode: StoryNode = null;
+  @Input() storyTag: string = '';
+  @Input() fullDisplay = false;
+  @Input() displaySteps = false;
+  @Input() botId: string = null;
+  @Input() displayCancel = false;
+  @Output() delete = new EventEmitter<string>();
+  @Input() submit = new AnswerController();
+  @Input() displayCount = true;
+  @Output() closeStory = new EventEmitter<boolean>();
 
   isSwitchingToManagedStory = false;
 
@@ -85,7 +50,8 @@ export class StoryComponent implements OnChanges {
     private state: StateService,
     private bot: BotService,
     private dialog: DialogService,
-    private nbDialogService: NbDialogService
+    private nbDialogService: NbDialogService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -115,25 +81,25 @@ export class StoryComponent implements OnChanges {
   }
 
   deleteStory() {
-    const action = 'remove';
+    const action = this.transloco.translate('common.actions.remove');
     const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
-        title: `Remove the story ${this.story.name}`,
-        subtitle: 'Are you sure you want to delete this story?',
+        title: this.transloco.translate('bot.story.removeStoryTitle', { name: this.story.name }),
+        subtitle: this.transloco.translate('bot.story.removeStorySubtitle'),
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
-          { actionName: action, buttonStatus: 'danger' }
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
+          { actionName: this.transloco.translate('bot.story.removeAction'), buttonStatus: 'danger' }
         ],
         modalStatus: 'danger'
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === action) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         this.bot.deleteStory(this.story._id).subscribe((_) => {
           this.delete.emit(this.story._id);
           this.story = null;
           this.storyTag = '';
-          this.dialog.notify(`Story deleted`, 'Delete');
+          this.dialog.notify(this.transloco.translate('bot.story.storyDeleted'), this.transloco.translate('bot.story.deleteTitle'));
         });
       }
     });
@@ -177,8 +143,10 @@ export class StoryComponent implements OnChanges {
       this.bot.saveStory(this.story).subscribe((s) => {
         this.story = s;
         this.story.selected = selectStoryAfterSave;
-        // this.state.resetConfiguration();
-        this.dialog.notify(`Story ${this.story.name} modified`, 'Update');
+        this.dialog.notify(
+          this.transloco.translate('bot.story.storyModified', { name: this.story.name }),
+          this.transloco.translate('bot.story.updateTitle')
+        );
       });
     }
   }
@@ -235,11 +203,17 @@ export class StoryComponent implements OnChanges {
     this.isSwitchingToManagedStory = false;
     const invalidMessage = this.story.currentAnswer().invalidMessage();
     if (invalidMessage) {
-      this.dialog.notify(`Error: ${invalidMessage}`);
+      this.dialog.notify(this.transloco.translate('bot.story.errorPrefix', { message: invalidMessage }));
     } else {
       if (!this.canBeMetricStory()) this.story.metricStory = false;
       this.bot.newStory(new CreateStoryRequest(this.story, this.state.currentLocale, [])).subscribe((intent) => {
-        this.dialog.notify(`New story ${this.story.name} created for language ${this.state.currentLocale}`, 'New Story');
+        this.dialog.notify(
+          this.transloco.translate('bot.story.newStoryCreated', {
+            name: this.story.name,
+            locale: this.state.currentLocale
+          }),
+          this.transloco.translate('bot.story.newStoryTitle')
+        );
         this.initStoryByBotIdAndIntent();
       });
     }
@@ -273,7 +247,7 @@ export class StoryComponent implements OnChanges {
           story.storyId
         );
         saveAs(blob, exportFileName);
-        this.dialog.notify(`Dump provided`, 'Dump');
+        this.dialog.notify(this.transloco.translate('bot.story.dumpProvided'), this.transloco.translate('bot.story.dumpTitle'));
       });
     }, 1);
   }
@@ -283,7 +257,7 @@ export class StoryComponent implements OnChanges {
       .open(SelectBotConfigurationDialogComponent, {
         closeOnEsc: true,
         context: {
-          title: 'Customise Answers'
+          title: this.transloco.translate('bot.story.customiseAnswersTitle')
         }
       })
       .onClose.subscribe((selectedConfig) => {
@@ -291,10 +265,14 @@ export class StoryComponent implements OnChanges {
           return;
         }
         if (this.story.configuredAnswers.find((customAnswer) => customAnswer.botConfiguration === selectedConfig.name)) {
-          this.dialog.notify('Custom answer already exists.', 'Customise', {
-            status: 'danger',
-            duration: 3000
-          });
+          this.dialog.notify(
+            this.transloco.translate('bot.story.customAnswerExists'),
+            this.transloco.translate('bot.story.customiseTitle'),
+            {
+              status: 'danger',
+              duration: 3000
+            }
+          );
           return;
         }
         if (!this.story.configuredAnswers) {
@@ -313,22 +291,22 @@ export class StoryComponent implements OnChanges {
   }
 
   deleteCustomAnswers(answer: BotConfiguredAnswer) {
-    const action = 'delete';
+    const action = this.transloco.translate('common.actions.delete');
     this.nbDialogService
       .open(ChoiceDialogComponent, {
         closeOnEsc: true,
         context: {
-          title: `Delete "${answer.botConfiguration}" custom answers`,
-          subtitle: `Are you sure you want to delete the "${answer.botConfiguration}" custom answers?`,
+          title: this.transloco.translate('bot.story.deleteCustomAnswersTitle', { configuration: answer.botConfiguration }),
+          subtitle: this.transloco.translate('bot.story.deleteCustomAnswersSubtitle', { configuration: answer.botConfiguration }),
           actions: [
-            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
             { actionName: action, buttonStatus: 'danger' }
           ],
           modalStatus: 'danger'
         }
       })
       .onClose.subscribe((result) => {
-        if (result === action) {
+        if (result.toLowerCase() === action.toLowerCase()) {
           const foundIndex = this.story.configuredAnswers ? this.story.configuredAnswers.indexOf(answer) : -1;
           if (foundIndex >= 0) {
             this.story.configuredAnswers.splice(foundIndex, 1);
@@ -338,12 +316,11 @@ export class StoryComponent implements OnChanges {
   }
 
   addCustomSteps() {
-    // TODO : check if all steps have a userSentence defined to avoid an error on duplication
     this.nbDialogService
       .open(SelectBotConfigurationDialogComponent, {
         closeOnEsc: true,
         context: {
-          title: 'Customise Actions'
+          title: this.transloco.translate('bot.story.customiseActionsTitle')
         }
       })
       .onClose.subscribe((selectedConfig) => {
@@ -351,10 +328,14 @@ export class StoryComponent implements OnChanges {
           return;
         }
         if (this.story.configuredSteps.find((customAnswer) => customAnswer.botConfiguration === selectedConfig.name)) {
-          this.dialog.notify('Custom actions already exist.', 'Customise', {
-            status: 'danger',
-            duration: 3000
-          });
+          this.dialog.notify(
+            this.transloco.translate('bot.story.customStepsExists'),
+            this.transloco.translate('bot.story.customiseTitle'),
+            {
+              status: 'danger',
+              duration: 3000
+            }
+          );
           return;
         }
         if (!this.story.configuredSteps) {
@@ -366,22 +347,22 @@ export class StoryComponent implements OnChanges {
   }
 
   deleteCustomSteps(steps: BotConfiguredSteps) {
-    const action = 'delete';
+    const action = this.transloco.translate('common.actions.delete');
     this.nbDialogService
       .open(ChoiceDialogComponent, {
         closeOnEsc: true,
         context: {
-          title: `Delete "${steps.botConfiguration}" custom steps`,
-          subtitle: `Are you sure you want to delete the "${steps.botConfiguration}" custom steps?`,
+          title: this.transloco.translate('bot.story.deleteCustomStepsTitle', { configuration: steps.botConfiguration }),
+          subtitle: this.transloco.translate('bot.story.deleteCustomStepsSubtitle', { configuration: steps.botConfiguration }),
           actions: [
-            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
             { actionName: action, buttonStatus: 'danger' }
           ],
           modalStatus: 'danger'
         }
       })
       .onClose.subscribe((result) => {
-        if (result === action) {
+        if (result.toLowerCase() === action.toLowerCase()) {
           const foundIndex = this.story.configuredSteps ? this.story.configuredSteps.indexOf(steps) : -1;
           if (foundIndex >= 0) {
             this.story.configuredSteps.splice(foundIndex, 1);
@@ -403,7 +384,6 @@ export class StoryComponent implements OnChanges {
     for (let i = 0; i < this.story.steps?.length; i++) {
       if (this.story.steps[i].metrics?.length) return true;
     }
-
     return false;
   }
 }

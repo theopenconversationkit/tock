@@ -20,8 +20,9 @@ import { StateService } from '../core-nlp/state.service';
 import { UserRole } from '../model/auth';
 
 @Component({
-  selector: 'tock-test-tabs',
-  template: '<nb-route-tabset></nb-route-tabset>'
+    selector: 'tock-test-tabs',
+    template: '<nb-route-tabset></nb-route-tabset>',
+    standalone: false
 })
 export class TestTabsComponent implements OnInit {
   constructor(private router: Router) {}

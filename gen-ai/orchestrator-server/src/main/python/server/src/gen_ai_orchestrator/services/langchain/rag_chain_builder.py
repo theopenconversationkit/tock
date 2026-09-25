@@ -134,6 +134,23 @@ def format_documents_as_context(documents: list[Document]) -> str:
 # ---------------------------------------------------------------------------
 
 
+def get_document_key(doc: Document) -> tuple:
+    """Return the stable document/chunk key used by every retrieval channel."""
+    return doc.metadata.get('id'), doc.metadata.get('chunk')
+
+
+def calculate_rrf_scores(
+    ranked_results: list[list[Document]], k: int
+) -> dict[tuple, float]:
+    """Calculate Reciprocal Rank Fusion scores without truncating the result."""
+    scores: dict[tuple, float] = {}
+    for results in ranked_results:
+        for rank, doc in enumerate(results, start=1):
+            key = get_document_key(doc)
+            scores[key] = scores.get(key, 0.0) + 1.0 / (k + rank)
+    return scores
+
+
 def apply_rrf_ranking(
     ranked_results: list[list[Document]],
     k: int,
@@ -147,23 +164,14 @@ def apply_rrf_ranking(
     highest-scoring documents are returned.
     """
 
-    def doc_key(doc: Document) -> tuple:
-        return doc.metadata.get('id'), doc.metadata.get('chunk')
-
-    # Accumulate RRF scores
-    scores: dict[tuple, float] = {}
-
-    for results in ranked_results:
-        for rank, doc in enumerate(results, start=1):
-            key = doc_key(doc)
-            scores[key] = scores.get(key, 0.0) + 1.0 / (k + rank)
+    scores = calculate_rrf_scores(ranked_results, k)
 
     # Deduplicate while preserving any Document instance
     unique_docs: dict[tuple, Document] = {}
 
     for results in ranked_results:
         for doc in results:
-            key = doc_key(doc)
+            key = get_document_key(doc)
 
             if key not in unique_docs:
                 unique_docs[key] = doc
@@ -178,7 +186,7 @@ def apply_rrf_ranking(
     # Attach the computed score and sort
     ranked_docs = sorted(
         unique_docs.values(),
-        key=lambda doc: scores[doc_key(doc)],
+        key=lambda doc: scores[get_document_key(doc)],
         reverse=True,
     )
     for rank, doc in enumerate(ranked_docs, start=1):

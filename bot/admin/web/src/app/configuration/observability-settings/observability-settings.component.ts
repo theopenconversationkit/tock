@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
@@ -29,6 +13,7 @@ import { ChoiceDialogComponent, DebugViewerWindowComponent } from '../../shared/
 import { saveAs } from 'file-saver-es';
 import { FileValidators } from '../../shared/validators';
 import { ProvidersConfigurationParam } from '../../shared/model/ai-settings';
+import { TranslocoService } from '@jsverse/transloco'; // Ajout
 
 interface ObservabilitySettingsForm {
   id: FormControl<string>;
@@ -38,9 +23,10 @@ interface ObservabilitySettingsForm {
 }
 
 @Component({
-  selector: 'tock-observability-settings',
-  templateUrl: './observability-settings.component.html',
-  styleUrls: ['./observability-settings.component.scss']
+    selector: 'tock-observability-settings',
+    templateUrl: './observability-settings.component.html',
+    styleUrls: ['./observability-settings.component.scss'],
+    standalone: false
 })
 export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
@@ -64,7 +50,8 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private botConfiguration: BotConfigurationService,
     private nbWindowService: NbWindowService,
-    private nbDialogService: NbDialogService
+    private nbDialogService: NbDialogService,
+    private transloco: TranslocoService // Ajout
   ) {}
 
   ngOnInit(): void {
@@ -203,21 +190,23 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
           this.form.patchValue(observabilitySettings);
           this.form.markAsPristine();
           this.isSubmitted = false;
-          this.toastrService.success(`Observability settings succesfully saved`, 'Success', {
-            duration: 5000,
-            status: 'success'
-          });
+          this.toastrService.success(
+            this.transloco.translate('configuration.observability-settings.settingsSavedSuccess'),
+            this.transloco.translate('common.messages.success'),
+            { duration: 5000, status: 'success' }
+          );
           this.loading = false;
         },
         error: (error) => {
-          this.toastrService.danger('An error occured', 'Error', {
-            duration: 5000,
-            status: 'danger'
-          });
+          this.toastrService.danger(
+            this.transloco.translate('configuration.observability-settings.settingsSaveError'),
+            this.transloco.translate('common.messages.error'),
+            { duration: 5000, status: 'danger' }
+          );
 
           if (error.error) {
             this.nbWindowService.open(DebugViewerWindowComponent, {
-              title: 'An error occured',
+              title: this.transloco.translate('configuration.observability-settings.settingsSaveError'),
               context: {
                 debug: error.error
               }
@@ -295,16 +284,17 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
     const exportFileName = getExportFileName(
       this.state.currentApplication.namespace,
       this.state.currentApplication.name,
-      'Observability settings',
+      this.transloco.translate('configuration.observability-settings.observabilitySettingsFileName'),
       'json'
     );
 
     saveAs(jsonBlob, exportFileName);
 
-    this.toastrService.show(`Observability settings dump provided`, 'Observability settings dump', {
-      duration: 3000,
-      status: 'success'
-    });
+    this.toastrService.show(
+      this.transloco.translate('configuration.observability-settings.observabilitySettingsDumpProvided'),
+      this.transloco.translate('configuration.observability-settings.observabilitySettingsDumpTitle'),
+      { duration: 3000, status: 'success' }
+    );
   }
 
   importModalRef;
@@ -349,12 +339,9 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
 
         if (!hasCompatibleProvider) {
           this.toastrService.show(
-            `The file supplied does not reference a compatible provider. Please check the file.`,
-            'Observability settings import fails',
-            {
-              duration: 6000,
-              status: 'danger'
-            }
+            this.transloco.translate('configuration.observability-settings.incompatibleProviderError'),
+            this.transloco.translate('configuration.observability-settings.importFailsTitle'),
+            { duration: 6000, status: 'danger' }
           );
           return;
         }
@@ -373,8 +360,8 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
 
     const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
-        title: `Delete observability settings`,
-        subtitle: `Are you sure you want to delete the currently saved observability settings?`,
+        title: this.transloco.translate('configuration.observability-settings.deleteSettingsTitle'),
+        subtitle: this.transloco.translate('configuration.observability-settings.deleteSettingsSubtitle'),
         modalStatus: 'danger',
         actions: [
           { actionName: cancelAction, buttonStatus: 'basic' },
@@ -395,10 +382,11 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
       delete this.settingsBackup;
       this.form.reset();
       this.form.markAsPristine();
-      this.toastrService.success(`Observability settings succesfully deleted`, 'Success', {
-        duration: 5000,
-        status: 'success'
-      });
+      this.toastrService.success(
+        this.transloco.translate('configuration.observability-settings.settingsDeletedSuccess'),
+        this.transloco.translate('common.messages.success'),
+        { duration: 5000, status: 'success' }
+      );
     });
   }
 

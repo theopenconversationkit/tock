@@ -1,56 +1,37 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<div
-  *ngIf="step && !readonly"
-  class="step"
->
+@if (step && !readonly) {
+<div class="step">
   <div class="line">
     <div>
+      @if (canUpward) {
       <button
         nbButton
         ghost
         shape="round"
         status="info"
-        nbTooltip="Move upward"
+        [nbTooltip]="'bot.story-action-step.moveUpwardTooltip' | transloco"
         (click)="upwardStep()"
-        *ngIf="canUpward"
         class="d-block"
       >
         <nb-icon icon="arrow-up-short"></nb-icon>
       </button>
-
+      } @if (canDownward) {
       <button
         nbButton
         ghost
         shape="round"
         status="info"
-        nbTooltip="Move downward"
+        [nbTooltip]="'bot.story-action-step.moveDownwardTooltip' | transloco"
         (click)="downwardStep()"
-        *ngIf="canDownward"
         class="d-block"
       >
         <nb-icon icon="arrow-down-short"></nb-icon>
       </button>
+      }
     </div>
-
     <!-- user sentence -->
     <div>
       <tock-form-control
-        label="User phrase"
+        [label]="'bot.story-action-step.userPhraseLabel' | transloco"
         name="userSentence"
         [hasMargin]="false"
         [required]="true"
@@ -59,32 +40,32 @@
         [showError]="true"
         [controls]="$any({ errors: step.new })"
       >
+        @if (!step.new) {
         <input
           nbInput
           fullWidth
           type="text"
           fieldSize="small"
-          placeholder="Enter a user phrase"
-          *ngIf="!step.new"
+          [placeholder]="'bot.story-action-step.userPhrasePlaceholder' | transloco"
           [(ngModel)]="step.userSentence.defaultLabel"
           (blur)="userSentenceChange($any($event.target).value)"
         />
+        } @if (step.new) {
         <input
           nbInput
           fullWidth
           type="text"
           fieldSize="small"
-          placeholder="Enter a user phrase"
-          *ngIf="step.new"
+          [placeholder]="'bot.story-action-step.userPhrasePlaceholder' | transloco"
           [(ngModel)]="step.newUserSentence"
           (blur)="userSentenceChange($any($event.target).value)"
         />
+        }
       </tock-form-control>
     </div>
-
     <!-- intent -->
     <tock-form-control
-      label="Intent"
+      [label]="'bot.story-action-step.intentLabel' | transloco"
       name="intent"
       [hasMargin]="false"
       [boldLabel]="false"
@@ -95,7 +76,7 @@
         fullWidth
         type="text"
         fieldSize="small"
-        placeholder="Intent starting the Action"
+        [placeholder]="'bot.story-action-step.intentPlaceholder' | transloco"
         [(ngModel)]="step.intent.name"
         (blur)="validateIntent(step)"
         autocomplete="off"
@@ -103,20 +84,19 @@
         [nbAutocomplete]="intentssAutocomplete"
       />
     </tock-form-control>
-
     <!-- entity -->
     <tock-form-control
-      label="Entity"
+      [label]="'bot.story-action-step.entityLabel' | transloco"
       [boldLabel]="false"
       [hasMargin]="false"
     >
+      @if (!step.entity || step.entity.value) {
       <button
         nbButton
         shape="round"
         size="small"
-        nbTooltip="Set Target Entity Value"
+        [nbTooltip]="'bot.story-action-step.setTargetEntityValueTooltip' | transloco"
         (click)="setEntity()"
-        *ngIf="!step.entity || step.entity.value"
       >
         {{ step.entity ? step.entity.entityRole : '' }}
         <nb-icon
@@ -125,24 +105,23 @@
         ></nb-icon>
         {{ step.entity ? (step.entity.value ? step.entity.value : '') : '' }}
       </button>
+      } @if (step.entity && !step.entity.value) {
       <button
         nbButton
         shape="round"
         size="small"
-        nbTooltip="Set Target Entity"
+        [nbTooltip]="'bot.story-action-step.setTargetEntityTooltip' | transloco"
         (click)="setEntity()"
-        *ngIf="step.entity && !step.entity.value"
       >
         {{ step.entity ? (step.entity.value ? step.entity.value : step.entity.entityRole) : '' }}
         <nb-icon icon="paperclip"></nb-icon>
       </button>
+      }
     </tock-form-control>
-
     <div></div>
-
     <!-- answer -->
     <tock-form-control
-      label="Answer"
+      [label]="'bot.story-action-step.answerLabel' | transloco"
       [boldLabel]="false"
       [hasMargin]="false"
     >
@@ -151,20 +130,19 @@
         [answer]="step"
       ></tock-answer>
     </tock-form-control>
-
     <tock-form-control
-      label="Target intent"
+      [label]="'bot.story-action-step.targetIntentLabel' | transloco"
       name="targetIntent"
       [boldLabel]="false"
       [hasMargin]="false"
-      nbTooltip="Intent to switch to when reaching the step"
+      [nbTooltip]="'bot.story-action-step.targetIntentTooltip' | transloco"
     >
       <input
         nbInput
         fullWidth
         type="text"
         fieldSize="small"
-        placeholder="Target intent"
+        [placeholder]="'bot.story-action-step.targetIntentPlaceholder' | transloco"
         #targetIntent
         [(ngModel)]="step.targetIntent.name"
         (keyup)="onIntentChange(step, $any($event.target).value)"
@@ -175,9 +153,8 @@
         [nbAutocomplete]="intentssAutocomplete"
       />
     </tock-form-control>
-
     <tock-form-control
-      label="Indicators"
+      [label]="'bot.story-action-step.indicatorsLabel' | transloco"
       [boldLabel]="false"
       [hasMargin]="false"
     >
@@ -185,25 +162,25 @@
         multiple
         fullWidth
         size="small"
-        placeholder="Associate indicators with this step"
+        [placeholder]="'bot.story-action-step.indicatorsPlaceholder' | transloco"
         optionsListClass="option-list--break-word"
         [selected]="selectedStepsMetrics"
         [compareWith]="matchMetrics"
         (selectedChange)="onStepMetricChange($event)"
         data-testid="selected-steps-Metrics"
       >
-        <nb-option-group
-          *ngFor="let dimension of getIndicatorsValuesGroups()"
-          [title]="dimension.dimension"
-        >
+        @for (dimension of getIndicatorsValuesGroups(); track dimension) {
+        <nb-option-group [title]="dimension.dimension">
+          @for (entry of dimension.entries; track entry) {
           <nb-option
-            *ngFor="let entry of dimension.entries"
             [value]="entry"
             [disabled]="!indicatorValueSelectable(entry)"
           >
             {{ getMetricLabel(entry) }}
           </nb-option>
+          }
         </nb-option-group>
+        }
       </nb-select>
     </tock-form-control>
   </div>
@@ -218,21 +195,20 @@
         (click)="removeStep()"
       >
         <nb-icon icon="dash-lg"></nb-icon>
-        Remove Action
+        {{ 'bot.story-action-step.removeActionButton' | transloco }}
       </button>
-
+      @if (!step.new && step.intent && !step.currentAnswer().isEmpty()) {
       <button
         nbButton
         ghost
         status="success"
         size="small"
         (click)="addChild()"
-        *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()"
       >
         <nb-icon icon="plus-lg"></nb-icon>
-        Add action
+        {{ 'bot.story-action-step.addActionButton' | transloco }}
       </button>
-
+      }
       <button
         nbButton
         ghost
@@ -240,54 +216,57 @@
         (click)="duplicateStep()"
       >
         <nb-icon icon="copy"></nb-icon>
-        Duplicate
+        {{ 'bot.story-action-step.duplicateButton' | transloco }}
       </button>
-
+      @if (!step.new && step.intent && !step.currentAnswer().isEmpty()) {
       <button
         nbButton
         ghost
         size="small"
         (click)="generateChildren()"
-        *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()"
       >
         <nb-icon icon="plus-square"></nb-icon>
-        Generate from entity
+        {{ 'bot.story-action-step.generateFromEntityButton' | transloco }}
       </button>
+      }
     </div>
   </div>
 </div>
+}
 
 <nb-autocomplete
   #intentssAutocomplete
   size="tiny"
 >
-  <nb-option-group
-    *ngFor="let category of intentsAutocompleteValues | async"
-    [title]="category.category"
-  >
+  @for (category of intentsAutocompleteValues | async; track category) {
+  <nb-option-group [title]="category.category">
+    @for (intent of category.intents; track intent) {
     <nb-option
-      *ngFor="let intent of category.intents"
       [value]="intent.name"
       class="text-capitalize"
     >
       {{ intent.intentLabel() }}
     </nb-option>
+    }
   </nb-option-group>
+  }
 </nb-autocomplete>
 
-<span
-  *ngIf="step && readonly"
-  class="read-only"
-  >{{ step.userSentence.defaultLocalizedLabelForLocale(state.currentLocale).label }}
+@if (step && readonly) {
+<span class="read-only">
+  {{ step.userSentence.defaultLocalizedLabelForLocale(state.currentLocale).label }}
+  @if (step.intent && step.intent.name) {
   <span
-    *ngIf="step.intent && step.intent.name"
     class="intent"
-    nbTooltip="Action Intent"
-    >[{{ step.intent.name }}]</span
-  >:
+    [nbTooltip]="'bot.story-action-step.actionIntentTooltip' | transloco"
+  >
+    [{{ step.intent.name }}]
+  </span>
+  } :
   <tock-answer
     class="answer"
     [answer]="step"
     [editable]="false"
-  ></tock-answer
-></span>
+  ></tock-answer>
+</span>
+}

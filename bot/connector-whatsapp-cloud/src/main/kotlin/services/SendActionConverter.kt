@@ -36,8 +36,8 @@ object SendActionConverter {
     fun toBotMessage(
         whatsAppCloudApiService: WhatsAppCloudApiService,
         action: Action,
-    ): WhatsAppCloudSendBotMessage? {
-        return if (action is SendSentence) {
+    ): WhatsAppCloudSendBotMessage? =
+        if (action is SendSentence) {
             val whatsappMessage = action.message(whatsAppCloudConnectorType)
             val stringText = action.stringText
 
@@ -55,7 +55,6 @@ object SendActionConverter {
         } else {
             null
         }
-    }
 
     private fun prepareBotMessage(
         message: WhatsAppCloudBotMessage,

@@ -23,14 +23,13 @@ import java.time.ZonedDateTime
 /**
  * Wraps a [ZonedDateTime] with a [DateEntityGrain].
  */
-data class DateEntityValue(val date: ZonedDateTime, val grain: DateEntityGrain) : DateEntityRange {
-    override fun start(): ZonedDateTime {
-        return date
-    }
+data class DateEntityValue(
+    val date: ZonedDateTime,
+    val grain: DateEntityGrain,
+) : DateEntityRange {
+    override fun start(): ZonedDateTime = date
 
-    override fun end(zoneId: ZoneId): ZonedDateTime {
-        return grain.calculateEnd(date, zoneId)
-    }
+    override fun end(zoneId: ZoneId): ZonedDateTime = grain.calculateEnd(date, zoneId)
 
     override fun duration(): Duration = Duration.between(grain.truncate(date), grain.truncate(end(date.zone)))
 }

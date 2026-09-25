@@ -65,7 +65,5 @@ data class TestActionReport(
             report.id,
         )
 
-    fun findFirstMessage(): Message {
-        return messages.first()
-    }
+    fun findFirstMessage(): Message = messages.first()
 }

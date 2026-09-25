@@ -21,11 +21,14 @@ import { ConnectorTypeConfiguration } from '../../../core/model/configuration';
 import { BotSharedService } from '../../../shared/bot-shared.service';
 import { NbToastrService } from '@nebular/theme';
 import { take } from 'rxjs';
+import { TranslocoService } from '@jsverse/transloco';
+import moment from 'moment';
 
 @Component({
-  selector: 'tock-i18n-label',
-  templateUrl: './i18n-label.component.html',
-  styleUrls: ['./i18n-label.component.scss']
+    selector: 'tock-i18n-label',
+    templateUrl: './i18n-label.component.html',
+    styleUrls: ['./i18n-label.component.scss'],
+    standalone: false
 })
 export class I18nLabelComponent implements OnInit {
   @Input() i18nLabel: I18nLabel;
@@ -44,10 +47,15 @@ export class I18nLabelComponent implements OnInit {
     public state: StateService,
     private botService: BotService,
     private toastrService: NbToastrService,
-    public botSharedService: BotSharedService
+    public botSharedService: BotSharedService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
+    this.transloco.langChanges$.subscribe((lang) => {
+      moment.locale(lang);
+    });
+
     this.botSharedService
       .getConnectorTypes()
       .pipe(take(1))

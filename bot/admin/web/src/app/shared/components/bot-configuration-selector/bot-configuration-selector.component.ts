@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Subject, take, takeUntil } from 'rxjs';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../../core/model/configuration';
@@ -24,11 +24,12 @@ export interface currentConfigurationSelection {
   restConfiguration: BotApplicationConfiguration | undefined;
 }
 @Component({
-  selector: 'tock-bot-configuration-selector',
-  templateUrl: './bot-configuration-selector.component.html',
-  styleUrl: './bot-configuration-selector.component.scss'
+    selector: 'tock-bot-configuration-selector',
+    templateUrl: './bot-configuration-selector.component.html',
+    styleUrl: './bot-configuration-selector.component.scss',
+    standalone: false
 })
-export class BotConfigurationSelectorComponent implements OnDestroy {
+export class BotConfigurationSelectorComponent implements OnDestroy, OnChanges {
   destroy = new Subject();
 
   allConfigurations: BotApplicationConfiguration[];

@@ -1,36 +1,44 @@
 <nb-card class="mb-2">
   <nb-card-header>
     <div class="d-flex justify-content-between align-items-start gap-1">
-      <div class="pt-1">{{ isEditMode ? 'Edit dataset' : 'New dataset' }}</div>
+      <div class="pt-1">
+        {{ isEditMode ? ('quality.dataset-create.title_edit' | transloco) : ('quality.dataset-create.title_new' | transloco) }}
+      </div>
 
       <button
         type="button"
         nbButton
         shape="round"
-        nbTooltip="Close"
+        [nbTooltip]="'quality.dataset-create.close_tooltip' | transloco"
         (click)="dialogRef.close()"
       >
         <nb-icon icon="x-lg"></nb-icon>
       </button>
     </div>
 
+    @if (isSubmitted && !form.valid) {
     <nb-alert
-      *ngIf="isSubmitted && !form.valid"
       status="danger"
       class="mt-2 mb-0"
     >
       <ul class="mb-0 ps-3 font-color-white">
-        <li *ngIf="form.controls.name.invalid">The dataset name is invalid.</li>
-        <li *ngIf="form.controls.description.invalid">The dataset description is invalid.</li>
-        <li *ngIf="questions.invalid">
-          {{ invalidQuestionCount }} question{{ invalidQuestionCount > 1 ? 's are' : ' is' }} invalid. Please ensure all questions are
-          filled out and do not exceed the character limit.
+        @if (form.controls.name.invalid) {
+        <li>
+          {{ 'quality.dataset-create.dataset_name_invalid' | transloco }}
         </li>
+        } @if (form.controls.description.invalid) {
+        <li>
+          {{ 'quality.dataset-create.dataset_description_invalid' | transloco }}
+        </li>
+        } @if (questions.invalid) {
+        <li>
+          {{ 'quality.dataset-create.questions_invalid_message' | transloco: { count: invalidQuestionCount } }}
+        </li>
+        }
       </ul>
     </nb-alert>
-
+    } @if (showQuestionEditWarning) {
     <nb-alert
-      *ngIf="showQuestionEditWarning"
       status="warning"
       class="mt-2 mb-0"
     >
@@ -40,16 +48,15 @@
           class="flex-shrink-0 mt-1"
         ></nb-icon>
         <div>
-          <strong>Be careful when editing existing questions.</strong>
+          <strong>{{ 'quality.dataset-create.edit_warning_title' | transloco }}</strong>
           <br />
-          Run results are matched by question ID, so rephrasing a question slightly is fine, but changing its meaning will cause results
-          from different runs to be compared incorrectly.
+          {{ 'quality.dataset-create.edit_warning_message_1' | transloco }}
           <br />
-          If the intent of the question has changed significantly, consider
-          <strong>adding a new question</strong> and deleting this one instead.
+          {{ 'quality.dataset-create.edit_warning_message_2' | transloco }}
         </div>
       </div>
     </nb-alert>
+    }
   </nb-card-header>
 
   <nb-card-body>
@@ -58,7 +65,7 @@
         <div class="col-12">
           <tock-form-control
             name="name"
-            label="Dataset name"
+            [label]="'quality.dataset-create.dataset_name_label' | transloco"
             [controls]="getFormControl('name')"
             [showError]="isSubmitted"
           >
@@ -66,7 +73,7 @@
               <input
                 nbInput
                 fullWidth
-                placeholder="Name of the dataset"
+                [placeholder]="'quality.dataset-create.dataset_name_placeholder' | transloco"
                 formControlName="name"
               />
             </nb-form-field>
@@ -76,7 +83,7 @@
         <div class="col-12">
           <tock-form-control
             name="description"
-            label="Dataset description"
+            [label]="'quality.dataset-create.dataset_description_label' | transloco"
             [controls]="getFormControl('description')"
             [showError]="isSubmitted"
           >
@@ -84,7 +91,7 @@
               <textarea
                 nbInput
                 fullWidth
-                placeholder="Description of the dataset"
+                [placeholder]="'quality.dataset-create.dataset_description_placeholder' | transloco"
                 formControlName="description"
               ></textarea>
             </nb-form-field>
@@ -94,13 +101,13 @@
         <div class="col-12">
           <tock-form-control
             name="questions"
-            label="Questions"
+            [label]="'quality.dataset-create.questions_label' | transloco"
             [controls]="getFormControl('questions')"
             [showError]="isSubmitted"
           >
             <div formArrayName="questions">
+              @for (questionGroup of questions.controls; track questionGroup; let i = $index) {
               <div
-                *ngFor="let questionGroup of questions.controls; let i = index"
                 [formGroupName]="i"
                 class="mb-3"
               >
@@ -112,53 +119,55 @@
                       fullWidth
                       rows="2"
                       formControlName="question"
-                      placeholder="Question {{ i + 1 }}…"
+                      [placeholder]="'quality.dataset-create.question_placeholder' | transloco: { index: i + 1 }"
                       [status]="isSubmitted && questionGroup.controls.question.invalid && !isLastEntry(i) ? 'danger' : 'basic'"
                       (input)="onQuestionInput(i)"
                       (paste)="onQuestionPaste($event, i)"
                       class="scrollbar-narrow"
                     ></textarea>
-
-                    <small
-                      *ngIf="isSubmitted && questionGroup.controls.question.errors?.maxlength && !isLastEntry(i)"
-                      class="text-danger"
-                    >
-                      Question exceeds the {{ questionGroup.controls.question.errors.maxlength.requiredLength }} character limit.
+                    @if (isSubmitted && questionGroup.controls.question.errors?.maxlength && !isLastEntry(i)) {
+                    <small class="text-danger">
+                      {{
+                        'quality.dataset-create.question_exceeds_limit'
+                          | transloco: { limit: questionGroup.controls.question.errors.maxlength.requiredLength }
+                      }}
                     </small>
+                    }
                   </div>
-
+                  @if (!isLastEntry(i) || questions.length === 1) {
                   <button
-                    *ngIf="!isLastEntry(i) || questions.length === 1"
                     nbButton
                     ghost
                     shape="round"
                     status="danger"
-                    nbTooltip="Delete question"
+                    [nbTooltip]="'quality.dataset-create.delete_question_tooltip' | transloco"
                     tabindex="-1"
                     (click)="removeQuestion(i)"
                   >
                     <nb-icon icon="trash"></nb-icon>
                   </button>
+                  }
                 </div>
-
+                @if (questionGroup.controls.question.value.trim()) {
                 <textarea
-                  *ngIf="questionGroup.controls.question.value.trim()"
                   nbInput
                   fullWidth
                   formControlName="groundTruth"
-                  placeholder="Ground truth (optional)"
+                  [placeholder]="'quality.dataset-create.ground_truth_placeholder' | transloco"
                   rows="2"
                   class="mt-1 scrollbar-narrow"
                   [status]="isSubmitted && questionGroup.controls.groundTruth.invalid ? 'danger' : 'basic'"
                 ></textarea>
-
-                <small
-                  *ngIf="isSubmitted && questionGroup.controls.groundTruth.errors?.maxlength"
-                  class="text-danger"
-                >
-                  Ground truth exceeds the {{ questionGroup.controls.groundTruth.errors.maxlength.requiredLength }} character limit.
+                } @if (isSubmitted && questionGroup.controls.groundTruth.errors?.maxlength) {
+                <small class="text-danger">
+                  {{
+                    'quality.dataset-create.ground_truth_exceeds_limit'
+                      | transloco: { limit: questionGroup.controls.groundTruth.errors.maxlength.requiredLength }
+                  }}
                 </small>
+                }
               </div>
+              }
             </div>
           </tock-form-control>
         </div>
@@ -170,21 +179,41 @@
     class="card-footer-actions"
     [ngClass]="{ 'justify-content-between': isEditMode }"
   >
-    <button
-      *ngIf="isEditMode"
-      nbButton
-      ghost="true"
-      status="primary"
-      tabindex="-1"
-      [disabled]="isLoading"
-      (click)="exportDataset()"
-    >
-      <nb-icon
-        icon="download"
-        class="mr-2"
-      ></nb-icon>
-      EXPORT DATASET
-    </button>
+    @if (isEditMode) {
+    <div class="d-flex gap-05">
+      <button
+        nbButton
+        ghost="true"
+        status="primary"
+        tabindex="-1"
+        [disabled]="isLoading"
+        [nbTooltip]="'quality.dataset-create.export_json_tooltip' | transloco"
+        (click)="exportDataset('json')"
+      >
+        <nb-icon
+          icon="download"
+          class="mr-2"
+        ></nb-icon>
+        JSON
+      </button>
+
+      <button
+        nbButton
+        ghost="true"
+        status="primary"
+        tabindex="-1"
+        [disabled]="isLoading"
+        [nbTooltip]="'quality.dataset-create.export_csv_tooltip' | transloco"
+        (click)="exportDataset('csv')"
+      >
+        <nb-icon
+          icon="download"
+          class="mr-2"
+        ></nb-icon>
+        CSV
+      </button>
+    </div>
+    }
 
     <div class="d-flex gap-1">
       <button
@@ -194,14 +223,18 @@
         tabindex="-1"
         (click)="dialogRef.close()"
       >
-        CANCEL
+        {{ 'quality.dataset-create.cancel_button' | transloco }}
       </button>
 
       <button
         #submitButton
         nbButton
         status="primary"
-        [nbTooltip]="isEditMode ? 'Save changes' : 'Create dataset'"
+        [nbTooltip]="
+          isEditMode
+            ? ('quality.dataset-create.save_changes_tooltip' | transloco)
+            : ('quality.dataset-create.create_dataset_tooltip' | transloco)
+        "
         class="d-flex align-items-center"
         [nbSpinner]="isLoading"
         [disabled]="isLoading"
@@ -211,7 +244,7 @@
           [icon]="isEditMode ? 'check-lg' : 'plus-lg'"
           class="mr-2"
         ></nb-icon>
-        {{ isEditMode ? 'SAVE' : 'CREATE' }}
+        {{ isEditMode ? ('quality.dataset-create.save_button' | transloco) : ('quality.dataset-create.create_button' | transloco) }}
       </button>
     </div>
   </nb-card-footer>

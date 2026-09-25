@@ -64,9 +64,7 @@ abstract class Event(
     /**
      * Does this event contains specified role entity?
      */
-    fun hasEntity(role: String): Boolean {
-        return hasSubEntity(state.entityValues, role)
-    }
+    fun hasEntity(role: String): Boolean = hasSubEntity(state.entityValues, role)
 
     /**
      * Does this event contains specified predefined value entity?
@@ -74,7 +72,5 @@ abstract class Event(
     fun hasEntityPredefinedValue(
         role: String,
         value: String,
-    ): Boolean {
-        return hasEntityPredefinedValue(state.entityValues, role, value)
-    }
+    ): Boolean = hasEntityPredefinedValue(state.entityValues, role, value)
 }

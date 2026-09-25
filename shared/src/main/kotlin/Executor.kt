@@ -116,13 +116,11 @@ interface Executor : Executor {
      */
     fun <T> newIncompleteFuture(): CompletableFuture<T> = ExecutableFuture(this)
 
-    open class ExecutableFuture<T>(private val executor: Executor) : CompletableFuture<T>() {
-        override fun <U : Any?> newIncompleteFuture(): CompletableFuture<U> {
-            return ExecutableFuture(executor)
-        }
+    open class ExecutableFuture<T>(
+        private val executor: Executor,
+    ) : CompletableFuture<T>() {
+        override fun <U : Any?> newIncompleteFuture(): CompletableFuture<U> = ExecutableFuture(executor)
 
-        override fun defaultExecutor(): Executor {
-            return executor
-        }
+        override fun defaultExecutor(): Executor = executor
     }
 }

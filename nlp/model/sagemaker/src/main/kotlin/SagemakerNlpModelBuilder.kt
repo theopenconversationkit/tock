@@ -30,13 +30,12 @@ internal object SagemakerNlpModelBuilder : NlpEngineModelBuilder {
         context: IntentContext,
         configuration: NlpApplicationConfiguration,
         expressions: List<SampleExpression>,
-    ): IntentModelHolder {
-        return IntentModelHolder(
+    ): IntentModelHolder =
+        IntentModelHolder(
             application = context.application,
             nativeModel = SagemakerModelConfiguration(),
             configuration = configuration,
         )
-    }
 
     override fun buildEntityModel(
         context: EntityBuildContext,

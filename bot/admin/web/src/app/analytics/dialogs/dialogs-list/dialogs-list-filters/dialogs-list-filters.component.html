@@ -1,18 +1,18 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
 <nb-card class="mb-2">
   <nb-card-body>
@@ -28,74 +28,73 @@
               nbInput
               fullWidth
               fieldSize="medium"
-              placeholder="Search user text"
+              [placeholder]="'analytics.dialogs-list-filters.search-user-questions' | transloco"
               type="text"
               formControlName="text"
               spellcheck="false"
               autocomplete="off"
             />
+            @if (!!getFormControl('text').value) {
             <button
-              *ngIf="!!getFormControl('text').value"
               nbButton
               nbSuffix
               ghost
-              nbTooltip="Clear text search"
+              [nbTooltip]="'common.actions.clear' | transloco"
               type="button"
               (click)="resetControl(getFormControl('text'))"
             >
               <nb-icon icon="x-lg"></nb-icon>
             </button>
-
+            } @if (!!getFormControl('exactMatch').value) {
             <button
-              *ngIf="!!getFormControl('exactMatch').value"
               nbButton
               nbSuffix
               ghost
-              nbTooltip="Exact text match : Search dialogs containing a user question corresponding exactly to the text indicated. Click to launch a partial search."
+              [nbTooltip]="'analytics.dialogs-list-filters.tooltips.exact-text-match' | transloco"
               type="button"
               (click)="patchControl(getFormControl('exactMatch'), false)"
             >
               <nb-icon icon="braces"></nb-icon>
             </button>
+            } @if (!getFormControl('exactMatch').value) {
             <button
-              *ngIf="!getFormControl('exactMatch').value"
               nbButton
               nbSuffix
               ghost
-              nbTooltip="Partial text match : Search dialogs containing a user question containing the text indicated. Click to search exactly the given text."
+              [nbTooltip]="'analytics.dialogs-list-filters.tooltips.partial-text-match' | transloco"
               type="button"
               (click)="patchControl(getFormControl('exactMatch'), true)"
             >
               <nb-icon icon="braces-asterisk"></nb-icon>
             </button>
+            }
           </nb-form-field>
         </div>
 
         <div class="ml-3">
+          @if (!advanced) {
           <nb-icon
-            *ngIf="!advanced"
             (click)="swapAdvanced()"
             class="pointer"
-            nbTooltip="Display advanced search options"
+            [nbTooltip]="'analytics.dialogs-list-filters.tooltips.display-advanced-search' | transloco"
             icon="chevron-down-outline"
             pack="nebular-essentials"
           ></nb-icon>
+          } @if (advanced) {
           <nb-icon
-            *ngIf="advanced"
             (click)="swapAdvanced()"
             class="pointer"
-            nbTooltip="Hide advanced search options"
+            [nbTooltip]="'analytics.dialogs-list-filters.tooltips.hide-advanced-search' | transloco"
             icon="chevron-up-outline"
             pack="nebular-essentials"
           ></nb-icon>
+          }
         </div>
       </div>
     </form>
 
-    <div
-      class="mt-2"
-      *ngIf="advanced"
-    >
+    @if (advanced) {
+    <div class="mt-2">
       <form [formGroup]="form">
         <div class="row">
           <div class="col-6 col-lg-3">
@@ -108,24 +107,24 @@
                 nbInput
                 fullWidth
                 fieldSize="small"
-                placeholder="Data collected after"
-                nbTooltip="Show dialogs containing messages created after this date"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.data-collected-after' | transloco }}"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.show-dialogs-after-date' | transloco"
                 [nbDatepicker]="from_date"
                 formControlName="dialogActivityFrom"
               />
+              @if (!!getFormControl('dialogActivityFrom').value) {
               <button
-                *ngIf="!!getFormControl('dialogActivityFrom').value"
                 nbButton
                 nbSuffix
                 ghost
-                nbTooltip="Clear"
+                [nbTooltip]="'common.actions.clear' | transloco"
                 type="button"
                 (click)="resetControl(getFormControl('dialogActivityFrom'))"
               >
                 <nb-icon icon="x"></nb-icon>
               </button>
+              }
             </nb-form-field>
-
             <nb-date-timepicker
               #from_date
               [step]="10"
@@ -134,7 +133,6 @@
               [showCurrentTimeButton]="false"
             ></nb-date-timepicker>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
@@ -145,24 +143,24 @@
                 nbInput
                 fullWidth
                 fieldSize="small"
-                placeholder="Data collected before"
-                nbTooltip="Show dialogs containing messages created before this date"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.data-collected-before' | transloco }}"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.show-dialogs-before-date' | transloco"
                 [nbDatepicker]="to_date"
                 formControlName="dialogActivityTo"
               />
+              @if (!!getFormControl('dialogActivityTo').value) {
               <button
-                *ngIf="!!getFormControl('dialogActivityTo').value"
                 nbButton
                 nbSuffix
                 ghost
-                nbTooltip="Clear"
+                [nbTooltip]="'common.actions.clear' | transloco"
                 type="button"
                 (click)="resetControl(getFormControl('dialogActivityTo'))"
               >
                 <nb-icon icon="x"></nb-icon>
               </button>
+              }
             </nb-form-field>
-
             <nb-date-timepicker
               #to_date
               [step]="10"
@@ -171,7 +169,6 @@
               [showCurrentTimeButton]="false"
             ></nb-date-timepicker>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
@@ -181,21 +178,19 @@
               <nb-select
                 fullWidth
                 size="small"
-                nbTooltip="Search for dialogs using this configuration."
-                placeholder="Configuration"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.search-dialogs-by-config' | transloco"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.configuration' | transloco }}"
                 formControlName="configuration"
               >
-                <nb-option value="">All</nb-option>
-                <nb-option
-                  *ngFor="let config of configurationNameList"
-                  [value]="config.applicationId"
-                >
+                <nb-option [value]="null">{{ 'common.actions.all' | transloco }}</nb-option>
+                @for (config of configurationNameList; track config) {
+                <nb-option [value]="config.applicationId">
                   {{ config.label }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
@@ -205,25 +200,23 @@
               <nb-select
                 fullWidth
                 size="small"
-                nbTooltip="Search for dialogs using this connector."
-                placeholder="Connector"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.search-dialogs-by-connector' | transloco"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.connector' | transloco }}"
                 formControlName="connectorType"
               >
-                <nb-option [value]="null">All</nb-option>
-                <nb-option
-                  *ngFor="let c of connectorTypes"
-                  [value]="c"
-                >
+                <nb-option [value]="null">{{ 'common.actions.all' | transloco }}</nb-option>
+                @for (c of connectorTypes; track c) {
+                <nb-option [value]="c">
                   <img
                     src="{{ getConnectorTypeIconById(c.id) }}"
                     class="select-icon align-self-center mr-2"
                   />
                   {{ c.id }}</nb-option
                 >
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
@@ -233,22 +226,20 @@
               <nb-select
                 fullWidth
                 size="small"
-                nbTooltip="Search dialogs containing exchanges corresponding to the selected intent."
-                placeholder="Intent"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.search-dialogs-by-intent' | transloco"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.intent' | transloco }}"
                 formControlName="intentName"
               >
-                <nb-option [value]="null">All</nb-option>
-                <nb-option
-                  *ngFor="let intent of state.currentApplication.intents"
-                  [value]="intent.name"
-                >
+                <nb-option [value]="null">{{ 'common.actions.all' | transloco }}</nb-option>
+                @for (intent of state.currentApplication.intents; track intent) {
+                <nb-option [value]="intent.name">
                   {{ intent.label || intent.name }}
                 </nb-option>
-                <nb-option value="unknown">Unknown</nb-option>
+                }
+                <nb-option value="unknown">{{ 'common.actions.unknown' | transloco }}</nb-option>
               </nb-select>
             </nb-form-field>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
@@ -259,21 +250,19 @@
                 fullWidth
                 size="small"
                 multiple
-                nbTooltip="Hide exchanges corresponding to selected intents."
-                placeholder="Hide intents"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.hide-exchanges-by-intent' | transloco"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.hide-intents' | transloco }}"
                 formControlName="intentsToHide"
               >
-                <nb-option>Clear selection</nb-option>
-                <nb-option
-                  *ngFor="let intent of state.currentApplication.intents"
-                  [value]="intent.name"
-                >
+                <nb-option>{{ 'common.actions.clear-selection' | transloco }}</nb-option>
+                @for (intent of state.currentApplication.intents; track intent) {
+                <nb-option [value]="intent.name">
                   {{ intent.label || intent.name }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field>
               <nb-icon
@@ -284,27 +273,27 @@
                 nbInput
                 fullWidth
                 fieldSize="small"
-                nbTooltip="Search a dialog by id"
-                placeholder="Dialog id"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.search-dialog-by-id' | transloco"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.dialog-id' | transloco }}"
                 type="text"
                 formControlName="dialogId"
                 spellcheck="false"
                 autocomplete="off"
               />
+              @if (!!getFormControl('dialogId').value) {
               <button
-                *ngIf="!!getFormControl('dialogId').value"
                 nbButton
                 nbSuffix
                 ghost
-                nbTooltip="Clear"
+                [nbTooltip]="'common.actions.clear' | transloco"
                 type="button"
                 (click)="resetControl(getFormControl('dialogId'))"
               >
                 <nb-icon icon="x-lg"></nb-icon>
               </button>
+              }
             </nb-form-field>
           </div>
-
           <!-- RAG Answer Status filter -->
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
@@ -312,104 +301,94 @@
                 nbPrefix
                 icon="flag"
               ></nb-icon>
-
               <nb-select
                 fullWidth
                 size="small"
-                nbTooltip="Filter by RAG answer status."
-                placeholder="RAG answer status"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.filter-by-rag-status' | transloco"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.rag-answer-status' | transloco }}"
                 formControlName="ragAnswerStatus"
               >
-                <nb-option>Clear filter</nb-option>
-                <nb-option
-                  *ngFor="let item of ragAnswerStatusLabels | sortByOrder: ragAnswerStatusDisplayOrder"
-                  [value]="item.key"
-                >
+                <nb-option>{{ 'common.actions.clear-filter' | transloco }}</nb-option>
+                @for (item of ragAnswerStatusLabels | sortByOrder: ragAnswerStatusDisplayOrder; track item) {
+                <nb-option [value]="item.key">
                   <nb-icon
                     [icon]="ragAnswerStatusIcons[item.key]"
                     class="select-icon align-self-center mr-2 font-size-small"
                   ></nb-icon>
                   {{ item.value }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
           <!-- Feedback filters -->
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
+              @if (!getFormControl('feedback').value) {
               <nb-icon
                 nbPrefix
                 icon="hand-thumbs-up"
-                *ngIf="!getFormControl('feedback').value"
               ></nb-icon>
+              } @if (getFormControl('feedback').value === 'UP') {
               <nb-icon
                 nbPrefix
                 icon="hand-thumbs-up"
-                *ngIf="getFormControl('feedback').value === 'UP'"
                 class="text-success"
               ></nb-icon>
+              } @if (getFormControl('feedback').value === 'DOWN') {
               <nb-icon
                 nbPrefix
                 icon="hand-thumbs-down"
-                *ngIf="getFormControl('feedback').value === 'DOWN'"
                 class="text-danger"
               ></nb-icon>
+              }
               <nb-select
                 fullWidth
                 size="small"
-                nbTooltip="Dialogues containing messages with feedback."
-                placeholder="Feedback"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.dialogs-with-feedback' | transloco"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.feedback' | transloco }}"
                 formControlName="feedback"
               >
-                <nb-option>Clear filter</nb-option>
-                <nb-option
-                  *ngFor="let vote of feedbackVotes"
-                  [value]="vote.value"
-                >
+                <nb-option>{{ 'common.actions.clear-filter' | transloco }}</nb-option>
+                @for (vote of feedbackVotes; track vote) {
+                <nb-option [value]="vote.value">
                   <nb-icon
                     icon="hand-thumbs-{{ vote.value.toLowerCase() }}"
                     class="select-icon align-self-center mr-2 font-size-small"
                   ></nb-icon>
-                  {{ vote.label }}
+                  {{ vote.labelKey | transloco }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
           <div class="col-6 col-lg-3 pt-1">
             <nb-checkbox
-              nbTooltip="Display dialogues held from the studio test view"
+              [nbTooltip]="'analytics.dialogs-list-filters.tooltips.display-studio-test-dialogs' | transloco"
               class="text-nowrap"
               formControlName="displayTests"
-              >Display tests
+              >{{ 'common.actions.display-tests' | transloco }}
             </nb-checkbox>
           </div>
-
           <div class="col-6 col-lg-3 pt-1">
             <nb-checkbox
-              nbTooltip="Display only dialogs containing Rag responses"
+              [nbTooltip]="'analytics.dialogs-list-filters.tooltips.display-only-rag-dialogs' | transloco"
               class="text-nowrap"
               formControlName="isGenAiRagDialog"
-              >Rag responses only
+              >{{ 'analytics.dialogs-list-filters.with-rag-responses' | transloco }}
             </nb-checkbox>
           </div>
-
           <!-- Annotations filters -->
-
           <div class="col-6 col-lg-3 pt-1 ellipsis">
             <nb-checkbox
-              nbTooltip="Display only annotated dialogs"
+              [nbTooltip]="'analytics.dialogs-list-filters.tooltips.display-only-annotated-dialogs' | transloco"
               class="text-nowrap"
               formControlName="withAnnotations"
-              >With annotation
+              >{{ 'analytics.dialogs-list-filters.with-annotation' | transloco }}
             </nb-checkbox>
           </div>
-
-          <div
-            class="col-6 col-lg-3"
-            *ngIf="getFormControl('withAnnotations').value"
-          >
+          @if (getFormControl('withAnnotations').value) {
+          <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
                 nbPrefix
@@ -419,25 +398,21 @@
                 fullWidth
                 size="small"
                 multiple
-                nbTooltip="Filter annotations by state"
-                placeholder="Annotations state"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.filter-annotations-by-state' | transloco"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.annotations-state' | transloco }}"
                 formControlName="annotationStates"
               >
-                <nb-option>Clear selection</nb-option>
-                <nb-option
-                  *ngFor="let state of annotationStates"
-                  [value]="state.value"
-                >
+                <nb-option>{{ 'common.actions.clear-selection' | transloco }}</nb-option>
+                @for (state of annotationStates; track state) {
+                <nb-option [value]="state.value">
                   {{ state.label }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
-          <div
-            class="col-6 col-lg-3"
-            *ngIf="getFormControl('withAnnotations').value"
-          >
+          } @if (getFormControl('withAnnotations').value) {
+          <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
                 nbPrefix
@@ -447,25 +422,21 @@
                 fullWidth
                 size="small"
                 multiple
-                nbTooltip="Filter annotations by reason"
-                placeholder="Annotations reasons"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.filter-annotations-by-reason' | transloco"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.annotations-reasons' | transloco }}"
                 formControlName="annotationReasons"
               >
-                <nb-option>Clear selection</nb-option>
-                <nb-option
-                  *ngFor="let reason of annotationReasons"
-                  [value]="reason.value"
-                >
+                <nb-option>{{ 'common.actions.clear-selection' | transloco }}</nb-option>
+                @for (reason of annotationReasons; track reason) {
+                <nb-option [value]="reason.value">
                   {{ reason.label }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
-          <div
-            class="col-6 col-lg-3"
-            *ngIf="getFormControl('withAnnotations').value"
-          >
+          } @if (getFormControl('withAnnotations').value) {
+          <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
                 nbPrefix
@@ -475,22 +446,23 @@
                 nbInput
                 fullWidth
                 fieldSize="small"
-                placeholder="Annotations created after"
-                nbTooltip="Show annotations created after this date"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.annotations-created-after' | transloco }}"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.show-annotations-after-date' | transloco"
                 [nbDatepicker]="from_date_annotation"
                 formControlName="annotationCreationDateFrom"
               />
+              @if (!!getFormControl('annotationCreationDateFrom').value) {
               <button
-                *ngIf="!!getFormControl('annotationCreationDateFrom').value"
                 nbButton
                 nbSuffix
                 ghost
-                nbTooltip="Clear"
+                [nbTooltip]="'common.actions.clear' | transloco"
                 type="button"
                 (click)="resetControl(getFormControl('annotationCreationDateFrom'))"
               >
                 <nb-icon icon="x"></nb-icon>
               </button>
+              }
             </nb-form-field>
             <nb-date-timepicker
               #from_date_annotation
@@ -500,11 +472,8 @@
               [showCurrentTimeButton]="false"
             ></nb-date-timepicker>
           </div>
-
-          <div
-            class="col-6 col-lg-3"
-            *ngIf="getFormControl('withAnnotations').value"
-          >
+          } @if (getFormControl('withAnnotations').value) {
+          <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
                 nbPrefix
@@ -514,22 +483,23 @@
                 nbInput
                 fullWidth
                 fieldSize="small"
-                placeholder="Annotations created before"
-                nbTooltip="Show annotations created before this date"
+                placeholder="{{ 'analytics.dialogs-list-filters.placeholder.annotations-created-before' | transloco }}"
+                [nbTooltip]="'analytics.dialogs-list-filters.tooltips.show-annotations-before-date' | transloco"
                 [nbDatepicker]="to_date_annotation"
                 formControlName="annotationCreationDateTo"
               />
+              @if (!!getFormControl('annotationCreationDateTo').value) {
               <button
-                *ngIf="!!getFormControl('annotationCreationDateTo').value"
                 nbButton
                 nbSuffix
                 ghost
-                nbTooltip="Clear"
+                [nbTooltip]="'common.actions.clear' | transloco"
                 type="button"
                 (click)="resetControl(getFormControl('annotationCreationDateTo'))"
               >
                 <nb-icon icon="x"></nb-icon>
               </button>
+              }
             </nb-form-field>
             <nb-date-timepicker
               #to_date_annotation
@@ -539,26 +509,24 @@
               [showCurrentTimeButton]="false"
             ></nb-date-timepicker>
           </div>
-
-          <div
-            class="col-12 col-xl-6 d-flex gap-1 align-items-center"
-            *ngIf="getFormControl('withAnnotations').value"
-          >
-            Sort order of annotations:
+          } @if (getFormControl('withAnnotations').value) {
+          <div class="col-12 col-xl-6 d-flex gap-1 align-items-center">
+            {{ 'analytics.dialogs-list-filters.sort-order-of-annotations' | transloco }}:
             <nb-radio-group
               formControlName="annotationSort"
               class="d-flex"
             >
-              <nb-radio
-                *ngFor="let order of sortOrders"
-                [value]="order.value"
-              >
-                {{ order.label }}
+              @for (order of sortOrders; track order) {
+              <nb-radio [value]="order.value">
+                {{ order.labelKey | transloco }}
               </nb-radio>
+              }
             </nb-radio-group>
           </div>
+          }
         </div>
       </form>
     </div>
+    }
   </nb-card-body>
 </nb-card>

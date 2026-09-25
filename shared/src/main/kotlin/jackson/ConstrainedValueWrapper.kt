@@ -45,7 +45,10 @@ fun addConstrainedTypes(types: Set<KClass<*>>) {
  */
 @JsonDeserialize(using = ConstrainedValueDeserializer::class)
 @JsonSerialize(using = ConstrainedValueSerializer::class)
-data class ConstrainedValueWrapper<T : Any>(val klass: String, val value: T?) {
+data class ConstrainedValueWrapper<T : Any>(
+    val klass: String,
+    val value: T?,
+) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }

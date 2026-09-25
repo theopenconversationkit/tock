@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration, BotConfiguration, ConnectorType, UserInterfaceType } from '../../core/model/configuration';
@@ -22,11 +6,13 @@ import { NbToastrService } from '@nebular/theme';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { Subject, takeUntil } from 'rxjs';
 import { ChoiceDialogComponent } from '../../shared/components';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-bot-configurations',
-  templateUrl: './bot-configurations.component.html',
-  styleUrls: ['./bot-configurations.component.scss']
+    selector: 'tock-bot-configurations',
+    templateUrl: './bot-configurations.component.html',
+    styleUrls: ['./bot-configurations.component.scss'],
+    standalone: false
 })
 export class BotConfigurationsComponent implements OnInit, OnDestroy {
   destroy = new Subject();
@@ -38,7 +24,8 @@ export class BotConfigurationsComponent implements OnInit, OnDestroy {
     public state: StateService,
     private botConfiguration: BotConfigurationService,
     private dialogService: DialogService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -97,11 +84,12 @@ export class BotConfigurationsComponent implements OnInit, OnDestroy {
 
   refresh(): void {
     this.botConfiguration.updateConfigurations();
-    this.toastrService.show(`Configurations reloaded`, 'Refresh', { duration: 2000 });
+    this.toastrService.show(this.transloco.translate('common.messages.success'), this.transloco.translate('common.actions.refresh'), {
+      duration: 2000
+    });
   }
 
   create(): void {
-    // black magic? welcome to the js world! :)
     const param = this.newApplicationConfiguration.parameters;
     Object.keys(param).forEach((k) => {
       param.set(k, param[k]);
@@ -109,10 +97,14 @@ export class BotConfigurationsComponent implements OnInit, OnDestroy {
 
     this.botConfiguration.saveConfiguration(this.newApplicationConfiguration).subscribe((_) => {
       this.botConfiguration.updateConfigurations();
-      this.toastrService.show(`Configuration created`, 'Creation', {
-        duration: 5000,
-        status: 'success'
-      });
+      this.toastrService.show(
+        this.transloco.translate('configuration.bot-configurations.configurationCreated'),
+        this.transloco.translate('common.actions.create'),
+        {
+          duration: 5000,
+          status: 'success'
+        }
+      );
       this.newApplicationConfiguration = null;
     });
   }
@@ -121,10 +113,14 @@ export class BotConfigurationsComponent implements OnInit, OnDestroy {
     this.botConfiguration.saveConfiguration(conf).subscribe({
       next: (_) => {
         this.botConfiguration.updateConfigurations();
-        this.toastrService.show(`Configuration updated`, 'Update', {
-          duration: 5000,
-          status: 'success'
-        });
+        this.toastrService.show(
+          this.transloco.translate('configuration.bot-configurations.configurationUpdated'),
+          this.transloco.translate('common.actions.update'),
+          {
+            duration: 5000,
+            status: 'success'
+          }
+        );
       },
       error: (error) => {
         this.botConfiguration.updateConfigurations();
@@ -133,11 +129,11 @@ export class BotConfigurationsComponent implements OnInit, OnDestroy {
   }
 
   remove(conf: BotApplicationConfiguration): void {
-    const action = 'remove';
+    const action = this.transloco.translate('common.actions.remove');
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: `Delete the configuration "${conf.name}"`,
-        subtitle: 'Are you sure?',
+        title: `${this.transloco.translate('configuration.bot-configurations.deleteConfigurationTitle')} "${conf.name}"`,
+        subtitle: this.transloco.translate('configuration.bot-configurations.deleteConfigurationSubtitle'),
         actions: [
           { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
           { actionName: action, buttonStatus: 'danger' }
@@ -146,13 +142,17 @@ export class BotConfigurationsComponent implements OnInit, OnDestroy {
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === action) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         this.botConfiguration.deleteConfiguration(conf).subscribe((_) => {
           this.botConfiguration.updateConfigurations();
-          this.toastrService.show(`Configuration deleted`, 'Delete', {
-            duration: 5000,
-            status: 'success'
-          });
+          this.toastrService.show(
+            this.transloco.translate('configuration.bot-configurations.configurationDeleted'),
+            this.transloco.translate('common.actions.delete'),
+            {
+              duration: 5000,
+              status: 'success'
+            }
+          );
         });
       }
     });
@@ -161,15 +161,23 @@ export class BotConfigurationsComponent implements OnInit, OnDestroy {
   saveBot(bot: BotConfiguration): void {
     this.botConfiguration.saveBot(bot).subscribe((_) => {
       this.botConfiguration.updateConfigurations();
-      this.toastrService.show(`Webhook saved`, 'Save', { duration: 5000, status: 'success' });
+      this.toastrService.show(
+        this.transloco.translate('configuration.bot-configurations.webhookSaved'),
+        this.transloco.translate('common.actions.save'),
+        { duration: 5000, status: 'success' }
+      );
     });
   }
 
   copyToClipboard(bot: BotConfiguration): void {
     navigator.clipboard.writeText(bot.apiKey);
-    this.toastrService.show(`${bot.apiKey} copied to clipboard`, 'Clipboard', {
-      duration: 2000
-    });
+    this.toastrService.show(
+      `${bot.apiKey} ${this.transloco.translate('configuration.bot-configurations.copiedToClipboard')}`,
+      this.transloco.translate('configuration.bot-configurations.clipboardTitle'),
+      {
+        duration: 2000
+      }
+    );
   }
 
   ngOnDestroy(): void {

@@ -24,7 +24,9 @@ import mu.KotlinLogging
 /**
  * A list of messages.
  */
-data class MessagesList(val messages: List<Message>) {
+data class MessagesList(
+    val messages: List<Message>,
+) {
     constructor(vararg messages: Message) : this(messages.toList())
 
     companion object {
@@ -43,19 +45,29 @@ data class MessagesList(val messages: List<Message>) {
             val result = messageProvider(bus)
             val list = if (result is Collection<*>) result else listOfNotNull(result)
             val messages =
-                list.mapNotNull { m ->
-                    when (m) {
-                        is Message -> m
-                        is CharSequence -> Sentence(bus.translate(m).toString())
-                        is ConnectorMessageProvider -> Sentence(null, mutableListOf(m.toConnectorMessage()))
-                        else -> {
-                            if (m !is Unit && m !is Bus<*>) {
-                                logger.warn { "message not handled: $m" }
+                list
+                    .mapNotNull { m ->
+                        when (m) {
+                            is Message -> {
+                                m
                             }
-                            null
+
+                            is CharSequence -> {
+                                Sentence(bus.translate(m).toString())
+                            }
+
+                            is ConnectorMessageProvider -> {
+                                Sentence(null, mutableListOf(m.toConnectorMessage()))
+                            }
+
+                            else -> {
+                                if (m !is Unit && m !is Bus<*>) {
+                                    logger.warn { "message not handled: $m" }
+                                }
+                                null
+                            }
                         }
-                    }
-                }.takeUnless { it.isEmpty() }
+                    }.takeUnless { it.isEmpty() }
                     ?: listOfNotNull(default?.let { Sentence(bus.translate(it).toString()) })
 
             return MessagesList(messages)

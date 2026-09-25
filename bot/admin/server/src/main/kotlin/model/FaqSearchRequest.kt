@@ -26,8 +26,8 @@ data class FaqSearchRequest(
     val user: String?,
     val allButUser: String?,
 ) : PaginatedQuery() {
-    fun toFaqQuery(): FaqQuery {
-        return FaqQuery(
+    fun toFaqQuery(): FaqQuery =
+        FaqQuery(
             this.start,
             this.size,
             this.search,
@@ -39,5 +39,4 @@ data class FaqSearchRequest(
             this.namespace,
             this.applicationName,
         )
-    }
 }

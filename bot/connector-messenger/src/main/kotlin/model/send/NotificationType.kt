@@ -29,12 +29,11 @@ enum class NotificationType {
     ;
 
     companion object {
-        fun toNotificationType(action: Action): NotificationType {
-            return when (action.metadata.priority) {
+        fun toNotificationType(action: Action): NotificationType =
+            when (action.metadata.priority) {
                 ActionPriority.high -> SILENT_PUSH
                 ActionPriority.urgent -> REGULAR
                 else -> NO_PUSH
             }
-        }
     }
 }

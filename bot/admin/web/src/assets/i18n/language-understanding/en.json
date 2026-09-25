@@ -1,0 +1,197 @@
+{
+  "sentences-inbox": {
+    "title": "Inbox sentences",
+    "refresh-tooltip": "Refresh sentences"
+  },
+  "sentence-new": {
+    "title": "New sentence",
+    "sub-title": "Test how the NLP model interprets a sentence. Intents detected and entities extracted will appear below.",
+    "main-input-placeholder": "e.g. Cancel my subscription",
+    "query-state-placeholder": "Enter query state",
+    "analyze-button": "Analyze",
+    "advanced-options": "Advanced options",
+    "skip-cache": "skip cache",
+    "skip-cache-tooltip": "Force NLP model query (skip cache)",
+    "empty-state-message": "Results will appear here once you analyze a sentence.",
+    "empty-query-error": "Please enter a non-empty query"
+  },
+  "sentences-search": {
+    "title": "Search sentences",
+    "download-tooltip": "Download a dump of the matching sentences",
+    "refresh-tooltip": "Refresh sentences"
+  },
+  "sentences-unknown": {
+    "title": "Unknown sentences"
+  },
+  "intents": {
+    "title": "Intents",
+    "no-intent-found": "No intent found",
+    "dialog": {
+      "remove-intent": {
+        "title": "Remove the Intent {{ name }}",
+        "subtitle": "Are you sure?",
+        "success": "Intent {{ name }} removed",
+        "success-title": "Remove Intent",
+        "failure": "Delete Intent {{ name }} failed"
+      },
+      "remove-state": {
+        "success": "State {{ state }} removed from Intent {{ intentName }}",
+        "success-title": "Remove State",
+        "failure": "Remove State failed"
+      },
+      "add-state": {
+        "title": "Add a state for intent \"{{ intentName }}\"",
+        "success": "State {{ state }} added for Intent {{ intentName }}",
+        "success-title": "Add State",
+        "failure": "Add State failed"
+      },
+      "remove-entity": {
+        "title": "Remove the Entity {{ entityName }}",
+        "subtitle": "Are you sure?",
+        "success": "Entity {{ entityName }} removed from intent",
+        "success-title": "Remove Entity"
+      },
+      "add-shared-intent": {
+        "title": "Add a shared intent to the intent \"{{ intentName }}\"",
+        "success": "Shared intent added for Intent {{ intentName }}",
+        "success-title": "Add Shared Intent",
+        "failure": "Add Shared Intent failed"
+      },
+      "remove-shared-intent": {
+        "success": "Shared Intent removed from Intent {{ intentName }}",
+        "success-title": "Remove Intent",
+        "failure": "Remove Shared Intent failed"
+      },
+      "download-sentences-dump": {
+        "success": "Dump provided",
+        "success-title": "Dump"
+      }
+    }
+  },
+  "intents-filters": {
+    "placeholder": "Search an intent"
+  },
+  "intents-list": {
+    "header": {
+      "intent": "Intent",
+      "entities": "Entities",
+      "shared-intents": "Shared Intents",
+      "mandatory-states": "Mandatory States",
+      "story": "Story",
+      "actions": "Actions"
+    },
+    "tooltip": {
+      "qualified-name": "Qualified name: {{ name }}",
+      "shared-intent-warning": "This intent is shared between at least one other application. All changes to the intent will also affect the other applications that use this intent.",
+      "delete-entity": "Delete entity",
+      "delete-shared-intent": "Remove shared intent",
+      "add-shared-intent": "Add shared intent",
+      "add-state": "Add state",
+      "delete-state": "Delete state",
+      "show-story-details": "View details of the story associated with this intention",
+      "edit-intent": "Edit the intent",
+      "download-sentences-dump": "Download a sentences dump",
+      "delete-intent": "Delete the intent"
+    }
+  },
+  "add-state": {
+    "description": "If at least one mandatory state is set for an intent,\n\nonly query with at least one mandatory state of the intent\n\nis able to returns this intent.",
+    "placeholder": "New State*"
+  },
+  "add-shared-intent": {
+    "placeholder": "Add shared intent"
+  },
+  "entities": {
+    "title": "Entities",
+    "entity-types": "Entity types",
+    "edit-entity-tooltip": "Edit entity",
+    "delete-entity-type-tooltip": "Delete entity type",
+    "configuration-for": "Configuration for",
+    "unselect-entity-tooltip": "Unselect entity",
+    "obfuscate-tooltip": "If selected all values are obfuscated in Tock Studio",
+    "obfuscate-label": "Obfuscate value in Tock Studio",
+    "predefined-values": "Predefined values",
+    "no-model-tooltip": "If selected, no model is used: only exact values are recognized/evaluated",
+    "no-model-label": "No Model",
+    "model-limit-label": "Model Limit",
+    "model-limit-placeholder": "Model Limit",
+    "model-limit-tooltip": "Number between 0 and 1 - only probability above this value are evaluated",
+    "full-text-tooltip": "If selected, all the values that contains the searched text are returned",
+    "full-text-label": "Full Text",
+    "download-dictionary": "Download Dictionary",
+    "download-dictionary-tooltip": "Download Dictionary",
+    "upload-dictionary": "Upload Dictionary",
+    "upload-dictionary-tooltip": "Upload Dictionary",
+    "table": {
+      "predefined-value": "Predefined Value",
+      "allowed-labels": "Allowed labels",
+      "actions": "Actions"
+    },
+    "delete-label-tooltip": "Delete label",
+    "add-label-placeholder": "Add label",
+    "add-label-tooltip": "Add Label",
+    "delete-predefined-value-tooltip": "Delete predefined value",
+    "add-new-predefined-value": "Add new predefined value",
+    "new-predefined-value-placeholder": "New predefined value",
+    "entity-roles": "Entity roles",
+    "no-entity-role-defined": "No entity role defined",
+    "dictionary_imported": "Dictionary imported",
+    "dictionary_title": "Dictionary",
+    "dictionary_exported": "Dictionary exported",
+    "entity_updated": "Entity updated",
+    "update_title": "Update",
+    "remove_entity_type_title": "Remove the entity type {entityType}",
+    "remove_entity_type_confirmation": "Are you sure? This can completely cleanup your model!",
+    "entity_type_removed": "Entity Type {entityType} removed",
+    "remove_entity_type_success_title": "Remove Entity Type",
+    "delete_entity_type_failed": "Delete Entity Type {entityType} failed",
+    "error_title": "Error",
+    "configuration_updated": "Configuration Updated",
+    "empty_predefined_value_error": "Empty Predefined Value is not allowed",
+    "predefined_value_exists_error": "Predefined Value already exist",
+    "update_predefined_value_failed": "Update Predefined Value '{name}' failed",
+    "create_predefined_value_failed": "Create Predefined Value '{name}' failed",
+    "delete_predefined_value_failed": "Delete Predefined Value '{name}' failed",
+    "create_label_failed": "Create Label '{name}' for Predefined Value '{value}' failed",
+    "delete_label_failed": "Delete Label '{name}' for Predefined Value '{value}' failed"
+  },
+  "entity-details": {
+    "remove-sub-entity-tooltip": "Remove sub entity type",
+    "evaluate-at-start-of-day-tooltip": "Useful for non relative time",
+    "evaluate-at-start-of-day-label": "Evaluate at start of day",
+    "entity_updated": "Entity updated",
+    "update_title": "Update",
+    "remove_subentity_title": "Remove the subentity {entityType}",
+    "remove_subentity_confirmation": "Are you sure?",
+    "subentity_removed": "Subentity {entityType} removed",
+    "remove_subentity_success_title": "Remove Subentity",
+    "remove_subentity_failed": "Remove Subentity {entityType} failed",
+    "error_title": "Error"
+  },
+  "intents-logs": {
+    "title": "Sentences logs",
+    "refresh-sentences-tooltip": "Refresh sentences",
+    "download-csv-dump-tooltip": "Download a minimal csv dump of the logs",
+    "search-logs-placeholder": "Search logs",
+    "only-current-locale": "Only current locale",
+    "no-logs-found": "No logs found",
+    "error-tooltip": "error",
+    "intent-probability-tooltip": "intent probability",
+    "view-full-log-tooltip": "View Full Log",
+    "create-faq-tooltip": "Create a faq based on this sentence",
+    "copy-sentence-tooltip": "Copy sentence",
+    "show-dialog-tooltip": "Show dialog",
+    "in": "in",
+    "messages": {
+      "sentence-copied": "Sentence copied to clipboard",
+      "clipboard": "Clipboard",
+      "export-provided": "Export provided",
+      "dump": "Dump"
+    }
+  },
+  "display-intents-full-log": {
+    "title": "Full Log",
+    "requestTitle": "Request",
+    "responseTitle": "Response"
+  }
+}

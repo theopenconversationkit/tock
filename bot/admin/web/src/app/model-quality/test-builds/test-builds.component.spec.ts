@@ -17,6 +17,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TestBuildsComponent } from './test-builds.component';
+import { TestSharedModule } from '../../shared/test-shared.module';
+import { StateService } from '../../core-nlp/state.service';
+import { StateServiceMock } from '../../shared/test-shared/state-service.mock';
+import { QualityService } from '../quality.service';
+import { of } from 'rxjs';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('TestBuildsComponent', () => {
   let component: TestBuildsComponent;
@@ -24,9 +30,14 @@ describe('TestBuildsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TestBuildsComponent ]
-    })
-    .compileComponents();
+      declarations: [TestBuildsComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        { provide: QualityService, useValue: { buildStats: () => of([]) } }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TestBuildsComponent);
     component = fixture.componentInstance;

@@ -12,6 +12,7 @@ import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { DirtyStateGuard, DirtyStateService } from '../../core/dirty-state.service';
 import { IndicatorDefinition } from '../../metrics/models';
 import { CanComponentDeactivate } from '../../shared/guards/can-deactivate.guard';
+import { TranslocoService } from '@jsverse/transloco';
 
 interface LexiconGroup {
   id: number;
@@ -25,9 +26,10 @@ interface PromptContext {
 }
 
 @Component({
-  selector: 'tock-prompt-context-settings',
-  templateUrl: './prompt-context-settings.component.html',
-  styleUrls: ['./prompt-context-settings.component.scss']
+    selector: 'tock-prompt-context-settings',
+    templateUrl: './prompt-context-settings.component.html',
+    styleUrls: ['./prompt-context-settings.component.scss'],
+    standalone: false
 })
 export class PromptContextSettingsComponent implements OnInit, CanComponentDeactivate, DirtyStateGuard, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
@@ -67,7 +69,8 @@ export class PromptContextSettingsComponent implements OnInit, CanComponentDeact
     private rest: RestService,
     private toastrService: NbToastrService,
     private nbDialogService: NbDialogService,
-    private dirtyState: DirtyStateService
+    private dirtyState: DirtyStateService,
+    private translocoService: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -204,15 +207,13 @@ export class PromptContextSettingsComponent implements OnInit, CanComponentDeact
       list.push(value);
     } else {
       if (isInList(list)) {
-        if (key === 'covered') this._coveredWarning = 'This topic is already listed';
-        if (key === 'excluded') this._excludedWarning = 'This topic is already listed';
+        if (key === 'covered') this._coveredWarning = this.translocoService.translate('rag.prompt-context.topic_already_listed');
+        if (key === 'excluded') this._excludedWarning = this.translocoService.translate('rag.prompt-context.topic_already_listed');
       }
 
       if (isInList(otherList)) {
-        if (key === 'covered')
-          this._coveredWarning = 'An excluded topic with the same name already exists. A topic cannot be both covered and excluded';
-        if (key === 'excluded')
-          this._excludedWarning = 'A covered topic with the same name already exists. A topic cannot be both covered and excluded';
+        if (key === 'covered') this._coveredWarning = this.translocoService.translate('rag.prompt-context.topic_conflict_error');
+        if (key === 'excluded') this._excludedWarning = this.translocoService.translate('rag.prompt-context.covered_topic_conflict_error');
       }
 
       setTimeout(() => {
@@ -302,10 +303,14 @@ export class PromptContextSettingsComponent implements OnInit, CanComponentDeact
 
     saveAs(jsonBlob, exportFileName);
 
-    this.toastrService.show(`Rag prompt context settings dump provided`, 'Rag prompt context settings dump', {
-      duration: 3000,
-      status: 'success'
-    });
+    this.toastrService.show(
+      this.translocoService.translate('rag.prompt-context.dump_provided'),
+      this.translocoService.translate('rag.prompt-context.dump_title'),
+      {
+        duration: 3000,
+        status: 'success'
+      }
+    );
   }
 
   // ─── Import ─────────────────────────────────────────────────────────────────
@@ -349,8 +354,8 @@ export class PromptContextSettingsComponent implements OnInit, CanComponentDeact
 
         if (!settings.coveredTopics?.length && !settings.excludedTopics?.length && !settings.lexiconGroups?.length) {
           this.toastrService.show(
-            `The file provided does not contain the expected data. Please check the file.`,
-            'Rag prompt context import fails',
+            this.translocoService.translate('rag.prompt-context.import_no_data_error'),
+            this.translocoService.translate('rag.prompt-context.import_failed_title'),
             {
               duration: 6000,
               status: 'danger'
@@ -408,11 +413,20 @@ export class PromptContextSettingsComponent implements OnInit, CanComponentDeact
     const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       closeOnBackdropClick: false,
       context: {
-        title: 'Unsaved changes',
-        subtitle: 'You have unsaved changes. What would you like to do?',
+        title: this.translocoService.translate('rag.prompt-context.unsaved_changes_title'),
+        subtitle: this.translocoService.translate('rag.prompt-context.unsaved_changes_message'),
         actions: [
-          { actionName: 'Stay on page', buttonStatus: 'basic', ghost: true, returnValue: false },
-          { actionName: 'Leave without saving', buttonStatus: 'danger', returnValue: true }
+          {
+            actionName: this.translocoService.translate('rag.prompt-context.stay_on_page'),
+            buttonStatus: 'basic',
+            ghost: true,
+            returnValue: false
+          },
+          {
+            actionName: this.translocoService.translate('rag.prompt-context.leave_without_saving'),
+            buttonStatus: 'danger',
+            returnValue: true
+          }
         ],
         modalStatus: 'danger'
       }

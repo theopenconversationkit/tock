@@ -78,8 +78,8 @@ fun I18nTranslator.gaFlexibleMessageForList(
     oneItemSubtitle: CharSequence? = null,
     oneItemDescription: CharSequence? = null,
     oneItemSuggestions: List<CharSequence> = emptyList(),
-): GAResponseConnectorMessage {
-    return if (items.size == 1) {
+): GAResponseConnectorMessage =
+    if (items.size == 1) {
         val one = items.first()
         gaMessage(
             richResponse(
@@ -95,7 +95,6 @@ fun I18nTranslator.gaFlexibleMessageForList(
     } else {
         gaMessageForList(items, title, suggestions)
     }
-}
 
 /**
  * Provides a [GAExpectedIntent] with a [GAListSelect].

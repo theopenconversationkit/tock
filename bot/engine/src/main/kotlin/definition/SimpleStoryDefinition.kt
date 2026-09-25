@@ -32,8 +32,7 @@ open class SimpleStoryDefinition(
     override val steps: Set<StoryStep<StoryHandlerDefinition>> = emptySet(),
     override val unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet(),
     override val tags: Set<StoryTag> = emptySet(),
-) :
-    StoryDefinition {
+) : StoryDefinition {
     constructor(
         id: String,
         storyHandler: StoryHandler,

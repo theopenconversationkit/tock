@@ -115,9 +115,7 @@ fun <T : Bus<T>> T.endForWhatsAppCloud(
  * Adds a WhatsApp [ConnectorMessage] if the current connector is WhatsApp.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun <T : Bus<T>> T.withWhatsAppCloud(messageProvider: () -> WhatsAppCloudConnectorMessage): T {
-    return withMessage(whatsAppCloudConnectorType, messageProvider)
-}
+fun <T : Bus<T>> T.withWhatsAppCloud(messageProvider: () -> WhatsAppCloudConnectorMessage): T = withMessage(whatsAppCloudConnectorType, messageProvider)
 
 /**
  * Creates a basic [Text Message](https://developers.facebook.com/docs/whatsapp/cloud-api/messages/text-messages).
@@ -259,17 +257,18 @@ internal fun I18nTranslator.whatsAppCloudReplyButtonMessage(
             action =
                 WhatsAppCloudBotAction(
                     buttons =
-                        replies.checkCount(WHATSAPP_REPLY_BUTTONS_MAX_COUNT) { count ->
-                            "$count is too many buttons for a reply button message"
-                        }.map {
-                            WhatsAppCloudBotActionButton(
-                                reply =
-                                    WhatsAppCloudBotActionButtonReply(
-                                        id = it.payload,
-                                        title = translate(it.title).toString().checkLength(WHATSAPP_BUTTONS_TITLE_MAX_LENGTH),
-                                    ),
-                            )
-                        },
+                        replies
+                            .checkCount(WHATSAPP_REPLY_BUTTONS_MAX_COUNT) { count ->
+                                "$count is too many buttons for a reply button message"
+                            }.map {
+                                WhatsAppCloudBotActionButton(
+                                    reply =
+                                        WhatsAppCloudBotActionButtonReply(
+                                            id = it.payload,
+                                            title = translate(it.title).toString().checkLength(WHATSAPP_BUTTONS_TITLE_MAX_LENGTH),
+                                        ),
+                                )
+                            },
                 ),
         ),
 )
@@ -424,15 +423,16 @@ fun I18nTranslator.whatsAppCloudListMessage(
         button,
         WhatsAppCloudBotActionSection(
             rows =
-                replies.checkCount(WHATSAPP_MAX_ROWS) { count ->
-                    "$count is too many buttons for a list message"
-                }.map {
-                    WhatsAppBotRow(
-                        id = it.payload,
-                        title = it.title.checkLength(WHATSAPP_ROW_TITLE_MAX_LENGTH),
-                        description = it.description?.checkLength(WHATSAPP_ROW_DESCRIPTION_MAX_LENGTH),
-                    )
-                },
+                replies
+                    .checkCount(WHATSAPP_MAX_ROWS) { count ->
+                        "$count is too many buttons for a list message"
+                    }.map {
+                        WhatsAppBotRow(
+                            id = it.payload,
+                            title = it.title.checkLength(WHATSAPP_ROW_TITLE_MAX_LENGTH),
+                            description = it.description?.checkLength(WHATSAPP_ROW_DESCRIPTION_MAX_LENGTH),
+                        )
+                    },
         ),
         header = header,
         footer = footer,
@@ -489,8 +489,8 @@ fun I18nTranslator.whatsAppCloudListMessage(
     sections: List<WhatsAppCloudBotActionSection>,
     header: CharSequence? = null,
     footer: CharSequence? = null,
-): WhatsAppCloudBotInteractiveMessage {
-    return WhatsAppCloudBotInteractiveMessage(
+): WhatsAppCloudBotInteractiveMessage =
+    WhatsAppCloudBotInteractiveMessage(
         recipientType = WhatsAppCloudBotRecipientType.individual,
         interactive =
             WhatsAppCloudBotInteractive(
@@ -519,11 +519,16 @@ fun I18nTranslator.whatsAppCloudListMessage(
                     ),
             ),
     ).also {
-        if ((it.interactive.action?.sections?.flatMap { s -> s.rows ?: listOf() }?.count() ?: 0) > WHATSAPP_MAX_ROWS) {
+        if ((
+                it.interactive.action
+                    ?.sections
+                    ?.flatMap { s -> s.rows ?: listOf() }
+                    ?.count() ?: 0
+            ) > WHATSAPP_MAX_ROWS
+        ) {
             error("a list message is limited to $WHATSAPP_MAX_ROWS rows across all sections.")
         }
     }
-}
 
 /**
  * Creates a section for an interactive list message
@@ -562,15 +567,16 @@ fun I18nTranslator.whatsAppCloudListSection(
 ) = WhatsAppCloudBotActionSection(
     title = translate(title).toString().checkLength(WHATSAPP_SECTION_TITLE_MAX_LENGTH),
     rows =
-        rows.checkCount(WHATSAPP_MAX_ROWS) { count ->
-            "$count is too many rows for a list section"
-        }.map { qr ->
-            WhatsAppBotRow(
-                id = qr.payload,
-                title = translate(qr.title).toString().checkLength(WHATSAPP_ROW_TITLE_MAX_LENGTH),
-                description = translate(qr.description).toString().checkLength(WHATSAPP_ROW_DESCRIPTION_MAX_LENGTH),
-            )
-        },
+        rows
+            .checkCount(WHATSAPP_MAX_ROWS) { count ->
+                "$count is too many rows for a list section"
+            }.map { qr ->
+                WhatsAppBotRow(
+                    id = qr.payload,
+                    title = translate(qr.title).toString().checkLength(WHATSAPP_ROW_TITLE_MAX_LENGTH),
+                    description = translate(qr.description).toString().checkLength(WHATSAPP_ROW_DESCRIPTION_MAX_LENGTH),
+                )
+            },
 )
 
 /**
@@ -724,8 +730,8 @@ fun I18nTranslator.whatsAppCloudTemplateMessage(
     templateName: String,
     languageCode: String,
     components: List<WhatsappTemplateComponent>,
-): WhatsAppCloudBotTemplateMessage {
-    return WhatsAppCloudBotTemplateMessage(
+): WhatsAppCloudBotTemplateMessage =
+    WhatsAppCloudBotTemplateMessage(
         recipientType = WhatsAppCloudBotRecipientType.individual,
         template =
             WhatsAppCloudBotTemplate(
@@ -737,7 +743,6 @@ fun I18nTranslator.whatsAppCloudTemplateMessage(
                 components = components,
             ),
     )
-}
 
 @Deprecated("renamed", ReplaceWith("whatsAppCloudTemplateMessageCarousel(templateName, components, languageCode)"))
 fun I18nTranslator.whatsAppCloudBuildTemplateMessageCarousel(
@@ -755,8 +760,8 @@ fun I18nTranslator.whatsAppCloudTemplateMessageCarousel(
     templateName: String,
     components: List<WhatsappTemplateComponent.Card>,
     languageCode: String,
-): WhatsAppCloudBotTemplateMessage {
-    return WhatsAppCloudBotTemplateMessage(
+): WhatsAppCloudBotTemplateMessage =
+    WhatsAppCloudBotTemplateMessage(
         recipientType = WhatsAppCloudBotRecipientType.individual,
         template =
             WhatsAppCloudBotTemplate(
@@ -774,17 +779,15 @@ fun I18nTranslator.whatsAppCloudTemplateMessageCarousel(
                     ),
             ),
     )
-}
 
 fun <T : Bus<T>> T.whatsAppCloudCardCarousel(
     cardIndex: Int,
     components: List<WhatsappTemplateComponent>,
-): WhatsappTemplateComponent.Card {
-    return whatsAppCloudTemplateCard(
+): WhatsappTemplateComponent.Card =
+    whatsAppCloudTemplateCard(
         cardIndex,
         components,
     )
-}
 
 /**
  * Creates a Media Card for a Carousel Template
@@ -939,8 +942,8 @@ fun whatsAppCloudTemplateImageHeader(imageId: String): WhatsappTemplateComponent
 private inline fun <T> List<T>.checkCount(
     maxCount: Int,
     errorMessage: (Int) -> String,
-): List<T> {
-    return if (this.size > maxCount) {
+): List<T> =
+    if (this.size > maxCount) {
         val msg = errorMessage(this.size) + " (max: $maxCount)"
         if (errorOnInvalidMessages) {
             throw IllegalArgumentException(msg)
@@ -951,13 +954,12 @@ private inline fun <T> List<T>.checkCount(
     } else {
         this
     }
-}
 
 private fun String.checkLength(
     maxLength: Int,
     textType: String = "text",
-): String {
-    return if (maxLength > 0 && this.length > maxLength) {
+): String =
+    if (maxLength > 0 && this.length > maxLength) {
         val msg = "$textType \"$this\" should not exceed $maxLength chars."
         if (errorOnInvalidMessages) {
             throw IllegalArgumentException(msg)
@@ -968,4 +970,3 @@ private fun String.checkLength(
     } else {
         this
     }
-}

@@ -92,8 +92,8 @@ internal class BotVerticle(
     fun registerServices(
         serviceIdentifier: String,
         installer: CoroutineRouterSupport.(Router) -> Any?,
-    ): ServiceInstaller {
-        return ServiceInstaller(serviceIdentifier, installer).also {
+    ): ServiceInstaller =
+        ServiceInstaller(serviceIdentifier, installer).also {
             if (!handlers.containsKey(serviceIdentifier)) {
                 handlers[serviceIdentifier] = it
             } else {
@@ -101,14 +101,14 @@ internal class BotVerticle(
                 secondaryInstallers.add(it)
             }
         }
-    }
 
     fun unregisterServices(installer: ServiceInstaller) {
         if (secondaryInstallers.contains(installer)) {
             secondaryInstallers.remove(installer)
         }
         if (handlers[installer.serviceId] == installer) {
-            handlers.remove(installer.serviceId)
+            handlers
+                .remove(installer.serviceId)
                 ?.also {
                     val s =
                         secondaryInstallers.find {
@@ -162,9 +162,7 @@ internal class BotVerticle(
         }
     }
 
-    override fun defaultHealthcheck(): (RoutingContext) -> Unit {
-        return BotRepository.healthcheckHandler
-    }
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit = BotRepository.healthcheckHandler
 
     override fun detailedHealthcheck(): (RoutingContext) -> Unit =
         detailedHealthcheck(
@@ -206,16 +204,17 @@ internal class BotVerticle(
                         }
                     }
 
-                    context.textMessageHandler { json ->
-                        try {
-                            logger.debug { "receive $json" }
-                            WebSocketController.getReceiveHandler(key)?.invoke(json)
-                        } catch (e: Exception) {
-                            logger.error(e)
+                    context
+                        .textMessageHandler { json ->
+                            try {
+                                logger.debug { "receive $json" }
+                                WebSocketController.getReceiveHandler(key)?.invoke(json)
+                            } catch (e: Exception) {
+                                logger.error(e)
+                            }
+                        }.closeHandler {
+                            WebSocketController.removePushHandler(key)
                         }
-                    }.closeHandler {
-                        WebSocketController.removePushHandler(key)
-                    }
                 } catch (e: Exception) {
                     logger.error(e)
                 }

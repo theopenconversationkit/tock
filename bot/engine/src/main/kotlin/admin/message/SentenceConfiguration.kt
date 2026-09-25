@@ -47,20 +47,20 @@ data class SentenceConfiguration(
         recipientId: PlayerId,
         locale: Locale,
         userInterfaceType: UserInterfaceType,
-    ): Action {
-        return SendSentence(
+    ): Action =
+        SendSentence(
             playerId,
             applicationId,
             recipientId,
             text,
-            messages.mapNotNull {
-                try {
-                    it.findConnectorMessage()
-                } catch (e: Exception) {
-                    logger.error(e)
-                    null
-                }
-            }.toMutableList(),
+            messages
+                .mapNotNull {
+                    try {
+                        it.findConnectorMessage()
+                    } catch (e: Exception) {
+                        logger.error(e)
+                        null
+                    }
+                }.toMutableList(),
         )
-    }
 }

@@ -18,6 +18,8 @@ package ai.tock.bot.connector.ga.model.response
 
 import ai.tock.bot.engine.message.GenericMessage
 
-data class GASimpleSelect(val items: List<GASelectItem>) {
+data class GASimpleSelect(
+    val items: List<GASelectItem>,
+) {
     fun toGenericMessage(): GenericMessage = GenericMessage(choices = items.map { it.toChoice() })
 }

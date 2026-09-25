@@ -19,6 +19,8 @@ package ai.tock.shared.exception.error
 /**
  * A wrapper of [ErrorMessage]
  */
-data class ErrorMessageWrapper(val errors: Set<ErrorMessage> = emptySet()) {
+data class ErrorMessageWrapper(
+    val errors: Set<ErrorMessage> = emptySet(),
+) {
     constructor(message: String) : this(setOf(ErrorMessage(message = message)))
 }

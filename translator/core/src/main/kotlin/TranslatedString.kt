@@ -21,7 +21,10 @@ import mu.KotlinLogging
 /**
  * A [CharSequence] flagged as translated.
  */
-open class TranslatedString(private val wrapped: CharSequence) : CharSequence by wrapped, TranslatedSequence {
+open class TranslatedString(
+    private val wrapped: CharSequence,
+) : CharSequence by wrapped,
+    TranslatedSequence {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -33,20 +36,14 @@ open class TranslatedString(private val wrapped: CharSequence) : CharSequence by
             else -> false
         }
 
-    override fun hashCode(): Int {
-        return wrapped.hashCode()
-    }
+    override fun hashCode(): Int = wrapped.hashCode()
 
-    override fun toString(): String {
-        return wrapped.toString()
-    }
+    override fun toString(): String = wrapped.toString()
 
     override fun subSequence(
         startIndex: Int,
         endIndex: Int,
-    ): TranslatedSequence {
-        return TranslatedString(wrapped.subSequence(startIndex, endIndex))
-    }
+    ): TranslatedSequence = TranslatedString(wrapped.subSequence(startIndex, endIndex))
 
     override fun plus(other: Any?): TranslatedSequence {
         logger.warn { "adding a String to a TranslatedSequence is not recommended - please use message format pattern" }

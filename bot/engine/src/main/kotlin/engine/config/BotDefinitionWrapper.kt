@@ -36,7 +36,9 @@ import mu.KotlinLogging
 /**
  *
  */
-internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefinition by botDefinition {
+internal class BotDefinitionWrapper(
+    val botDefinition: BotDefinition,
+) : BotDefinition by botDefinition {
     private val logger = KotlinLogging.logger {}
 
     // stories with configuration (including built-in)
@@ -96,8 +98,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                         configuration = it,
                         configurationStoryHandler = botStoryHandlers[it.storyId],
                     )
-                }
-                .groupBy { it.storyId }
+                }.groupBy { it.storyId }
 
         allStories =
             (
@@ -108,8 +109,8 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                         .asSequence()
                         .filterNot { this.configuredStories.containsKey(it.id) }
                         .groupBy { it.id }
-            )
-                .values.flatten()
+            ).values
+                .flatten()
 
         this.allStoriesById = allStories.associateBy { it.id }
     }
@@ -136,9 +137,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     override fun findStoryDefinition(
         intent: IntentAware?,
         applicationId: String,
-    ): StoryDefinition {
-        return findStoryDefinition(intent?.wrappedIntent()?.name, applicationId)
-    }
+    ): StoryDefinition = findStoryDefinition(intent?.wrappedIntent()?.name, applicationId)
 
     private fun findStory(
         intent: String?,
@@ -152,8 +151,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                         is ConfiguredStoryDefinition -> !it.isDisabled(applicationId)
                         else -> true
                     }
-                }
-                .map { it.checkApplicationId(applicationId) }
+                }.map { it.checkApplicationId(applicationId) }
                 .toList(),
             intent,
             unknownStory,
@@ -243,8 +241,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         (
             botDefinition.stories.find { it.storyHandler == storyHandler }
                 ?: stories.find { it.storyHandler == storyHandler }
-        )
-            ?.checkApplicationId(applicationId)
+        )?.checkApplicationId(applicationId)
 
     private fun StoryDefinition.checkApplicationId(applicationId: String): StoryDefinition =
         if (this is ConfiguredStoryDefinition &&
@@ -260,7 +257,5 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
             this
         }
 
-    override fun toString(): String {
-        return "Wrapper($botDefinition)"
-    }
+    override fun toString(): String = "Wrapper($botDefinition)"
 }

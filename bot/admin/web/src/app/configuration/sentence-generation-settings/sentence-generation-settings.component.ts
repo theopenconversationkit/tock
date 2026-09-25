@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Observable, Subject, debounceTime, takeUntil } from 'rxjs';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
@@ -35,6 +19,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ChoiceDialogComponent, DebugViewerWindowComponent } from '../../shared/components';
 import { saveAs } from 'file-saver-es';
 import { FileValidators } from '../../shared/validators';
+import { TranslocoService } from '@jsverse/transloco';
 
 interface GenAiSettingsForm {
   id: FormControl<string>;
@@ -46,9 +31,10 @@ interface GenAiSettingsForm {
 }
 
 @Component({
-  selector: 'tock-sentence-generation-settings',
-  templateUrl: './sentence-generation-settings.component.html',
-  styleUrls: ['./sentence-generation-settings.component.scss']
+    selector: 'tock-sentence-generation-settings',
+    templateUrl: './sentence-generation-settings.component.html',
+    styleUrls: ['./sentence-generation-settings.component.scss'],
+    standalone: false
 })
 export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
@@ -76,7 +62,8 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private botConfiguration: BotConfigurationService,
     private nbWindowService: NbWindowService,
-    private nbDialogService: NbDialogService
+    private nbDialogService: NbDialogService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -252,21 +239,29 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
           this.form.patchValue(genAiSettings);
           this.form.markAsPristine();
           this.isSubmitted = false;
-          this.toastrService.success(`Sentence generation settings succesfully saved`, 'Success', {
-            duration: 5000,
-            status: 'success'
-          });
+          this.toastrService.success(
+            this.transloco.translate('configuration.sentence-generation-settings.saveSuccessMessage'),
+            this.transloco.translate('common.messages.success'),
+            {
+              duration: 5000,
+              status: 'success'
+            }
+          );
           this.loading = false;
         },
         error: (error) => {
-          this.toastrService.danger('An error occured', 'Error', {
-            duration: 5000,
-            status: 'danger'
-          });
+          this.toastrService.danger(
+            this.transloco.translate('configuration.sentence-generation-settings.saveErrorMessage'),
+            this.transloco.translate('common.messages.error'),
+            {
+              duration: 5000,
+              status: 'danger'
+            }
+          );
 
           if (error.error) {
             this.nbWindowService.open(DebugViewerWindowComponent, {
-              title: 'An error occured',
+              title: this.transloco.translate('configuration.sentence-generation-settings.saveErrorTitle'),
               context: {
                 debug: error.error
               }
@@ -346,16 +341,20 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     const exportFileName = getExportFileName(
       this.state.currentApplication.namespace,
       this.state.currentApplication.name,
-      'Sentence generation settings',
+      this.transloco.translate('configuration.sentence-generation-settings.exportFileName'),
       'json'
     );
 
     saveAs(jsonBlob, exportFileName);
 
-    this.toastrService.show(`Sentence generation settings dump provided`, 'Sentence generation settings dump', {
-      duration: 3000,
-      status: 'success'
-    });
+    this.toastrService.show(
+      this.transloco.translate('configuration.sentence-generation-settings.exportSuccessMessage'),
+      this.transloco.translate('configuration.sentence-generation-settings.exportTitle'),
+      {
+        duration: 3000,
+        status: 'success'
+      }
+    );
   }
 
   importModalRef: NbDialogRef<any>;
@@ -400,8 +399,8 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
 
         if (!hasCompatibleProvider) {
           this.toastrService.show(
-            `The file supplied does not reference a compatible provider. Please check the file.`,
-            'Sentence generation settings import fails',
+            this.transloco.translate('configuration.sentence-generation-settings.importErrorMessage'),
+            this.transloco.translate('configuration.sentence-generation-settings.importErrorTitle'),
             {
               duration: 6000,
               status: 'danger'
@@ -419,13 +418,13 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
   }
 
   confirmSettingsDeletion(): void {
-    const confirmAction = 'Delete';
-    const cancelAction = 'Cancel';
+    const confirmAction = this.transloco.translate('common.actions.yes');
+    const cancelAction = this.transloco.translate('common.actions.cancel');
 
     const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
-        title: `Delete sentence generation settings`,
-        subtitle: `Are you sure you want to delete the currently saved sentence generation settings?`,
+        title: this.transloco.translate('configuration.sentence-generation-settings.deleteConfirmationTitle'),
+        subtitle: this.transloco.translate('configuration.sentence-generation-settings.deleteConfirmationSubtitle'),
         modalStatus: 'danger',
         actions: [
           { actionName: cancelAction, buttonStatus: 'basic' },
@@ -446,10 +445,14 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
       delete this.settingsBackup;
       this.form.reset();
       this.form.markAsPristine();
-      this.toastrService.success(`Sentence generation settings succesfully deleted`, 'Success', {
-        duration: 5000,
-        status: 'success'
-      });
+      this.toastrService.success(
+        this.transloco.translate('configuration.sentence-generation-settings.deleteSuccessMessage'),
+        this.transloco.translate('common.messages.success'),
+        {
+          duration: 5000,
+          status: 'success'
+        }
+      );
     });
   }
 

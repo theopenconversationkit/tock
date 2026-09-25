@@ -45,13 +45,14 @@ internal object WebhookActionConverter {
     ): Event? {
         val senderId = createHashedId(message.from)
         return when (message) {
-            is WhatsAppCloudTextMessage ->
+            is WhatsAppCloudTextMessage -> {
                 SendSentence(
                     PlayerId(senderId),
                     applicationId,
                     PlayerId(applicationId, PlayerType.bot),
                     message.text.body,
                 )
+            }
 
             is WhatsAppCloudImageMessage -> {
                 val binaryImg = whatsAppCloudApiService.downloadImgByBinary(message.image.id, message.image.mimeType)
@@ -64,13 +65,14 @@ internal object WebhookActionConverter {
                 )
             }
 
-            is WhatsAppCloudLocationMessage ->
+            is WhatsAppCloudLocationMessage -> {
                 SendLocation(
                     PlayerId(senderId),
                     applicationId,
                     PlayerId(applicationId, PlayerType.bot),
                     UserLocation(message.location.latitude, message.location.longitude),
                 )
+            }
 
             is WhatsAppCloudButtonMessage -> {
                 val messageCopy = getMessageButtonCopy(message)
@@ -103,7 +105,9 @@ internal object WebhookActionConverter {
                 }
             }
 
-            else -> null
+            else -> {
+                null
+            }
         }
     }
 

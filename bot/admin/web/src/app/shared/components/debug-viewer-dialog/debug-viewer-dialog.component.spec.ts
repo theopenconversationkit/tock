@@ -18,6 +18,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NbDialogRef } from '@nebular/theme';
 
 import { DebugViewerDialogComponent } from './debug-viewer-dialog.component';
+import { TranslocoService } from '@jsverse/transloco';
+import { TestSharedModule } from '../../test-shared.module';
 
 describe('DebugViewerComponent', () => {
   let component: DebugViewerDialogComponent;
@@ -26,6 +28,7 @@ describe('DebugViewerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DebugViewerDialogComponent],
+      imports: [TestSharedModule],
       providers: [
         {
           provide: NbDialogRef,

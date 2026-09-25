@@ -18,9 +18,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 
 @Component({
-  selector: 'tock-nlp-stats-display',
-  templateUrl: './nlp-stats-display.component.html',
-  styleUrls: ['./nlp-stats-display.component.scss']
+    selector: 'tock-nlp-stats-display',
+    templateUrl: './nlp-stats-display.component.html',
+    styleUrls: ['./nlp-stats-display.component.scss'],
+    standalone: false
 })
 export class NlpStatsDisplayComponent {
   @Input() data;

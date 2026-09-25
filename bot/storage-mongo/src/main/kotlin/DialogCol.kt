@@ -83,8 +83,8 @@ internal data class DialogCol(
     val review: String? = null,
 ) {
     companion object {
-        private fun getActionWrapper(action: Action): ActionMongoWrapper {
-            return when (action) {
+        private fun getActionWrapper(action: Action): ActionMongoWrapper =
+            when (action) {
                 is SendSentence -> SendSentenceMongoWrapper(action)
                 is SendSentenceWithFootnotes -> SendSentenceWithFootnotesMongoWrapper(action)
                 is SendDebug -> SendDebugMongoWrapper(action)
@@ -93,7 +93,6 @@ internal data class DialogCol(
                 is SendLocation -> SendLocationMongoWrapper(action)
                 else -> error("action type not supported : $action")
             }
-        }
     }
 
     constructor(dialog: Dialog, userTimeline: UserTimelineCol) : this(
@@ -109,8 +108,8 @@ internal data class DialogCol(
         rating = dialog.rating,
     )
 
-    fun toDialog(storyDefinitionProvider: (String) -> StoryDefinition): Dialog {
-        return stories.map { it.toStory(_id, storyDefinitionProvider) }.let { stories ->
+    fun toDialog(storyDefinitionProvider: (String) -> StoryDefinition): Dialog =
+        stories.map { it.toStory(_id, storyDefinitionProvider) }.let { stories ->
             Dialog(
                 playerIds,
                 _id,
@@ -121,7 +120,6 @@ internal data class DialogCol(
                 review = review,
             )
         }
-    }
 
     fun toDialogReport(evaluableActionsOnly: Boolean = false): DialogReport {
         val actions =
@@ -131,8 +129,7 @@ internal data class DialogCol(
                 .distinctBy { it.id }
                 .let { seq ->
                     if (evaluableActionsOnly) seq.filter { it.isEvaluable() } else seq
-                }
-                .map { it.toAction(_id) }
+                }.map { it.toAction(_id) }
                 .toList()
                 .run {
                     val connectorMessageColIds =
@@ -176,14 +173,14 @@ internal data class DialogCol(
                             (a as? SendSentenceWithFootnotes)?.ragDebug,
                         )
                     }
-                }
-                .withLegacyRagDebug()
+                }.withLegacyRagDebug()
         return DialogReport(
             actions,
             stories
                 .flatMap { it.actions }
                 .firstOrNull { it.state.userInterface != null }
-                ?.state?.userInterface
+                ?.state
+                ?.userInterface
                 ?: textChat,
             _id,
             rating = rating,
@@ -217,20 +214,22 @@ internal data class DialogCol(
         constructor(state: DialogState) : this(
             state.currentIntent,
             state.entityValues.mapValues { EntityStateValueWrapper(it.value) },
-            state.context.asMap().map { e -> e.key.id to AnyValueWrapper(e.key.type, e.value) }.toMap(),
+            state.context
+                .asMap()
+                .map { e -> e.key.id to AnyValueWrapper(e.key.type, e.value) }
+                .toMap(),
             state.userLocation,
             state.nextActionState,
         )
 
-        fun toState(actionsMap: Map<Id<Action>, Action>): DialogState {
-            return DialogState(
+        fun toState(actionsMap: Map<Id<Action>, Action>): DialogState =
+            DialogState(
                 currentIntent,
                 entityValues.mapValues { it.value.toEntityStateValue(actionsMap) }.toMutableMap(),
                 convertContext(),
                 userLocation,
                 nextActionState,
             )
-        }
 
         private fun convertContext(): DialogContextMap =
             DialogContextMap().apply {
@@ -262,15 +261,14 @@ internal data class DialogCol(
             value.stateValueId ?: newId(),
         )
 
-        fun toEntityStateValue(actionsMap: Map<Id<Action>, Action>): EntityStateValue {
-            return EntityStateValue(
+        fun toEntityStateValue(actionsMap: Map<Id<Action>, Action>): EntityStateValue =
+            EntityStateValue(
                 value,
                 mutableListOf(),
                 lastUpdate,
                 id,
                 actionsMap,
             )
-        }
     }
 
     @Data(internal = true)
@@ -291,14 +289,13 @@ internal data class DialogCol(
         fun toStory(
             dialogId: Id<Dialog>,
             storyDefinitionProvider: (String) -> StoryDefinition,
-        ): Story {
-            return Story(
+        ): Story =
+            Story(
                 storyDefinitionProvider.invoke(storyDefinitionId),
                 currentIntent ?: Intent.unknown,
                 currentStep,
                 actions.map { it.toAction(dialogId) }.toMutableList(),
             )
-        }
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
@@ -362,8 +359,8 @@ internal data class DialogCol(
             assignFrom(sentence)
         }
 
-        override fun toAction(dialogId: Id<Dialog>): Action {
-            return if (customMessage || nlpStats || annotation != null) {
+        override fun toAction(dialogId: Id<Dialog>): Action =
+            if (customMessage || nlpStats || annotation != null) {
                 SendSentenceNotYetLoaded(
                     dialogId,
                     playerId,
@@ -391,7 +388,6 @@ internal data class DialogCol(
                     botMetadata,
                 )
             }
-        }
     }
 
     @JsonTypeName(value = "sentenceWithFootnotes")
@@ -409,8 +405,8 @@ internal data class DialogCol(
             assignFrom(sentence)
         }
 
-        override fun toAction(dialogId: Id<Dialog>): Action {
-            return SendSentenceWithFootnotes(
+        override fun toAction(dialogId: Id<Dialog>): Action =
+            SendSentenceWithFootnotes(
                 playerId,
                 applicationId,
                 recipientId,
@@ -423,7 +419,6 @@ internal data class DialogCol(
                 annotation,
                 transformData(ragDebug),
             )
-        }
     }
 
     @JsonTypeName(value = "debug")
@@ -439,8 +434,8 @@ internal data class DialogCol(
             assignFrom(debug)
         }
 
-        override fun toAction(dialogId: Id<Dialog>): Action {
-            return SendDebug(
+        override fun toAction(dialogId: Id<Dialog>): Action =
+            SendDebug(
                 playerId,
                 applicationId,
                 recipientId,
@@ -451,7 +446,6 @@ internal data class DialogCol(
                 state,
                 botMetadata,
             )
-        }
     }
 
     @JsonTypeName(value = "choice")
@@ -467,8 +461,8 @@ internal data class DialogCol(
             assignFrom(choice)
         }
 
-        override fun toAction(dialogId: Id<Dialog>): Action {
-            return SendChoice(
+        override fun toAction(dialogId: Id<Dialog>): Action =
+            SendChoice(
                 playerId,
                 applicationId,
                 recipientId,
@@ -479,7 +473,6 @@ internal data class DialogCol(
                 state,
                 botMetadata,
             )
-        }
     }
 
     @JsonTypeName(value = "attachment")
@@ -493,8 +486,8 @@ internal data class DialogCol(
             assignFrom(attachment)
         }
 
-        override fun toAction(dialogId: Id<Dialog>): Action {
-            return SendAttachment(
+        override fun toAction(dialogId: Id<Dialog>): Action =
+            SendAttachment(
                 playerId,
                 applicationId,
                 recipientId,
@@ -505,17 +498,18 @@ internal data class DialogCol(
                 state,
                 botMetadata,
             )
-        }
     }
 
     @JsonTypeName(value = "location")
-    class SendLocationMongoWrapper(val location: UserLocation?) : ActionMongoWrapper() {
+    class SendLocationMongoWrapper(
+        val location: UserLocation?,
+    ) : ActionMongoWrapper() {
         constructor(location: SendLocation) : this(location.location) {
             assignFrom(location)
         }
 
-        override fun toAction(dialogId: Id<Dialog>): Action {
-            return SendLocation(
+        override fun toAction(dialogId: Id<Dialog>): Action =
+            SendLocation(
                 playerId,
                 applicationId,
                 recipientId,
@@ -525,7 +519,6 @@ internal data class DialogCol(
                 state,
                 botMetadata,
             )
-        }
     }
 }
 

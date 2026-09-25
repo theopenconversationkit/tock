@@ -48,10 +48,12 @@ import { FaqManagementListComponent } from './faq-management/faq-management-list
 import { FaqManagementEditComponent } from './faq-management/faq-management-edit/faq-management-edit.component';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { FaqManagementSettingsComponent } from './faq-management/faq-management-settings/faq-management-settings.component';
+import { FaqManagementImportComponent } from './faq-management/faq-management-import/faq-management-import.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FaqService } from './services/faq.service';
 import { BotAnalyticsModule } from '../analytics/analytics.module';
 import { FaqTabsComponent } from './faq-tabs.component';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @NgModule({
   imports: [
@@ -82,17 +84,24 @@ import { FaqTabsComponent } from './faq-tabs.component';
     NbRouteTabsetModule,
     NbToggleModule,
     NbRadioModule,
-    NbPopoverModule
+    NbPopoverModule,
+    TranslocoModule
   ],
   declarations: [
     FaqManagementComponent,
     FaqManagementFiltersComponent,
     FaqManagementListComponent,
     FaqManagementEditComponent,
+    FaqManagementImportComponent,
     FaqManagementSettingsComponent,
     FaqTabsComponent
   ],
   exports: [],
-  providers: [FaqService]
+  providers: [
+    FaqService,
+    provideTranslocoScope({
+      scope: 'faq'
+    })
+  ]
 })
 export class FaqModule {}

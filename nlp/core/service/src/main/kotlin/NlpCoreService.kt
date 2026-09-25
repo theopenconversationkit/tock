@@ -145,8 +145,8 @@ internal object NlpCoreService : NlpCore {
         intent: Intent,
         entityClassifier: (Intent) -> List<EntityRecognition>,
         text: String,
-    ): Pair<List<EntityRecognition>, List<EntityRecognition>> {
-        return try {
+    ): Pair<List<EntityRecognition>, List<EntityRecognition>> =
+        try {
             // TODO regexp
             // evaluate entities from intent entity model & dedicated entity models
             val intentContext = EntityCallContextForIntent(context, intent)
@@ -169,11 +169,14 @@ internal object NlpCoreService : NlpCore {
                             )
                         result to
                             (evaluatedEntities + classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) })
-                                .subtract(result).toList()
+                                .subtract(result)
+                                .toList()
                     } else {
                         evaluatedEntities to
-                            classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) }
-                                .subtract(evaluatedEntities).toList()
+                            classifiedEntityTypes
+                                .map { it.toEntityRecognition(it.entityType.name) }
+                                .subtract(evaluatedEntities)
+                                .toList()
                     }
                 } else {
                     evaluatedEntities to emptyList()
@@ -185,45 +188,33 @@ internal object NlpCoreService : NlpCore {
             logger.error(e)
             Pair(emptyList(), emptyList())
         }
-    }
 
     override fun evaluateEntities(
         context: CallContext,
         text: String,
         entities: List<EntityRecognition>,
-    ): List<EntityRecognition> {
-        return entityCore.evaluateEntities(context, text, entities)
-    }
+    ): List<EntityRecognition> = entityCore.evaluateEntities(context, text, entities)
 
-    override fun supportedNlpEngineTypes(): Set<NlpEngineType> {
-        return nlpClassifier.supportedNlpEngineTypes()
-    }
+    override fun supportedNlpEngineTypes(): Set<NlpEngineType> = nlpClassifier.supportedNlpEngineTypes()
 
-    override fun supportValuesMerge(entityType: EntityType): Boolean {
-        return entityCore.supportValuesMerge(entityType)
-    }
+    override fun supportValuesMerge(entityType: EntityType): Boolean = entityCore.supportValuesMerge(entityType)
 
     override fun mergeValues(
         context: CallContext,
         entity: Entity,
         values: List<ValueDescriptor>,
-    ): ValueDescriptor? {
-        return entityCore.mergeValues(EntityCallContextForEntity(context, entity), values)
-    }
+    ): ValueDescriptor? = entityCore.mergeValues(EntityCallContextForEntity(context, entity), values)
 
     override fun getBuiltInEntityTypes(): Set<String> = EntityCoreService.knownEntityTypes
 
-    override fun healthcheck(): Boolean {
-        return entityCore.healthcheck()
-    }
+    override fun healthcheck(): Boolean = entityCore.healthcheck()
 
-    private fun CallContext.prepareText(text: String): String {
-        return if (application.normalizeText) {
+    private fun CallContext.prepareText(text: String): String =
+        if (application.normalizeText) {
             text.normalize(language)
         } else {
             text
         }
-    }
 
     private fun TestContext.prepareText(text: String): String = callContext.prepareText(text)
 }

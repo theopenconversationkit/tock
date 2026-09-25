@@ -215,8 +215,7 @@ internal class TwitterClient(
                 longProperty("tock_twitter_request_timeout_ms", 30000),
                 logger,
                 interceptors = listOf(SigningInterceptor(twitterOAuthConsumer)),
-            )
-                .baseUrl(BASE_URL)
+            ).baseUrl(BASE_URL)
                 .addJacksonConverter()
                 .build()
                 .create()
@@ -226,8 +225,7 @@ internal class TwitterClient(
                 longProperty("tock_twitter_request_timeout_ms", 30000),
                 logger,
                 interceptors = listOf(SigningInterceptor(twitterOAuthConsumer)),
-            )
-                .baseUrl(BASE_URL)
+            ).baseUrl(BASE_URL)
                 .addJacksonConverter()
                 .build()
                 .create()
@@ -237,8 +235,7 @@ internal class TwitterClient(
                 longProperty("tock_twitter_request_timeout_ms", 30000),
                 logger,
                 interceptors = listOf(SigningInterceptor(twitterOAuthConsumer)),
-            )
-                .baseUrl(BASE_URL)
+            ).baseUrl(BASE_URL)
                 .addJacksonConverter()
                 .build()
                 .create()
@@ -248,8 +245,7 @@ internal class TwitterClient(
                 longProperty("tock_twitter_request_timeout_ms", 30000),
                 logger,
                 interceptors = listOf(SigningInterceptor(twitterOAuthConsumer)),
-            )
-                .baseUrl(BASE_MEDIA_URL)
+            ).baseUrl(BASE_MEDIA_URL)
                 .addJacksonConverter()
                 .build()
                 .create()
@@ -259,16 +255,13 @@ internal class TwitterClient(
                 longProperty("tock_twitter_request_timeout_ms", 30000),
                 logger,
                 interceptors = listOf(SigningInterceptor(twitterOAuthConsumer)),
-            )
-                .baseUrl(BASE_URL)
+            ).baseUrl(BASE_URL)
                 .addJacksonConverter()
                 .build()
                 .create()
     }
 
-    private fun defaultUser(): User {
-        return User("", "", "", Date().time, null, null, null, "", "", false, false, 0, 0, 0, "", "")
-    }
+    private fun defaultUser(): User = User("", "", "", Date().time, null, null, null, "", "", false, false, 0, 0, 0, "", "")
 
     private fun Response<*>.logError() {
         val error = message()
@@ -304,8 +297,7 @@ internal class TwitterClient(
                 longProperty("tock_twitter_request_timeout_ms", 30000),
                 logger,
                 interceptors = listOf(SigningInterceptor(oAuthApiConsumer)),
-            )
-                .baseUrl(BASE_URL)
+            ).baseUrl(BASE_URL)
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .build()
                 .create()
@@ -338,9 +330,7 @@ internal class TwitterClient(
      *
      * @return url for request user authorization
      */
-    fun authorizationUrl(requestToken: RequestToken): String {
-        return "$BASE_URL/oauth/authorize?oauth_token=${requestToken.oauthToken}"
-    }
+    fun authorizationUrl(requestToken: RequestToken): String = "$BASE_URL/oauth/authorize?oauth_token=${requestToken.oauthToken}"
 
     /**
      * Allows a Consumer application to use an OAuth Request Token to request user authorization.
@@ -362,8 +352,7 @@ internal class TwitterClient(
                 longProperty("tock_twitter_request_timeout_ms", 30000),
                 logger,
                 interceptors = listOf(SigningInterceptor(oAuthApiConsumer)),
-            )
-                .baseUrl(BASE_URL)
+            ).baseUrl(BASE_URL)
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .build()
                 .create()
@@ -401,8 +390,8 @@ internal class TwitterClient(
      * @return webhook or null if registration failed
      *
      */
-    fun registerWebhook(url: String): Webhook? {
-        return try {
+    fun registerWebhook(url: String): Webhook? =
+        try {
             val response = accountActivityApi.registerWebhook(environment, url).execute()
             if (response.isSuccessful) {
                 response.body()?.also {
@@ -417,7 +406,6 @@ internal class TwitterClient(
             logger.error(e)
             null
         }
-    }
 
     /**
      * Subscribes the provided application to all events for the provided environment for all message types.
@@ -427,8 +415,8 @@ internal class TwitterClient(
      *
      * @return true if Subscription success
      */
-    fun subscribe(): Boolean {
-        return try {
+    fun subscribe(): Boolean =
+        try {
             val response = accountActivityApi.subscribe("develop").execute()
             if (!response.isSuccessful) {
                 response.logError()
@@ -441,7 +429,6 @@ internal class TwitterClient(
             logger.error(e)
             false
         }
-    }
 
     /**
      * Provides a way to determine if a webhook configuration is subscribed to the provided user’s events.
@@ -450,8 +437,8 @@ internal class TwitterClient(
      * false if the user does not have an active subscription.
      *
      */
-    fun subscriptions(): Boolean {
-        return try {
+    fun subscriptions(): Boolean =
+        try {
             val response = accountActivityApi.subscriptions("develop").execute()
             response.code() == 204
         } catch (e: Exception) {
@@ -459,7 +446,6 @@ internal class TwitterClient(
             logger.error(e)
             false
         }
-    }
 
     /**
      * Removes the webhook from the provided application's all activities configuration.
@@ -469,8 +455,8 @@ internal class TwitterClient(
      * @return true if success else false
      *
      */
-    fun unregisterWebhook(webhookId: String): Boolean {
-        return try {
+    fun unregisterWebhook(webhookId: String): Boolean =
+        try {
             val response = accountActivityApi.unregisterWebhook(environment, webhookId).execute()
             if (!response.isSuccessful) {
                 response.logError()
@@ -483,15 +469,14 @@ internal class TwitterClient(
             logger.error(e)
             false
         }
-    }
 
     /**
      * Returns a variety of information about the user specified by the required user_id
      *
      * @return a user profile
      */
-    fun user(userId: String): User {
-        return try {
+    fun user(userId: String): User =
+        try {
             val response = userApi.user(userId).execute()
             if (response.isSuccessful) {
                 response.body()?.also {
@@ -506,7 +491,6 @@ internal class TwitterClient(
             logger.error(e)
             defaultUser()
         }
-    }
 
     /**
      * Returns all environments, webhook URLs and their statuses for the authenticating app. Currently, only one webhook URL can be registered to each environment.

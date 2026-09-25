@@ -61,33 +61,23 @@ internal object IntentDefinitionMongoDAO : IntentDefinitionDAO {
         asyncCol.watch { listener() }
     }
 
-    override fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> {
-        return col.find(Applications contains applicationId).toList()
-    }
+    override fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> = col.find(Applications contains applicationId).toList()
 
     override fun getIntentsByNamespace(namespace: String): List<IntentDefinition> = col.find(Namespace eq namespace).toList()
 
     override fun getIntentsByApplicationIdAndCategory(
         applicationId: Id<ApplicationDefinition>,
         category: String,
-    ): List<IntentDefinition> {
-        return col.find(Applications contains applicationId).filter(Category eq category).toList()
-    }
+    ): List<IntentDefinition> = col.find(Applications contains applicationId).filter(Category eq category).toList()
 
     override fun getIntentByNamespaceAndName(
         namespace: String,
         name: String,
-    ): IntentDefinition? {
-        return col.findOne(Name eq name, Namespace eq namespace)
-    }
+    ): IntentDefinition? = col.findOne(Name eq name, Namespace eq namespace)
 
-    override fun getIntentById(id: Id<IntentDefinition>): IntentDefinition? {
-        return col.findOneById(id)
-    }
+    override fun getIntentById(id: Id<IntentDefinition>): IntentDefinition? = col.findOneById(id)
 
-    override fun getIntentByIds(ids: Set<Id<IntentDefinition>>): List<IntentDefinition>? {
-        return col.find(_id `in` ids).into(ArrayList())
-    }
+    override fun getIntentByIds(ids: Set<Id<IntentDefinition>>): List<IntentDefinition>? = col.find(_id `in` ids).into(ArrayList())
 
     override fun save(intent: IntentDefinition) {
         col.save(intent)
@@ -97,9 +87,7 @@ internal object IntentDefinitionMongoDAO : IntentDefinitionDAO {
         col.deleteOneById(id)
     }
 
-    override fun getIntentsUsingEntity(entityType: String): List<IntentDefinition> {
-        return col.find(Entities.entityTypeName eq entityType).toList()
-    }
+    override fun getIntentsUsingEntity(entityType: String): List<IntentDefinition> = col.find(Entities.entityTypeName eq entityType).toList()
 
     fun getIntentsByNames(names: List<String>): List<IntentDefinition> = col.find(Name `in` names).toList()
 }

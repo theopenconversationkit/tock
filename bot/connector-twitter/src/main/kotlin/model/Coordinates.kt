@@ -16,4 +16,7 @@
 
 package ai.tock.bot.connector.twitter.model
 
-data class Coordinates(val coordinates: List<Float>, val type: String)
+data class Coordinates(
+    val coordinates: List<Float>,
+    val type: String,
+)

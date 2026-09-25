@@ -38,8 +38,8 @@ data class Element(
         buttons: List<Button>?,
     ) : this(title.toString(), imageUrl, subtitle?.toString(), buttons?.takeUnless { it.isEmpty() })
 
-    fun toGenericElement(): GenericElement {
-        return GenericElement(
+    fun toGenericElement(): GenericElement =
+        GenericElement(
             choices = buttons?.map { it.toChoice() } ?: emptyList(),
             texts =
                 mapNotNullValues(
@@ -48,12 +48,14 @@ data class Element(
                 ),
             attachments =
                 imageUrl
-                    ?.let { listOf(ai.tock.bot.engine.message.Attachment(imageUrl, image)) }
+                    ?.let {
+                        listOf(
+                            ai.tock.bot.engine.message
+                                .Attachment(imageUrl, image),
+                        )
+                    }
                     ?: emptyList(),
         )
-    }
 
-    fun obfuscate(): Element {
-        return Element(obfuscate(title)!!, imageUrl, obfuscate(subtitle), buttons)
-    }
+    fun obfuscate(): Element = Element(obfuscate(title)!!, imageUrl, obfuscate(subtitle), buttons)
 }

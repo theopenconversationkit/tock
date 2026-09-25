@@ -1,0 +1,55 @@
+/**
+ * Flex rather than grid: a widget left alone on its line must fill the width.
+ * With grid, an unpaired item keeps its column span and leaves a hole. Here the
+ * basis drives the wrapping while flex-grow, set proportionally to the span,
+ * absorbs the leftover space: a full line keeps its ratios, a lone widget stretches.
+ */
+.dashboard-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.grid-span-4 {
+  flex: 4 1 calc(33.333% - 1rem);
+}
+
+.grid-span-5 {
+  flex: 5 1 calc(41.666% - 1rem);
+}
+
+.grid-span-6 {
+  flex: 6 1 calc(50% - 1rem);
+}
+
+.grid-span-7 {
+  flex: 7 1 calc(58.333% - 1rem);
+}
+
+.grid-span-8 {
+  flex: 8 1 calc(66.666% - 1rem);
+}
+
+.grid-span-12 {
+  flex: 12 1 100%;
+}
+
+@media (max-width: 1100px) {
+  .grid-span-4,
+  .grid-span-5,
+  .grid-span-6 {
+    flex: 6 1 calc(50% - 1rem);
+  }
+
+  .grid-span-7,
+  .grid-span-8 {
+    flex: 12 1 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboard-grid > div {
+    flex: 12 1 100%;
+  }
+}

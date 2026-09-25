@@ -30,7 +30,10 @@ data class WhatsAppBotMessageInteractiveMessage(
             texts = texts,
             choices =
                 interactive.action?.buttons?.map { it.toChoice() }
-                    ?: interactive.action?.sections?.flatMap { it.rows ?: listOf() }?.map { it.toChoice() }
+                    ?: interactive.action
+                        ?.sections
+                        ?.flatMap { it.rows ?: listOf() }
+                        ?.map { it.toChoice() }
                     ?: listOf(),
         )
     }

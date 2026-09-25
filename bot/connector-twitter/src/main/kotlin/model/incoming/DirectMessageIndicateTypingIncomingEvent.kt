@@ -33,7 +33,5 @@ data class DirectMessageIndicateTypingIncomingEvent(
     override val ignored: Boolean
         get() = true
 
-    override fun toEvent(applicationId: String): Event? {
-        return null
-    }
+    override fun toEvent(applicationId: String): Event? = null
 }

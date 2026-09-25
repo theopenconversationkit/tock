@@ -33,11 +33,15 @@ open class OrchestratorService(
         val eligibleBots = request.eligibleTargetBots.mapNotNull { eligibleBot -> orchestratedBots.get(eligibleBot) }
 
         return when (val response = getTheBestAnswer(eligibleBots, request)) {
-            null ->
+            null -> {
                 NoOrchestrationResponse(
                     status = NOT_AVAILABLE,
                 )
-            else -> response
+            }
+
+            else -> {
+                response
+            }
         }
     }
 
@@ -56,13 +60,12 @@ open class OrchestratorService(
     protected open fun getTheBestAnswer(
         eligibleBots: List<OrchestratedRuntimeBot>,
         request: AskEligibilityToOrchestratorRequest,
-    ): OrchestrationResponse? {
-        return eligibleBots
+    ): OrchestrationResponse? =
+        eligibleBots
             .map { it to it.askOrchestration(request.toBotRequest()) } // TODO to run in parallel
             .filter { (_, response) -> response.indice > 0 }
             .maxByOrNull { (_, response) -> response.indice }
             ?.let { (bot, response) -> response.toOrchestratorResponse(bot.target) }
-    }
 
     private fun AskEligibilityToOrchestratorRequest.toBotRequest() =
         AskEligibilityToOrchestratedBotRequest(

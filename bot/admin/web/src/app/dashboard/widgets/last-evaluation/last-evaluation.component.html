@@ -1,0 +1,86 @@
+<tock-dashboard-widget
+  [title]="'dashboard.evaluation.title' | transloco"
+  icon="eyedropper"
+  [state]="state"
+  [skeletonLines]="3"
+  [emptyTitle]="'dashboard.evaluation.empty-title' | transloco"
+  [emptyMessage]="'dashboard.evaluation.empty-message' | transloco"
+>
+  <ng-template #widgetFooter>
+    <a [routerLink]="['/quality/samples']">
+      {{ 'dashboard.evaluation.all' | transloco }}
+      <i class="bi bi-arrow-right-short"></i>
+    </a>
+  </ng-template>
+
+  <ng-template #widgetBody>
+    @for (entry of entries; track entry.sample._id; let first = $first) {
+    <div
+      class="evaluation-entry"
+      [class.evaluation-entry-first]="first"
+    >
+      <svg
+        class="evaluation-ring"
+        width="64"
+        height="64"
+        viewBox="0 0 64 64"
+        aria-hidden="true"
+      >
+        <circle
+          cx="32"
+          cy="32"
+          [attr.r]="ringRadius"
+          class="evaluation-ring-track"
+        />
+        <circle
+          cx="32"
+          cy="32"
+          [attr.r]="ringRadius"
+          class="evaluation-ring-value"
+          [attr.stroke-dasharray]="ringCircumference"
+          [attr.stroke-dashoffset]="entry.ringOffset"
+          transform="rotate(-90 32 32)"
+        />
+        <text
+          x="32"
+          y="37"
+          text-anchor="middle"
+          class="evaluation-ring-text"
+        >
+          {{ entry.positiveRate | percent: '1.0-0' }}
+        </text>
+      </svg>
+
+      <div class="evaluation-detail">
+        <div class="d-flex align-items-baseline gap-05">
+          <span class="evaluation-name">{{ entry.sample.name }}</span>
+          <tock-dashboard-delta [value]="entry.delta"></tock-dashboard-delta>
+        </div>
+
+        <div class="metric-label">
+          {{
+            'dashboard.evaluation.breakdown'
+              | transloco
+                : {
+                    positive: entry.sample.evaluationsResult.positiveCount | number,
+                    negative: entry.sample.evaluationsResult.negativeCount | number,
+                    evaluated: entry.sample.evaluationsResult.evaluated | number
+                  }
+          }}
+        </div>
+
+        <div class="evaluation-meta">
+          <span>{{ entry.sample.statusChangeDate | date: 'dd MMM yyyy' }}</span>
+          <span class="evaluation-meta-author">{{ entry.sample.statusChangedBy }}</span>
+          @if (entry.isStale) {
+          <span class="status-badge status-badge-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            {{ 'dashboard.evaluation.stale-badge' | transloco }}
+          </span>
+          }
+        </div>
+      </div>
+    </div>
+    }
+  </ng-template>
+</tock-dashboard-widget>

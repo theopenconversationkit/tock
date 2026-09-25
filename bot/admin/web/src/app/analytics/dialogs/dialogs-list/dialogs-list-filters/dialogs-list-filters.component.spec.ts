@@ -17,6 +17,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DialogsListFiltersComponent } from './dialogs-list-filters.component';
+import { TestSharedModule } from '../../../../shared/test-shared.module';
+import { StateServiceMock } from '../../../../shared/test-shared/state-service.mock';
+import { StateService } from '../../../../core-nlp/state.service';
+import { BotConfigurationService } from '../../../../core/bot-configuration.service';
+import { BehaviorSubject } from 'rxjs';
 
 describe('DialogsListFiltersComponent', () => {
   let component: DialogsListFiltersComponent;
@@ -24,9 +29,16 @@ describe('DialogsListFiltersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DialogsListFiltersComponent]
-    })
-    .compileComponents();
+      declarations: [DialogsListFiltersComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        {
+          provide: BotConfigurationService,
+          useValue: { configurations: new BehaviorSubject([]), restConfigurations: new BehaviorSubject([]) }
+        }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DialogsListFiltersComponent);
     component = fixture.componentInstance;

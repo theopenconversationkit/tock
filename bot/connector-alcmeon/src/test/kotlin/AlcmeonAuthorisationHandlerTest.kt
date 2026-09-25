@@ -31,7 +31,8 @@ internal class AlcmeonAuthorisationHandlerTest {
                 every { normalizedPath() } returns "/alcmeon/start"
                 every {
                     body().asString()
-                } returns "{\"backend\": \"whatsapp\", \"parameters\": [], \"user_external_id\": \"33671485945\", \"user_name\": \"Germain\", \"event\": {\"type\": \"text\", \"text\": {\"body\": \"Bonjour\"}}, \"global_variables\": {}}"
+                } returns
+                    "{\"backend\": \"whatsapp\", \"parameters\": [], \"user_external_id\": \"33671485945\", \"user_name\": \"Germain\", \"event\": {\"type\": \"text\", \"text\": {\"body\": \"Bonjour\"}}, \"global_variables\": {}}"
             }
 
         AlcmeonAuthorisationHandler("1309768d3f6f8462").handle(routingContext)

@@ -82,7 +82,8 @@ class OpenAIConnector internal constructor(
             logger.debug("deploy Open API connector services for root path $path ")
 
             val corsHandler =
-                CorsHandler.create()
+                CorsHandler
+                    .create()
                     .addOriginWithRegex(corsPattern)
                     .allowedMethods(setOf(OPTIONS, GET, POST))
                     .allowedHeader("Access-Control-Allow-Origin")
@@ -103,7 +104,8 @@ class OpenAIConnector internal constructor(
                 .handler(webSecurityHandler)
 
             router.get("$path/health").handler { context ->
-                context.response()
+                context
+                    .response()
                     .end()
             }
 
@@ -112,13 +114,15 @@ class OpenAIConnector internal constructor(
                     listOf(
                         defaultModel,
                     )
-                context.response()
+                context
+                    .response()
                     .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                     .end(writeJson(response))
             }
 
             router.get("$path/models/:modelId").handler { context ->
-                context.response()
+                context
+                    .response()
                     .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                     .end(writeJson(defaultModel))
             }
@@ -157,7 +161,9 @@ class OpenAIConnector internal constructor(
             }
             val chatId = context.request().getHeader("X-OpenWebUI-Chat-Id")
             val locale =
-                context.request().getHeader("Accept-Language")
+                context
+                    .request()
+                    .getHeader("Accept-Language")
                     ?.let { Locale.forLanguageTag(it) } ?: defaultLocale
             val event = request.toEvent(connectorId, chatId)
             handleEvent(connectorId, locale, event, controller, context, emptyMap(), DialogContext.EMPTY)
@@ -241,7 +247,10 @@ class OpenAIConnector internal constructor(
                 }
             }
 
-            is MetadataEvent -> (callback as? OpenAIConnectorCallback)?.addMetadata(event)
+            is MetadataEvent -> {
+                (callback as? OpenAIConnectorCallback)?.addMetadata(event)
+            }
+
             else -> {
                 logger.trace { "unsupported event: $event" }
             }
@@ -267,12 +276,11 @@ class OpenAIConnector internal constructor(
     override fun loadProfile(
         callback: ConnectorCallback,
         userId: PlayerId,
-    ): UserPreferences {
-        return when (callback) {
+    ): UserPreferences =
+        when (callback) {
             is OpenAIConnectorCallback -> UserPreferences().apply { locale = callback.locale }
             else -> UserPreferences()
         }
-    }
 
     override fun addSuggestions(
         text: CharSequence,

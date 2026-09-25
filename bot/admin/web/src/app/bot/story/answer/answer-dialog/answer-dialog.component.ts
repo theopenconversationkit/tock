@@ -20,11 +20,13 @@ import { NbDialogRef, NbToastrService } from '@nebular/theme';
 import { AnswerConfiguration, AnswerConfigurationType, AnswerContainer } from '../../../model/story';
 import { BotService } from '../../../bot-service';
 import { AnswerController } from '../../controller';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-answer-dialog',
-  templateUrl: './answer-dialog.component.html',
-  styleUrls: ['./answer-dialog.component.scss']
+    selector: 'tock-answer-dialog',
+    templateUrl: './answer-dialog.component.html',
+    styleUrls: ['./answer-dialog.component.scss'],
+    standalone: false
 })
 export class AnswerDialogComponent implements OnInit {
   @Input() create: boolean;
@@ -39,7 +41,8 @@ export class AnswerDialogComponent implements OnInit {
   constructor(
     private botService: BotService,
     private toastrService: NbToastrService,
-    private nbDialogRef: NbDialogRef<AnswerDialogComponent>
+    private nbDialogRef: NbDialogRef<AnswerDialogComponent>,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit() {
@@ -53,11 +56,19 @@ export class AnswerDialogComponent implements OnInit {
     this.submit.checkAnswer((_) => {
       const invalidMessage = this.answer.currentAnswer().invalidMessage();
       if (invalidMessage) {
-        this.toastrService.danger(`Error: ${invalidMessage}`, 'Error', { duration: 5000 });
+        this.toastrService.danger(
+          this.transloco.translate('bot.answer-dialog.errorMessage', { message: invalidMessage }),
+          this.transloco.translate('bot.answer-dialog.errorTitle'),
+          { duration: 5000 }
+        );
       } else if (!this.create) {
         this.answer.save(this.botService).subscribe((r) => {
           this.nbDialogRef.close({ answer: this.answer });
-          this.toastrService.success(`${this.answerLabel} update successfully`, 'Update', { duration: 1000 });
+          this.toastrService.success(
+            this.transloco.translate('bot.answer-dialog.updateSuccessMessage', { answerLabel: this.answerLabel }),
+            this.transloco.translate('common.actions.update'),
+            { duration: 1000 }
+          );
         });
       } else {
         this.nbDialogRef.close({ answer: this.answer });

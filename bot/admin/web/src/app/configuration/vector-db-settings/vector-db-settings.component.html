@@ -1,21 +1,5 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="d-flex">
-  <h1 class="flex-grow-1 mb-0">Application vector database settings</h1>
+  <h1 class="flex-grow-1 mb-0">{{ 'configuration.vector-db-settings.title' | transloco }}</h1>
 
   <section class="grid-actions">
     <button
@@ -23,7 +7,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Export Vector DB settings dump"
+      [nbTooltip]="'configuration.vector-db-settings.exportTooltip' | transloco"
       (click)="exportSettings()"
     >
       <nb-icon icon="download"></nb-icon>
@@ -32,61 +16,55 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Import Vector DB settings dump"
+      [nbTooltip]="'configuration.vector-db-settings.importTooltip' | transloco"
       (click)="importSettings()"
     >
       <nb-icon icon="upload"></nb-icon>
     </button>
 
+    @if (settingsBackup && form.dirty) {
     <button
-      *ngIf="settingsBackup && form.dirty"
       nbButton
       ghost
       status="primary"
-      nbTooltip="Cancel modifications"
+      [nbTooltip]="'configuration.vector-db-settings.cancelTooltip' | transloco"
       (click)="cancel()"
     >
       <nb-icon icon="x-circle"></nb-icon>
-      CANCEL
+      {{ 'common.actions.cancel' | transloco }}
     </button>
+    } @if (form.dirty) {
     <button
-      *ngIf="form.dirty"
       nbButton
       status="primary"
-      nbTooltip="Save settings"
+      [nbTooltip]="'configuration.vector-db-settings.saveTooltip' | transloco"
       (click)="submit()"
     >
       <nb-icon icon="floppy"></nb-icon>
-      SAVE
+      {{ 'common.actions.save' | transloco }}
     </button>
+    }
   </section>
 </div>
 
 <small>
-  Optional vector database provider. By default, the vector database used to index the Rag documents is defined in environment variables,
-  but if you need a specific vector database for this application, you can provide its configuration here. This configuration will override
-  the environment configuration for the application
+  {{ 'configuration.vector-db-settings.description' | transloco }}
   <b
     ><i>{{ state.currentApplication.name }}</i></b
   >.
 </small>
 
-<tock-no-data-found
-  *ngIf="configurations?.length === 0"
-  title="No bot configuration detected"
-></tock-no-data-found>
-
-<form
-  [formGroup]="form"
-  *ngIf="configurations?.length > 0"
->
+@if (configurations?.length === 0) {
+<tock-no-data-found [title]="'configuration.vector-db-settings.noBotConfiguration' | transloco"></tock-no-data-found>
+} @if (configurations?.length > 0) {
+<form [formGroup]="form">
   <nb-card class="mt-2">
     <nb-card-body
       [nbSpinner]="loading"
       class="pb-0"
     >
       <nb-card class="mt-2">
-        <nb-card-header>Vector DB activation</nb-card-header>
+        <nb-card-header>{{ 'configuration.vector-db-settings.vectorDbActivationTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <tock-form-control
             name="enabled"
@@ -98,16 +76,18 @@
               formControlName="enabled"
               class="mt-1"
             >
-              <span *ngIf="enabled.value">Vector DB activated</span>
-              <span *ngIf="!enabled.value">Vector DB deactivated</span>
+              @if (enabled.value) {
+              <span>{{ 'configuration.vector-db-settings.vectorDbActivated' | transloco }}</span>
+              } @if (!enabled.value) {
+              <span>{{ 'configuration.vector-db-settings.vectorDbDeactivated' | transloco }}</span>
+              }
             </nb-toggle>
           </tock-form-control>
         </nb-card-body>
       </nb-card>
-
       <nb-card>
         <nb-card-header>
-          Vector DB provider for application <i>{{ state.currentApplication.name }}</i>
+          {{ 'configuration.vector-db-settings.vectorDbProviderTitle' | transloco }} <i>{{ state.currentApplication.name }}</i>
         </nb-card-header>
         <nb-card-body>
           <tock-form-control
@@ -121,65 +101,64 @@
               name="vectorDbProvider"
               class="d-flex"
             >
-              <nb-radio
-                *ngFor="let provider of providersConfigurations"
-                [value]="provider.key"
-              >
+              @for (provider of providersConfigurations; track provider) {
+              <nb-radio [value]="provider.key">
                 {{ provider.label }}
               </nb-radio>
+              }
             </nb-radio-group>
           </tock-form-control>
-
-          <div
-            *ngIf="currentVectorDbProvider"
-            class="mt-2 mb-2"
-          >
+          @if (currentVectorDbProvider) {
+          <div class="mt-2 mb-2">
             <div class="row mb-1">
-              <ng-container *ngFor="let param of currentVectorDbProvider.params">
-                <div
-                  class="col-6 px-3"
-                  [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
-                >
-                  <tock-ai-settings-engine-config-param-input
-                    parentGroup="setting"
-                    [configurationParam]="param"
-                    [form]="form"
-                    [isSubmitted]="isSubmitted"
-                  ></tock-ai-settings-engine-config-param-input>
-                </div>
-              </ng-container>
+              @for (param of currentVectorDbProvider.params; track param) {
+              <div
+                class="col-6 px-3"
+                [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
+              >
+                <tock-ai-settings-engine-config-param-input
+                  parentGroup="setting"
+                  [configurationParam]="param"
+                  [form]="form"
+                  [isSubmitted]="isSubmitted"
+                ></tock-ai-settings-engine-config-param-input>
+              </div>
+              }
             </div>
           </div>
+          }
         </nb-card-body>
       </nb-card>
-
-      <nb-card *ngIf="settingsBackup">
-        <nb-card-header>Settings deletion</nb-card-header>
+      @if (settingsBackup) {
+      <nb-card>
+        <nb-card-header>{{ 'configuration.vector-db-settings.settingsDeletionTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <button
             nbButton
             status="danger"
-            nbTooltip="Delete settings"
+            [nbTooltip]="'configuration.vector-db-settings.deleteSettingsTooltip' | transloco"
             (click)="confirmSettingsDeletion()"
           >
             <nb-icon icon="trash"></nb-icon>
-            DELETE SETTINGS
+            {{ 'configuration.vector-db-settings.deleteSettingsButton' | transloco }}
           </button>
         </nb-card-body>
       </nb-card>
+      }
     </nb-card-body>
   </nb-card>
 </form>
+}
 
 <ng-template #exportConfirmationModal>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Confirmation of sensitive data export
+      {{ 'configuration.vector-db-settings.exportConfirmationTitle' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'common.actions.cancel' | transloco"
         (click)="closeExportConfirmationModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -187,8 +166,9 @@
     </nb-card-header>
 
     <nb-card-body>
-      <div class="mb-2">Include the following sensitive data:</div>
-      <div *ngFor="let sensitiveParam of sensitiveParams">
+      <div class="mb-2">{{ 'configuration.vector-db-settings.includeSensitiveDataLabel' | transloco }}</div>
+      @for (sensitiveParam of sensitiveParams; track sensitiveParam) {
+      <div>
         <nb-checkbox
           status="basic"
           [(ngModel)]="sensitiveParam.include"
@@ -197,6 +177,7 @@
           {{ sensitiveParam.param.label }}
         </nb-checkbox>
       </div>
+      }
     </nb-card-body>
 
     <nb-card-footer class="card-footer-actions">
@@ -206,7 +187,7 @@
         size="small"
         (click)="closeExportConfirmationModal()"
       >
-        Cancel
+        {{ 'common.actions.cancel' | transloco }}
       </button>
       <button
         type="button"
@@ -215,7 +196,7 @@
         size="small"
         (click)="confirmExportSettings()"
       >
-        Export
+        {{ 'configuration.vector-db-settings.exportButton' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>
@@ -224,12 +205,12 @@
 <ng-template #importModal>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Import Vector DB settings dump
+      {{ 'configuration.vector-db-settings.importModalTitle' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'common.actions.cancel' | transloco"
         (click)="closeImportModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -242,7 +223,7 @@
         (submit)="submitImportSettings()"
       >
         <tock-form-control
-          label="Vector DB settings dump file"
+          [label]="'configuration.vector-db-settings.importFileLabel' | transloco"
           name="importFile"
           [required]="true"
           [controls]="fileSource"
@@ -267,7 +248,7 @@
         size="small"
         (click)="closeImportModal()"
       >
-        Cancel
+        {{ 'common.actions.cancel' | transloco }}
       </button>
       <button
         type="button"
@@ -276,7 +257,7 @@
         size="small"
         (click)="submitImportSettings()"
       >
-        Import
+        {{ 'configuration.vector-db-settings.importButton' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>

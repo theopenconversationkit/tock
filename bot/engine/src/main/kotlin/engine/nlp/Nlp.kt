@@ -206,8 +206,8 @@ internal class Nlp : NlpController {
             }
         }
 
-        private suspend fun findKeyword(sentence: String?): Intent? {
-            return if (sentence != null) {
+        private suspend fun findKeyword(sentence: String?): Intent? =
+            if (sentence != null) {
                 var i: Intent? = null
                 BotRepository.forEachNlpListener {
                     if (i == null) {
@@ -224,7 +224,6 @@ internal class Nlp : NlpController {
             } else {
                 null
             }
-        }
 
         private suspend fun listenNlpSuccessCall(
             query: NlpQuery,
@@ -267,15 +266,20 @@ internal class Nlp : NlpController {
             )
         }
 
-        private suspend fun toNlpQuery(): NlpQuery {
-            return NlpQuery(
+        private suspend fun toNlpQuery(): NlpQuery =
+            NlpQuery(
                 listOf(sentence.stringText ?: ""),
                 botDefinition.namespace,
                 botDefinition.nlpModelName,
                 toQueryContext(),
                 NlpQueryState(
                     dialog.state.nextActionState?.states
-                        ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet(),
+                        ?: listOfNotNull(
+                            dialog.currentStory
+                                ?.definition
+                                ?.mainIntent()
+                                ?.name,
+                        ).toSet(),
                 ),
                 configuration = connector.botConfiguration.applicationId,
             ).run {
@@ -285,7 +289,6 @@ internal class Nlp : NlpController {
                 }
                 query
             }
-        }
 
         private fun mergeEntityValues(
             action: Action,
@@ -309,7 +312,8 @@ internal class Nlp : NlpController {
                 if (eligibleToMergeValues.isEmpty() ||
                     (eligibleToMergeValues.size == 1 && oldValue.value?.value == null)
                 ) {
-                    oldValue.changeValue(defaultNewValue, action)
+                    oldValue
+                        .changeValue(defaultNewValue, action)
                         .apply {
                             multiRequestedValues = newValues
                         }
@@ -389,27 +393,30 @@ internal class Nlp : NlpController {
                     nlpClient.parse(
                         request.copy(
                             intentsSubset =
-                                intentsQualifiers.asSequence().map {
-                                    it.copy(
-                                        intent =
-                                            it.intent.withNamespace(
-                                                request.namespace,
-                                            ),
-                                    )
-                                }.toSet(),
+                                intentsQualifiers
+                                    .asSequence()
+                                    .map {
+                                        it.copy(
+                                            intent =
+                                                it.intent.withNamespace(
+                                                    request.namespace,
+                                                ),
+                                        )
+                                    }.toSet(),
                         ),
                     )
                 }
             if (result != null && useQualifiers) {
                 // force intents qualifiers if unknown answer
                 if (intentsQualifiers.none { it.intent == result.intent }) {
-                    return result.copy(
-                        intent =
-                            intentsQualifiers.maxByOrNull { it.modifier }?.intent
-                                ?: intentsQualifiers.first().intent,
-                    ).also {
-                        logger.warn { "${result.intent} not in intents qualifier $intentsQualifiers - use $it" }
-                    }
+                    return result
+                        .copy(
+                            intent =
+                                intentsQualifiers.maxByOrNull { it.modifier }?.intent
+                                    ?: intentsQualifiers.first().intent,
+                        ).also {
+                            logger.warn { "${result.intent} not in intents qualifier $intentsQualifiers - use $it" }
+                        }
                 }
             }
             return result

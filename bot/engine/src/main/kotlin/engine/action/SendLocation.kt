@@ -37,8 +37,7 @@ class SendLocation(
     date: Instant = Instant.now(),
     state: EventState = EventState(),
     metadata: ActionMetadata = ActionMetadata(),
-) :
-    Action(playerId, recipientId, applicationId, id, date, state, metadata) {
+) : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
     @Deprecated(
         "Use constructor with connectorId",
         ReplaceWith(
@@ -65,7 +64,5 @@ class SendLocation(
         _deprecatedConstructor: Nothing? = null,
     ) : this(playerId, applicationId, recipientId, location, id, date, state, metadata)
 
-    override fun toMessage(): Message {
-        return Location(location)
-    }
+    override fun toMessage(): Message = Location(location)
 }

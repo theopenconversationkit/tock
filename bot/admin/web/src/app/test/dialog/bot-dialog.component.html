@@ -1,20 +1,5 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
 <h1>
-  Test the application <i>{{ state.currentApplication.label }}</i>
+  {{ 'test.bot-dialog.title' | transloco: { applicationLabel: state.currentApplication.label } }}
 </h1>
 
 <nb-card class="mb-0">
@@ -28,9 +13,14 @@
         >
         </tock-select-bot>
 
-        <div *ngIf="xrayAvailable">
+        @if (xrayAvailable) {
+        <div>
           <button
-            [nbTooltip]="testContext ? 'Disable test context' : 'Enable test context'"
+            [nbTooltip]="
+              testContext
+                ? ('test.bot-dialog.testContextTooltipDisable' | transloco)
+                : ('test.bot-dialog.testContextTooltipEnable' | transloco)
+            "
             nbButton
             outline
             status="warning"
@@ -40,21 +30,25 @@
             <nb-icon icon="cube"></nb-icon>
           </button>
         </div>
+        }
 
         <nb-toggle
-          nbTooltip="Get debug infos"
+          [nbTooltip]="'test.bot-dialog.debugTooltip' | transloco"
           labelPosition="start"
           [(ngModel)]="debug"
           class="nb-toggle-reset-label-margin"
-          >Debug</nb-toggle
         >
+          Debug
+        </nb-toggle>
+
         <nb-toggle
-          nbTooltip="Get text content of RAG sources"
+          [nbTooltip]="'test.bot-dialog.sourcesContentTooltip' | transloco"
           labelPosition="start"
           [(ngModel)]="sourceWithContent"
           class="nb-toggle-reset-label-margin"
-          >Sources content</nb-toggle
         >
+          {{ 'test.bot-dialog.sourcesContent' | transloco }}
+        </nb-toggle>
       </div>
     </div>
   </nb-card-header>
@@ -65,22 +59,19 @@
       [mayScroll]="true"
       #chatUi
     >
+      @for (m of messages; track m) {
       <tock-chat-ui-message
-        *ngFor="let m of messages"
         [message]="m.message"
         [reply]="m.bot"
         [avatar]="getUserAvatar(m.bot)"
         (sendMessage)="onNewMessage($event)"
       >
-        <span
-          *ngIf="m.locale"
-          class="stats"
-        >
-          [{{ m.locale }}]
+        @if (m.locale) {
+        <span class="stats">
+          [{{ m.locale }}] @if (m.hasNlpStats) {
           <button
-            *ngIf="m.hasNlpStats"
             (click)="displayNlpStats(m)"
-            nbTooltip="View Nlp Stats"
+            [nbTooltip]="'test.bot-dialog.viewNlpStatsTooltip' | transloco"
             nbButton
             ghost
             shape="round"
@@ -89,8 +80,11 @@
           >
             <nb-icon icon="clipboard-data"></nb-icon>
           </button>
+          }
         </span>
+        }
       </tock-chat-ui-message>
+      }
     </tock-chat-ui>
 
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-1 mt-3">
@@ -103,7 +97,7 @@
           fullWidth
           fieldSize="medium"
           status="primary"
-          placeholder="Type some text"
+          [placeholder]="'test.bot-dialog.userMessagePlaceholder' | transloco"
           [(ngModel)]="userMessage"
           (onInputValueChange)="onUserMessageChange($event)"
           (keyup.shift.enter)="insertCarriage()"
@@ -122,13 +116,13 @@
           size="medium"
           (click)="submit()"
         >
-          GO
+          {{ 'test.bot-dialog.goButton' | transloco }}
         </button>
       </div>
 
+      @if (messages.length !== 0) {
       <button
-        *ngIf="messages.length !== 0"
-        nbTooltip="Clear conversation"
+        [nbTooltip]="'test.bot-dialog.clearConversationTooltip' | transloco"
         nbButton
         outline
         status="danger"
@@ -137,68 +131,66 @@
       >
         <nb-icon icon="trash"></nb-icon>
       </button>
+      }
     </div>
 
     <nb-autocomplete
       #userMessageAutocomplete
       size="tiny"
     >
-      <nb-option
-        *ngFor="let option of userMessageAutocompleteValues | async"
-        [value]="option"
-      >
+      @for (option of userMessageAutocompleteValues | async; track option) {
+      <nb-option [value]="option">
         {{ option }}
       </nb-option>
+      }
     </nb-autocomplete>
 
-    <div
-      *ngIf="testContext"
-      id="test-saving-accordions"
-    >
+    @if (testContext) {
+    <div id="test-saving-accordions">
       <nb-accordion>
         <nb-accordion-item>
-          <nb-accordion-item-header (click)="removeXrayTestName()">Save dialog in Xray</nb-accordion-item-header>
+          <nb-accordion-item-header (click)="removeXrayTestName()">
+            {{ 'test.bot-dialog.saveDialogInXray' | transloco }}
+          </nb-accordion-item-header>
           <nb-accordion-item-body>
+            @if (testContext) {
             <input
-              *ngIf="testContext"
               nbInput
               [status]="isXrayTestNameFilled ? 'basic' : 'danger'"
-              placeholder="Xray test name"
+              [placeholder]="'test.bot-dialog.xrayTestNamePlaceholder' | transloco"
               id="test-name"
               [(ngModel)]="xrayTestName"
               (ngModelChange)="updateSaveButtonStatus($event)"
             />
-
+            } @if (testContext) {
             <input
-              *ngIf="testContext"
               nbInput
               status="default"
-              placeholder="US identifier in Jira"
+              [placeholder]="'test.bot-dialog.jiraIdentifierPlaceholder' | transloco"
               id="jira-name"
               [(ngModel)]="jiraIdentifier"
             />
-
+            } @if (testContext) {
             <nb-select
-              *ngIf="testContext"
               multiple
-              placeholder="Xray test plans"
+              [placeholder]="'test.bot-dialog.xrayTestPlansPlaceholder' | transloco"
               class="test-plans-select"
               name="testplans"
               [(selected)]="selectTestPlans"
               (selectedChange)="printSelectedTestPlans($event)"
             >
+              @for (e of xrayTestPlans; track e) {
               <nb-option
-                *ngFor="let e of xrayTestPlans"
                 [value]="e.key"
                 [nbTooltip]="e.fields.summary"
               >
                 {{ e.key }}
               </nb-option>
+              }
             </nb-select>
-
+            } @if (testContext) {
             <button
-              *ngIf="testContext"
-              nbTooltip="Send dialog to Xray"
+              [nbTooltip]="'test.bot-dialog.sendToXrayTooltip' | transloco"
               nbTooltipStatus="info"
               [disabled]="!isXrayTestNameFilled"
               id="save-button"
@@ -210,25 +202,26 @@
             >
               <nb-icon icon="floppy"></nb-icon>
             </button>
+            }
           </nb-accordion-item-body>
         </nb-accordion-item>
-
         <nb-accordion-item>
-          <nb-accordion-item-header (click)="removeXrayTestIdentifier()">Update dialog in Xray</nb-accordion-item-header>
+          <nb-accordion-item-header (click)="removeXrayTestIdentifier()">
+            {{ 'test.bot-dialog.updateDialogInXray' | transloco }}
+          </nb-accordion-item-header>
           <nb-accordion-item-body>
+            @if (testContext) {
             <input
-              *ngIf="testContext"
               nbInput
               [status]="isXrayTestIdentifierFilled ? 'basic' : 'danger'"
-              placeholder="Xray test identifier"
+              [placeholder]="'test.bot-dialog.xrayTestNamePlaceholder' | transloco"
               id="test-identifier"
               [(ngModel)]="xrayTestIdentifier"
               (ngModelChange)="updateUpdateButtonStatus($event)"
             />
-
+            } @if (testContext) {
             <button
-              *ngIf="testContext"
-              nbTooltip="Update Xray test"
+              [nbTooltip]="'test.bot-dialog.updateXrayTestTooltip' | transloco"
               nbTooltipStatus="info"
               [disabled]="!isXrayTestIdentifierFilled"
               id="update-button"
@@ -240,14 +233,15 @@
             >
               <nb-icon icon="floppy"></nb-icon>
             </button>
+            }
           </nb-accordion-item-body>
         </nb-accordion-item>
-
         <nb-accordion-item disabled>
-          <nb-accordion-item-header>Save dialog in Tock</nb-accordion-item-header>
-          <nb-accordion-item-body> coming soon... </nb-accordion-item-body>
+          <nb-accordion-item-header>{{ 'test.bot-dialog.saveDialogInTock' | transloco }}</nb-accordion-item-header>
+          <nb-accordion-item-body>{{ 'test.bot-dialog.comingSoon' | transloco }}</nb-accordion-item-body>
         </nb-accordion-item>
       </nb-accordion>
     </div>
+    }
   </nb-card-body>
 </nb-card>

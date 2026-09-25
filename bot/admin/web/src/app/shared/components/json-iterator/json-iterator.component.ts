@@ -20,10 +20,11 @@ import { JsonIteratorService } from './json-iterator.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'tock-json-iterator',
-  templateUrl: './json-iterator.component.html',
-  styleUrls: ['./json-iterator.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'tock-json-iterator',
+    templateUrl: './json-iterator.component.html',
+    styleUrls: ['./json-iterator.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class JsonIteratorComponent implements AfterViewInit, OnDestroy {
   destroy = new Subject();
@@ -39,6 +40,9 @@ export class JsonIteratorComponent implements AfterViewInit, OnDestroy {
   isDeployed: boolean = false;
 
   isPrimitive = isPrimitive;
+
+  copied: boolean = false;
+  private copiedTimer: ReturnType<typeof setTimeout>;
 
   constructor(private jsonIteratorService: JsonIteratorService, private elementRef: ElementRef, private cdr: ChangeDetectorRef) {
     this.jsonIteratorService.communication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
@@ -98,7 +102,23 @@ export class JsonIteratorComponent implements AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  copyValue(): void {
+    const value = this.isPrimitive(this.data) ? String(this.data) : JSON.stringify(this.data, null, 2);
+
+    navigator.clipboard.writeText(value).then(() => {
+      this.copied = true;
+      this.cdr.detectChanges();
+
+      clearTimeout(this.copiedTimer);
+      this.copiedTimer = setTimeout(() => {
+        this.copied = false;
+        this.cdr.detectChanges();
+      }, 1500);
+    });
+  }
+
   ngOnDestroy(): void {
+    clearTimeout(this.copiedTimer);
     this.resizeObserver.disconnect();
     this.destroy.next(true);
     this.destroy.complete();

@@ -97,7 +97,8 @@ internal class BotApiClientController(
     fun configuration(handler: (ClientConfiguration?) -> Unit) {
         client
             ?.takeIf { it.isReachable() }
-            ?.send(RequestData(configuration = true))?.apply {
+            ?.send(RequestData(configuration = true))
+            ?.apply {
                 loadConfiguration(botConfiguration, handler)
             }
             ?: sendWithWebSocket(RequestData(configuration = true), {

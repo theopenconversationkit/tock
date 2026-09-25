@@ -22,14 +22,15 @@ import ai.tock.bot.engine.message.Choice
 /**
  *
  */
-data class LoginButton(val url: String) : Button(ButtonType.account_link) {
-    override fun toChoice(): Choice {
-        return Choice(
+data class LoginButton(
+    val url: String,
+) : Button(ButtonType.account_link) {
+    override fun toChoice(): Choice =
+        Choice(
             SendChoice.LOGIN_INTENT,
             mapOf(
                 SendChoice.URL_PARAMETER to url,
                 SendChoice.TITLE_PARAMETER to "Login",
             ),
         )
-    }
 }

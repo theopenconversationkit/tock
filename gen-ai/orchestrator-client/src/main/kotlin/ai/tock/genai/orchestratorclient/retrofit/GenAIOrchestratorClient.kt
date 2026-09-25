@@ -40,14 +40,16 @@ object GenAIOrchestratorClient {
     private val timeout: Long = longProperty("tock_gen_ai_orchestrator_client_request_timeout_ms", 55000)
 
     private val jsonObjectMapper: ObjectMapper =
-        jacksonObjectMapper().findAndRegisterModules()
+        jacksonObjectMapper()
+            .findAndRegisterModules()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
 
     private var client: OkHttpClient =
-        OkHttpClient.Builder()
+        OkHttpClient
+            .Builder()
             .addInterceptor(GenAIOrchestratorInterceptor(jsonObjectMapper))
             .addInterceptor(
                 // adapt log level to use specific log interceptors
@@ -58,14 +60,14 @@ object GenAIOrchestratorClient {
                         ).toString(),
                     ),
                 ),
-            )
-            .readTimeout(timeout, TimeUnit.MILLISECONDS)
+            ).readTimeout(timeout, TimeUnit.MILLISECONDS)
             .connectTimeout(timeout, TimeUnit.MILLISECONDS)
             .writeTimeout(timeout, TimeUnit.MILLISECONDS)
             .build()
 
     private val retrofit: Retrofit =
-        Retrofit.Builder()
+        Retrofit
+            .Builder()
             .baseUrl(baseUrl)
             .client(client)
             .addJacksonConverter(jsonObjectMapper)

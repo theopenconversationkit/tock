@@ -128,13 +128,22 @@ private fun startCommandLine(buildType: BuildType) {
     FrontIoc.setup()
     try {
         when (buildType) {
-            REBUILD_ALL -> BuildModelWorker.updateAllModels()
+            REBUILD_ALL -> {
+                BuildModelWorker.updateAllModels()
+            }
+
             REBUILD_DIFF -> {
                 BuildModelWorker.buildModelWithValidatedSentences()
                 BuildModelWorker.buildModelWithDeletedSentences()
             }
-            TEST -> BuildModelWorker.testModels()
-            CLEANUP -> BuildModelWorker.cleanupModel()
+
+            TEST -> {
+                BuildModelWorker.testModels()
+            }
+
+            CLEANUP -> {
+                BuildModelWorker.cleanupModel()
+            }
         }
         exitProcess(0)
     } catch (e: Throwable) {

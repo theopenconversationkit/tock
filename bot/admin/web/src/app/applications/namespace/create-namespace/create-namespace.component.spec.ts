@@ -19,6 +19,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { CreateNamespaceComponent } from './create-namespace.component';
 import { NbDialogRef } from '@nebular/theme';
+import { TranslocoService } from '@jsverse/transloco';
+import { TestSharedModule } from '../../../shared/test-shared.module';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('CreateNamespaceComponent', () => {
   let component: CreateNamespaceComponent;
@@ -27,13 +30,14 @@ describe('CreateNamespaceComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CreateNamespaceComponent],
-      imports: [ReactiveFormsModule],
+      imports: [TestSharedModule, ReactiveFormsModule],
       providers: [
         {
           provide: NbDialogRef,
           useValue: {}
         }
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CreateNamespaceComponent);

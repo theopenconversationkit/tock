@@ -31,4 +31,6 @@ import kotlin.reflect.KClass
 @ConnectorHandler(connectorTypeId = ALEXA_CONNECTOR_TYPE_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class AlexaHandler(val value: KClass<out ConnectorSpecificHandling>)
+annotation class AlexaHandler(
+    val value: KClass<out ConnectorSpecificHandling>,
+)

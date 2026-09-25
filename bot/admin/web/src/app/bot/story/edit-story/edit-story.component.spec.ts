@@ -22,6 +22,7 @@ import { TestSharedModule } from '../../../shared/test-shared.module';
 import { BotService } from '../../bot-service';
 
 import { EditStoryComponent } from './edit-story.component';
+import { StoryDefinitionConfiguration } from '../../model/story';
 
 describe('EditStoryComponent', () => {
   let component: EditStoryComponent;
@@ -42,7 +43,9 @@ describe('EditStoryComponent', () => {
         },
         {
           provide: BotService,
-          useValue: {}
+          useValue: {
+            findStory: () => of({ selected: false, getFirstTag: () => undefined } as any)
+          }
         }
       ],
       schemas: [NO_ERRORS_SCHEMA]

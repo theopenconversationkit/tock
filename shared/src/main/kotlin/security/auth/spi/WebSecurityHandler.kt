@@ -25,10 +25,21 @@ const val TOCK_USER_ID = "tock_user_id"
  * Handler to manage authentication.
  * All implementations MUST call routingContext.next() in a blocking thread.
  *
- * Custom implementations should store the final user id in the [RoutingContext] using `routingContext.put(TOCK_USER_ID, userId)`.
+ * Implementations must store the final user id in the [RoutingContext] using `routingContext.put(TOCK_USER_ID, userId)`.
+ * They may optionally store a DialogContext with arbitrary context data using [TRANSIENT_DIALOG_CONTEXT_KEY].
  */
 interface WebSecurityHandler : Handler<RoutingContext> {
     companion object {
+        /**
+         * Set by the connector for use in WebSecurityHandler implementations. Cookies should be stored using this path.
+         */
+        const val CONNECTOR_PUBLIC_PATH_CONTEXT_KEY = "tock_connector_public_path"
+
+        /**
+         * Set by the connector for use in WebSecurityHandler implementations
+         */
+        const val CONNECTOR_ID_CONTEXT_KEY = "tock_connector_id"
+
         /**
          * Can be used as a [RoutingContext] key to store an optional [ai.tock.bot.definition.DialogContext]
          */

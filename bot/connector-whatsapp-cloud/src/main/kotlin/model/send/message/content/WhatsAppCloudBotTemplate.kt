@@ -65,9 +65,16 @@ sealed class WhatsappTemplateComponent {
     )
 }
 
-data class TextParameter(val type: ParameterType, val text: String)
+data class TextParameter(
+    val type: ParameterType,
+    val text: String,
+)
 
-data class PayloadParameter(val type: ParameterType, val payload: String?, val text: String)
+data class PayloadParameter(
+    val type: ParameterType,
+    val payload: String?,
+    val text: String,
+)
 
 sealed class HeaderParameter {
     data class Image(

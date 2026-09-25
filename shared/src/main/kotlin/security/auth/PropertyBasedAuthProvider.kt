@@ -51,7 +51,10 @@ import mu.KotlinLogging
 internal object PropertyBasedAuthProvider : TockAuthProvider {
     private val logger = KotlinLogging.logger {}
 
-    private data class AuthenticateRequest(val email: String, val password: String)
+    private data class AuthenticateRequest(
+        val email: String,
+        val password: String,
+    )
 
     private data class AuthenticateResponse(
         val authenticated: Boolean,
@@ -87,37 +90,37 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
             router.post(authenticatePath).handler { context ->
                 val request = mapper.readValue<AuthenticateRequest>(context.body().asString())
                 val creds = UsernamePasswordCredentials(request.email, request.password)
-                authenticate(creds).onSuccess { u ->
-                    val user = u as TockUser
-                    sessionHandler
-                        .setUser(context, user)
-                        .onSuccess {
-                            val rs = user.roles
-                            val respRoles =
-                                buildSet<TockUserRole> {
-                                    if (rs.contains(nlpUser.name)) add(nlpUser)
-                                    if (rs.contains(faqNlpUser.name)) add(nlpUser) // historique
-                                    if (rs.contains(faqBotUser.name)) add(botUser) // historique
-                                    if (rs.contains(botUser.name)) add(botUser)
-                                    if (rs.contains(admin.name)) add(admin)
-                                    if (rs.contains(technicalAdmin.name)) add(technicalAdmin)
-                                }
-                            context.endJson(
-                                AuthenticateResponse(
-                                    authenticated = true,
-                                    email = request.email,
-                                    organization = user.namespace,
-                                    roles = respRoles,
-                                ),
-                            )
-                        }
-                        .onFailure { err ->
-                            logger.error("Failed to bind user to session", err)
-                            context.endJson(AuthenticateResponse(false))
-                        }
-                }.onFailure {
-                    context.endJson(AuthenticateResponse(false))
-                }
+                authenticate(creds)
+                    .onSuccess { u ->
+                        val user = u as TockUser
+                        sessionHandler
+                            .setUser(context, user)
+                            .onSuccess {
+                                val rs = user.roles
+                                val respRoles =
+                                    buildSet<TockUserRole> {
+                                        if (rs.contains(nlpUser.name)) add(nlpUser)
+                                        if (rs.contains(faqNlpUser.name)) add(nlpUser) // historique
+                                        if (rs.contains(faqBotUser.name)) add(botUser) // historique
+                                        if (rs.contains(botUser.name)) add(botUser)
+                                        if (rs.contains(admin.name)) add(admin)
+                                        if (rs.contains(technicalAdmin.name)) add(technicalAdmin)
+                                    }
+                                context.endJson(
+                                    AuthenticateResponse(
+                                        authenticated = true,
+                                        email = request.email,
+                                        organization = user.namespace,
+                                        roles = respRoles,
+                                    ),
+                                )
+                            }.onFailure { err ->
+                                logger.error("Failed to bind user to session", err)
+                                context.endJson(AuthenticateResponse(false))
+                            }
+                    }.onFailure {
+                        context.endJson(AuthenticateResponse(false))
+                    }
             }
 
             router.get("$basePath/user").handler {
@@ -154,7 +157,8 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
                         TockUser(
                             username,
                             organizations[idx],
-                            roles.getOrNull(idx)
+                            roles
+                                .getOrNull(idx)
                                 ?.takeIf { role -> role.size > 1 || role.firstOrNull()?.isBlank() == false }
                                 ?: allRoles,
                         ),

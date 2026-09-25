@@ -26,16 +26,19 @@ import opennlp.tools.ml.model.AbstractModel
 /**
  *
  */
-internal class OpenNlpIntentClassifier(model: IntentModelHolder) : NlpIntentClassifier(model) {
+internal class OpenNlpIntentClassifier(
+    model: IntentModelHolder,
+) : NlpIntentClassifier(model) {
     override fun classifyIntent(
         context: IntentContext,
         text: String,
         tokens: Array<String>,
-    ): IntentClassification {
-        return with(model) {
+    ): IntentClassification =
+        with(model) {
             val openNlpModel = nativeModel as AbstractModel
             val outcomes =
-                openNlpModel.eval(tokens)
+                openNlpModel
+                    .eval(tokens)
                     .mapIndexed { index, d -> index to d }
                     .sortedByDescending { it.second }
                     .iterator()
@@ -47,13 +50,11 @@ internal class OpenNlpIntentClassifier(model: IntentModelHolder) : NlpIntentClas
 
                 override fun hasNext(): Boolean = outcomes.hasNext()
 
-                override fun next(): Intent {
-                    return outcomes.next().let { (index, proba) ->
+                override fun next(): Intent =
+                    outcomes.next().let { (index, proba) ->
                         probability = proba
                         application.getIntent(openNlpModel.getOutcome(index)) ?: Intent.UNKNOWN_INTENT
                     }
-                }
             }
         }
-    }
 }

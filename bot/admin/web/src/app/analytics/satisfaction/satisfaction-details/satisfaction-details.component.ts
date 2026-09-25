@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AnalyticsService } from '../../analytics.service';
 import { RatingReportQueryResult } from './RatingReportQueryResult';
 import { DialogsListComponent } from '../../dialogs/dialogs-list/dialogs-list.component';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'tock-satisfaction-details',
-  templateUrl: './satisfaction-details.component.html',
-  styleUrls: ['./satisfaction-details.component.scss']
+    selector: 'tock-satisfaction-details',
+    templateUrl: './satisfaction-details.component.html',
+    styleUrls: ['./satisfaction-details.component.scss'],
+    standalone: false
 })
-export class SatisfactionDetailsComponent implements OnInit, AfterViewInit {
+export class SatisfactionDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
 
   loading = false;

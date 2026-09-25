@@ -111,9 +111,7 @@ fun <T : Bus<T>> T.endForWhatsApp(
     "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
     ReplaceWith("withWhatsAppCloud", "ai.tock.bot.connector.whatsapp.cloud.withWhatsAppCloud"),
 )
-fun <T : Bus<T>> T.withWhatsApp(messageProvider: () -> WhatsAppBotMessage): T {
-    return withMessage(whatsAppConnectorType, messageProvider)
-}
+fun <T : Bus<T>> T.withWhatsApp(messageProvider: () -> WhatsAppBotMessage): T = withMessage(whatsAppConnectorType, messageProvider)
 
 /**
  * Creates a [WhatsAppBotTextMessage].
@@ -267,13 +265,29 @@ fun I18nTranslator.completeListMessage(
                     ),
             ),
     ).also {
-        if ((it.interactive.action?.sections?.flatMap { s -> s.rows ?: listOf() }?.count() ?: 0) > WHATS_APP_MAX_ROWS) {
+        if ((
+                it.interactive.action
+                    ?.sections
+                    ?.flatMap { s -> s.rows ?: listOf() }
+                    ?.count() ?: 0
+            ) > WHATS_APP_MAX_ROWS
+        ) {
             error("a list message is limited to $WHATS_APP_MAX_ROWS rows across all sections.")
         }
-        if ((it.interactive.action?.sections?.count() ?: 0) > WHATS_APP_MAX_SECTIONS) {
+        if ((
+                it.interactive.action
+                    ?.sections
+                    ?.count() ?: 0
+            ) > WHATS_APP_MAX_SECTIONS
+        ) {
             error("sections count in list message should not exceed $WHATS_APP_MAX_SECTIONS.")
         }
-        if ((it.interactive.action?.button?.count() ?: 0) > WHATS_APP_BUTTONS_TITLE_MAX_LENGTH) {
+        if ((
+                it.interactive.action
+                    ?.button
+                    ?.count() ?: 0
+            ) > WHATS_APP_BUTTONS_TITLE_MAX_LENGTH
+        ) {
             error("button text ${it.interactive.action?.button} should not exceed $WHATS_APP_BUTTONS_TITLE_MAX_LENGTH chars.")
         }
     }
@@ -387,8 +401,8 @@ private fun buildTemplate(
     nameSpace: String,
     templateName: String,
     components: List<WhatsAppComponent>?,
-): WhatsAppTemplate {
-    return WhatsAppTemplate(
+): WhatsAppTemplate =
+    WhatsAppTemplate(
         namespace = nameSpace,
         name = templateName,
         language =
@@ -398,7 +412,6 @@ private fun buildTemplate(
             ),
         components = components,
     )
-}
 
 private fun String.checkLength(maxLength: Int): String {
     if (maxLength > 0 && this.length > maxLength) {

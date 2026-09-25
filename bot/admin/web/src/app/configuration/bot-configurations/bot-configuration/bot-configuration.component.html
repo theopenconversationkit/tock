@@ -1,103 +1,75 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<nb-card *ngIf="configuration">
-  <nb-card-body
-    *ngIf="loading"
-    [nbSpinner]="loading"
-  ></nb-card-body>
-
-  <nb-card-body
-    *ngIf="!loading"
-    [ngClass]="{ 'pt-5': configuration._id }"
-  >
-    <div
-      *ngIf="configuration._id"
-      class="connector-title-box"
-    >
+@if (configuration) {
+<nb-card>
+  @if (loading) {
+  <nb-card-body [nbSpinner]="loading"></nb-card-body>
+  } @if (!loading) {
+  <nb-card-body [ngClass]="{ 'pt-5': configuration._id }">
+    @if (configuration._id) {
+    <div class="connector-title-box">
       <img
         src="{{ configuration.connectorType.iconUrl() }}"
         class="connector-icon mr-1"
       />
       {{ configuration.connectorType.label() }}
     </div>
-
-    <h5
-      *ngIf="!configuration._id"
-      class="mb-3"
-    >
-      New configuration
+    } @if (!configuration._id) {
+    <h5 class="mb-3">
+      {{ 'configuration.bot-configuration.newConfigurationTitle' | transloco }}
     </h5>
-
+    }
     <div class="row">
       <div class="col-4">
         <tock-form-control
-          label="Configuration name"
+          [label]="'configuration.bot-configuration.configurationNameLabel' | transloco"
           name="configurationName"
         >
           <input
             nbInput
             fullWidth
             type="text"
-            placeholder="Configuration name"
+            [placeholder]="'configuration.bot-configuration.configurationNamePlaceholder' | transloco"
             [(ngModel)]="configuration.name"
           />
         </tock-form-control>
       </div>
-
       <div class="col-4">
+        @if (configuration._id) {
         <tock-form-control
-          label="Connector type"
+          [label]="'configuration.bot-configuration.connectorTypeLabel' | transloco"
           name="connectorType"
-          *ngIf="configuration._id"
         >
           <nb-form-field>
+            @if (configuration._id) {
             <img
               nbPrefix
-              *ngIf="configuration._id"
               src="{{ configuration.connectorType.iconUrl() }}"
               class="connector-icon"
               [nbTooltip]="configuration.connectorType.label()"
             />
+            }
             <input
               nbInput
               fullWidth
               type="text"
-              placeholder="Connector type"
+              [placeholder]="'configuration.bot-configuration.connectorTypePlaceholder' | transloco"
               [ngModel]="configuration.connectorType.label()"
               [disabled]="true"
               class="connector"
             />
           </nb-form-field>
         </tock-form-control>
-
+        } @if (!configuration._id) {
         <tock-form-control
-          label="Connector type"
+          [label]="'configuration.bot-configuration.connectorTypeLabel' | transloco"
           name="connectorType"
-          *ngIf="!configuration._id"
         >
           <nb-select
             fullWidth
             [(ngModel)]="configuration.connectorType"
             (selectedChange)="changeConnectorType()"
           >
-            <nb-option
-              *ngFor="let c of connectorTypesAndRestType"
-              [value]="c"
-            >
+            @for (c of connectorTypesAndRestType; track c) {
+            <nb-option [value]="c">
               <img
                 src="{{ c.iconUrl() }}"
                 class="connector-icon mr-1"
@@ -105,7 +77,8 @@
               />
               {{ c.label() }}
             </nb-option>
-            <nb-select-label *ngIf="configuration.connectorType">
+            } @if (configuration.connectorType) {
+            <nb-select-label>
               <img
                 src="{{ configuration.connectorType.iconUrl() }}"
                 class="connector-icon mr-1"
@@ -113,26 +86,25 @@
               />
               {{ configuration.connectorType.label() }}
             </nb-select-label>
+            }
           </nb-select>
         </tock-form-control>
+        }
       </div>
-
       <div class="col-4">
+        @if (!configuration._id && configuration.connectorType.isRest()) {
         <tock-form-control
-          label="Target connector type"
+          [label]="'configuration.bot-configuration.targetConnectorTypeLabel' | transloco"
           name="targetConnectorType"
-          *ngIf="!configuration._id && configuration.connectorType.isRest()"
         >
           <nb-select
             fullWidth
-            placeholder="Target connector type"
+            [placeholder]="'configuration.bot-configuration.targetConnectorTypePlaceholder' | transloco"
             [(ngModel)]="configuration.ownerConnectorType"
             (selectedChange)="changeConnectorType()"
           >
-            <nb-option
-              *ngFor="let c of connectorTypes"
-              [value]="c"
-            >
+            @for (c of connectorTypes; track c) {
+            <nb-option [value]="c">
               <img
                 src="{{ c.iconUrl() }}"
                 class="connector-icon mr-1"
@@ -140,7 +112,8 @@
               />
               {{ c.label() }}
             </nb-option>
-            <nb-select-label *ngIf="configuration.ownerConnectorType">
+            } @if (configuration.ownerConnectorType) {
+            <nb-select-label>
               <img
                 src="{{ configuration.ownerConnectorType.iconUrl() }}"
                 class="connector-icon mr-1"
@@ -148,13 +121,13 @@
               />
               {{ configuration.ownerConnectorType.label() }}
             </nb-select-label>
+            }
           </nb-select>
         </tock-form-control>
-
+        } @if (configuration._id && configuration.connectorType.isRest() && configuration.ownerConnectorType) {
         <tock-form-control
-          label="Target connector type"
+          [label]="'configuration.bot-configuration.targetConnectorTypeLabel' | transloco"
           name="targetConnectorType"
-          *ngIf="configuration._id && configuration.connectorType.isRest() && configuration.ownerConnectorType"
         >
           <nb-form-field>
             <img
@@ -166,86 +139,81 @@
             <input
               nbInput
               type="text"
-              placeholder="Target connector type"
+              [placeholder]="'configuration.bot-configuration.targetConnectorTypePlaceholder' | transloco"
               [ngModel]="configuration.ownerConnectorType?.label()"
               [disabled]="true"
             />
           </nb-form-field>
         </tock-form-control>
+        }
       </div>
     </div>
-
     <div class="row">
       <div class="col-4">
         <tock-form-control
-          label="Connector identifier"
+          [label]="'configuration.bot-configuration.connectorIdentifierLabel' | transloco"
           name="connectorIdentifier"
         >
           <input
             nbInput
             type="text"
-            placeholder="Connector identifier"
+            [placeholder]="'configuration.bot-configuration.connectorIdentifierPlaceholder' | transloco"
             [(ngModel)]="configuration.applicationId"
           />
         </tock-form-control>
       </div>
-
       <div class="col-4">
         <tock-form-control
-          label="Relative REST path"
+          [label]="'configuration.bot-configuration.relativeRestPathLabel' | transloco"
           name="relativeRestPath"
         >
           <input
             nbInput
             type="text"
-            placeholder="Relative REST path"
-            nbTooltip="e.g. /messenger"
+            [placeholder]="'configuration.bot-configuration.relativeRestPathPlaceholder' | transloco"
+            [nbTooltip]="'configuration.bot-configuration.relativeRestPathTooltip' | transloco"
             [(ngModel)]="configuration.path"
             (change)="changePath()"
           />
         </tock-form-control>
       </div>
-
       <div class="col-4">
+        @if (botSharedService.configuration && botSharedService.configuration.botApiSupport) {
         <tock-form-control
-          label="Connector url"
+          [label]="'configuration.bot-configuration.connectorUrlLabel' | transloco"
           name="connectorUrl"
-          *ngIf="botSharedService.configuration && botSharedService.configuration.botApiSupport"
         >
           {{ botSharedService.configuration.botApiBaseUrl }}{{ configuration.path }}
         </tock-form-control>
+        }
       </div>
     </div>
-
-    <nb-accordion
-      *ngIf="
-        botSharedService.findConnectorConfiguration(configuration.connectorType) &&
-        botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0
-      "
-    >
+    @if ( botSharedService.findConnectorConfiguration(configuration.connectorType) &&
+    botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0 ) {
+    <nb-accordion>
       <nb-accordion-item [expanded]="!configuration._id">
-        <nb-accordion-item-header>Connector Custom Configuration</nb-accordion-item-header>
+        <nb-accordion-item-header>
+          {{ 'configuration.bot-configuration.connectorCustomConfigurationTitle' | transloco }}
+        </nb-accordion-item-header>
         <nb-accordion-item-body>
+          @if (!botSharedService.configuration || !botSharedService.configuration.botApiSupport) {
           <tock-form-control
-            label="Application base url"
+            [label]="'configuration.bot-configuration.applicationBaseUrlLabel' | transloco"
             name="applicationBaseUrl"
-            *ngIf="!botSharedService.configuration || !botSharedService.configuration.botApiSupport"
           >
             <input
               nbInput
               fullWidth
               type="text"
-              placeholder="Application base url"
-              nbTooltip="optional"
+              [placeholder]="'configuration.bot-configuration.applicationBaseUrlPlaceholder' | transloco"
+              [nbTooltip]="'configuration.bot-configuration.applicationBaseUrlTooltip' | transloco"
               [(ngModel)]="configuration.baseUrl"
             />
           </tock-form-control>
-
+          }
           <div class="row">
-            <div
-              class="col-6"
-              *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields"
-            >
+            @for (f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields; track f) {
+            <div class="col-6">
               <tock-form-control [label]="f.label">
                 <input
                   nbInput
@@ -257,16 +225,15 @@
                 />
               </tock-form-control>
             </div>
+            }
           </div>
         </nb-accordion-item-body>
       </nb-accordion-item>
     </nb-accordion>
+    }
   </nb-card-body>
-
-  <nb-card-footer
-    *ngIf="!loading"
-    style="text-align: right"
-  >
+  } @if (!loading) {
+  <nb-card-footer style="text-align: right">
     <button
       nbButton
       ghost
@@ -274,15 +241,16 @@
       size="small"
       (click)="remove()"
     >
-      <nb-icon
-        *ngIf="configuration._id"
-        icon="trash"
-      ></nb-icon>
-      <nb-icon
-        *ngIf="!configuration._id"
-        icon="x-lg"
-      ></nb-icon>
-      {{ configuration._id ? 'Delete' : 'Cancel' }}
+      @if (configuration._id) {
+      <nb-icon icon="trash"></nb-icon>
+      } @if (!configuration._id) {
+      <nb-icon icon="x-lg"></nb-icon>
+      }
+      {{
+        configuration._id
+          ? ('configuration.bot-configuration.deleteButton' | transloco)
+          : ('configuration.bot-configuration.cancelButton' | transloco)
+      }}
     </button>
     <button
       nbButton
@@ -292,7 +260,13 @@
       style="margin-left: 20px"
     >
       <nb-icon icon="floppy"></nb-icon>
-      {{ configuration._id ? 'Update' : 'Create' }}
+      {{
+        configuration._id
+          ? ('configuration.bot-configuration.updateButton' | transloco)
+          : ('configuration.bot-configuration.createButton' | transloco)
+      }}
     </button>
   </nb-card-footer>
+  }
 </nb-card>
+}

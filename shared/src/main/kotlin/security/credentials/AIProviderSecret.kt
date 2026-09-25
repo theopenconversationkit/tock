@@ -19,4 +19,6 @@ package ai.tock.shared.security.credentials
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AIProviderSecret(val secret: String)
+data class AIProviderSecret(
+    val secret: String,
+)

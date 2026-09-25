@@ -112,21 +112,25 @@ class RoutingContextHolderTest {
                         false,
                         emptyList(),
                     ),
-                    listOf(firstMessage, secondMessage, thirdMessage).map {
-                        ActionWithDelay(
-                            SendSentence(
-                                playerId,
-                                "appId",
-                                playerId,
-                                null,
-                                mutableListOf(it),
-                            ),
-                        )
-                    }.toMutableList(),
+                    listOf(firstMessage, secondMessage, thirdMessage)
+                        .map {
+                            ActionWithDelay(
+                                SendSentence(
+                                    playerId,
+                                    "appId",
+                                    playerId,
+                                    null,
+                                    mutableListOf(it),
+                                ),
+                            )
+                        }.toMutableList(),
                 )
 
             val result = holder.buildResponse()
-            val richResponse = result.expectedInputs!!.first().inputPrompt.richInitialPrompt
+            val richResponse =
+                result.expectedInputs!!
+                    .first()
+                    .inputPrompt.richInitialPrompt
             assertEquals(2, richResponse.items.size)
             val basicCard = richResponse.items[1].basicCard!!
             assertEquals("title1", basicCard.title)

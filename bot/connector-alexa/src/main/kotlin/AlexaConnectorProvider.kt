@@ -53,7 +53,10 @@ internal object AlexaConnectorProvider : ConnectorProvider {
                     if (mapper.isNullOrBlank()) {
                         AlexaTockMapper(connectorId)
                     } else {
-                        Class.forName(mapper).kotlin.primaryConstructor!!.call(connectorId) as AlexaTockMapper
+                        Class
+                            .forName(mapper)
+                            .kotlin.primaryConstructor!!
+                            .call(connectorId) as AlexaTockMapper
                     }
                 } catch (e: Exception) {
                     logger.error("not found Alexa Mapper $mapper, fallback to default", e)

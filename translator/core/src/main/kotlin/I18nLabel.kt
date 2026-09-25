@@ -84,7 +84,8 @@ data class I18nLabel(
         userInterfaceType: UserInterfaceType,
         connectorId: String?,
     ): I18nLocalizedLabel? =
-        i18n.firstOrNull { it.label.isNotBlank() && it.locale == defaultLocale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
+        i18n
+            .firstOrNull { it.label.isNotBlank() && it.locale == defaultLocale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
             ?.takeIf { forbiddenLocale != defaultLocale }
             ?: i18n.firstOrNull { it.label.isNotBlank() && it.locale != forbiddenLocale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
 }

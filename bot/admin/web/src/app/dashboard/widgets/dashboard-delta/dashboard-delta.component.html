@@ -1,0 +1,6 @@
+@if (value !== null) {
+  <span class="delta" [class.delta-up]="isUp" [class.delta-down]="isDown" [class.delta-flat]="isFlat">
+    <i class="bi" [class.bi-arrow-up-short]="isUp" [class.bi-arrow-down-short]="isDown" [class.bi-dash]="isFlat"></i>
+    {{ value | percent: '1.1-1' }}
+  </span>
+}

@@ -56,7 +56,9 @@ class MongoTest {
         assertEquals("this_is_a_collection", collectionBuilder.invoke(ThisIsACollection::class))
     }
 
-    data class TestPeriod(val p: Period)
+    data class TestPeriod(
+        val p: Period,
+    )
 
     @Test
     fun `GIVEN serialized Period THEN KMongo mapper can deserialize it`() {

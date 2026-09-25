@@ -16,4 +16,6 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.template.management
 
-data class UpdateTemplateResponse(val success: Boolean)
+data class UpdateTemplateResponse(
+    val success: Boolean,
+)

@@ -32,13 +32,12 @@ import kotlin.reflect.KClass
 internal object RestConnectorProvider : ConnectorProvider {
     override val connectorType: ConnectorType get() = ConnectorType.rest
 
-    override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
-        return RestConnector(
+    override fun connector(connectorConfiguration: ConnectorConfiguration): Connector =
+        RestConnector(
             connectorConfiguration.connectorId,
             connectorConfiguration.path,
             createRequestFilter(connectorConfiguration),
         )
-    }
 
     override fun check(connectorConfiguration: ConnectorConfiguration): List<String> =
         super.check(connectorConfiguration) +

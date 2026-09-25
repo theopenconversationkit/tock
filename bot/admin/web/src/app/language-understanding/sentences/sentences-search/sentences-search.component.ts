@@ -19,9 +19,10 @@ import { SentenceTrainingMode } from '../../../shared/components/sentence-traini
 import { SentenceTrainingComponent } from '../../../shared/components';
 
 @Component({
-  selector: 'tock-sentences-search',
-  templateUrl: './sentences-search.component.html',
-  styleUrls: ['./sentences-search.component.scss']
+    selector: 'tock-sentences-search',
+    templateUrl: './sentences-search.component.html',
+    styleUrls: ['./sentences-search.component.scss'],
+    standalone: false
 })
 export class SentencesSearchComponent {
   mode = SentenceTrainingMode.SEARCH;

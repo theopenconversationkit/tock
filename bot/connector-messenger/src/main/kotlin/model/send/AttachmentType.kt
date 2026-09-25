@@ -31,12 +31,8 @@ enum class AttachmentType {
     ;
 
     companion object {
-        fun fromTockAttachmentType(type: SendAttachment.AttachmentType): AttachmentType {
-            return valueOf(type.name)
-        }
+        fun fromTockAttachmentType(type: SendAttachment.AttachmentType): AttachmentType = valueOf(type.name)
     }
 
-    fun toTockAttachmentType(): SendAttachment.AttachmentType {
-        return SendAttachment.AttachmentType.valueOf(name)
-    }
+    fun toTockAttachmentType(): SendAttachment.AttachmentType = SendAttachment.AttachmentType.valueOf(name)
 }

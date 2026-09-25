@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NlpService } from '../../../core-nlp/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
@@ -33,11 +17,13 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
 import { AnswerController } from './../controller';
 import { Subscription } from 'rxjs';
 import { NbToastrService } from '@nebular/theme';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-create-story',
-  templateUrl: './create-story.component.html',
-  styleUrls: ['./create-story.component.scss']
+    selector: 'tock-create-story',
+    templateUrl: './create-story.component.html',
+    styleUrls: ['./create-story.component.scss'],
+    standalone: false
 })
 export class CreateStoryComponent implements OnInit, OnDestroy {
   sentence: Sentence;
@@ -62,7 +48,8 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
     private botConfiguration: BotConfigurationService,
     private bot: BotService,
     private toastrService: NbToastrService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -101,7 +88,9 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
     const v = value ? value.trim() : this.story.userSentence.trim();
     this.sentence = null;
     if (v.length === 0) {
-      this.toastrService.show(`Please enter a non-empty sentence`, 'ERROR', { duration: 2000 });
+      this.toastrService.show(this.transloco.translate('common.messages.emptyInput'), this.transloco.translate('common.messages.error'), {
+        duration: 2000
+      });
     } else {
       this.loading = true;
       this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe((sentence) => {
@@ -191,19 +180,28 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
     this.submit.checkAnswer((_) => {
       const invalidMessage = this.story.currentAnswer().invalidMessage();
       if (invalidMessage) {
-        this.toastrService.show(`Error: ${invalidMessage}`, 'ERROR', {
-          duration: 5000,
-          status: 'danger'
-        });
+        this.toastrService.show(
+          this.transloco.translate('bot.create-story.errors.invalidAnswer', { message: invalidMessage }),
+          this.transloco.translate('common.messages.error'),
+          {
+            duration: 5000,
+            status: 'danger'
+          }
+        );
       } else {
         this.story.steps = this.story.steps.filter((s) => !s.new);
         this.bot
           .newStory(new CreateStoryRequest(this.story, this.state.currentLocale, [this.story.userSentence.trim()]))
           .subscribe((intent) => {
             this.state.resetConfiguration();
-            this.toastrService.show(`New story ${this.story.name} created for language ${this.state.currentLocale}`, 'New Story', {
-              duration: 3000
-            });
+            this.toastrService.show(
+              this.transloco.translate('bot.create-story.notifications.storyCreated', {
+                storyName: this.story.name,
+                language: this.state.currentLocale
+              }),
+              this.transloco.translate('bot.create-story.notifications.storyCreatedTitle'),
+              { duration: 3000 }
+            );
 
             this.newSentence.nativeElement.focus();
             setTimeout((_) => this.resetState(), 200);

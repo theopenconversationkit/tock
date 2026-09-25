@@ -1,30 +1,13 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<div *ngIf="configurations && configurations.length === 0">No bot configuration detected &nbsp;</div>
+@if (configurations && configurations.length === 0) {
+<div>{{ 'common.messages.noBotConfiguration' | transloco }}&nbsp;</div>
+} @if (configurations && configurations.length !== 0) {
 <div
-  *ngIf="configurations && configurations.length !== 0"
   class="gap-1"
   [ngClass]="{ 'd-flex': displayConnectorChoice && currentBotName !== 'None' }"
 >
-  <span
-    class="select-configuration w-50 lineHeight-1"
-    *ngIf="botNames && (allowNoSelection || botNames.length > 1)"
-  >
-    <nb-form-field nbTooltip="Select configuration">
+  @if (botNames && (allowNoSelection || botNames.length > 1)) {
+  <span class="select-configuration w-50 lineHeight-1">
+    <nb-form-field [nbTooltip]="'shared.select-bot.selectConfigurationTooltip' | transloco">
       <nb-icon
         nbPrefix
         icon="link-45deg"
@@ -32,31 +15,26 @@
       <nb-select
         (selectedChange)="changeBotName()"
         [size]="size"
-        placeholder="Select a configuration"
+        [placeholder]="'shared.select-bot.selectConfigurationPlaceholder' | transloco"
         [(ngModel)]="currentBotName"
         class="select-width"
         fullWidth
         [disabled]="disabled"
       >
-        <nb-option
-          *ngIf="allowNoSelection"
-          value="None"
-          >{{ noConfigurationLabel }}</nb-option
-        >
-        <nb-option
-          *ngFor="let n of botNames"
-          [value]="n"
-          >{{ n }}</nb-option
-        >
+        @if (allowNoSelection) {
+        <nb-option value="None">{{ noConfigurationLabel }}</nb-option>
+        } @for (n of botNames; track n) {
+        <nb-option [value]="n">{{ n }}</nb-option>
+        }
       </nb-select>
     </nb-form-field>
   </span>
+  } @if (displayConnectorChoice && currentBotName !== 'None') {
   <span
-    *ngIf="displayConnectorChoice && currentBotName !== 'None'"
     class="select-configuration lineHeight-1"
     [class.w-50]="botNames && (allowNoSelection || botNames.length > 1)"
   >
-    <nb-form-field nbTooltip="Select connector">
+    <nb-form-field [nbTooltip]="'shared.select-bot.selectConnectorTooltip' | transloco">
       <nb-icon
         nbPrefix
         icon="plug"
@@ -64,29 +42,27 @@
       <nb-select
         (selectedChange)="changeConnectorType()"
         [size]="size"
-        placeholder="Select a connector"
+        [placeholder]="'shared.select-bot.selectConnectorPlaceholder' | transloco"
         [(ngModel)]="currentConfiguration"
         class="select-width"
         fullWidth
         [disabled]="disabled"
       >
-        <nb-option
-          *ngIf="allowNoConfigurationSelection"
-          value=""
-          >{{ noConnectorLabel }}</nb-option
-        >
-        <nb-option
-          *ngFor="let c of currentConfigurations"
-          [value]="c"
-        >
+        @if (allowNoConfigurationSelection) {
+        <nb-option value="">{{ noConnectorLabel }}</nb-option>
+        } @for (c of currentConfigurations; track c) {
+        <nb-option [value]="c">
           <img
             src="{{ c.connectorType.iconUrl() }}"
             class="connector-icon"
           />
           {{ c.connectorType.label() }} ( {{ c.applicationId }})</nb-option
         >
+        }
       </nb-select>
     </nb-form-field>
   </span>
+  }
   <ng-content></ng-content>
 </div>
+}

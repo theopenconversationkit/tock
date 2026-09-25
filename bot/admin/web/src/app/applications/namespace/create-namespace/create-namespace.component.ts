@@ -26,9 +26,10 @@ export interface CreateNamespaceData {
 }
 
 @Component({
-  selector: 'tock-create-namespace',
-  templateUrl: './create-namespace.component.html',
-  styleUrls: ['./create-namespace.component.scss']
+    selector: 'tock-create-namespace',
+    templateUrl: './create-namespace.component.html',
+    styleUrls: ['./create-namespace.component.scss'],
+    standalone: false
 })
 export class CreateNamespaceComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
@@ -57,7 +58,7 @@ export class CreateNamespaceComponent implements OnInit, OnDestroy {
   }
 
   public noWhitespaceValidator(control: FormControl) {
-    return (control.value || '').trim().length ? null : { custom: 'Only whitespace characters are not allowed' };
+    return (control.value || '').trim().length ? null : { custom: 'Whitespace characters are not allowed' };
   }
 
   private buildTechnicalName(value: string): string {

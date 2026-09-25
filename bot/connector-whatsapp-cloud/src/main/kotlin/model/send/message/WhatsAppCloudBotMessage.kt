@@ -51,8 +51,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 abstract class WhatsAppCloudBotMessage(
     val type: WhatsAppCloudBotMessageType,
     @JsonIgnore internal open val userId: String?,
-) :
-    ConnectorMessage, WhatsAppCloudConnectorMessage() {
+) : WhatsAppCloudConnectorMessage(),
+    ConnectorMessage {
     @get:JsonIgnore
     override val connectorType: ConnectorType = whatsAppCloudConnectorType
 
@@ -70,15 +70,16 @@ abstract class WhatsAppCloudBotMessage(
     @get:JsonIgnore
     val to: String get() = userId?.let { UserHashedIdCache.getRealId(it) } ?: "unknown"
 
-    override fun toGenericMessage(): GenericMessage? {
-        return when (this) {
-            is WhatsAppCloudBotInteractiveMessage ->
+    override fun toGenericMessage(): GenericMessage? =
+        when (this) {
+            is WhatsAppCloudBotInteractiveMessage -> {
                 GenericMessage(
                     connectorType = whatsAppCloudConnectorType,
                     choices =
                         interactive.action?.buttons?.mapNotNull { actionButton ->
                             actionButton.reply.let {
-                                SendChoice.decodeChoiceId(it.id)
+                                SendChoice
+                                    .decodeChoiceId(it.id)
                                     .let { (intent, params) ->
                                         Choice(
                                             intent,
@@ -88,12 +89,13 @@ abstract class WhatsAppCloudBotMessage(
                             }
                         }!!,
                 )
+            }
 
-            else ->
+            else -> {
                 GenericMessage(
                     connectorType = whatsAppCloudConnectorType,
                     texts = mapOf(GenericMessage.TEXT_PARAM to "Unsupported message type"),
                 )
+            }
         }
-    }
 }

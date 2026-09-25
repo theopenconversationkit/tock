@@ -23,13 +23,12 @@ data class GASelectItem(
     val optionInfo: GAOptionInfo,
     val title: String?,
 ) {
-    fun toChoice(): Choice {
-        return optionInfo.toChoice().run {
+    fun toChoice(): Choice =
+        optionInfo.toChoice().run {
             if (title == null) {
                 this
             } else {
                 copy(parameters = parameters + (TITLE_PARAMETER to title))
             }
         }
-    }
 }

@@ -64,22 +64,18 @@ object MessageParser {
             .configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
             .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
 
-    fun parse(content: String): List<Message> {
-        return content.trim()
+    fun parse(content: String): List<Message> =
+        content
+            .trim()
             .split(multiMessagesSeparator)
             .map { toMessage(it) }
-    }
 
-    internal fun mapToString(map: Map<String, String>): String {
-        return mapper.writeValueAsString(map)
-    }
+    internal fun mapToString(map: Map<String, String>): String = mapper.writeValueAsString(map)
 
-    internal fun elementsToString(elements: List<GenericMessage>): String {
-        return elements.map { elementToString(it) }.joinToString()
-    }
+    internal fun elementsToString(elements: List<GenericMessage>): String = elements.map { elementToString(it) }.joinToString()
 
-    private fun elementToString(element: GenericMessage): String {
-        return with(element) {
+    private fun elementToString(element: GenericMessage): String =
+        with(element) {
             val content =
                 listOfNotNull(
                     if (connectorType == ConnectorType.none) null else "connectorType:$connectorType",
@@ -100,10 +96,9 @@ object MessageParser {
                 ).joinToString(prefix = elementsSeparator, separator = elementsSeparator)
             "{$content}"
         }
-    }
 
-    private fun subElementToString(element: GenericElement): String {
-        return with(element) {
+    private fun subElementToString(element: GenericElement): String =
+        with(element) {
             val content =
                 listOfNotNull(
                     if (attachments.isEmpty()) null else "attachments:[${attachments.joinToString(fieldSeparator) { it.toPrettyString() }}]",
@@ -114,10 +109,9 @@ object MessageParser {
                 ).joinToString(prefix = subElementsSeparator, separator = subElementsSeparator)
             "{$content}"
         }
-    }
 
-    private fun toMessage(content: String): Message {
-        return content.trim().let {
+    private fun toMessage(content: String): Message =
+        content.trim().let {
             when {
                 it.contains("{$sentence") -> parseSentence(it)
                 it.contains("{$choice") -> parseChoice(it)
@@ -126,13 +120,13 @@ object MessageParser {
                 else -> Sentence(it)
             }
         }
-    }
 
-    private fun parseSentence(content: String): Sentence {
-        return content
+    private fun parseSentence(content: String): Sentence =
+        content
             .removePrefix("{")
             .let {
-                it.substring(it.indexOf(":") + 1, it.lastIndexOf("}"))
+                it
+                    .substring(it.indexOf(":") + 1, it.lastIndexOf("}"))
                     .let {
                         Sentence(
                             null,
@@ -141,11 +135,11 @@ object MessageParser {
                         )
                     }
             }
-    }
 
-    private fun parseSentenceElement(content: String): GenericMessage {
-        return content.takeIf { it.isNotEmpty() }.let {
-            it?.substring(content.indexOf("{") + 1, content.lastIndexOf("}"))
+    private fun parseSentenceElement(content: String): GenericMessage =
+        content.takeIf { it.isNotEmpty() }.let {
+            it
+                ?.substring(content.indexOf("{") + 1, content.lastIndexOf("}"))
                 .let {
                     var attachments: List<Attachment> = emptyList()
                     var choices: List<Choice> = emptyList()
@@ -158,36 +152,47 @@ object MessageParser {
                         when {
                             s.startsWith("attachments") -> {
                                 attachments =
-                                    s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                                    s
+                                        .substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
                                         .split(fieldSeparator)
                                         .map { parseAttachment(it.trim()) }
                             }
+
                             s.startsWith("choices") -> {
                                 choices =
-                                    s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                                    s
+                                        .substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
                                         .split(fieldSeparator)
                                         .map { parseChoice(it.trim()) }
                             }
+
                             s.startsWith("locations") -> {
                                 locations =
-                                    s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                                    s
+                                        .substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
                                         .split(fieldSeparator)
                                         .map { parseLocation(it.trim()) }
                             }
+
                             s.startsWith("subElements") -> {
                                 elements =
-                                    s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                                    s
+                                        .substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
                                         .split(subElementsArraySeparator)
                                         .map { parseSentenceSubElement(it.trim()) }
                             }
+
                             s.startsWith("texts") -> {
                                 texts =
-                                    s.substring(s.indexOf(":") + 1)
+                                    s
+                                        .substring(s.indexOf(":") + 1)
                                         .let { mapper.readValue(it) }
                             }
+
                             s.startsWith("metadata") -> {
                                 metadata =
-                                    s.substring(s.indexOf(":") + 1)
+                                    s
+                                        .substring(s.indexOf(":") + 1)
                                         .let { mapper.readValue(it) }
                             }
                         }
@@ -204,10 +209,9 @@ object MessageParser {
                     )
                 }
         }
-    }
 
-    private fun parseSentenceSubElement(content: String): GenericElement {
-        return content
+    private fun parseSentenceSubElement(content: String): GenericElement =
+        content
             .substring(content.indexOf("{") + 1, content.lastIndexOf("}"))
             .let {
                 var attachments: List<Attachment> = emptyList()
@@ -219,26 +223,31 @@ object MessageParser {
                 it.split(subElementsSeparator).forEach { s ->
                     if (s.startsWith("attachments")) {
                         attachments =
-                            s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                            s
+                                .substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
                                 .split(fieldSeparator)
                                 .map { parseAttachment(it.trim()) }
                     } else if (s.startsWith("choices")) {
                         choices =
-                            s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                            s
+                                .substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
                                 .split(fieldSeparator)
                                 .map { parseChoice(it.trim()) }
                     } else if (s.startsWith("locations")) {
                         locations =
-                            s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                            s
+                                .substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
                                 .split(fieldSeparator)
                                 .map { parseLocation(it.trim()) }
                     } else if (s.startsWith("texts")) {
                         texts =
-                            s.substring(s.indexOf(":") + 1)
+                            s
+                                .substring(s.indexOf(":") + 1)
                                 .let { mapper.readValue(it) }
                     } else if (s.startsWith("metadata")) {
                         metadata =
-                            s.substring(s.indexOf(":") + 1)
+                            s
+                                .substring(s.indexOf(":") + 1)
                                 .let { mapper.readValue(it) }
                     }
                 }
@@ -251,13 +260,13 @@ object MessageParser {
                     metadata,
                 )
             }
-    }
 
-    private fun parseChoice(content: String): Choice {
-        return content
+    private fun parseChoice(content: String): Choice =
+        content
             .removePrefix("{")
             .let {
-                it.substring(it.indexOf(":") + 1, it.lastIndexOf("}"))
+                it
+                    .substring(it.indexOf(":") + 1, it.lastIndexOf("}"))
                     .let {
                         val index = it.indexOf(",")
                         if (index != -1) {
@@ -270,13 +279,13 @@ object MessageParser {
                         }
                     }
             }
-    }
 
-    private fun parseAttachment(content: String): Attachment {
-        return content
+    private fun parseAttachment(content: String): Attachment =
+        content
             .removePrefix("{")
             .let {
-                it.substring(it.indexOf(":") + 1, it.lastIndexOf("}"))
+                it
+                    .substring(it.indexOf(":") + 1, it.lastIndexOf("}"))
                     .let {
                         val index = it.lastIndexOf(",")
                         if (index != -1) {
@@ -289,13 +298,13 @@ object MessageParser {
                         }
                     }
             }
-    }
 
-    private fun parseLocation(content: String): Location {
-        return content
+    private fun parseLocation(content: String): Location =
+        content
             .removePrefix("{")
             .let {
-                it.substring(it.indexOf(":") + 1, it.lastIndexOf("}"))
+                it
+                    .substring(it.indexOf(":") + 1, it.lastIndexOf("}"))
                     .let {
                         val index = it.indexOf(",")
                         Location(
@@ -306,5 +315,4 @@ object MessageParser {
                         )
                     }
             }
-    }
 }

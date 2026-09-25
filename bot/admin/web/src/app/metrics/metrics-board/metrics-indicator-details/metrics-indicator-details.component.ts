@@ -25,9 +25,10 @@ enum SortingCriteria {
 }
 
 @Component({
-  selector: 'tock-metrics-indicator-details',
-  templateUrl: './metrics-indicator-details.component.html',
-  styleUrls: ['./metrics-indicator-details.component.scss']
+    selector: 'tock-metrics-indicator-details',
+    templateUrl: './metrics-indicator-details.component.html',
+    styleUrls: ['./metrics-indicator-details.component.scss'],
+    standalone: false
 })
 export class MetricsIndicatorDetailsComponent implements OnInit {
   @Input() indicatorName: string;

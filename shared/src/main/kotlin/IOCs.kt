@@ -27,6 +27,7 @@ import ai.tock.shared.security.mongo.MongoCredentialsProvider
 import ai.tock.shared.vertx.TockVertxProvider
 import ai.tock.shared.vertx.VertxProvider
 import ai.tock.shared.vertx.WebSecurityCookiesHandler
+import ai.tock.shared.vertx.WebSecurityEncryptedCookiesHandler
 import ai.tock.shared.vertx.WebSecurityPassthroughHandler
 import ai.tock.shared.vertx.vertxExecutor
 import com.github.salomonbrys.kodein.Kodein
@@ -66,7 +67,7 @@ inline fun <reified T : Any> KodeinInjector.provideOrDefault(
 ): T =
     try {
         injector.providerOrNull<T>(tag).value?.invoke() ?: defaultValueProvider.invoke()
-    } catch (e: KodeinInjector.UninjectedException) {
+    } catch (_: KodeinInjector.UninjectedException) {
         defaultValueProvider.invoke()
     }
 
@@ -81,6 +82,7 @@ val sharedModule =
         bind<TockUserListener>() with provider { NoOpTockUserListener }
         bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
         bind<WebSecurityHandler>(tag = WebSecurityMode.COOKIES.name) with singleton { WebSecurityCookiesHandler() }
+        bind<WebSecurityHandler>(tag = WebSecurityMode.COOKIES_ENCRYPTED.name) with singleton { WebSecurityEncryptedCookiesHandler() }
         bind<WebSecurityHandler>(tag = WebSecurityMode.PASSTHROUGH.name) with singleton { WebSecurityPassthroughHandler() }
 
         try {

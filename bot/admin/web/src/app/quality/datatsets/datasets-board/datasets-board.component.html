@@ -1,27 +1,11 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="d-flex align-items-center mb-2">
-  <h1 class="flex-grow-1 m-0">Datasets</h1>
+  <h1 class="flex-grow-1 m-0">{{ 'quality.datasets-board.title' | transloco }}</h1>
   <section class="grid-actions">
     <button
       nbButton
       ghost
       shape="round"
-      nbTooltip="Import a dataset"
+      [nbTooltip]="'quality.datasets-board.import_dataset_tooltip' | transloco"
       (click)="importDataset()"
     >
       <nb-icon icon="upload"></nb-icon>
@@ -31,7 +15,7 @@
       nbButton
       status="primary"
       size="medium"
-      nbTooltip="Create new dataset"
+      [nbTooltip]="'quality.datasets-board.create_dataset_tooltip' | transloco"
       class="d-flex align-items-center"
       (click)="createDataset()"
     >
@@ -39,107 +23,94 @@
         icon="plus-lg"
         class="mr-2"
       ></nb-icon>
-      <span>NEW DATASET</span>
+      <span>{{ 'quality.datasets-board.new_dataset_button' | transloco }}</span>
     </button>
   </section>
 </div>
 
+@if (loading && !datasets?.length) {
 <nb-card
-  *ngIf="loading && !datasets?.length"
   [nbSpinner]="loading"
   class="shadow-sm mt-2"
 >
   <nb-card-body class="main-card-body p-4">&nbsp;</nb-card-body>
 </nb-card>
-
+} @if (configurations?.length === 0) {
+<tock-no-data-found [title]="'quality.datasets-board.no_bot_configuration_detected' | transloco"></tock-no-data-found>
+} @if (!datasets?.length && !loading) {
 <tock-no-data-found
-  *ngIf="configurations?.length === 0"
-  title="No bot configuration detected"
-></tock-no-data-found>
-
-<tock-no-data-found
-  *ngIf="!datasets?.length && !loading"
-  title="No dataset found"
-  message="Create your first dataset using the &#34;NEW DATASET&#34; button above."
+  [title]="'quality.datasets-board.no_dataset_found' | transloco"
+  [message]="'quality.datasets-board.no_dataset_message' | transloco"
   class="mt-4"
 ></tock-no-data-found>
-
-<div
-  *ngIf="!loading && datasets?.length"
-  class="list-grid list-header text-muted"
->
+} @if (!loading && datasets?.length) {
+<div class="list-grid list-header text-muted">
   <div
     class="ellipsis sortable-col"
     [class.sort-active]="sortField === 'name'"
     (click)="setSort('name')"
   >
-    Dataset
+    {{ 'quality.datasets-board.dataset_column' | transloco }}
     <nb-icon
       class="sort-icon"
       [icon]="sortField === 'name' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
       [class.sort-icon--visible]="sortField === 'name'"
     ></nb-icon>
   </div>
-
   <div
     class="ellipsis pl-1 sortable-col"
     [class.sort-active]="sortField === 'questions'"
     (click)="setSort('questions')"
   >
-    Questions
+    {{ 'quality.datasets-board.questions_column' | transloco }}
     <nb-icon
       class="sort-icon"
       [icon]="sortField === 'questions' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
       [class.sort-icon--visible]="sortField === 'questions'"
     ></nb-icon>
   </div>
-
   <div
     class="ellipsis pl-1 sortable-col"
     [class.sort-active]="sortField === 'runs'"
     (click)="setSort('runs')"
   >
-    Runs
+    {{ 'quality.datasets-board.runs_column' | transloco }}
     <nb-icon
       class="sort-icon"
       [icon]="sortField === 'runs' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
       [class.sort-icon--visible]="sortField === 'runs'"
     ></nb-icon>
   </div>
-
   <div
     class="ellipsis sortable-col"
     [class.sort-active]="sortField === 'lastRun'"
     (click)="setSort('lastRun')"
   >
-    Last run state
+    {{ 'quality.datasets-board.last_run_state_column' | transloco }}
     <nb-icon
       class="sort-icon"
       [icon]="sortField === 'lastRun' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
       [class.sort-icon--visible]="sortField === 'lastRun'"
     ></nb-icon>
   </div>
-
-  <div class="ellipsis">Duration</div>
+  <div class="ellipsis">{{ 'quality.datasets-board.duration_column' | transloco }}</div>
   <div class="ellipsis"></div>
 </div>
-
-<div
-  *ngFor="let dataset of sortedDatasets; trackBy: trackById"
-  [nbSpinner]="loading"
->
+} @for (dataset of sortedDatasets; track trackById($index, dataset)) {
+<div [nbSpinner]="loading">
   <tock-datasets-board-entry [dataset]="dataset"></tock-datasets-board-entry>
 </div>
+}
 
 <ng-template #importModal>
   <nb-card [nbSpinner]="loading">
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Import Dataset
+      {{ 'quality.datasets-board.import_dataset_title' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'quality.datasets-board.cancel_tooltip' | transloco"
         (click)="closeImportModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -152,7 +123,7 @@
         (submit)="submitImportDataset()"
       >
         <tock-form-control
-          label="Dataset file"
+          [label]="'quality.datasets-board.dataset_file_label' | transloco"
           name="importFile"
           [required]="true"
           [controls]="fileSource"
@@ -164,9 +135,62 @@
             [autofocus]="true"
             [fullWidth]="true"
             [multiple]="false"
-            [fileTypeAccepted]="['json']"
+            [fileTypeAccepted]="['json', 'csv']"
           ></tock-file-upload>
         </tock-form-control>
+
+        <div class="d-flex justify-content-end mb-2">
+          <button
+            type="button"
+            nbButton
+            ghost
+            size="tiny"
+            [nbTooltip]="'quality.datasets-board.download_csv_template_tooltip' | transloco"
+            (click)="downloadCsvTemplate()"
+          >
+            <nb-icon
+              icon="filetype-csv"
+              class="mr-2"
+            ></nb-icon>
+            {{ 'quality.datasets-board.download_csv_template' | transloco }}
+          </button>
+        </div>
+
+        @if (isCsvImport) {
+        <tock-form-control
+          name="name"
+          [label]="'quality.datasets-board.dataset_name_label' | transloco"
+          [required]="true"
+          [controls]="importName"
+          [showError]="isImportSubmitted"
+        >
+          <nb-form-field>
+            <input
+              nbInput
+              fullWidth
+              formControlName="name"
+              [placeholder]="'quality.datasets-board.dataset_name_placeholder' | transloco"
+            />
+          </nb-form-field>
+        </tock-form-control>
+
+        <tock-form-control
+          name="description"
+          [label]="'quality.datasets-board.dataset_description_label' | transloco"
+          [controls]="importDescription"
+          [showError]="isImportSubmitted"
+        >
+          <nb-form-field>
+            <textarea
+              nbInput
+              fullWidth
+              rows="2"
+              formControlName="description"
+              [placeholder]="'quality.datasets-board.dataset_description_placeholder' | transloco"
+            ></textarea>
+          </nb-form-field>
+        </tock-form-control>
+        }
       </form>
     </nb-card-body>
 
@@ -177,7 +201,7 @@
         size="small"
         (click)="closeImportModal()"
       >
-        Cancel
+        {{ 'quality.datasets-board.cancel_button' | transloco }}
       </button>
       <button
         type="button"
@@ -186,7 +210,7 @@
         size="small"
         (click)="submitImportDataset()"
       >
-        Import
+        {{ 'quality.datasets-board.import_button' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>

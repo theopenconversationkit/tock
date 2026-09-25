@@ -18,4 +18,6 @@ package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
 import ai.tock.bot.connector.iadvize.model.response.conversation.Duration
 
-data class IadvizeAwait(val duration: Duration) : IadvizeReply(ReplyType.await)
+data class IadvizeAwait(
+    val duration: Duration,
+) : IadvizeReply(ReplyType.await)

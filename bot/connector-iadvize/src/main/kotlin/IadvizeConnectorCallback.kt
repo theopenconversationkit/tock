@@ -70,7 +70,10 @@ class IadvizeConnectorCallback(
 
     internal var iadvizeGraphQLClient = IadvizeGraphQLClient()
 
-    data class ActionWithDelay(val action: Action, val delayInMs: Long = 0)
+    data class ActionWithDelay(
+        val action: Action,
+        val delayInMs: Long = 0,
+    )
 
     fun addAction(
         event: Event,
@@ -124,7 +127,9 @@ class IadvizeConnectorCallback(
             )
 
         return when (request) {
-            is ConversationsRequest -> response
+            is ConversationsRequest -> {
+                response
+            }
 
             is MessageRequest -> {
                 response.replies.addAll(toListIadvizeReply(actions))
@@ -140,35 +145,37 @@ class IadvizeConnectorCallback(
                 return response
             }
 
-            else -> response
+            else -> {
+                response
+            }
         }
     }
 
-    private fun toListIadvizeReply(actions: List<ActionWithDelay>): List<IadvizeReply> {
-        return actions.map {
-            if (it.action is SendSentence) {
-                val listIadvizeReply: List<IadvizeReply> = it.action.messages.filterAndEnhanceIadvizeReply()
+    private fun toListIadvizeReply(actions: List<ActionWithDelay>): List<IadvizeReply> =
+        actions
+            .map {
+                if (it.action is SendSentence) {
+                    val listIadvizeReply: List<IadvizeReply> = it.action.messages.filterAndEnhanceIadvizeReply()
 
-                if (it.action.text != null) {
-                    val simpleTextPayload = mapToMessageTextPayload(it.action.text!!)
-                    // Combine 1 MessageTextPayload with messages enhanced IadvizeReply
-                    listOf(listOf(simpleTextPayload), listIadvizeReply).flatten()
-                } else {
-                    // No simple MessageTextPayload
-                    // translate all TextPayloads if they exist
-                    listIadvizeReply.map { reply ->
-                        if (reply is IadvizeMessage) {
-                            reply.copy(payload = TextPayload(translator.translate((reply.payload as TextPayload).value)))
-                        } else {
-                            reply
+                    if (it.action.text != null) {
+                        val simpleTextPayload = mapToMessageTextPayload(it.action.text!!)
+                        // Combine 1 MessageTextPayload with messages enhanced IadvizeReply
+                        listOf(listOf(simpleTextPayload), listIadvizeReply).flatten()
+                    } else {
+                        // No simple MessageTextPayload
+                        // translate all TextPayloads if they exist
+                        listIadvizeReply.map { reply ->
+                            if (reply is IadvizeMessage) {
+                                reply.copy(payload = TextPayload(translator.translate((reply.payload as TextPayload).value)))
+                            } else {
+                                reply
+                            }
                         }
                     }
+                } else {
+                    emptyList()
                 }
-            } else {
-                emptyList()
-            }
-        }.flatten()
-    }
+            }.flatten()
 
     private fun List<ConnectorMessage>.filterAndEnhanceIadvizeReply(): List<IadvizeReply> {
         // Filter Message not IadvizeConnectorMessage for other connector

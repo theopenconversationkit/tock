@@ -64,8 +64,7 @@ class JWKHandler {
             longProperty("tock_microsoft_request_timeout", 5000),
             this.logger,
             logLevel,
-        )
-            .baseUrl(openIDMetadataLocationBotFwEmulator)
+        ).baseUrl(openIDMetadataLocationBotFwEmulator)
             .addJacksonConverter(teamsMapper)
             .build()
             .create()
@@ -75,8 +74,7 @@ class JWKHandler {
             longProperty("tock_microsoft_request_timeout", 5000),
             logger,
             logLevel,
-        )
-            .baseUrl(openIDMetadataLocation)
+        ).baseUrl(openIDMetadataLocation)
             .addJacksonConverter(teamsMapper)
             .build()
             .create()
@@ -86,8 +84,7 @@ class JWKHandler {
             longProperty("tock_microsoft_request_timeout", 5000),
             this.logger,
             logLevel,
-        )
-            .baseUrl(jksBaseLocation)
+        ).baseUrl(jksBaseLocation)
             .addJacksonConverter(teamsMapper)
             .build()
             .create()
@@ -116,9 +113,11 @@ class JWKHandler {
         tokenIds = response?.idTokenSigningAlgValuesSupported
             ?: error("Error : Unable to get OpenidMetadata to validate BotConnectorServiceKeys")
         val keysForBotConnectorService =
-            microsoftJwksApi.getJwk(
-                response.jwksUri,
-            ).execute().body()
+            microsoftJwksApi
+                .getJwk(
+                    response.jwksUri,
+                ).execute()
+                .body()
                 ?: error("Error : Unable to get JWK signatures to validate BotConnectorServiceKeys")
         val listOfKeys: MutableList<MicrosoftValidSigningKey> = keysForBotConnectorService.keys.toMutableList()
 
@@ -131,9 +130,11 @@ class JWKHandler {
                     ?: error("Error : Unable to get OpenidMetadata to validate BotFrameworkEmulatorKeys"),
             )
             val keysForBotFwkEmulator =
-                microsoftJwksApi.getJwk(
-                    nextResponse!!.jwksUri,
-                ).execute().body()
+                microsoftJwksApi
+                    .getJwk(
+                        nextResponse!!.jwksUri,
+                    ).execute()
+                    .body()
                     ?: error("Error : Unable to get JWK signatures to validate BotFrameworkEmulatorKeys")
             listOfKeys.addAll(keysForBotFwkEmulator.keys)
         }
@@ -156,8 +157,7 @@ class JWKHandler {
                 longProperty("tock_microsoft_request_timeout", 5000),
                 logger,
                 level = Level.BASIC,
-            )
-                .baseUrl(openIDMetadataLocation)
+            ).baseUrl(openIDMetadataLocation)
                 .addJacksonConverter(teamsMapper)
                 .build()
                 .create()
@@ -171,8 +171,7 @@ class JWKHandler {
                 longProperty("tock_microsoft_request_timeout", 5000),
                 logger,
                 level = Level.BASIC,
-            )
-                .baseUrl(openIDMetadataLocation)
+            ).baseUrl(openIDMetadataLocation)
                 .addJacksonConverter(teamsMapper)
                 .build()
                 .create()
@@ -186,8 +185,7 @@ class JWKHandler {
                 longProperty("tock_microsoft_request_timeout", 5000),
                 this.logger,
                 level = Level.BASIC,
-            )
-                .baseUrl(jksBaseLocation)
+            ).baseUrl(jksBaseLocation)
                 .addJacksonConverter(teamsMapper)
                 .build()
                 .create()

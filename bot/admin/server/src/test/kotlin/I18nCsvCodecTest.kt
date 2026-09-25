@@ -118,8 +118,18 @@ Départs suivants;mynamespace;departuresarrivals;fr;textChat;id2;true;"""
 
         assertEquals(1, result)
         assertEquals(2, slot.captured.i18n.size)
-        assertEquals("ok", slot.captured.i18n.first { it.interfaceType == textChat }.label)
-        assertEquals("Départs suivants", slot.captured.i18n.first { it.interfaceType == voiceAssistant }.label)
+        assertEquals(
+            "ok",
+            slot.captured.i18n
+                .first { it.interfaceType == textChat }
+                .label,
+        )
+        assertEquals(
+            "Départs suivants",
+            slot.captured.i18n
+                .first { it.interfaceType == voiceAssistant }
+                .label,
+        )
     }
 
     @Test

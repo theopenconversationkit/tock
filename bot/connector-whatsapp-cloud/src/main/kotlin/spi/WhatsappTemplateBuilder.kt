@@ -30,7 +30,11 @@ import ai.tock.translator.Translator
 import ai.tock.translator.UserInterfaceType
 import java.util.Locale
 
-abstract class WhatsappTemplateBuilder(val name: String, val locale: Locale, connectorId: String) {
+abstract class WhatsappTemplateBuilder(
+    val name: String,
+    val locale: Locale,
+    connectorId: String,
+) {
     private val i18nContext = I18nContext(locale, UserInterfaceType.textChat, connectorId)
 
     /**
@@ -51,9 +55,7 @@ abstract class WhatsappTemplateBuilder(val name: String, val locale: Locale, con
 
     var body: TemplateBody? = null
 
-    fun translate(text: I18nLabelValue): String {
-        return Translator.translate(text, i18nContext).toString()
-    }
+    fun translate(text: I18nLabelValue): String = Translator.translate(text, i18nContext).toString()
 
     protected open fun components(): List<TemplateComponent> =
         listOf(
@@ -65,23 +67,28 @@ abstract class WhatsappTemplateBuilder(val name: String, val locale: Locale, con
     internal fun build() = WhatsappTemplate(name, templateLanguage, components(), category)
 }
 
-class WhatsappBasicTemplateBuilder(name: String, locale: Locale, connectorId: String) : WhatsappTemplateBuilder(name, locale, connectorId) {
+class WhatsappBasicTemplateBuilder(
+    name: String,
+    locale: Locale,
+    connectorId: String,
+) : WhatsappTemplateBuilder(name, locale, connectorId) {
     var header: TemplateHeader? = null
     var footer: TemplateFooter? = null
     var buttons: TemplateCardButtons? = null
 
-    override fun components(): List<TemplateComponent> {
-        return super.components() + listOfNotNull(header, footer)
-    }
+    override fun components(): List<TemplateComponent> = super.components() + listOfNotNull(header, footer)
 }
 
-class WhatsappCarouselBuilder(name: String, locale: Locale, connectorId: String) : WhatsappTemplateBuilder(name, locale, connectorId) {
+class WhatsappCarouselBuilder(
+    name: String,
+    locale: Locale,
+    connectorId: String,
+) : WhatsappTemplateBuilder(name, locale, connectorId) {
     var carousel: TemplateCarousel? = null
 
-    override fun components(): List<TemplateComponent> {
-        return super.components() +
+    override fun components(): List<TemplateComponent> =
+        super.components() +
             checkNotNull(carousel) {
                 "Missing 'carousel' field"
             }
-    }
 }

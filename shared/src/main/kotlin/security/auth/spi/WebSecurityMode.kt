@@ -16,24 +16,55 @@
 
 package ai.tock.shared.security.auth.spi
 
+import ai.tock.shared.propertyOrNull
+
 enum class WebSecurityMode {
-    // If "env.tock_web_cookie_auth" is set to true, the WebSecurityMode.COOKIES mode is applied, otherwise nothing (PASSTHROUGH mode).
+    /**
+     * Uses the global default, set by runtime environment
+     *
+     * @see getDefault
+     */
     DEFAULT,
 
-    // Get tock_user_id cookie
+    /**
+     * Stores the user id in a plain HTTP cookie
+     */
     COOKIES,
 
-    // Pass the interceptor without any changes
+    /**
+     * Hardened implementation of a cookie-based session handler
+     *
+     * Stores the user ID in an encrypted HTTP cookie with expiration date
+     */
+    COOKIES_ENCRYPTED,
+
+    /**
+     * Pass the interceptor without any changes
+     */
     PASSTHROUGH,
 
-    // Parse the JWT, to validate signature, check token revocation and manage authorization
+    /**
+     * Parse the JWT, to validate signature, check token revocation and manage authorization
+     */
     JWT,
 
     ;
 
     companion object {
-        fun findByName(mode: String): WebSecurityMode? {
-            return WebSecurityMode.entries.firstOrNull { it.name == mode }
-        }
+        private val cookieAuth = propertyOrNull("tock_web_cookie_auth")
+
+        fun find(mode: String?): WebSecurityMode = mode?.let(::findByName)?.takeUnless { it == DEFAULT } ?: getDefault()
+
+        fun findByName(mode: String): WebSecurityMode? = WebSecurityMode.entries.firstOrNull { it.name == mode }
+
+        /**
+         * If "env.tock_web_cookie_auth" is set, uses the COOKIES or COOKIES_ENCRYPTED mode, otherwise nothing (PASSTHROUGH mode)
+         */
+        fun getDefault(): WebSecurityMode =
+            when (cookieAuth?.lowercase()) {
+                "encrypted" -> COOKIES_ENCRYPTED
+                "basic", "true" -> COOKIES
+                else -> PASSTHROUGH
+            }
     }
 }

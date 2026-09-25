@@ -64,8 +64,8 @@ data class DirectMessageOutcomingEvent(
         var options: List<Option> = listOf()
         var optionsWithoutDescription: List<OptionWithoutDescription> = listOf()
 
-        fun build(): DirectMessageOutcomingEvent {
-            return DirectMessageOutcomingEvent(
+        fun build(): DirectMessageOutcomingEvent =
+            DirectMessageOutcomingEvent(
                 MessageCreate(
                     target = target,
                     sourceAppId = sourceAppId,
@@ -84,7 +84,6 @@ data class DirectMessageOutcomingEvent(
                         ),
                 ),
             )
-        }
 
         fun withSourceAppId(sourceAppId: String): Builder {
             this.sourceAppId = sourceAppId

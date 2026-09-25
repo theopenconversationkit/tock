@@ -33,7 +33,9 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.push
+import org.litote.kmongo.save
 import org.litote.kmongo.setValue
+import com.mongodb.client.model.Filters.eq as bsonEq
 
 interface OrchestrationRepository {
     fun create(
@@ -51,12 +53,21 @@ interface OrchestrationRepository {
     )
 
     fun end(playerId: PlayerId)
+
+    fun updateUserId(
+        oldPlayerId: PlayerId,
+        newPlayerId: PlayerId,
+    ): Long
+
+    fun deleteByUserId(playerId: PlayerId): Long
 }
 
 object MongoOrchestrationRepository : OrchestrationRepository {
     private val col: MongoCollection<Orchestration> by lazy {
 
-        injector.provide<MongoDatabase>(TOCK_BOT_DATABASE).getCollection<Orchestration>()
+        injector
+            .provide<MongoDatabase>(TOCK_BOT_DATABASE)
+            .getCollection<Orchestration>()
             .apply {
                 ensureIndex(Orchestration::playerId)
                 ensureIndex(Orchestration::playerId, Orchestration::status)
@@ -69,7 +80,13 @@ object MongoOrchestrationRepository : OrchestrationRepository {
         target: OrchestrationTargetedBot,
         actions: List<SecondaryBotAction>,
     ): Orchestration {
-        val orchestration = Orchestration(playerId = playerId, targetMetadata = targetMetadata, targetBot = target, history = actions.toMutableList())
+        val orchestration =
+            Orchestration(
+                playerId = playerId,
+                targetMetadata = targetMetadata,
+                targetBot = target,
+                history = actions.toMutableList(),
+            )
         col.insertOne(orchestration)
         return orchestration
     }
@@ -93,4 +110,40 @@ object MongoOrchestrationRepository : OrchestrationRepository {
             setValue(Orchestration::status, CLOSED),
         )
     }
+
+    override fun updateUserId(
+        oldPlayerId: PlayerId,
+        newPlayerId: PlayerId,
+    ): Long {
+        val orchestrations =
+            col
+                .find(
+                    bsonEq("playerId.id", oldPlayerId.id),
+                ).toList()
+
+        orchestrations.forEach { orchestration ->
+            col.save(
+                orchestration.copy(
+                    playerId = newPlayerId,
+                    targetMetadata =
+                        orchestration.targetMetadata.copy(
+                            playerId = orchestration.targetMetadata.playerId.migrateIfMatches(oldPlayerId, newPlayerId),
+                            recipientId = orchestration.targetMetadata.recipientId.migrateIfMatches(oldPlayerId, newPlayerId),
+                        ),
+                ),
+            )
+        }
+        return orchestrations.size.toLong()
+    }
+
+    override fun deleteByUserId(playerId: PlayerId): Long =
+        col
+            .deleteMany(
+                bsonEq("playerId.id", playerId.id),
+            ).deletedCount
+
+    private fun PlayerId.migrateIfMatches(
+        oldPlayerId: PlayerId,
+        newPlayerId: PlayerId,
+    ): PlayerId = if (this == oldPlayerId) newPlayerId else this
 }

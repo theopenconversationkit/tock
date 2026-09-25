@@ -30,9 +30,10 @@ interface ExportLabelsForm {
 }
 
 @Component({
-  selector: 'tock-i18n-export-action',
-  templateUrl: './i18n-export.component.html',
-  styleUrls: ['./i18n-export.component.scss']
+    selector: 'tock-i18n-export-action',
+    templateUrl: './i18n-export.component.html',
+    styleUrls: ['./i18n-export.component.scss'],
+    standalone: false
 })
 export class I18nExportComponent implements OnInit {
   downloading = false;

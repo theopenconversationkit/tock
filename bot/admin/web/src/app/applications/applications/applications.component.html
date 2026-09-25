@@ -1,87 +1,62 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="d-flex flex-wrap mb-2">
-  <div
-    class="flex-grow-1"
-    *ngIf="state.applications.length === 0"
-  >
-    <h1 class="mb-0">Welcome!</h1>
-    <strong>Please create your first Application</strong>
+  @if (state.applications.length === 0) {
+  <div class="flex-grow-1">
+    <h1 class="mb-0">{{ 'applications.applications.welcomeTitle' | transloco }}</h1>
+    <strong>{{ 'applications.applications.createFirstApplication' | transloco }}</strong>
   </div>
-
-  <h1
-    class="flex-grow-1"
-    *ngIf="state.applications.length !== 0"
-  >
-    Applications
+  } @if (state.applications.length !== 0) {
+  <h1 class="flex-grow-1">
+    {{ 'applications.applications.applicationsTitle' | transloco }}
   </h1>
-
-  <section
-    class="grid-actions"
-    *ngIf="isAdmin()"
-  >
+  } @if (isAdmin()) {
+  <section class="grid-actions">
     <button
       nbButton
       ghost
       shape="round"
-      nbTooltip="Upload dump"
+      [nbTooltip]="'applications.applications.uploadDumpTooltip' | transloco"
       (click)="showUploadDumpPanel()"
     >
       <nb-icon icon="upload"></nb-icon>
     </button>
-
     <button
       nbButton
       status="primary"
       routerLink="create"
-      nbTooltip="Create new application"
+      [nbTooltip]="'applications.applications.createNewApplicationTooltip' | transloco"
     >
       <nb-icon icon="plus-lg"></nb-icon>
-      NEW APPLICATION
+      {{ 'applications.applications.newApplicationButton' | transloco }}
     </button>
   </section>
+  }
 </div>
 
+@if (!state.applications.length) {
 <tock-no-data-found
-  *ngIf="!state.applications.length"
-  title="No application detected"
-  message="Use the NEW APPLICATION button to create one"
+  [title]="'applications.applications.noApplicationDetected' | transloco"
+  [message]="'applications.applications.useNewApplicationButton' | transloco"
 ></tock-no-data-found>
-
+} @for (app of state.applications; track app) {
 <nb-card
-  *ngFor="let app of state.applications"
   class="mb-2"
   [nbSpinner]="loading"
 >
   <nb-card-body>
     <div class="d-flex gap-1 align-items-center">
+      @if (app._id === state.currentApplication._id) {
       <nb-toggle
-        *ngIf="app._id === state.currentApplication._id"
         checked="true"
         class="mb-0 nb-toggle-reset-label-margin unClickable"
       ></nb-toggle>
+      } @if (app._id !== state.currentApplication._id) {
       <nb-toggle
-        *ngIf="app._id !== state.currentApplication._id"
         checked="false"
         (checkedChange)="selectApplication(app)"
         class="mb-0 nb-toggle-reset-label-margin"
-        nbTooltip="Set as current application"
+        [nbTooltip]="'applications.applications.setAsCurrentApplicationTooltip' | transloco"
       ></nb-toggle>
-
+      }
       <div class="flex-grow-1">
         <span
           class="lead text-nowrap"
@@ -89,61 +64,61 @@
         >
           {{ app.label }}
         </span>
-
         <div class="text-muted">
-          <span *ngFor="let locale of app.supportedLocales; let last = last">
+          @for (locale of app.supportedLocales; track locale; let last = $last) {
+          <span>
             {{ state.localeName(locale) }}
-            <ng-container *ngIf="!last">|</ng-container>
+            @if (!last) { | }
           </span>
+          }
         </div>
       </div>
-
+      @if (isAdmin()) {
       <button
-        *ngIf="isAdmin()"
         nbButton
         ghost
         shape="round"
         status="info"
         routerLink="edit/{{ app._id }}"
-        nbTooltip="Edit application"
+        [nbTooltip]="'applications.applications.editApplicationTooltip' | transloco"
       >
         <nb-icon icon="pencil"></nb-icon>
       </button>
-
+      } @if (isAdmin()) {
       <button
-        *ngIf="isAdmin()"
         nbButton
         ghost
         shape="round"
         (click)="downloadDump(app)"
-        nbTooltip="Download an application dump"
+        [nbTooltip]="'applications.applications.downloadApplicationDumpTooltip' | transloco"
       >
         <nb-icon icon="download"></nb-icon>
       </button>
+      } @if (isAdmin()) {
       <button
-        *ngIf="isAdmin()"
         nbButton
         ghost
         shape="round"
         (click)="downloadSentencesDump(app)"
-        nbTooltip="Download a sentences dump"
+        [nbTooltip]="'applications.applications.downloadSentencesDumpTooltip' | transloco"
       >
         <nb-icon icon="download"></nb-icon>
       </button>
-
+      } @if (isAdmin()) {
       <button
-        *ngIf="isAdmin()"
         nbButton
         ghost
         shape="round"
         status="danger"
         (click)="deleteApplication(app)"
-        nbTooltip="Delete application"
+        [nbTooltip]="'applications.applications.deleteApplicationTooltip' | transloco"
       >
         <nb-icon icon="trash"></nb-icon>
       </button>
+      }
     </div>
   </nb-card-body>
 </nb-card>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

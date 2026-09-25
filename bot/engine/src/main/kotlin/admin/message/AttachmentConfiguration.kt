@@ -40,13 +40,12 @@ data class AttachmentConfiguration(
         recipientId: PlayerId,
         locale: Locale,
         userInterfaceType: UserInterfaceType,
-    ): Action {
-        return SendAttachment(
+    ): Action =
+        SendAttachment(
             playerId,
             applicationId,
             recipientId,
             url,
             type,
         )
-    }
 }

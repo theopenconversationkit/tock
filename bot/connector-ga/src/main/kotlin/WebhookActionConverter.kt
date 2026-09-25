@@ -60,7 +60,13 @@ internal object WebhookActionConverter {
 
         val input = message.inputs.firstOrNull()
         if (input != null) {
-            if (input.arguments?.all { it.builtInArg == GAArgumentBuiltInName.PERMISSION && message.device?.location?.coordinates?.latitude != null } == true) {
+            if (input.arguments?.all {
+                    it.builtInArg == GAArgumentBuiltInName.PERMISSION && message.device
+                        ?.location
+                        ?.coordinates
+                        ?.latitude != null
+                } == true
+            ) {
                 return with(message.device!!.location!!.coordinates!!) {
                     SendLocation(
                         playerId,
@@ -80,7 +86,11 @@ internal object WebhookActionConverter {
                     )
                 // Google assistant makes an somewhat erroneous nlp selection sometimes
                 // to avoid that, double check the label
-                if (input.rawInputs.firstOrNull()?.query?.let { query -> params.second[SendChoice.TITLE_PARAMETER] == query } != false) {
+                if (input.rawInputs
+                        .firstOrNull()
+                        ?.query
+                        ?.let { query -> params.second[SendChoice.TITLE_PARAMETER] == query } != false
+                ) {
                     return SendChoice(
                         playerId,
                         applicationId,
@@ -97,9 +107,12 @@ internal object WebhookActionConverter {
                     botId,
                     input.intent.substringAfter("tock."),
                     parameters =
-                        input.arguments?.filter { it.textValue != null }?.map {
-                            it.name to it.textValue!!
-                        }?.toMap().orEmpty(),
+                        input.arguments
+                            ?.filter { it.textValue != null }
+                            ?.map {
+                                it.name to it.textValue!!
+                            }?.toMap()
+                            .orEmpty(),
                     state = eventState,
                 )
             }
@@ -110,26 +123,39 @@ internal object WebhookActionConverter {
             }
 
             return when (input.builtInIntent) {
-                GAIntent.main -> StartConversationEvent(playerId, botId, applicationId).setEventState()
-                GAIntent.cancel -> EndConversationEvent(playerId, botId, applicationId).setEventState()
-                GAIntent.noInput -> NoInputEvent(playerId, botId, applicationId).setEventState()
-                GAIntent.newSurface ->
+                GAIntent.main -> {
+                    StartConversationEvent(playerId, botId, applicationId).setEventState()
+                }
+
+                GAIntent.cancel -> {
+                    EndConversationEvent(playerId, botId, applicationId).setEventState()
+                }
+
+                GAIntent.noInput -> {
+                    NoInputEvent(playerId, botId, applicationId).setEventState()
+                }
+
+                GAIntent.newSurface -> {
                     NewDeviceEvent(
                         playerId,
                         botId,
                         applicationId,
                         (input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.NEW_SURFACE }?.extension as GANewSurfaceValue).status.toString(),
                     ).setEventState()
-                GAIntent.mediaStatus ->
+                }
+
+                GAIntent.mediaStatus -> {
                     MediaStatusEvent(
                         playerId,
                         botId,
                         applicationId,
                         (input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.MEDIA_STATUS }?.extension as GAMediaStatusValue).status.toString(),
                     ).setEventState()
+                }
+
                 GAIntent.signIn -> {
                     when ((input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.SIGN_IN }?.extension as GASignInValue).status) {
-                        GASignInStatus.OK ->
+                        GASignInStatus.OK -> {
                             LoginEvent(
                                 playerId,
                                 botId,
@@ -137,9 +163,14 @@ internal object WebhookActionConverter {
                                 applicationId,
                                 previousUserId = PlayerId(message.conversation.conversationId, PlayerType.user),
                             )
-                        else -> LogoutEvent(playerId, botId, applicationId)
+                        }
+
+                        else -> {
+                            LogoutEvent(playerId, botId, applicationId)
+                        }
                     }
                 }
+
                 else -> {
                     val rawInput = input.rawInputs.firstOrNull()
                     var text = rawInput?.query

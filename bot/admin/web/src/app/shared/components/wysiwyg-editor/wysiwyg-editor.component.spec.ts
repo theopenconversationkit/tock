@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WysiwygEditorComponent } from './wysiwyg-editor.component';
+import { TestSharedModule } from '../../test-shared.module';
 
 describe('WysiwygEditorComponent', () => {
   let component: WysiwygEditorComponent;
@@ -24,9 +25,9 @@ describe('WysiwygEditorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WysiwygEditorComponent]
-    })
-    .compileComponents();
+      declarations: [WysiwygEditorComponent],
+      imports: [TestSharedModule]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(WysiwygEditorComponent);
     component = fixture.componentInstance;

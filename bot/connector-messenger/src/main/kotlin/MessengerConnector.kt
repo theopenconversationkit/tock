@@ -111,17 +111,17 @@ class MessengerConnector internal constructor(
             booleanProperty("tock_messenger_webhook_check_subscription", false)
 
         private fun getAllConnectors(): List<MessengerConnector> =
-            connectorIdConnectorControllerMap.values.asSequence().map { it.connector }
-                .filterIsInstance<MessengerConnector>().toList()
+            connectorIdConnectorControllerMap.values
+                .asSequence()
+                .map { it.connector }
+                .filterIsInstance<MessengerConnector>()
+                .toList()
 
-        fun getConnectorById(connectorId: String): MessengerConnector? {
-            return connectorIdConnectorControllerMap[connectorId]?.connector as? MessengerConnector
-        }
+        fun getConnectorById(connectorId: String): MessengerConnector? = connectorIdConnectorControllerMap[connectorId]?.connector as? MessengerConnector
 
-        fun healthcheck(): Boolean {
-            return (connectorIdConnectorControllerMap.values.firstOrNull()?.connector as? MessengerConnector)?.client?.healthcheck()
+        fun healthcheck(): Boolean =
+            (connectorIdConnectorControllerMap.values.firstOrNull()?.connector as? MessengerConnector)?.client?.healthcheck()
                 ?: true
-        }
     }
 
     init {
@@ -230,8 +230,8 @@ class MessengerConnector internal constructor(
         postMessage: (String) -> Unit = {},
         transformActionRequest: (ActionRequest) -> ActionRequest = { it },
         errorListener: (Throwable) -> Unit = {},
-    ): SendResponse? {
-        return try {
+    ): SendResponse? =
+        try {
             if (event is Action) {
                 var message = SendActionConverter.toMessageRequest(event, personaId)
                 if (message != null) {
@@ -248,28 +248,28 @@ class MessengerConnector internal constructor(
                         val attachmentId =
                             getAttachmentId(event.applicationId, url)
                                 .let {
-                                    it ?: client.sendAttachment(
-                                        token,
-                                        AttachmentRequest(
-                                            AttachmentMessage(
-                                                Attachment(
-                                                    AttachmentType.fromTockAttachmentType(
-                                                        firstElement.mediaType.toAttachmentType(),
-                                                    ),
-                                                    UrlPayload(
-                                                        url,
-                                                        null,
-                                                        true,
+                                    it ?: client
+                                        .sendAttachment(
+                                            token,
+                                            AttachmentRequest(
+                                                AttachmentMessage(
+                                                    Attachment(
+                                                        AttachmentType.fromTockAttachmentType(
+                                                            firstElement.mediaType.toAttachmentType(),
+                                                        ),
+                                                        UrlPayload(
+                                                            url,
+                                                            null,
+                                                            true,
+                                                        ),
                                                     ),
                                                 ),
+                                                personaId,
                                             ),
-                                            personaId,
-                                        ),
-                                    )!!
+                                        )!!
                                         .apply {
                                             setAttachmentId(event.applicationId, url, attachmentId!!)
-                                        }
-                                        .attachmentId!!
+                                        }.attachmentId!!
                                 }
                         message =
                             message.copy(
@@ -308,7 +308,6 @@ class MessengerConnector internal constructor(
             errorListener.invoke(e)
             null
         }
-    }
 
     /**
      * Send action after an optin request, using the recipient.user_ref property.
@@ -406,23 +405,26 @@ class MessengerConnector internal constructor(
         transformActionRequest: (ActionRequest) -> ActionRequest = { it },
     ): SendResponse? =
         when (event) {
-            is TypingOnEvent ->
+            is TypingOnEvent -> {
                 client.sendAction(
                     getToken(event),
                     transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_on, personaId)),
                 )
+            }
 
-            is TypingOffEvent ->
+            is TypingOffEvent -> {
                 client.sendAction(
                     getToken(event),
                     transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_off, personaId)),
                 )
+            }
 
-            is MarkSeenEvent ->
+            is MarkSeenEvent -> {
                 client.sendAction(
                     getToken(event),
                     transformActionRequest(ActionRequest(Recipient(event.recipientId.id), mark_seen)),
                 )
+            }
 
             else -> {
                 logger.warn { "unsupported event $event" }
@@ -522,14 +524,13 @@ class MessengerConnector internal constructor(
         return UserPreferences()
     }
 
-    private fun getLocale(it: String): Locale? {
-        return try {
+    private fun getLocale(it: String): Locale? =
+        try {
             LocaleUtils.toLocale(it)
         } catch (e: Exception) {
             logger.error(e)
             null
         }
-    }
 
     override fun refreshProfile(
         callback: ConnectorCallback,
@@ -559,9 +560,7 @@ class MessengerConnector internal constructor(
     private fun isSignedByFacebook(
         payload: String,
         facebookSignature: String,
-    ): Boolean {
-        return "sha1=${sha1(payload, client.secretKey)}" == facebookSignature
-    }
+    ): Boolean = "sha1=${sha1(payload, client.secretKey)}" == facebookSignature
 
     private fun sha1(
         payload: String,

@@ -1,0 +1,197 @@
+{
+  "sentences-inbox": {
+    "title": "Phrases à entraîner",
+    "refresh-tooltip": "Rafraîchir les phrases"
+  },
+  "sentence-new": {
+    "title": "Nouvelle phrase",
+    "sub-title": "Testez la manière dont le modèle de NLP interprète une phrase. Les intents détectées et les entités extraites s'afficheront ci-dessous.",
+    "main-input-placeholder": "ex. Annuler mon abonnement",
+    "query-state-placeholder": "Saisir l'état de la requête",
+    "analyze-button": "Analyser",
+    "advanced-options": "Options avancées",
+    "skip-cache": "ignorer le cache",
+    "skip-cache-tooltip": "Forcer la requête vers le modèle NLP (ignorer le cache)",
+    "empty-state-message": "Les résultats s'afficheront ici une fois que vous aurez analysé une phrase.",
+    "empty-query-error": "Veuillez saisir une requête non vide"
+  },
+  "sentences-search": {
+    "title": "Rechercher des phrases",
+    "download-tooltip": "Télécharger un export des phrases correspondantes",
+    "refresh-tooltip": "Rafraîchir les phrases"
+  },
+  "sentences-unknown": {
+    "title": "Phrases inconnues"
+  },
+  "intents": {
+    "title": "Intentions",
+    "no-intent-found": "Aucune intention trouvée",
+    "dialog": {
+      "remove-intent": {
+        "title": "Supprimer l'intention {{ name }}",
+        "subtitle": "Êtes-vous sûr ?",
+        "success": "Intention {{ name }} supprimée",
+        "success-title": "Supprimer l'intention",
+        "failure": "La suppression de l'intention {{ name }} a échoué"
+      },
+      "remove-state": {
+        "success": "L'état {{ state }} a été supprimé de l'intention {{ intentName }}",
+        "success-title": "Supprimer l'état",
+        "failure": "La suppression de l'état a échoué"
+      },
+      "add-state": {
+        "title": "Ajouter un état pour l'intention \"{{ intentName }}\"",
+        "success": "L'état {{ state }} a été ajouté à l'intention {{ intentName }}",
+        "success-title": "Ajouter un état",
+        "failure": "L'ajout de l'état a échoué"
+      },
+      "remove-entity": {
+        "title": "Supprimer l'entité {{ entityName }}",
+        "subtitle": "Êtes-vous sûr ?",
+        "success": "L'entité {{ entityName }} a été supprimée de l'intention",
+        "success-title": "Supprimer l'entité"
+      },
+      "add-shared-intent": {
+        "title": "Ajouter une intention partagée à l'intention \"{{ intentName }}\"",
+        "success": "Intention partagée ajoutée pour l'intention {{ intentName }}",
+        "success-title": "Ajouter une intention partagée",
+        "failure": "L'ajout de l'intention partagée a échoué"
+      },
+      "remove-shared-intent": {
+        "success": "Intention partagée supprimée de l'intention {{ intentName }}",
+        "success-title": "Supprimer l'intention",
+        "failure": "La suppression de l'intention partagée a échoué"
+      },
+      "download-sentences-dump": {
+        "success": "Export fourni",
+        "success-title": "Export"
+      }
+    }
+  },
+  "intents-filters": {
+    "placeholder": "Rechercher une intention"
+  },
+  "intents-list": {
+    "header": {
+      "intent": "Intention",
+      "entities": "Entités",
+      "shared-intents": "Intentions partagées",
+      "mandatory-states": "États obligatoires",
+      "story": "Story",
+      "actions": "Actions"
+    },
+    "tooltip": {
+      "qualified-name": "Nom qualifié : {{ name }}",
+      "shared-intent-warning": "Cette intention est partagée avec au moins une autre application. Toutes les modifications apportées à cette intention affecteront également les autres applications qui l'utilisent.",
+      "delete-entity": "Supprimer l'entité",
+      "delete-shared-intent": "Supprimer l'intention partagée",
+      "add-shared-intent": "Ajouter une intention partagée",
+      "add-state": "Ajouter un état",
+      "delete-state": "Supprimer l'état",
+      "show-story-details": "Afficher les détails de la story associée à cette intention",
+      "edit-intent": "Modifier l'intention",
+      "download-sentences-dump": "Télécharger un export des phrases",
+      "delete-intent": "Supprimer l'intention"
+    }
+  },
+  "add-state": {
+    "description": "Si au moins un état obligatoire est défini pour une intention,\n\nseules les requêtes contenant au moins un état obligatoire de cette intention\n\npourront retourner cette intention.",
+    "placeholder": "Nouvel état*"
+  },
+  "add-shared-intent": {
+    "placeholder": "Ajouter une intention partagée"
+  },
+  "entities": {
+    "title": "Entités",
+    "entity-types": "Types d'entités",
+    "edit-entity-tooltip": "Modifier l'entité",
+    "delete-entity-type-tooltip": "Supprimer le type d'entité",
+    "configuration-for": "Configuration pour",
+    "unselect-entity-tooltip": "Désélectionner l'entité",
+    "obfuscate-tooltip": "Si coché, toutes les valeurs sont masquées dans Tock Studio",
+    "obfuscate-label": "Masquer la valeur dans Tock Studio",
+    "predefined-values": "Valeurs prédéfinies",
+    "no-model-tooltip": "Si coché, aucun modèle n'est utilisé : seules les valeurs exactes sont reconnues/évaluées",
+    "no-model-label": "Sans modèle",
+    "model-limit-label": "Seuil du modèle",
+    "model-limit-placeholder": "Seuil du modèle",
+    "model-limit-tooltip": "Nombre entre 0 et 1 - seules les probabilités au-dessus de cette valeur sont évaluées",
+    "full-text-tooltip": "Si coché, toutes les valeurs contenant le texte recherché sont retournées",
+    "full-text-label": "Texte complet",
+    "download-dictionary": "Télécharger le dictionnaire",
+    "download-dictionary-tooltip": "Télécharger le dictionnaire",
+    "upload-dictionary": "Charger un dictionnaire",
+    "upload-dictionary-tooltip": "Charger un dictionnaire",
+    "table": {
+      "predefined-value": "Valeur prédéfinie",
+      "allowed-labels": "Étiquettes autorisées",
+      "actions": "Actions"
+    },
+    "delete-label-tooltip": "Supprimer l'étiquette",
+    "add-label-placeholder": "Ajouter une étiquette",
+    "add-label-tooltip": "Ajouter une étiquette",
+    "delete-predefined-value-tooltip": "Supprimer la valeur prédéfinie",
+    "add-new-predefined-value": "Ajouter une nouvelle valeur prédéfinie",
+    "new-predefined-value-placeholder": "Nouvelle valeur prédéfinie",
+    "entity-roles": "Rôles d'entités",
+    "no-entity-role-defined": "Aucun rôle d'entité défini",
+    "dictionary_imported": "Dictionnaire importé",
+    "dictionary_title": "Dictionnaire",
+    "dictionary_exported": "Dictionnaire exporté",
+    "entity_updated": "Entité mise à jour",
+    "update_title": "Mise à jour",
+    "remove_entity_type_title": "Supprimer le type d'entité {entityType}",
+    "remove_entity_type_confirmation": "Êtes-vous sûr ? Cela peut supprimer complètement votre modèle !",
+    "entity_type_removed": "Type d'entité {entityType} supprimé",
+    "remove_entity_type_success_title": "Type d'entité supprimé",
+    "delete_entity_type_failed": "La suppression du type d'entité {entityType} a échoué",
+    "error_title": "Erreur",
+    "configuration_updated": "Configuration mise à jour",
+    "empty_predefined_value_error": "La valeur prédéfinie vide n'est pas autorisée",
+    "predefined_value_exists_error": "La valeur prédéfinie existe déjà",
+    "update_predefined_value_failed": "La mise à jour de la valeur prédéfinie '{name}' a échoué",
+    "create_predefined_value_failed": "La création de la valeur prédéfinie '{name}' a échoué",
+    "delete_predefined_value_failed": "La suppression de la valeur prédéfinie '{name}' a échoué",
+    "create_label_failed": "La création de l'étiquette '{name}' pour la valeur prédéfinie '{value}' a échoué",
+    "delete_label_failed": "La suppression de l'étiquette '{name}' pour la valeur prédéfinie '{value}' a échoué"
+  },
+  "entity-details": {
+    "remove-sub-entity-tooltip": "Supprimer le sous-type d'entité",
+    "evaluate-at-start-of-day-tooltip": "Utile pour les heures non relatives",
+    "evaluate-at-start-of-day-label": "Évaluer au début de la journée",
+    "entity_updated": "Entité mise à jour",
+    "update_title": "Mise à jour",
+    "remove_subentity_title": "Supprimer la sous-entité {entityType}",
+    "remove_subentity_confirmation": "Êtes-vous sûr ?",
+    "subentity_removed": "Sous-entité {entityType} supprimée",
+    "remove_subentity_success_title": "Sous-entité supprimée",
+    "remove_subentity_failed": "La suppression de la sous-entité {entityType} a échoué",
+    "error_title": "Erreur"
+  },
+  "intents-logs": {
+    "title": "Historique des phrases",
+    "refresh-sentences-tooltip": "Rafraîchir les phrases",
+    "download-csv-dump-tooltip": "Télécharger un export CSV minimal des logs",
+    "search-logs-placeholder": "Rechercher dans les logs",
+    "only-current-locale": "Uniquement la locale actuelle",
+    "no-logs-found": "Aucun log trouvé",
+    "error-tooltip": "erreur",
+    "intent-probability-tooltip": "probabilité de l'intention",
+    "view-full-log-tooltip": "Voir le log complet",
+    "create-faq-tooltip": "Créer une FAQ basée sur cette phrase",
+    "copy-sentence-tooltip": "Copier la phrase",
+    "show-dialog-tooltip": "Afficher le dialogue",
+    "in": "en",
+    "messages": {
+      "sentence-copied": "Phrase copiée dans le presse-papiers",
+      "clipboard": "Presse-papiers",
+      "export-provided": "Export fourni",
+      "dump": "Export"
+    }
+  },
+  "display-intents-full-log": {
+    "title": "Journal complet",
+    "requestTitle": "Requête",
+    "responseTitle": "Réponse"
+  }
+}

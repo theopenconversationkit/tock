@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { NbDialogService } from '@nebular/theme';
 import { UserRole } from '../../../model/auth';
@@ -24,9 +24,10 @@ import { StateService } from '../../../core-nlp/state.service';
 import { IntentStoryDetailsComponent } from '../../../shared/components';
 
 @Component({
-  selector: 'tock-intents-list',
-  templateUrl: './intents-list.component.html',
-  styleUrls: ['./intents-list.component.scss']
+    selector: 'tock-intents-list',
+    templateUrl: './intents-list.component.html',
+    styleUrls: ['./intents-list.component.scss'],
+    standalone: false
 })
 export class IntentsListComponent implements OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

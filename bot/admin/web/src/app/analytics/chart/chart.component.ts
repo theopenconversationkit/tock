@@ -23,9 +23,10 @@ import { UserFilter } from '../users/users.component';
 import { ChartData, GraphInfo } from './ChartData';
 
 @Component({
-  selector: 'tock-chart',
-  templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.css']
+    selector: 'tock-chart',
+    templateUrl: './chart.component.html',
+    styleUrls: ['./chart.component.css'],
+    standalone: false
 })
 export class ChartComponent implements OnChanges {
   @Input()

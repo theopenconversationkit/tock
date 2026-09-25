@@ -20,9 +20,10 @@ import { BotApplicationConfiguration, BotConfiguration } from '../../../core/mod
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 
 @Component({
-  selector: 'tock-bot-configuration-dialog',
-  templateUrl: './select-bot-configuration-dialog.component.html',
-  styleUrls: ['./select-bot-configuration-dialog.component.css']
+    selector: 'tock-bot-configuration-dialog',
+    templateUrl: './select-bot-configuration-dialog.component.html',
+    styleUrls: ['./select-bot-configuration-dialog.component.css'],
+    standalone: false
 })
 export class SelectBotConfigurationDialogComponent implements OnInit {
   @Input()

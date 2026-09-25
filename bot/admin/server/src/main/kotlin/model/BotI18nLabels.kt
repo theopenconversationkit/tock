@@ -22,4 +22,7 @@ import java.util.Locale
 /**
  *
  */
-data class BotI18nLabels(val labels: List<BotI18nLabel>, val localeBase: Locale = defaultLocale)
+data class BotI18nLabels(
+    val labels: List<BotI18nLabel>,
+    val localeBase: Locale = defaultLocale,
+)

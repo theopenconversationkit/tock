@@ -42,6 +42,7 @@ import { RagRoutingModule } from './rag-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RagExcludedComponent } from './rag-excluded/rag-excluded.component';
 import { PromptContextSettingsComponent } from './prompt-context/prompt-context-settings.component';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @NgModule({
   imports: [
@@ -66,9 +67,14 @@ import { PromptContextSettingsComponent } from './prompt-context/prompt-context-
     NbAutocompleteModule,
     NbFormFieldModule,
     NbBadgeModule,
-    NbTagModule
+    NbTagModule,
+    TranslocoModule
   ],
   declarations: [RagTabsComponent, RagSettingsComponent, RagExcludedComponent, PromptContextSettingsComponent],
-  providers: []
+  providers: [
+    provideTranslocoScope({
+      scope: 'rag'
+    })
+  ]
 })
 export class RagModule {}

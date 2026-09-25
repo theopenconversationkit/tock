@@ -59,7 +59,8 @@ object I18nCsvCodec {
         val sb = StringBuilder()
         val printer = CsvCodec.newPrinter(sb)
         printer.printRecord(CsvColumn.values().map { it.name })
-        i18nDAO.getLabels(namespace, query?.toI18nLabelFilter())
+        i18nDAO
+            .getLabels(namespace, query?.toI18nLabelFilter())
             .forEach { label ->
                 label.i18n.forEach { localizedLabel ->
                     printer.printRecord(
@@ -84,10 +85,11 @@ object I18nCsvCodec {
     fun importCsv(
         namespace: String,
         content: String,
-    ): Int {
-        return try {
+    ): Int =
+        try {
             val parsedCsv =
-                csvFormat().withFirstRecordAsHeader()
+                csvFormat()
+                    .withFirstRecordAsHeader()
                     .parse(StringReader(content))
             val headers = parsedCsv.headerNames
             val isNamespaceInCsv = headers.contains(CsvColumn.Namespace.name)
@@ -120,8 +122,7 @@ object I18nCsvCodec {
                             ),
                         ),
                     )
-                }
-                .filter { it.i18n.any { it.validated } }
+                }.filter { it.i18n.any { it.validated } }
                 .groupBy { it._id }
                 .map { (key, value) ->
                     value
@@ -133,7 +134,8 @@ object I18nCsvCodec {
                                     LinkedHashSet(
                                         localized +
                                             (
-                                                i18nDAO.getLabelById(key)
+                                                i18nDAO
+                                                    .getLabelById(key)
                                                     ?.i18n
                                                     ?.filter { old ->
                                                         localized.none {
@@ -158,5 +160,4 @@ object I18nCsvCodec {
             logger.error(t)
             0
         }
-    }
 }

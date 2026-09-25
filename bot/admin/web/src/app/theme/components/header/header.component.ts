@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit, inject } from '@angular/core';
 
 import { NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 import { StateService } from '../../../core-nlp/state.service';
@@ -28,11 +28,13 @@ import { CoreConfig } from '../../../core-nlp/core.config';
 import { Router } from '@angular/router';
 import { TestDialogService } from '../../../shared/components/test-dialog/test-dialog.service';
 import { DirtyStateService } from '../../../core/dirty-state.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-header',
-  styleUrls: ['./header.component.scss'],
-  templateUrl: './header.component.html'
+    selector: 'tock-header',
+    styleUrls: ['./header.component.scss'],
+    templateUrl: './header.component.html',
+    standalone: false
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private destroy: Subject<boolean> = new Subject<boolean>();
@@ -57,7 +59,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private config: CoreConfig,
     private router: Router,
     private testDialogService: TestDialogService,
-    private dirtyState: DirtyStateService
+    private dirtyState: DirtyStateService,
+    public transloco: TranslocoService
   ) {}
 
   ngOnInit() {
@@ -79,6 +82,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
       });
       this.refreshNamespaceName();
     });
+  }
+
+  setLang(lang: string) {
+    this.transloco.setActiveLang(lang);
+    localStorage.setItem('preferred-lang', lang);
   }
 
   private refreshNamespaceName() {

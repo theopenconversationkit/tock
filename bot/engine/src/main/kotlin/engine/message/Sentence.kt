@@ -66,22 +66,22 @@ data class Sentence(
         playerId: PlayerId,
         applicationId: String,
         recipientId: PlayerId,
-    ): Action {
-        return SendSentence(
+    ): Action =
+        SendSentence(
             playerId,
             applicationId,
             recipientId,
             text,
-            messages.mapNotNull {
-                try {
-                    it.findConnectorMessage()
-                } catch (e: Exception) {
-                    logger.error(e)
-                    null
-                }
-            }.toMutableList(),
+            messages
+                .mapNotNull {
+                    try {
+                        it.findConnectorMessage()
+                    } catch (e: Exception) {
+                        logger.error(e)
+                        null
+                    }
+                }.toMutableList(),
         )
-    }
 
     override fun obfuscate(): Sentence =
         copy(
@@ -89,9 +89,7 @@ data class Sentence(
             messages = messages.asSequence().map { it.obfuscate() }.toMutableList(),
         )
 
-    override fun toPrettyString(): String {
-        return text ?: "{$eventType:${elementsToString(messages)}}"
-    }
+    override fun toPrettyString(): String = text ?: "{$eventType:${elementsToString(messages)}}"
 
     override fun isSimpleMessage(): Boolean = text != null
 

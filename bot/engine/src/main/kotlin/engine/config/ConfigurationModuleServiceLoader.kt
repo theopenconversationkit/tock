@@ -23,7 +23,8 @@ interface ConfigurationModuleServiceLoader {
 }
 
 private val modulesMap: Map<String, BotConfigurationModule> =
-    Loader.loadServices<ConfigurationModuleServiceLoader>()
+    Loader
+        .loadServices<ConfigurationModuleServiceLoader>()
         .flatMap { it.modules() }
         .associateBy { it.id }
 

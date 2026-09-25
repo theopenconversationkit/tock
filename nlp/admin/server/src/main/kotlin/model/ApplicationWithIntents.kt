@@ -102,8 +102,8 @@ data class ApplicationWithIntents(
             application._id,
         )
 
-    fun toApplication(): ApplicationDefinition {
-        return ApplicationDefinition(
+    fun toApplication(): ApplicationDefinition =
+        ApplicationDefinition(
             name,
             label,
             namespace,
@@ -119,5 +119,4 @@ data class ApplicationWithIntents(
             normalizeText,
             _id ?: newId(),
         )
-    }
 }

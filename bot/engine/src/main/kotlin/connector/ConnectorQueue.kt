@@ -34,7 +34,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * A Queue to ensure the calls from the same user id are sent sequentially.
  */
-class ConnectorQueue(private val executor: Executor, private val clock: InstantSource = InstantSource.system()) {
+class ConnectorQueue(
+    private val executor: Executor,
+    private val clock: InstantSource = InstantSource.system(),
+) {
     private class ScheduledAction<T>(
         private val baseAction: Action,
         private val processedAction: CompletableFuture<T?>,
@@ -45,9 +48,7 @@ class ConnectorQueue(private val executor: Executor, private val clock: InstantS
 
         fun joinAndSend() = processedAction.join()?.let(send)
 
-        override fun toString(): String {
-            return baseAction.toString()
-        }
+        override fun toString(): String = baseAction.toString()
     }
 
     private inner class UserQueue : Queue<ScheduledAction<*>> by ConcurrentLinkedQueue() {
@@ -73,7 +74,8 @@ class ConnectorQueue(private val executor: Executor, private val clock: InstantS
     }
 
     private val messagesByRecipientMap: Cache<String, UserQueue> =
-        CacheBuilder.newBuilder()
+        CacheBuilder
+            .newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
             .build()
 

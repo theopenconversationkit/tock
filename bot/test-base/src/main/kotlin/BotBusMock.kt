@@ -323,7 +323,9 @@ open class BotBusMock(
         if (a != context.firstAction) {
             context.story.actions.add(a)
             // update action state
-            a.state.intent = context.dialog.state.currentIntent?.name
+            a.state.intent =
+                context.dialog.state.currentIntent
+                    ?.name
             a.state.step = context.story.currentStep?.name
         }
         if (a.state.userInterface != null) {
@@ -381,9 +383,7 @@ open class BotBusMock(
         userPreferences.locale = locale
     }
 
-    override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? {
-        return mockData.contextMap[key]
-    }
+    override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? = mockData.contextMap[key]
 
     override fun <T : Any> setBusContextValue(
         key: DialogContextKey<T>,
@@ -424,9 +424,7 @@ open class BotBusMock(
     override fun sendRawText(
         plainText: CharSequence?,
         delay: Long,
-    ): BotBus {
-        return answer(createBotSentence(plainText), delay)
-    }
+    ): BotBus = answer(createBotSentence(plainText), delay)
 
     override fun sendDebugData(
         title: String,
@@ -444,9 +442,7 @@ open class BotBusMock(
     override fun send(
         action: Action,
         delay: Long,
-    ): BotBus {
-        return answer(action, delay)
-    }
+    ): BotBus = answer(action, delay)
 
     override fun withPriority(priority: ActionPriority): BotBus {
         mockData.priority = priority
@@ -492,27 +488,28 @@ open class BotBusMock(
         if (key == null) {
             EMPTY_TRANSLATED_STRING
         } else {
-            Translator.formatMessage(
-                I18nLabel.findLabel(key.defaultI18n, userLocale, userInterfaceType, targetConnectorType.id)?.label
-                    ?: translator.translate(
-                        key.defaultLabel.toString(),
-                        defaultLocale,
+            Translator
+                .formatMessage(
+                    I18nLabel.findLabel(key.defaultI18n, userLocale, userInterfaceType, targetConnectorType.id)?.label
+                        ?: translator.translate(
+                            key.defaultLabel.toString(),
+                            defaultLocale,
+                            userLocale,
+                        ),
+                    I18nContext(
                         userLocale,
+                        userInterfaceType,
+                        targetConnectorType.id,
+                        dialog.id.toString(),
                     ),
-                I18nContext(
-                    userLocale,
-                    userInterfaceType,
-                    targetConnectorType.id,
-                    dialog.id.toString(),
-                ),
-                key.args.map { arg ->
-                    when (arg) {
-                        is I18nLabelValue -> translate(arg)
-                        is Pair<*, *> -> if (arg.second is I18nLabelValue) Pair(arg.first, translate(arg.second as I18nLabelValue)) else arg
-                        else -> arg
-                    }
-                },
-            ).raw
+                    key.args.map { arg ->
+                        when (arg) {
+                            is I18nLabelValue -> translate(arg)
+                            is Pair<*, *> -> if (arg.second is I18nLabelValue) Pair(arg.first, translate(arg.second as I18nLabelValue)) else arg
+                            else -> arg
+                        }
+                    },
+                ).raw
         }
 
     override fun markAsUnknown() {
@@ -522,11 +519,10 @@ open class BotBusMock(
     /**
      * Update Action using BotAnswerInterceptor
      */
-    fun applyBotAnswerInterceptor(a: Action): Action {
-        return context.testContext.botAnswerInterceptors.fold(a) { action, interceptor ->
+    fun applyBotAnswerInterceptor(a: Action): Action =
+        context.testContext.botAnswerInterceptors.fold(a) { action, interceptor ->
             interceptor.handle(action, this)
         }
-    }
 
     /**
      * Assert that logs contains specified messages.

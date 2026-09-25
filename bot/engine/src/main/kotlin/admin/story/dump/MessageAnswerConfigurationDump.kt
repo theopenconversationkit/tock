@@ -24,8 +24,9 @@ import ai.tock.bot.admin.message.MessageConfiguration
 /**
  *
  */
-data class MessageAnswerConfigurationDump(val messages: List<MessageConfiguration> = emptyList()) :
-    AnswerConfigurationDump(AnswerConfigurationType.message) {
+data class MessageAnswerConfigurationDump(
+    val messages: List<MessageConfiguration> = emptyList(),
+) : AnswerConfigurationDump(AnswerConfigurationType.message) {
     constructor(conf: MessageAnswerConfiguration) : this(conf.messages)
 
     override fun toAnswer(

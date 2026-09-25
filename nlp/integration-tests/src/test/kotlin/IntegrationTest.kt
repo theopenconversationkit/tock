@@ -75,9 +75,16 @@ class IntegrationTest {
                 30,
                 Entity(EntityType("duckling:datetime"), "datetime"),
                 DateEntityValue(
-                    ZonedDateTime.now().withZoneSameInstant(defaultZoneId).plusDays(1).withHour(0).withMinute(0).withSecond(
-                        0,
-                    ).withNano(0).withFixedOffsetZone(),
+                    ZonedDateTime
+                        .now()
+                        .withZoneSameInstant(defaultZoneId)
+                        .plusDays(1)
+                        .withHour(0)
+                        .withMinute(0)
+                        .withSecond(
+                            0,
+                        ).withNano(0)
+                        .withFixedOffsetZone(),
                     DateEntityGrain.day,
                 ),
                 true,

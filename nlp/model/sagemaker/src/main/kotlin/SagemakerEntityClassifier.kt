@@ -26,7 +26,9 @@ import ai.tock.nlp.sagemaker.SagemakerAwsClient.ParsedRequest
 import ai.tock.shared.property
 import software.amazon.awssdk.regions.Region
 
-internal class SagemakerEntityClassifier(model: EntityModelHolder) : NlpEntityClassifier(model) {
+internal class SagemakerEntityClassifier(
+    model: EntityModelHolder,
+) : NlpEntityClassifier(model) {
     companion object {
         val CLIENT_TYPE = SagemakerClientType.ENTITY_CLASSIFICATION
     }
@@ -36,28 +38,30 @@ internal class SagemakerEntityClassifier(model: EntityModelHolder) : NlpEntityCl
         text: String,
         tokens: Array<String>,
     ): List<EntityRecognition> {
-        SagemakerClientProvider.getClient(
-            SagemakerAwsClientProperties(
-                CLIENT_TYPE.clientName,
-                Region.of(property("tock_sagemaker_aws_region_name", "eu-west-3")),
-                property("tock_sagemaker_aws_entities_endpoint_name", "default"),
-                property("tock_sagemaker_aws_content_type", "application/json"),
-                property("tock_sagemaker_aws_profile_name", "default"),
-            ),
-        ).parseEntities(ParsedRequest(text)).run {
-            return entities.map { e ->
-                e.role
-                EntityRecognition(
-                    EntityValue(
-                        e.start,
-                        e.end,
-                        // entity is entityType in fact -- do not modify for the moment
-                        Entity(EntityType(e.entity), e.role.toString()),
-                        e.value,
-                    ),
-                    e.confidence,
-                )
+        SagemakerClientProvider
+            .getClient(
+                SagemakerAwsClientProperties(
+                    CLIENT_TYPE.clientName,
+                    Region.of(property("tock_sagemaker_aws_region_name", "eu-west-3")),
+                    property("tock_sagemaker_aws_entities_endpoint_name", "default"),
+                    property("tock_sagemaker_aws_content_type", "application/json"),
+                    property("tock_sagemaker_aws_profile_name", "default"),
+                ),
+            ).parseEntities(ParsedRequest(text))
+            .run {
+                return entities.map { e ->
+                    e.role
+                    EntityRecognition(
+                        EntityValue(
+                            e.start,
+                            e.end,
+                            // entity is entityType in fact -- do not modify for the moment
+                            Entity(EntityType(e.entity), e.role.toString()),
+                            e.value,
+                        ),
+                        e.confidence,
+                    )
+                }
             }
-        }
     }
 }

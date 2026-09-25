@@ -52,9 +52,10 @@ function displayDuration(d): string {
 }
 
 @Component({
-  selector: 'tock-test-builds',
-  templateUrl: './test-builds.component.html',
-  styleUrls: ['./test-builds.component.scss']
+    selector: 'tock-test-builds',
+    templateUrl: './test-builds.component.html',
+    styleUrls: ['./test-builds.component.scss'],
+    standalone: false
 })
 export class TestBuildsComponent implements OnInit, OnDestroy {
   destroy = new Subject();

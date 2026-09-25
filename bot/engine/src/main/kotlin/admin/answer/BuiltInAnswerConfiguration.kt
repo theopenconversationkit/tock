@@ -19,5 +19,6 @@ package ai.tock.bot.admin.answer
 /**
  *
  */
-data class BuiltInAnswerConfiguration(val storyHandlerClassName: String?) :
-    AnswerConfiguration(AnswerConfigurationType.builtin)
+data class BuiltInAnswerConfiguration(
+    val storyHandlerClassName: String?,
+) : AnswerConfiguration(AnswerConfigurationType.builtin)

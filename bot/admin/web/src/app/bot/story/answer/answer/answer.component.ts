@@ -29,9 +29,10 @@ import { AnswerController } from './../../controller';
 import { BotSharedService } from '../../../../shared/bot-shared.service';
 
 @Component({
-  selector: 'tock-answer',
-  templateUrl: './answer.component.html',
-  styleUrls: ['./answer.component.scss']
+    selector: 'tock-answer',
+    templateUrl: './answer.component.html',
+    styleUrls: ['./answer.component.scss'],
+    standalone: false
 })
 export class AnswerComponent implements OnInit {
   @Input() answer: AnswerContainer;

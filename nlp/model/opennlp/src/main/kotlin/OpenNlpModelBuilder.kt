@@ -107,19 +107,21 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
                         val text = expression.text
                         val tokens = tokenizer.tokenize(tokenizerContext, text)
                         val spans =
-                            expression.entities.mapNotNull { e ->
-                                val start =
-                                    if (e.start == 0) 0 else tokenizer.tokenize(tokenizerContext, text.substring(0, e.start)).size
-                                val end = start + tokenizer.tokenize(tokenizerContext, text.substring(e.start, e.end)).size
-                                if (start >= tokens.size || end > tokens.size) {
-                                    null
-                                } else {
-                                    entityCount++
-                                    val roleSpan = Span(start, end, e.definition.role)
-                                    spanEntityMap.put(roleSpan, e)
-                                    roleSpan
-                                }
-                            }.toTypedArray().sortedArray()
+                            expression.entities
+                                .mapNotNull { e ->
+                                    val start =
+                                        if (e.start == 0) 0 else tokenizer.tokenize(tokenizerContext, text.substring(0, e.start)).size
+                                    val end = start + tokenizer.tokenize(tokenizerContext, text.substring(e.start, e.end)).size
+                                    if (start >= tokens.size || end > tokens.size) {
+                                        null
+                                    } else {
+                                        entityCount++
+                                        val roleSpan = Span(start, end, e.definition.role)
+                                        spanEntityMap.put(roleSpan, e)
+                                        roleSpan
+                                    }
+                                }.toTypedArray()
+                                .sortedArray()
 
                         if (spans.size == expression.entities.size) {
                             try {

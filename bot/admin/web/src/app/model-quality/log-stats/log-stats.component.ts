@@ -22,9 +22,10 @@ import { LogStat, LogStatsQuery } from '../../model/nlp';
 import { formatStatDate } from '../../model/commons';
 
 @Component({
-  selector: 'tock-log-stats',
-  templateUrl: './log-stats.component.html',
-  styleUrls: ['./log-stats.component.scss']
+    selector: 'tock-log-stats',
+    templateUrl: './log-stats.component.html',
+    styleUrls: ['./log-stats.component.scss'],
+    standalone: false
 })
 export class LogStatsComponent implements OnInit, OnDestroy {
   destroy = new Subject();

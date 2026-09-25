@@ -16,11 +16,18 @@
 
 package ai.tock.iadvize.client.graphql
 
-data class CloseMessageInput(val _unusedField: Boolean = false)
+data class CloseMessageInput(
+    val _unusedField: Boolean = false,
+)
 
-data class TransferOptionsInput(val timeout: Int = 5)
+data class TransferOptionsInput(
+    val timeout: Int = 5,
+)
 
-data class TransferMessageInput(val routingRuleId: String, val transferOptions: TransferOptionsInput)
+data class TransferMessageInput(
+    val routingRuleId: String,
+    val transferOptions: TransferOptionsInput,
+)
 
 data class ChatbotActionInput(
     val closeMessage: CloseMessageInput? = null,

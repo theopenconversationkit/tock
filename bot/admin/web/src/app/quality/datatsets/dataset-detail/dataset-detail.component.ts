@@ -3,15 +3,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, of, Subject, takeUntil } from 'rxjs';
 import { filter, skip, switchMap, take } from 'rxjs/operators';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
-
 import { Dataset, DatasetQuestion, DatasetRun, DatasetRunAction, DatasetRunState } from '../models';
-
 import { SettingsService } from '../../../core-nlp/settings.service';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { DatasetDetailSettingsDiffComponent, SettingsDiffCurrentTabs } from './settings-diff/settings-diff.component';
 import { hasDiffExcluding } from '../../../shared/utils';
 import { DatasetsService } from '../services/datasets.service';
 import { DatePipe } from '@angular/common';
+import { TranslocoService } from '@jsverse/transloco';
 
 interface RunDiffFlags {
   statusDiff: boolean;
@@ -27,9 +26,10 @@ interface ActiveFilters {
 }
 
 @Component({
-  selector: 'tock-dataset-detail',
-  templateUrl: './dataset-detail.component.html',
-  styleUrl: './dataset-detail.component.scss'
+    selector: 'tock-dataset-detail',
+    templateUrl: './dataset-detail.component.html',
+    styleUrl: './dataset-detail.component.scss',
+    standalone: false
 })
 export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
@@ -79,7 +79,8 @@ export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     private dialogService: DialogService,
     private datasetsService: DatasetsService,
     private datePipe: DatePipe,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
 
   ngAfterViewInit(): void {
@@ -294,7 +295,11 @@ export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   getPrevEntryTooltip(run: DatasetRun) {
-    return `Run started by ${run.startedBy} on ${this.datePipe.transform(run.startTime, 'y/MM/dd - HH:mm')}`;
+    const date = this.datePipe.transform(run.startTime, 'y/MM/dd - HH:mm');
+    return this.transloco.translate('quality.dataset-detail.run_started_by_tooltip', {
+      startedBy: run.startedBy,
+      date: date
+    });
   }
 
   getRunDuration(run: DatasetRun): string {
@@ -378,6 +383,7 @@ export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     if (qA == null || qB == null) return false;
     return qA.trim() !== qB.trim();
   }
+
   // ── Private helpers ───────────────────────────────────────────────────────
 
   private _buildComparableRuns(dataset: Dataset): DatasetRun[] {

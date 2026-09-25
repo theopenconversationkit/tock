@@ -86,21 +86,20 @@ class FaqAdminServiceSettingsTest : AbstractTest() {
         every { storyDefinitionDAO.save(any()) } just Runs
     }
 
-    private fun generateIntentDefinition(intentId: String): IntentDefinition {
-        return IntentDefinition(
+    private fun generateIntentDefinition(intentId: String): IntentDefinition =
+        IntentDefinition(
             _id = intentId.toId(),
             name = "name-$intentId",
             namespace = "namespace-$intentId",
             applications = setOf("appId-$intentId".toId()),
             entities = emptySet<EntityDefinition>(),
         )
-    }
 
     private fun generateStory(
         intent: IntentDefinition,
         storyId: String,
-    ): StoryDefinitionConfiguration {
-        return StoryDefinitionConfiguration(
+    ): StoryDefinitionConfiguration =
+        StoryDefinitionConfiguration(
             _id = storyId.toId(),
             storyId = storyId,
             botId = "bot-$storyId",
@@ -108,21 +107,22 @@ class FaqAdminServiceSettingsTest : AbstractTest() {
             currentType = AnswerConfigurationType.simple,
             answers = emptyList(),
         )
-    }
 
     private fun generateFAQ(
         intent: IntentDefinition,
         faqId: String,
-    ): FaqDefinition {
-        return FaqDefinition(
+    ): FaqDefinition =
+        FaqDefinition(
             _id = faqId.toId(),
             "botId",
             namespace,
             intentId = intent._id,
             i18nId = "i18nId-$faqId".toId(),
-            emptyList(), true, Instant.now(), Instant.now(),
+            emptyList(),
+            true,
+            Instant.now(),
+            Instant.now(),
         )
-    }
 
     @BeforeEach
     override fun initMocks() {

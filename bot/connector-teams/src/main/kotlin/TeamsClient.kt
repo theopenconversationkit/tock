@@ -42,7 +42,9 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Url
 
-internal class TeamsClient(private val tokenHandler: TokenHandler) {
+internal class TeamsClient(
+    private val tokenHandler: TokenHandler,
+) {
     private val connectorApi: ConnectorMicrosoftApi
     private val logger = KotlinLogging.logger {}
     private val customInterceptor = CustomInterceptor()
@@ -54,8 +56,7 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
                 longProperty("tock_whatsapp_request_timeout_ms", 30000),
                 logger,
                 interceptors = listOf(customInterceptor),
-            )
-                .baseUrl("https://smba.trafficmanager.net/emea/")
+            ).baseUrl("https://smba.trafficmanager.net/emea/")
                 .addJacksonConverter(tokenHandler.teamsMapper)
                 .build()
                 .create()
@@ -86,10 +87,11 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
         }
         // send the message
         val messageResponse =
-            connectorApi.postResponse(
-                url,
-                activity,
-            ).execute()
+            connectorApi
+                .postResponse(
+                    url,
+                    activity,
+                ).execute()
         if (!messageResponse.isSuccessful) {
             logger.warn {
                 "Microsoft Login Api Error : ${messageResponse.code()} // ${messageResponse.errorBody()}"
@@ -114,6 +116,7 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
                     },
                 )
             }
+
             is TeamsCarousel -> {
                 val listElement = mutableListOf<TeamsBotMessage>()
                 listElement.addAll(event.listMessage)
@@ -125,6 +128,7 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
                     )
                 }
             }
+
             is TeamsHeroCard -> {
                 val card =
                     HeroCard().apply {
@@ -147,7 +151,9 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
         return attachments
     }
 
-    private data class MessageResponse(val id: String)
+    private data class MessageResponse(
+        val id: String,
+    )
 
     private interface ConnectorMicrosoftApi {
         @POST
@@ -164,7 +170,8 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
 
             var request = chain.request()
             request =
-                request.newBuilder()
+                request
+                    .newBuilder()
                     .addHeader("Authorization", "Bearer ${tokenHandler.token}")
                     .build()
             val response = chain.proceed(request)

@@ -40,7 +40,9 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Query
 
-internal data class BooleanResponse(val success: Boolean = true)
+internal data class BooleanResponse(
+    val success: Boolean = true,
+)
 
 /**
  *

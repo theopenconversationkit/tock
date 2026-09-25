@@ -29,7 +29,8 @@ val defaultLocale: Locale = Locale(property("tock_default_locale", "en"))
  * The languages supported by Tock.
  */
 val supportedLanguages: Map<String, Locale> by lazy(PUBLICATION) {
-    Locale.getAvailableLocales()
+    Locale
+        .getAvailableLocales()
         .asSequence()
         .filter { it.language.isNotEmpty() }
         .distinctBy { it.language }

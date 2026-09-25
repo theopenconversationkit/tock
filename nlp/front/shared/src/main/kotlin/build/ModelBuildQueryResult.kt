@@ -19,4 +19,7 @@ package ai.tock.nlp.front.shared.build
 /**
  *
  */
-data class ModelBuildQueryResult(val total: Long, val data: List<ModelBuild>)
+data class ModelBuildQueryResult(
+    val total: Long,
+    val data: List<ModelBuild>,
+)

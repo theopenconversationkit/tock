@@ -31,4 +31,6 @@ import kotlin.reflect.KClass
 @ConnectorHandler(connectorTypeId = BUSINESS_CHAT_CONNECTOR_TYPE_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class BusinessChatHandler(val value: KClass<out ConnectorSpecificHandling>)
+annotation class BusinessChatHandler(
+    val value: KClass<out ConnectorSpecificHandling>,
+)

@@ -21,9 +21,10 @@ import { StateService } from '../../../../../core-nlp/state.service';
 import { getContrastYIQ } from '../../../../utils';
 
 @Component({
-  selector: 'tock-sentence-training-create-entity',
-  templateUrl: './sentence-training-create-entity.component.html',
-  styleUrls: ['./sentence-training-create-entity.component.scss']
+    selector: 'tock-sentence-training-create-entity',
+    templateUrl: './sentence-training-create-entity.component.html',
+    styleUrls: ['./sentence-training-create-entity.component.scss'],
+    standalone: false
 })
 export class SentenceTrainingCreateEntityComponent {
   @Input() intentOrEntityType;

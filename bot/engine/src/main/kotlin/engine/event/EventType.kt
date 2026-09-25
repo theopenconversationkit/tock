@@ -20,7 +20,9 @@ package ai.tock.bot.engine.event
  * Define default event types.
  */
 @Suppress("ktlint:standard:enum-entry-name-case")
-enum class EventType(val action: Boolean = true) {
+enum class EventType(
+    val action: Boolean = true,
+) {
     /**
      * [SendSentence] action type.
      */

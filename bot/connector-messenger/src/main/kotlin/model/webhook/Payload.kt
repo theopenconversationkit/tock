@@ -20,4 +20,4 @@ import ai.tock.bot.connector.messenger.json.webhook.PayloadDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 @JsonDeserialize(using = PayloadDeserializer::class)
-abstract class Payload()
+abstract class Payload

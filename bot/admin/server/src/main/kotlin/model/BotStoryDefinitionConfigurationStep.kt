@@ -98,15 +98,12 @@ data class BotStoryDefinitionConfigurationStep(
                         story.category,
                         e.userSentence,
                     )
-            )
-                .let { Translator.saveIfNotExist(it, readOnly) },
+            ).let { Translator.saveIfNotExist(it, readOnly) },
             e.children.map { BotStoryDefinitionConfigurationStep(story, it, readOnly) },
             e.level,
             e.entity,
             e.metrics,
         )
 
-    fun hasMetrics(): Boolean {
-        return metrics.isNotEmpty() || children.any { it.hasMetrics() }
-    }
+    fun hasMetrics(): Boolean = metrics.isNotEmpty() || children.any { it.hasMetrics() }
 }

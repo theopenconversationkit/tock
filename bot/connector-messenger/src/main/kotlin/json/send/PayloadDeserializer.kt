@@ -69,30 +69,60 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
             jp.read<PayloadFields> { fields, name ->
                 with(fields) {
                     when (name) {
-                        "template_type" -> templateType = jp.readValue()
-                        UrlPayload::url.name -> url = jp.valueAsString
-                        "is_reusable" -> isReusable = jp.valueAsBoolean
-                        "attachment_id" -> attachmentId = jp.valueAsString
-                        GenericPayload::elements.name ->
+                        "template_type" -> {
+                            templateType = jp.readValue()
+                        }
+
+                        UrlPayload::url.name -> {
+                            url = jp.valueAsString
+                        }
+
+                        "is_reusable" -> {
+                            isReusable = jp.valueAsBoolean
+                        }
+
+                        "attachment_id" -> {
+                            attachmentId = jp.valueAsString
+                        }
+
+                        GenericPayload::elements.name -> {
                             elements =
                                 jp.readValueAsTree<TreeNode>().run {
                                     if ((this as ArrayNode).elementAt(0).has("media_type")) {
-                                        jp.codec.treeToValue(
-                                            this,
-                                            Array<MediaElement>::class.java,
-                                        ).toList()
+                                        jp.codec
+                                            .treeToValue(
+                                                this,
+                                                Array<MediaElement>::class.java,
+                                            ).toList()
                                     } else {
-                                        jp.codec.treeToValue(
-                                            this,
-                                            Array<Element>::class.java,
-                                        ).toList()
+                                        jp.codec
+                                            .treeToValue(
+                                                this,
+                                                Array<Element>::class.java,
+                                            ).toList()
                                     }
                                 }
-                        ButtonPayload::buttons.name -> buttons = jp.readListValues()
-                        ButtonPayload::text.name -> text = jp.valueAsString
-                        "top_element_style" -> topElementStyle = jp.readValue()
-                        MediaPayload::sharable.name -> sharable = jp.valueAsBoolean
-                        else -> other = jp.readUnknownValue()
+                        }
+
+                        ButtonPayload::buttons.name -> {
+                            buttons = jp.readListValues()
+                        }
+
+                        ButtonPayload::text.name -> {
+                            text = jp.valueAsString
+                        }
+
+                        "top_element_style" -> {
+                            topElementStyle = jp.readValue()
+                        }
+
+                        MediaPayload::sharable.name -> {
+                            sharable = jp.valueAsBoolean
+                        }
+
+                        else -> {
+                            other = jp.readUnknownValue()
+                        }
                     }
                 }
             }

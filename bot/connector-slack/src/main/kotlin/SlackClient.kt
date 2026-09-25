@@ -44,8 +44,7 @@ object SlackClient {
         retrofitBuilderWithTimeoutAndLogger(
             30000,
             logger,
-        )
-            .baseUrl("https://hooks.slack.com")
+        ).baseUrl("https://hooks.slack.com")
             .build()
             .create(SlackApi::class.java)
 

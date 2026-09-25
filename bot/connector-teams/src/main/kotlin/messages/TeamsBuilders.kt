@@ -24,9 +24,7 @@ import com.microsoft.bot.schema.ActionTypes.OPEN_URL
 import com.microsoft.bot.schema.CardAction
 import com.microsoft.bot.schema.CardImage
 
-fun <T : Bus<T>> T.withTeams(messageProvider: () -> TeamsBotMessage): T {
-    return withMessage(teamsConnectorType, messageProvider)
-}
+fun <T : Bus<T>> T.withTeams(messageProvider: () -> TeamsBotMessage): T = withMessage(teamsConnectorType, messageProvider)
 
 fun I18nTranslator.teamsMessage(text: CharSequence): TeamsBotTextMessage = TeamsBotTextMessage(translate(text).toString())
 

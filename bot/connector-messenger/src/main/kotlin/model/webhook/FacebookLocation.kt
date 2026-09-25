@@ -21,7 +21,10 @@ import ai.tock.bot.engine.user.UserLocation
 /**
  *
  */
-data class FacebookLocation(val lat: Double, val long: Double) {
+data class FacebookLocation(
+    val lat: Double,
+    val long: Double,
+) {
     constructor(userLocation: UserLocation) : this(userLocation.lat, userLocation.lng)
 
     fun toUserLocation(): UserLocation = UserLocation(lat, long)

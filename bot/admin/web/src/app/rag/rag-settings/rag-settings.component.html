@@ -1,22 +1,6 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <tock-sticky-menu [offset]="50">
   <div class="d-flex flex-wrap">
-    <h1 class="flex-grow-1">Rag settings</h1>
+    <h1 class="flex-grow-1">{{ 'rag.rag-settings.title' | transloco }}</h1>
 
     <section class="grid-actions">
       <button
@@ -24,7 +8,7 @@
         nbButton
         ghost
         shape="round"
-        nbTooltip="Export Rag settings dump"
+        [nbTooltip]="'rag.rag-settings.export_tooltip' | transloco"
         (click)="exportSettings()"
       >
         <nb-icon icon="download"></nb-icon>
@@ -33,53 +17,49 @@
         nbButton
         ghost
         shape="round"
-        nbTooltip="Import Rag settings dump"
+        [nbTooltip]="'rag.rag-settings.import_tooltip' | transloco"
         (click)="importSettings()"
       >
         <nb-icon icon="upload"></nb-icon>
       </button>
 
+      @if (settingsBackup && form.dirty) {
       <button
-        *ngIf="settingsBackup && form.dirty"
         nbButton
         ghost
         status="primary"
-        nbTooltip="Cancel modifications"
+        [nbTooltip]="'rag.rag-settings.cancel_modifications_tooltip' | transloco"
         (click)="cancel()"
       >
         <nb-icon icon="x-circle"></nb-icon>
-        CANCEL
+        {{ 'rag.rag-settings.cancel_button' | transloco }}
       </button>
+      } @if (form.dirty && hasExportableData) {
       <button
-        *ngIf="form.dirty && hasExportableData"
         nbButton
         status="primary"
-        nbTooltip="Save settings"
+        [nbTooltip]="'rag.rag-settings.save_settings_tooltip' | transloco"
         (click)="submit()"
       >
         <nb-icon icon="floppy"></nb-icon>
-        SAVE
+        {{ 'rag.rag-settings.save_button' | transloco }}
       </button>
+      }
     </section>
   </div>
 </tock-sticky-menu>
 
-<tock-no-data-found
-  *ngIf="configurations?.length === 0"
-  title="No bot configuration detected"
-></tock-no-data-found>
-
-<form
-  [formGroup]="form"
-  *ngIf="configurations?.length > 0"
->
+@if (configurations?.length === 0) {
+<tock-no-data-found [title]="'rag.rag-settings.no_bot_configuration' | transloco"></tock-no-data-found>
+} @if (configurations?.length > 0) {
+<form [formGroup]="form">
   <nb-card class="mt-1">
     <nb-card-body
       [nbSpinner]="loading"
       class="pb-0"
     >
       <nb-card class="mt-2 mb-3">
-        <nb-card-header>RAG activation</nb-card-header>
+        <nb-card-header>{{ 'rag.rag-settings.rag_activation_title' | transloco }}</nb-card-header>
         <nb-card-body class="d-flex gap-2 align-items-start">
           <tock-form-control
             name="enabled"
@@ -91,11 +71,13 @@
               formControlName="enabled"
               class="mt-1"
             >
-              <span *ngIf="enabled.value">Rag activated</span>
-              <span *ngIf="!enabled.value">Rag deactivated</span>
+              @if (enabled.value) {
+              <span>{{ 'rag.rag-settings.rag_activated' | transloco }}</span>
+              } @if (!enabled.value) {
+              <span>{{ 'rag.rag-settings.rag_deactivated' | transloco }}</span>
+              }
             </nb-toggle>
           </tock-form-control>
-
           <tock-form-control
             name="debugEnabled"
             [controls]="debugEnabled"
@@ -106,13 +88,15 @@
               formControlName="debugEnabled"
               class="nb-toggle-small mt-2"
               status="basic"
-              nbTooltip="Include Rag debug info in dialog logs (Analytics > Dialogs)"
+              [nbTooltip]="'rag.rag-settings.debug_info_tooltip' | transloco"
             >
-              <span *ngIf="debugEnabled.value">Dialogs debug activated</span>
-              <span *ngIf="!debugEnabled.value">Dialogs debug deactivated</span>
+              @if (debugEnabled.value) {
+              <span>{{ 'rag.rag-settings.dialogs_debug_activated' | transloco }}</span>
+              } @if (!debugEnabled.value) {
+              <span>{{ 'rag.rag-settings.dialogs_debug_deactivated' | transloco }}</span>
+              }
             </nb-toggle>
           </tock-form-control>
-
           <tock-form-control
             name="explainabilityEnabled"
             [controls]="explainabilityEnabled"
@@ -123,24 +107,26 @@
               formControlName="explainabilityEnabled"
               class="nb-toggle-small mt-2"
               status="basic"
-              nbTooltip="Include RAG explainability instructions in the answering prompt"
+              [nbTooltip]="'rag.rag-settings.explainability_tooltip' | transloco"
             >
-              <span *ngIf="explainabilityEnabled.value">Explainability activated</span>
-              <span *ngIf="!explainabilityEnabled.value">Explainability deactivated</span>
+              @if (explainabilityEnabled.value) {
+              <span>{{ 'rag.rag-settings.explainability_activated' | transloco }}</span>
+              } @if (!explainabilityEnabled.value) {
+              <span>{{ 'rag.rag-settings.explainability_deactivated' | transloco }}</span>
+              }
             </nb-toggle>
           </tock-form-control>
         </nb-card-body>
       </nb-card>
-
       <nb-card class="mb-3">
-        <nb-card-header>Question condensing</nb-card-header>
+        <nb-card-header>{{ 'rag.rag-settings.question_condensing_title' | transloco }}</nb-card-header>
         <nb-card-body class="p-0">
           <nb-accordion
             multi
             class="shadow-none"
           >
             <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionConsensingConfiguration')">
-              <nb-accordion-item-header>Configuration</nb-accordion-item-header>
+              <nb-accordion-item-header>{{ 'rag.rag-settings.configuration_title' | transloco }}</nb-accordion-item-header>
               <nb-accordion-item-body>
                 <tock-form-control
                   name="questionCondensingLlmProvider"
@@ -153,66 +139,59 @@
                     name="questionCondensingLlmProvider"
                     class="d-flex"
                   >
-                    <nb-radio
-                      *ngFor="let engine of enginesConfigurations[engineSettingKeyName.questionCondensingLlmSetting]"
-                      [value]="engine.key"
-                    >
+                    @for (engine of enginesConfigurations[engineSettingKeyName.questionCondensingLlmSetting]; track engine) {
+                    <nb-radio [value]="engine.key">
                       {{ engine.label }}
                     </nb-radio>
+                    }
                   </nb-radio-group>
                 </tock-form-control>
-
-                <div
-                  *ngIf="currentQuestionCondensingConfig"
-                  class="mt-2"
-                >
+                @if (currentQuestionCondensingConfig) {
+                <div class="mt-2">
                   <div class="row">
-                    <ng-container *ngFor="let param of currentQuestionCondensingConfig.params">
-                      <div
-                        class="col-12 px-3"
-                        [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
-                      >
-                        <tock-ai-settings-engine-config-param-input
-                          [parentGroup]="engineSettingKeyName.questionCondensingLlmSetting"
-                          [configurationParam]="param"
-                          [form]="form"
-                          [isSubmitted]="isSubmitted"
-                        ></tock-ai-settings-engine-config-param-input>
-                      </div>
-                    </ng-container>
-                  </div>
-                </div>
-              </nb-accordion-item-body>
-            </nb-accordion-item>
-
-            <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionCondensingPrompt')">
-              <nb-accordion-item-header>Prompt</nb-accordion-item-header>
-              <nb-accordion-item-body>
-                <div class="row">
-                  <ng-container *ngFor="let param of questionCondensing_prompt">
+                    @for (param of currentQuestionCondensingConfig.params; track param) {
                     <div
                       class="col-12 px-3"
-                      *ngIf="shouldDisplayPromptParam('questionCondensingPrompt', param)"
+                      [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
                     >
                       <tock-ai-settings-engine-config-param-input
-                        parentGroup="questionCondensingPrompt"
+                        [parentGroup]="engineSettingKeyName.questionCondensingLlmSetting"
                         [configurationParam]="param"
                         [form]="form"
                         [isSubmitted]="isSubmitted"
-                        [defaultPrompt]="$any(param.defaultValue)"
                       ></tock-ai-settings-engine-config-param-input>
                     </div>
-                  </ng-container>
-
+                    }
+                  </div>
+                </div>
+                }
+              </nb-accordion-item-body>
+            </nb-accordion-item>
+            <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionCondensingPrompt')">
+              <nb-accordion-item-header>{{ 'rag.rag-settings.prompt_title' | transloco }}</nb-accordion-item-header>
+              <nb-accordion-item-body>
+                <div class="row">
+                  @for (param of questionCondensing_prompt; track param) { @if (shouldDisplayPromptParam('questionCondensingPrompt', param))
+                  {
+                  <div class="col-12 px-3">
+                    <tock-ai-settings-engine-config-param-input
+                      parentGroup="questionCondensingPrompt"
+                      [configurationParam]="param"
+                      [form]="form"
+                      [isSubmitted]="isSubmitted"
+                      [defaultPrompt]="$any(param.defaultValue)"
+                    ></tock-ai-settings-engine-config-param-input>
+                  </div>
+                  } }
                   <div class="col-6 px-3">
                     <tock-form-control
-                      label="Max number of messages in history"
+                      [label]="'rag.rag-settings.max_messages_history_label' | transloco"
                       name="maxMessagesFromHistory"
                       [controls]="maxMessagesFromHistory"
                       [required]="false"
                       [showError]="isSubmitted"
                       [boldLabel]="false"
-                      information="Number of messages in the dialog history to be taken into account when condensing the question. Zero = no history."
+                      [information]="'rag.rag-settings.max_messages_history_info' | transloco"
                     >
                       <input
                         type="number"
@@ -232,16 +211,15 @@
           </nb-accordion>
         </nb-card-body>
       </nb-card>
-
       <nb-card class="mb-3">
-        <nb-card-header>Question answering</nb-card-header>
+        <nb-card-header>{{ 'rag.rag-settings.question_answering_title' | transloco }}</nb-card-header>
         <nb-card-body class="p-0">
           <nb-accordion
             multi
             class="shadow-none"
           >
             <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionAnsweringConfiguration')">
-              <nb-accordion-item-header>Configuration</nb-accordion-item-header>
+              <nb-accordion-item-header>{{ 'rag.rag-settings.configuration_title' | transloco }}</nb-accordion-item-header>
               <nb-accordion-item-body>
                 <tock-form-control
                   name="questionAnsweringLlmProvider"
@@ -254,72 +232,64 @@
                     name="questionAnsweringLlmProvider"
                     class="d-flex"
                   >
-                    <nb-radio
-                      *ngFor="let engine of enginesConfigurations[engineSettingKeyName.questionAnsweringLlmSetting]"
-                      [value]="engine.key"
-                    >
+                    @for (engine of enginesConfigurations[engineSettingKeyName.questionAnsweringLlmSetting]; track engine) {
+                    <nb-radio [value]="engine.key">
                       {{ engine.label }}
                     </nb-radio>
+                    }
                   </nb-radio-group>
                 </tock-form-control>
-
-                <div
-                  *ngIf="currentQuestionAnsweringConfig"
-                  class="mt-2"
-                >
+                @if (currentQuestionAnsweringConfig) {
+                <div class="mt-2">
                   <div class="row">
-                    <ng-container *ngFor="let param of currentQuestionAnsweringConfig.params">
-                      <div
-                        class="col-12 px-3"
-                        [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
-                      >
-                        <tock-ai-settings-engine-config-param-input
-                          [parentGroup]="engineSettingKeyName.questionAnsweringLlmSetting"
-                          [configurationParam]="param"
-                          [form]="form"
-                          [isSubmitted]="isSubmitted"
-                        ></tock-ai-settings-engine-config-param-input>
-                      </div>
-                    </ng-container>
-                  </div>
-                </div>
-              </nb-accordion-item-body>
-            </nb-accordion-item>
-
-            <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionAnsweringPrompt')">
-              <nb-accordion-item-header>Prompt</nb-accordion-item-header>
-              <nb-accordion-item-body>
-                <div class="row">
-                  <ng-container *ngFor="let param of questionAnswering_prompt">
+                    @for (param of currentQuestionAnsweringConfig.params; track param) {
                     <div
                       class="col-12 px-3"
-                      *ngIf="shouldDisplayPromptParam('questionAnsweringPrompt', param)"
+                      [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
                     >
                       <tock-ai-settings-engine-config-param-input
-                        parentGroup="questionAnsweringPrompt"
+                        [parentGroup]="engineSettingKeyName.questionAnsweringLlmSetting"
                         [configurationParam]="param"
                         [form]="form"
                         [isSubmitted]="isSubmitted"
-                        [defaultPrompt]="$any(param.defaultValue)"
                       ></tock-ai-settings-engine-config-param-input>
                     </div>
-                  </ng-container>
+                    }
+                  </div>
+                </div>
+                }
+              </nb-accordion-item-body>
+            </nb-accordion-item>
+            <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionAnsweringPrompt')">
+              <nb-accordion-item-header>{{ 'rag.rag-settings.prompt_title' | transloco }}</nb-accordion-item-header>
+              <nb-accordion-item-body>
+                <div class="row">
+                  @for (param of questionAnswering_prompt; track param) { @if (shouldDisplayPromptParam('questionAnsweringPrompt', param)) {
+                  <div class="col-12 px-3">
+                    <tock-ai-settings-engine-config-param-input
+                      parentGroup="questionAnsweringPrompt"
+                      [configurationParam]="param"
+                      [form]="form"
+                      [isSubmitted]="isSubmitted"
+                      [defaultPrompt]="$any(param.defaultValue)"
+                    ></tock-ai-settings-engine-config-param-input>
+                  </div>
+                  } }
                 </div>
               </nb-accordion-item-body>
             </nb-accordion-item>
           </nb-accordion>
         </nb-card-body>
       </nb-card>
-
       <nb-card class="mb-3">
-        <nb-card-header>Embedding</nb-card-header>
+        <nb-card-header>{{ 'rag.rag-settings.embedding_title' | transloco }}</nb-card-header>
         <nb-card-body class="p-0">
           <nb-accordion
             multi
             class="shadow-none"
           >
             <nb-accordion-item [expanded]="isAccordionItemsExpanded('embeddingConfiguration')">
-              <nb-accordion-item-header>Configuration</nb-accordion-item-header>
+              <nb-accordion-item-header>{{ 'rag.rag-settings.configuration_title' | transloco }}</nb-accordion-item-header>
               <nb-accordion-item-body>
                 <tock-form-control
                   name="emProvider"
@@ -332,24 +302,20 @@
                     name="emProvider"
                     class="d-flex"
                   >
-                    <nb-radio
-                      *ngFor="let engine of enginesConfigurations[engineSettingKeyName.emSetting]"
-                      [value]="engine.key"
-                    >
+                    @for (engine of enginesConfigurations[engineSettingKeyName.emSetting]; track engine) {
+                    <nb-radio [value]="engine.key">
                       {{ engine.label }}
                     </nb-radio>
+                    }
                   </nb-radio-group>
                 </tock-form-control>
-
-                <div
-                  *ngIf="currentEmConfig"
-                  class="mt-2"
-                >
+                @if (currentEmConfig) {
+                <div class="mt-2">
                   <div class="row">
+                    @for (param of currentEmConfig.params; track param) {
                     <div
                       class="col-12 px-3"
                       [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
-                      *ngFor="let param of currentEmConfig.params"
                     >
                       <tock-ai-settings-engine-config-param-input
                         [parentGroup]="engineSettingKeyName.emSetting"
@@ -358,21 +324,22 @@
                         [isSubmitted]="isSubmitted"
                       ></tock-ai-settings-engine-config-param-input>
                     </div>
+                    }
                   </div>
                 </div>
+                }
               </nb-accordion-item-body>
             </nb-accordion-item>
           </nb-accordion>
         </nb-card-body>
       </nb-card>
-
       <nb-card class="mb-3">
-        <nb-card-header>Indexing session</nb-card-header>
+        <nb-card-header>{{ 'rag.rag-settings.indexing_session_title' | transloco }}</nb-card-header>
         <nb-card-body>
           <div class="row">
             <div class="col-12 col-lg-6 px-3">
               <tock-form-control
-                label="Indexing session id"
+                [label]="'rag.rag-settings.indexing_session_id_label' | transloco"
                 name="indexingSessionId"
                 [controls]="indexSessionId"
                 [required]="false"
@@ -386,10 +353,9 @@
                 />
               </tock-form-control>
             </div>
-
             <div class="col-12 col-lg-6 px-3">
               <tock-form-control
-                label="Vector database index name"
+                [label]="'rag.rag-settings.vector_db_index_name_label' | transloco"
                 name="indexName"
                 [controls]="indexName"
                 [required]="false"
@@ -403,40 +369,39 @@
                 />
               </tock-form-control>
             </div>
-
             <div class="col-12 px-3">
               <tock-form-control
-                label="Search type"
+                [label]="'rag.rag-settings.search_type_label' | transloco"
                 name="documentSearchType"
                 [controls]="documentSearchType"
                 [required]="false"
                 [boldLabel]="false"
-                information="Search method used to retrieve documents from the vector store. Similarity search retrieves chunks by vector proximity (embedding-based). Full text search retrieves chunks by keyword matching within chunk content. Hybrid search combines both. Current support is limited to PGVector."
+                [information]="'rag.rag-settings.search_type_info' | transloco"
               >
                 <nb-radio-group
                   formControlName="documentSearchType"
                   name="documentSearchType"
                   class="d-flex"
                 >
+                  @for (option of documentSearchTypes; track option) {
                   <nb-radio
-                    *ngFor="let option of documentSearchTypes"
                     [value]="option.key"
                     class="lineHeight-0"
                   >
                     {{ option.label }}
                   </nb-radio>
+                  }
                 </nb-radio-group>
               </tock-form-control>
             </div>
-
             <div class="col-12 px-3">
               <tock-form-control
-                label="Max documents retrieved"
+                [label]="'rag.rag-settings.max_documents_retrieved_label' | transloco"
                 name="maxDocumentsRetrieved"
                 [controls]="maxDocumentsRetrieved"
                 [required]="false"
                 [boldLabel]="false"
-                information="Maximum number of documents retrieved and passed to the LLM as context. This limit applies to each search type, whether used individually or combined in hybrid mode."
+                [information]="'rag.rag-settings.max_documents_retrieved_info' | transloco"
               >
                 <input
                   type="number"
@@ -453,34 +418,36 @@
           </div>
         </nb-card-body>
       </nb-card>
-
-      <nb-card *ngIf="settingsBackup">
-        <nb-card-header>Settings deletion</nb-card-header>
+      @if (settingsBackup) {
+      <nb-card>
+        <nb-card-header>{{ 'rag.rag-settings.settings_deletion_title' | transloco }}</nb-card-header>
         <nb-card-body>
           <button
             nbButton
             status="danger"
-            nbTooltip="Delete settings"
+            [nbTooltip]="'rag.rag-settings.delete_settings_button' | transloco"
             (click)="confirmSettingsDeletion()"
           >
             <nb-icon icon="trash"></nb-icon>
-            DELETE SETTINGS
+            {{ 'rag.rag-settings.delete_settings_button' | transloco }}
           </button>
         </nb-card-body>
       </nb-card>
+      }
     </nb-card-body>
   </nb-card>
 </form>
+}
 
 <ng-template #exportConfirmationModal>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Confirmation of sensitive data export
+      {{ 'rag.rag-settings.export_confirmation_title' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'rag.rag-settings.close_tooltip' | transloco"
         (click)="closeExportConfirmationModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -488,8 +455,9 @@
     </nb-card-header>
 
     <nb-card-body>
-      <div class="mb-2">Include the following sensitive data:</div>
-      <div *ngFor="let sensitiveParam of sensitiveParams">
+      <div class="mb-2">{{ 'rag.rag-settings.include_sensitive_data' | transloco }}</div>
+      @for (sensitiveParam of sensitiveParams; track sensitiveParam) {
+      <div>
         <nb-checkbox
           status="basic"
           [(ngModel)]="sensitiveParam.include"
@@ -498,6 +466,7 @@
           {{ sensitiveParam.param.label }}
         </nb-checkbox>
       </div>
+      }
     </nb-card-body>
 
     <nb-card-footer class="card-footer-actions">
@@ -507,7 +476,7 @@
         size="small"
         (click)="closeExportConfirmationModal()"
       >
-        Cancel
+        {{ 'rag.rag-settings.cancel_button' | transloco }}
       </button>
       <button
         type="button"
@@ -516,7 +485,7 @@
         size="small"
         (click)="confirmExportSettings()"
       >
-        Export
+        {{ 'rag.rag-settings.export_button' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>
@@ -525,12 +494,12 @@
 <ng-template #importModal>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Import Rag settings dump
+      {{ 'rag.rag-settings.import_modal_title' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'rag.rag-settings.close_tooltip' | transloco"
         (click)="closeImportModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -543,7 +512,7 @@
         (submit)="submitImportSettings()"
       >
         <tock-form-control
-          label="Rag settings dump file"
+          [label]="'rag.rag-settings.title' | transloco"
           name="importFile"
           [required]="true"
           [controls]="fileSource"
@@ -568,7 +537,7 @@
         size="small"
         (click)="closeImportModal()"
       >
-        Cancel
+        {{ 'rag.rag-settings.cancel_button' | transloco }}
       </button>
       <button
         type="button"
@@ -577,7 +546,7 @@
         size="small"
         (click)="submitImportSettings()"
       >
-        Import
+        {{ 'rag.rag-settings.import_button' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>

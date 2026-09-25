@@ -27,16 +27,17 @@ import { PaginatedResult } from '../../model/nlp';
 import { PaginatedQuery } from '../../model/commons';
 import { NbToastrService } from '@nebular/theme';
 import { BotApplicationConfiguration, ConnectorType } from '../../core/model/configuration';
-import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../shared/utils';
+import { getDialogMessageUserAvatar, getDialogMessageUserQualifierKey } from '../../shared/utils';
 
 export class UserFilter {
   constructor(public flags: string[], public displayTests: boolean, public from?: Date, public to?: Date, public intent: string = '') {}
 }
 
 @Component({
-  selector: 'tock-users',
-  templateUrl: './users.component.html',
-  styleUrls: ['./users.component.scss']
+    selector: 'tock-users',
+    templateUrl: './users.component.html',
+    styleUrls: ['./users.component.scss'],
+    standalone: false
 })
 export class UsersComponent extends ScrollComponent<UserReport> {
   filter: UserFilter = new UserFilter([], false);
@@ -172,8 +173,8 @@ export class UsersComponent extends ScrollComponent<UserReport> {
       .subscribe((_) => this.toastrService.show(`Dialog added to plan`, 'Dialog Added', { duration: 3000 }));
   }
 
-  getUserName(action: ActionReport): string {
-    return getDialogMessageUserQualifier(action.isBot());
+  getUserNameKey(action: ActionReport): string {
+    return getDialogMessageUserQualifierKey(action.isBot());
   }
 
   getUserAvatar(action: ActionReport): string {

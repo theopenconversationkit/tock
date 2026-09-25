@@ -26,7 +26,5 @@ open class RequestTimerData(
     var message: String? = null,
     var throwable: Throwable? = null,
 ) {
-    override fun toString(): String {
-        return "type='$type', start=$start, error=$error, message=$message, throwable=$throwable"
-    }
+    override fun toString(): String = "type='$type', start=$start, error=$error, message=$message, throwable=$throwable"
 }

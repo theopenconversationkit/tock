@@ -97,9 +97,7 @@ fun <T : Bus<T>> T.endForMessenger(
  * Adds a Messenger [ConnectorMessage] if the current connector is Messenger.
  * You need to call [<T : Bus<T>> T.send] or [<T : Bus<T>> T.end] later to send this message.
  */
-fun <T : Bus<T>> T.withMessenger(messageProvider: () -> MessengerConnectorMessage): T {
-    return withMessage(messengerConnectorType, messageProvider)
-}
+fun <T : Bus<T>> T.withMessenger(messageProvider: () -> MessengerConnectorMessage): T = withMessage(messengerConnectorType, messageProvider)
 
 /**
  * Adds a Messenger [ConnectorMessage] if the current connector is Messenger and the current connector is [connectorId].
@@ -108,9 +106,7 @@ fun <T : Bus<T>> T.withMessenger(messageProvider: () -> MessengerConnectorMessag
 fun <T : Bus<T>> T.withMessenger(
     connectorId: String,
     messageProvider: () -> MessengerConnectorMessage,
-): T {
-    return withMessage(messengerConnectorType, connectorId, messageProvider)
-}
+): T = withMessage(messengerConnectorType, connectorId, messageProvider)
 
 /**
  * Creates a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]
@@ -168,8 +164,8 @@ fun mediaTemplate(
     mediaType: MediaType = MediaType.image,
     sharable: Boolean = false,
     actions: List<UserAction> = emptyList(),
-): AttachmentMessage {
-    return AttachmentMessage(
+): AttachmentMessage =
+    AttachmentMessage(
         Attachment(
             AttachmentType.template,
             MediaPayload(
@@ -185,14 +181,11 @@ fun mediaTemplate(
         ),
         extractQuickReplies(actions),
     )
-}
 
 /**
  * Creates a [generic template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic).
  */
-fun genericTemplate(vararg elements: Element): AttachmentMessage {
-    return genericTemplate(elements.toList())
-}
+fun genericTemplate(vararg elements: Element): AttachmentMessage = genericTemplate(elements.toList())
 
 /**
  * Creates a [generic template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic).
@@ -240,32 +233,42 @@ fun <T : Bus<T>> T.attachment(
     attachmentUrl: String,
     type: AttachmentType,
     quickReplies: List<QuickReply>,
-): AttachmentMessage {
-    return when (type) {
-        AttachmentType.image -> cachedAttachment(attachmentUrl, AttachmentType.image, quickReplies = quickReplies)
-        AttachmentType.audio -> cachedAttachment(attachmentUrl, AttachmentType.audio, quickReplies = quickReplies)
-        AttachmentType.video -> cachedAttachment(attachmentUrl, AttachmentType.video, quickReplies = quickReplies)
-        AttachmentType.file -> cachedAttachment(attachmentUrl, AttachmentType.file, quickReplies = quickReplies)
+): AttachmentMessage =
+    when (type) {
+        AttachmentType.image -> {
+            cachedAttachment(attachmentUrl, AttachmentType.image, quickReplies = quickReplies)
+        }
+
+        AttachmentType.audio -> {
+            cachedAttachment(attachmentUrl, AttachmentType.audio, quickReplies = quickReplies)
+        }
+
+        AttachmentType.video -> {
+            cachedAttachment(attachmentUrl, AttachmentType.video, quickReplies = quickReplies)
+        }
+
+        AttachmentType.file -> {
+            cachedAttachment(attachmentUrl, AttachmentType.file, quickReplies = quickReplies)
+        }
+
         else -> {
             error { "not supported attachment type $type" }
         }
     }
-}
 
 private fun <T : Bus<T>> T.cachedAttachment(
     attachmentUrl: String,
     type: AttachmentType,
     useCache: Boolean = MessengerConfiguration.reuseAttachmentByDefault,
     quickReplies: List<QuickReply>,
-): AttachmentMessage {
-    return AttachmentMessage(
+): AttachmentMessage =
+    AttachmentMessage(
         Attachment(
             type,
             UrlPayload.getUrlPayload(applicationId, attachmentUrl, useCache && !test),
         ),
         quickReplies.run { if (isEmpty()) null else this },
     )
-}
 
 /**
  * Creates an [image] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).

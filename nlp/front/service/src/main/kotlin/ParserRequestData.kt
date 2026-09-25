@@ -37,20 +37,13 @@ internal data class ParserRequestData(
     private val intentsById = intents.map { it._id to it }.toMap()
     private val intentsByName = intents.map { it.qualifiedName to it }.toMap()
 
-    private fun isIntentEnabled(intentId: Id<IntentDefinition>?): Boolean {
-        return intentsQualifiers.isEmpty() ||
+    private fun isIntentEnabled(intentId: Id<IntentDefinition>?): Boolean =
+        intentsQualifiers.isEmpty() ||
             intentsQualifiers.any { it.intent == intentsById[intentId]?.qualifiedName }
-    }
 
-    fun isStateEnabledForIntentId(intentId: Id<IntentDefinition>?): Boolean {
-        return isIntentEnabled(intentId) && intentsById[intentId]?.supportStates(query.state.states) ?: true
-    }
+    fun isStateEnabledForIntentId(intentId: Id<IntentDefinition>?): Boolean = isIntentEnabled(intentId) && intentsById[intentId]?.supportStates(query.state.states) ?: true
 
-    fun isStateSupportedByIntent(intent: Intent): Boolean {
-        return intentsByName[intent.name]?.supportStates(query.state.states) ?: true
-    }
+    fun isStateSupportedByIntent(intent: Intent): Boolean = intentsByName[intent.name]?.supportStates(query.state.states) ?: true
 
-    fun getModifierForIntent(intent: Intent): Double? {
-        return intentsQualifiers.firstOrNull { it.intent == intent.name }?.modifier
-    }
+    fun getModifierForIntent(intent: Intent): Double? = intentsQualifiers.firstOrNull { it.intent == intent.name }?.modifier
 }

@@ -22,5 +22,4 @@ package ai.tock.bot.connector.rest.client.model
 data class ClientDebug(
     val text: String,
     val data: Any,
-) :
-    ClientMessage(ClientEventType.debug)
+) : ClientMessage(ClientEventType.debug)

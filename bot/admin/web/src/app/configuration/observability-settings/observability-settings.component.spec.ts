@@ -17,6 +17,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ObservabilitySettingsComponent } from './observability-settings.component';
+import { TestSharedModule } from '../../shared/test-shared.module';
+import { StateServiceMock } from '../../shared/test-shared/state-service.mock';
+import { StateService } from '../../core-nlp/state.service';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { BehaviorSubject } from 'rxjs';
 
 describe('ObservabilitySettingsComponent', () => {
   let component: ObservabilitySettingsComponent;
@@ -24,9 +29,21 @@ describe('ObservabilitySettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ObservabilitySettingsComponent ]
-    })
-    .compileComponents();
+      declarations: [ObservabilitySettingsComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        {
+          provide: BotConfigurationService,
+          useValue: {
+            configurations: new BehaviorSubject([]),
+            restConfigurations: new BehaviorSubject([]),
+            getConfigurationById: () => undefined,
+            updateConfigurations: () => {}
+          }
+        }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ObservabilitySettingsComponent);
     component = fixture.componentInstance;

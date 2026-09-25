@@ -106,28 +106,36 @@ class IadvizeConnector internal constructor(
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
-            router.get("$path/external-bots")
+            router
+                .get("$path/external-bots")
                 .handleAndCatchException(controller, handlerGetBots)
 
-            router.get("$path/bots/:idOperator")
+            router
+                .get("$path/bots/:idOperator")
                 .handleAndCatchException(controller, handlerGetBot)
 
-            router.put("$path/bots/:idOperator")
+            router
+                .put("$path/bots/:idOperator")
                 .handleAndCatchException(controller, handlerUpdateBot)
 
-            router.get("$path/availability-strategies")
+            router
+                .get("$path/availability-strategies")
                 .handleAndCatchException(controller, handlerStrategies)
 
-            router.get("$path/bots/:idOperator/conversation-first-messages")
+            router
+                .get("$path/bots/:idOperator/conversation-first-messages")
                 .handleAndCatchException(controller, handlerFirstMessage)
 
-            router.post("$path/conversations")
+            router
+                .post("$path/conversations")
                 .handleAndCatchException(controller, handlerStartConversation)
 
-            router.post("$path/conversations/:idConversation/messages")
+            router
+                .post("$path/conversations/:idConversation/messages")
                 .handleAndCatchException(controller, handlerConversation)
 
-            router.get("$path/healthcheck")
+            router
+                .get("$path/healthcheck")
                 .handleAndCatchException(controller, handlerHealthcheck)
         }
     }
@@ -176,7 +184,8 @@ class IadvizeConnector internal constructor(
                         request().query(),
                         body().asJsonObject(),
                         // Get only iAdvize headers
-                        request().headers()
+                        request()
+                            .headers()
                             .filter { it.key.startsWith("X-") }
                             .associate { it.key to it.value },
                     ),
@@ -207,9 +216,7 @@ class IadvizeConnector internal constructor(
     private fun getBotUpdate(
         idOperator: String,
         controller: ConnectorController,
-    ): BotUpdated {
-        return BotUpdated(idOperator, getBot(controller), LocalDateTime.now(), LocalDateTime.now())
-    }
+    ): BotUpdated = BotUpdated(idOperator, getBot(controller), LocalDateTime.now(), LocalDateTime.now())
 
     private fun getBot(controller: ConnectorController): Bot {
         val botId: String = controller.botDefinition.botId
@@ -265,10 +272,9 @@ class IadvizeConnector internal constructor(
      * If request is a MessageRequest and the author of message have role "operator" : do not treat request.
      * in many case it's an echo, but it can be a human operator
      */
-    private fun isOperator(iadvizeRequest: IadvizeRequest): Boolean {
-        return iadvizeRequest is MessageRequest &&
+    private fun isOperator(iadvizeRequest: IadvizeRequest): Boolean =
+        iadvizeRequest is MessageRequest &&
             iadvizeRequest.message.author.role == ROLE_OPERATOR
-    }
 
     private fun mapRequest(
         idConversation: String,
@@ -357,7 +363,10 @@ class IadvizeConnector internal constructor(
         parameters: Map<String, String>,
     ) {
         when (action) {
-            is SendSentenceWithFootnotes -> action.sendByGraphQL(parameters)
+            is SendSentenceWithFootnotes -> {
+                action.sendByGraphQL(parameters)
+            }
+
             is SendSentence -> {
                 if (action.messages.isEmpty()) {
                     action.text?.let {
@@ -454,7 +463,9 @@ class IadvizeConnector internal constructor(
                     }
                 }
 
-                else -> this.toChatBotActionOrMessageInput()
+                else -> {
+                    this.toChatBotActionOrMessageInput()
+                }
             }
 
         // Send a proactive action or message
@@ -503,7 +514,9 @@ class IadvizeConnector internal constructor(
 
             // Only MessageRequest are supported, other messages are UnsupportedMessage
             // and UnsupportedResponse can be sent immediately
-            else -> callback.answerWithResponse()
+            else -> {
+                callback.answerWithResponse()
+            }
         }
     }
 
@@ -526,14 +539,13 @@ class IadvizeConnector internal constructor(
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = MediaConverter.toConnectorMessage(message)
 
-    private fun getLocale(it: String): Locale? {
-        return try {
+    private fun getLocale(it: String): Locale? =
+        try {
             LocaleUtils.toLocale(it)
         } catch (e: Exception) {
             logger.error(e)
             null
         }
-    }
 }
 
 @JsonInclude(JsonInclude.Include.ALWAYS)

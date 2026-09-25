@@ -30,4 +30,6 @@ import kotlin.annotation.AnnotationTarget.ANNOTATION_CLASS
  */
 @Target(ANNOTATION_CLASS)
 @MustBeDocumented
-annotation class ConnectorHandler(val connectorTypeId: String)
+annotation class ConnectorHandler(
+    val connectorTypeId: String,
+)

@@ -21,6 +21,8 @@ import ai.tock.bot.engine.message.Choice
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 @JsonDeserialize(using = ButtonDeserializer::class)
-abstract class Button(val type: ButtonType) : UserAction {
+abstract class Button(
+    val type: ButtonType,
+) : UserAction {
     abstract fun toChoice(): Choice
 }

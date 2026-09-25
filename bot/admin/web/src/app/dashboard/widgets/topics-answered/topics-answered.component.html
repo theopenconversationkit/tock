@@ -1,0 +1,34 @@
+<tock-dashboard-widget
+  [title]="'dashboard.topics.title' | transloco"
+  icon="tags"
+  [state]="state"
+  [skeletonLines]="6"
+  [emptyTitle]="'dashboard.topics.empty-title' | transloco"
+  [emptyMessage]="'dashboard.topics.empty-message' | transloco"
+  [unavailableIcon]="'tags'"
+  [unavailableTitle]="'dashboard.common.rag-disabled-title' | transloco"
+  [unavailableMessage]="'dashboard.topics.unavailable-message' | transloco"
+  [unavailableLinkLabel]="'dashboard.common.open-rag-settings' | transloco"
+  unavailableLink="/rag/settings"
+>
+  <ng-template #widgetFooter>
+    <span class="metric-label">
+      {{ 'dashboard.topics.footer-prefix' | transloco }}
+      <a [routerLink]="['/business-metrics/board']">{{ 'dashboard.topics.footer-link' | transloco }}</a>
+    </span>
+  </ng-template>
+
+  <ng-template #widgetBody>
+    @for (topic of topics; track topic.name) {
+    <div class="topic-row">
+      <div class="d-flex gap-05">
+        <span class="topic-name">{{ topic.name }}</span>
+        <span class="topic-count">{{ topic.count | number }}</span>
+      </div>
+      <div class="topic-bar">
+        <span [style.width.%]="share(topic)"></span>
+      </div>
+    </div>
+    }
+  </ng-template>
+</tock-dashboard-widget>

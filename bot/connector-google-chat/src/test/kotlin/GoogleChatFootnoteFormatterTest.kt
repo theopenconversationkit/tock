@@ -23,11 +23,13 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 import kotlin.test.assertEquals
 
+private const val SOURCES_LABEL = "Sources"
+
 class GoogleChatFootnoteFormatterTest {
     @Test
     fun `format with no footnotes returns original text`() {
         val text = "Hello world"
-        val result = GoogleChatFootnoteFormatter.format(text, emptyList(), condensed = false)
+        val result = GoogleChatFootnoteFormatter.format(text, emptyList(), condensed = false, sourcesLabel = SOURCES_LABEL)
         assertEquals("Hello world", result)
     }
 
@@ -39,7 +41,7 @@ class GoogleChatFootnoteFormatterTest {
         footnotes: List<Footnote>,
         expectedResult: String,
     ) {
-        val result = GoogleChatFootnoteFormatter.format(text, footnotes, condensed = false)
+        val result = GoogleChatFootnoteFormatter.format(text, footnotes, condensed = false, sourcesLabel = SOURCES_LABEL)
         assertEquals(expectedResult, result)
     }
 
@@ -51,7 +53,7 @@ class GoogleChatFootnoteFormatterTest {
         footnotes: List<Footnote>,
         expectedResult: String,
     ) {
-        val result = GoogleChatFootnoteFormatter.format(text, footnotes, condensed = true)
+        val result = GoogleChatFootnoteFormatter.format(text, footnotes, condensed = true, sourcesLabel = SOURCES_LABEL)
         assertEquals(expectedResult, result)
     }
 
@@ -67,13 +69,14 @@ class GoogleChatFootnoteFormatterTest {
                     ),
                 condensed = false,
                 displaySourcesWithoutUrl = false,
+                sourcesLabel = SOURCES_LABEL,
             )
 
         assertEquals(
             """
             Here's some info
 
-            *Source :*
+            *Sources :*
             <https://google.com|Google>
             """.trimIndent(),
             result,
@@ -92,13 +95,14 @@ class GoogleChatFootnoteFormatterTest {
                     ),
                 condensed = true,
                 displaySourcesWithoutUrl = false,
+                sourcesLabel = SOURCES_LABEL,
             )
 
         assertEquals(
             """
             Sources below
 
-            *Source:* [[1]](https://tock.ai)
+            *Sources:* [[1]](https://tock.ai)
             """.trimIndent(),
             result,
         )
@@ -115,6 +119,7 @@ class GoogleChatFootnoteFormatterTest {
                     ),
                 condensed = true,
                 displaySourcesWithoutUrl = false,
+                sourcesLabel = SOURCES_LABEL,
             )
 
         assertEquals("Sources below", result)
@@ -179,7 +184,7 @@ class GoogleChatFootnoteFormatterTest {
                     """
                     References
 
-                    *Source :*
+                    *Sources :*
                     <https://doc.com|Doc>
                     """.trimIndent(),
                 ),
@@ -202,5 +207,52 @@ class GoogleChatFootnoteFormatterTest {
                     """.trimIndent(),
                 ),
             )
+    }
+
+    @Test
+    fun `format uses custom sources label`() {
+        val result =
+            GoogleChatFootnoteFormatter.format(
+                text = "Hello",
+                footnotes =
+                    listOf(
+                        Footnote("id1", "Google", "https://google.com", null, null),
+                    ),
+                condensed = false,
+                sourcesLabel = "Références",
+            )
+
+        assertEquals(
+            """
+            Hello
+
+            *Références :*
+            <https://google.com|Google>
+            """.trimIndent(),
+            result,
+        )
+    }
+
+    @Test
+    fun `format condensed uses custom sources label`() {
+        val result =
+            GoogleChatFootnoteFormatter.format(
+                text = "Hello",
+                footnotes =
+                    listOf(
+                        Footnote("id1", "Google", "https://google.com", null, null),
+                    ),
+                condensed = true,
+                sourcesLabel = "Références",
+            )
+
+        assertEquals(
+            """
+            Hello
+
+            *Références:* [[1]](https://google.com)
+            """.trimIndent(),
+            result,
+        )
     }
 }

@@ -46,13 +46,15 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
     private val logger = KotlinLogging.logger {}
 
     private val entityBucket: GridFSBucket by lazy {
-        GridFSBuckets.create(database, "fs_entity")
+        GridFSBuckets
+            .create(database, "fs_entity")
             .apply {
                 database.getCollection("fs_entity.files").ensureIndex("{filename:1}")
             }
     }
     private val intentBucket: GridFSBucket by lazy {
-        GridFSBuckets.create(database, "fs_intent")
+        GridFSBuckets
+            .create(database, "fs_intent")
             .apply {
                 database.getCollection("fs_intent.files").ensureIndex("{filename:1}")
             }
@@ -77,28 +79,25 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
     private fun getGridFSFile(
         bucket: GridFSBucket,
         key: ClassifierContextKey,
-    ): GridFSFile? {
-        return try {
+    ): GridFSFile? =
+        try {
             bucket.find(eq("filename", key.id())).limit(1).first()
                 ?: key.idWithoutNamespace()?.let { bucket.find(eq("filename", it)).limit(1).first() }
         } catch (e: MongoGridFSException) {
             logger.debug(e) { "no model exists for $key" }
             null
         }
-    }
 
     private fun getDownloadStream(
         bucket: GridFSBucket,
         key: ClassifierContextKey,
-    ): GridFSDownloadStream? {
-        return (
+    ): GridFSDownloadStream? =
+        (
             getGridFSFile(bucket, key)
                 ?: key.idWithoutNamespace()?.let { getGridFSFile(bucket, key) }
-        )
-            ?.let {
-                bucket.openDownloadStream(it.id)
-            }
-    }
+        )?.let {
+            bucket.openDownloadStream(it.id)
+        }
 
     private fun saveModel(
         bucket: GridFSBucket,
@@ -118,7 +117,8 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
         bucket: GridFSBucket,
         key: ClassifierContextKey,
     ) {
-        bucket.find(eq("filename", key.id()))
+        bucket
+            .find(eq("filename", key.id()))
             .limit(1)
             .first()
             ?.apply {
@@ -131,7 +131,8 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
         bucket: GridFSBucket,
         keys: List<ClassifierContextKey>,
     ) {
-        bucket.find(Filters.not(Filters.`in`("filename", keys.map { it.id() })))
+        bucket
+            .find(Filters.not(Filters.`in`("filename", keys.map { it.id() })))
             .forEach {
                 logger.debug { "Remove file ${it.objectId} for ${it.filename}" }
                 bucket.delete(it.objectId)
@@ -141,8 +142,8 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
     private fun getModelInputStream(
         bucket: GridFSBucket,
         key: ClassifierContextKey,
-    ): NlpModelStream? {
-        return getDownloadStream(bucket, key)?.let { stream ->
+    ): NlpModelStream? =
+        getDownloadStream(bucket, key)?.let { stream ->
             val date = stream.gridFSFile.uploadDate.toInstant()
             NlpModelStream(
                 stream,
@@ -150,18 +151,13 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
                 NlpApplicationConfigurationMongoDAO.loadLastConfiguration(key.applicationName, key.engineType, date),
             )
         }
-    }
 
     private fun getLastUpdate(
         bucket: GridFSBucket,
         key: ClassifierContextKey,
-    ): Instant? {
-        return getGridFSFile(bucket, key)?.uploadDate?.toInstant()
-    }
+    ): Instant? = getGridFSFile(bucket, key)?.uploadDate?.toInstant()
 
-    override fun getEntityModelInputStream(key: EntityContextKey): NlpModelStream? {
-        return getModelInputStream(entityBucket, key)
-    }
+    override fun getEntityModelInputStream(key: EntityContextKey): NlpModelStream? = getModelInputStream(entityBucket, key)
 
     override fun saveEntityModel(
         key: EntityContextKey,
@@ -170,9 +166,7 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
         saveModel(entityBucket, key, stream)
     }
 
-    override fun getEntityModelLastUpdate(key: EntityContextKey): Instant? {
-        return getLastUpdate(entityBucket, key)
-    }
+    override fun getEntityModelLastUpdate(key: EntityContextKey): Instant? = getLastUpdate(entityBucket, key)
 
     override fun deleteEntityModelsNotIn(keys: List<EntityContextKey>) {
         deleteModelNotIn(entityBucket, keys)
@@ -182,9 +176,7 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
         deleteModel(entityBucket, key)
     }
 
-    override fun getIntentModelInputStream(key: IntentContextKey): NlpModelStream? {
-        return getModelInputStream(intentBucket, key)
-    }
+    override fun getIntentModelInputStream(key: IntentContextKey): NlpModelStream? = getModelInputStream(intentBucket, key)
 
     override fun saveIntentModel(
         key: IntentContextKey,
@@ -193,9 +185,7 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
         saveModel(intentBucket, key, stream)
     }
 
-    override fun getIntentModelLastUpdate(key: IntentContextKey): Instant? {
-        return getLastUpdate(intentBucket, key)
-    }
+    override fun getIntentModelLastUpdate(key: IntentContextKey): Instant? = getLastUpdate(intentBucket, key)
 
     override fun deleteIntentModelsNotIn(keys: List<IntentContextKey>) {
         deleteModelNotIn(intentBucket, keys)

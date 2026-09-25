@@ -19,9 +19,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AnswerContainer, ScriptAnswerConfiguration } from '../../../model/story';
 
 @Component({
-  selector: 'tock-script-answer',
-  templateUrl: './script-answer.component.html',
-  styleUrls: ['./script-answer.component.scss']
+    selector: 'tock-script-answer',
+    templateUrl: './script-answer.component.html',
+    styleUrls: ['./script-answer.component.scss'],
+    standalone: false
 })
 export class ScriptAnswerComponent implements OnInit {
   @Input() container: AnswerContainer;

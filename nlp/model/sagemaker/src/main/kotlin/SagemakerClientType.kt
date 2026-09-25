@@ -18,7 +18,9 @@ package ai.tock.nlp.sagemaker
 /**
  * Enum representing the different types of Sagemaker clients.
  */
-enum class SagemakerClientType(val clientName: String) {
+enum class SagemakerClientType(
+    val clientName: String,
+) {
     INTENT_CLASSIFICATION("intent-classification"),
     ENTITY_CLASSIFICATION("entity-classification"),
     ;

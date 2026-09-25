@@ -150,18 +150,20 @@ class TranslatorTest : AbstractTest() {
 
         assertEquals(
             target,
-            Translator.translate(
-                key,
-                I18nContext(defaultLocale, textChat),
-            ).toString(),
+            Translator
+                .translate(
+                    key,
+                    I18nContext(defaultLocale, textChat),
+                ).toString(),
         )
 
         assertEquals(
             target,
-            Translator.translate(
-                key,
-                I18nContext(defaultLocale, textChat),
-            ).toString(),
+            Translator
+                .translate(
+                    key,
+                    I18nContext(defaultLocale, textChat),
+                ).toString(),
         )
 
         verify { i18nDAO.getLabelById(id.toId()) }
@@ -203,31 +205,33 @@ class TranslatorTest : AbstractTest() {
 
         assertEquals(
             target,
-            Translator.translate(
-                key,
-                I18nContext(defaultLocale, textChat),
-            ).toString(),
+            Translator
+                .translate(
+                    key,
+                    I18nContext(defaultLocale, textChat),
+                ).toString(),
         )
 
         assertEquals(
             updatedTarget,
-            Translator.translate(
-                I18nLabelValue(
-                    id,
-                    defaultNamespace,
-                    category,
-                    toTranslate,
-                    defaultI18n =
-                        linkedSetOf(
-                            I18nLocalizedLabel(
-                                defaultLocale,
-                                textChat,
-                                updatedTarget,
+            Translator
+                .translate(
+                    I18nLabelValue(
+                        id,
+                        defaultNamespace,
+                        category,
+                        toTranslate,
+                        defaultI18n =
+                            linkedSetOf(
+                                I18nLocalizedLabel(
+                                    defaultLocale,
+                                    textChat,
+                                    updatedTarget,
+                                ),
                             ),
-                        ),
-                ),
-                I18nContext(defaultLocale, textChat),
-            ).toString(),
+                    ),
+                    I18nContext(defaultLocale, textChat),
+                ).toString(),
         )
 
         verify { i18nDAO.getLabelById(id.toId()) }
@@ -251,10 +255,11 @@ class TranslatorTest : AbstractTest() {
 
         assertEquals(
             toTranslate,
-            Translator.translate(
-                key,
-                I18nContext(defaultLocale, textChat),
-            ).toString(),
+            Translator
+                .translate(
+                    key,
+                    I18nContext(defaultLocale, textChat),
+                ).toString(),
         )
 
         verify { i18nDAO.getLabelById(id.toId()) }

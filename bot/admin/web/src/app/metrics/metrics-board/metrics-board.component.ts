@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, effect, OnDestroy, OnInit, signal } from '@angular/core';
 import { NbCalendarRange, NbDateService, NbDialogService, NbToastrService } from '@nebular/theme';
 import type { EChartsOption } from 'echarts';
@@ -36,7 +20,7 @@ import {
 } from '../models';
 import { MetricsByStoriesComponent } from './metrics-by-stories/metrics-by-stories.component';
 import { StoriesHitsComponent } from './stories-hits/stories-hits.component';
-import { RagAnswerStatusLabels, roundMinutesToNextTen, snakeCaseToDisplayLabel } from '../../shared/utils';
+import { RagAnswerStatus, RagAnswerStatusLabels, roundMinutesToNextTen, snakeCaseToDisplayLabel } from '../../shared/utils';
 import {
   CountByDateResult,
   DialogStats as DialogStats,
@@ -46,6 +30,7 @@ import {
 } from 'src/app/shared/model/dialog-data';
 import { BotSharedService } from '../../shared/bot-shared.service';
 import { MetricsIndicatorDetailsComponent } from './metrics-indicator-details/metrics-indicator-details.component';
+import { TranslocoService } from '@jsverse/transloco';
 
 export enum TimeRanges {
   threeDays = 3,
@@ -68,9 +53,10 @@ export const unknownIntentName = 'unknown';
 export const ragStoryId = 'tock_rag_story';
 
 @Component({
-  selector: 'tock-metrics-board',
-  templateUrl: './metrics-board.component.html',
-  styleUrls: ['./metrics-board.component.scss']
+    selector: 'tock-metrics-board',
+    templateUrl: './metrics-board.component.html',
+    styleUrls: ['./metrics-board.component.scss'],
+    standalone: false
 })
 export class MetricsBoardComponent implements OnInit, OnDestroy {
   destroy = new Subject();
@@ -98,6 +84,8 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
 
   displayTests: boolean = false;
 
+  ragAnswerStatusLabels = RagAnswerStatusLabels;
+
   constructor(
     private stateService: StateService,
     private dateService: NbDateService<Date>,
@@ -105,7 +93,8 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     private rest: RestService,
     private nbDialogService: NbDialogService,
     private toastrService: NbToastrService,
-    private botSharedService: BotSharedService
+    private botSharedService: BotSharedService,
+    private transloco: TranslocoService
   ) {
     effect(
       () => {
@@ -121,10 +110,14 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
             this.setMinAndMax();
             this.loadMetrics();
           } else {
-            this.toastrService.show('The end date of the period must be later than the start date.', 'Incorrect time interval', {
-              duration: 3000,
-              status: 'danger'
-            });
+            this.toastrService.show(
+              this.transloco.translate('metrics.metrics-board.incorrect_time_interval_message'),
+              this.transloco.translate('metrics.metrics-board.incorrect_time_interval_title'),
+              {
+                duration: 3000,
+                status: 'danger'
+              }
+            );
           }
         }, 1000);
       },
@@ -135,6 +128,21 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loading = true;
+
+    this.transloco
+      .selectTranslateObject('common.ragAnswerStatus', {}, '')
+      .pipe(takeUntil(this.destroy))
+      .subscribe((translatedRanges) => {
+        this.ragAnswerStatusLabels = {
+          [RagAnswerStatus.FOUND_IN_CONTEXT]: translatedRanges.foundInContext,
+          [RagAnswerStatus.NOT_FOUND_IN_CONTEXT]: translatedRanges.notFoundInContext,
+          [RagAnswerStatus.SMALL_TALK]: translatedRanges.smallTalk,
+          [RagAnswerStatus.HUMAN_ESCALATION]: translatedRanges.humanEscalation,
+          [RagAnswerStatus.OUT_OF_SCOPE]: translatedRanges.outOfScope,
+          [RagAnswerStatus.INJECTION_ATTEMPT]: translatedRanges.injectionAttempt,
+          [RagAnswerStatus.TECHNICAL_ERROR]: translatedRanges.technicalError
+        };
+      });
 
     this.displayTests = this.botSharedService.session_storage?.dialogs?.displayTests;
 
@@ -148,10 +156,14 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
 
   updateStart(newStart: Date): void {
     if (!newStart) {
-      this.toastrService.show('The provided start date is invalid. Please enter a valid date.', 'Invalid Date Format', {
-        duration: 3000,
-        status: 'danger'
-      });
+      this.toastrService.show(
+        this.transloco.translate('metrics.metrics-board.invalid_start_date_message'),
+        this.transloco.translate('metrics.metrics-board.invalid_date_format_title'),
+        {
+          duration: 3000,
+          status: 'danger'
+        }
+      );
       return;
     }
     this.range.set({ ...this.range(), start: newStart });
@@ -159,10 +171,14 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
 
   updateEnd(newEnd: Date): void {
     if (!newEnd) {
-      this.toastrService.show('The provided end date is invalid. Please enter a valid date.', 'Invalid Date Format', {
-        duration: 3000,
-        status: 'danger'
-      });
+      this.toastrService.show(
+        this.transloco.translate('metrics.metrics-board.invalid_end_date_message'),
+        this.transloco.translate('metrics.metrics-board.invalid_date_format_title'),
+        {
+          duration: 3000,
+          status: 'danger'
+        }
+      );
       return;
     }
     this.range.set({ ...this.range(), end: newEnd });
@@ -179,6 +195,30 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     this.range.set({
       start: this.dateService.addDay(this.dateService.today(), -(timeRange - 1)),
       end: roundMinutesToNextTen(this.dateService.today())
+    });
+  }
+
+  // Tooltip formatters
+  storiesChartTooltipFormatter(params: any): string {
+    return this.transloco.translate('metrics.metrics-board.stories_chart_tooltip', {
+      name: params.data.name,
+      value: params.data.value,
+      percent: params.percent
+    });
+  }
+
+  dimensionChartTooltipFormatter(params: any): string {
+    return this.transloco.translate('metrics.metrics-board.dimension_chart_tooltip', {
+      name: params.data.name,
+      percent: params.percent,
+      value: params.data.value
+    });
+  }
+
+  messagesChartTooltipFormatter(params: any): string {
+    return this.transloco.translate('metrics.metrics-board.messages_chart_tooltip', {
+      date: params[0].name,
+      count: params[0].data
     });
   }
 
@@ -405,10 +445,7 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     this.messagesChartOptions = {
       tooltip: {
         trigger: 'axis',
-        formatter: function (params) {
-          const plural = params[0].data > 0 ? 's' : '';
-          return `${params[0].name}<br />${params[0].data} message${plural}`;
-        }
+        formatter: (params) => this.messagesChartTooltipFormatter(params)
       },
       xAxis: {
         data: dates as any
@@ -500,7 +537,7 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     if (deletedStoriesHits > 0) {
       filteredMetrics.push({
         value: deletedStoriesHits,
-        name: 'Deleted Stories',
+        name: this.transloco.translate('metrics.metrics-board.deleted_stories_label'),
         color: '#000000'
       });
     }
@@ -515,16 +552,19 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     if (mainMetrics.length > maxDisplayedStories) {
       mainMetrics = filteredMetrics.slice(0, maxDisplayedStories);
       const othersCount = filteredMetrics.slice(maxDisplayedStories).reduce((acc, current) => acc + current.value, 0);
-      mainMetrics.push({ value: othersCount, name: `Other stories (${filteredMetrics.length - maxDisplayedStories})`, otherStories: true });
+      mainMetrics.push({
+        value: othersCount,
+        name: this.transloco.translate('metrics.metrics-board.other_stories_label', {
+          count: filteredMetrics.length - maxDisplayedStories
+        }),
+        otherStories: true
+      });
     }
 
     this.storiesChart = {
       tooltip: {
         trigger: 'item',
-        formatter: function (params) {
-          const plural = params.data.value > 1 ? 's' : '';
-          return `Story <strong>${params.data.name}</strong> <br />was triggered <strong>${params.data.value} time${plural}</strong> (${params.percent}%)`;
-        }
+        formatter: (params) => this.storiesChartTooltipFormatter(params)
       },
       calculable: true,
       series: [
@@ -536,7 +576,6 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
           itemStyle: {
             borderRadius: 4
           },
-
           data: mainMetrics.map((hit) => {
             return {
               value: hit.value,
@@ -599,7 +638,6 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
 
   private initCurrentDimensionMetricsChart(dimensionMetrics: MetricResult[]): void {
     this.currentDimensionCharts = [];
-
     this.currentDimensionIndicators.forEach((indicator) => {
       const entries = [];
 
@@ -614,8 +652,11 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
         let indicatorValue = this.getIndicatorValueByName(imr.row.indicatorName, imr.row.indicatorValueName);
         if (indicatorValue) {
           const valueLabel = this.getIndicatorValueLabelByName(imr.row.indicatorName, imr.row.indicatorValueName);
-          const displayLabel = RagAnswerStatusLabels[valueLabel.toLowerCase()] || snakeCaseToDisplayLabel(valueLabel);
 
+          const displayLabel =
+            this.ragAnswerStatusLabels[indicatorValue.name] ||
+            this.ragAnswerStatusLabels[valueLabel.toLowerCase()] ||
+            snakeCaseToDisplayLabel(valueLabel);
           entries.push({
             value: imr.count,
             name: displayLabel,
@@ -631,7 +672,7 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
         if (conversionRate) {
           entries.push({
             value: conversionRate,
-            name: 'No answer given',
+            name: this.transloco.translate('metrics.metrics-board.no_answer_given_label'),
             itemStyle: { color: '#aaa' }
           });
         }
@@ -643,9 +684,7 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
         indicatorType: indicator.type,
         tooltip: {
           trigger: 'item',
-          formatter: function (params) {
-            return `${params.data.name} :<br /><strong>${params.percent}%</strong> (${params.data.value})`;
-          }
+          formatter: (params) => this.dimensionChartTooltipFormatter(params)
         },
         calculable: true,
         series: [

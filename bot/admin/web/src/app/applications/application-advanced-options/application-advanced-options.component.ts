@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, Input, OnInit } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { Application, NlpApplicationConfiguration, NlpModelConfiguration } from '../../model/application';
@@ -25,11 +9,13 @@ import { Subject } from 'rxjs';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { ApplicationUploadComponent } from '../application-upload/application-upload.component';
 import { getExportFileName } from '../../shared/utils';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-application-advanced-options',
-  templateUrl: './application-advanced-options.component.html',
-  styleUrls: ['./application-advanced-options.component.scss']
+    selector: 'tock-application-advanced-options',
+    templateUrl: './application-advanced-options.component.html',
+    styleUrls: ['./application-advanced-options.component.scss'],
+    standalone: false
 })
 export class ApplicationAdvancedOptionsComponent implements OnInit {
   @Input()
@@ -46,7 +32,8 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
     private toastrService: NbToastrService,
     private nbDialogService: NbDialogService,
     public state: StateService,
-    private applicationService: ApplicationService
+    private applicationService: ApplicationService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -72,7 +59,13 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
   triggerBuild(): void {
     this.applicationService
       .triggerBuild(this.application)
-      .subscribe((_) => this.toastrService.show(`Application build started`, 'Build', { duration: 2000 }));
+      .subscribe((_) =>
+        this.toastrService.show(
+          this.transloco.translate('applications.application-advanced-options.buildStarted'),
+          this.transloco.translate('applications.application-advanced-options.buildTitle'),
+          { duration: 2000 }
+        )
+      );
   }
 
   downloadAlexaExport(): void {
@@ -89,7 +82,11 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
         );
         saveAs(blob, exportFileName);
 
-        this.toastrService.show(`Alexa export file provided`, 'Alexa', { duration: 2000 });
+        this.toastrService.show(
+          this.transloco.translate('applications.application-advanced-options.alexaExportProvided'),
+          this.transloco.translate('applications.application-advanced-options.alexaTitle'),
+          { duration: 2000 }
+        );
       });
     });
   }

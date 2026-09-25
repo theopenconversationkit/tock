@@ -61,15 +61,17 @@ data class DirectMessageIncomingEvent(
                 return if (quickReplyResponse != null) {
                     when (quickReplyResponse) {
                         is OptionsResponse -> {
-                            SendChoice.decodeChoice(
-                                quickReplyResponse.metadata,
-                                playerId(PlayerType.user),
-                                applicationId,
-                                recipientId(PlayerType.bot),
-                            ).apply {
-                                metadata.visibility = ActionVisibility.PRIVATE
-                            }
+                            SendChoice
+                                .decodeChoice(
+                                    quickReplyResponse.metadata,
+                                    playerId(PlayerType.user),
+                                    applicationId,
+                                    recipientId(PlayerType.bot),
+                                ).apply {
+                                    metadata.visibility = ActionVisibility.PRIVATE
+                                }
                         }
+
                         else -> {
                             logger.debug { "unknown quick reply response type $this" }
                             null

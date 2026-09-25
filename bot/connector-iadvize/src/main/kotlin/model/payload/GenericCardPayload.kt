@@ -24,5 +24,4 @@ data class GenericCardPayload(
     val text: String? = null,
     val image: Image? = null,
     val actions: List<Action> = mutableListOf(),
-) :
-    Payload("card/content")
+) : Payload("card/content")

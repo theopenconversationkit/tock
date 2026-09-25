@@ -36,5 +36,10 @@ data class NlpCallStats(
     /**
      * Entity ranges to be obfuscated.
      */
-    fun obfuscatedRanges(): List<IntRange> = entityResult.asSequence().filter { it.entity.entityType.obfuscated }.mapNotNull { it.toClosedRange() }.toList()
+    fun obfuscatedRanges(): List<IntRange> =
+        entityResult
+            .asSequence()
+            .filter { it.entity.entityType.obfuscated }
+            .mapNotNull { it.toClosedRange() }
+            .toList()
 }

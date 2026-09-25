@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-stt</artifactId>
-        <version>26.3.4-SNAPSHOT</version>
+        <version>26.3.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-stt-google-speech</artifactId>
@@ -29,7 +29,7 @@
     <description>Google Speech STT implementation</description>
 
     <properties>
-        <jave>3.5.0</jave>
+        <jave>4.2.0</jave>
     </properties>
 
     <dependencies>

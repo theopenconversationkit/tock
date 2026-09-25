@@ -33,8 +33,8 @@ data class UserSearchQuery(
     val flags: Set<String> = emptySet(),
     val displayTests: Boolean = false,
 ) : PaginatedQuery() {
-    fun toUserReportQuery(): UserReportQuery {
-        return UserReportQuery(
+    fun toUserReportQuery(): UserReportQuery =
+        UserReportQuery(
             namespace,
             applicationName,
             currentLanguage,
@@ -46,15 +46,13 @@ data class UserSearchQuery(
             flags.map { it to null }.toMap(),
             displayTests,
         )
-    }
 
-    fun toUserAnalyticsQuery(): AnalyticsQuery {
-        return AnalyticsQuery(
+    fun toUserAnalyticsQuery(): AnalyticsQuery =
+        AnalyticsQuery(
             namespace,
             applicationName,
             currentLanguage,
             LocalDateTime.of(from?.toLocalDate(), LocalTime.MIDNIGHT),
             LocalDateTime.of(to?.toLocalDate(), LocalTime.MAX),
         )
-    }
 }

@@ -52,18 +52,22 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 /**
  * Best attempt to guess local ip.
  */
-fun tryToFindLocalIp(): String {
-    return NetworkInterface.getNetworkInterfaces()
+fun tryToFindLocalIp(): String =
+    NetworkInterface
+        .getNetworkInterfaces()
         .toList()
         .run {
             find { it.name.contains("eno") }
-                ?.inetAddresses?.toList()?.filterIsInstance<Inet4Address>()?.firstOrNull()?.hostName
+                ?.inetAddresses
+                ?.toList()
+                ?.filterIsInstance<Inet4Address>()
+                ?.firstOrNull()
+                ?.hostName
                 ?: flatMap { it.inetAddresses.toList().filterIsInstance<Inet4Address>() }
                     .find { it.hostName.startsWith("192.168.0") }
                     ?.hostName
                 ?: "localhost"
         }
-}
 
 /**
  * Create a new Retrofit service.
@@ -106,28 +110,28 @@ fun retrofitBuilderWithTimeoutAndLogger(
     circuitBreaker: Boolean = false,
     proxy: Proxy? = null,
 ): Retrofit.Builder =
-    OkHttpClient.Builder()
+    OkHttpClient
+        .Builder()
         .readTimeout(ms, MILLISECONDS)
         .connectTimeout(ms, MILLISECONDS)
         .writeTimeout(ms, MILLISECONDS)
         .apply {
             interceptors.forEach { addInterceptor(it) }
-        }
-        .apply {
+        }.apply {
             takeIf { requestGZipEncoding }
                 ?.addInterceptor(GzipRequestInterceptor())
-        }
-        .addInterceptor(LoggingInterceptor(logger, level))
+        }.addInterceptor(LoggingInterceptor(logger, level))
         .apply {
             // support compatible tls
             connectionSpecs(listOf(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
             takeIf { proxy != null }
                 ?.proxy(proxy)
-        }
-        .apply(TockProxyAuthenticator::install)
+        }.apply(TockProxyAuthenticator::install)
         .build()
         .let {
-            Retrofit.Builder().client(it)
+            Retrofit
+                .Builder()
+                .client(it)
                 .apply {
                     takeIf { circuitBreaker && booleanProperty("tock_circuit_breaker", false) }
                         ?.addCallAdapterFactory(CircuitBreakerCallAdapter.of(CircuitBreaker.ofDefaults(logger.name)))
@@ -146,7 +150,8 @@ fun basicAuthInterceptor(
         val original = chain.request()
 
         val requestBuilder =
-            original.newBuilder()
+            original
+                .newBuilder()
                 .header("Authorization", credential)
 
         val request = requestBuilder.build()
@@ -157,18 +162,18 @@ fun basicAuthInterceptor(
 /**
  * Create a token authentication interceptor.
  */
-fun tokenAuthenticationInterceptor(token: String): Interceptor {
-    return Interceptor { chain ->
+fun tokenAuthenticationInterceptor(token: String): Interceptor =
+    Interceptor { chain ->
         val original = chain.request()
 
         val requestBuilder =
-            original.newBuilder()
+            original
+                .newBuilder()
                 .header("Authorization", "Bearer $token")
 
         val request = requestBuilder.build()
         chain.proceed(request)
     }
-}
 
 /**
  * Encode basic credential header.
@@ -199,7 +204,8 @@ private class GzipRequestInterceptor : Interceptor {
         }
 
         val compressedRequest =
-            originalRequest.newBuilder()
+            originalRequest
+                .newBuilder()
                 .header("Content-Encoding", "gzip")
                 .method(originalRequest.method, gzip(body))
                 .build()
@@ -208,9 +214,7 @@ private class GzipRequestInterceptor : Interceptor {
 
     private fun gzip(body: RequestBody): RequestBody {
         return object : RequestBody() {
-            override fun contentType(): MediaType? {
-                return body.contentType()
-            }
+            override fun contentType(): MediaType? = body.contentType()
 
             override fun contentLength(): Long {
                 return -1 // We don't know the compressed length in advance!
@@ -289,7 +293,10 @@ enum class Level {
     BODY,
 }
 
-private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interceptor {
+private class LoggingInterceptor(
+    val logger: KLogger,
+    val level: Level,
+) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val level = this.level
 

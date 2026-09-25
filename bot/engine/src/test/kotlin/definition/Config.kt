@@ -20,14 +20,19 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.nlp.entity.date.DateEntityRange
 import java.time.ZonedDateTime
 
-class SimpleDef(bus: BotBus) : HandlerDef<Connector>(bus)
+class SimpleDef(
+    bus: BotBus,
+) : HandlerDef<Connector>(bus)
 
 data class StoryData(
     val entityValue: String? = null,
     val departureDate: ZonedDateTime? = null,
 )
 
-class Def(bus: BotBus, val data: StoryData) : HandlerDef<Connector>(bus) {
+class Def(
+    bus: BotBus,
+    val data: StoryData,
+) : HandlerDef<Connector>(bus) {
     override fun answer() {
         when {
             data.entityValue == null -> askToFillValue()
@@ -49,14 +54,19 @@ class Def(bus: BotBus, val data: StoryData) : HandlerDef<Connector>(bus) {
     }
 }
 
-class Connector(context: Def) : ConnectorDef<Def>(context)
+class Connector(
+    context: Def,
+) : ConnectorDef<Def>(context)
 
 data class StoryData2(
     val entityValue: String?,
     val departureDate: ZonedDateTime?,
 )
 
-class Def2(bus: BotBus, val data: StoryData) : HandlerDef<Connector>(bus) {
+class Def2(
+    bus: BotBus,
+    val data: StoryData,
+) : HandlerDef<Connector>(bus) {
     override fun answer() {
         when {
             data.entityValue == null -> askToFillValue()
@@ -78,7 +88,9 @@ class Def2(bus: BotBus, val data: StoryData) : HandlerDef<Connector>(bus) {
     }
 }
 
-class Connector2(context: Def2) : ConnectorDef<Def2>(context)
+class Connector2(
+    context: Def2,
+) : ConnectorDef<Def2>(context)
 
 @Suppress("ktlint:standard:enum-entry-name-case")
 enum class Step2 : StoryDataStep<Def2, StoryData, StoryData2> {

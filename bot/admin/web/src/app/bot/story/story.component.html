@@ -1,20 +1,5 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<nb-accordion *ngIf="story">
+@if (story) {
+<nb-accordion>
   <nb-accordion-item
     [expanded]="!!storyNode || !story._id || story.selected"
     [disabled]="!!storyNode || !story._id"
@@ -23,116 +8,118 @@
     <nb-accordion-item-header>
       <div class="story-accordion-header d-flex flex-wrap">
         <div>
-          <span *ngIf="!storyNode">
+          @if (!storyNode) {
+          <span>
+            @if (story.isBuiltIn()) {
             <nb-icon
-              *ngIf="story.isBuiltIn()"
-              nbTooltip="Built-in Story"
+              [nbTooltip]="'bot.story.builtInStoryTooltip' | transloco"
               icon="box"
               class="align-middle"
             ></nb-icon>
+            } @if (story.isSimpleNonFaqAnswer()) {
             <nb-icon
-              *ngIf="story.isSimpleNonFaqAnswer()"
-              nbTooltip="Message Story"
+              [nbTooltip]="'bot.story.messageStoryTooltip' | transloco"
               icon="chat-left"
               class="align-middle"
             ></nb-icon>
+            } @if (story.isSimpleFaqAnswer()) {
             <nb-icon
-              *ngIf="story.isSimpleFaqAnswer()"
-              class="align-middle"
-              nbTooltip="Message Faq Story"
+              [nbTooltip]="'bot.story.messageFaqStoryTooltip' | transloco"
               icon="chat-left-text"
+              class="align-middle"
             ></nb-icon>
+            } @if (story.isScriptAnswer()) {
             <nb-icon
-              *ngIf="story.isScriptAnswer()"
-              nbTooltip="Script Story"
+              [nbTooltip]="'bot.story.scriptStoryTooltip' | transloco"
               icon="code"
               class="align-middle"
             ></nb-icon>
+            } @if (!storyNode) {
             <span
-              *ngIf="!storyNode"
-              nbTooltip="Story name"
+              [nbTooltip]="'bot.story.storyNameTooltip' | transloco"
               class="answer-title"
             >
               {{ story.name }}
             </span>
+            }
           </span>
-
+          } @if (storyNode) {
           <span
-            *ngIf="storyNode"
-            nbTooltip="Story name"
+            [nbTooltip]="'bot.story.storyNameTooltip' | transloco"
             class="answer-title"
           >
             <div>
               <span>{{ story.name }}</span>
+              @if (displayCount) {
               <nb-badge
-                *ngIf="displayCount"
                 [text]="storyNode.displayCount()"
                 status="info"
                 position="top right"
               ></nb-badge>
+              }
             </div>
           </span>
+          }
         </div>
-
         <div>
+          @if (!storyNode && story._id && !story.isBuiltIn()) {
           <tock-answer
-            *ngIf="!storyNode && story._id && !story.isBuiltIn()"
             class="answer"
             [answer]="story"
             [fullDisplay]="false"
             [wide]="true"
           ></tock-answer>
-
+          } @if (!story.isBuiltIn()) {
           <button
-            *ngIf="!story.isBuiltIn()"
             nbButton
             ghost
             shape="round"
-            nbTooltip="Edit story"
+            [nbTooltip]="'common.actions.edit' | transloco"
             (click)="$event.stopPropagation(); editStory()"
           >
             <nb-icon icon="pencil"></nb-icon>
           </button>
+          } @if (!story.isBuiltIn()) {
           <button
-            *ngIf="!story.isBuiltIn()"
             nbButton
             ghost
             shape="round"
-            nbTooltip="Edit Mandatory Entities"
+            [nbTooltip]="'bot.story.editMandatoryEntitiesTooltip' | transloco"
             (click)="$event.stopPropagation(); editEntities()"
           >
             <nb-icon icon="paperclip"></nb-icon>
           </button>
+          } @if (!story.isBuiltIn()) {
           <button
-            *ngIf="!story.isBuiltIn()"
             nbButton
             ghost
             shape="round"
-            nbTooltip="Edit Actions"
+            [nbTooltip]="'bot.story.editActionsTooltip' | transloco"
             (click)="$event.stopPropagation(); editSteps()"
           >
             <nb-icon icon="bar-chart-steps"></nb-icon>
           </button>
+          } @if (story._id) {
           <button
-            *ngIf="story._id"
             nbButton
             ghost
             shape="round"
-            nbTooltip="Export Story"
+            [nbTooltip]="'bot.story.exportStoryTooltip' | transloco"
             (click)="$event.stopPropagation(); download(story)"
           >
             <nb-icon icon="download"></nb-icon>
           </button>
+          } @if (story._id) {
           <button
-            *ngIf="story._id"
             nbButton
             ghost
             shape="round"
-            nbTooltip="Delete"
+            [nbTooltip]="'common.actions.delete' | transloco"
             (click)="$event.stopPropagation(); deleteStory()"
           >
             <nb-icon icon="trash"></nb-icon>
           </button>
+          }
         </div>
       </div>
     </nb-accordion-item-header>
@@ -146,31 +133,34 @@
                 <div>
                   <span
                     class="font-weight-bold initial-capitalize"
-                    nbTooltip="Main intent"
+                    [nbTooltip]="'bot.story.mainIntentTooltip' | transloco"
                   >
                     {{ story.intent.name }}
                   </span>
-                  <span nbTooltip="Story category"> [{{ story.category }}]</span>
+                  <span [nbTooltip]="'bot.story.storyCategoryTooltip' | transloco"> [{{ story.category }}]</span>
                 </div>
                 <div>
-                  <small
-                    *ngIf="story.description"
-                    class="text-mitigated truncate"
-                  >
+                  @if (story.description) {
+                  <small class="text-mitigated truncate">
                     {{ story.description }}
                   </small>
-
-                  <ul *ngIf="storyNode">
-                    <li *ngIf="storyNode.intent">
+                  } @if (storyNode) {
+                  <ul>
+                    @if (storyNode.intent) {
+                    <li>
                       Intent: <b>{{ storyNode.intent }}</b>
                     </li>
-                    <li *ngIf="storyNode.step">
+                    } @if (storyNode.step) {
+                    <li>
                       Step: <b>{{ storyNode.step }}</b>
                     </li>
-                    <li *ngIf="storyNode.entities.length !== 0">
+                    } @if (storyNode.entities.length !== 0) {
+                    <li>
                       Entities: <b>{{ storyNode.entities }}</b>
                     </li>
+                    }
                   </ul>
+                  }
                 </div>
               </div>
             </nb-accordion-item-header>
@@ -182,63 +172,67 @@
             </nb-accordion-item-body>
           </nb-accordion-item>
         </nb-accordion>
-
-        <div *ngIf="!story.hideDetails && !story.isBuiltIn()">
+        @if (!story.hideDetails && !story.isBuiltIn()) {
+        <div>
           <!-- Mandatory entities -->
-          <nb-card
-            *ngIf="story.mandatoryEntities.length !== 0"
-            class="section-card"
-          >
+          @if (story.mandatoryEntities.length !== 0) {
+          <nb-card class="section-card">
             <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
-              Mandatory entities
+              {{ 'bot.story.mandatoryEntitiesTitle' | transloco }}
               <button
                 nbButton
                 ghost
                 shape="round"
-                nbTooltip="Edit"
+                [nbTooltip]="'common.actions.edit' | transloco"
                 (click)="editEntities()"
               >
                 <nb-icon icon="pencil"></nb-icon>
               </button>
             </nb-card-header>
             <nb-list>
-              <nb-list-item *ngFor="let e of story.mandatoryEntities">
+              @for (e of story.mandatoryEntities; track e) {
+              <nb-list-item>
                 {{ e.role }}
+                @if (e.intent) {
                 <span
-                  *ngIf="e.intent"
                   class="font-italic"
-                  nbTooltip="Intent requested"
+                  [nbTooltip]="'bot.story.intentRequestedTooltip' | transloco"
                   >[{{ e.intent.name }}]</span
-                >:
+                >
+                }:
                 <tock-answer
                   class="answer"
                   [answer]="e"
                   [editable]="false"
                 ></tock-answer>
               </nb-list-item>
+              }
             </nb-list>
           </nb-card>
-
+          }
           <!-- default answer -->
           <nb-card class="section-card">
             <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
+              @if (!fullDisplay) {
               <span
-                *ngIf="!fullDisplay"
                 for="main_answer"
                 class="label-answer"
-                >Answer:</span
               >
-              <span *ngIf="fullDisplay">Answers</span>
+                {{ 'bot.story.answerLabel' | transloco }}
+              </span>
+              } @if (fullDisplay) {
+              <span>{{ 'bot.story.answersLabel' | transloco }}</span>
+              } @if (canCustomiseMainAnswer()) {
               <button
-                *ngIf="canCustomiseMainAnswer()"
                 nbButton
                 ghost
                 shape="round"
-                nbTooltip="Customise answer by bot application configuration"
+                [nbTooltip]="'bot.story.customiseAnswerTooltip' | transloco"
                 (click)="customiseMainAnswer()"
               >
                 <nb-icon icon="link-45deg"></nb-icon>
               </button>
+              }
             </nb-card-header>
             <nb-card-body class="section-card-body">
               <tock-answer
@@ -250,22 +244,20 @@
               ></tock-answer>
             </nb-card-body>
           </nb-card>
-
           <!-- answers by bot configuration -->
-          <nb-card
-            *ngIf="story.configuredAnswers && story.configuredAnswers.length > 0"
-            class="section-card"
-          >
-            <nb-card-header>Custom answers</nb-card-header>
+          @if (story.configuredAnswers && story.configuredAnswers.length > 0) {
+          <nb-card class="section-card">
+            <nb-card-header>{{ 'bot.story.customAnswersTitle' | transloco }}</nb-card-header>
             <nb-card-body class="section-card-body">
-              <nb-card *ngFor="let configuredAnswer of story.configuredAnswers">
+              @for (configuredAnswer of story.configuredAnswers; track configuredAnswer) {
+              <nb-card>
                 <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
                   <span><nb-icon icon="gear"></nb-icon> {{ configuredAnswer.botConfiguration }}</span>
                   <button
                     nbButton
                     ghost
                     shape="round"
-                    nbTooltip="Delete"
+                    [nbTooltip]="'common.actions.delete' | transloco"
                     status="danger"
                     (click)="deleteCustomAnswers(configuredAnswer)"
                   >
@@ -279,29 +271,29 @@
                   ></tock-answer>
                 </nb-card-body>
               </nb-card>
+              }
             </nb-card-body>
           </nb-card>
-
+          }
           <!-- Story steps/action -->
           <nb-card class="section-card">
             <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
-              Actions
+              {{ 'bot.story.actionsTitle' | transloco }}
               <div class="d-flex gap-1">
                 <nb-toggle
                   ngDefaultControl
-                  nbTooltip="The step indicators recorded for a metric story, refer to the story with which the user has previously interacted. A metrics story must be a redirected story and is generally used to evaluate user satisfaction. At least one step must refer to an indicator to be activated."
+                  [nbTooltip]="'bot.story.metricsStoryTooltip' | transloco"
                   [(ngModel)]="story.metricStory"
                   [disabled]="!canBeMetricStory()"
                 >
-                  Metrics story
+                  {{ 'bot.story.metricsStoryLabel' | transloco }}
                 </nb-toggle>
-
                 <button
                   class="mb-2"
                   nbButton
                   ghost
                   shape="round"
-                  nbTooltip="Customise actions by bot application configuration"
+                  [nbTooltip]="'bot.story.customiseActionsTooltip' | transloco"
                   (click)="addCustomSteps()"
                 >
                   <nb-icon icon="link-45deg"></nb-icon>
@@ -316,23 +308,21 @@
               ></tock-steps>
             </nb-card-body>
           </nb-card>
-
           <!-- steps by bot configuration -->
-          <nb-card
-            *ngIf="story.configuredSteps && story.configuredSteps.length > 0"
-            class="section-card"
-          >
-            <nb-card-header>Custom actions</nb-card-header>
+          @if (story.configuredSteps && story.configuredSteps.length > 0) {
+          <nb-card class="section-card">
+            <nb-card-header>{{ 'bot.story.customActionsTitle' | transloco }}</nb-card-header>
             <nb-card-body class="section-card-body">
-              <nb-card *ngFor="let configuredSteps of story.configuredSteps">
+              @for (configuredSteps of story.configuredSteps; track configuredSteps) {
+              <nb-card>
                 <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
                   <span><nb-icon icon="gear"></nb-icon> {{ configuredSteps.botConfiguration }}</span>
                   <button
                     nbButton
                     ghost
                     shape="round"
+                    [nbTooltip]="'common.actions.delete' | transloco"
                     status="danger"
-                    nbTooltip="Delete"
                     (click)="deleteCustomSteps(configuredSteps)"
                   >
                     <nb-icon icon="trash"></nb-icon>
@@ -346,63 +336,66 @@
                   ></tock-steps>
                 </nb-card-body>
               </nb-card>
+              }
             </nb-card-body>
           </nb-card>
+          }
         </div>
+        }
       </div>
-      <div
-        *ngIf="storyNode || story._id"
-        class="accordion-footer card-footer-actions"
-      >
+      @if (storyNode || story._id) {
+      <div class="accordion-footer card-footer-actions">
+        @if (!story._id) {
         <button
-          *ngIf="!story._id"
           nbButton
           status="primary"
           size="small"
           (click)="saveNewStory()"
         >
           <nb-icon icon="plus"></nb-icon>
-          Create
+          {{ 'common.actions.create' | transloco }}
         </button>
+        } @if (story._id) {
         <button
-          *ngIf="story._id"
           nbButton
           ghost
           size="small"
           (click)="cancelManagingStory()"
         >
           <nb-icon icon="x-lg"></nb-icon>
-          Cancel
+          {{ 'common.actions.cancel' | transloco }}
         </button>
+        } @if (story._id && !story.isBuiltIn()) {
         <button
-          *ngIf="story._id && !story.isBuiltIn()"
           nbButton
           status="primary"
           size="small"
           (click)="saveStory(false); submitClose()"
         >
           <nb-icon icon="floppy"></nb-icon>
-          Update
+          {{ 'common.actions.update' | transloco }}
         </button>
+        } @if (story._id && story.isBuiltIn()) {
         <button
-          *ngIf="story._id && story.isBuiltIn()"
           nbButton
           status="primary"
           size="small"
           (click)="manageStory()"
         >
-          Manage
+          {{ 'bot.story.manageStoryButton' | transloco }}
         </button>
+        }
       </div>
+      }
     </nb-accordion-item-body>
   </nb-accordion-item>
 </nb-accordion>
-
-<nb-card *ngIf="!story && storyNode">
+} @if (!story && storyNode) {
+<nb-card>
   <nb-card-header>
     <span
+      [nbTooltip]="'bot.story.storyNameTooltip' | transloco"
       class="answer-title"
-      nbTooltip="Story name"
     >
       {{ storyNode.nodeName() }}
       <nb-badge
@@ -413,16 +406,23 @@
   </nb-card-header>
   <nb-card-body>
     <ul>
-      <li *ngIf="storyNode.intent">
+      @if (storyNode.intent) {
+      <li>
         Intent: <b>{{ storyNode.intent }}</b>
       </li>
-      <li *ngIf="storyNode.step">
+      } @if (storyNode.step) {
+      <li>
         Step: <b>{{ storyNode.step }}</b>
       </li>
-      <li *ngIf="storyNode.entities.length !== 0">
+      } @if (storyNode.entities.length !== 0) {
+      <li>
         Entities: <b>{{ storyNode.entities }}</b>
       </li>
-      <li>{{ storyNode.count }} {{ storyNode.count === 1 ? 'instance' : 'instances' }}</li>
+      }
+      <li>
+        {{ storyNode.count }}
+        {{ storyNode.count === 1 ? ('bot.story.instanceLabel' | transloco) : ('bot.story.instancesLabel' | transloco) }}
+      </li>
     </ul>
   </nb-card-body>
   <nb-card-footer>
@@ -430,7 +430,8 @@
       nbButton
       (click)="createStory()"
     >
-      Create Managed Story
+      {{ 'bot.story.createManagedStoryButton' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>
+}

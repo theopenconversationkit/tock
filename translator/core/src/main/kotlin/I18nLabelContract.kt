@@ -20,7 +20,7 @@ import org.litote.kmongo.Id
 import java.util.Locale
 
 interface I18nLabelContract {
-    @Suppress("ktlint:standard:property-naming")
+    @Suppress("ktlint:standard:backing-property-naming")
     val _id: Id<I18nLabel>
     val namespace: String?
     val category: String

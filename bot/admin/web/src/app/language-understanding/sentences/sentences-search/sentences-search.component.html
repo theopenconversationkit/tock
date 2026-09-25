@@ -15,12 +15,12 @@
   -->
 
 <div class="d-flex flex-wrap">
-  <h1 class="flex-grow-1">Search sentences</h1>
+  <h1 class="flex-grow-1">{{ 'lu.sentences-search.title' | transloco }}</h1>
 
   <section class="d-flex flex-wrap align-items-center">
     <button
       nbButton
-      nbTooltip="Download a dump of the matching sentences"
+      [nbTooltip]="'lu.sentences-search.download-tooltip' | transloco"
       ghost
       shape="round"
       (click)="downloadSentencesDump()"
@@ -33,7 +33,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Refresh sentences"
+      [nbTooltip]="'lu.sentences-search.refresh-tooltip' | transloco"
       (click)="refresh()"
       class="ml-2"
     >

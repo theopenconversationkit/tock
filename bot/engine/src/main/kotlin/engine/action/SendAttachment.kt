@@ -37,8 +37,7 @@ open class SendAttachment(
     date: Instant = Instant.now(),
     state: EventState = EventState(),
     metadata: ActionMetadata = ActionMetadata(),
-) :
-    Action(playerId, recipientId, connectorId, id, date, state, metadata) {
+) : Action(playerId, recipientId, connectorId, id, date, state, metadata) {
     @Deprecated("Use constructor with connectorId", ReplaceWith("Action(connectorId = applicationId, id, date, state)"))
     constructor(
         playerId: PlayerId,
@@ -61,7 +60,5 @@ open class SendAttachment(
         file,
     }
 
-    override fun toMessage(): Message {
-        return Attachment(url, type)
-    }
+    override fun toMessage(): Message = Attachment(url, type)
 }

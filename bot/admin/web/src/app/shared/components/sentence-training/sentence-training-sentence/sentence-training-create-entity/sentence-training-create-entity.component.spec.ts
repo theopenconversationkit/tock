@@ -17,6 +17,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SentenceTrainingCreateEntityComponent } from './sentence-training-create-entity.component';
+import { TestSharedModule } from '../../../../test-shared.module';
+import { NbDialogRef } from '@nebular/theme';
+import { of } from 'rxjs';
+import { StateServiceMock } from '../../../../test-shared/state-service.mock';
+import { StateService } from '../../../../../core-nlp/state.service';
 
 describe('SentenceTrainingCreateEntityComponent', () => {
   let component: SentenceTrainingCreateEntityComponent;
@@ -24,9 +29,13 @@ describe('SentenceTrainingCreateEntityComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SentenceTrainingCreateEntityComponent ]
-    })
-    .compileComponents();
+      declarations: [SentenceTrainingCreateEntityComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: NbDialogRef, useValue: { onClose: of(null), close: () => {} } },
+        { provide: StateService, useClass: StateServiceMock }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SentenceTrainingCreateEntityComponent);
     component = fixture.componentInstance;

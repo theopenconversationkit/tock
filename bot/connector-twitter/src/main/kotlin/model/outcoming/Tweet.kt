@@ -19,10 +19,14 @@ package ai.tock.bot.connector.twitter.model.outcoming
 import ai.tock.bot.connector.twitter.model.TwitterPublicConnectorMessage
 import ai.tock.bot.engine.message.GenericMessage
 
-data class Tweet(val text: String, val dmRecipientID: String? = null, val welcomeMessageID: String? = null, val defaultMessage: String? = null) : TwitterPublicConnectorMessage() {
-    override fun toGenericMessage(): GenericMessage? {
-        return GenericMessage(
+data class Tweet(
+    val text: String,
+    val dmRecipientID: String? = null,
+    val welcomeMessageID: String? = null,
+    val defaultMessage: String? = null,
+) : TwitterPublicConnectorMessage() {
+    override fun toGenericMessage(): GenericMessage? =
+        GenericMessage(
             texts = mapOf("text" to text),
         )
-    }
 }

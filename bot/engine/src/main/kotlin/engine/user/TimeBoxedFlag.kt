@@ -25,7 +25,5 @@ data class TimeBoxedFlag(
     val value: String,
     val expirationDate: Instant? = Instant.now(),
 ) {
-    fun isValid(): Boolean {
-        return expirationDate?.isAfter(Instant.now()) ?: true
-    }
+    fun isValid(): Boolean = expirationDate?.isAfter(Instant.now()) ?: true
 }

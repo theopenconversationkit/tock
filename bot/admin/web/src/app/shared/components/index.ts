@@ -64,3 +64,4 @@ export * from './annotation/annotation-comment.component';
 export * from './chat-ui/chat-ui-dialog-logger/chat-ui-dialog-logger.component';
 export * from './chat-ui/chat-ui-dialog-evaluator/chat-ui-dialog-evaluator.component';
 export * from './json-viewer-dialog/json-viewer-dialog.component';
+export * from './intent-dialog/intent-dialog.component';

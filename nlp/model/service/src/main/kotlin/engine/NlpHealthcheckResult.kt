@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-data class NlpHealthcheckResult(val entityClassifier: Boolean, val intentClassifier: Boolean) {
+data class NlpHealthcheckResult(
+    val entityClassifier: Boolean,
+    val intentClassifier: Boolean,
+) {
     companion object {
         val ALL_OK = NlpHealthcheckResult(entityClassifier = true, intentClassifier = true)
     }

@@ -23,8 +23,9 @@ import io.netty.handler.codec.http.HttpResponseStatus
 /**
  * Http 400 exception.
  */
-class BadRequestException(httpResponseBody: ErrorMessageWrapper) :
-    RestException(httpResponseBody, HttpResponseStatus.BAD_REQUEST) {
+class BadRequestException(
+    httpResponseBody: ErrorMessageWrapper,
+) : RestException(httpResponseBody, HttpResponseStatus.BAD_REQUEST) {
     constructor(errorCode: Int, message: String) : this(ErrorMessageWrapper(setOf(ErrorMessage(errorCode.toString(), message))))
     constructor(message: String) : this(ErrorMessageWrapper(message))
     constructor(errorMessages: Set<ErrorMessage>) : this(ErrorMessageWrapper(errors = errorMessages))

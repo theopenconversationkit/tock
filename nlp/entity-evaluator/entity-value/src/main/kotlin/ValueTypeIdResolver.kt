@@ -29,9 +29,7 @@ class ValueTypeIdResolver : TypeIdResolverBase() {
     override fun typeFromId(
         context: DatabindContext,
         id: String,
-    ): JavaType {
-        return context.config.constructType(ValueResolverRepository.getType(id).java)
-    }
+    ): JavaType = context.config.constructType(ValueResolverRepository.getType(id).java)
 
     override fun idFromValue(value: Any): String {
         @Suppress("UNCHECKED_CAST")
@@ -41,11 +39,7 @@ class ValueTypeIdResolver : TypeIdResolverBase() {
     override fun idFromValueAndType(
         value: Any,
         suggestedType: Class<*>,
-    ): String {
-        return idFromValue(value)
-    }
+    ): String = idFromValue(value)
 
-    override fun getMechanism(): JsonTypeInfo.Id {
-        return JsonTypeInfo.Id.NAME
-    }
+    override fun getMechanism(): JsonTypeInfo.Id = JsonTypeInfo.Id.NAME
 }

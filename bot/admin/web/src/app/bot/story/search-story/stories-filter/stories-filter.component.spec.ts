@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StoriesFilterComponent } from './stories-filter.component';
+import { TestSharedModule } from '../../../../shared/test-shared.module';
 
 describe('StoriesFilterComponent', () => {
   let component: StoriesFilterComponent;
@@ -24,9 +25,9 @@ describe('StoriesFilterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StoriesFilterComponent ]
-    })
-    .compileComponents();
+      declarations: [StoriesFilterComponent],
+      imports: [TestSharedModule]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(StoriesFilterComponent);
     component = fixture.componentInstance;

@@ -63,7 +63,5 @@ class SendDebug(
         _deprecatedConstructor: Nothing? = null,
     ) : this(playerId, applicationId, recipientId, text, data, id, date, state, metadata)
 
-    override fun toMessage(): Message {
-        return DebugMessage(text, data)
-    }
+    override fun toMessage(): Message = DebugMessage(text, data)
 }

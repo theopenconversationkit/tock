@@ -19,4 +19,7 @@ package ai.tock.bot.connector.iadvize.model
 /**
  *
  */
-data class DistributionRule(val id: String, val label: String)
+data class DistributionRule(
+    val id: String,
+    val label: String,
+)

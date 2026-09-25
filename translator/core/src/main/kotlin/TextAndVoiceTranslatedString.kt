@@ -31,9 +31,7 @@ data class TextAndVoiceTranslatedString(
 
     fun isSSML(): Boolean = voice.isSSML()
 
-    override fun toString(): String {
-        return text.toString()
-    }
+    override fun toString(): String = text.toString()
 
     // override extension method
     fun splitToCharSequence(
@@ -54,12 +52,11 @@ data class TextAndVoiceTranslatedString(
     override fun subSequence(
         startIndex: Int,
         endIndex: Int,
-    ): TranslatedSequence {
-        return TextAndVoiceTranslatedString(
+    ): TranslatedSequence =
+        TextAndVoiceTranslatedString(
             text.subSequence(startIndex, endIndex),
             voice.subSequence(startIndex, endIndex),
         )
-    }
 
     override fun plus(other: Any?): TranslatedSequence {
         logger.warn { "adding a String to a TranslatedSequence is not recommended - please use message format pattern" }

@@ -172,6 +172,12 @@ internal class GAAccountLinkingTest {
             assertEquals(newUserId, capturedTimeline.captured.playerId)
             assertEquals(previousUserPreferences, capturedTimeline.captured.userPreferences)
             assertEquals(previousUserState, capturedTimeline.captured.userState)
-            assertEquals(newUserId, capturedTimeline.captured.dialogs.first().playerIds.first())
+            assertEquals(
+                newUserId,
+                capturedTimeline.captured.dialogs
+                    .first()
+                    .playerIds
+                    .first(),
+            )
         }
 }

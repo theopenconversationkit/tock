@@ -29,7 +29,9 @@ import {
 import { takeUntil } from 'rxjs';
 
 @Directive({
-  selector: 'textarea[nbAutocomplete]'
+    // eslint-disable-next-line @angular-eslint/directive-selector
+    selector: 'textarea[nbAutocomplete]',
+    standalone: false
 })
 export class TextareaAutocompleteDirective<T> extends NbAutocompleteDirective<T> {
   @Input() position: 'top' | 'bottom' = 'bottom';

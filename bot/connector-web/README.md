@@ -264,11 +264,23 @@ Different security modes are available for the web connector. The selected mode 
 - This mode retrieves the `tock_user_id` cookie to authenticate the user.
 - The system relies on session-based authentication using browser cookies.
 
-### 3. `PASSTHROUGH`
+Caveat: cookies may not be sent by the browser across domains. You may need a reverse-proxy if your bot backend
+domain is different from your website frontend domain.
+
+### 3. `COOKIES_ENCRYPTED`
+Strengthened cookie-based session implementation.
+
+- Retrieves the `__Http-tock_user_token` cookie to authenticate the user.
+- The token stores an ID + expiration date, encrypted using AES-GCM, with the encryption key derived from the `tock_encrypt_pass` global property
+
+Caveat: cookies _will not_ be sent by the browser across domains. A reverse proxy is required when the
+bot backend domain is different from the website frontend domain.
+
+### 4. `PASSTHROUGH`
 - This mode allows all requests to pass through without any security enforcement.
 - No authentication or authorization checks are performed.
 
-### 4. `JWT`
+### 5. `JWT`
 - This mode validates JSON Web Tokens (JWT) included in requests.
 - It checks the signature, ensures the token has not been revoked, and manages user authorization.
 - This mode is recommended for stateless authentication in secure environments.

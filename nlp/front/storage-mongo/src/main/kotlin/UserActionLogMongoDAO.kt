@@ -117,7 +117,8 @@ internal object UserActionLogMongoDAO : UserActionLogDAO {
             val count = col.countDocuments(baseFilter, defaultCountOptions)
             return if (count > start) {
                 val list =
-                    col.find(baseFilter)
+                    col
+                        .find(baseFilter)
                         .descendingSort(Date)
                         .skip(start.toInt())
                         .limit(size)

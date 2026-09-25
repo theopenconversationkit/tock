@@ -75,8 +75,10 @@ internal object ConfigurationRepository {
         val byApplicationId = mutableMapOf<Id<ApplicationDefinition>, List<IntentDefinition>>()
 
         applicationDAO
-            .getApplications().forEach { app ->
-                intentDAO.getIntentsByApplicationId(app._id)
+            .getApplications()
+            .forEach { app ->
+                intentDAO
+                    .getIntentsByApplicationId(app._id)
                     .apply {
                         byId.putAll(associateBy { it._id })
                         byApplicationId[app._id] = this
@@ -93,7 +95,8 @@ internal object ConfigurationRepository {
         val byApplicationId = mutableMapOf<Id<ApplicationDefinition>, List<IntentDefinition>>()
 
         applicationDAO
-            .getApplications().forEach { app ->
+            .getApplications()
+            .forEach { app ->
                 val sharedIntents = ApplicationConfigurationService.getModelSharedIntents(app.namespace)
                 if (sharedIntents.isEmpty()) {
                     byApplicationId[app._id] = intentsByApplicationId[app._id] ?: emptyList()
@@ -125,29 +128,26 @@ internal object ConfigurationRepository {
                     v.copy(
                         subEntities =
                             entityTypesDefinitionMap[v.name]?.subEntities?.mapNotNull {
-                                entityTypesMap[it.entityTypeName]?.let { e ->
-                                    Entity(e, it.role)
-                                }.apply {
-                                    if (this == null) {
-                                        logger.error { "entity ${it.entityTypeName} not found" }
+                                entityTypesMap[it.entityTypeName]
+                                    ?.let { e ->
+                                        Entity(e, it.role)
+                                    }.apply {
+                                        if (this == null) {
+                                            logger.error { "entity ${it.entityTypeName} not found" }
+                                        }
                                     }
-                                }
                             } ?: emptyList(),
                     )
-                }
-                .toMap(),
+                }.toMap(),
         )
     }
 
-    fun entityTypeExists(name: String): Boolean {
-        return entityTypes.containsKey(name)
-    }
+    fun entityTypeExists(name: String): Boolean = entityTypes.containsKey(name)
 
-    fun entityTypeByName(name: String): EntityType? {
-        return entityTypes[name] ?: refreshEntityTypes().run {
+    fun entityTypeByName(name: String): EntityType? =
+        entityTypes[name] ?: refreshEntityTypes().run {
             entityTypes[name] ?: null.apply { logger.error { "unknown entity $name" } }
         }
-    }
 
     fun addNewEntityType(entityType: EntityTypeDefinition) {
         if (entityTypeByName(entityType.name) == null) {
@@ -162,16 +162,12 @@ internal object ConfigurationRepository {
         }
     }
 
-    fun toEntityType(entityType: EntityTypeDefinition): EntityType? {
-        return entityTypeByName(entityType.name)
-    }
+    fun toEntityType(entityType: EntityTypeDefinition): EntityType? = entityTypeByName(entityType.name)
 
     fun toEntity(
         type: String,
         role: String,
-    ): Entity? {
-        return entityTypeByName(type)?.let { Entity(it, role) }
-    }
+    ): Entity? = entityTypeByName(type)?.let { Entity(it, role) }
 
     fun toApplication(applicationDefinition: ApplicationDefinition): Application {
         val intentDefinitions = getSharedNamespaceIntentsByApplicationId(applicationDefinition._id)
@@ -225,22 +221,16 @@ internal object ConfigurationRepository {
     fun getApplicationByNamespaceAndName(
         namespace: String,
         name: String,
-    ): ApplicationDefinition? {
-        return applicationsByNamespaceAndName[namespace]?.get(name)
+    ): ApplicationDefinition? =
+        applicationsByNamespaceAndName[namespace]?.get(name)
             ?: config.getApplicationByNamespaceAndName(namespace, name)
-    }
 
-    fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> {
-        return intentsByApplicationId[applicationId] ?: config.getIntentsByApplicationId(applicationId)
-    }
+    fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> = intentsByApplicationId[applicationId] ?: config.getIntentsByApplicationId(applicationId)
 
-    fun getSharedNamespaceIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> {
-        return intentsSharedNamespaceByApplicationId[applicationId] ?: config.getIntentsByApplicationId(applicationId)
-    }
+    fun getSharedNamespaceIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> =
+        intentsSharedNamespaceByApplicationId[applicationId] ?: config.getIntentsByApplicationId(applicationId)
 
-    fun getIntentById(id: Id<IntentDefinition>): IntentDefinition? {
-        return intentsById[id] ?: config.getIntentById(id)
-    }
+    fun getIntentById(id: Id<IntentDefinition>): IntentDefinition? = intentsById[id] ?: config.getIntentById(id)
 
     fun initRepository(): Boolean =
         try {

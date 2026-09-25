@@ -1,0 +1,100 @@
+<nb-card
+  status="info"
+  class="container"
+>
+  <nb-card-header>
+    @if (create) {
+    <span>
+      {{ 'shared.intent-dialog.header.create' | transloco: { dialogType: this.dialogType } }}
+    </span>
+    } @if (!create) {
+    <span>{{ 'shared.intent-dialog.header.update' | transloco: { dialogType: this.dialogType, nameOrLabel: name ? name : label } }}</span>
+    }
+  </nb-card-header>
+  <nb-card-body>
+    <form
+      #intentForm="ngForm"
+      id="intentForm"
+    >
+      <div class="form-group">
+        <input
+          nbInput
+          fullWidth
+          name="label"
+          [(ngModel)]="label"
+          (keyup)="copyToName()"
+          (keyup.enter)="save()"
+          [placeholder]="'shared.intent-dialog.placeholders.label' | transloco"
+          [nbTooltip]="'shared.intent-dialog.tooltips.label' | transloco"
+          #labelElement
+          autocomplete="off"
+        />
+      </div>
+      <div class="form-group">
+        <input
+          nbInput
+          fullWidth
+          [disabled]="!create"
+          name="name"
+          [(ngModel)]="name"
+          (keyup)="format()"
+          (keyup.enter)="save()"
+          [placeholder]="'shared.intent-dialog.placeholders.name' | transloco"
+          [nbTooltip]="'shared.intent-dialog.tooltips.name' | transloco"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <input
+          nbInput
+          fullWidth
+          name="category"
+          [(ngModel)]="category"
+          [placeholder]="'shared.intent-dialog.placeholders.category' | transloco"
+          [nbTooltip]="'shared.intent-dialog.tooltips.category' | transloco"
+          (keyup)="categoryChange()"
+          (focus)="categoryChange()"
+          [nbAutocomplete]="auto"
+          autocomplete="off"
+        />
+        <nb-autocomplete #auto>
+          @for (c of categories; track c) {
+          <nb-option [value]="c">
+            {{ c }}
+          </nb-option>
+          }
+        </nb-autocomplete>
+      </div>
+
+      <div class="form-group">
+        <textarea
+          nbInput
+          fullWidth
+          rows="5"
+          name="description"
+          [placeholder]="'shared.intent-dialog.placeholders.description' | transloco"
+          [(ngModel)]="description"
+        ></textarea>
+      </div>
+    </form>
+  </nb-card-body>
+  <nb-card-footer class="footer">
+    <button
+      nbButton
+      (click)="cancel()"
+    >
+      {{ 'common.actions.cancel' | transloco }}
+    </button>
+    <button
+      type="submit"
+      nbButton
+      status="success"
+      (click)="save()"
+      [disabled]="!intentForm.form.valid"
+      class="submit-button"
+    >
+      {{ create ? ('common.actions.create' | transloco) : ('common.actions.update' | transloco) }}
+    </button>
+  </nb-card-footer>
+</nb-card>

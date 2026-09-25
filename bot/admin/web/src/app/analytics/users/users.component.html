@@ -1,34 +1,16 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="d-flex flex-wrap align-items-center mt-3">
   <h1 class="flex-grow-1">
-    Users
-    <span
-      *ngIf="formattedTotal()"
-      class="font-weight-normal"
-      >({{ formattedTotal() }})</span
-    >
+    {{ 'analytics.users.title' | transloco }}
+    @if (formattedTotal()) {
+    <span class="font-weight-normal">({{ formattedTotal() }})</span>
+    }
   </h1>
 
   <button
     nbButton
     ghost
     shape="round"
-    nbTooltip="Refresh dialogs"
+    [nbTooltip]="'analytics.users.refreshTooltip' | transloco"
     (click)="reload()"
     class="ml-2"
   >
@@ -48,7 +30,7 @@
           nbInput
           fullWidth
           fieldSize="small"
-          placeholder="Data collected after"
+          [placeholder]="'analytics.users.dataCollectedAfterPlaceholder' | transloco"
           [nbDatepicker]="from_date"
           [(ngModel)]="filter.from"
         />
@@ -69,7 +51,7 @@
           nbInput
           fullWidth
           fieldSize="small"
-          placeholder="Data collected before"
+          [placeholder]="'analytics.users.dataCollectedBeforePlaceholder' | transloco"
           [nbDatepicker]="to_date"
           [(ngModel)]="filter.to"
         />
@@ -81,23 +63,20 @@
     </div>
 
     <nb-toggle
-      nbTooltip="{{ !filter.displayTests ? 'Display tests' : 'Hide tests' }}"
+      [nbTooltip]="(!filter.displayTests ? 'analytics.users.displayTestsTooltip' : 'analytics.users.hideTestsTooltip') | transloco"
       [(ngModel)]="filter.displayTests"
       (change)="waitAndRefresh()"
       class="nb-toggle-reset-label-margin text-nowrap"
     >
-      Display tests
+      {{ (!filter.displayTests ? 'analytics.users.displayTestsLabel' : 'analytics.users.hideTestsLabel') | transloco }}
     </nb-toggle>
   </nb-card-body>
 </nb-card>
 
-<tock-no-data-found
-  *ngIf="!loading && !data?.length"
-  title="No records found"
-></tock-no-data-found>
-
+@if (!loading && !data?.length) {
+<tock-no-data-found [title]="'analytics.users.noRecordsFound' | transloco"></tock-no-data-found>
+} @if (data.length) {
 <div
-  *ngIf="data.length"
   [nbSpinner]="loading"
   class="min-vh-100"
 >
@@ -110,8 +89,8 @@
       [scrollWindow]="false"
       [nbSpinner]="loading"
     >
+      @for (user of data; track user) {
       <nb-card
-        *ngFor="let user of data"
         [accent]="user.playerId === selectedUser?.playerId ? 'info' : ''"
         class="m-0"
       >
@@ -121,92 +100,83 @@
         >
           <nb-user
             size="large"
-            name="{{ user.userPreferences.firstName ? user.userPreferences.firstName : 'Anonymous' }} {{ user.userPreferences.lastName }}"
+            name="{{ user.userPreferences.firstName ? user.userPreferences.firstName : ('analytics.users.anonymousLabel' | transloco) }} {{
+              user.userPreferences.lastName
+            }}"
             title="{{ user.lastUpdateDate | amDateFormat: 'DD MMM YYYY HH:mm' }}"
             picture="{{ getUserPicture(user) }}"
           >
           </nb-user>
+          @if (getConnector(user.applicationIds[0])) {
           <img
-            *ngIf="getConnector(user.applicationIds[0])"
             src="{{ getConnector(user.applicationIds[0]).iconUrl() }}"
             class="connector"
             [nbTooltip]="getConnector(user.applicationIds[0]).label()"
           />
+          }
         </nb-card-header>
-
         <nb-card-body>
           <div>
-            <span *ngIf="user.botConfiguration">[{{ user.botConfiguration.name }} - {{ user.botConfiguration.connectorType.id }}]</span>
-            <span *ngIf="user.userPreferences.locale">({{ user.userPreferences.locale }})</span>
-            <span
-              class="text-muted"
-              *ngIf="user.lastActionText"
-            >
-              {{ user.lastActionText }}</span
-            >
+            @if (user.botConfiguration) {
+            <span>[{{ user.botConfiguration.name }} - {{ user.botConfiguration.connectorType.id }}]</span>
+            } @if (user.userPreferences.locale) {
+            <span>({{ user.userPreferences.locale }})</span>
+            } @if (user.lastActionText) {
+            <span class="text-muted"> {{ user.lastActionText }}</span>
+            }
           </div>
-
+          @for (f of user.userState.flags; track f) {
           <div
             class="tag pointer"
-            *ngFor="let f of user.userState.flags"
             [selected]="containsFlag(f)"
             color="accent"
             (click)="toggleFlag(f)"
-            nbTooltip="Filter by flag {{ f }}"
+            [nbTooltip]="'analytics.users.filterByFlagTooltip' | transloco: { flag: f }"
           >
             {{ f }}
           </div>
+          }
         </nb-card-body>
       </nb-card>
+      }
     </div>
-
     <nb-card
       class="flex-grow-1 mn-0"
       [nbSpinner]="loadingDialog"
     >
       <nb-card-header class="position-relative p-0">
-        <tock-chat-ui
-          *ngIf="selectedUser && selectedUser.displayDialogs && selectedUser.userDialog"
-          height="calc(100vh - 350px)"
-        >
+        @if (selectedUser && selectedUser.displayDialogs && selectedUser.userDialog) {
+        <tock-chat-ui height="calc(100vh - 350px)">
           <tock-chat-ui-dialog-logger [dialog]="selectedUser.userDialog"></tock-chat-ui-dialog-logger>
         </tock-chat-ui>
-
+        }
         <div class="shader"></div>
       </nb-card-header>
-
-      <nb-card-body
-        class="d-flex align-items-center"
-        *ngIf="
-          selectedUser?.displayDialogs &&
-          selectedUser?.userDialog &&
-          selectedUser.userDialog.actions.length !== 0 &&
-          selectedUser.testPlans &&
-          selectedUser.testPlans.length !== 0
-        "
-      >
+      @if ( selectedUser?.displayDialogs && selectedUser?.userDialog && selectedUser.userDialog.actions.length !== 0 &&
+      selectedUser.testPlans && selectedUser.testPlans.length !== 0 ) {
+      <nb-card-body class="d-flex align-items-center">
         <nb-select
           fullWidth
           size="small"
           [(ngModel)]="selectedPlanId"
-          placeholder="Add dialog to Test Plan"
+          [placeholder]="'analytics.users.addDialogToTestPlanPlaceholder' | transloco"
         >
-          <nb-option
-            *ngFor="let plan of selectedUser.testPlans"
-            [value]="plan._id"
-            >{{ plan.name }}
-          </nb-option>
+          @for (plan of selectedUser.testPlans; track plan) {
+          <nb-option [value]="plan._id">{{ plan.name }} </nb-option>
+          }
         </nb-select>
         <button
           nbButton
           size="small"
           (click)="addDialogToTestPlan(selectedPlanId, selectedUser.userDialog)"
           ghost="true"
-          nbTooltip="Add dialog to Test Plan"
+          [nbTooltip]="'analytics.users.addDialogToTestPlanTooltip' | transloco"
         >
           <nb-icon icon="plus-circle"></nb-icon>
         </button>
       </nb-card-body>
+      }
     </nb-card>
   </div>
 </div>
+}

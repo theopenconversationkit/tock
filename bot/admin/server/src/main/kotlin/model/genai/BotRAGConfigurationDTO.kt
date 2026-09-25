@@ -109,17 +109,18 @@ data class BotRAGConfigurationDTO(
         )
 }
 
-private fun BotRAGConfiguration.generateIndexName(): String? {
-    return indexSessionId?.takeIf { it.isNotBlank() }?.let {
-        VectorStoreUtils.getVectorStoreElements(
-            namespace,
-            botId,
-            indexSessionId = it,
-            kNeighborsDocuments = maxDocumentsRetrieved,
-            documentSearchType = documentSearchType,
-            vectorStoreSetting =
-                VectorStoreService.getVectorStoreConfiguration(namespace, botId, enabled = true)
-                    ?.setting,
-        ).second
+private fun BotRAGConfiguration.generateIndexName(): String? =
+    indexSessionId?.takeIf { it.isNotBlank() }?.let {
+        VectorStoreUtils
+            .getVectorStoreElements(
+                namespace,
+                botId,
+                indexSessionId = it,
+                kNeighborsDocuments = maxDocumentsRetrieved,
+                documentSearchType = documentSearchType,
+                vectorStoreSetting =
+                    VectorStoreService
+                        .getVectorStoreConfiguration(namespace, botId, enabled = true)
+                        ?.setting,
+            ).second
     }
-}

@@ -181,7 +181,5 @@ enum class GAStatusCode {
      * Serialized as number.
      */
     @JsonValue
-    fun toOrdinal(): Int {
-        return ordinal
-    }
+    fun toOrdinal(): Int = ordinal
 }

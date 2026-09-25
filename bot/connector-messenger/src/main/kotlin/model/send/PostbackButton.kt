@@ -27,9 +27,10 @@ data class PostbackButton(
     val payload: String?,
     val title: String,
 ) : Button(ButtonType.postback) {
-    override fun toChoice(): Choice {
-        return payload?.let {
-            SendChoice.decodeChoiceId(it)
+    override fun toChoice(): Choice =
+        payload?.let {
+            SendChoice
+                .decodeChoiceId(it)
                 .let { (intent, params) ->
                     Choice(
                         intent,
@@ -37,5 +38,4 @@ data class PostbackButton(
                     )
                 }
         } ?: Choice(Companion.unknown.name, mapOf(SendChoice.TITLE_PARAMETER to title))
-    }
 }

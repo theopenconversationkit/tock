@@ -9,6 +9,7 @@ import { StateService } from '../../../core-nlp/state.service';
 import { RestService } from '../../../core-nlp/rest/rest.service';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
+import { TranslocoService } from '@jsverse/transloco';
 
 interface DialogListFiltersForm {
   name: FormControl<string>;
@@ -20,9 +21,10 @@ interface DialogListFiltersForm {
 }
 
 @Component({
-  selector: 'tock-sample-create',
-  templateUrl: './sample-create.component.html',
-  styleUrl: './sample-create.component.scss'
+    selector: 'tock-sample-create',
+    templateUrl: './sample-create.component.html',
+    styleUrl: './sample-create.component.scss',
+    standalone: false
 })
 export class SampleCreateComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
@@ -35,7 +37,8 @@ export class SampleCreateComponent implements OnInit, OnDestroy {
     private stateService: StateService,
     private rest: RestService,
     private toastrService: NbToastrService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private translocoService: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -83,17 +86,21 @@ export class SampleCreateComponent implements OnInit, OnDestroy {
     const dateTo = this.form.get('dialogActivityTo')?.value;
 
     if (!dateFrom || !(dateFrom instanceof Date) || isNaN(dateFrom.getTime())) {
-      this.form.get('dialogActivityFrom')?.setErrors({ custom: 'This field requires a valid date.' });
+      this.form
+        .get('dialogActivityFrom')
+        ?.setErrors({ custom: this.translocoService.translate('quality.sample-create.invalid_date_error') });
       return false;
     }
 
     if (!dateTo || !(dateTo instanceof Date) || isNaN(dateTo.getTime())) {
-      this.form.get('dialogActivityTo')?.setErrors({ custom: 'This field requires a valid date.' });
+      this.form.get('dialogActivityTo')?.setErrors({ custom: this.translocoService.translate('quality.sample-create.invalid_date_error') });
       return false;
     }
 
     if (dateFrom && dateTo && dateFrom > dateTo) {
-      this.form.get('dialogActivityFrom')?.setErrors({ custom: 'The start date must be earlier than the end date.' });
+      this.form
+        .get('dialogActivityFrom')
+        ?.setErrors({ custom: this.translocoService.translate('quality.sample-create.start_date_before_end_date_error') });
       return false;
     }
 
@@ -126,15 +133,17 @@ export class SampleCreateComponent implements OnInit, OnDestroy {
           if (error?.error?.errors && Array.isArray(error.error.errors)) {
             const mssg = [];
             error.error.errors.forEach((e) => {
-              if (e.message) {
+              if (e.code === '4221') {
+                mssg.push(this.translocoService.translate('quality.sample-create.no_dialog_matching_query'));
+              } else if (e.message) {
                 mssg.push(e.message);
               }
             });
             if (mssg.length) {
-              const closeAction = 'Close';
+              const closeAction = this.translocoService.translate('common.actions.close');
               this.dialogService.openDialog(ChoiceDialogComponent, {
                 context: {
-                  title: `Unable to create sample`,
+                  title: this.translocoService.translate('quality.sample-create.unable_to_create_sample'),
                   subtitle: mssg.join(' + '),
                   actions: [{ actionName: closeAction, buttonStatus: 'basic' }]
                 }
@@ -144,10 +153,14 @@ export class SampleCreateComponent implements OnInit, OnDestroy {
             }
           }
 
-          this.toastrService.danger('An error occured', 'Error', {
-            duration: 5000,
-            status: 'danger'
-          });
+          this.toastrService.danger(
+            this.translocoService.translate('quality.sample-create.an_error_occurred'),
+            this.translocoService.translate('quality.sample-create.error_title'),
+            {
+              duration: 5000,
+              status: 'danger'
+            }
+          );
         }
       });
     }

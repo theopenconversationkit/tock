@@ -23,9 +23,10 @@ import { UserRole } from '../../model/auth';
 import { NbDialogRef } from '@nebular/theme';
 
 @Component({
-  selector: 'tock-application-upload',
-  templateUrl: 'application-upload.component.html',
-  styleUrls: ['application-upload.component.scss']
+    selector: 'tock-application-upload',
+    templateUrl: 'application-upload.component.html',
+    styleUrls: ['application-upload.component.scss'],
+    standalone: false
 })
 export class ApplicationUploadComponent implements OnInit {
   UserRole = UserRole;

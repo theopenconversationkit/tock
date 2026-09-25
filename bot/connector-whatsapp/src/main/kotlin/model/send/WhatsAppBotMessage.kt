@@ -42,8 +42,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 abstract class WhatsAppBotMessage(
     val type: WhatsAppBotMessageType,
     @JsonIgnore internal open val userId: String?,
-) :
-    ConnectorMessage {
+) : ConnectorMessage {
     @get:JsonIgnore
     override val connectorType: ConnectorType = whatsAppConnectorType
 

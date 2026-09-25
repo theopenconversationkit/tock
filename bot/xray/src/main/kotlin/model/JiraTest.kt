@@ -21,7 +21,9 @@ import ai.tock.shared.property
 /**
  * see (https://confluence.xpand-addons.com/display/XRAY/Tests+-+REST)
  */
-data class JiraTest(val fields: Map<String, Any>) {
+data class JiraTest(
+    val fields: Map<String, Any>,
+) {
     constructor(
         project: String,
         summary: String,

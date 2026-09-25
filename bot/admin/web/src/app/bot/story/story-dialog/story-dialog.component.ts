@@ -21,9 +21,10 @@ import { StateService } from '../../../core-nlp/state.service';
 import { IntentsCategory } from '../../../model/nlp';
 
 @Component({
-  selector: 'tock-story-dialog',
-  templateUrl: './story-dialog.component.html',
-  styleUrls: ['./story-dialog.component.scss']
+    selector: 'tock-story-dialog',
+    templateUrl: './story-dialog.component.html',
+    styleUrls: ['./story-dialog.component.scss'],
+    standalone: false
 })
 export class StoryDialogComponent implements OnInit {
   create: boolean;

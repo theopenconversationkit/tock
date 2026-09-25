@@ -45,9 +45,7 @@ object ObservabilityService {
     fun getObservabilityConfiguration(
         namespace: String,
         botId: String,
-    ): BotObservabilityConfiguration? {
-        return observabilityConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-    }
+    ): BotObservabilityConfiguration? = observabilityConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
 
     /**
      * Get the Observability configuration
@@ -59,9 +57,7 @@ object ObservabilityService {
         namespace: String,
         botId: String,
         enabled: Boolean,
-    ): BotObservabilityConfiguration? {
-        return observabilityConfigurationDAO.findByNamespaceAndBotIdAndEnabled(namespace, botId, enabled)
-    }
+    ): BotObservabilityConfiguration? = observabilityConfigurationDAO.findByNamespaceAndBotIdAndEnabled(namespace, botId, enabled)
 
     /**
      * Deleting the Observability Configuration
@@ -92,7 +88,20 @@ object ObservabilityService {
      * @throws [BadRequestException] if the observability configuration is invalid
      * @return [BotObservabilityConfiguration]
      */
-    fun saveObservability(observabilityConfig: BotObservabilityConfigurationDTO): BotObservabilityConfiguration {
+    fun saveObservability(
+        observabilityConfig: BotObservabilityConfigurationDTO,
+        author: String? = null,
+    ): BotObservabilityConfiguration =
+        BotHistoryService.configuration(
+            observabilityConfig.namespace,
+            observabilityConfig.botId,
+            "observability",
+            author,
+            previous = { observabilityConfigurationDAO.findByNamespaceAndBotId(observabilityConfig.namespace, observabilityConfig.botId) },
+            save = { saveWithValidation(observabilityConfig) },
+        )
+
+    private fun saveWithValidation(observabilityConfig: BotObservabilityConfigurationDTO): BotObservabilityConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(observabilityConfig.namespace, observabilityConfig.botId).firstOrNull()
             ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: ${observabilityConfig.namespace}, botId = ${observabilityConfig.botId}]")
         return saveObservabilityConfiguration(observabilityConfig)

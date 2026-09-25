@@ -27,8 +27,7 @@ data class BotScriptAnswerConfiguration(
     val current: BotScriptAnswerVersionedConfiguration =
         scriptVersions.maxByOrNull { it.date }
             ?: error("at least one script version is necessary"),
-) :
-    BotAnswerConfiguration(AnswerConfigurationType.script) {
+) : BotAnswerConfiguration(AnswerConfigurationType.script) {
     constructor(conf: ScriptAnswerConfiguration) : this(
         conf.scriptVersions.map {
             BotScriptAnswerVersionedConfiguration(it)

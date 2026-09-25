@@ -19,4 +19,6 @@ package ai.tock.bot.connector.messenger.model.webhook
 /**
  *
  */
-data class UrlPayload(val url: String) : Payload()
+data class UrlPayload(
+    val url: String,
+) : Payload()

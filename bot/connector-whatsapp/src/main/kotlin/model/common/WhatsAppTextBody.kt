@@ -19,4 +19,6 @@ package ai.tock.bot.connector.whatsapp.model.common
 /**
  *
  */
-data class WhatsAppTextBody(val body: String)
+data class WhatsAppTextBody(
+    val body: String,
+)

@@ -50,23 +50,24 @@ describe('NoDataFoundComponent', () => {
 
   it('should display custom title if the title input is change', () => {
     const title = 'custom title';
-    const titleElement: HTMLTitleElement = fixture.debugElement.query(By.css('[data-testid="title"]')).nativeElement;
-    component.title = title;
+    fixture.componentRef.setInput('title', title);
     fixture.detectChanges();
 
+    const titleElement: HTMLElement = fixture.debugElement.query(By.css('[data-testid="title"]')).nativeElement;
     expect(titleElement.textContent.toLowerCase().trim()).toBe(title);
   });
 
   it('should display message if the input is inform', () => {
-    const message = 'message to display';
-    component.message = undefined;
+    fixture.componentRef.setInput('message', undefined);
     fixture.detectChanges();
     let messageElement = fixture.debugElement.query(By.css('[data-testid="message"]'));
 
     expect(messageElement).toBeFalsy();
 
-    component.message = message;
+    const message = 'message to display';
+    fixture.componentRef.setInput('message', message);
     fixture.detectChanges();
+
     messageElement = fixture.debugElement.query(By.css('[data-testid="message"]'));
 
     expect(messageElement.nativeElement.textContent.toLowerCase().trim()).toBe(message);

@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import {
   Component,
   ElementRef,
@@ -34,6 +18,7 @@ import { normalizedCamelCase } from '../../../shared/utils';
 import { IndicatorDefinition, IndicatorValueDefinition } from '../../models';
 import { IndicatorEdition } from '../indicators.component';
 import { ChoiceDialogComponent } from '../../../shared/components';
+import { TranslocoService } from '@jsverse/transloco';
 
 interface IndicatorValueEditForm {
   name: FormControl<string>;
@@ -47,9 +32,10 @@ interface IndicatorEditForm {
 }
 
 @Component({
-  selector: 'tock-indicators-edit',
-  templateUrl: './indicators-edit.component.html',
-  styleUrls: ['./indicators-edit.component.scss']
+    selector: 'tock-indicators-edit',
+    templateUrl: './indicators-edit.component.html',
+    styleUrls: ['./indicators-edit.component.scss'],
+    standalone: false
 })
 export class IndicatorsEditComponent implements OnChanges {
   @Input() loading: boolean;
@@ -65,7 +51,7 @@ export class IndicatorsEditComponent implements OnChanges {
 
   dimensionsAutocompleteValues: Observable<any[]>;
 
-  constructor(private dialogService: DialogService) {}
+  constructor(private dialogService: DialogService, private transloco: TranslocoService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.indicatorEdition?.currentValue) {
@@ -110,7 +96,10 @@ export class IndicatorsEditComponent implements OnChanges {
     return new FormControl(initVal, [
       Validators.required,
       Validators.minLength(2),
-      this.customPatternValid({ pattern: /[A-Za-z]+/, msg: 'Value label must contain at least one letter' })
+      this.customPatternValid({
+        pattern: /[A-Za-z]+/,
+        msg: this.transloco.translate('metrics.indicators-edit.value_label_validation_error')
+      })
     ]);
   }
 
@@ -118,7 +107,6 @@ export class IndicatorsEditComponent implements OnChanges {
     return (control: FormControl) => {
       let urlRegEx: RegExp = config.pattern;
       if (control.value && !control.value.match(urlRegEx)) {
-        // TODO : le message d'erreur ne s'affichera qu'apres le merge avec scenarios. A checker apres le merge
         return {
           custom: config.msg
         };
@@ -137,7 +125,7 @@ export class IndicatorsEditComponent implements OnChanges {
       Validators.required,
       Validators.maxLength(50),
       this.isIndicatorLabelUnic(),
-      this.customPatternValid({ pattern: /[A-Za-z]+/, msg: 'Label must contain at least one letter' })
+      this.customPatternValid({ pattern: /[A-Za-z]+/, msg: this.transloco.translate('metrics.indicators-edit.label_validation_error') })
     ]),
     description: new FormControl('', Validators.maxLength(this.descriptionMaxLength)),
     dimensions: new FormArray([], [Validators.required]),
@@ -173,8 +161,7 @@ export class IndicatorsEditComponent implements OnChanges {
           indicator != this.indicatorEdition.indicator && indicator.label.trim().toLowerCase() === control.value.trim().toLowerCase()
       );
 
-      // TODO : le message d'erreur ne s'affichera qu'apres le merge avec scenarios. A checker apres le merge
-      return indicatorAsSameLabel ? { custom: 'There is already an indicator with the same label' } : null;
+      return indicatorAsSameLabel ? { custom: this.transloco.translate('metrics.indicators-edit.indicator_label_unique_error') } : null;
     };
   }
 
@@ -223,20 +210,24 @@ export class IndicatorsEditComponent implements OnChanges {
   }
 
   close(): Observable<any> {
-    const action = 'yes';
+    const action = this.transloco.translate('common.actions.yes');
     if (this.form.dirty) {
       const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
-          title: `Cancel ${this.indicatorEdition.existing ? 'edit' : 'create'} indicator`,
-          subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
+          title: this.transloco.translate(
+            this.indicatorEdition.existing
+              ? 'metrics.indicators-edit.cancel_edit_indicator_title'
+              : 'metrics.indicators-edit.cancel_create_indicator_title'
+          ),
+          subtitle: this.transloco.translate('metrics.indicators-edit.cancel_confirmation_message'),
           actions: [
-            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
             { actionName: action, buttonStatus: 'danger' }
           ]
         }
       });
       dialogRef.onClose.subscribe((result) => {
-        if (result === action) {
+        if (result.toLowerCase() === action.toLowerCase()) {
           this.onClose.emit(true);
         }
       });

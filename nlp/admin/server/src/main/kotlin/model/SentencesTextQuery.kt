@@ -24,8 +24,8 @@ import org.litote.kmongo.Id
 data class SentencesTextQuery(
     val texts: List<String> = emptyList(),
 ) : ApplicationScopedQuery() {
-    fun toSentencesQueries(applicationId: Id<ApplicationDefinition>): List<SentencesQuery> {
-        return texts.map {
+    fun toSentencesQueries(applicationId: Id<ApplicationDefinition>): List<SentencesQuery> =
+        texts.map {
             SentencesQuery(
                 applicationId,
                 language,
@@ -33,5 +33,4 @@ data class SentencesTextQuery(
                 onlyExactMatch = true,
             )
         }
-    }
 }

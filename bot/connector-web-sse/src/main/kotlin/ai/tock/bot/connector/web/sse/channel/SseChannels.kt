@@ -23,7 +23,9 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class SseChannels(private val channelDAO: ChannelDAO) {
+internal class SseChannels(
+    private val channelDAO: ChannelDAO,
+) {
     private val initialized = AtomicBoolean(false)
     private val channelsByUser = ConcurrentHashMap<String, CopyOnWriteArrayList<SseChannel>>()
 
@@ -40,12 +42,13 @@ internal class SseChannels(private val channelDAO: ChannelDAO) {
         recipientId: String,
         response: WebConnectorResponseContract,
     ): Future<Boolean> =
-        Future.all(
-            (channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
-                logger.debug { "call onAction for $channel" }
-                channel.onAction(response)
-            },
-        ).map { futures -> futures.size() > 0 }
+        Future
+            .all(
+                (channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
+                    logger.debug { "call onAction for $channel" }
+                    channel.onAction(response)
+                },
+            ).map { futures -> futures.size() > 0 }
 
     fun register(
         appId: String,
@@ -59,6 +62,36 @@ internal class SseChannels(private val channelDAO: ChannelDAO) {
         return SseChannel(appId, UUID.randomUUID(), userId, onAction).also(channels::add)
     }
 
+    fun migrate(
+        appId: String?,
+        oldUserId: String,
+        newUserId: String,
+    ): Long {
+        if (oldUserId == newUserId) {
+            return 0
+        }
+
+        val databaseResult = channelDAO.updateRecipientId(oldUserId, newUserId)
+
+        val oldChannels = channelsByUser[oldUserId] ?: return databaseResult
+        val channelsToMigrate = oldChannels.filterTo(mutableSetOf()) { appId == null || it.appId == appId }
+        if (channelsToMigrate.isEmpty()) {
+            return databaseResult
+        }
+
+        oldChannels.removeAll(channelsToMigrate)
+        channelsByUser
+            .getOrPut(newUserId) { CopyOnWriteArrayList() }
+            .addAll(channelsToMigrate.map { it.copy(userId = newUserId) })
+        if (oldChannels.isEmpty()) {
+            channelsByUser.remove(oldUserId, oldChannels)
+        }
+
+        return databaseResult + channelsToMigrate.size
+    }
+
+    fun deletePersistedEvents(userId: String): Long = channelDAO.deleteByRecipientId(userId)
+
     fun sendMissedEvents(channel: SseChannel) {
         channelDAO.handleMissedEvents(channel.appId, channel.userId) { (_, _, response) ->
             channel.onAction(response).map { true }
@@ -66,8 +99,9 @@ internal class SseChannels(private val channelDAO: ChannelDAO) {
     }
 
     fun unregister(channel: SseChannel) {
-        channelsByUser[channel.userId]?.removeIf {
-            it.uuid == channel.uuid
+        channelsByUser.entries.removeIf { (_, channels) ->
+            channels.removeIf { it.uuid == channel.uuid }
+            channels.isEmpty()
         }
     }
 

@@ -18,14 +18,17 @@ package ai.tock.bot.connector.web.sse
 
 import ai.tock.bot.connector.web.sse.channel.ChannelDAO
 import ai.tock.bot.connector.web.sse.channel.ChannelMongoDAO
+import ai.tock.bot.connector.web.sse.channel.SseChannels
 import ai.tock.shared.service.BotAdditionalModulesService
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.singleton
 
 val webConnectorModule =
     Kodein.Module {
         bind<ChannelDAO>() with singleton { ChannelMongoDAO }
+        bind<SseChannels>() with singleton { SseChannels(instance()) }
     }
 
 // used in file META-INF/services/ai.tock.shared.service.BotAdditionalModulesService

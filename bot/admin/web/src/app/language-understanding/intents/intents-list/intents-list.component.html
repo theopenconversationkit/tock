@@ -1,54 +1,50 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
-<div
-  *ngIf="intents.length"
-  class="table-list table-list-header"
->
-  <div class="table-list-entry">Intent</div>
-  <div class="table-list-entry bordered text-center">Entities</div>
-  <div class="table-list-entry bordered text-center">Shared Intents</div>
-  <div class="table-list-entry bordered text-center">Mandatory States</div>
-  <div class="table-list-entry bordered text-center">Story</div>
-  <div class="table-list-entry text-center">Actions</div>
+@if (intents.length) {
+<div class="table-list table-list-header">
+  <div class="table-list-entry">{{ 'lu.intents-list.header.intent' | transloco }}</div>
+  <div class="table-list-entry bordered text-center">{{ 'lu.intents-list.header.entities' | transloco }}</div>
+  <div class="table-list-entry bordered text-center">{{ 'lu.intents-list.header.shared-intents' | transloco }}</div>
+  <div class="table-list-entry bordered text-center">{{ 'lu.intents-list.header.mandatory-states' | transloco }}</div>
+  <div class="table-list-entry bordered text-center">{{ 'lu.intents-list.header.story' | transloco }}</div>
+  <div class="table-list-entry text-center">{{ 'lu.intents-list.header.actions' | transloco }}</div>
 </div>
-<div
-  class="table-list"
-  *ngFor="let intent of intents"
->
+} @for (intent of intents; track intent) {
+<div class="table-list">
   <div class="table-list-entry">
     <div class="font-weight-bold pl-2">
       <span nbTooltip="{{ intent.qualifiedName() }}">
         {{ state.isOtherNamespaceIntent(intent) ? intent.qualifiedName() : intent.intentLabel() }}
       </span>
+      @if (state.intentExistsInOtherApplication(intent.name)) {
       <span
         class="ml-2 align-middle"
-        *ngIf="state.intentExistsInOtherApplication(intent.name)"
-        nbTooltip="This intent is shared between at least one other application. All changes to the intent will also affect the other applications that use this intent."
+        nbTooltip="{{ 'lu.intents-list.tooltip.shared-intent-warning' | transloco }}"
       >
         <nb-icon icon="share"></nb-icon>
       </span>
+      }
     </div>
     <span class="text-muted">{{ intent.description }}</span>
   </div>
-
   <div class="table-list-entry bordered text-center">
+    @for (e of intent.entities; track e) {
     <span
       class="tag"
-      *ngFor="let e of intent.entities"
       [style.background-color]="e.entityColor"
       [style.color]="getContrastYIQ(e.entityColor)"
     >
@@ -58,146 +54,139 @@
       >
         {{ e.qualifiedName(state.user) }}
       </div>
+      @if (!state.intentExistsInOtherApplication(intent.name) && !state.isOtherNamespaceIntent(intent)) {
       <button
-        *ngIf="!state.intentExistsInOtherApplication(intent.name) && !state.isOtherNamespaceIntent(intent)"
         nbButton
         ghost
         size="tiny"
         shape="round"
         (click)="removeEntity(intent, e)"
-        nbTooltip="Delete entity"
+        nbTooltip="{{ 'lu.intents-list.tooltip.delete-entity' | transloco }}"
         [style.color]="getContrastYIQ(e.entityColor)"
       >
         <nb-icon icon="x-lg"></nb-icon>
       </button>
+      }
     </span>
+    }
   </div>
-
   <div class="table-list-entry bordered text-center">
-    <ng-container *ngIf="!state.isOtherNamespaceIntent(intent)">
-      <span
-        class="tag"
-        *ngFor="let intentId of intent.sharedIntents"
+    @if (!state.isOtherNamespaceIntent(intent)) { @for (intentId of intent.sharedIntents; track intentId) {
+    <span class="tag">
+      <div
+        class="ellipsis"
+        nbTooltip="{{ state.findIntentById(intentId)?.name }}"
       >
-        <div
-          class="ellipsis"
-          nbTooltip="{{ state.findIntentById(intentId)?.name }}"
-        >
-          {{ state.findIntentById(intentId)?.name }}
-        </div>
-        <button
-          *ngIf="!state.intentExistsInOtherApplication(intent.name)"
-          nbButton
-          ghost
-          size="tiny"
-          shape="round"
-          (click)="removeSharedIntent(intent, intentId)"
-          nbTooltip="Remove shared intent"
-        >
-          <nb-icon icon="x-lg"></nb-icon>
-        </button>
-      </span>
-    </ng-container>
-
+        {{ state.findIntentById(intentId)?.name }}
+      </div>
+      @if (!state.intentExistsInOtherApplication(intent.name)) {
+      <button
+        nbButton
+        ghost
+        size="tiny"
+        shape="round"
+        (click)="removeSharedIntent(intent, intentId)"
+        nbTooltip="{{ 'lu.intents-list.tooltip.delete-shared-intent' | transloco }}"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+      }
+    </span>
+    } } @if (!state.isOtherNamespaceIntent(intent)) {
     <button
-      *ngIf="!state.isOtherNamespaceIntent(intent)"
       nbButton
       ghost
       shape="round"
       size="small"
-      nbTooltip="Add shared intent"
+      nbTooltip="{{ 'lu.intents-list.tooltip.add-shared-intent' | transloco }}"
       (click)="displayAddSharedIntentDialog(intent)"
     >
       <nb-icon icon="plus-circle"></nb-icon>
     </button>
+    }
   </div>
-
   <div class="table-list-entry bordered text-center">
-    <ng-container *ngIf="!state.isOtherNamespaceIntent(intent)">
-      <span
-        class="tag"
-        *ngFor="let s of intent.mandatoryStates"
+    @if (!state.isOtherNamespaceIntent(intent)) { @for (s of intent.mandatoryStates; track s) {
+    <span class="tag">
+      <div
+        class="ellipsis"
+        nbTooltip="{{ s }}"
       >
-        <div
-          class="ellipsis"
-          nbTooltip="{{ s }}"
-        >
-          {{ s }}
-        </div>
-        <button
-          *ngIf="!state.intentExistsInOtherApplication(intent.name)"
-          nbButton
-          ghost
-          size="tiny"
-          shape="round"
-          (click)="removeState(intent, s)"
-          nbTooltip="Delete State"
-        >
-          <nb-icon icon="x-lg"></nb-icon>
-        </button>
-      </span>
-    </ng-container>
-
+        {{ s }}
+      </div>
+      @if (!state.intentExistsInOtherApplication(intent.name)) {
+      <button
+        nbButton
+        ghost
+        size="tiny"
+        shape="round"
+        (click)="removeState(intent, s)"
+        nbTooltip="{{ 'lu.intents-list.tooltip.delete-state' | transloco }}"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+      }
+    </span>
+    } } @if (!state.intentExistsInOtherApplication(intent.name) && !state.isOtherNamespaceIntent(intent)) {
     <button
-      *ngIf="!state.intentExistsInOtherApplication(intent.name) && !state.isOtherNamespaceIntent(intent)"
       nbButton
       ghost
       shape="round"
       size="small"
-      nbTooltip="Add state"
+      nbTooltip="{{ 'lu.intents-list.tooltip.add-state' | transloco }}"
       (click)="addState(intent)"
     >
       <nb-icon icon="plus-circle"></nb-icon>
     </button>
+    }
   </div>
-
   <div class="table-list-entry bordered text-center">
     <button
       nbButton
       ghost
       shape="round"
       (click)="displayIntentStoryDetails(intent)"
-      nbTooltip="Show intent story details"
+      nbTooltip="{{ 'lu.intents-list.tooltip.show-story-details' | transloco }}"
     >
       <nb-icon icon="book"></nb-icon>
     </button>
   </div>
-
   <div class="table-list-entry text-center">
-    <div
-      class="d-flex justify-content-center"
-      *ngIf="!state.isOtherNamespaceIntent(intent)"
-    >
+    @if (!state.isOtherNamespaceIntent(intent)) {
+    <div class="d-flex justify-content-center">
       <button
         nbButton
         ghost
         shape="round"
         status="info"
-        nbTooltip="Edit the intent"
+        nbTooltip="{{ 'lu.intents-list.tooltip.edit-intent' | transloco }}"
         (click)="updateIntent(intent)"
       >
         <nb-icon icon="pencil"></nb-icon>
       </button>
+      @if (state.hasRole(UserRole.admin)) {
       <button
-        *ngIf="state.hasRole(UserRole.admin)"
         nbButton
         ghost
         shape="round"
-        nbTooltip="Download a sentences dump"
+        nbTooltip="{{ 'lu.intents-list.tooltip.download-sentences-dump' | transloco }}"
         (click)="downloadSentencesDump(intent)"
       >
         <nb-icon icon="download"></nb-icon>
       </button>
+      }
       <button
         nbButton
         ghost
         shape="round"
         status="danger"
-        nbTooltip="Delete the intent"
+        nbTooltip="{{ 'lu.intents-list.tooltip.delete-intent' | transloco }}"
         (click)="deleteIntent(intent)"
       >
         <nb-icon icon="trash"></nb-icon>
       </button>
     </div>
+    }
   </div>
 </div>
+}

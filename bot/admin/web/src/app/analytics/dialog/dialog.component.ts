@@ -27,9 +27,10 @@ import { copyToClipboard } from '../../shared/utils';
 import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
-  selector: 'tock-dialog',
-  templateUrl: './dialog.component.html',
-  styleUrl: './dialog.component.scss'
+    selector: 'tock-dialog',
+    templateUrl: './dialog.component.html',
+    styleUrl: './dialog.component.scss',
+    standalone: false
 })
 export class DialogComponent implements OnInit, OnDestroy {
   destroy = new Subject();

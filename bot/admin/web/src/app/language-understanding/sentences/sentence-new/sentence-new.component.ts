@@ -20,11 +20,13 @@ import { Subject, takeUntil } from 'rxjs';
 import { NlpService } from '../../../core-nlp/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { NbToastrService } from '@nebular/theme';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-sentence-new',
-  templateUrl: './sentence-new.component.html',
-  styleUrls: ['./sentence-new.component.scss']
+    selector: 'tock-sentence-new',
+    templateUrl: './sentence-new.component.html',
+    styleUrls: ['./sentence-new.component.scss'],
+    standalone: false
 })
 export class SentenceNewComponent implements OnInit, OnDestroy {
   destroy = new Subject();
@@ -34,7 +36,12 @@ export class SentenceNewComponent implements OnInit, OnDestroy {
 
   @ViewChild('newSentenceInput') newSentenceInput: ElementRef;
 
-  constructor(private nlp: NlpService, private state: StateService, private toastrService: NbToastrService) {}
+  constructor(
+    private nlp: NlpService,
+    private state: StateService,
+    private toastrService: NbToastrService,
+    private transloco: TranslocoService
+  ) {}
 
   ngOnInit(): void {
     this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => this.onClose());
@@ -46,7 +53,12 @@ export class SentenceNewComponent implements OnInit, OnDestroy {
     const v = value.trim();
 
     if (v.length == 0) {
-      this.toastrService.show(`Please enter a non-empty query`, 'ERROR', { duration: 2000 });
+      this.transloco.translate('common.connectors.unknown-connector');
+      this.toastrService.show(
+        this.transloco.translate('lu.sentence-new.empty-query-error'),
+        this.transloco.translate('common.messages.error'),
+        { duration: 2000 }
+      );
     } else {
       this.sentence = null;
       this.nlp

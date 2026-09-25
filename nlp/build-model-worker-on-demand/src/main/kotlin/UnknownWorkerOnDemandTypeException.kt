@@ -16,4 +16,6 @@
 
 package ai.tock.nlp.build.ondemand
 
-internal class UnknownWorkerOnDemandTypeException(message: String) : Exception(message)
+internal class UnknownWorkerOnDemandTypeException(
+    message: String,
+) : Exception(message)

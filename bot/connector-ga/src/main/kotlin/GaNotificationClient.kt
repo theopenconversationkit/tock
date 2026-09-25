@@ -58,8 +58,7 @@ class GaNotificationClient {
                 longProperty("tock_ga_notification_api_timeout", 30000),
                 logger,
                 interceptors = listOf(tokenAuthenticationInterceptor(getAccessToken())),
-            )
-                .baseUrl("$baseUrl/v$version/")
+            ).baseUrl("$baseUrl/v$version/")
                 .addJacksonConverter()
                 .build()
                 .create()
@@ -70,25 +69,26 @@ class GaNotificationClient {
         userId: String,
         intent: String,
         locale: String,
-    ): Boolean {
-        return try {
-            gaNotificationApi.push(
-                GAPushNotification(
-                    GaPushMessage(
-                        GANotification(title),
-                        GATarget(
-                            userId,
-                            intent,
-                            locale,
+    ): Boolean =
+        try {
+            gaNotificationApi
+                .push(
+                    GAPushNotification(
+                        GaPushMessage(
+                            GANotification(title),
+                            GATarget(
+                                userId,
+                                intent,
+                                locale,
+                            ),
                         ),
                     ),
-                ),
-            ).execute().isSuccessful
+                ).execute()
+                .isSuccessful
         } catch (e: Exception) {
             logger.error(e)
             false
         }
-    }
 
     private fun getAccessToken(): String {
         val token = loadCredentials().refreshAccessToken()

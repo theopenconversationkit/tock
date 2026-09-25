@@ -33,7 +33,8 @@ internal object NamedArgumentNormalizer {
     ): NamedArgResult {
         try {
             val argNames =
-                enrichedArgPattern.findAll(label)
+                enrichedArgPattern
+                    .findAll(label)
                     .sortedBy { it.range.first }
                     .map { it.groupValues }
                     .map { it.last() }
@@ -65,4 +66,7 @@ internal object NamedArgumentNormalizer {
     }
 }
 
-internal data class NamedArgResult(val label: String, val args: List<Any?>)
+internal data class NamedArgResult(
+    val label: String,
+    val args: List<Any?>,
+)

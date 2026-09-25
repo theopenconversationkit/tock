@@ -17,6 +17,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LogStatsComponent } from './log-stats.component';
+import { TestSharedModule } from '../../shared/test-shared.module';
+import { StateService } from '../../core-nlp/state.service';
+import { StateServiceMock } from '../../shared/test-shared/state-service.mock';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { QualityService } from '../quality.service';
+import { of } from 'rxjs';
 
 describe('LogStatsComponent', () => {
   let component: LogStatsComponent;
@@ -24,9 +30,14 @@ describe('LogStatsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LogStatsComponent ]
-    })
-    .compileComponents();
+      declarations: [LogStatsComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        { provide: QualityService, useValue: { logStats: () => of([]) } }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LogStatsComponent);
     component = fixture.componentInstance;

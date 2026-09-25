@@ -21,8 +21,9 @@ import ai.tock.bot.engine.BotBus
 /**
  * For simple stories that do not use custom [StoryHandlerDefinition].
  */
-abstract class SimpleStoryHandlerBase(mainIntentName: String? = null) :
-    StoryHandlerBase<StoryHandlerDefinition>(mainIntentName) {
+abstract class SimpleStoryHandlerBase(
+    mainIntentName: String? = null,
+) : StoryHandlerBase<StoryHandlerDefinition>(mainIntentName) {
     /**
      * The method to implement.
      */

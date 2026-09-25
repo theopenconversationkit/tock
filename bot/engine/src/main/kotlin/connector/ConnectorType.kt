@@ -43,7 +43,5 @@ data class ConnectorType(
         val rest: ConnectorType = ConnectorType("rest")
     }
 
-    override fun toString(): String {
-        return id
-    }
+    override fun toString(): String = id
 }

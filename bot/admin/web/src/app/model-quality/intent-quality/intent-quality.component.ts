@@ -26,9 +26,10 @@ interface FilterForm {
 }
 
 @Component({
-  selector: 'tock-intent-quality',
-  templateUrl: './intent-quality.component.html',
-  styleUrls: ['./intent-quality.component.scss']
+    selector: 'tock-intent-quality',
+    templateUrl: './intent-quality.component.html',
+    styleUrls: ['./intent-quality.component.scss'],
+    standalone: false
 })
 export class IntentQualityComponent implements OnInit, OnDestroy {
   destroy = new Subject();

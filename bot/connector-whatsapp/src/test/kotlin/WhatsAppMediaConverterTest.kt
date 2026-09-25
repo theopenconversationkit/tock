@@ -40,11 +40,12 @@ class WhatsAppMediaConverterTest {
             every { translate(any()) } answers { (args[0] as CharSequence).raw }
             every { translateAndReturnBlankAsNull(any()) } answers { (args[0] as CharSequence).raw }
             every { translate(any(), *anyVararg()) } answers {
-                Translator.formatMessage(
-                    args[0].toString(),
-                    I18nContext(defaultLocale, textChat, null),
-                    args.subList(1, args.size),
-                ).raw
+                Translator
+                    .formatMessage(
+                        args[0].toString(),
+                        I18nContext(defaultLocale, textChat, null),
+                        args.subList(1, args.size),
+                    ).raw
             }
         }
 

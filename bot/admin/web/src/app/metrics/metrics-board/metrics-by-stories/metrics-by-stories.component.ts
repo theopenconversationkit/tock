@@ -26,15 +26,16 @@ import { heuristicValueColorDetection } from '../../commons/utils';
 import { IndicatorDefinition, IndicatorValueDefinition, MetricResult, StorySummary } from '../../models';
 
 @Component({
-  selector: 'tock-metrics-by-stories',
-  templateUrl: './metrics-by-stories.component.html',
-  styleUrls: ['./metrics-by-stories.component.scss'],
-  providers: [
-    {
-      provide: NGX_ECHARTS_CONFIG,
-      useFactory: () => ({ echarts: () => import('echarts') })
-    }
-  ]
+    selector: 'tock-metrics-by-stories',
+    templateUrl: './metrics-by-stories.component.html',
+    styleUrls: ['./metrics-by-stories.component.scss'],
+    providers: [
+        {
+            provide: NGX_ECHARTS_CONFIG,
+            useFactory: () => ({ echarts: () => import('echarts') })
+        }
+    ],
+    standalone: false
 })
 export class MetricsByStoriesComponent implements OnInit {
   @Input() indicatorName: string;

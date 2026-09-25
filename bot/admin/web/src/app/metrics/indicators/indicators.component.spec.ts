@@ -24,16 +24,24 @@ import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { TestSharedModule } from '../../shared/test-shared.module';
-import { IndicatorDefinition } from '../models';
+import { IndicatorDefinition, IndicatorType } from '../models';
 import { IndicatorsComponent } from './indicators.component';
 
-const indicator1: IndicatorDefinition = { name: 'test', label: 'test', description: 'test desc', dimensions: ['test'], values: [] };
+const indicator1: IndicatorDefinition = {
+  name: 'test',
+  label: 'test',
+  description: 'test desc',
+  dimensions: ['test'],
+  values: [],
+  type: IndicatorType.CUSTOM
+};
 const indicator2: IndicatorDefinition = {
   name: 'otherTest',
   label: 'Other Test',
   description: 'Other Test desc',
   dimensions: ['test', 'Other test dim'],
-  values: []
+  values: [],
+  type: IndicatorType.CUSTOM
 };
 
 describe('IndicatorsComponent', () => {

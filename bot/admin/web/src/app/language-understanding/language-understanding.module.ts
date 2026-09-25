@@ -42,7 +42,7 @@ import { SentenceNewComponent } from './sentences/sentence-new/sentence-new.comp
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IntentsLogsComponent } from './intents-logs/intents-logs.component';
 import { DisplayIntentFullLogComponent } from './intents-logs/display-intents-full-log/display-intents-full-log.component';
-import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { JsonEditorComponent } from 'ang-jsoneditor';
 import { MomentModule } from 'ngx-moment';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { EntitiesComponent } from './entities/entities.component';
@@ -54,7 +54,8 @@ import { IntentsListComponent } from './intents/intents-list/intents-list.compon
 
 import { AddStateDialogComponent } from './intents/add-state/add-state-dialog.component';
 import { AddSharedIntentDialogComponent } from './intents/add-shared-intent/add-shared-intent-dialog.component';
-import { IntentDialogComponent } from './intent-dialog/intent-dialog.component';
+
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @NgModule({
   imports: [
@@ -77,10 +78,11 @@ import { IntentDialogComponent } from './intent-dialog/intent-dialog.component';
     NbTooltipModule,
     NbSelectModule,
     NbAutocompleteModule,
-    NgJsonEditorModule,
+    JsonEditorComponent,
     MomentModule,
     InfiniteScrollModule,
-    FileUploadModule
+    FileUploadModule,
+    TranslocoModule
   ],
   declarations: [
     LanguageUnderstandingTabsComponent,
@@ -97,8 +99,13 @@ import { IntentDialogComponent } from './intent-dialog/intent-dialog.component';
     IntentsListComponent,
 
     AddStateDialogComponent,
-    AddSharedIntentDialogComponent,
-    IntentDialogComponent
+    AddSharedIntentDialogComponent
+  ],
+  providers: [
+    provideTranslocoScope({
+      scope: 'language-understanding',
+      alias: 'lu'
+    })
   ]
 })
 export class LanguageUnderstandingModule {}

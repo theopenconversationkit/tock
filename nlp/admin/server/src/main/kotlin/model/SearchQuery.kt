@@ -53,8 +53,8 @@ data class SearchQuery(
     val minIntentProbability: Float = 0f,
     val configuration: String? = null,
 ) : PaginatedQuery() {
-    fun toSentencesQuery(applicationId: Id<ApplicationDefinition>): SentencesQuery {
-        return SentencesQuery(
+    fun toSentencesQuery(applicationId: Id<ApplicationDefinition>): SentencesQuery =
+        SentencesQuery(
             applicationId,
             language,
             start,
@@ -77,5 +77,4 @@ data class SearchQuery(
             minIntentProbability = minIntentProbability,
             configuration = configuration,
         )
-    }
 }

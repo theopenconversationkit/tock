@@ -123,8 +123,8 @@ internal object TockKMongoConfiguration {
                         override fun deserialize(
                             parser: JsonParser,
                             context: DeserializationContext,
-                        ): Duration? {
-                            return if (parser.currentTokenId() == JsonTokenId.ID_EMBEDDED_OBJECT) {
+                        ): Duration? =
+                            if (parser.currentTokenId() == JsonTokenId.ID_EMBEDDED_OBJECT) {
                                 val e = parser.embeddedObject
                                 when (e) {
                                     is Decimal128 -> {
@@ -134,13 +134,17 @@ internal object TockKMongoConfiguration {
                                         Duration.ofSeconds(seconds, nanoseconds.toLong())
                                     }
 
-                                    is Duration -> e
-                                    else -> error("unsupported duration $e")
+                                    is Duration -> {
+                                        e
+                                    }
+
+                                    else -> {
+                                        error("unsupported duration $e")
+                                    }
                                 }
                             } else {
                                 DurationDeserializer.INSTANCE.deserialize(parser, context)
                             }
-                        }
                     },
                 )
             }
@@ -202,7 +206,8 @@ internal val mongoClient: MongoClient by lazy {
 internal val asyncMongoClient: com.mongodb.reactivestreams.client.MongoClient by lazy {
     TockKMongoConfiguration.configure(true)
     org.litote.kmongo.reactivestreams.KMongo.createClient(
-        MongoClientSettings.builder()
+        MongoClientSettings
+            .builder()
             .applyConnectionString(asyncMongoUrl)
             .apply {
                 if (asyncMongoUrl.credential == null) {
@@ -213,8 +218,7 @@ internal val asyncMongoClient: com.mongodb.reactivestreams.client.MongoClient by
                 if (asyncMongoUrl.sslEnabled == true) {
                     transportSettings(TransportSettings.nettyBuilder().build())
                 }
-            }
-            .build(),
+            }.build(),
     )
 }
 
@@ -301,23 +305,28 @@ fun isDocumentDB(): Boolean = isDocumentDB
  * Transform json data to prevent AWS DocumentDB field name restrictions
  * Amazon DocumentDB does not support dots “.” in a document field name
  */
-fun transformData(data: Any?): Any? {
-    return if (isDocumentDB()) {
+fun transformData(data: Any?): Any? =
+    if (isDocumentDB()) {
         data?.let {
             when (it) {
                 is Map<*, *> -> {
-                    it.mapKeys { (key, _) -> key.toString().replace(".", "_DOT_") }
+                    it
+                        .mapKeys { (key, _) -> key.toString().replace(".", "_DOT_") }
                         .mapValues { (_, value) -> transformData(value) }
                 }
 
-                is List<*> -> it.map { elem -> transformData(elem) }
-                else -> it
+                is List<*> -> {
+                    it.map { elem -> transformData(elem) }
+                }
+
+                else -> {
+                    it
+                }
             }
         }
     } else {
         data
     }
-}
 
 /**
  * Generate and return an index matching DocumentDB limits (32 characters maximum in a compound index) with the given document keys and options
@@ -336,7 +345,12 @@ private fun generateIndexName(
         var reducedIndex = ""
 
         for ((key, value) in (document as BsonDocument).entries) {
-            val sort: String = value.takeIf { it.isInt32 }?.asInt32()?.value.toString()
+            val sort: String =
+                value
+                    .takeIf { it.isInt32 }
+                    ?.asInt32()
+                    ?.value
+                    .toString()
             index += key + sort
             reducedIndex += key.let {
                 if (it.length > DOCUMENT_DB_INDEX_REDUCED_SIZE) {

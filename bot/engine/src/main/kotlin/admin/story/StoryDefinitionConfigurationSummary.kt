@@ -57,7 +57,7 @@ data class StoryDefinitionConfigurationSummaryMinimumMetrics(
 ) : StoryDefinitionConfigurationSummaryBase
 
 interface StoryDefinitionConfigurationSummaryBase {
-    @Suppress("ktlint:standard:property-naming")
+    @Suppress("ktlint:standard:backing-property-naming")
     val _id: Id<StoryDefinitionConfiguration>
     val storyId: String
     val intent: IntentWithoutNamespace

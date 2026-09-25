@@ -81,6 +81,8 @@ import ai.tock.bot.admin.model.StorySearchRequest
 import ai.tock.bot.admin.model.SummaryStorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.model.UserSearchQueryResult
+import ai.tock.bot.admin.service.BotDashboardService
+import ai.tock.bot.admin.service.BotHistoryService
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -179,8 +181,8 @@ object BotAdminService {
         override fun buildScript(
             script: ScriptAnswerVersionedConfigurationDump,
             compile: Boolean,
-        ): ScriptAnswerVersionedConfiguration {
-            return if (compile && !KotlinCompilerClient.compilerDisabled) {
+        ): ScriptAnswerVersionedConfiguration =
+            if (compile && !KotlinCompilerClient.compilerDisabled) {
                 val fileName = "T${Dice.newId()}.kt"
                 val result = KotlinCompilerClient.compile(KotlinFile(script.script, fileName))
                 if (result?.compilationResult == null) {
@@ -203,7 +205,6 @@ object BotAdminService {
                     date = script.date,
                 )
             }
-        }
 
         override fun checkIntent(intent: IntentWithoutNamespace?): IntentWithoutNamespace? {
             if (intent != null) {
@@ -224,13 +225,12 @@ object BotAdminService {
         actionId: String,
         annotationDTO: BotAnnotationDTO,
         user: String,
-    ): BotAnnotation {
-        return if (dialogReportDAO.annotationExists(dialogId, actionId)) {
+    ): BotAnnotation =
+        if (dialogReportDAO.annotationExists(dialogId, actionId)) {
             updateAnnotation(dialogId, actionId, annotationDTO, user)
         } else {
             createAnnotation(dialogId, actionId, annotationDTO, user)
         }
-    }
 
     private fun createAnnotation(
         dialogId: String,
@@ -421,13 +421,14 @@ object BotAdminService {
 
         return existingAnnotation.copy(
             events =
-                existingAnnotation.events.map { event ->
-                    if (event is BotAnnotationEventComment) {
-                        event.copy(canEdit = event.user == user)
-                    } else {
-                        event
-                    }
-                }.toMutableList(),
+                existingAnnotation.events
+                    .map { event ->
+                        if (event is BotAnnotationEventComment) {
+                            event.copy(canEdit = event.user == user)
+                        } else {
+                            event
+                        }
+                    }.toMutableList(),
         )
     }
 
@@ -451,9 +452,7 @@ object BotAdminService {
     fun getBots(
         namespace: String,
         botId: String,
-    ): List<BotConfiguration> {
-        return applicationConfigurationDAO.getBotConfigurationsByNamespaceAndBotId(namespace, botId)
-    }
+    ): List<BotConfiguration> = applicationConfigurationDAO.getBotConfigurationsByNamespaceAndBotId(namespace, botId)
 
     fun save(conf: BotConfiguration) {
         val locales =
@@ -463,12 +462,11 @@ object BotAdminService {
         applicationConfigurationDAO.save(conf.copy(supportedLocales = locales))
     }
 
-    fun searchUsers(query: UserSearchQuery): UserSearchQueryResult {
-        return UserSearchQueryResult(userReportDAO.search(query.toUserReportQuery()))
-    }
+    fun searchUsers(query: UserSearchQuery): UserSearchQueryResult = UserSearchQueryResult(userReportDAO.search(query.toUserReportQuery()))
 
-    fun search(query: DialogsSearchQuery): DialogReportQueryResult {
-        return dialogReportDAO.search(query.toDialogReportQuery())
+    fun search(query: DialogsSearchQuery): DialogReportQueryResult =
+        dialogReportDAO
+            .search(query.toDialogReportQuery())
             .run {
                 val searchResult =
                     if (query.intentsToHide.isEmpty()) {
@@ -509,7 +507,6 @@ object BotAdminService {
                     nlpStats = dialogReportDAO.getNlpStats(searchResult.dialogs.map { it.id }, query.namespace),
                 )
             }
-    }
 
     fun searchWithCommentRights(
         query: DialogsSearchQuery,
@@ -527,17 +524,16 @@ object BotAdminService {
     fun getDialogWithCommentRights(
         id: Id<Dialog>,
         userLogin: String,
-    ): DialogReport? {
-        return dialogReportDAO.getDialog(id)?.let { dialog ->
+    ): DialogReport? =
+        dialogReportDAO.getDialog(id)?.let { dialog ->
             processAnnotationsForUser(dialog, userLogin)
         }
-    }
 
     private fun processAnnotationsForUser(
         dialog: DialogReport,
         userLogin: String,
-    ): DialogReport {
-        return dialog.copy(
+    ): DialogReport =
+        dialog.copy(
             actions =
                 dialog.actions.map { action ->
                     action.copy(
@@ -545,26 +541,24 @@ object BotAdminService {
                             action.annotation?.let { annotation ->
                                 annotation.copy(
                                     events =
-                                        annotation.events.map { event ->
-                                            if (event is BotAnnotationEventComment) {
-                                                event.copy(canEdit = event.user == userLogin)
-                                            } else {
-                                                event
-                                            }
-                                        }.toMutableList(),
+                                        annotation.events
+                                            .map { event ->
+                                                if (event is BotAnnotationEventComment) {
+                                                    event.copy(canEdit = event.user == userLogin)
+                                                } else {
+                                                    event
+                                                }
+                                            }.toMutableList(),
                                 )
                             },
                     )
                 },
         )
-    }
 
     fun getIntentsInDialogs(
         namespace: String,
         nlpModel: String,
-    ): Set<String> {
-        return dialogReportDAO.intents(namespace, nlpModel)
-    }
+    ): Set<String> = dialogReportDAO.intents(namespace, nlpModel)
 
     fun getDialogObfuscatedById(
         id: Id<Dialog>,
@@ -577,8 +571,8 @@ object BotAdminService {
     private fun filterIntentFromDialogActions(
         dialogs: List<DialogReport>,
         intentsToHide: Set<String>,
-    ): List<DialogReport> {
-        return dialogs.map { dialog ->
+    ): List<DialogReport> =
+        dialogs.map { dialog ->
             val groupedLists = dialog.actions.groupBy { it.playerId.type }
             var list = dialog.actions.toMutableList()
             groupedLists[PlayerType.user]?.forEach { action ->
@@ -596,7 +590,9 @@ object BotAdminService {
                                 dialog.actions.size
                             } else {
                                 dialog.actions.indexOf(
-                                    groupedLists[PlayerType.user]?.indexOf(action)?.plus(1)
+                                    groupedLists[PlayerType.user]
+                                        ?.indexOf(action)
+                                        ?.plus(1)
                                         ?.let { groupedLists[PlayerType.user]?.get(it) },
                                 )
                             },
@@ -606,11 +602,8 @@ object BotAdminService {
             }
             dialog.copy(actions = list)
         }
-    }
 
-    fun searchRating(query: DialogsSearchQuery): RatingReportQueryResult? {
-        return dialogReportDAO.findBotDialogStats(query.toDialogReportQuery())
-    }
+    fun searchRating(query: DialogsSearchQuery): RatingReportQueryResult? = dialogReportDAO.findBotDialogStats(query.toDialogReportQuery())
 
     // Group by test/prod
     private fun groupByAppConfigType(results: List<CountResult>): Map<String, List<CountResult>> {
@@ -666,28 +659,23 @@ object BotAdminService {
     fun deleteApplicationConfiguration(conf: BotApplicationConfiguration) {
         applicationConfigurationDAO.delete(conf)
         // delete rest connector if found
-        applicationConfigurationDAO.getConfigurationByTargetId(conf._id)
+        applicationConfigurationDAO
+            .getConfigurationByTargetId(conf._id)
             ?.also { applicationConfigurationDAO.delete(it) }
     }
 
-    fun getBotConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? {
-        return applicationConfigurationDAO.getConfigurationById(id)
-    }
+    fun getBotConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? = applicationConfigurationDAO.getConfigurationById(id)
 
     fun getBotConfigurationByApplicationIdAndBotId(
         namespace: String,
         applicationId: String,
         botId: String,
-    ): BotApplicationConfiguration? {
-        return applicationConfigurationDAO.getConfigurationByApplicationIdAndBotId(namespace, applicationId, botId)
-    }
+    ): BotApplicationConfiguration? = applicationConfigurationDAO.getConfigurationByApplicationIdAndBotId(namespace, applicationId, botId)
 
     fun getBotConfigurationsByNamespaceAndBotId(
         namespace: String,
         botId: String,
-    ): List<BotApplicationConfiguration> {
-        return applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(namespace, botId)
-    }
+    ): List<BotApplicationConfiguration> = applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(namespace, botId)
 
     fun getBotConfigurationsByNamespaceAndNlpModel(
         namespace: String,
@@ -704,8 +692,21 @@ object BotAdminService {
         }
     }
 
-    fun saveApplicationConfiguration(conf: BotApplicationConfiguration) {
+    fun saveApplicationConfiguration(
+        conf: BotApplicationConfiguration,
+        author: String? = null,
+    ) {
+        val previous = if (author == null) null else applicationConfigurationDAO.getConfigurationById(conf._id)
         applicationConfigurationDAO.save(conf)
+        if (author != null && previous != conf && conf.targetConfigurationId == null) {
+            BotHistoryService.record(
+                conf.namespace,
+                conf.botId,
+                "connector",
+                author,
+                mapOf("connector" to conf.connectorType.id, "label" to conf.name),
+            )
+        }
         if (applicationConfigurationDAO.getBotConfigurationsByNamespaceAndNameAndBotId(
                 conf.namespace,
                 conf.name,
@@ -714,7 +715,8 @@ object BotAdminService {
         ) {
             val applicationDefinition =
                 applicationDAO.getApplicationByNamespaceAndName(
-                    namespace = conf.namespace, name = conf.nlpModel,
+                    namespace = conf.namespace,
+                    name = conf.nlpModel,
                 ) ?: error("no application definition found for $conf")
             applicationConfigurationDAO.save(
                 BotConfiguration(
@@ -838,7 +840,7 @@ object BotAdminService {
                     val controller =
                         BotStoryDefinitionConfigurationDumpController(namespace, botId, it, application, locale, user)
                     val storyConf = it.toStoryDefinitionConfiguration(controller)
-                    importStory(namespace, storyConf, botConf, ragConfiguration, controller, dump.mode)
+                    importStory(namespace, storyConf, botConf, ragConfiguration, controller, dump.mode, user)
                 } catch (e: Exception) {
                     logger.error("import error with story $it", e)
                 }
@@ -853,15 +855,24 @@ object BotAdminService {
         ragConfiguration: BotRAGConfiguration?,
         controller: BotStoryDefinitionConfigurationDumpController,
         importMode: StoriesImportMode,
+        author: UserLogin,
     ) {
         var storyToSave = manageExistingStory(botConf, storyToImport)
 
         // Manage the import of an unknown story, taking into account the RAG configuration
         if (ragConfiguration?.enabled == true && Intent.UNKNOWN_INTENT.name.withoutNamespace() == storyToImport.intent.name) {
             if (importMode == StoriesImportMode.RAG_OFF) {
-                ragConfigurationDAO.findByNamespaceAndBotId(namespace, botConf.botId)
+                ragConfigurationDAO
+                    .findByNamespaceAndBotId(namespace, botConf.botId)
                     ?.let {
-                        ragConfigurationDAO.save(it.copy(enabled = false))
+                        BotHistoryService.configuration(
+                            namespace,
+                            botConf.botId,
+                            "rag-settings",
+                            author,
+                            previous = { it },
+                            save = { ragConfigurationDAO.save(it.copy(enabled = false)) },
+                        )
                     }
             } else if (importMode == StoriesImportMode.RAG_ON) {
                 storyToSave = storyToSave.copy(features = prepareEndingFeatures(storyToSave, false))
@@ -891,15 +902,16 @@ object BotAdminService {
             )
 
         val existingStory2 =
-            storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
-                botConf.namespace,
-                botConf.botId,
-                storyToImport.storyId,
-            )?.also {
-                if (existingStory1 != null) {
-                    storyDefinitionDAO.delete(it)
+            storyDefinitionDAO
+                .getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+                    botConf.namespace,
+                    botConf.botId,
+                    storyToImport.storyId,
+                )?.also {
+                    if (existingStory1 != null) {
+                        storyDefinitionDAO.delete(it)
+                    }
                 }
-            }
 
         return storyToImport.copy(_id = existingStory1?._id ?: existingStory2?._id ?: storyToImport._id)
     }
@@ -950,24 +962,23 @@ object BotAdminService {
         namespace: String,
         botId: String,
         intent: String,
-    ): BotStoryDefinitionConfiguration? {
-        return storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(namespace, botId, intent)
+    ): BotStoryDefinitionConfiguration? =
+        storyDefinitionDAO
+            .getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(namespace, botId, intent)
             ?.let {
                 loadStory(namespace, it)
             }
-    }
 
     fun findConfiguredStoriesByBotIdAndIntent(
         namespace: String,
         botId: String,
         intentNames: List<String>,
-    ): List<StoryDefinitionConfiguration> {
-        return storyDefinitionDAO.getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(
+    ): List<StoryDefinitionConfiguration> =
+        storyDefinitionDAO.getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(
             namespace,
             botId,
             intentNames,
         )
-    }
 
     fun deleteStory(
         namespace: String,
@@ -1011,11 +1022,10 @@ object BotAdminService {
         }
     }
 
-    private fun simpleAnswer(answer: BotSimpleAnswerConfiguration): SimpleAnswerConfiguration {
-        return SimpleAnswerConfiguration(
+    private fun simpleAnswer(answer: BotSimpleAnswerConfiguration): SimpleAnswerConfiguration =
+        SimpleAnswerConfiguration(
             answer.answers.map { it.toConfiguration() },
         )
-    }
 
     private fun String.toScriptConfiguration(
         botId: String,
@@ -1058,15 +1068,24 @@ object BotAdminService {
         answers: List<AnswerConfiguration>?,
     ): AnswerConfiguration? =
         when (this) {
-            is BotSimpleAnswerConfiguration -> simpleAnswer(this)
-            is BotScriptAnswerConfiguration ->
+            is BotSimpleAnswerConfiguration -> {
+                simpleAnswer(this)
+            }
+
+            is BotScriptAnswerConfiguration -> {
                 current.script.toScriptConfiguration(
                     botId,
                     answers?.find { it.answerType == script } as? ScriptAnswerConfiguration,
                 )
+            }
 
-            is BotBuiltinAnswerConfiguration -> BuiltInAnswerConfiguration(storyHandlerClassName)
-            else -> error("unsupported type $this")
+            is BotBuiltinAnswerConfiguration -> {
+                BuiltInAnswerConfiguration(storyHandlerClassName)
+            }
+
+            else -> {
+                error("unsupported type $this")
+            }
         }
 
     private fun BotAnswerConfiguration.toAnswerConfiguration(
@@ -1191,8 +1210,8 @@ object BotAdminService {
         story: BotStoryDefinitionConfiguration,
         application: ApplicationDefinition,
         botId: String,
-    ): StoryDefinitionConfiguration {
-        return oldStory.copy(
+    ): StoryDefinitionConfiguration =
+        oldStory.copy(
             name = story.name,
             description = story.description,
             category = story.category,
@@ -1221,7 +1240,6 @@ object BotAdminService {
             nextIntentsQualifiers = story.nextIntentsQualifiers,
             metricStory = story.metricStory,
         )
-    }
 
     /**
      * Checks and save the story
@@ -1259,17 +1277,19 @@ object BotAdminService {
         return if (botConf != null) {
             val application = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
             val storyWithSameNsBotAndName =
-                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
-                    namespace,
-                    botConf.botId,
-                    story.storyId,
-                )?.also { logger.debug { "Found story with same namespace, type and name: $it" } }
+                storyDefinitionDAO
+                    .getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+                        namespace,
+                        botConf.botId,
+                        story.storyId,
+                    )?.also { logger.debug { "Found story with same namespace, type and name: $it" } }
             val storyWithSameNsBotAndIntent =
-                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-                    namespace,
-                    botConf.botId,
-                    story.intent.name,
-                )?.also { logger.debug { "Found story with same namespace, type and intent: $it" } }
+                storyDefinitionDAO
+                    .getStoryDefinitionByNamespaceAndBotIdAndIntent(
+                        namespace,
+                        botConf.botId,
+                        story.intent.name,
+                    )?.also { logger.debug { "Found story with same namespace, type and intent: $it" } }
 
             storyWithSameNsBotAndIntent.let {
                 if (it == null || it.currentType == builtin) {
@@ -1288,8 +1308,7 @@ object BotAdminService {
                     }
                 }
             }
-            if (storyWithSameNsBotAndName != null && storyWithSameNsBotAndName._id != storyWithSameId?._id
-            ) {
+            if (storyWithSameNsBotAndName != null && storyWithSameNsBotAndName._id != storyWithSameId?._id) {
                 if (storyWithSameNsBotAndName.currentType != builtin) {
                     badRequest("Story ${story.name} (${story.currentType}) already exists")
                 }
@@ -1427,16 +1446,17 @@ object BotAdminService {
         user: UserLogin,
     ) {
         if (
-            front.search(
-                SentencesQuery(
-                    applicationId = applicationId,
-                    language = locale,
-                    search = text,
-                    onlyExactMatch = true,
-                    intentId = intentId,
-                    status = setOf(validated, model),
-                ),
-            ).total == 0L
+            front
+                .search(
+                    SentencesQuery(
+                        applicationId = applicationId,
+                        language = locale,
+                        search = text,
+                        onlyExactMatch = true,
+                        intentId = intentId,
+                        status = setOf(validated, model),
+                    ),
+                ).total == 0L
         ) {
             front.save(
                 ClassifiedSentence(
@@ -1578,9 +1598,7 @@ object BotAdminService {
         return dialogFlowDAO.loadApplicationData(namespace, botId, applicationIds, request.from, request.to)
     }
 
-    private fun loadApplicationIds(request: DialogFlowRequest): Set<Id<BotApplicationConfiguration>> {
-        return loadApplications(request).map { it._id }.toSet()
-    }
+    private fun loadApplicationIds(request: DialogFlowRequest): Set<Id<BotApplicationConfiguration>> = loadApplications(request).map { it._id }.toSet()
 
     private fun loadApplications(request: DialogFlowRequest): Set<BotApplicationConfiguration> {
         val namespace = request.namespace
@@ -1616,26 +1634,29 @@ object BotAdminService {
     }
 
     fun deleteApplication(app: ApplicationDefinition) {
-        applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(
-            app.namespace,
-            app.name,
-        ).forEach {
-            applicationConfigurationDAO.delete(it)
-        }
-        applicationConfigurationDAO.getBotConfigurationsByNamespaceAndBotId(
-            app.namespace,
-            app.name,
-        ).forEach {
-            applicationConfigurationDAO.delete(it)
-        }
+        applicationConfigurationDAO
+            .getConfigurationsByNamespaceAndNlpModel(
+                app.namespace,
+                app.name,
+            ).forEach {
+                applicationConfigurationDAO.delete(it)
+            }
+        applicationConfigurationDAO
+            .getBotConfigurationsByNamespaceAndBotId(
+                app.namespace,
+                app.name,
+            ).forEach {
+                applicationConfigurationDAO.delete(it)
+            }
 
         // delete stories and faqDefinitions
-        storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
-            app.namespace,
-            app.name,
-        ).forEach { story ->
-            storyDefinitionDAO.delete(story)
-        }
+        storyDefinitionDAO
+            .getStoryDefinitionsByNamespaceAndBotId(
+                app.namespace,
+                app.name,
+            ).forEach { story ->
+                storyDefinitionDAO.delete(story)
+            }
 
         // delete the Business Rules configuration
         businessRulesConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let { config ->
@@ -1683,56 +1704,65 @@ object BotAdminService {
 
         // delete evaluation samples and their evaluations
         evaluationSampleDAO.deleteByNamespaceAndBotId(app.namespace, app.name)
+
+        // A dashboard purge failure must not prevent the existing configuration and secret cleanup.
+        BotDashboardService.delete(app.namespace, app.name)
     }
 
     fun changeSupportedLocales(newApp: ApplicationDefinition) {
-        applicationConfigurationDAO.getBotConfigurationsByNamespaceAndBotId(
-            newApp.namespace,
-            newApp.name,
-        ).forEach {
-            applicationConfigurationDAO.save(it.copy(supportedLocales = newApp.supportedLocales))
-        }
+        applicationConfigurationDAO
+            .getBotConfigurationsByNamespaceAndBotId(
+                newApp.namespace,
+                newApp.name,
+            ).forEach {
+                applicationConfigurationDAO.save(it.copy(supportedLocales = newApp.supportedLocales))
+            }
     }
 
     fun changeApplicationName(
         existingApp: ApplicationDefinition,
         newApp: ApplicationDefinition,
     ) {
-        applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(
-            existingApp.namespace,
-            existingApp.name,
-        ).forEach {
-            applicationConfigurationDAO.save(it.copy(botId = newApp.name, nlpModel = newApp.name))
-        }
-        applicationConfigurationDAO.getBotConfigurationsByNamespaceAndBotId(
-            existingApp.namespace,
-            existingApp.name,
-        ).forEach {
-            applicationConfigurationDAO.save(it.copy(botId = newApp.name))
-        }
+        applicationConfigurationDAO
+            .getConfigurationsByNamespaceAndNlpModel(
+                existingApp.namespace,
+                existingApp.name,
+            ).forEach {
+                applicationConfigurationDAO.save(it.copy(botId = newApp.name, nlpModel = newApp.name))
+            }
+        applicationConfigurationDAO
+            .getBotConfigurationsByNamespaceAndBotId(
+                existingApp.namespace,
+                existingApp.name,
+            ).forEach {
+                applicationConfigurationDAO.save(it.copy(botId = newApp.name))
+            }
         // stories
-        storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
-            existingApp.namespace,
-            existingApp.name,
-        ).forEach {
-            storyDefinitionDAO.save(it.copy(botId = newApp.name))
-        }
+        storyDefinitionDAO
+            .getStoryDefinitionsByNamespaceAndBotId(
+                existingApp.namespace,
+                existingApp.name,
+            ).forEach {
+                storyDefinitionDAO.save(it.copy(botId = newApp.name))
+            }
     }
 
     fun importLabels(
         labels: List<I18nLabel>,
         organization: String,
-    ): Int {
-        return labels
+    ): Int =
+        labels
             .filter { it.i18n.any { i18n -> i18n.validated } }
             .map {
                 it.copy(
-                    _id = it._id.toString().replaceFirst(it.namespace, organization).toId(),
+                    _id =
+                        it._id
+                            .toString()
+                            .replaceFirst(it.namespace, organization)
+                            .toId(),
                     namespace = organization,
                 )
             }.apply {
                 i18n.save(this)
-            }
-            .size
-    }
+            }.size
 }

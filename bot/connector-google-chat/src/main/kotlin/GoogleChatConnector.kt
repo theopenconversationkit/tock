@@ -34,6 +34,7 @@ import ai.tock.shared.Executor
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
 import com.google.api.services.chat.v1.HangoutsChat
+import com.google.api.services.chat.v1.model.Message
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import mu.KotlinLogging
@@ -48,6 +49,9 @@ class GoogleChatConnector(
     private val displaySourcesWithoutUrl: Boolean,
     private val introMessage: String? = null,
     private val useThread: Boolean = false,
+    private val sourcesLabel: String,
+    private val waitingMessage: String,
+    private val feedback: GoogleChatFeedback? = null,
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
@@ -64,7 +68,8 @@ class GoogleChatConnector(
                         logger.debug { "message received from Google chat: $body" }
 
                         // answer immediately
-                        context.response()
+                        context
+                            .response()
                             .putHeader("Content-Type", "application/json; charset=UTF-8")
                             .setStatusCode(200)
                             .end("{}")
@@ -72,41 +77,78 @@ class GoogleChatConnector(
                         val chatEvent: JsonObject = messageEvent.getAsJsonObject("chat")
 
                         // https://developers.google.com/workspace/add-ons/concepts/event-objects#chat-payload
-                        if (!chatEvent.has("messagePayload")) {
-                            logger.debug {
-                                "Only messagePayload is handled. Skipped events: " +
-                                    "AddedToSpacePayload, " +
-                                    "RemovedFromSpacePayload, " +
-                                    "ButtonClickedPayload, " +
-                                    "WidgetUpdatedPayload, " +
-                                    "AppCommandPayload."
-                            }
+                        if (chatEvent.has("messagePayload")) {
+                            handleMessage(chatEvent, controller)
+                        } else if (chatEvent.has("buttonClickedPayload") && feedback != null) {
+                            handleFeedback(messageEvent, chatEvent, controller)
                         } else {
-                            val message = chatEvent.getAsJsonObject("messagePayload").getAsJsonObject("message")
-                            val spaceName = message.getAsJsonObject("space").get("name").asString
-                            val threadName = message.getAsJsonObject("thread").get("name").asString
-
-                            val event = GoogleChatRequestConverter.toEvent(chatEvent, connectorId)
-                            executor.executeBlocking {
-                                controller.handle(
-                                    event,
-                                    ConnectorData(
-                                        GoogleChatConnectorCallback(
-                                            connectorId,
-                                            spaceName,
-                                            threadName,
-                                            chatService,
-                                            introMessage,
-                                            useThread,
-                                        ),
-                                    ),
-                                )
+                            logger.debug {
+                                "Unsupported Google Chat event skipped. " +
+                                    "Feedback button events are handled only when feedback is enabled."
                             }
                         }
                     } catch (e: Throwable) {
                         logger.error(e) { "Error while handling Google Chat event" }
                     }
                 }
+        }
+    }
+
+    private fun handleMessage(
+        chatEvent: JsonObject,
+        controller: ConnectorController,
+    ) {
+        val message = chatEvent.getAsJsonObject("messagePayload").getAsJsonObject("message")
+        val spaceName = message.getAsJsonObject("space").get("name").asString
+        val threadName = message.getAsJsonObject("thread").get("name").asString
+        val event = GoogleChatRequestConverter.toEvent(chatEvent, connectorId)
+        executor.executeBlocking {
+            val callback =
+                GoogleChatConnectorCallback(
+                    connectorId,
+                    spaceName,
+                    threadName,
+                    chatService,
+                    introMessage,
+                    useThread,
+                    waitingMessage,
+                    feedback,
+                )
+
+            callback.initializeProcessingMessage()
+            controller.handle(event, ConnectorData(callback))
+        }
+    }
+
+    private fun handleFeedback(
+        messageEvent: JsonObject,
+        chatEvent: JsonObject,
+        controller: ConnectorController,
+    ) {
+        val request = GoogleChatRequestConverter.toFeedbackRequest(messageEvent, chatEvent, connectorId)
+        if (request == null) {
+            logger.debug { "Ignoring unsupported Google Chat button action" }
+            return
+        }
+
+        executor.executeBlocking {
+            controller.handle(request.event)
+            patchFeedbackAcknowledgement(request)
+        }
+    }
+
+    private fun patchFeedbackAcknowledgement(request: GoogleChatFeedbackRequest) {
+        try {
+            chatService
+                .spaces()
+                .messages()
+                .patch(
+                    request.messageName,
+                    Message().setAccessoryWidgets(feedback?.acknowledgement(request.vote, request.event.actionId)),
+                ).setUpdateMask("accessoryWidgets")
+                .execute()
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to acknowledge feedback on Google Chat message: ${request.messageName}" }
         }
     }
 
@@ -119,15 +161,20 @@ class GoogleChatConnector(
         if (event !is Action) return
 
         val message =
-            GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes, displaySourcesWithoutUrl)
+            GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes, displaySourcesWithoutUrl, sourcesLabel)
                 ?: return
 
         callback as GoogleChatConnectorCallback
 
         executor.executeBlocking(Duration.ofMillis(delayInMs)) {
-            callback.sendGoogleMessage(
-                message,
-            )
+            val processingMessageName = callback.processingMessageName
+
+            if (processingMessageName != null) {
+                callback.patchGoogleMessage(processingMessageName, message, event.id.toString())
+                callback.processingMessageName = null
+            } else {
+                callback.sendGoogleMessageAndGetName(message, event.id.toString())
+            }
         }
     }
 

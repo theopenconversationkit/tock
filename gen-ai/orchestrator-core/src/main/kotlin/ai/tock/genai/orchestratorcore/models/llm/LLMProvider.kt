@@ -24,8 +24,6 @@ enum class LLMProvider {
     ;
 
     companion object {
-        fun findByName(provider: String): LLMProvider? {
-            return entries.firstOrNull { it.name == provider }
-        }
+        fun findByName(provider: String): LLMProvider? = entries.firstOrNull { it.name == provider }
     }
 }

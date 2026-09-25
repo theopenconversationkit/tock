@@ -86,15 +86,15 @@ data class WhatsAppBotActionButton(
     val type: String = "reply",
     val reply: WhatsAppBotActionButtonReply,
 ) {
-    fun toChoice(): Choice {
-        return SendChoice.decodeChoiceId(reply.id)
+    fun toChoice(): Choice =
+        SendChoice
+            .decodeChoiceId(reply.id)
             .let { (intent, params) ->
                 Choice(
                     intent,
                     params + (SendChoice.TITLE_PARAMETER to reply.title),
                 )
             }
-    }
 }
 
 data class WhatsAppBotActionButtonReply(
@@ -115,7 +115,8 @@ data class WhatsAppBotRow(
     val description: String? = null,
 ) {
     fun toChoice(): Choice =
-        SendChoice.decodeChoiceId(id)
+        SendChoice
+            .decodeChoiceId(id)
             .let { (intent, params) ->
                 Choice(
                     intent,

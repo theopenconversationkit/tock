@@ -1,24 +1,61 @@
-/*!
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 :host {
   display: block;
 
   .parent-title {
     padding: 0.3rem;
+    display: flex;
+    align-items: flex-start;
+
+    &:hover .copy-btn,
+    .copy-btn:focus-visible {
+      opacity: 1;
+    }
+  }
+
+  button.node-toggle {
+    display: flex;
+    align-items: baseline;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+    appearance: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    user-select: none;
+
+    &:disabled {
+      cursor: default;
+      opacity: 1;
+      color: inherit;
+    }
+  }
+
+  .node-value {
+    flex: 1 1 auto;
+    min-width: 0;
+    user-select: text;
+    cursor: text;
+  }
+
+  button.copy-btn {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    padding: 0 0.25rem;
+    margin: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+    appearance: none;
+    color: inherit;
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 0.15s;
   }
 
   .entry-block {

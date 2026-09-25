@@ -26,6 +26,7 @@ import { TestSharedModule } from '../../../../shared/test-shared.module';
 import { BotService } from '../../../bot-service';
 import { AnswerConfigurationType, IntentName, SimpleAnswerConfiguration, StoryStep } from '../../../model/story';
 import { StepComponent } from './step.component';
+import { IndicatorType } from '../../../../metrics/models';
 
 const stepMock = new StoryStep(
   'testStep',
@@ -51,6 +52,7 @@ const indicatorsMock = [
     description: 'Indicateur 1 desc',
     applicationName: 'appName',
     dimensions: ['dimension1'],
+    type: IndicatorType.CUSTOM,
     values: [
       { name: 'val1', label: 'Val 1' },
       { name: 'val2', label: 'Val 2' }
@@ -62,6 +64,7 @@ const indicatorsMock = [
     description: 'Indicateur 2 desc',
     applicationName: 'appName',
     dimensions: ['dimension1', 'dimension2'],
+    type: IndicatorType.CUSTOM,
     values: [
       { name: 'val1', label: 'Val 1' },
       { name: 'val2', label: 'Val 2' }
@@ -73,6 +76,7 @@ const indicatorsMock = [
     description: 'Indicateur 3 desc',
     applicationName: 'appName',
     dimensions: ['dimension2'],
+    type: IndicatorType.CUSTOM,
     values: [
       { name: 'val1', label: 'Val 1' },
       { name: 'val2', label: 'Val 2' }

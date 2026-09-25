@@ -31,7 +31,9 @@ data class SystemContent(
     val customer: String?,
 )
 
-enum class SystemUpdateType(val typeName: String) {
+enum class SystemUpdateType(
+    val typeName: String,
+) {
     CUSTOMER_CHANGED_NUMBER("customer_changed_number"),
     CUSTOMER_IDENTITY_CHANGED("customer_identity_changed"),
     ;

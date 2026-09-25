@@ -1,32 +1,27 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div
   class="d-flex flex-wrap mb-2"
   [nbSpinner]="loading.edit || loading.delete"
 >
-  <h1 class="flex-grow-1">FAQs stories</h1>
+  <h1 class="flex-grow-1">{{ 'faq.faq-management.title' | transloco }}</h1>
 
   <section class="grid-actions">
+    <button
+      nbButton
+      ghost
+      shape="round"
+      [disabled]="loading.list || loading.edit || !configurations?.length"
+      [nbTooltip]="'faq.faq-management.importFaqsTooltip' | transloco"
+      (click)="openImport()"
+    >
+      <nb-icon icon="upload"></nb-icon>
+    </button>
+
     <button
       [disabled]="loading.list || !faqs?.length"
       nbButton
       ghost
       shape="round"
-      nbTooltip="Export all faqs"
+      [nbTooltip]="'faq.faq-management.exportAllFaqsTooltip' | transloco"
       (click)="openExport()"
     >
       <nb-icon icon="download"></nb-icon>
@@ -36,7 +31,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="FAQ Parameters"
+      [nbTooltip]="'faq.faq-management.faqParametersTooltip' | transloco"
       [disabled]="!configurations?.length"
       (click)="openSettings()"
     >
@@ -48,7 +43,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Disable all currently active FAQs"
+      [nbTooltip]="'faq.faq-management.disableAllFaqsTooltip' | transloco"
       (click)="disableAllFaqs()"
     >
       <nb-icon icon="toggle-off"></nb-icon>
@@ -61,7 +56,7 @@
       (click)="addOrEditFaq()"
     >
       <nb-icon icon="plus-lg"></nb-icon>
-      NEW FAQ STORY
+      {{ 'faq.faq-management.newFaqButton' | transloco }}
     </button>
   </section>
 </div>
@@ -71,31 +66,23 @@
   [class.sidePanelExpanded]="sidePanelExpanded"
   [nbSpinner]="loading.edit || loading.delete"
 >
-  <tock-no-data-found
-    *ngIf="configurations?.length === 0"
-    title="No bot configuration detected"
-  ></tock-no-data-found>
-
-  <div
-    *ngIf="configurations?.length"
-    class="main"
-  >
+  @if (configurations?.length === 0) {
+  <tock-no-data-found [title]="'faq.faq-management.noBotConfiguration' | transloco"></tock-no-data-found>
+  } @if (configurations?.length) {
+  <div class="main">
     <tock-faq-management-filters
       [tagsCache]="tagsCache"
       (onFilter)="filterFaqs($event)"
       class="d-block mb-2"
     ></tock-faq-management-filters>
-
-    <div
-      class="d-flex justify-content-end"
-      *ngIf="!loading.list && faqs?.length"
-    >
+    @if (!loading.list && faqs?.length) {
+    <div class="d-flex justify-content-end">
       <tock-pagination
         [pagination]="pagination"
         (onPaginationChange)="paginationChange($event)"
       ></tock-pagination>
     </div>
-
+    }
     <div
       class="loading mt-2"
       [nbSpinner]="loading.list"
@@ -103,26 +90,25 @@
       [infiniteScrollDistance]="1"
       (scrolled)="onScroll()"
     >
+      @if (!loading.list && !faqs?.length) {
       <tock-no-data-found
-        *ngIf="!loading.list && !faqs?.length"
-        title="No Faq found"
-        message="You may create a new one using above button &#34;NEW FAQ&#34;."
+        [title]="'faq.faq-management.noFaqFoundTitle' | transloco"
+        [message]="'faq.faq-management.noFaqFoundMessage' | transloco"
       ></tock-no-data-found>
-
+      } @if (!loading.list && faqs?.length) {
       <tock-faq-management-list
-        *ngIf="!loading.list && faqs?.length"
         [faqs]="faqs"
         [selectedFaq]="faqEdit"
         (onEdit)="addOrEditFaq($event)"
         (onDelete)="deleteFaq($event)"
         (onEnable)="enableFaq($event)"
       ></tock-faq-management-list>
+      }
     </div>
   </div>
-
+  } @if (isSidePanelOpen.edit) {
   <tock-faq-management-edit
     #faqEditComponent
-    *ngIf="isSidePanelOpen.edit"
     class="aside"
     [loading]="loading.edit"
     [faq]="faqEdit"
@@ -132,16 +118,14 @@
     (onSave)="saveFaq($event)"
     (onExpandSidePanel)="onExpandSidePanel()"
   ></tock-faq-management-edit>
-
+  } @if (isSidePanelOpen.settings) {
   <tock-faq-management-settings
     #faqSettingsComponent
-    *ngIf="isSidePanelOpen.settings"
     class="aside"
     (onClose)="closeSidePanel()"
   ></tock-faq-management-settings>
-
+  } @if (isSidePanelOpen.export) {
   <tock-data-export
-    *ngIf="isSidePanelOpen.export"
     class="aside"
     [data]="faqs"
     [defaultColumns]="exportDefaultColumns"
@@ -158,6 +142,7 @@
     [searchQuery]="getExportSearchQuery()"
     (onClose)="closeSidePanel()"
   ></tock-data-export>
+  }
 </section>
 
 <tock-scroll-top-button></tock-scroll-top-button>

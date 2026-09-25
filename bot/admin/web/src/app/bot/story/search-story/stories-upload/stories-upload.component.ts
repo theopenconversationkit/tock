@@ -35,9 +35,10 @@ export enum storiesImportRagConflictMode {
 }
 
 @Component({
-  selector: 'tock-stories-upload',
-  templateUrl: './stories-upload.component.html',
-  styleUrls: ['./stories-upload.component.scss']
+    selector: 'tock-stories-upload',
+    templateUrl: './stories-upload.component.html',
+    styleUrls: ['./stories-upload.component.scss'],
+    standalone: false
 })
 export class StoriesUploadComponent implements OnInit {
   @Output() onImportComplete = new EventEmitter();

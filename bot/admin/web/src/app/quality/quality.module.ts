@@ -50,6 +50,7 @@ import { DatasetDetailSettingsDiffComponent } from './datatsets/dataset-detail/s
 import { DatasetDetailEntryComponent } from './datatsets/dataset-detail/dataset-detail-entry/dataset-detail-entry.component';
 import { DatasetsBoardEntryComponent } from './datatsets/datasets-board/dataset-board-entry/datasets-board-entry.component';
 import { SampleCreateFromRunComponent } from './datatsets/sample-create-from-run/sample-create-from-run.component';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @NgModule({
   declarations: [
@@ -88,7 +89,13 @@ import { SampleCreateFromRunComponent } from './datatsets/sample-create-from-run
     NbCheckboxModule,
     NbProgressBarModule,
     InfiniteScrollModule,
-    QualityRoutingModule
+    QualityRoutingModule,
+    TranslocoModule
+  ],
+  providers: [
+    provideTranslocoScope({
+      scope: 'quality'
+    })
   ]
 })
 export class QualityModule {}

@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div
   class="content"
   id="element-id"
@@ -26,9 +10,9 @@
       ></tock-date-range-calendar>
       <tock-select-bot
         [allowNoConfigurationSelection]="true"
-        noConnectorLabel="All Connectors"
+        [noConnectorLabel]="'analytics.behavior.allConnectorsLabel' | transloco"
         [allowNoSelection]="true"
-        noConfigurationLabel="All Configurations"
+        [noConfigurationLabel]="'analytics.behavior.allConfigurationsLabel' | transloco"
         (selectionChange)="selectedConfigurationChanged($event)"
         class="select-bot"
       >
@@ -38,7 +22,7 @@
         ghost
         shape="round"
         (click)="waitAndRefresh()"
-        nbTooltip="Refresh Data"
+        [nbTooltip]="'analytics.behavior.refreshTooltip' | transloco"
         status="basic"
       >
         <nb-icon icon="arrow-clockwise"></nb-icon>
@@ -49,87 +33,82 @@
           [(ngModel)]="displayTests"
           (change)="waitAndRefresh()"
         >
-          Tests (Tock Studio)
+          {{ 'analytics.behavior.displayTestsLabel' | transloco }}
         </nb-toggle>
-        <!--      <button nbButton outline shape="round" (click)="onPdfAction()" nbTooltip="Export page as PDF"-->
-        <!--              status="primary" style="float: right; margin-right: 40px;">-->
-        <!--        PDF <nb-icon icon="download"></nb-icon>-->
-        <!--      </button>-->
       </span>
     </nb-card-body>
   </nb-card>
 
   <div class="space graph-list">
+    @if (userPreferences.graphs.behavior.messagesByStory) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByStory"
       [nbSpinner]="messagesByStoryLoading"
     >
       <nb-card-body>
         <tock-chart
           [data]="messagesByStoryData"
-          title="Messages by Story"
+          [title]="'analytics.behavior.messagesByStoryTitle' | transloco"
           type="PieChart"
           [chartPreferences]="userPreferences"
           [isMultiChart]="false"
         ></tock-chart>
       </nb-card-body>
     </nb-card>
+    } @if (userPreferences.graphs.behavior.messagesByIntent) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByIntent"
       [nbSpinner]="messagesByIntentLoading"
     >
       <nb-card-body>
         <tock-chart
           [data]="messagesByIntentData"
-          title="Messages by Intent"
+          [title]="'analytics.behavior.messagesByIntentTitle' | transloco"
           type="PieChart"
           [chartPreferences]="userPreferences"
           [isMultiChart]="false"
         ></tock-chart>
       </nb-card-body>
     </nb-card>
+    } @if (userPreferences.graphs.behavior.messagesByDayOfWeek) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByDayOfWeek"
       [nbSpinner]="messagesByDayOfWeekLoading"
     >
       <nb-card-body>
         <tock-chart
           [data]="messagesByDayOfWeekData"
-          title="Messages by Day of Week"
+          [title]="'analytics.behavior.messagesByDayOfWeekTitle' | transloco"
           type="PieChart"
           [chartPreferences]="userPreferences"
           [isMultiChart]="false"
         ></tock-chart>
       </nb-card-body>
     </nb-card>
+    } @if (userPreferences.graphs.behavior.messagesByHourOfDay) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByHourOfDay"
       [nbSpinner]="messagesByDayOfWeekLoading"
     >
       <nb-card-body>
         <tock-chart
           [data]="messagesByHourData"
-          title="Messages by Hour of Day"
+          [title]="'analytics.behavior.messagesByHourOfDayTitle' | transloco"
           type="PieChart"
           [chartPreferences]="userPreferences"
           [isMultiChart]="false"
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-
+    } @if (userPreferences.graphs.behavior.messagesByActionType) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByActionType"
       [nbSpinner]="messagesByActionTypeLoading"
     >
       <nb-card-body>
         <tock-chart
           [data]="messagesByActionTypeData"
-          title="Messages by Action Type"
+          [title]="'analytics.behavior.messagesByActionTypeTitle' | transloco"
           type="PieChart"
           [chartPreferences]="userPreferences"
           [filter]="filter"
@@ -138,53 +117,52 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-
+    } @if (userPreferences.graphs.behavior.messagesByStoryCategory) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByStoryCategory"
       [nbSpinner]="messagesByStoryCategoryLoading"
     >
       <nb-card-body>
         <tock-chart
           [data]="messagesByStoryCategoryData"
-          title="Messages by Story Category"
+          [title]="'analytics.behavior.messagesByStoryCategoryTitle' | transloco"
           type="PieChart"
           [chartPreferences]="userPreferences"
           [isMultiChart]="false"
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-
+    } @if (userPreferences.graphs.behavior.messagesByStoryType) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByStoryType"
       [nbSpinner]="messagesByStoryTypeLoading"
     >
       <nb-card-body>
         <tock-chart
           [data]="messagesByStoryTypeData"
-          title="Messages by Story Type"
+          [title]="'analytics.behavior.messagesByStoryTypeTitle' | transloco"
           type="PieChart"
           [chartPreferences]="userPreferences"
           [isMultiChart]="false"
         ></tock-chart>
       </nb-card-body>
     </nb-card>
+    } @if (userPreferences.graphs.behavior.messagesByLocale) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByLocale"
       [nbSpinner]="messagesByStoryLocaleLoading"
     >
       <nb-card-body>
         <tock-chart
           [data]="messagesByStoryLocaleData"
-          title="Messages by Locale"
+          [title]="'analytics.behavior.messagesByLocaleTitle' | transloco"
           type="PieChart"
           [chartPreferences]="userPreferences"
           [isMultiChart]="false"
         ></tock-chart>
       </nb-card-body>
     </nb-card>
+    }
   </div>
 </div>
 

@@ -25,9 +25,10 @@ import { NlpService } from '../../../core-nlp/nlp.service';
 import { TestDialogService } from '../test-dialog/test-dialog.service';
 
 @Component({
-  selector: 'tock-intent-story-details',
-  templateUrl: './intent-story-details.component.html',
-  styleUrls: ['./intent-story-details.component.scss']
+    selector: 'tock-intent-story-details',
+    templateUrl: './intent-story-details.component.html',
+    styleUrls: ['./intent-story-details.component.scss'],
+    standalone: false
 })
 export class IntentStoryDetailsComponent implements OnInit {
   @Input() intentId?: string;

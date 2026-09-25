@@ -29,9 +29,10 @@ interface IndicatorsFilterForm {
 }
 
 @Component({
-  selector: 'tock-indicators-filters',
-  templateUrl: './indicators-filters.component.html',
-  styleUrls: ['./indicators-filters.component.scss']
+    selector: 'tock-indicators-filters',
+    templateUrl: './indicators-filters.component.html',
+    styleUrls: ['./indicators-filters.component.scss'],
+    standalone: false
 })
 export class IndicatorsFiltersComponent implements OnInit, OnDestroy {
   destroy = new Subject();

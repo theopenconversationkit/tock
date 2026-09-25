@@ -16,4 +16,6 @@
 
 package ai.tock.bot.connector.iadvize.model.response
 
-data class Healthcheck(val status: String = "UP")
+data class Healthcheck(
+    val status: String = "UP",
+)

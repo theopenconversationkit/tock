@@ -35,35 +35,33 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
 
     private val connectorIdHandlerMap: MutableMap<KClass<*>, Map<String, KClass<*>>> = ConcurrentHashMap()
 
-    private fun getConnectorHandlerMap(contextClass: KClass<*>): Map<String, KClass<*>> {
-        return connectorHandlerMap.getOrPut(contextClass) {
+    private fun getConnectorHandlerMap(contextClass: KClass<*>): Map<String, KClass<*>> =
+        connectorHandlerMap.getOrPut(contextClass) {
             getAllAnnotations(contextClass)
                 .filter { it.annotationClass.findAnnotation<ConnectorHandler>() != null }
                 .mapNotNullValues { a: Annotation ->
                     a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to
                         (
-                            a.annotationClass.java.getDeclaredMethod(
-                                "value",
-                            ).invoke(a) as? Class<*>?
+                            a.annotationClass.java
+                                .getDeclaredMethod(
+                                    "value",
+                                ).invoke(a) as? Class<*>?
                         )?.kotlin
-                }
-                .toMap()
+                }.toMap()
         }
-    }
 
-    private fun getConnectorIdHandlerMap(contextClass: KClass<*>): Map<String, KClass<*>> {
-        return connectorIdHandlerMap.getOrPut(contextClass) {
+    private fun getConnectorIdHandlerMap(contextClass: KClass<*>): Map<String, KClass<*>> =
+        connectorIdHandlerMap.getOrPut(contextClass) {
             contextClass.findAnnotation<ConnectorIdHandlers>()?.handlers?.associate { connectorIdHandler ->
                 connectorIdHandler.connectorId to connectorIdHandler.value
             } ?: mapOf()
         }
-    }
 
     private fun getAllAnnotations(
         kClass: KClass<*>,
         alreadyFound: MutableSet<KClass<*>> = mutableSetOf(),
-    ): List<Annotation> {
-        return if (!alreadyFound.contains(kClass)) {
+    ): List<Annotation> =
+        if (!alreadyFound.contains(kClass)) {
             val r = kClass.annotations.toMutableList()
             alreadyFound.add(kClass)
             kClass.superclasses.forEach {
@@ -73,7 +71,6 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
         } else {
             emptyList()
         }
-    }
 
     @Suppress("UNCHECKED_CAST")
     private inline fun <reified C : ConnectorSpecificHandling, reified T> provideConnectorStoryHandler(

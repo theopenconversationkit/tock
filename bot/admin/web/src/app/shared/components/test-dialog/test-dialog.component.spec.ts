@@ -17,6 +17,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TestDialogComponent } from './test-dialog.component';
+import { TestSharedModule } from '../../test-shared.module';
+import { BotConfigurationService } from '../../../core/bot-configuration.service';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { StateServiceMock } from '../../test-shared/state-service.mock';
+import { StateService } from '../../../core-nlp/state.service';
+import { NbWindowRef } from '@nebular/theme';
 
 describe('TestDialogComponent', () => {
   let component: TestDialogComponent;
@@ -24,9 +30,29 @@ describe('TestDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TestDialogComponent]
-    })
-    .compileComponents();
+      declarations: [TestDialogComponent],
+      imports: [TestSharedModule],
+      providers: [
+        {
+          provide: BotConfigurationService,
+          useValue: {
+            configurations: new BehaviorSubject([]),
+            restConfigurations: new BehaviorSubject([]),
+            getConfigurationById: () => undefined,
+            updateConfigurations: () => {}
+          }
+        },
+        { provide: StateService, useClass: StateServiceMock },
+        {
+          provide: NbWindowRef,
+          useValue: {
+            close: () => {},
+            config: {},
+            stateChange: new Subject()
+          }
+        }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TestDialogComponent);
     component = fixture.componentInstance;

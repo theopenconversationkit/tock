@@ -43,9 +43,7 @@ object SentenceGenerationService {
     fun getSentenceGenerationConfiguration(
         namespace: String,
         botId: String,
-    ): BotSentenceGenerationConfiguration? {
-        return sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-    }
+    ): BotSentenceGenerationConfiguration? = sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
 
     /**
      * Deleting the LLM Sentence Generation Configuration

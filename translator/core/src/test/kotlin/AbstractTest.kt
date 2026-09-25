@@ -33,12 +33,11 @@ abstract class AbstractTest {
     val i18nDAO: I18nDAO = mockk(relaxed = true)
     val translatorEngine: TranslatorEngine = mockk(relaxed = true)
 
-    open fun baseModule(): Kodein.Module {
-        return Kodein.Module {
+    open fun baseModule(): Kodein.Module =
+        Kodein.Module {
             bind<I18nDAO>() with provider { i18nDAO }
             bind<TranslatorEngine>() with provider { translatorEngine }
         }
-    }
 
     @BeforeEach
     fun initContext() {

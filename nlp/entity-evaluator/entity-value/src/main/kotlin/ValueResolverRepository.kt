@@ -50,8 +50,7 @@ object ValueResolverRepository {
             UnknownValue::class,
             StringValue::class,
             DurationValue::class,
-        )
-            .forEach { registerType(it) }
+        ).forEach { registerType(it) }
     }
 
     /**
@@ -70,8 +69,8 @@ object ValueResolverRepository {
             }
     }
 
-    internal fun getType(id: String): KClass<out Value> {
-        return idClassMap[id] ?: try {
+    internal fun getType(id: String): KClass<out Value> =
+        idClassMap[id] ?: try {
             @Suppress("UNCHECKED_CAST")
             (Class.forName(id) as Class<out Value>).kotlin
         } catch (e: ClassNotFoundException) {
@@ -87,9 +86,6 @@ object ValueResolverRepository {
 
             UnknownValue::class
         }
-    }
 
-    internal fun <T : Value> getId(kClass: KClass<T>): String {
-        return classIdMap[kClass] ?: kClass.qualifiedName!!
-    }
+    internal fun <T : Value> getId(kClass: KClass<T>): String = classIdMap[kClass] ?: kClass.qualifiedName!!
 }

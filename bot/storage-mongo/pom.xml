@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>26.3.4-SNAPSHOT</version>
+        <version>26.3.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot-storage-mongo</artifactId>
@@ -32,6 +32,10 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.litote.kmongo</groupId>
@@ -48,6 +52,14 @@
         <dependency>
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-retry</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-kotlin</artifactId>
         </dependency>
 
         <dependency>

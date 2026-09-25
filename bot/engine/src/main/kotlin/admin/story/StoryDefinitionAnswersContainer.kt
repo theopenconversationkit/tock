@@ -54,12 +54,19 @@ internal interface StoryDefinitionAnswersContainer {
         storyDefinitionConfiguration: StoryDefinitionConfiguration,
     ): StoryDefinition? =
         when (currentType) {
-            script ->
+            script -> {
                 (findCurrentAnswer() as? ScriptAnswerConfiguration)
                     ?.findBestVersion(BotVersion.getCurrentBotVersion(botDefinition.botId))
                     ?.storyDefinition
-            builtin -> botDefinition.builtInStory(storyDefinitionConfiguration.storyId)
-            else -> null
+            }
+
+            builtin -> {
+                botDefinition.builtInStory(storyDefinitionConfiguration.storyId)
+            }
+
+            else -> {
+                null
+            }
         }
 
     fun findNextSteps(

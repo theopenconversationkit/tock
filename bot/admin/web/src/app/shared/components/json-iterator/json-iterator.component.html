@@ -1,87 +1,73 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
+@if (isRoot && !isPrimitive(data)) {
 <button
   nbButton
   size="tiny"
   class="float-right ml-2"
-  nbTooltip="Expand recursively"
-  *ngIf="isRoot && !isPrimitive(data)"
+  [nbTooltip]="'shared.json-iterator.expand_recursively_tooltip' | transloco"
   (click)="expandAll()"
 >
   <nb-icon icon="arrows-expand"></nb-icon>
 </button>
-
-<div *ngIf="isRoot && isPrimitive(data)">
+} @if (isRoot && isPrimitive(data)) {
+<div>
   {{ data }}
 </div>
-
-<div
-  *ngIf="parentKey"
-  (click)="switchDeployed()"
-  class="parent-title"
-  [ngClass]="{ pointer: isExpandable() }"
->
-  <div class="d-flex">
-    <div class="caret-holder">
+} @if (parentKey) {
+<div class="parent-title d-flex">
+  <button
+    type="button"
+    class="node-toggle"
+    [disabled]="!isExpandable()"
+    [attr.aria-expanded]="isExpandable() ? isDeployed : null"
+    (click)="switchDeployed()"
+  >
+    <span class="caret-holder">
+      @if (!isDeployed && isExpandable()) {
       <nb-icon
         icon="caret-right-fill"
         class="align-middle"
-        *ngIf="!isDeployed && isExpandable()"
       ></nb-icon>
+      } @if (isDeployed && isExpandable()) {
       <nb-icon
         icon="caret-down-fill"
         class="align-middle"
-        *ngIf="isDeployed && isExpandable()"
       ></nb-icon>
-    </div>
-    <div class="grow-1 ellipsis">
-      <strong> {{ parentKey }} : </strong>
-
-      <span
-        class="text-primary pl-2"
-        *ngIf="isPrimitive(data) && !isDeployed"
-        >"{{ data }}"</span
-      >
-      <pre
-        class="pre-format text-primary pl-2"
-        *ngIf="isPrimitive(data) && isDeployed"
-      >
-"{{ data }}"</pre
-      >
-
-      <span
-        class="text-muted pl-2"
-        *ngIf="!isPrimitive(data)"
-        >{{ data | json }}</span
-      >
-    </div>
+      }
+    </span>
+    <strong>{{ parentKey }} :</strong>
+  </button>
+  <div
+    class="node-value grow-1"
+    [class.ellipsis]="!(isDeployed && isPrimitive(data))"
+  >
+    @if (isPrimitive(data) && !isDeployed) {
+    <span class="text-primary pl-2">"{{ data }}"</span>
+    } @if (isPrimitive(data) && isDeployed) {
+    <pre class="pre-format text-primary pl-2">            "{{ data }}"</pre>
+    } @if (!isPrimitive(data)) {
+    <span class="text-muted pl-2">{{ data | json }}</span>
+    }
   </div>
+  <button
+    type="button"
+    class="copy-btn"
+    [nbTooltip]="(copied ? 'shared.json-iterator.copied_tooltip' : 'shared.json-iterator.copy_tooltip') | transloco"
+    (click)="copyValue()"
+  >
+    <nb-icon [icon]="copied ? 'check' : 'copy'"></nb-icon>
+  </button>
 </div>
-
+} @if (!isPrimitive(data) && (isRoot || isDeployed)) {
 <div
-  *ngIf="!isPrimitive(data) && (isRoot || isDeployed)"
   class="entry-block"
   [class.isRoot]="isRoot"
 >
-  <ng-container *ngFor="let list of data | keyvalue: customSort">
-    <tock-json-iterator
-      [data]="list.value"
-      [parentKey]="list.key"
-      [isRoot]="false"
-    ></tock-json-iterator>
-  </ng-container>
+  @for (list of data | keyvalue: customSort; track list) {
+  <tock-json-iterator
+    [data]="list.value"
+    [parentKey]="list.key"
+    [isRoot]="false"
+  ></tock-json-iterator>
+  }
 </div>
+}

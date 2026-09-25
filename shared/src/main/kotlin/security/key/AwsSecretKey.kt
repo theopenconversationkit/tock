@@ -21,4 +21,5 @@ package ai.tock.shared.security.key
  */
 data class AwsSecretKey(
     override val secretName: String,
-) : SecretKey(SecretKeyType.AwsSecretsManager), NamedSecretKey
+) : SecretKey(SecretKeyType.AwsSecretsManager),
+    NamedSecretKey

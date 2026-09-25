@@ -58,13 +58,12 @@ data class SentenceEntityDump(
             entity.end,
         )
 
-    fun toClassifiedEntity(): ClassifiedEntity {
-        return ClassifiedEntity(
+    fun toClassifiedEntity(): ClassifiedEntity =
+        ClassifiedEntity(
             entity,
             role,
             start,
             end,
             subEntities.map { it.toClassifiedEntity() },
         )
-    }
 }

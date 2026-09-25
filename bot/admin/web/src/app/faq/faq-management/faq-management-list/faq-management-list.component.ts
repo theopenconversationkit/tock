@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { saveAs } from 'file-saver-es';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
@@ -24,11 +8,13 @@ import { copyToClipboard, getExportFileName } from '../../../shared/utils';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { ChoiceDialogComponent, IntentStoryDetailsComponent } from '../../../shared/components';
 import { TestDialogService } from '../../../shared/components/test-dialog/test-dialog.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-faq-management-list',
-  templateUrl: './faq-management-list.component.html',
-  styleUrls: ['./faq-management-list.component.scss']
+    selector: 'tock-faq-management-list',
+    templateUrl: './faq-management-list.component.html',
+    styleUrls: ['./faq-management-list.component.scss'],
+    standalone: false
 })
 export class FaqManagementListComponent {
   @Input() faqs!: FaqDefinitionExtended[];
@@ -43,7 +29,8 @@ export class FaqManagementListComponent {
     private dialogService: DialogService,
     private toastrService: NbToastrService,
     private nbDialogService: NbDialogService,
-    private testDialogService: TestDialogService
+    private testDialogService: TestDialogService,
+    private transloco: TranslocoService
   ) {}
 
   getCurrentLocaleAnswerLabel(faq: FaqDefinitionExtended) {
@@ -63,29 +50,27 @@ export class FaqManagementListComponent {
       return i18n.locale === this.state.currentLocale;
     });
 
-    if (localeI18n?.label?.trim().length) return true;
-
-    return false;
+    return !!localeI18n?.label?.trim().length;
   }
 
   toggleEnabled(faq: FaqDefinitionExtended) {
-    let action = 'Enable';
-    if (faq.enabled) {
-      action = 'Disable';
-    }
+    const actionLabel = faq.enabled
+      ? this.transloco.translate('faq.faq-management-list.disableAction')
+      : this.transloco.translate('faq.faq-management-list.enableAction');
 
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: `${action} faq "${faq.title}"`,
-        subtitle: `Are you sure you want to ${action.toLowerCase()} this faq ?`,
+        title: this.transloco.translate('faq.faq-management-list.toggleFaqTitle', { action: actionLabel, title: faq.title }),
+        subtitle: this.transloco.translate('faq.faq-management-list.toggleFaqSubtitle', { action: actionLabel.toLowerCase() }),
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
-          { actionName: action, buttonStatus: 'danger' }
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
+          { actionName: actionLabel, buttonStatus: 'danger' }
         ]
       }
     });
+
     dialogRef.onClose.subscribe((result) => {
-      if (result === action.toLowerCase()) {
+      if (result.toLowerCase() === actionLabel.toLowerCase()) {
         this.onEnable.emit(faq);
       }
     });
@@ -96,19 +81,19 @@ export class FaqManagementListComponent {
   }
 
   delete(faq: FaqDefinitionExtended): void {
-    const action = 'delete';
+    const action = this.transloco.translate('faq.faq-management-list.deleteAction');
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: `Delete faq "${faq.title}"`,
-        subtitle: 'Are you sure you want to delete this faq ?',
+        title: this.transloco.translate('faq.faq-management-list.deleteFaqTitle', { title: faq.title }),
+        subtitle: this.transloco.translate('faq.faq-management-list.deleteFaqSubtitle'),
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
-          { actionName: action, buttonStatus: 'danger' }
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
+          { actionName: this.transloco.translate('faq.faq-management-list.deleteAction'), buttonStatus: 'danger' }
         ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === action) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         this.onDelete.emit(faq);
       }
     });
@@ -132,7 +117,10 @@ export class FaqManagementListComponent {
 
   copyString(str: string) {
     copyToClipboard(str);
-    this.toastrService.success(`String copied to clipboard`, 'Clipboard');
+    this.toastrService.success(
+      this.transloco.translate('common.messages.stringCopiedToClipboard'),
+      this.transloco.translate('common.messages.clipboard')
+    );
   }
 
   displayStoryDetails(faq: FaqDefinitionExtended): void {

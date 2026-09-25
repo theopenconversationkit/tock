@@ -422,14 +422,44 @@ class ConfiguredStoryHandlerTest {
         val capturedCarousel234 = capturedMediaMessages.get(1)
         assertTrue { capturedCarousel234 is MediaCarousel }
         assertEquals((capturedCarousel234 as MediaCarousel).cards.size, 3)
-        assertEquals(capturedCarousel234.cards.get(0).title.toString(), label2Card.defaultLabel)
-        assertEquals(capturedCarousel234.cards.get(1).title.toString(), label3Card.defaultLabel)
-        assertEquals(capturedCarousel234.cards.get(2).title.toString(), label4Card.defaultLabel)
+        assertEquals(
+            capturedCarousel234.cards
+                .get(0)
+                .title
+                .toString(),
+            label2Card.defaultLabel,
+        )
+        assertEquals(
+            capturedCarousel234.cards
+                .get(1)
+                .title
+                .toString(),
+            label3Card.defaultLabel,
+        )
+        assertEquals(
+            capturedCarousel234.cards
+                .get(2)
+                .title
+                .toString(),
+            label4Card.defaultLabel,
+        )
         val capturedCarousel78 = capturedMediaMessages.get(2)
         assertTrue { capturedCarousel78 is MediaCarousel }
         assertEquals((capturedCarousel78 as MediaCarousel).cards.size, 2)
-        assertEquals(capturedCarousel78.cards.get(0).title.toString(), label7Card.defaultLabel)
-        assertEquals(capturedCarousel78.cards.get(1).title.toString(), label8Card.defaultLabel)
+        assertEquals(
+            capturedCarousel78.cards
+                .get(0)
+                .title
+                .toString(),
+            label7Card.defaultLabel,
+        )
+        assertEquals(
+            capturedCarousel78.cards
+                .get(1)
+                .title
+                .toString(),
+            label8Card.defaultLabel,
+        )
     }
 
     companion object {
@@ -473,7 +503,11 @@ class ConfiguredStoryHandlerTest {
         val handler = ConfiguredStoryHandler(BotDefinitionWrapper(BotDefinitionTest()), configuration)
         handler.handle(bus)
 
-        assertEquals(bus.dialog.state.nextActionState?.intentsQualifiers, listOf(NlpIntentQualifier("intent1", 0.5), NlpIntentQualifier("intent2", 0.5)))
+        assertEquals(
+            bus.dialog.state.nextActionState
+                ?.intentsQualifiers,
+            listOf(NlpIntentQualifier("intent1", 0.5), NlpIntentQualifier("intent2", 0.5)),
+        )
     }
 
     @Test

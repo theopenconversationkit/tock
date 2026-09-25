@@ -19,4 +19,6 @@ package ai.tock.bot.engine.event
 /**
  * Thrown when an [Event]'s processing is skipped by the engine
  */
-class SkippedEventException(message: String) : RuntimeException(message)
+class SkippedEventException(
+    message: String,
+) : RuntimeException(message)

@@ -22,6 +22,4 @@ import ai.tock.nlp.front.shared.config.EntityDefinition
 /**
  *
  */
-internal fun EntityDefinition.toEntity(): Entity? {
-    return ConfigurationRepository.toEntity(this.entityTypeName, this.role)
-}
+internal fun EntityDefinition.toEntity(): Entity? = ConfigurationRepository.toEntity(this.entityTypeName, this.role)

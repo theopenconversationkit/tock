@@ -47,27 +47,28 @@ class WorkerOnDemandVerticle(
     override fun start() {
         logger.info("Starting WorkerOnDemandVerticle for $buildType ...")
 
-        workerOnDemand = WorkerOnDemandProvider.provide(
-            type = workerOnDemandType,
-            properties = workerProperties(),
-        )?.apply {
-            logger.info { "WorkerOnDemand ${this@WorkerOnDemandVerticle.javaClass.simpleName} loaded for $buildType" }
-            handler = Handler {
-                if (ZonedDateTime.now(defaultZoneId).isInTimeFrame()) {
-                    start {
-                        // Schedule the next execution
-                        logger.info { "Next Job ${this@WorkerOnDemandVerticle.javaClass.simpleName} for $buildType is scheduled in $delayBetweenJob minutes" }
-                        vertx.setTimer(TimeUnit.MINUTES.toMillis(delayBetweenJob), handler)
+        workerOnDemand = WorkerOnDemandProvider
+            .provide(
+                type = workerOnDemandType,
+                properties = workerProperties(),
+            )?.apply {
+                logger.info { "WorkerOnDemand ${this@WorkerOnDemandVerticle.javaClass.simpleName} loaded for $buildType" }
+                handler = Handler {
+                    if (ZonedDateTime.now(defaultZoneId).isInTimeFrame()) {
+                        start {
+                            // Schedule the next execution
+                            logger.info { "Next Job ${this@WorkerOnDemandVerticle.javaClass.simpleName} for $buildType is scheduled in $delayBetweenJob minutes" }
+                            vertx.setTimer(TimeUnit.MINUTES.toMillis(delayBetweenJob), handler)
+                        }
+                    } else {
+                        logger.debug { "Job ${this@WorkerOnDemandVerticle.javaClass.simpleName} for $buildType waiting timeframe $timeFrame" }
+                        vertx.setTimer(TimeUnit.MINUTES.toMillis(1), handler)
                     }
-                } else {
-                    logger.debug { "Job ${this@WorkerOnDemandVerticle.javaClass.simpleName} for $buildType waiting timeframe $timeFrame" }
-                    vertx.setTimer(TimeUnit.MINUTES.toMillis(1), handler)
                 }
-            }
 
-            // Schedule the first execution
-            vertx.setTimer(TimeUnit.SECONDS.toMillis(1), handler)
-        } ?: throw UnknownWorkerOnDemandTypeException("Unabled to load WorkerOnDemand with type '$workerOnDemandType'")
+                // Schedule the first execution
+                vertx.setTimer(TimeUnit.SECONDS.toMillis(1), handler)
+            } ?: throw UnknownWorkerOnDemandTypeException("Unabled to load WorkerOnDemand with type '$workerOnDemandType'")
     }
 
     fun name(): String = "worker-on-demand-$buildType"
@@ -76,11 +77,13 @@ class WorkerOnDemandVerticle(
 
     private fun ZonedDateTime.isInTimeFrame(): Boolean = (hour >= timeFrame[0] && hour <= timeFrame[1] && minute % 1 == 0)
 
-    private fun workerProperties(): WorkerProperties {
-        return (System.getProperties() + System.getenv())
+    private fun workerProperties(): WorkerProperties =
+        (System.getProperties() + System.getenv())
             .filterKeys { it.toString().startsWith(PREFIX) }
-            .entries.associate {
-                it.key.toString()
+            .entries
+            .associate {
+                it.key
+                    .toString()
                     .replace(PREFIX, "tock")
                     .replace("tock_JAVA_ARGS", "JAVA_ARGS") to it.value.toString()
             } + mapOf(
@@ -89,5 +92,4 @@ class WorkerOnDemandVerticle(
         ) + mapOf(
             BUILD_TYPE_ARG to buildType,
         )
-    }
 }

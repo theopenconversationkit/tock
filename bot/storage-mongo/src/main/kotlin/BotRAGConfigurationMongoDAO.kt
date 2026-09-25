@@ -46,24 +46,22 @@ internal object BotRAGConfigurationMongoDAO : BotRAGConfigurationDAO {
     override fun findByNamespaceAndBotId(
         namespace: String,
         botId: String,
-    ): BotRAGConfiguration? {
-        return col.findOne(
+    ): BotRAGConfiguration? =
+        col.findOne(
             BotRAGConfiguration::namespace eq namespace,
             BotRAGConfiguration::botId eq botId,
         )
-    }
 
     override fun findByNamespaceAndBotIdAndEnabled(
         namespace: String,
         botId: String,
         enabled: Boolean,
-    ): BotRAGConfiguration? {
-        return col.findOne(
+    ): BotRAGConfiguration? =
+        col.findOne(
             BotRAGConfiguration::namespace eq namespace,
             BotRAGConfiguration::botId eq botId,
             BotRAGConfiguration::enabled eq enabled,
         )
-    }
 
     override fun save(conf: BotRAGConfiguration): BotRAGConfiguration {
         col.save(conf)

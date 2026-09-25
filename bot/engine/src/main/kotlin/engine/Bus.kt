@@ -114,9 +114,7 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     /**
      * Sends previously registered [ConnectorMessage].
      */
-    fun send(delay: Long = defaultDelay(currentAnswerIndex)): T {
-        return sendRawText(null, delay)
-    }
+    fun send(delay: Long = defaultDelay(currentAnswerIndex)): T = sendRawText(null, delay)
 
     /**
      * Sends i18nText.
@@ -125,9 +123,7 @@ interface Bus<T : Bus<T>> : I18nTranslator {
         i18nText: CharSequence,
         delay: Long = defaultDelay(currentAnswerIndex),
         vararg i18nArgs: Any?,
-    ): T {
-        return sendRawText(translate(i18nText, *i18nArgs), delay)
-    }
+    ): T = sendRawText(translate(i18nText, *i18nArgs), delay)
 
     /**
      * Sends i18nText.
@@ -135,9 +131,7 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     fun send(
         i18nText: CharSequence,
         vararg i18nArgs: Any?,
-    ): T {
-        return sendRawText(translate(i18nText, *i18nArgs))
-    }
+    ): T = sendRawText(translate(i18nText, *i18nArgs))
 
     /**
      * Sends messages provided by [messageProvider].
@@ -192,9 +186,7 @@ interface Bus<T : Bus<T>> : I18nTranslator {
         i18nText: CharSequence,
         delay: Long = defaultDelay(currentAnswerIndex),
         vararg i18nArgs: Any?,
-    ): T {
-        return endRawText(translate(i18nText, *i18nArgs), delay)
-    }
+    ): T = endRawText(translate(i18nText, *i18nArgs), delay)
 
     /**
      * Sends i18nText as last bot answer.
@@ -202,16 +194,12 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     fun end(
         i18nText: CharSequence,
         vararg i18nArgs: Any?,
-    ): T {
-        return endRawText(translate(i18nText, *i18nArgs))
-    }
+    ): T = endRawText(translate(i18nText, *i18nArgs))
 
     /**
      * Send previously registered [ConnectorMessage] as last bot answer.
      */
-    fun end(delay: Long = defaultDelay(currentAnswerIndex)): T {
-        return endRawText(null, delay)
-    }
+    fun end(delay: Long = defaultDelay(currentAnswerIndex)): T = endRawText(null, delay)
 
     /**
      * Sends messages provided by [messageProvider] as last bot answer.

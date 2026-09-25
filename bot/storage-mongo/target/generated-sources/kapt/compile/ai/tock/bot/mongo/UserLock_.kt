@@ -18,6 +18,8 @@ private val __Locked: KProperty1<MongoUserLock.UserLock, Boolean?>
     get() = MongoUserLock.UserLock::locked
 private val __Date: KProperty1<MongoUserLock.UserLock, Instant?>
     get() = MongoUserLock.UserLock::date
+private val __LockId: KProperty1<MongoUserLock.UserLock, String?>
+    get() = MongoUserLock.UserLock::lockId
 internal class UserLock_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         MongoUserLock.UserLock?>) : KPropertyPath<T, MongoUserLock.UserLock?>(previous,property) {
     val _id: KPropertyPath<T, Id<MongoUserLock.UserLock>?>
@@ -29,13 +31,18 @@ internal class UserLock_<T>(previous: KPropertyPath<T, *>?, property: KProperty1
     val date: KPropertyPath<T, Instant?>
         get() = KPropertyPath(this,__Date)
 
+    val lockId: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__LockId)
+
     companion object {
         val _id: KProperty1<MongoUserLock.UserLock, Id<MongoUserLock.UserLock>?>
             get() = ___id
         val Locked: KProperty1<MongoUserLock.UserLock, Boolean?>
             get() = __Locked
         val Date: KProperty1<MongoUserLock.UserLock, Instant?>
-            get() = __Date}
+            get() = __Date
+        val LockId: KProperty1<MongoUserLock.UserLock, String?>
+            get() = __LockId}
 }
 
 internal class UserLock_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -49,6 +56,9 @@ internal class UserLock_Col<T>(previous: KPropertyPath<T, *>?, property: KProper
 
     val date: KPropertyPath<T, Instant?>
         get() = KPropertyPath(this,__Date)
+
+    val lockId: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__LockId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserLock_<T> = UserLock_(this,
@@ -65,6 +75,9 @@ internal class UserLock_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPro
 
     val date: KPropertyPath<T, Instant?>
         get() = KPropertyPath(this,__Date)
+
+    val lockId: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__LockId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserLock_<T> = UserLock_(this,

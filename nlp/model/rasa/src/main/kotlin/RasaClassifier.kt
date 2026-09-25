@@ -26,7 +26,10 @@ import ai.tock.nlp.model.service.engine.EntityClassifier
 import ai.tock.nlp.model.service.engine.IntentClassifier
 import ai.tock.nlp.rasa.RasaClient.ParseRequest
 
-internal class RasaClassifier(private val conf: RasaModelConfiguration) : IntentClassifier, EntityClassifier {
+internal class RasaClassifier(
+    private val conf: RasaModelConfiguration,
+) : IntentClassifier,
+    EntityClassifier {
     private val threadLocal = ThreadLocal<List<EntityRecognition>>()
 
     override fun classifyIntent(
@@ -35,7 +38,9 @@ internal class RasaClassifier(private val conf: RasaModelConfiguration) : Intent
         tokens: Array<String>,
     ): IntentClassification {
         // TODO get RasaConfiguration ?
-        return RasaClientProvider.getClient(RasaConfiguration()).parse(ParseRequest(text))
+        return RasaClientProvider
+            .getClient(RasaConfiguration())
+            .parse(ParseRequest(text))
             .run {
                 if (entities.isNotEmpty()) {
                     val intent = intent?.name?.let { context.application.getIntent(it.unescapeRasaName()) }
@@ -66,12 +71,11 @@ internal class RasaClassifier(private val conf: RasaModelConfiguration) : Intent
 
                     override fun hasNext(): Boolean = iterator.hasNext()
 
-                    override fun next(): Intent {
-                        return iterator.next().let { (intent, proba) ->
+                    override fun next(): Intent =
+                        iterator.next().let { (intent, proba) ->
                             probability = proba
                             context.application.getIntent(intent.unescapeRasaName()) ?: Intent.UNKNOWN_INTENT
                         }
-                    }
                 }
             }
     }
@@ -82,8 +86,12 @@ internal class RasaClassifier(private val conf: RasaModelConfiguration) : Intent
         tokens: Array<String>,
     ): List<EntityRecognition> =
         when (context) {
-            is EntityCallContextForIntent ->
+            is EntityCallContextForIntent -> {
                 threadLocal.get().also { threadLocal.remove() } ?: emptyList()
-            else -> error("$context not yet supported")
+            }
+
+            else -> {
+                error("$context not yet supported")
+            }
         }
 }

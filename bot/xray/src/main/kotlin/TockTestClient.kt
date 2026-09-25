@@ -44,8 +44,7 @@ internal object TockTestClient : TestClientService {
             retrofitBuilderWithTimeoutAndLogger(
                 tockTimeoutInSeconds,
                 interceptors = listOf(basicAuthInterceptor(tockLogin, tockPassword)),
-            )
-                .addJacksonConverter()
+            ).addJacksonConverter()
                 .baseUrl(tockUrl)
                 .build()
                 .create()
@@ -54,16 +53,12 @@ internal object TockTestClient : TestClientService {
     override fun saveAndExecuteTestPlan(
         testPlan: TestPlan,
         executionId: Id<TestPlanExecution>,
-    ): TestPlanExecution {
-        return tock.executeTestPlan(testPlan).execute().body() ?: TestPlanExecution(testPlan._id, emptyList(), 1)
-    }
+    ): TestPlanExecution = tock.executeTestPlan(testPlan).execute().body() ?: TestPlanExecution(testPlan._id, emptyList(), 1)
 
     override fun getBotConfigurations(
         namespace: String,
         botId: String,
-    ): List<BotApplicationConfiguration> {
-        return tock.getBotConfigurations(botId).execute().body() ?: error("not a bot configuration")
-    }
+    ): List<BotApplicationConfiguration> = tock.getBotConfigurations(botId).execute().body() ?: error("not a bot configuration")
 
     override fun priority(): Int = 0
 }

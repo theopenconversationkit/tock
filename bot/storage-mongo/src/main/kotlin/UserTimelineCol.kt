@@ -94,17 +94,16 @@ internal data class UserTimelineCol(
         }
     }
 
-    fun toUserTimeline(): UserTimeline {
-        return UserTimeline(
+    fun toUserTimeline(): UserTimeline =
+        UserTimeline(
             playerId,
             userPreferences.toUserPreferences(),
             userState.toUserState(),
             temporaryIds = temporaryIds,
         )
-    }
 
-    fun toUserReport(): UserReport {
-        return UserReport(
+    fun toUserReport(): UserReport =
+        UserReport(
             playerId,
             applicationIds,
             userPreferences.toUserPreferences(),
@@ -113,7 +112,6 @@ internal data class UserTimelineCol(
             lastActionText,
             lastUserActionDate,
         )
-    }
 
     fun toUserAnalytics(): UserAnalytics {
         val zoneId = defaultZoneId
@@ -155,8 +153,8 @@ internal data class UserTimelineCol(
             encryptionEnabled,
         )
 
-        fun toUserPreferences(): UserPreferences {
-            return UserPreferences(
+        fun toUserPreferences(): UserPreferences =
+            UserPreferences(
                 firstName?.let { if (encrypted) decrypt(it) else it },
                 lastName?.let { if (encrypted) decrypt(it) else it },
                 email?.let { if (encrypted) decrypt(it) else it },
@@ -167,7 +165,6 @@ internal data class UserTimelineCol(
                 test,
                 initialLocale,
             )
-        }
     }
 
     @Data(internal = true)
@@ -189,12 +186,11 @@ internal data class UserTimelineCol(
                 },
             )
 
-        fun toUserState(): UserState {
-            return UserState(
+        fun toUserState(): UserState =
+            UserState(
                 creationDate,
                 flags.mapValues { it.value.toTimeBoxedFlag() }.toMutableMap(),
             )
-        }
     }
 
     data class TimeBoxedFlagWrapper(
@@ -214,13 +210,12 @@ internal data class UserTimelineCol(
                 expirationDate,
             )
 
-        fun decryptValue(): String {
-            return if (encrypted) {
+        fun decryptValue(): String =
+            if (encrypted) {
                 decrypt(value)
             } else {
                 value
             }
-        }
     }
 
     class FlagsDeserializer : JsonDeserializer<Map<String, TimeBoxedFlagWrapper>>() {

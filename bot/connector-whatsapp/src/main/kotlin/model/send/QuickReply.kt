@@ -16,4 +16,8 @@
 
 package ai.tock.bot.connector.whatsapp.model.send
 
-data class QuickReply(val title: String, val payload: String, val subTitle: String? = null)
+data class QuickReply(
+    val title: String,
+    val payload: String,
+    val subTitle: String? = null,
+)

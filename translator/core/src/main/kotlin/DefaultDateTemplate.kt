@@ -32,11 +32,10 @@ internal class DefaultDateTemplate(
             },
         )
 
-    override fun format(locale: Locale): String {
-        return date?.let {
+    override fun format(locale: Locale): String =
+        date?.let {
             formatterProvider.provide(locale).format(it)
         } ?: ""
-    }
 
     /**
      * To immediately format this date with the given locale.
@@ -54,7 +53,5 @@ internal class DefaultDateTemplate(
         return true
     }
 
-    override fun hashCode(): Int {
-        return date?.hashCode() ?: 0
-    }
+    override fun hashCode(): Int = date?.hashCode() ?: 0
 }

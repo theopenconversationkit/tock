@@ -43,11 +43,11 @@
     padding: var(--card-padding);
 
     // Default grid: without the optional logout button (6 columns)
-    grid-template-columns: 2.5em minmax(7em, auto) minmax(7em, auto) minmax(5em, auto) 2.5em 2.5em;
+    grid-template-columns: 2.5em minmax(7em, auto) minmax(7em, auto) minmax(5em, auto) 2.5em 2.5em minmax(6.2em, auto);
 
     // If a 7th child is present (logout button), add the extra column
     &:has(> :nth-child(7)) {
-      grid-template-columns: 2.5em minmax(7em, auto) minmax(7em, auto) minmax(5em, auto) 2.5em 2.5em 2.5em;
+      grid-template-columns: 2.5em minmax(7em, auto) minmax(7em, auto) minmax(5em, auto) 2.5em 2.5em minmax(6.2em, auto) 2.5em;
     }
   }
 }

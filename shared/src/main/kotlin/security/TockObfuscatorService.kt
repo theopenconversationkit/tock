@@ -76,9 +76,7 @@ object TockObfuscatorService {
     fun obfuscate(
         texts: List<String>,
         obfuscatedRanges: Map<Int, List<IntRange>> = emptyMap(),
-    ): List<String> {
-        return texts.mapIndexed { index, t -> obfuscate(t, obfuscatedRanges[index] ?: emptyList()) ?: "" }
-    }
+    ): List<String> = texts.mapIndexed { index, t -> obfuscate(t, obfuscatedRanges[index] ?: emptyList()) ?: "" }
 
     /**
      * Obfuscates text.
@@ -89,8 +87,8 @@ object TockObfuscatorService {
     fun obfuscate(
         text: String?,
         obfuscatedRanges: List<IntRange> = emptyList(),
-    ): String? {
-        return try {
+    ): String? =
+        try {
             if (text == null) {
                 null
             } else {
@@ -107,15 +105,14 @@ object TockObfuscatorService {
             logger.error(e)
             text
         }
-    }
 
     /**
      * Obfuscates a map - usually key-based.
      *
      * @map the map to be obfuscated
      */
-    fun obfuscate(map: Map<String, String>): Map<String, String> {
-        return try {
+    fun obfuscate(map: Map<String, String>): Map<String, String> =
+        try {
             var p: Map<String, String> = map
             mapObfuscators.forEach {
                 p = it.obfuscate(p)
@@ -125,5 +122,4 @@ object TockObfuscatorService {
             logger.error(e)
             map
         }
-    }
 }

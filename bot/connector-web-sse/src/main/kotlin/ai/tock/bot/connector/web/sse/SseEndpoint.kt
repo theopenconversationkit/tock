@@ -53,7 +53,7 @@ class SseEndpoint internal constructor(
 
     private val logger = KotlinLogging.logger {}
 
-    constructor(responseSerializer: ObjectMapper = webMapper) : this(responseSerializer, SseChannels(injector.provide()))
+    constructor(responseSerializer: ObjectMapper = webMapper) : this(responseSerializer, injector.provide())
 
     fun configureRoute(
         router: Router,
@@ -61,7 +61,8 @@ class SseEndpoint internal constructor(
         connectorId: String,
         webSecurityHandler: WebSecurityHandler,
     ) {
-        router.get(path)
+        router
+            .get(path)
             .handler(webSecurityHandler)
             .handler { context ->
                 try {

@@ -29,7 +29,10 @@ internal class GAAccountLinking {
     companion object {
         private val userTimelineDAO: UserTimelineDAO get() = injector.provide()
 
-        internal fun getUserId(message: GARequest) = message.user.accessToken?.split("|")?.get(0) ?: message.conversation.conversationId
+        internal fun getUserId(message: GARequest) =
+            message.user.accessToken
+                ?.split("|")
+                ?.get(0) ?: message.conversation.conversationId
 
         internal fun isUserAuthenticated(message: GARequest) = message.user.accessToken != null
 
@@ -50,14 +53,16 @@ internal class GAAccountLinking {
                     newLoggedUserId,
                     oldTimeline.userPreferences,
                     oldTimeline.userState,
-                    oldTimeline.dialogs.map {
-                        it.copy(
-                            playerIds =
-                                it.playerIds.filter { playerId ->
-                                    playerId.type != PlayerType.user
-                                }.toSet() + newLoggedUserId,
-                        )
-                    }.toMutableList(),
+                    oldTimeline.dialogs
+                        .map {
+                            it.copy(
+                                playerIds =
+                                    it.playerIds
+                                        .filter { playerId ->
+                                            playerId.type != PlayerType.user
+                                        }.toSet() + newLoggedUserId,
+                            )
+                        }.toMutableList(),
                     oldTimeline.temporaryIds,
                 )
             userTimelineDAO.save(newTimeline, controller.botDefinition)

@@ -29,13 +29,12 @@ object XrayKeywords {
 }
 
 class XrayKeywordService : KeywordService {
-    override fun detectKeywordIntent(sentence: String): Intent? {
-        return if (sentence.startsWith(XRAY_KEYWORD) || sentence.startsWith(XRAY_UPDATE_KEYWORD)) {
+    override fun detectKeywordIntent(sentence: String): Intent? =
+        if (sentence.startsWith(XRAY_KEYWORD) || sentence.startsWith(XRAY_UPDATE_KEYWORD)) {
             Intent.keyword
         } else {
             null
         }
-    }
 
     override fun keywordHandler(keyword: String): ((bus: BotBus) -> Unit)? {
         when {
@@ -44,11 +43,13 @@ class XrayKeywordService : KeywordService {
                     XrayKeywordHandler().updateXray(keyword, it)
                 }
             }
+
             keyword.contains(XRAY_KEYWORD) -> {
                 return {
                     XrayKeywordHandler().createXray(keyword, it)
                 }
             }
+
             else -> {
                 return null
             }

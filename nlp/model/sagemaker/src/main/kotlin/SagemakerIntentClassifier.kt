@@ -23,7 +23,9 @@ import ai.tock.nlp.sagemaker.SagemakerAwsClient.ParsedRequest
 import ai.tock.shared.property
 import software.amazon.awssdk.regions.Region
 
-internal class SagemakerIntentClassifier(private val conf: SagemakerModelConfiguration) : IntentClassifier {
+internal class SagemakerIntentClassifier(
+    private val conf: SagemakerModelConfiguration,
+) : IntentClassifier {
     companion object {
         val CLIENT_TYPE = SagemakerClientType.INTENT_CLASSIFICATION
     }
@@ -32,16 +34,17 @@ internal class SagemakerIntentClassifier(private val conf: SagemakerModelConfigu
         context: IntentContext,
         text: String,
         tokens: Array<String>,
-    ): IntentClassification {
-        return SagemakerClientProvider.getClient(
-            SagemakerAwsClientProperties(
-                CLIENT_TYPE.clientName,
-                Region.of(property("tock_sagemaker_aws_region_name", "eu-west-3")),
-                property("tock_sagemaker_aws_intent_endpoint_name", "default"),
-                property("tock_sagemaker_aws_content_type", "application/json"),
-                property("tock_sagemaker_aws_profile_name", "default"),
-            ),
-        ).parseIntent(ParsedRequest(text))
+    ): IntentClassification =
+        SagemakerClientProvider
+            .getClient(
+                SagemakerAwsClientProperties(
+                    CLIENT_TYPE.clientName,
+                    Region.of(property("tock_sagemaker_aws_region_name", "eu-west-3")),
+                    property("tock_sagemaker_aws_intent_endpoint_name", "default"),
+                    property("tock_sagemaker_aws_content_type", "application/json"),
+                    property("tock_sagemaker_aws_profile_name", "default"),
+                ),
+            ).parseIntent(ParsedRequest(text))
             .run {
                 object : IntentClassification {
                     var probability = 0.0
@@ -51,16 +54,14 @@ internal class SagemakerIntentClassifier(private val conf: SagemakerModelConfigu
 
                     override fun hasNext(): Boolean = iterator.hasNext()
 
-                    override fun next(): Intent {
-                        return iterator.next().let { (intent, proba) ->
+                    override fun next(): Intent =
+                        iterator.next().let { (intent, proba) ->
                             if (proba != null) {
                                 probability = proba
                             }
                             intent?.let { context.application.getIntent(it.unescapeSagemakerName()) }
                                 ?: Intent.UNKNOWN_INTENT
                         }
-                    }
                 }
             }
-    }
 }

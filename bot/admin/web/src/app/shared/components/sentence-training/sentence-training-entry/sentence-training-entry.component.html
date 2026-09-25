@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card
   [ngClass]="{ selected: sentence._showDialog }"
   class="my-2"
@@ -23,26 +7,28 @@
     class="grid-columns flex-wrap p-3"
     [ngClass]="{ 'grid-columns-without-selection': !selection }"
   >
+    @if (selection) {
     <nb-checkbox
-      *ngIf="selection"
       [checked]="isSentenceSelected()"
       (checkedChange)="toggle()"
       class="mt-1"
     ></nb-checkbox>
+    }
 
     <div class="flex-grow-1">
       <tock-sentence-training-sentence [sentence]="sentence"></tock-sentence-training-sentence>
 
+      @if (sentence.forReview && sentence.reviewComment) {
       <nb-card
         class="mx-3 mt-2 mb-0"
         accent="info"
-        *ngIf="sentence.forReview && sentence.reviewComment"
       >
         <nb-card-body class="text-muted review">
-          <strong class="d-block">Review comment :</strong>
+          <strong class="d-block">{{ 'shared.sentence-training-entry.review-comment' | transloco }} :</strong>
           {{ sentence.reviewComment }}
         </nb-card-body>
       </nb-card>
+      }
     </div>
 
     <div class="tools-panel">
@@ -52,7 +38,7 @@
           ghost
           size="tiny"
           class="lineFirstSmallButtonRetract"
-          nbTooltip="Copy sentence"
+          [nbTooltip]="'shared.sentence-training-entry.copy-sentence' | transloco"
           (click)="copySentence()"
         >
           <nb-icon icon="copy"></nb-icon>
@@ -63,7 +49,7 @@
           ghost
           size="tiny"
           class="mr-2"
-          nbTooltip="Test this sentence in a dialog"
+          [nbTooltip]="'shared.sentence-training-entry.test-sentence' | transloco"
           (click)="testDialogSentence()"
         >
           <nb-icon icon="terminal-plus"></nb-icon>
@@ -74,27 +60,26 @@
         <span
           class="text-uppercase mx-1"
           [style.color]="sentence.statusColor()"
-          nbTooltip="Sentence status"
+          [nbTooltip]="'shared.sentence-training-entry.sentence-status' | transloco"
         >
           {{ sentence.statusDisplayed() }}
         </span>
 
-        <span nbTooltip="Sentence configuration">
+        <span [nbTooltip]="'shared.sentence-training-entry.sentence-configuration' | transloco">
           {{ sentence.configuration }}
         </span>
 
-        <span
-          *ngIf="sentence.qualifier"
-          nbTooltip="Qualifier"
-        >
+        @if (sentence.qualifier) {
+        <span [nbTooltip]="'shared.sentence-training-entry.qualifier' | transloco">
           {{ sentence.qualifier }}
         </span>
+        }
       </div>
 
       <div class="d-flex mb-1">
         <nb-form-field
           class="mb-0 flex-grow-1 mb-0"
-          nbTooltip="Intent association"
+          [nbTooltip]="'shared.sentence-training-entry.intent-association' | transloco"
         >
           <nb-icon
             nbPrefix
@@ -105,7 +90,7 @@
             nbInput
             fullWidth
             type="text"
-            placeholder="{{ getSentenceAttribut('intentLabel') }}"
+            [placeholder]="getSentenceAttribut('intentLabel')"
             (focus)="onFocus()"
             (blur)="onBlur($event)"
             (keyup.escape)="onBlur($event)"
@@ -114,27 +99,30 @@
             [nbAutocomplete]="intentsAutocomplete"
             class="intent-input"
           />
+          @if (isIntentStorySearchable()) {
           <nb-icon
             nbSuffix
             icon="book"
-            *ngIf="isIntentStorySearchable()"
             (click)="displayIntentStoryDetails()"
-            nbTooltip="Show intent story details"
+            [nbTooltip]="'shared.sentence-training-entry.show-intent-story-details' | transloco"
             class="pointer"
           ></nb-icon>
+          }
         </nb-form-field>
         <button
           nbButton
           ghost
-          nbTooltip="Intent detection probability. Click for details"
+          [nbTooltip]="'shared.sentence-training-entry.intent-detection-probability' | transloco"
           class="stats-button font-weight-normal"
           [class.pl-3]="!intentHasChanged()"
           [class.pr-1]="!intentHasChanged()"
           (click)="swapStatsDetails()"
         >
-          <span *ngIf="!intentHasChanged()">
+          @if (!intentHasChanged()) {
+          <span>
             {{ getSentenceAttribut('probability') | percent: '1.0-1' }}
           </span>
+          }
           <nb-icon
             [icon]="sentence._showStatsDetails ? 'chevron-up-outline' : 'chevron-down-outline'"
             pack="nebular-essentials"
@@ -146,38 +134,29 @@
           #intentsAutocomplete
           (selectedChange)="addIntentToSentence($event)"
         >
-          <nb-option-group
-            *ngFor="let group of filteredIntentGroups | async"
-            [title]="group.category"
-          >
-            <nb-option
-              *ngFor="let intent of group.intents"
-              [value]="intent._id"
-            >
+          @for (group of filteredIntentGroups | async; track group) {
+          <nb-option-group [title]="group.category">
+            @for (intent of group.intents; track intent) {
+            <nb-option [value]="intent._id">
               {{ intent.label || intent.name }}
             </nb-option>
+            }
           </nb-option-group>
+          }
         </nb-autocomplete>
       </div>
 
-      <div
-        class="stats-details font-size-small mb-3"
-        *ngIf="sentence._showStatsDetails"
-      >
+      @if (sentence._showStatsDetails) {
+      <div class="stats-details font-size-small mb-3">
         <div class="d-flex gap-1 justify-content-between">
-          <span> Intent probability: </span>
-          <span> {{ sentence.classification.intentProbability | percent: '1.0-2' }} </span>
+          <span>{{ 'shared.sentence-training-entry.intent-probability' | transloco }} :</span>
+          <span>{{ sentence.classification.intentProbability | percent: '1.0-2' }}</span>
         </div>
-
-        <div
-          class="text-muted font-size-small"
-          *ngIf="sentence.classification.otherIntentsProbabilities?.size"
-        >
-          Probability for other intents:
-          <div
-            class="d-flex gap-1 justify-content-between"
-            *ngFor="let i of sentence.classification.otherIntentsProbabilities | keyvalue: originalOrder"
-          >
+        @if (sentence.classification.otherIntentsProbabilities?.size) {
+        <div class="text-muted font-size-small">
+          {{ 'shared.sentence-training-entry.other-intents-probability' | transloco }} : @for (i of
+          sentence.classification.otherIntentsProbabilities | keyvalue: originalOrder; track i) {
+          <div class="d-flex gap-1 justify-content-between">
             <span>
               {{ state.intentLabelByName(i.key) }}
               <button
@@ -185,44 +164,42 @@
                 size="tiny"
                 ghost
                 (click)="setSentenceIntentByName(i.key)"
-                nbTooltip="Associate this intent with the sentence"
+                [nbTooltip]="'shared.sentence-training-entry.associate-intent' | transloco"
               >
                 <nb-icon icon="arrow-right-circle-fill"></nb-icon>
               </button>
             </span>
             <span>{{ i.value | percent: '1.0-2' }}</span>
           </div>
+          }
         </div>
-
+        }
         <hr class="my-1" />
-
         <div class="d-flex gap-1 justify-content-between">
-          <span> Entities probability: </span>
-          <span> {{ sentence.classification.entitiesProbability | percent: '1.0-2' }} </span>
+          <span>{{ 'shared.sentence-training-entry.entities-probability' | transloco }} :</span>
+          <span>{{ sentence.classification.entitiesProbability | percent: '1.0-2' }}</span>
         </div>
-
-        <div
-          class="text-muted font-size-small"
-          *ngIf="sentence.classification.notRetainedEntities?.length"
-        >
-          Probability for other entities:
-          <div
-            class="d-flex gap-1 justify-content-between"
-            *ngFor="let i of sentence.notRetainedEntitiesContainer().getEntities()"
-          >
+        @if (sentence.classification.notRetainedEntities?.length) {
+        <div class="text-muted font-size-small">
+          {{ 'shared.sentence-training-entry.other-entities-probability' | transloco }} : @for (i of
+          sentence.notRetainedEntitiesContainer().getEntities(); track i) {
+          <div class="d-flex gap-1 justify-content-between">
             <span
               >{{ i.value ? sentence.notRetainedEntitiesContainer().entityText(i) : '' }}
               {{ sentence.notRetainedEntitiesContainer().entityValue(i) }}</span
             >
             <span>{{ i.probability | percent: '1.0-2' }}</span>
           </div>
+          }
         </div>
+        }
       </div>
+      }
 
       <div class="d-flex flex-wrap justify-content-between align-items-center">
         <button
           nbButton
-          nbTooltip="Validate"
+          [nbTooltip]="'shared.sentence-training-entry.validate' | transloco"
           status="success"
           [ngClass]="{ 'action-button-active': isActionButtonSuggested(Action.VALIDATE) || isActionButtonHighlighted(Action.VALIDATE) }"
           [class.lineFirstLargeButtonRetract]="!isActionButtonHighlighted(Action.VALIDATE) && !isActionButtonSuggested(Action.VALIDATE)"
@@ -237,7 +214,7 @@
 
         <button
           nbButton
-          nbTooltip="Ask for review"
+          [nbTooltip]="'shared.sentence-training-entry.ask-for-review' | transloco"
           status="info"
           [ghost]="!isActionButtonHighlighted('review')"
           shape="round"
@@ -247,10 +224,10 @@
           <nb-icon icon="search"></nb-icon>
         </button>
 
+        @if (sentenceTrainingMode !== SentenceTrainingMode.UNKNOWN) {
         <button
-          *ngIf="sentenceTrainingMode !== SentenceTrainingMode.UNKNOWN"
           nbButton
-          nbTooltip="Set as unknown"
+          [nbTooltip]="'shared.sentence-training-entry.set-as-unknown' | transloco"
           status="warning"
           [ngClass]="{ 'action-button-active': isActionButtonSuggested(Action.UNKNOWN) || isActionButtonHighlighted(Action.UNKNOWN) }"
           [ghost]="!isActionButtonHighlighted(Action.UNKNOWN)"
@@ -261,11 +238,10 @@
         >
           <nb-icon icon="question-circle"></nb-icon>
         </button>
-
+        } @if (sentenceTrainingMode !== SentenceTrainingMode.RAGEXCLUDED) {
         <button
-          *ngIf="sentenceTrainingMode !== SentenceTrainingMode.RAGEXCLUDED"
           nbButton
-          nbTooltip="Exclude from Rag handling"
+          [nbTooltip]="'shared.sentence-training-entry.exclude-from-rag' | transloco"
           status="warning"
           [ngClass]="{
             'action-button-active': isActionButtonSuggested(Action.RAGEXCLUDED) || isActionButtonHighlighted(Action.RAGEXCLUDED)
@@ -278,10 +254,11 @@
         >
           <nb-icon icon="lightbulb-off"></nb-icon>
         </button>
+        }
 
         <button
           nbButton
-          nbTooltip="Delete"
+          [nbTooltip]="'shared.sentence-training-entry.delete' | transloco"
           status="danger"
           ghost
           shape="round"
@@ -292,24 +269,22 @@
         </button>
 
         <nb-form-field
-          nbTooltip="Set sentence language"
+          [nbTooltip]="'shared.sentence-training-entry.set-sentence-language' | transloco"
           class="mt-1 flex-grow-1"
         >
           <nb-icon
             nbPrefix
             icon="globe2"
           ></nb-icon>
-
           <nb-select
             [(ngModel)]="sentence.language"
-            placeholder="Sentence language"
+            [placeholder]="'shared.sentence-training-entry.sentence-language' | transloco"
           >
-            <nb-option
-              *ngFor="let l of state.currentApplication.supportedLocales"
-              [value]="l"
-            >
+            @for (l of state.currentApplication.supportedLocales; track l) {
+            <nb-option [value]="l">
               {{ state.localeName(l) }}
             </nb-option>
+            }
           </nb-select>
         </nb-form-field>
       </div>
@@ -318,7 +293,7 @@
         <div>
           <button
             nbButton
-            nbTooltip="Create new Intent"
+            [nbTooltip]="'shared.sentence-training-entry.create-new-intent' | transloco"
             ghost
             shape="round"
             class="lineFirstButtonRetract"
@@ -327,10 +302,10 @@
             <nb-icon icon="compass"></nb-icon>
           </button>
 
+          @if (state.hasRole(UserRole.botUser)) {
           <button
-            *ngIf="state.hasRole(UserRole.botUser)"
             nbButton
-            nbTooltip="Create new FAQ based on this sentence"
+            [nbTooltip]="'shared.sentence-training-entry.create-faq' | transloco"
             ghost
             shape="round"
             (click)="redirectToFaqManagement()"
@@ -338,12 +313,13 @@
           >
             <nb-icon icon="chat-left-text"></nb-icon>
           </button>
+          }
         </div>
 
+        @if (!standAlone) {
         <button
-          *ngIf="!standAlone"
           nbButton
-          nbTooltip="Show dialog"
+          [nbTooltip]="'shared.sentence-training-entry.show-dialog' | transloco"
           ghost
           shape="round"
           status="info"
@@ -351,6 +327,7 @@
         >
           <nb-icon icon="wechat"></nb-icon>
         </button>
+        }
       </div>
     </div>
   </nb-card-body>

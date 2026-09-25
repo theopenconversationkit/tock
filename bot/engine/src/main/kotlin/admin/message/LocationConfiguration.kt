@@ -39,12 +39,11 @@ data class LocationConfiguration(
         recipientId: PlayerId,
         locale: Locale,
         userInterfaceType: UserInterfaceType,
-    ): Action {
-        return SendLocation(
+    ): Action =
+        SendLocation(
             playerId,
             applicationId,
             recipientId,
             location,
         )
-    }
 }

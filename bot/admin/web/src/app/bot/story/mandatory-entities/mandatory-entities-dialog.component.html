@@ -1,28 +1,12 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card class="m-0">
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1 flex-wrap">
-    Mandatory entities
+    {{ 'bot.mandatory-entities.title' | transloco }}
     <button
       type="button"
       nbButton
       ghost
       shape="round"
-      nbTooltip="Close"
+      [nbTooltip]="'common.actions.close' | transloco"
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>
@@ -31,12 +15,10 @@
   <nb-card-body>
     <div class="d-flex flex-column gap-3">
       <div class="d-flex flex-column gap-1">
-        <div
-          *ngFor="let e of entities; let i = index"
-          class="grid"
-        >
+        @for (e of entities; track e; let i = $index) {
+        <div class="grid">
           <tock-form-control
-            label="Answer"
+            [label]="'bot.mandatory-entities.answerLabel' | transloco"
             name="answer_{{ i }}"
             [required]="true"
             [hasMargin]="false"
@@ -49,13 +31,13 @@
             ></tock-answer>
           </tock-form-control>
           <tock-form-control
-            label="Entity"
+            [label]="'bot.mandatory-entities.entityLabel' | transloco"
             name="entity_{{ i }}"
             [required]="true"
             [hasMargin]="false"
           >
+            @if (e.entity) {
             <span
-              *ngIf="e.entity"
               id="entity_{{ i }}"
               class="pointer entity"
               [style.background-color]="e.entity.entityColor"
@@ -63,7 +45,8 @@
             >
               {{ e.entity.qualifiedName(stateService.user) }}
             </span>
-            <div *ngIf="!e.entity">
+            } @if (!e.entity) {
+            <div>
               <button
                 nbButton
                 id="entity_{{ i }}"
@@ -71,14 +54,15 @@
                 outline
                 (click)="selectEntity(e)"
               >
-                Select
+                {{ 'common.actions.select' | transloco }}
               </button>
             </div>
+            }
           </tock-form-control>
           <tock-form-control
-            label="Intent"
+            [label]="'bot.mandatory-entities.intentLabel' | transloco"
             name="intent_{{ i }}"
-            information="Intent used to find the Entity"
+            [information]="'bot.mandatory-entities.intentInformation' | transloco"
             [required]="true"
             [hasMargin]="false"
           >
@@ -87,7 +71,7 @@
               id="intent_{{ i }}"
               name="intent"
               autocomplete="off"
-              placeholder="Choose intent"
+              [placeholder]="'bot.mandatory-entities.chooseIntentPlaceholder' | transloco"
               fieldSize="small"
               [(ngModel)]="e.intent.name"
               [nbAutocomplete]="intentAuto"
@@ -102,17 +86,18 @@
             status="danger"
             shape="round"
             size="small"
-            nbTooltip="Remove"
+            [nbTooltip]="'common.actions.remove' | transloco"
             (click)="removeEntity(e)"
           >
             <nb-icon icon="trash"></nb-icon>
           </button>
         </div>
+        }
       </div>
 
       <div class="grid">
         <tock-form-control
-          label="Answer"
+          [label]="'bot.mandatory-entities.answerLabel' | transloco"
           name="answer"
           [required]="true"
           [hasMargin]="false"
@@ -124,13 +109,13 @@
           ></tock-answer>
         </tock-form-control>
         <tock-form-control
-          label="Entity"
+          [label]="'bot.mandatory-entities.entityLabel' | transloco"
           name="entity"
           [required]="true"
           [hasMargin]="false"
         >
+          @if (newEntity.entity) {
           <span
-            *ngIf="newEntity.entity"
             id="entity"
             class="pointer entity"
             [style.background-color]="newEntity.entity.entityColor"
@@ -138,7 +123,8 @@
           >
             {{ newEntity.entity.qualifiedName(stateService.user) }}
           </span>
-          <div *ngIf="!newEntity.entity">
+          } @if (!newEntity.entity) {
+          <div>
             <button
               id="entity"
               nbButton
@@ -146,14 +132,15 @@
               size="small"
               (click)="selectEntity(newEntity)"
             >
-              Select
+              {{ 'common.actions.select' | transloco }}
             </button>
           </div>
+          }
         </tock-form-control>
         <tock-form-control
-          label="Intent"
+          [label]="'bot.mandatory-entities.intentLabel' | transloco"
           name="intent"
-          information="Intent used to find the Entity"
+          [information]="'bot.mandatory-entities.intentInformation' | transloco"
           [hasMargin]="false"
         >
           <input
@@ -161,7 +148,7 @@
             id="intent"
             name="intent"
             autocomplete="off"
-            placeholder="Choose intent"
+            [placeholder]="'bot.mandatory-entities.chooseIntentPlaceholder' | transloco"
             fieldSize="small"
             [(ngModel)]="newEntity.intent.name"
             [nbAutocomplete]="intentAuto"
@@ -175,7 +162,7 @@
           shape="round"
           status="primary"
           size="small"
-          nbTooltip="Add"
+          [nbTooltip]="'common.actions.add' | transloco"
           class="entity-button"
           (click)="addEntity()"
         >
@@ -192,7 +179,7 @@
       type="button"
       (click)="cancel()"
     >
-      Cancel
+      {{ 'common.actions.cancel' | transloco }}
     </button>
     <button
       type="button"
@@ -201,7 +188,7 @@
       size="small"
       (click)="save()"
     >
-      Save
+      {{ 'common.actions.save' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>
@@ -210,15 +197,13 @@
   #intentAuto
   [activeFirst]="true"
 >
-  <nb-option-group
-    *ngFor="let category of currentIntentCategories"
-    [title]="category.category"
-  >
-    <nb-option
-      *ngFor="let intent of category.intents"
-      [value]="intent.name"
-    >
+  @for (category of currentIntentCategories; track category) {
+  <nb-option-group [title]="category.category">
+    @for (intent of category.intents; track intent) {
+    <nb-option [value]="intent.name">
       {{ intent.intentLabel() }}
     </nb-option>
+    }
   </nb-option-group>
+  }
 </nb-autocomplete>

@@ -1,11 +1,12 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, HostListener, Inject, Input, OnInit, ViewChild } from '@angular/core';
+
+import { Component, HostListener, Inject, Input, OnInit, ViewChild, DOCUMENT } from '@angular/core';
 import { NbTooltipDirective } from '@nebular/theme';
 
 @Component({
-  selector: 'tock-sticky-menu',
-  templateUrl: './sticky-menu.component.html',
-  styleUrls: ['./sticky-menu.component.scss']
+    selector: 'tock-sticky-menu',
+    templateUrl: './sticky-menu.component.html',
+    styleUrls: ['./sticky-menu.component.scss'],
+    standalone: false
 })
 export class StickyMenuComponent implements OnInit {
   @Input() offset: number = 230;

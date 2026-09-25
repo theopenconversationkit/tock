@@ -39,11 +39,12 @@ inline fun <reified T : StoryHandlerDefinition> defaultHandlerStoryDefinitionCre
                             bus::class.starProjectedType.isSubtypeOf(parameter.type)
                         } to bus,
                         if (data != null) {
-                            pC.parameters.find { parameter ->
-                                data::class.starProjectedType.isSubtypeOf(parameter.type)
-                            }?.let { p ->
-                                p to data
-                            }
+                            pC.parameters
+                                .find { parameter ->
+                                    data::class.starProjectedType.isSubtypeOf(parameter.type)
+                                }?.let { p ->
+                                    p to data
+                                }
                         } else {
                             null
                         },

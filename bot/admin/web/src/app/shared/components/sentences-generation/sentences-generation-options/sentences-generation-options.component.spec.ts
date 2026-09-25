@@ -17,6 +17,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SentencesGenerationOptionsComponent } from './sentences-generation-options.component';
+import { TestSharedModule } from '../../../test-shared.module';
+import { NbSelectModule, NbToggleModule } from '@nebular/theme';
 
 describe('SentencesGenerationOptionsComponent', () => {
   let component: SentencesGenerationOptionsComponent;
@@ -24,9 +26,9 @@ describe('SentencesGenerationOptionsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SentencesGenerationOptionsComponent ]
-    })
-    .compileComponents();
+      declarations: [SentencesGenerationOptionsComponent],
+      imports: [TestSharedModule, NbToggleModule, NbSelectModule]
+    }).compileComponents();
   });
 
   beforeEach(() => {

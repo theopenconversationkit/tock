@@ -18,6 +18,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Choice } from '../../../../model/dialog-data';
 
 import { ChatUiMessageChoiceComponent } from './chat-ui-message-choice.component';
+import { TestSharedModule } from '../../../../test-shared.module';
 
 const choice = new Choice(0, '', new Map());
 
@@ -27,7 +28,8 @@ describe('ChatUiMessageChoiceComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ChatUiMessageChoiceComponent]
+      declarations: [ChatUiMessageChoiceComponent],
+      imports: [TestSharedModule]
     }).compileComponents();
   });
 

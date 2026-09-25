@@ -33,8 +33,9 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 fun retrofit(
     baseUrl: String,
     timeout: Long = longProperty("tock_nlp_client_request_timeout_ms", 20000),
-): Retrofit {
-    return Retrofit.Builder()
+): Retrofit =
+    Retrofit
+        .Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(JacksonConverterFactory.create(mapper))
         .client(
@@ -46,8 +47,5 @@ fun retrofit(
                     HttpLoggingInterceptor().apply {
                         level = HttpLoggingInterceptor.Level.BODY
                     },
-                )
-                .build(),
-        )
-        .build()
-}
+                ).build(),
+        ).build()

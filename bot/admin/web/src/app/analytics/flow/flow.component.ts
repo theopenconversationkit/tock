@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BotService } from '../../bot/bot-service';
 import { AnalyticsService } from '../analytics.service';
@@ -35,9 +19,9 @@ import { NbCalendarRange, NbDateService, NbDatepickerDirective, NbToastrService 
 import { darkenIfTooLight, toISOStringWithoutOffset, truncateString } from '../../shared/utils';
 import { SelectBotEvent } from '../../shared/components';
 import { EChartsOption } from 'echarts';
-import { timeRanges } from './time-ranges';
 import { layouts } from './layouts';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { TranslocoService } from '@jsverse/transloco';
 
 type Graph = {
   edges: any[];
@@ -47,29 +31,28 @@ type Graph = {
 type TransitionsMap = Map<string, NodeTransition>;
 
 @Component({
-  selector: 'tock-flow',
-  templateUrl: './flow.component.html',
-  styleUrls: ['./flow.component.scss'],
-  animations: [
-    trigger('inOutRightAnimation', [
-      transition(':enter', [style({ right: -500, opacity: 0 }), animate('0.3s ease-out', style({ right: 0, opacity: 1 }))]),
-      transition(':leave', [style({ right: 0, opacity: 1 }), animate('0.3s ease-in', style({ right: -500, opacity: 0 }))])
-    ]),
-    trigger('inOutHeightAnimation', [
-      transition(':enter', [style({ height: 0 }), animate('0.3s ease-out', style({ height: '*' }))]),
-      transition(':leave', [style({ height: '*' }), animate('0.3s ease-in', style({ height: 0 }))])
-    ])
-  ]
+    selector: 'tock-flow',
+    templateUrl: './flow.component.html',
+    styleUrls: ['./flow.component.scss'],
+    animations: [
+        trigger('inOutRightAnimation', [
+            transition(':enter', [style({ right: -500, opacity: 0 }), animate('0.3s ease-out', style({ right: 0, opacity: 1 }))]),
+            transition(':leave', [style({ right: 0, opacity: 1 }), animate('0.3s ease-in', style({ right: -500, opacity: 0 }))])
+        ]),
+        trigger('inOutHeightAnimation', [
+            transition(':enter', [style({ height: 0 }), animate('0.3s ease-out', style({ height: '*' }))]),
+            transition(':leave', [style({ height: '*' }), animate('0.3s ease-in', style({ height: 0 }))])
+        ])
+    ],
+    standalone: false
 })
 export class FlowComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
 
   range: NbCalendarRange<Date>;
 
-  timeRanges = timeRanges;
-
+  timeRanges: { duration: number; label: string; tooltipLabel: string; offset?: number }[];
   layouts = layouts;
-
   layout = this.layouts[0];
 
   typeFilters = NodeTypeFilters;
@@ -126,11 +109,62 @@ export class FlowComponent implements OnInit, OnDestroy {
     private bot: BotService,
     private botConfiguration: BotConfigurationService,
     private toastrService: NbToastrService,
-    private dateService: NbDateService<Date>
+    private dateService: NbDateService<Date>,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
     this.initTimeRange();
+
+    this.dateService.setLocale(this.transloco.getActiveLang());
+
+    this.transloco.langChanges$.pipe(takeUntil(this.destroy$)).subscribe((lang) => {
+      this.dateService.setLocale(lang);
+    });
+
+    this.transloco
+      .selectTranslateObject('flow.timeRanges', {}, 'analytics')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((translatedRanges) => {
+        this.timeRanges = [
+          {
+            duration: 0,
+            label: translatedRanges.today.label,
+            tooltipLabel: translatedRanges.today.tooltipLabel
+          },
+          {
+            duration: 1,
+            offset: -1,
+            label: translatedRanges.yesterday.label,
+            tooltipLabel: translatedRanges.yesterday.tooltipLabel
+          },
+          {
+            duration: 6,
+            label: translatedRanges.last7Days.label,
+            tooltipLabel: translatedRanges.last7Days.tooltipLabel
+          },
+          {
+            duration: 13,
+            label: translatedRanges.last14Days.label,
+            tooltipLabel: translatedRanges.last14Days.tooltipLabel
+          },
+          {
+            duration: 29,
+            label: translatedRanges.last30Days.label,
+            tooltipLabel: translatedRanges.last30Days.tooltipLabel
+          },
+          {
+            duration: 89,
+            label: translatedRanges.last90Days.label,
+            tooltipLabel: translatedRanges.last90Days.tooltipLabel
+          },
+          {
+            duration: 179,
+            label: translatedRanges.last180Days.label,
+            tooltipLabel: translatedRanges.last180Days.tooltipLabel
+          }
+        ];
+      });
 
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((conf) => {
       if (conf?.length) {
@@ -183,7 +217,6 @@ export class FlowComponent implements OnInit, OnDestroy {
           });
         }
       } else {
-        // Reload static flow
         console.debug('Fetching stories...');
         this.loading = true;
         this.userFlow = null;
@@ -288,11 +321,7 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   buildGraph(theFlow: ApplicationDialogFlow) {
     console.debug('Building graph from flow...');
-    let flow = theFlow
-      ? this.mergeOldStories
-        ? JSON.parse(JSON.stringify(theFlow))
-        : theFlow // clone - states might be modified by merge
-      : undefined;
+    let flow = theFlow ? (this.mergeOldStories ? JSON.parse(JSON.stringify(theFlow)) : theFlow) : undefined;
     if (flow) {
       const displayOnlyNext: boolean = this.direction === -1;
       const displayOnlyPrev: boolean = this.direction === 1;
@@ -301,7 +330,7 @@ export class FlowComponent implements OnInit, OnDestroy {
         edges: []
       };
 
-      //1 create nodes
+      // 1 create nodes
       let nodesNumber = 0;
       const nodesByIndex = new Map<number, StoryNode>();
       const nodesByStateId = new Map<string, StoryNode>();
@@ -401,7 +430,7 @@ export class FlowComponent implements OnInit, OnDestroy {
         }
       });
 
-      //2 set stories map
+      // 2 set stories map
       const storiesById = new Map<string, StoryDefinitionConfiguration>();
       if (!this.statsMode) {
         nodesByIndex.forEach((s) => {
@@ -416,7 +445,7 @@ export class FlowComponent implements OnInit, OnDestroy {
         });
       }
 
-      //3 filter state by count and type
+      // 3 filter state by count and type
       let finalNodes: StoryNode[] = [];
       this.typeFilterCounters.clear();
       this.typeFilters = new Array<NodeTypeFilter>();
@@ -439,12 +468,16 @@ export class FlowComponent implements OnInit, OnDestroy {
         }
       });
       if (finalNodes.length < 1) {
-        this.toastrService.show('Please change options to find nodes to render.', 'No node to render', {
-          duration: 5000,
-          status: 'warning'
-        });
+        this.toastrService.show(
+          this.transloco.translate('analytics.flow.noNodeToRenderMessage'),
+          this.transloco.translate('analytics.flow.noNodeToRenderTitle'),
+          {
+            duration: 5000,
+            status: 'warning'
+          }
+        );
       } else {
-        //4 create transitions
+        // 4 create transitions
         const countTransitionByStartId = [];
         const transitionsByKey: TransitionsMap = new Map();
 
@@ -469,7 +502,7 @@ export class FlowComponent implements OnInit, OnDestroy {
           }
         });
 
-        //5 filter transitions per percentage
+        // 5 filter transitions per percentage
         const finalTransitions = new Map<string, NodeTransition>();
         transitionsByKey.forEach((t, k) => {
           const prev = nodesByIndex.get(t.previousId);
@@ -492,7 +525,7 @@ export class FlowComponent implements OnInit, OnDestroy {
           }
         });
 
-        //6 filter by selected story and create graph nodes
+        // 6 filter by selected story and create graph nodes
         let addStartup = true;
         const tmpFinalStates = [];
         const theMinCount = finalNodes.reduce((prev, current) => (prev.count < current.count ? prev : current)).count;
@@ -561,12 +594,12 @@ export class FlowComponent implements OnInit, OnDestroy {
 
         if (finalTransitions.size > 1000) {
           this.toastrService.show(
-            'More than 1000 nodes to render. Please change options to fetch less or filter out more.',
-            'Too many nodes to render',
+            this.transloco.translate('analytics.flow.tooManyNodesMessage'),
+            this.transloco.translate('analytics.flow.tooManyNodesTitle'),
             { duration: 5000, status: 'warning' }
           );
         } else {
-          //7 create graph edges
+          // 7 create graph edges
           finalTransitions.forEach((t, k) => {
             const prev = nodesByIndex.get(t.previousId);
             const next = nodesByIndex.get(t.nextId);
@@ -603,14 +636,20 @@ export class FlowComponent implements OnInit, OnDestroy {
             }
           });
 
-          //8 add startup if useful
+          // 8 add startup if useful
           if (addStartup) {
             graph.nodes.push({
-              data: { id: -1, name: 'Startup', weight: 40, colorCode: 'cornflowerblue', shapeType: 'triangle' }
+              data: {
+                id: -1,
+                name: this.transloco.translate('analytics.flow.startupLabel'),
+                weight: 40,
+                colorCode: 'cornflowerblue',
+                shapeType: 'triangle'
+              }
             });
           }
 
-          //9 init vars
+          // 9 init vars
           this.maxNodeCount = theMaxCount;
           this.storiesById = storiesById;
           this.nodesById = nodesByStoryKey.size > 0 ? nodesByStoryKey : nodesByStateId;

@@ -52,13 +52,11 @@ class WebConnectorSSEIntegrationTest {
                                         query = "Bonjour",
                                     ),
                                 ),
-                            )
-                            .connectTimeout(3, TimeUnit.SECONDS)
+                            ).connectTimeout(3, TimeUnit.SECONDS)
                             // Setting the maximum connection time, longer than the maximum connection time set by the server
                             .readTimeout(600, TimeUnit.SECONDS),
                     ),
-                )
-                .threadPriority(Thread.MAX_PRIORITY)
+                ).threadPriority(Thread.MAX_PRIORITY)
                 .build()
 
         // Starting the EventSource connection
@@ -67,7 +65,7 @@ class WebConnectorSSEIntegrationTest {
     }
 }
 
-class SseEventHandler() : BackgroundEventHandler {
+class SseEventHandler : BackgroundEventHandler {
     override fun onOpen() {
         // Write logic for handling successful SSE connection
         println("open connection")

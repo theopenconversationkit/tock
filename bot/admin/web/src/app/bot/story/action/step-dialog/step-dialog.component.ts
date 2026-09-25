@@ -21,9 +21,10 @@ import { StateService } from '../../../../core-nlp/state.service';
 import { StoryStep } from '../../../model/story';
 
 @Component({
-  selector: 'tock-step-dialog',
-  templateUrl: './step-dialog.component.html',
-  styleUrls: ['./step-dialog.component.scss']
+    selector: 'tock-step-dialog',
+    templateUrl: './step-dialog.component.html',
+    styleUrls: ['./step-dialog.component.scss'],
+    standalone: false
 })
 export class StepDialogComponent implements OnChanges {
   @Input() steps: StoryStep[];

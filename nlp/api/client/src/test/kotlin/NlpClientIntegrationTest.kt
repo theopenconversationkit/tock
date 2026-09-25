@@ -68,10 +68,12 @@ class NlpClientIntegrationTest {
     fun testGetIntentsByNamespaceAndName() {
         assertEquals(
             2,
-            TockNlpClient("http://localhost:8880").getIntentsByNamespaceAndName(
-                applicationNamespace,
-                applicationName,
-            )!!.size,
+            TockNlpClient("http://localhost:8880")
+                .getIntentsByNamespaceAndName(
+                    applicationNamespace,
+                    applicationName,
+                )!!
+                .size,
         )
     }
 
@@ -79,10 +81,12 @@ class NlpClientIntegrationTest {
     fun testGetIntentsByNamespaceAndNameWithUnknownApplicationName() {
         assertEquals(
             0,
-            TockNlpClient("http://localhost:8880").getIntentsByNamespaceAndName(
-                applicationNamespace,
-                unknownApplicationName,
-            )!!.size,
+            TockNlpClient("http://localhost:8880")
+                .getIntentsByNamespaceAndName(
+                    applicationNamespace,
+                    unknownApplicationName,
+                )!!
+                .size,
         )
     }
 
@@ -105,14 +109,16 @@ class NlpClientIntegrationTest {
     fun testLogsCount() {
         assertEquals(
             2,
-            TockNlpClient("http://localhost:8888").logsCount(
-                NlpLogCountQuery(
-                    applicationNamespace,
-                    applicationName,
-                    Locale.FRENCH,
-                    size = Integer.MAX_VALUE,
-                ),
-            )!!.size,
+            TockNlpClient("http://localhost:8888")
+                .logsCount(
+                    NlpLogCountQuery(
+                        applicationNamespace,
+                        applicationName,
+                        Locale.FRENCH,
+                        size = Integer.MAX_VALUE,
+                    ),
+                )!!
+                .size,
         )
     }
 }

@@ -22,7 +22,10 @@ import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.nlp.front.client.FrontClient
 import java.util.Locale
 
-class ConfigurationContentModule(val id: String, val stories: List<StoryDefinitionConfigurationContent>) {
+class ConfigurationContentModule(
+    val id: String,
+    val stories: List<StoryDefinitionConfigurationContent>,
+) {
     fun setupContent(
         conf: BotApplicationConfiguration,
         locale: Locale,

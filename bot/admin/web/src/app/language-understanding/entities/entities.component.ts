@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { saveAs } from 'file-saver-es';
 import { map } from 'rxjs/operators';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
@@ -28,11 +12,13 @@ import { DialogService } from '../../core-nlp/dialog.service';
 import { Observable } from 'rxjs';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { getExportFileName } from '../../shared/utils';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-entities',
-  templateUrl: './entities.component.html',
-  styleUrls: ['./entities.component.scss']
+    selector: 'tock-entities',
+    templateUrl: './entities.component.html',
+    styleUrls: ['./entities.component.scss'],
+    standalone: false
 })
 export class EntitiesComponent implements OnInit {
   selectedEntityType: EntityType;
@@ -47,7 +33,8 @@ export class EntitiesComponent implements OnInit {
     private nlp: NlpService,
     private toastrService: NbToastrService,
     private dialog: DialogService,
-    private applicationService: ApplicationService
+    private applicationService: ApplicationService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -58,10 +45,14 @@ export class EntitiesComponent implements OnInit {
       this.selectedEntityType.dictionary = d.values.length !== 0;
       this.nlp.updateEntityType(this.selectedEntityType).subscribe((s) => {
         if (s) this.refreshEntityType(this.selectedEntityType);
-        this.toastrService.show(`Dictionary imported`, 'Dictionary', {
-          duration: 2000,
-          status: 'success'
-        });
+        this.toastrService.show(
+          this.transloco.translate('lu.entities.dictionary_imported'),
+          this.transloco.translate('lu.entities.dictionary_title'),
+          {
+            duration: 2000,
+            status: 'success'
+          }
+        );
       });
     };
   }
@@ -81,46 +72,64 @@ export class EntitiesComponent implements OnInit {
 
     saveAs(new Blob([JsonUtils.stringify(this.selectedDictionary)]), exportFileName);
 
-    this.toastrService.show(`Dictionary exported`, 'Dictionary', {
-      duration: 2000,
-      status: 'success'
-    });
+    this.toastrService.show(
+      this.transloco.translate('lu.entities.dictionary_exported'),
+      this.transloco.translate('lu.entities.dictionary_title'),
+      {
+        duration: 2000,
+        status: 'success'
+      }
+    );
   }
 
   update(entity: EntityDefinition) {
     this.nlp
       .updateEntityDefinition(this.state.createUpdateEntityDefinitionQuery(entity))
       .pipe(map((_) => this.applicationService.reloadCurrentApplication()))
-      .subscribe((_) => this.toastrService.show(`Entity updated`, 'Update', { duration: 2000, status: 'success' }));
+      .subscribe((_) =>
+        this.toastrService.show(
+          this.transloco.translate('lu.entities.entity_updated'),
+          this.transloco.translate('lu.entities.update_title'),
+          { duration: 2000, status: 'success' }
+        )
+      );
   }
 
   deleteEntityType(entityType: EntityType) {
-    const action = 'remove';
+    const action = this.transloco.translate('common.actions.remove');
     let dialogRef = this.dialog.openDialog(ChoiceDialogComponent, {
       context: {
-        title: `Remove the entity type ${entityType.name}`,
-        subtitle: 'Are you sure? This can completely cleanup your model!',
+        title: this.transloco.translate('lu.entities.remove_entity_type_title', { entityType: entityType.name }),
+        subtitle: this.transloco.translate('lu.entities.remove_entity_type_confirmation'),
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
           { actionName: action, buttonStatus: 'danger' }
         ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === action) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         this.nlp.removeEntityType(entityType).subscribe(
           (_) => {
             this.state.resetConfiguration();
-            this.toastrService.show(`Entity Type ${entityType.name} removed`, 'Remove Entity Type', {
-              duration: 2000,
-              status: 'success'
-            });
+            this.toastrService.show(
+              this.transloco.translate('lu.entities.entity_type_removed', { entityType: entityType.name }),
+              this.transloco.translate('lu.entities.remove_entity_type_success_title'),
+              {
+                duration: 2000,
+                status: 'success'
+              }
+            );
           },
           (_) =>
-            this.toastrService.show(`Delete Entity Type ${entityType.name} failed`, 'Error', {
-              duration: 5000,
-              status: 'danger'
-            })
+            this.toastrService.show(
+              this.transloco.translate('lu.entities.delete_entity_type_failed', { entityType: entityType.name }),
+              this.transloco.translate('lu.entities.error_title'),
+              {
+                duration: 5000,
+                status: 'danger'
+              }
+            )
         );
       }
     });
@@ -156,19 +165,27 @@ export class EntitiesComponent implements OnInit {
 
   updateEntityType(): void {
     this.nlp.updateEntityType(this.selectedEntityType).subscribe((_) =>
-      this.toastrService.show(`Configuration Updated`, 'Update', {
-        duration: 5000,
-        status: 'success'
-      })
+      this.toastrService.show(
+        this.transloco.translate('lu.entities.configuration_updated'),
+        this.transloco.translate('lu.entities.update_title'),
+        {
+          duration: 5000,
+          status: 'success'
+        }
+      )
     );
   }
 
   updateDictionary(): void {
     this.nlp.saveDictionary(this.selectedDictionary).subscribe((_) =>
-      this.toastrService.show(`Configuration Updated`, 'Update', {
-        duration: 5000,
-        status: 'success'
-      })
+      this.toastrService.show(
+        this.transloco.translate('lu.entities.configuration_updated'),
+        this.transloco.translate('lu.entities.update_title'),
+        {
+          duration: 5000,
+          status: 'success'
+        }
+      )
     );
   }
 
@@ -177,18 +194,26 @@ export class EntitiesComponent implements OnInit {
     const oldValue = predefinedValue.value;
     if (oldValue !== newValue) {
       if (newValue.trim() === '') {
-        this.toastrService.show(`Empty Predefined Value is not allowed`, 'Error', {
-          duration: 5000,
-          status: 'warning'
-        });
+        this.toastrService.show(
+          this.transloco.translate('lu.entities.empty_predefined_value_error'),
+          this.transloco.translate('lu.entities.error_title'),
+          {
+            duration: 5000,
+            status: 'warning'
+          }
+        );
         input.value = oldValue;
         input.focus();
       } else {
         if (this.selectedDictionary.values.some((v) => v.value === newValue)) {
-          this.toastrService.show(`Predefined Value already exist`, 'Error', {
-            duration: 5000,
-            status: 'warning'
-          });
+          this.toastrService.show(
+            this.transloco.translate('lu.entities.predefined_value_exists_error'),
+            this.transloco.translate('lu.entities.error_title'),
+            {
+              duration: 5000,
+              status: 'warning'
+            }
+          );
           input.value = oldValue;
           input.focus();
         } else {
@@ -201,10 +226,14 @@ export class EntitiesComponent implements OnInit {
               (error) => {
                 input.value = oldValue;
                 input.focus();
-                this.toastrService.show(`Update Predefined Value '${name}' failed`, 'Error', {
-                  duration: 5000,
-                  status: 'danger'
-                });
+                this.toastrService.show(
+                  this.transloco.translate('lu.entities.update_predefined_value_failed', { name: newValue }),
+                  this.transloco.translate('lu.entities.error_title'),
+                  {
+                    duration: 5000,
+                    status: 'danger'
+                  }
+                );
               }
             );
         }
@@ -214,10 +243,14 @@ export class EntitiesComponent implements OnInit {
 
   createPredefinedValue(name: string): void {
     if (name.trim() === '') {
-      this.toastrService.show(`Empty Predefined Value is not allowed`, 'Error', {
-        duration: 5000,
-        status: 'danger'
-      });
+      this.toastrService.show(
+        this.transloco.translate('lu.entities.empty_predefined_value_error'),
+        this.transloco.translate('lu.entities.error_title'),
+        {
+          duration: 5000,
+          status: 'danger'
+        }
+      );
     } else {
       this.nlp.createOrUpdatePredefinedValue(this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)).subscribe(
         (next) => {
@@ -230,10 +263,14 @@ export class EntitiesComponent implements OnInit {
           }
         },
         (_) =>
-          this.toastrService.show(`Create Predefined Value '${name}' failed`, 'Error', {
-            duration: 5000,
-            status: 'danger'
-          })
+          this.toastrService.show(
+            this.transloco.translate('lu.entities.create_predefined_value_failed', { name: name }),
+            this.transloco.translate('lu.entities.error_title'),
+            {
+              duration: 5000,
+              status: 'danger'
+            }
+          )
       );
     }
   }
@@ -258,10 +295,14 @@ export class EntitiesComponent implements OnInit {
         }
       },
       (_) =>
-        this.toastrService.show(`Delete Predefined Value '${name}' failed`, 'Error', {
-          duration: 5000,
-          status: 'danger'
-        })
+        this.toastrService.show(
+          this.transloco.translate('lu.entities.delete_predefined_value_failed', { name: name }),
+          this.transloco.translate('lu.entities.error_title'),
+          {
+            duration: 5000,
+            status: 'danger'
+          }
+        )
     );
   }
 
@@ -280,10 +321,14 @@ export class EntitiesComponent implements OnInit {
           });
         },
         error: (_) =>
-          this.toastrService.show(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, 'Error', {
-            duration: 5000,
-            status: 'danger'
-          })
+          this.toastrService.show(
+            this.transloco.translate('lu.entities.create_label_failed', { name: name, value: predefinedValue.value }),
+            this.transloco.translate('lu.entities.error_title'),
+            {
+              duration: 5000,
+              status: 'danger'
+            }
+          )
       });
   }
 
@@ -307,10 +352,14 @@ export class EntitiesComponent implements OnInit {
           });
         },
         error: (_) =>
-          this.toastrService.show(`Delete Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, 'Error', {
-            duration: 5000,
-            status: 'danger'
-          })
+          this.toastrService.show(
+            this.transloco.translate('lu.entities.delete_label_failed', { name: name, value: predefinedValue.value }),
+            this.transloco.translate('lu.entities.error_title'),
+            {
+              duration: 5000,
+              status: 'danger'
+            }
+          )
       });
   }
 }

@@ -26,7 +26,10 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
-data class OptionWithoutDescription private constructor(val label: String, val metadata: String) : AbstractOption() {
+data class OptionWithoutDescription private constructor(
+    val label: String,
+    val metadata: String,
+) : AbstractOption() {
     companion object {
         fun of(
             label: String,
@@ -46,8 +49,9 @@ data class OptionWithoutDescription private constructor(val label: String, val m
         }
     }
 
-    override fun toChoice(): Choice {
-        return SendChoice.decodeChoiceId(metadata)
+    override fun toChoice(): Choice =
+        SendChoice
+            .decodeChoiceId(metadata)
             .let { (intent, params) ->
                 Choice(
                     intent,
@@ -55,5 +59,4 @@ data class OptionWithoutDescription private constructor(val label: String, val m
                         mapNotNullValues(SendChoice.TITLE_PARAMETER to label),
                 )
             }
-    }
 }

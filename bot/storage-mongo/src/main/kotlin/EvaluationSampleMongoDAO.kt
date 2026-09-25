@@ -20,7 +20,6 @@ import ai.tock.bot.admin.evaluation.EvaluationSample
 import ai.tock.bot.admin.evaluation.EvaluationSampleDAO
 import ai.tock.bot.admin.evaluation.EvaluationSampleStatus
 import ai.tock.shared.ensureIndex
-import ai.tock.shared.error
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
@@ -66,14 +65,13 @@ internal object EvaluationSampleMongoDAO : EvaluationSampleDAO {
             } else {
                 baseQuery
             }
-        return col.find(query)
+        return col
+            .find(query)
             .sort(descending(EvaluationSample::creationDate))
             .toList()
     }
 
-    override fun findById(id: Id<EvaluationSample>): EvaluationSample? {
-        return col.findOneById(id)
-    }
+    override fun findById(id: Id<EvaluationSample>): EvaluationSample? = col.findOneById(id)
 
     override fun save(sample: EvaluationSample): EvaluationSample {
         col.save(sample)
@@ -100,9 +98,7 @@ internal object EvaluationSampleMongoDAO : EvaluationSampleDAO {
         return findById(id)
     }
 
-    override fun delete(id: Id<EvaluationSample>): Boolean {
-        return col.deleteOneById(id).deletedCount > 0
-    }
+    override fun delete(id: Id<EvaluationSample>): Boolean = col.deleteOneById(id).deletedCount > 0
 
     override fun deleteByNamespaceAndBotId(
         namespace: String,

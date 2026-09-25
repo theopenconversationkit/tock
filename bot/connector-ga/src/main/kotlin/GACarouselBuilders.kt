@@ -70,8 +70,8 @@ fun I18nTranslator.gaFlexibleMessageForCarousel(
     oneItemSubtitle: CharSequence? = null,
     oneItemDescription: CharSequence? = null,
     oneItemSuggestions: List<CharSequence> = emptyList(),
-): GAResponseConnectorMessage {
-    return gaFlexibleMessageForCarousel(
+): GAResponseConnectorMessage =
+    gaFlexibleMessageForCarousel(
         items,
         suggestions,
         oneItemSuggestions,
@@ -83,7 +83,6 @@ fun I18nTranslator.gaFlexibleMessageForCarousel(
             one.image,
         )
     }
-}
 
 /**
  *  Add a basic card if only one element in the items list, in order to avoid the limitation of 2 items.
@@ -105,8 +104,8 @@ fun I18nTranslator.gaFlexibleMessageForCarousel(
             it.image,
         )
     },
-): GAResponseConnectorMessage {
-    return if (items.size == 1) {
+): GAResponseConnectorMessage =
+    if (items.size == 1) {
         gaMessage(
             richResponse(
                 oneItemBasicCardProvider.invoke(items.first()),
@@ -116,13 +115,12 @@ fun I18nTranslator.gaFlexibleMessageForCarousel(
     } else {
         gaMessageForCarousel(items, suggestions)
     }
-}
 
 /**
  * Provides a [GAExpectedIntent] with a [GACarouselSelect].
  */
-fun I18nTranslator.expectedIntentForCarousel(items: List<GACarouselItem>): GAExpectedIntent {
-    return GAExpectedIntent(
+fun I18nTranslator.expectedIntentForCarousel(items: List<GACarouselItem>): GAExpectedIntent =
+    GAExpectedIntent(
         GAIntent.option,
         optionValueSpec(
             carouselSelect =
@@ -136,7 +134,6 @@ fun I18nTranslator.expectedIntentForCarousel(items: List<GACarouselItem>): GAExp
                 ),
         ),
     )
-}
 
 /**
  * Provides a [GACarouselItem] with [String] parameters.

@@ -27,9 +27,10 @@ export interface IntentsFilter {
 }
 
 @Component({
-  selector: 'tock-intents-filters',
-  templateUrl: './intents-filters.component.html',
-  styleUrls: ['./intents-filters.component.scss']
+    selector: 'tock-intents-filters',
+    templateUrl: './intents-filters.component.html',
+    styleUrls: ['./intents-filters.component.scss'],
+    standalone: false
 })
 export class IntentsFiltersComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

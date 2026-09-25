@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { saveAs } from 'file-saver-es';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
@@ -30,13 +14,15 @@ import { BotApplicationConfiguration } from '../../../core/model/configuration';
 import { StoriesUploadComponent } from './stories-upload/stories-upload.component';
 import { getExportFileName, normalize } from '../../../shared/utils';
 import { ChoiceDialogComponent } from '../../../shared/components';
+import { TranslocoService } from '@jsverse/transloco';
 
 export type StoriesByCategory = { category: string; stories: StoryDefinitionConfigurationSummary[] };
 
 @Component({
-  selector: 'tock-search-story',
-  templateUrl: './search-story.component.html',
-  styleUrls: ['./search-story.component.scss']
+    selector: 'tock-search-story',
+    templateUrl: './search-story.component.html',
+    styleUrls: ['./search-story.component.scss'],
+    standalone: false
 })
 export class SearchStoryComponent implements OnInit, OnDestroy {
   destroy = new Subject();
@@ -64,7 +50,8 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     private router: Router,
     private location: Location,
     private botConfiguration: BotConfigurationService,
-    private nbDialogService: NbDialogService
+    private nbDialogService: NbDialogService,
+    private transloco: TranslocoService
   ) {
     const cat = (this.location.getState() as any)?.category;
     if (cat) this.expandedCategory = cat;
@@ -212,31 +199,39 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
           story.storyId
         );
         saveAs(blob, exportFileName);
-        this.toastrService.show(`Dump provided`, 'Dump', { duration: 3000, status: 'success' });
+        this.toastrService.show(
+          this.transloco.translate('bot.search-story.dumpProvided'),
+          this.transloco.translate('bot.search-story.dumpTitle'),
+          { duration: 3000, status: 'success' }
+        );
       });
     }, 1);
   }
 
   deleteStory(story: StoryDefinitionConfigurationSummary) {
-    const action = 'remove';
+    const action = this.transloco.translate('common.actions.delete');
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: `Remove the story "${story.name}"`,
-        subtitle: 'Are you sure?',
+        title: `${this.transloco.translate('bot.search-story.removeStoryTitle')} "${story.name}"`,
+        subtitle: this.transloco.translate('bot.search-story.removeStoryConfirmation'),
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
           { actionName: action, buttonStatus: 'danger' }
         ],
         modalStatus: 'danger'
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === action) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         this.bot.deleteStory(story._id).subscribe((_) => {
           this.stories = this.stories.filter((str) => story != str);
           this.filterStories();
           this.computeStoriesCategories();
-          this.toastrService.show(`Story deleted`, 'Delete', { duration: 3000, status: 'success' });
+          this.toastrService.show(
+            this.transloco.translate('bot.search-story.storyDeleted'),
+            this.transloco.translate('bot.search-story.deleteTitle'),
+            { duration: 3000, status: 'success' }
+          );
         });
       }
     });
@@ -252,7 +247,11 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
           'json'
         );
         saveAs(blob, exportFileName);
-        this.toastrService.show(`Dump provided`, 'Dump', { duration: 3000, status: 'success' });
+        this.toastrService.show(
+          this.transloco.translate('bot.search-story.dumpProvided'),
+          this.transloco.translate('bot.search-story.dumpTitle'),
+          { duration: 3000, status: 'success' }
+        );
       });
     }, 1);
   }

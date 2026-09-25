@@ -27,7 +27,5 @@ data class ArchivedEntityValue(
     val action: Action?,
     val date: Instant = action?.date ?: Instant.now(),
 ) {
-    override fun toString(): String {
-        return "ArchivedEntityValue(entityValue=$entityValue, date=$date)"
-    }
+    override fun toString(): String = "ArchivedEntityValue(entityValue=$entityValue, date=$date)"
 }

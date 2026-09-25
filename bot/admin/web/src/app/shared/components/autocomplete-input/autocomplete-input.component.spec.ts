@@ -19,6 +19,7 @@ import { NbAutocompleteModule, NbInputModule } from '@nebular/theme';
 import { TestingModule } from '../../../../testing';
 
 import { AutocompleteInputComponent } from './autocomplete-input.component';
+import { TestSharedModule } from '../../test-shared.module';
 
 describe('AutocompleteInputComponent', () => {
   let component: AutocompleteInputComponent;
@@ -27,7 +28,7 @@ describe('AutocompleteInputComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AutocompleteInputComponent],
-      imports: [TestingModule, NbAutocompleteModule, NbInputModule]
+      imports: [TestingModule, NbAutocompleteModule, NbInputModule, TestSharedModule]
     }).compileComponents();
   });
 

@@ -52,58 +52,59 @@ object MetricMongoDAO : MetricDAO {
         namespace: String,
         botId: String,
     ): List<Metric> =
-        col.find(
-            and(
-                Metric::namespace eq namespace,
-                Metric::botId eq botId,
-            ),
-        ).toList()
+        col
+            .find(
+                and(
+                    Metric::namespace eq namespace,
+                    Metric::botId eq botId,
+                ),
+            ).toList()
 
     override fun filterAndGroupBy(
         filter: MetricFilter,
         groupBy: List<MetricGroupBy>,
-    ): List<CustomMetric> {
-        return col.aggregate<CustomMetric>(
-            match(
-                and(
-                    filter.listOfNotNull(),
+    ): List<CustomMetric> =
+        col
+            .aggregate<CustomMetric>(
+                match(
+                    and(
+                        filter.listOfNotNull(),
+                    ),
                 ),
-            ),
-            group(
-                id =
-                    with(groupBy) {
-                        if (isEmpty()) {
-                            Metric::_id
-                        } else {
-                            Document(
-                                "_id",
-                                listOfNotNull(
-                                    if (contains(MetricGroupBy.APPLICATION_ID)) "\$applicationId" else null,
-                                    if (contains(MetricGroupBy.TYPE)) "\$type" else null,
-                                    if (contains(MetricGroupBy.EMITTER_STORY_ID)) "\$emitterStoryId" else null,
-                                    if (contains(MetricGroupBy.TRACKED_STORY_ID)) "\$trackedStoryId" else null,
-                                    if (contains(MetricGroupBy.INDICATOR_NAME)) "\$indicatorName" else null,
-                                    if (contains(MetricGroupBy.INDICATOR_VALUE_NAME)) "\$indicatorValueName" else null,
-                                ).joinToString(":_:").split(":"),
+                group(
+                    id =
+                        with(groupBy) {
+                            if (isEmpty()) {
+                                Metric::_id
+                            } else {
+                                Document(
+                                    "_id",
+                                    listOfNotNull(
+                                        if (contains(MetricGroupBy.APPLICATION_ID)) "\$applicationId" else null,
+                                        if (contains(MetricGroupBy.TYPE)) "\$type" else null,
+                                        if (contains(MetricGroupBy.EMITTER_STORY_ID)) "\$emitterStoryId" else null,
+                                        if (contains(MetricGroupBy.TRACKED_STORY_ID)) "\$trackedStoryId" else null,
+                                        if (contains(MetricGroupBy.INDICATOR_NAME)) "\$indicatorName" else null,
+                                        if (contains(MetricGroupBy.INDICATOR_VALUE_NAME)) "\$indicatorValueName" else null,
+                                    ).joinToString(":_:").split(":"),
+                                )
+                            }
+                        },
+                    fieldAccumulators =
+                        with(groupBy) {
+                            listOfNotNull(
+                                if (isEmpty()) CustomMetric::id first Metric::_id else null,
+                                if (contains(MetricGroupBy.APPLICATION_ID)) CustomMetric::applicationId first Metric::applicationId else null,
+                                if (contains(MetricGroupBy.TYPE)) CustomMetric::type first Metric::type else null,
+                                if (contains(MetricGroupBy.EMITTER_STORY_ID)) CustomMetric::emitterStoryId first Metric::emitterStoryId else null,
+                                if (contains(MetricGroupBy.TRACKED_STORY_ID)) CustomMetric::trackedStoryId first Metric::trackedStoryId else null,
+                                if (contains(MetricGroupBy.INDICATOR_NAME)) CustomMetric::indicatorName first Metric::indicatorName else null,
+                                if (contains(MetricGroupBy.INDICATOR_VALUE_NAME)) CustomMetric::indicatorValueName first Metric::indicatorValueName else null,
+                                CustomMetric::count sum 1,
                             )
-                        }
-                    },
-                fieldAccumulators =
-                    with(groupBy) {
-                        listOfNotNull(
-                            if (isEmpty()) CustomMetric::id first Metric::_id else null,
-                            if (contains(MetricGroupBy.APPLICATION_ID)) CustomMetric::applicationId first Metric::applicationId else null,
-                            if (contains(MetricGroupBy.TYPE)) CustomMetric::type first Metric::type else null,
-                            if (contains(MetricGroupBy.EMITTER_STORY_ID)) CustomMetric::emitterStoryId first Metric::emitterStoryId else null,
-                            if (contains(MetricGroupBy.TRACKED_STORY_ID)) CustomMetric::trackedStoryId first Metric::trackedStoryId else null,
-                            if (contains(MetricGroupBy.INDICATOR_NAME)) CustomMetric::indicatorName first Metric::indicatorName else null,
-                            if (contains(MetricGroupBy.INDICATOR_VALUE_NAME)) CustomMetric::indicatorValueName first Metric::indicatorValueName else null,
-                            CustomMetric::count sum 1,
-                        )
-                    },
-            ),
-        ).toList()
-    }
+                        },
+                ),
+            ).toList()
 
     /**
      * Create not null filters
@@ -125,8 +126,9 @@ object MetricMongoDAO : MetricDAO {
         namespace: String,
         botId: String,
     ): Boolean =
-        col.deleteMany(
-            Metric::namespace eq namespace,
-            Metric::botId eq botId,
-        ).deletedCount > 0
+        col
+            .deleteMany(
+                Metric::namespace eq namespace,
+                Metric::botId eq botId,
+            ).deletedCount > 0
 }

@@ -17,6 +17,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CreateRuleComponent } from './create-rule.component';
+import { TestSharedModule } from '../../../../shared/test-shared.module';
+import { NbAutocompleteModule, NbDialogRef, NbToggleModule } from '@nebular/theme';
+import { of } from 'rxjs';
+import { StateServiceMock } from '../../../../shared/test-shared/state-service.mock';
+import { StateService } from '../../../../core-nlp/state.service';
 
 describe('CreateRuleComponent', () => {
   let component: CreateRuleComponent;
@@ -24,9 +29,13 @@ describe('CreateRuleComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CreateRuleComponent ]
-    })
-    .compileComponents();
+      declarations: [CreateRuleComponent],
+      imports: [TestSharedModule, NbToggleModule, NbAutocompleteModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        { provide: NbDialogRef, useValue: { onClose: of(null), close: () => {} } }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CreateRuleComponent);
     component = fixture.componentInstance;

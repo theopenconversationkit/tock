@@ -37,13 +37,12 @@ data class UrlPayload(
          * Create an UrlPayload from an url.
          * Uses default cache configuration.
          */
-        fun getUrlPayload(attachment: SendAttachment): UrlPayload {
-            return getUrlPayload(
+        fun getUrlPayload(attachment: SendAttachment): UrlPayload =
+            getUrlPayload(
                 attachment.applicationId,
                 attachment.url,
                 reuseAttachmentByDefault && !attachment.state.testEvent,
             )
-        }
 
         internal fun getUrlPayload(
             bus: BotBus,
@@ -60,8 +59,8 @@ data class UrlPayload(
             applicationId: String,
             url: String,
             useCache: Boolean,
-        ): UrlPayload {
-            return if (useCache) {
+        ): UrlPayload =
+            if (useCache) {
                 val attachmentId = AttachmentCacheService.getAttachmentId(applicationId, url)
                 if (attachmentId == null) {
                     UrlPayload(url, null, true)
@@ -71,6 +70,5 @@ data class UrlPayload(
             } else {
                 UrlPayload(url, null, null)
             }
-        }
     }
 }

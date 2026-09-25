@@ -71,13 +71,12 @@ fun CharSequence.splitToCharSequence(
     vararg delimiters: String,
     ignoreCase: Boolean = false,
     limit: Int = 0,
-): List<CharSequence> {
-    return if (this is TextAndVoiceTranslatedString) {
+): List<CharSequence> =
+    if (this is TextAndVoiceTranslatedString) {
         splitToCharSequence(*delimiters, ignoreCase = ignoreCase, limit = limit)
     } else {
         rangesDelimitedBy(delimiters, ignoreCase = ignoreCase, limit = limit).asIterable().map { subSequence(it) }
     }
-}
 
 // copied from Strings.kt ->
 
@@ -100,7 +99,7 @@ private class DelimitedRangesSequence(
                     nextState = 0
                     nextItem = null
                 } else {
-                    if (limit > 0 && ++counter >= limit || nextSearchIndex > input.length) {
+                    if ((limit > 0 && ++counter >= limit) || nextSearchIndex > input.length) {
                         nextItem = currentStartIndex..input.lastIndex
                         nextSearchIndex = -1
                     } else {

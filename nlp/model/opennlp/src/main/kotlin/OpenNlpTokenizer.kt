@@ -24,7 +24,9 @@ import opennlp.tools.tokenize.SimpleTokenizer
 /**
  *
  */
-internal class OpenNlpTokenizer(model: TokenizerModelHolder) : NlpTokenizer(model) {
+internal class OpenNlpTokenizer(
+    model: TokenizerModelHolder,
+) : NlpTokenizer(model) {
     companion object {
         private val tokenizer = SimpleTokenizer.INSTANCE
     }
@@ -32,7 +34,5 @@ internal class OpenNlpTokenizer(model: TokenizerModelHolder) : NlpTokenizer(mode
     override fun tokenize(
         context: TokenizerContext,
         text: String,
-    ): Array<String> {
-        return tokenizer.tokenize(text)
-    }
+    ): Array<String> = tokenizer.tokenize(text)
 }

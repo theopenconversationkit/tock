@@ -1,39 +1,22 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card [nbSpinner]="loading || uploading">
-  <nb-card-header>Upload Stories</nb-card-header>
+  <nb-card-header>{{ 'bot.stories-upload.title' | transloco }}</nb-card-header>
   <nb-card-body>
     <form
       [formGroup]="form"
       (submit)="import()"
     >
       <tock-form-control
-        label="Stories dump file"
+        [label]="'bot.stories-upload.storiesDumpFileLabel' | transloco"
         name="importFile"
         [required]="true"
         [controls]="file"
         [showError]="isImportSubmitted"
       >
-        <div
-          *ngIf="fileFormatErrorMessage"
-          class="font-weight-bold text-danger font-italic mb-2"
-        >
+        @if (fileFormatErrorMessage) {
+        <div class="font-weight-bold text-danger font-italic mb-2">
           {{ fileFormatErrorMessage }}
         </div>
+        }
         <tock-file-upload
           id="importFile"
           formControlName="file"
@@ -52,7 +35,7 @@
       ghost
       (click)="cancel()"
     >
-      Cancel
+      {{ 'common.actions.cancel' | transloco }}
     </button>
     <button
       nbButton
@@ -61,7 +44,7 @@
       [disabled]="!canSaveImport"
       status="primary"
     >
-      Import
+      {{ 'common.actions.import' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>

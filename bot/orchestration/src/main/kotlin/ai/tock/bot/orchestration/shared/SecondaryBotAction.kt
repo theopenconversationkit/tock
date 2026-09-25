@@ -44,14 +44,21 @@ interface SecondaryBotAction {
             botId: String,
         ): SecondaryBotAction? =
             when (action) {
-                is SendSentence ->
+                is SendSentence -> {
                     SecondaryBotSendSentence(
                         messages = action.messages.filterIsInstance<SerializableConnectorMessage>(),
                         text = action.text?.toString(),
                         metadata = action.metadata.copy(orchestratedBy = botId),
                     )
-                is SendChoice -> SecondaryBotSendChoice(intentName = action.intentName, parameters = action.parameters, metadata = action.metadata.copy(orchestratedBy = botId))
-                else -> null
+                }
+
+                is SendChoice -> {
+                    SecondaryBotSendChoice(intentName = action.intentName, parameters = action.parameters, metadata = action.metadata.copy(orchestratedBy = botId))
+                }
+
+                else -> {
+                    null
+                }
             }
     }
 }

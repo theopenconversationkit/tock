@@ -118,9 +118,7 @@ object Translator {
         return t
     }
 
-    private fun loadLabel(id: String): I18nLabel? {
-        return cache[id]?.copy() ?: i18nDAO.getLabelById(id.toId())
-    }
+    private fun loadLabel(id: String): I18nLabel? = cache[id]?.copy() ?: i18nDAO.getLabelById(id.toId())
 
     fun getLabel(id: String): I18nLabel? = loadLabel(id)
 
@@ -347,8 +345,7 @@ object Translator {
                 .findLabel(locale, userInterfaceType, connectorId)
                 ?.let {
                     randomText(i18nLabel, it, contextId)
-                }
-                .run {
+                }.run {
                     if (isNullOrBlank()) {
                         labelWithoutUserInterface(i18nLabel, defaultLabel, context)
                     } else {
@@ -398,11 +395,12 @@ object Translator {
 
         val (normalizedLabel, normalizedArgs) = NamedArgumentNormalizer.normalize(label, args)
 
-        return MessageFormat(escapeQuotes(normalizedLabel), context.userLocale).format(
-            normalizedArgs.map { formatArg(it, context) }.toTypedArray(),
-            StringBuffer(),
-            null,
-        ).toString()
+        return MessageFormat(escapeQuotes(normalizedLabel), context.userLocale)
+            .format(
+                normalizedArgs.map { formatArg(it, context) }.toTypedArray(),
+                StringBuffer(),
+                null,
+            ).toString()
     }
 
     private fun escapeQuotes(text: String): String =
@@ -452,13 +450,14 @@ object Translator {
             }
             val newMessage =
                 MessageFormat(
-                    splitPattern.map {
-                        if (choicePrefixList.contains(it)) {
-                            it
-                        } else {
-                            translator.translate(it.replace("''", "'"), source, target)
-                        }
-                    }.joinToString(""),
+                    splitPattern
+                        .map {
+                            if (choicePrefixList.contains(it)) {
+                                it
+                            } else {
+                                translator.translate(it.replace("''", "'"), source, target)
+                            }
+                        }.joinToString(""),
                 )
             newMessage.formats = m.formats
             return newMessage.toPattern()
@@ -471,9 +470,15 @@ object Translator {
     ): Any? {
         val a =
             when (arg) {
-                is String? -> arg ?: ""
-                is Number? -> arg ?: -1
-                is Boolean? ->
+                is String? -> {
+                    arg ?: ""
+                }
+
+                is Number? -> {
+                    arg ?: -1
+                }
+
+                is Boolean? -> {
                     if (arg == null) {
                         -1
                     } else if (arg) {
@@ -481,10 +486,23 @@ object Translator {
                     } else {
                         0
                     }
-                is Enum<*>? -> arg?.ordinal ?: -1
-                is I18nLabelValue -> translate(arg, context)
-                null -> ""
-                else -> Formatter().format(context.userLocale, "%s", arg).toString()
+                }
+
+                is Enum<*>? -> {
+                    arg?.ordinal ?: -1
+                }
+
+                is I18nLabelValue -> {
+                    translate(arg, context)
+                }
+
+                null -> {
+                    ""
+                }
+
+                else -> {
+                    Formatter().format(context.userLocale, "%s", arg).toString()
+                }
             }
 
         return transformArg(a, context.userLocale, context.userInterfaceType)
@@ -496,8 +514,8 @@ object Translator {
         category: String,
         defaultLabel: CharSequence,
         context: I18nContext,
-    ): TranslatedSequence {
-        return translate(
+    ): TranslatedSequence =
+        translate(
             I18nLabelValue(
                 key.lowercase(),
                 namespace,
@@ -506,11 +524,8 @@ object Translator {
             ),
             context,
         )
-    }
 
-    private fun notTransformedKeyFromDefaultLabel(label: CharSequence): String {
-        return label.substring(0, Math.min(512, label.length))
-    }
+    private fun notTransformedKeyFromDefaultLabel(label: CharSequence): String = label.substring(0, Math.min(512, label.length))
 
     fun getKeyFromDefaultLabel(label: CharSequence): String = notTransformedKeyFromDefaultLabel(label)
 
@@ -544,8 +559,8 @@ object Translator {
         localized: I18nLocalizedLabel,
         contextId: String?,
         index: Int? = null,
-    ): String {
-        return with(localized) {
+    ): String =
+        with(localized) {
             if (alternatives.isEmpty()) {
                 label
             } else {
@@ -576,5 +591,4 @@ object Translator {
                 }
             }
         }
-    }
 }

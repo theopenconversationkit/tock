@@ -25,7 +25,5 @@ internal object SupportedNlpEnginesProvider {
     /**
      * Returns the list of all supported [NlpEngineProvider].
      */
-    fun engines(): List<NlpEngineProvider> {
-        return Loader.loadServices()
-    }
+    fun engines(): List<NlpEngineProvider> = Loader.loadServices()
 }

@@ -70,7 +70,10 @@ data class SaveIndicatorRequest(
  * @param label: mandatory indicator value label
  * @see ToValidate
  */
-data class IndicatorValueRequest(val name: String, val label: String) : ToValidate {
+data class IndicatorValueRequest(
+    val name: String,
+    val label: String,
+) : ToValidate {
     override fun validate(): List<String> {
         val errors = mutableListOf<String>()
         if (name.isBlank()) errors.add("Indicator's value name is required")

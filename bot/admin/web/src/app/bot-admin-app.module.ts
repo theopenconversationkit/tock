@@ -18,10 +18,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { CoreModule } from './core-nlp/core.module';
 import { BotAdminAppComponent } from './bot-admin-app.component';
-import { BotSharedModule } from './shared/bot-shared.module'
+import { BotSharedModule } from './shared/bot-shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BotCoreModule } from './core/bot-core.module';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ThemeModule } from './theme/theme.module';
 import {
   NbDatepickerModule,
@@ -39,20 +39,20 @@ import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 import { BotService } from './bot/bot-service';
 import { BotAdminAppRoutingModule } from './bot-admin-app-routing.module';
 import { NlpService } from './core-nlp/nlp.service';
+import { TranslocoRootModule } from './transloco-root.module';
+import { EnvBannerComponent } from './shared/env-banner/env-banner.component';
 
 @NgModule({
   declarations: [BotAdminAppComponent],
+  bootstrap: [BotAdminAppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    HttpClientModule,
     CoreModule,
     BotSharedModule,
     BotCoreModule,
     BotAdminAppRoutingModule,
-
     ThemeModule.forRoot(),
-
     NbSidebarModule.forRoot(),
     NbMenuModule.forRoot(),
     NbDatepickerModule.forRoot(),
@@ -60,7 +60,9 @@ import { NlpService } from './core-nlp/nlp.service';
     NbDialogModule.forRoot(),
     NbWindowModule.forRoot(),
     NbToastrModule.forRoot(),
-    NbThemeModule.forRoot({ name: 'default' })
+    NbThemeModule.forRoot({ name: 'default' }),
+    TranslocoRootModule,
+    EnvBannerComponent
   ],
   providers: [
     {
@@ -69,9 +71,9 @@ import { NlpService } from './core-nlp/nlp.service';
       deps: [PlatformLocation]
     },
     BotService,
-    NlpService
-  ],
-  bootstrap: [BotAdminAppComponent]
+    NlpService,
+    provideHttpClient(withInterceptorsFromDi())
+  ]
 })
 export class BotAdminAppModule {
   constructor(private iconLibraries: NbIconLibraries) {

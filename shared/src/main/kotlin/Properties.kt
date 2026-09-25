@@ -21,9 +21,7 @@ import java.util.Properties
 /**
  * Return an env or system String property or null if not found
  */
-fun propertyOrNull(name: String): String? {
-    return System.getProperty(name) ?: System.getenv(name)
-}
+fun propertyOrNull(name: String): String? = System.getProperty(name) ?: System.getenv(name)
 
 /**
  * Is this env or system property exists?
@@ -93,9 +91,11 @@ fun mapListProperty(
     keyValueSeparator: String = "=",
     listSeparator: String = ",",
 ): Map<String, List<String>> =
-    propertyOrNull(name)?.split(entrySeparator)?.map {
-        it.split(keyValueSeparator).let { it[0] to it[1].split(listSeparator) }
-    }?.toMap() ?: defaultValue
+    propertyOrNull(name)
+        ?.split(entrySeparator)
+        ?.map {
+            it.split(keyValueSeparator).let { it[0] to it[1].split(listSeparator) }
+        }?.toMap() ?: defaultValue
 
 /**
  * Load a [Properties] for classpath.

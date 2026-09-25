@@ -31,7 +31,9 @@ enum class FnType {
     RUNNABLE,
 }
 
-class TestCase<T, R>(val name: String) {
+class TestCase<T, R>(
+    val name: String,
+) {
     private val givenStatements = mutableListOf<Pair<FnType, Any>>()
     private val whenStatements = mutableListOf<Pair<FnType, Any>>()
     private val thenStatements = mutableListOf<Pair<FnType, Any>>()
@@ -255,11 +257,14 @@ class TestCase<T, R>(val name: String) {
             it.addAll(givenInfos)
             it.addAll(whenInfos)
             it.addAll(thenInfos)
-        }.joinToString("\n").let { logger.info("\n$it\n") }
+        }.joinToString("\n")
+            .let { logger.info("\n$it\n") }
     }
 }
 
-class Given<T, R>(private val testCase: TestCase<T, R>) {
+class Given<T, R>(
+    private val testCase: TestCase<T, R>,
+) {
     @JvmName("andCn")
     fun and(
         message: String,
@@ -300,28 +305,24 @@ class Given<T, R>(private val testCase: TestCase<T, R>) {
     fun `when`(
         message: String,
         fn: TConsumer<T?>,
-    ): When<T, R> {
-        return testCase.`when`(message, fn)
-    }
+    ): When<T, R> = testCase.`when`(message, fn)
 
     @JvmName("whenSp")
     fun `when`(
         message: String,
         fn: TSupplier<R?>,
-    ): When<T, R> {
-        return testCase.`when`(message, fn)
-    }
+    ): When<T, R> = testCase.`when`(message, fn)
 
     @JvmName("whenFn")
     fun `when`(
         message: String,
         fn: TFunction<T?, R?>,
-    ): When<T, R> {
-        return testCase.`when`(message, fn)
-    }
+    ): When<T, R> = testCase.`when`(message, fn)
 }
 
-class When<T, R>(private val testCase: TestCase<T, R>) {
+class When<T, R>(
+    private val testCase: TestCase<T, R>,
+) {
     @JvmName("andSp")
     fun and(
         message: String,
@@ -352,19 +353,17 @@ class When<T, R>(private val testCase: TestCase<T, R>) {
     fun then(
         message: String,
         fn: TConsumer<R?>,
-    ): Then<T, R> {
-        return testCase.then(message, fn)
-    }
+    ): Then<T, R> = testCase.then(message, fn)
 
     fun then(
         message: String,
         fn: TRunnable,
-    ): Then<T, R> {
-        return testCase.then(message, fn)
-    }
+    ): Then<T, R> = testCase.then(message, fn)
 }
 
-class Then<T, R>(private val testCase: TestCase<T, R>) {
+class Then<T, R>(
+    private val testCase: TestCase<T, R>,
+) {
     fun and(
         message: String,
         fn: TConsumer<R?>,

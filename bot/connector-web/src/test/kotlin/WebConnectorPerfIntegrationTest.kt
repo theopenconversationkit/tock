@@ -34,7 +34,8 @@ class WebConnectorPerfIntegrationTest {
             (0..users)
                 .map { user ->
                     val request =
-                        HttpRequest.newBuilder(URI("http://localhost:8080/io/app/new_assistant/web"))
+                        HttpRequest
+                            .newBuilder(URI("http://localhost:8080/io/app/new_assistant/web"))
                             .POST(ofString("{\"query\":\"yo\",\"userId\":\"${userIds[user]}\",\"locale\":\"fr\"}"))
                             .header("Content-Type", "application/json")
                             .header("Accept", "application/json")
@@ -45,8 +46,7 @@ class WebConnectorPerfIntegrationTest {
                         val end = System.currentTimeMillis()
                         println("user: $user - call: $call - code: ${response.statusCode()} duration: ${end - start} ms")
                     }
-                }
-                .forEach {
+                }.forEach {
                     it.join()
                 }
         }

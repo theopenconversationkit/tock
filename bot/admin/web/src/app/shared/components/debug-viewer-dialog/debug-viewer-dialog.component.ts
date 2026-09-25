@@ -34,9 +34,10 @@ interface DocumentSummaryItem {
 }
 
 @Component({
-  selector: 'tock-debug-viewer-dialog',
-  templateUrl: './debug-viewer-dialog.component.html',
-  styleUrls: ['./debug-viewer-dialog.component.scss']
+    selector: 'tock-debug-viewer-dialog',
+    templateUrl: './debug-viewer-dialog.component.html',
+    styleUrls: ['./debug-viewer-dialog.component.scss'],
+    standalone: false
 })
 export class DebugViewerDialogComponent implements OnInit {
   @Input() debug?: any;

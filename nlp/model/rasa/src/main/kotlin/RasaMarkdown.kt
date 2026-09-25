@@ -31,12 +31,15 @@ internal object RasaMarkdown {
                     if (i.entities.isEmpty()) {
                         " []"
                     } else {
-                        i.entities.distinctBy { it.entityType.name }
+                        i.entities
+                            .distinctBy { it.entityType.name }
                             .joinToString(separator = "\n", prefix = "\n") { "        - ${it.entityType.name.escapeRasaName()}" }
                     }
             } +
             "\n\nentities:\n" +
-            context.application.intents.flatMap { it.entities }.distinctBy { it.entityType.name }
+            context.application.intents
+                .flatMap { it.entities }
+                .distinctBy { it.entityType.name }
                 .joinToString(separator = "\n", postfix = "\n\n") {
                     "  - ${it.entityType.name.escapeRasaName()}"
                 }.also {
@@ -44,10 +47,12 @@ internal object RasaMarkdown {
                 }
 
     fun toModelNluMarkdown(expressions: List<SampleExpression>): String =
-        expressions.groupBy { it.intent }.map { (intent, sentences) ->
-            "## intent:${intent.name.escapeRasaName()}\n" +
-                sentences.joinToString(separator = "\n") { "- ${it.rasaClassifiedFormat()}" }
-        }.joinToString(separator = "\n\n", postfix = "\n\n")
+        expressions
+            .groupBy { it.intent }
+            .map { (intent, sentences) ->
+                "## intent:${intent.name.escapeRasaName()}\n" +
+                    sentences.joinToString(separator = "\n") { "- ${it.rasaClassifiedFormat()}" }
+            }.joinToString(separator = "\n\n", postfix = "\n\n")
             .also {
                 logger.debug { it }
             }

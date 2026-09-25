@@ -17,6 +17,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CountStatsComponent } from './count-stats.component';
+import { TestSharedModule } from '../../shared/test-shared.module';
+import { StateService } from '../../core-nlp/state.service';
+import { StateServiceMock } from '../../shared/test-shared/state-service.mock';
+import { QualityService } from '../quality.service';
+import { of } from 'rxjs';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('CountStatsComponent', () => {
   let component: CountStatsComponent;
@@ -24,12 +30,18 @@ describe('CountStatsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CountStatsComponent ]
-    })
-    .compileComponents();
+      declarations: [CountStatsComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        { provide: QualityService, useValue: { countStats: () => of({ total: 0, rows: [] }) } }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CountStatsComponent);
     component = fixture.componentInstance;
+
     fixture.detectChanges();
   });
 

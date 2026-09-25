@@ -42,7 +42,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = WhatsAppCloudVideoMessage::class, name = "video"),
     JsonSubTypes.Type(value = WhatsAppCloudLocationMessage::class, name = "location"),
 )
-abstract class WhatsAppCloudMessage(val type: WhatsAppCloudMessageType) {
+abstract class WhatsAppCloudMessage(
+    val type: WhatsAppCloudMessageType,
+) {
     abstract val from: String
     abstract val id: String
     abstract val timestamp: String

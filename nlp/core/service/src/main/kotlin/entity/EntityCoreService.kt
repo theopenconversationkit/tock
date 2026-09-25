@@ -52,41 +52,40 @@ internal object EntityCoreService : EntityCore {
     override fun classifyEntityTypes(
         context: EntityCallContext,
         text: String,
-    ): List<EntityTypeRecognition> {
-        return when (context) {
+    ): List<EntityTypeRecognition> =
+        when (context) {
             is EntityCallContextForIntent -> classifyEntityTypesForIntent(context, text)
-            is EntityCallContextForEntity -> emptyList() // TODO
+
+            is EntityCallContextForEntity -> emptyList()
+
+            // TODO
             is EntityCallContextForSubEntities -> emptyList() // TODO
         }
-    }
 
     private fun classifyEntityTypesForIntent(
         context: EntityCallContextForIntent,
         text: String,
-    ): List<EntityTypeRecognition> {
-        return context.intent
+    ): List<EntityTypeRecognition> =
+        context.intent
             .entities
             .mapNotNull { e ->
                 e.entityType.name.namespaceAndName().let { (namespace, name) ->
                     entityTypeProviders.firstOrNull { it.supportClassification(namespace, name) }?.getEntityTypeClassifier()
                 }
-            }
-            .distinct()
+            }.distinct()
             .flatMap { classifyEntities(it, context, text) }
-    }
 
     private fun classifyEntities(
         classifier: EntityTypeClassifier,
         context: EntityCallContext,
         text: String,
-    ): List<EntityTypeRecognition> {
-        return try {
+    ): List<EntityTypeRecognition> =
+        try {
             classifier.classifyEntities(context, text)
         } catch (e: Throwable) {
             logger.error(e)
             emptyList()
         }
-    }
 
     override fun evaluateEntities(
         context: CallContext,
@@ -132,23 +131,18 @@ internal object EntityCoreService : EntityCore {
         evaluator: EntityTypeEvaluator,
         context: EntityCallContextForEntity,
         text: String,
-    ): EvaluationResult {
-        return try {
+    ): EvaluationResult =
+        try {
             evaluator.evaluate(context, text)
         } catch (e: Throwable) {
             logger.error(e)
             EvaluationResult(false)
         }
-    }
 
     override fun mergeValues(
         context: EntityCallContextForEntity,
         values: List<ValueDescriptor>,
-    ): ValueDescriptor? {
-        return getEntityEvaluator(context.entityType)?.merge(context, values)
-    }
+    ): ValueDescriptor? = getEntityEvaluator(context.entityType)?.merge(context, values)
 
-    override fun healthcheck(): Boolean {
-        return entityTypeProviders.all { it.healthcheck() }
-    }
+    override fun healthcheck(): Boolean = entityTypeProviders.all { it.healthcheck() }
 }

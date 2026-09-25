@@ -22,9 +22,10 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
 import { take } from 'rxjs';
 
 @Component({
-  selector: 'tock-bot-configuration',
-  templateUrl: './bot-configuration.component.html',
-  styleUrls: ['./bot-configuration.component.scss']
+    selector: 'tock-bot-configuration',
+    templateUrl: './bot-configuration.component.html',
+    styleUrls: ['./bot-configuration.component.scss'],
+    standalone: false
 })
 export class BotConfigurationComponent implements OnInit {
   public loading: boolean = true;

@@ -19,4 +19,6 @@ package ai.tock.nlp.entity
 /**
  *
  */
-data class PhoneNumberValue(val value: String) : Value
+data class PhoneNumberValue(
+    val value: String,
+) : Value

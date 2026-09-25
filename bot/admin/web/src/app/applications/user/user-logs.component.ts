@@ -24,9 +24,10 @@ import { DisplayUserDataComponent } from './display-user-data/display-user-data.
 import { Pagination } from '../../shared/components';
 
 @Component({
-  selector: 'tock-user-logs',
-  templateUrl: './user-logs.component.html',
-  styleUrls: ['./user-logs.component.scss']
+    selector: 'tock-user-logs',
+    templateUrl: './user-logs.component.html',
+    styleUrls: ['./user-logs.component.scss'],
+    standalone: false
 })
 export class UserLogsComponent implements OnInit {
   dataSource: UserLog[];

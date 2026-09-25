@@ -1,144 +1,121 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="d-flex flex-wrap mb-2">
-  <h1 class="flex-grow-1">Namespaces</h1>
+  <h1 class="flex-grow-1">{{ 'applications.namespace.namespacesTitle' | transloco }}</h1>
 
-  <section
-    class="grid-actions"
-    *ngIf="canCreateNamespace()"
-  >
+  @if (canCreateNamespace()) {
+  <section class="grid-actions">
     <button
       nbButton
       status="primary"
       (click)="createNamespace()"
-      nbTooltip="Create a new namespace"
+      [nbTooltip]="'applications.namespace.createNewNamespaceTooltip' | transloco"
     >
       <nb-icon icon="plus-lg"></nb-icon>
-      NEW NAMESPACE
+      {{ 'applications.namespace.newNamespaceButton' | transloco }}
     </button>
   </section>
+  }
 </div>
 
+@for (n of state.namespaces; track n) {
 <nb-card
-  *ngFor="let n of state.namespaces"
   class="mb-2"
   [nbSpinner]="loading"
 >
   <nb-card-body>
     <div class="d-flex gap-1 align-items-center">
+      @if (n.current) {
       <nb-toggle
-        *ngIf="n.current"
         checked="true"
         class="mb-0 nb-toggle-reset-label-margin unClickable"
       ></nb-toggle>
+      } @if (!n.current) {
       <nb-toggle
-        *ngIf="!n.current"
         checked="false"
         (click)="selectNamespace(n.namespace)"
         class="mb-0 nb-toggle-reset-label-margin"
-        nbTooltip="Set as current application"
+        [nbTooltip]="'applications.namespace.setAsCurrentApplicationTooltip' | transloco"
       ></nb-toggle>
-
+      }
       <span
         class="lead text-nowrap"
         [ngClass]="{ 'font-weight-bold': state.currentApplication && n.namespace === state.currentApplication.namespace }"
         >{{ n.displayLabel() }}</span
       >
-
       <div class="flex-grow-1 text-muted">
+        @if (n.owner) {
         <nb-icon
-          *ngIf="n.owner"
-          nbTooltip="Owner"
+          [nbTooltip]="'applications.namespace.ownerTooltip' | transloco"
           icon="shield-check"
         ></nb-icon>
+        }
       </div>
-
+      @if (n.owner && isAdmin()) {
       <button
-        *ngIf="n.owner && isAdmin()"
         nbButton
         ghost
         shape="round"
         (click)="manageUsers(n.namespace)"
-        nbTooltip="Manage Users"
+        [nbTooltip]="'applications.namespace.manageUsersTooltip' | transloco"
       >
         <nb-icon icon="person"></nb-icon>
       </button>
+      } @if (n.owner && isAdmin()) {
       <button
-        *ngIf="n.owner && isAdmin()"
         nbButton
         ghost
         shape="round"
         (click)="manageSharingSettings(n.namespace)"
-        nbTooltip="Configure namespace settings"
+        [nbTooltip]="'applications.namespace.configureNamespaceSettingsTooltip' | transloco"
       >
         <nb-icon icon="gear"></nb-icon>
       </button>
-
+      } @if (n.owner && isAdmin()) {
       <button
-        *ngIf="n.owner && isAdmin()"
         nbButton
         ghost
         shape="round"
         status="danger"
         (click)="confirmDeleteNamespace(n)"
-        nbTooltip="Delete this namespace"
+        [nbTooltip]="'applications.namespace.deleteNamespaceTooltip' | transloco"
       >
         <nb-icon icon="trash"></nb-icon>
       </button>
+      }
     </div>
-
-    <nb-card
-      class="mt-3 mb-1"
-      *ngIf="managedNamespace === n.namespace && managedUsers"
-    >
+    @if (managedNamespace === n.namespace && managedUsers) {
+    <nb-card class="mt-3 mb-1">
       <nb-card-header>
-        <span *ngIf="state.applications.length !== 0">
-          <b>Namespace users</b>
+        @if (state.applications.length !== 0) {
+        <span>
+          <b>{{ 'applications.namespace.namespaceUsersTitle' | transloco }}</b>
         </span>
+        }
       </nb-card-header>
-
       <nb-card-body class="p-0">
-        <div
-          *ngFor="let u of managedUsers"
-          class="d-flex align-items-center border-bottom pl-4 pr-2 py-1 hover-highlight"
-        >
+        @for (u of managedUsers; track u) {
+        <div class="d-flex align-items-center border-bottom pl-4 pr-2 py-1 hover-highlight">
           <b>{{ u.login }}</b>
-
           <div class="flex-grow-1 ml-2">
+            @if (u.owner) {
             <nb-icon
-              *ngIf="u.owner"
-              nbTooltip="Owner"
+              [nbTooltip]="'applications.namespace.ownerTooltip' | transloco"
               icon="shield-check"
             ></nb-icon>
+            }
           </div>
-
           <button
             nbButton
             ghost
             shape="round"
             status="danger"
             (click)="deleteUserNamespace(u)"
-            nbTooltip="Delete User &quot;{{ u.login }}&quot;"
+            [nbTooltip]="'applications.namespace.deleteUserTooltip' | transloco: { login: u.login }"
           >
             <nb-icon icon="trash"></nb-icon>
           </button>
         </div>
+        }
       </nb-card-body>
-
       <nb-card-footer>
         <div class="d-flex gap-1 align-items-center">
           <nb-form-field>
@@ -149,17 +126,15 @@
             <input
               nbInput
               [(ngModel)]="newLogin"
-              placeholder="New User"
+              [placeholder]="'applications.namespace.newUserPlaceholder' | transloco"
             />
           </nb-form-field>
-
           <nb-checkbox
             [(checked)]="newOwner"
             class="checkbox"
-            nbTooltip="Set the new user as owner of the namespace (allowed to add and remove users)"
-            >Owner</nb-checkbox
+            [nbTooltip]="'applications.namespace.setOwnerTooltip' | transloco"
+            >{{ 'applications.namespace.ownerLabel' | transloco }}</nb-checkbox
           >
-
           <button
             nbButton
             status="primary"
@@ -167,61 +142,57 @@
             (click)="addUserNamespace()"
           >
             <nb-icon icon="plus"></nb-icon>
-            Add
+            {{ 'applications.namespace.addUserButton' | transloco }}
           </button>
         </div>
       </nb-card-footer>
     </nb-card>
-
-    <nb-card
-      class="mt-3 mb-1"
-      *ngIf="managedNamespace === n.namespace && namespaceConfiguration"
-    >
+    } @if (managedNamespace === n.namespace && namespaceConfiguration) {
+    <nb-card class="mt-3 mb-1">
       <nb-card-header>
-        <span *ngIf="state.applications.length !== 0">
-          <b>Namespace settings</b>
+        @if (state.applications.length !== 0) {
+        <span>
+          <b>{{ 'applications.namespace.namespaceSettingsTitle' | transloco }}</b>
         </span>
+        }
       </nb-card-header>
-
       <nb-card-body>
         <div class="settings-section">
-          <div class="settings-section-title">Display label</div>
+          <div class="settings-section-title">{{ 'applications.namespace.displayLabelTitle' | transloco }}</div>
           <nb-form-field class="w-100 settings-field">
             <input
               nbInput
               [(ngModel)]="namespaceConfiguration.label"
-              placeholder="Namespace label"
+              [placeholder]="'applications.namespace.namespaceLabelPlaceholder' | transloco"
               fullWidth
             />
           </nb-form-field>
-          <div class="text-muted settings-help">If empty, the technical namespace name is used.</div>
+          <div class="text-muted settings-help">{{ 'applications.namespace.displayLabelHelp' | transloco }}</div>
         </div>
-
         <div class="settings-section">
-          <div class="settings-section-title">Sharing</div>
+          <div class="settings-section-title">{{ 'applications.namespace.sharingTitle' | transloco }}</div>
           <p>
-            <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.model"
-              >Allow sharing <b>model</b> with other namespaces</nb-toggle
-            >
+            <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.model">
+              {{ 'applications.namespace.allowSharingModelLabel' | transloco }}
+            </nb-toggle>
           </p>
           <p>
-            <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.stories"
-              >Allow sharing <b>stories</b> with other namespaces</nb-toggle
-            >
+            <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.stories">
+              {{ 'applications.namespace.allowSharingStoriesLabel' | transloco }}
+            </nb-toggle>
           </p>
-          <div class="settings-section-description mb-2">Imported namespaces</div>
+          <div class="settings-section-description mb-2">{{ 'applications.namespace.importedNamespacesTitle' | transloco }}</div>
           <nb-select
             multiple
-            placeholder="None"
+            [placeholder]="'applications.namespace.nonePlaceholder' | transloco"
             [(selected)]="importedNamespaces"
             class="imported-namespaces-select"
           >
-            <nb-option
-              *ngFor="let c of sharableNamespaceConfigurations"
-              [value]="c.namespace"
-            >
+            @for (c of sharableNamespaceConfigurations; track c) {
+            <nb-option [value]="c.namespace">
               {{ c.displayLabel() }}
             </nb-option>
+            }
           </nb-select>
         </div>
       </nb-card-body>
@@ -233,7 +204,7 @@
           (click)="closeEdition()"
         >
           <nb-icon icon="x-lg"></nb-icon>
-          Close
+          {{ 'applications.namespace.closeButton' | transloco }}
         </button>
         <button
           nbButton
@@ -241,11 +212,13 @@
           (click)="saveNamespaceConfiguration()"
         >
           <nb-icon icon="floppy"></nb-icon>
-          Save
+          {{ 'applications.namespace.saveButton' | transloco }}
         </button>
       </nb-card-footer>
     </nb-card>
+    }
   </nb-card-body>
 </nb-card>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

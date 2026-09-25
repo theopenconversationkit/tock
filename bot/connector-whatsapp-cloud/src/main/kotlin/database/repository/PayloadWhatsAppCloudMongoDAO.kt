@@ -57,13 +57,12 @@ object PayloadWhatsAppCloudMongoDAO : PayloadWhatsAppCloudDAO {
         collection.addExpiryIndex()
     }
 
-    override fun getPayloadById(id: String): String? {
-        return if (isUUID(id)) {
+    override fun getPayloadById(id: String): String? =
+        if (isUUID(id)) {
             collection.findOneById(id)?.payload
         } else {
             id
         }
-    }
 
     override fun save(payloadWhatsAppCloud: PayloadWhatsAppCloud) {
         collection.save(payloadWhatsAppCloud)
@@ -90,7 +89,5 @@ object PayloadWhatsAppCloudMongoDAO : PayloadWhatsAppCloudDAO {
         }
     }
 
-    private fun isUUID(uuid: String): Boolean {
-        return uuidRegex.matches(uuid)
-    }
+    private fun isUUID(uuid: String): Boolean = uuidRegex.matches(uuid)
 }

@@ -80,7 +80,8 @@ open class AbstractIntegrationTest {
                         .setDefaultHost("localhost"),
                 )
             // Receive authentication header
-            webClient.post("/rest/authenticate")
+            webClient
+                .post("/rest/authenticate")
                 .sendBuffer(
                     JsonObject().put("email", userLogin).put("password", "password").toBuffer(),
                 ).onComplete {
@@ -109,8 +110,6 @@ open class AbstractIntegrationTest {
         /**
          * Generates the same type of IDs for MongoDB like the Backend apps do
          */
-        fun <T> newId(): StringId<T> {
-            return ObjectIdToStringGenerator.generateNewId()
-        }
+        fun <T> newId(): StringId<T> = ObjectIdToStringGenerator.generateNewId()
     }
 }

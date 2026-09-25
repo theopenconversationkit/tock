@@ -18,9 +18,10 @@ import { Component } from '@angular/core';
 import { SentenceTrainingMode } from '../../../shared/components/sentence-training/models';
 
 @Component({
-  selector: 'tock-sentences-unknown',
-  templateUrl: './sentences-unknown.component.html',
-  styleUrls: ['./sentences-unknown.component.scss']
+    selector: 'tock-sentences-unknown',
+    templateUrl: './sentences-unknown.component.html',
+    styleUrls: ['./sentences-unknown.component.scss'],
+    standalone: false
 })
 export class SentencesUnknownComponent {
   mode = SentenceTrainingMode.UNKNOWN;

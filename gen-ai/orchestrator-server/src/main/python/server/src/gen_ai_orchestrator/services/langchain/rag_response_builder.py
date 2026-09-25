@@ -115,7 +115,7 @@ def build_footnotes(
         Footnote(
             identifier=doc.metadata['id'],
             title=doc.metadata['title'],
-            url=doc.metadata['source'],
+            url=doc.metadata['source'] or None,
             content=get_source_content(doc),
             metadata=doc.metadata.copy(),
         )

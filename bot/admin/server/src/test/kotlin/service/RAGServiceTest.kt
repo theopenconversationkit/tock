@@ -112,21 +112,22 @@ class RAGServiceTest : AbstractTest() {
 
         init {
             tockInternalInjector = KodeinInjector()
-            Kodein.Module {
-                bind<BotRAGConfigurationDAO>() with singleton { ragDao }
-                bind<StoryDefinitionConfigurationDAO>() with singleton { storyDao }
-                bind<LLMProviderService>() with singleton { llmProviderService }
-                bind<EMProviderService>() with singleton { emProviderService }
-                bind<I18nDAO>() with singleton { i18nDAO }
-                bind<BotObservabilityConfigurationDAO>() with provider { botObservabilityConfigurationDAO }
-            }.also {
-                tockInternalInjector.inject(
-                    Kodein {
-                        import(defaultModulesBinding())
-                        import(it)
-                    },
-                )
-            }
+            Kodein
+                .Module {
+                    bind<BotRAGConfigurationDAO>() with singleton { ragDao }
+                    bind<StoryDefinitionConfigurationDAO>() with singleton { storyDao }
+                    bind<LLMProviderService>() with singleton { llmProviderService }
+                    bind<EMProviderService>() with singleton { emProviderService }
+                    bind<I18nDAO>() with singleton { i18nDAO }
+                    bind<BotObservabilityConfigurationDAO>() with provider { botObservabilityConfigurationDAO }
+                }.also {
+                    tockInternalInjector.inject(
+                        Kodein {
+                            import(defaultModulesBinding())
+                            import(it)
+                        },
+                    )
+                }
         }
 
         private val ragDao: BotRAGConfigurationDAO = mockk(relaxed = false)
@@ -212,17 +213,19 @@ class RAGServiceTest : AbstractTest() {
             Assertions.assertEquals(PROMPT, captured.questionAnsweringPrompt.template)
         }
 
-        TestCase<SaveFnEntry, Unit>("Save valid RAG Configuration that does not exist yet").given(
-            "An application name and a valid request",
-            entry,
-        ).and(
-            "Rag Config not exist with request name or label and the given application name",
-            ragNotYetExists,
-        ).and("The rag config in database is captured", captureRagAndStoryToSave)
+        TestCase<SaveFnEntry, Unit>("Save valid RAG Configuration that does not exist yet")
+            .given(
+                "An application name and a valid request",
+                entry,
+            ).and(
+                "Rag Config not exist with request name or label and the given application name",
+                ragNotYetExists,
+            ).and("The rag config in database is captured", captureRagAndStoryToSave)
             .and("The LLM and EM setting are valid", checkLlmAndEmSetting)
             .`when`("RagService's save method is called", callServiceSave)
             .then("The dao's saveEnableRagRequest must be called exactly once", daoSaveByFnIsCalledOnce)
-            .and("The dao's to find current unknown story must be not called", findCurrentUnknownFnNotCalled).and(
+            .and("The dao's to find current unknown story must be not called", findCurrentUnknownFnNotCalled)
+            .and(
                 """
                 - BotRAGConfiguration to persist must be not null
                 - BotRAGConfiguration to persist must have a not null id
@@ -239,7 +242,9 @@ class RAGServiceTest : AbstractTest() {
         val noStoryExistsForUnknownIntent: TRunnable = {
             every {
                 storyDao.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-                    eq(NAMESPACE), eq(BOT_ID), eq(UNKNOWN_INTENT),
+                    eq(NAMESPACE),
+                    eq(BOT_ID),
+                    eq(UNKNOWN_INTENT),
                 )
             } returns null
         }
@@ -292,8 +297,7 @@ class RAGServiceTest : AbstractTest() {
             .given(
                 "No story exists for unknown intent",
                 noStoryExistsForUnknownIntent,
-            )
-            .and("Rag Configuration is valid", query)
+            ).and("Rag Configuration is valid", query)
             .and("The LLM and EM setting are valid", checkLlmAndEmSetting)
             .and("Bot configuration exists", mocks)
             .`when`("RagService's save method is called", callService)
@@ -303,8 +307,7 @@ class RAGServiceTest : AbstractTest() {
                 - rag configuration is saved
                 """.trimIndent(),
                 checks,
-            )
-            .run()
+            ).run()
     }
 
     @Test
@@ -324,7 +327,9 @@ class RAGServiceTest : AbstractTest() {
         val noStoryExistsForUnknownIntent: TRunnable = {
             every {
                 storyDao.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-                    eq(NAMESPACE), eq(BOT_ID), eq(UNKNOWN_INTENT),
+                    eq(NAMESPACE),
+                    eq(BOT_ID),
+                    eq(UNKNOWN_INTENT),
                 )
             } returns unknownStory
         }
@@ -392,8 +397,7 @@ class RAGServiceTest : AbstractTest() {
                 - rag configuration is saved
                 """.trimIndent(),
                 checks,
-            )
-            .run()
+            ).run()
     }
 
     @Test
@@ -413,7 +417,9 @@ class RAGServiceTest : AbstractTest() {
         val unknownStoryExists: TRunnable = {
             every {
                 storyDao.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-                    eq(NAMESPACE), eq(BOT_ID), eq(UNKNOWN_INTENT),
+                    eq(NAMESPACE),
+                    eq(BOT_ID),
+                    eq(UNKNOWN_INTENT),
                 )
             } returns unknownStory
         }
@@ -480,8 +486,7 @@ class RAGServiceTest : AbstractTest() {
                 - rag configuration is saved
                 """.trimIndent(),
                 checks,
-            )
-            .run()
+            ).run()
     }
 }
 

@@ -36,5 +36,10 @@ internal data class MessageResponse(
 ) : ConnectorMessage {
     override val connectorType: ConnectorType = ConnectorType.rest
 
-    override fun toGenericMessage(): GenericMessage? = messages.filterIsInstance<Sentence>().firstOrNull()?.messages?.firstOrNull()
+    override fun toGenericMessage(): GenericMessage? =
+        messages
+            .filterIsInstance<Sentence>()
+            .firstOrNull()
+            ?.messages
+            ?.firstOrNull()
 }

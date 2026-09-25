@@ -20,7 +20,9 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.teams.teamsConnectorType
 
-abstract class TeamsBotMessage(val text: String?) : ConnectorMessage {
+abstract class TeamsBotMessage(
+    val text: String?,
+) : ConnectorMessage {
     override val connectorType: ConnectorType
         get() = teamsConnectorType
 
@@ -33,7 +35,5 @@ abstract class TeamsBotMessage(val text: String?) : ConnectorMessage {
         return true
     }
 
-    override fun hashCode(): Int {
-        return text?.hashCode() ?: 0
-    }
+    override fun hashCode(): Int = text?.hashCode() ?: 0
 }

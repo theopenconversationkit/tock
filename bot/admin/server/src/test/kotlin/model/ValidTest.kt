@@ -30,7 +30,10 @@ private const val AGE_CANNOT_BE_NULL = "Age cannot be null"
 /**
  * Person example implement of [ToValidate]
  */
-data class Person(val name: String = "", val age: Int? = null) : ToValidate {
+data class Person(
+    val name: String = "",
+    val age: Int? = null,
+) : ToValidate {
     override fun validate(): List<String> {
         val errors = mutableListOf<String>()
         if (name.isEmpty()) errors.add(NAME_CANNOT_BE_EMPTY)

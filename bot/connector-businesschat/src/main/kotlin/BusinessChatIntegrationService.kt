@@ -59,8 +59,8 @@ interface BusinessChatIntegrationService {
         clazz: KClass<T>,
         logger: KLogger,
     ): T {
-        fun bodyToString(request: RequestBody?): String? {
-            return try {
+        fun bodyToString(request: RequestBody?): String? =
+            try {
                 val buffer = Buffer()
                 request?.writeTo(buffer)
                 buffer.readUtf8()
@@ -69,7 +69,6 @@ interface BusinessChatIntegrationService {
                 logger.trace(e)
                 null
             }
-        }
 
         val headerInterceptor =
             Interceptor { chain ->
@@ -79,7 +78,8 @@ interface BusinessChatIntegrationService {
                         val bodyString = bodyToString(original.body)
                         if (bodyString != null) {
                             val message = mapper.readValue<BusinessChatCommonModel>(bodyString)
-                            original.newBuilder()
+                            original
+                                .newBuilder()
                                 .addHeader("id", message.id)
                                 .addHeader("Source-Id", message.sourceId)
                                 .addHeader("Destination-Id", message.destinationId)
@@ -98,8 +98,7 @@ interface BusinessChatIntegrationService {
             longProperty("tock_business_chat_request_timeout_ms", 30000),
             logger,
             interceptors = listOfNotNull(authInterceptor(), headerInterceptor),
-        )
-            .baseUrl(baseUrl)
+        ).baseUrl(baseUrl)
             .addJacksonConverter()
             .build()
             .create(clazz.java)

@@ -28,7 +28,5 @@ class RequestThreadControlEvent(
     val requestOwnerAppId: String,
     val metadata: String? = null,
 ) : OneToOneEvent(userId, recipientId, applicationId) {
-    override fun toString(): String {
-        return "[RequestThreadControlEvent] to $requestOwnerAppId with metadata $metadata"
-    }
+    override fun toString(): String = "[RequestThreadControlEvent] to $requestOwnerAppId with metadata $metadata"
 }

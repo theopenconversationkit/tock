@@ -25,9 +25,10 @@ enum SortingCriteria {
 }
 
 @Component({
-  selector: 'tock-stories-hits',
-  templateUrl: './stories-hits.component.html',
-  styleUrls: ['./stories-hits.component.scss']
+    selector: 'tock-stories-hits',
+    templateUrl: './stories-hits.component.html',
+    styleUrls: ['./stories-hits.component.scss'],
+    standalone: false
 })
 export class StoriesHitsComponent implements OnInit {
   @Input() stories: StorySummary[];

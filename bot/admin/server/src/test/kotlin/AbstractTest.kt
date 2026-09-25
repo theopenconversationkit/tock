@@ -78,8 +78,8 @@ abstract class AbstractTest {
             return module
         }
 
-        fun BotStoryDefinitionConfiguration.toStoryDefinitionConfiguration(): StoryDefinitionConfiguration {
-            return StoryDefinitionConfiguration(
+        fun BotStoryDefinitionConfiguration.toStoryDefinitionConfiguration(): StoryDefinitionConfiguration =
+            StoryDefinitionConfiguration(
                 storyId = storyId,
                 botId = botId,
                 intent = intent,
@@ -89,15 +89,14 @@ abstract class AbstractTest {
                 userSentenceLocale = userSentenceLocale,
                 _id = _id,
             )
-        }
 
         fun newTestStory(
             storyId: String,
             type: AnswerConfigurationType,
             _id: Id<StoryDefinitionConfiguration> = newId(),
             name: String = storyId,
-        ): BotStoryDefinitionConfiguration {
-            return BotStoryDefinitionConfiguration(
+        ): BotStoryDefinitionConfiguration =
+            BotStoryDefinitionConfiguration(
                 storyId = storyId,
                 botId = "testBotId",
                 intent = IntentWithoutNamespace("testIntent"),
@@ -108,7 +107,6 @@ abstract class AbstractTest {
                 _id = _id,
                 name = name,
             )
-        }
 
         val aApplication =
             BotApplicationConfiguration(

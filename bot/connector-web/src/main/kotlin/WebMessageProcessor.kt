@@ -21,9 +21,11 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 
-internal class WebMessageProcessor(private val processMarkdown: Boolean) {
-    fun process(action: Action): WebMessage? {
-        return when (action) {
+internal class WebMessageProcessor(
+    private val processMarkdown: Boolean,
+) {
+    fun process(action: Action): WebMessage? =
+        when (action) {
             is SendSentence -> {
                 val stringText = action.stringText
 
@@ -33,6 +35,7 @@ internal class WebMessageProcessor(private val processMarkdown: Boolean) {
                     postProcess(action.message(webConnectorType) as? WebMessage, actionId = action.id.toString())
                 }
             }
+
             is SendSentenceWithFootnotes -> {
                 val stringText = action.text.toString()
                 WebMessage(
@@ -51,9 +54,11 @@ internal class WebMessageProcessor(private val processMarkdown: Boolean) {
                     actionId = action.id.toString(),
                 )
             }
-            else -> null
+
+            else -> {
+                null
+            }
         }
-    }
 
     private fun postProcess(
         message: WebMessage?,

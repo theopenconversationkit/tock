@@ -57,10 +57,14 @@ data class AlcmeonConnectorCallback(
         val response = AlcmeonMessageConverter.toMessageOut(actions, backend, exitReason, delayInMs)
         val serializedResponse = jacksonObjectMapper().writeValueAsString(response)
         logger.info { "Alcmeon connector callback response : $serializedResponse" }
-        context.response()
+        context
+            .response()
             .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
             .end(serializedResponse)
     }
 }
 
-data class DelayedAction(val action: Action, val delay: Long)
+data class DelayedAction(
+    val action: Action,
+    val delay: Long,
+)

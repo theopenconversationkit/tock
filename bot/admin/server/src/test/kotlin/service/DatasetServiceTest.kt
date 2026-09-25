@@ -640,7 +640,11 @@ class DatasetServiceTest : AbstractTest() {
                     DatasetCreateRequest(
                         name = "   ",
                         description = "desc",
-                        questions = listOf(ai.tock.bot.admin.model.dataset.DatasetQuestionRequest(question = "question")),
+                        questions =
+                            listOf(
+                                ai.tock.bot.admin.model.dataset
+                                    .DatasetQuestionRequest(question = "question"),
+                            ),
                     ),
                 )
             }
@@ -695,7 +699,14 @@ class DatasetServiceTest : AbstractTest() {
 
         assertEquals(1, result.size)
         assertEquals(DatasetRunActionState.COMPLETED, result.first().state)
-        assertEquals(answerAction.id.toString(), result.first().action?.id.toString())
+        assertEquals(
+            answerAction.id.toString(),
+            result
+                .first()
+                .action
+                ?.id
+                .toString(),
+        )
         assertEquals(dialog.id, updatedQuestionResultSlot.captured.dialogId)
         assertEquals(answerAction.id, updatedQuestionResultSlot.captured.answerActionId)
         assertEquals("test_${run.botApplicationConfigurationId}_${run.language}_${questionResult.userIdModifier}", querySlot.captured.playerId?.id)

@@ -48,12 +48,11 @@ internal data class ArchivedEntityValuesCol(
     ) {
         constructor(value: ArchivedEntityValue) : this(value.entityValue, value.action?.toActionId(), value.date)
 
-        fun toArchivedEntityValue(actionsMap: Map<Id<Action>, Action>): ArchivedEntityValue {
-            return ArchivedEntityValue(
+        fun toArchivedEntityValue(actionsMap: Map<Id<Action>, Action>): ArchivedEntityValue =
+            ArchivedEntityValue(
                 entityValue,
                 actionsMap[actionId ?: ""],
                 date,
             )
-        }
     }
 }

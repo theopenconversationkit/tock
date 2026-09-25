@@ -53,6 +53,8 @@ interface DialogReportDAO {
 
     fun calculateDialogStats(query: DialogStatsQuery): DialogStatsQueryResult
 
+    fun calculateDialogUsage(query: DialogStatsQuery): DialogUsageStats
+
     // ANNOTATION FUNCTIONS
     fun insertAnnotation(
         dialogId: String,

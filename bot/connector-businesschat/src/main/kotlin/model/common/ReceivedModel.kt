@@ -48,11 +48,17 @@ data class HandoverData(
     val recipientUserId: String?,
 )
 
-class InteractiveData(val data: Data)
+class InteractiveData(
+    val data: Data,
+)
 
-class Data(val replyMessage: ReplyMessage?)
+class Data(
+    val replyMessage: ReplyMessage?,
+)
 
-class ReplyMessage(val title: String)
+class ReplyMessage(
+    val title: String,
+)
 
 class InteractiveDataRef(
     val url: String,

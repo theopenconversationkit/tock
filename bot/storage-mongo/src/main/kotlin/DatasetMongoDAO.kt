@@ -76,19 +76,18 @@ internal object DatasetMongoDAO : DatasetDAO, DatasetRunDAO {
         return dataset
     }
 
-    override fun getDatasetById(id: Id<Dataset>): Dataset? {
-        return datasetCol.findOneById(id)
-    }
+    override fun getDatasetById(id: Id<Dataset>): Dataset? = datasetCol.findOneById(id)
 
     override fun getDatasetsByNamespaceAndBotId(
         namespace: String,
         botId: String,
-    ): List<Dataset> {
-        return datasetCol.find(
-            Dataset::namespace eq namespace,
-            Dataset::botId eq botId,
-        ).ascendingSort(Dataset::name).toList()
-    }
+    ): List<Dataset> =
+        datasetCol
+            .find(
+                Dataset::namespace eq namespace,
+                Dataset::botId eq botId,
+            ).ascendingSort(Dataset::name)
+            .toList()
 
     override fun delete(id: Id<Dataset>) {
         datasetCol.deleteOneById(id)
@@ -111,32 +110,29 @@ internal object DatasetMongoDAO : DatasetDAO, DatasetRunDAO {
         return run
     }
 
-    override fun claimNextQueuedRun(): DatasetRun? {
-        return datasetRunCol.findOneAndUpdate(
+    override fun claimNextQueuedRun(): DatasetRun? =
+        datasetRunCol.findOneAndUpdate(
             DatasetRun::state eq DatasetRunState.QUEUED,
             set(DatasetRun::state.name, DatasetRunState.RUNNING),
             FindOneAndUpdateOptions()
                 .sort(ascending(DatasetRun::startTime.name))
                 .returnDocument(ReturnDocument.AFTER),
         )
-    }
 
-    override fun getRunById(id: Id<DatasetRun>): DatasetRun? {
-        return datasetRunCol.findOneById(id)
-    }
+    override fun getRunById(id: Id<DatasetRun>): DatasetRun? = datasetRunCol.findOneById(id)
 
-    override fun getRunsByDatasetId(datasetId: Id<Dataset>): List<DatasetRun> {
-        return datasetRunCol.find(DatasetRun::datasetId eq datasetId)
+    override fun getRunsByDatasetId(datasetId: Id<Dataset>): List<DatasetRun> =
+        datasetRunCol
+            .find(DatasetRun::datasetId eq datasetId)
             .descendingSort(DatasetRun::startTime)
             .toList()
-    }
 
-    override fun getActiveRunsByDatasetId(datasetId: Id<Dataset>): List<DatasetRun> {
-        return datasetRunCol.find(
-            DatasetRun::datasetId eq datasetId,
-            DatasetRun::state `in` listOf(DatasetRunState.QUEUED, DatasetRunState.RUNNING),
-        ).toList()
-    }
+    override fun getActiveRunsByDatasetId(datasetId: Id<Dataset>): List<DatasetRun> =
+        datasetRunCol
+            .find(
+                DatasetRun::datasetId eq datasetId,
+                DatasetRun::state `in` listOf(DatasetRunState.QUEUED, DatasetRunState.RUNNING),
+            ).toList()
 
     override fun deleteRun(id: Id<DatasetRun>) {
         datasetRunCol.deleteOneById(id)
@@ -156,10 +152,12 @@ internal object DatasetMongoDAO : DatasetDAO, DatasetRunDAO {
         botId: String,
     ) {
         val runIds =
-            datasetRunCol.find(
-                DatasetRun::namespace eq namespace,
-                DatasetRun::botId eq botId,
-            ).toList().map { it._id }
+            datasetRunCol
+                .find(
+                    DatasetRun::namespace eq namespace,
+                    DatasetRun::botId eq botId,
+                ).toList()
+                .map { it._id }
 
         datasetRunCol.deleteMany(
             DatasetRun::namespace eq namespace,
@@ -183,9 +181,7 @@ internal object DatasetMongoDAO : DatasetDAO, DatasetRunDAO {
         results.forEach { datasetRunQuestionResultCol.save(it) }
     }
 
-    override fun getQuestionResultsByRunId(runId: Id<DatasetRun>): List<DatasetRunQuestionResult> {
-        return datasetRunQuestionResultCol.find(DatasetRunQuestionResult::runId eq runId).toList()
-    }
+    override fun getQuestionResultsByRunId(runId: Id<DatasetRun>): List<DatasetRunQuestionResult> = datasetRunQuestionResultCol.find(DatasetRunQuestionResult::runId eq runId).toList()
 
     override fun deleteQuestionResultsByRunId(runId: Id<DatasetRun>) {
         datasetRunQuestionResultCol.deleteMany(DatasetRunQuestionResult::runId eq runId)

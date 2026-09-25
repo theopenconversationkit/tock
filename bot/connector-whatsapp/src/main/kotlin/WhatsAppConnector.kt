@@ -105,7 +105,8 @@ class WhatsAppConnector(
         delayInMs: Long,
     ) {
         if (event is Action) {
-            SendActionConverter.toBotMessage(event)
+            SendActionConverter
+                .toBotMessage(event)
                 ?.also {
                     val delay = Duration.ofMillis(delayInMs)
                     executor.executeBlocking(delay) {
@@ -115,7 +116,5 @@ class WhatsAppConnector(
         }
     }
 
-    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> {
-        return WhatsAppMediaConverter.toConnectorMessage(message)
-    }
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = WhatsAppMediaConverter.toConnectorMessage(message)
 }

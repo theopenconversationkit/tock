@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -30,19 +14,20 @@ import { StateService } from '../core-nlp/state.service';
 import { RestService } from '../core-nlp/rest/rest.service';
 import { TestMessage } from '../test/model/test';
 import { ActionReport, PlayerId, PlayerType, Sentence } from '../shared/model/dialog-data';
+import { TranslocoService } from '@jsverse/transloco';
 
 interface PlaygroundForm {
   questionAnsweringLlmProvider: FormControl<AiEngineProvider>;
   questionAnsweringLlmSetting: FormGroup<any>;
   questionAnsweringPromptTemplate: FormControl<string>;
-
   prompt: FormControl<string>;
 }
 
 @Component({
-  selector: 'tock-playground',
-  templateUrl: './playground.component.html',
-  styleUrl: './playground.component.scss'
+    selector: 'tock-playground',
+    templateUrl: './playground.component.html',
+    styleUrl: './playground.component.scss',
+    standalone: false
 })
 export class PlaygroundComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
@@ -73,6 +58,12 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
 
   question_answering_prompt: string;
 
+  promptTemplateShortcuts = [
+    { title: 'Load current bot prompt', type: 'current' },
+    { title: 'Load default prompt', type: 'default' },
+    { title: 'Clear prompt', type: 'clear' }
+  ];
+
   constructor(
     private botConfiguration: BotConfigurationService,
     public state: StateService,
@@ -80,7 +71,8 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
     private location: Location,
     private nbDialogService: NbDialogService,
     private toastrService: NbToastrService,
-    private nbMenuService: NbMenuService
+    private nbMenuService: NbMenuService,
+    private transloco: TranslocoService
   ) {
     this.question_answering_prompt = (this.location.getState() as any)?.question_answering_prompt;
   }
@@ -122,10 +114,20 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
         });
       } else {
         this.form.reset();
-
         this.loading = false;
       }
     });
+
+    this.transloco
+      .selectTranslateObject('playground', {}, 'playground')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((t) => {
+        this.promptTemplateShortcuts = [
+          { title: t.loadCurrentBotPrompt, type: 'current' },
+          { title: t.loadDefaultPrompt, type: 'default' },
+          { title: t.clearPrompt, type: 'clear' }
+        ];
+      });
   }
 
   private getRagSettingsLoader(): Observable<RagSettings> {
@@ -143,12 +145,15 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
   get questionAnsweringLlmProvider(): FormControl {
     return this.form.get('questionAnsweringLlmProvider') as FormControl;
   }
+
   get questionAnsweringLlmSetting(): FormControl {
     return this.form.get('questionAnsweringLlmSetting') as FormControl;
   }
+
   get prompt(): FormControl {
     return this.form.get('prompt') as FormControl;
   }
+
   get questionAnsweringPromptTemplate(): FormControl {
     return this.form.get('questionAnsweringPromptTemplate') as FormControl;
   }
@@ -285,10 +290,14 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.log(error);
-        this.toastrService.danger('An error occured', 'Error', {
-          duration: 5000,
-          status: 'danger'
-        });
+        this.toastrService.danger(
+          this.transloco.translate('common.messages.an-error-occured'),
+          this.transloco.translate('common.messages.error'),
+          {
+            duration: 5000,
+            status: 'danger'
+          }
+        );
         delete this.testQueryInProgress;
       }
     });
@@ -345,15 +354,8 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
   getPromptShortcutsMargin() {
     const textarea = this.textareaPromptRef?.nativeElement;
     if (textarea && textarea.clientHeight < textarea.scrollHeight) return '0 1em 0 0';
-
     return '0';
   }
-
-  promptTemplateShortcuts = [
-    { title: 'Load current bot prompt', type: 'current' },
-    { title: 'Load default prompt', type: 'default' },
-    { title: 'Clear prompt', type: 'clear' }
-  ];
 
   loadPromptTemplate(wich: 'current' | 'default' | 'clear') {
     if (wich === 'current') {
@@ -362,7 +364,6 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
     if (wich === 'default') {
       this.form.patchValue({ prompt: QuestionAnsweringDefaultPrompt });
     }
-
     if (wich === 'clear') {
       this.form.patchValue({ prompt: '' });
     }
@@ -375,7 +376,6 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
   }
 
   // IMPORT
-
   importModalRef: NbDialogRef<any>;
 
   importSettings(): void {
@@ -419,8 +419,8 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
 
         if (!hasCompatibleProvider) {
           this.toastrService.show(
-            `The file supplied does not reference a compatible provider. Please check the file.`,
-            'Rag settings import fails',
+            this.transloco.translate('playground.playground.importError'),
+            this.transloco.translate('playground.playground.importModalTitle'),
             {
               duration: 6000,
               status: 'danger'
@@ -430,7 +430,6 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
         }
 
         this.initForm(settings);
-
         this.closeImportModal();
       });
     }

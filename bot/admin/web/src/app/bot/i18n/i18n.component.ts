@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, DOCUMENT } from '@angular/core';
 import { I18nLabel, I18nLabelStateQuery, I18nLocalizedLabel, userInterfaces } from '../model/i18n';
 import { BotService } from '../bot-service';
 import { StateService } from '../../core-nlp/state.service';
@@ -25,13 +25,14 @@ import { Pagination } from '../../shared/components';
 import { I18nCategoryFilterAll, I18nFilters, I18nLocaleFilters } from './models';
 import { I18nExportComponent } from './i18n-export/i18n-export.component';
 import { I18nImportComponent } from './i18n-import/i18n-import.component';
-import { DOCUMENT } from '@angular/common';
+
 import { scrollToPageTop } from '../../shared/utils';
 
 @Component({
-  selector: 'tock-i18n',
-  templateUrl: './i18n.component.html',
-  styleUrls: ['./i18n.component.css']
+    selector: 'tock-i18n',
+    templateUrl: './i18n.component.html',
+    styleUrls: ['./i18n.component.css'],
+    standalone: false
 })
 export class I18nComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

@@ -23,4 +23,6 @@ package ai.tock.bot.connector
  */
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class ConnectorIdHandlers(vararg val handlers: ConnectorIdHandler)
+annotation class ConnectorIdHandlers(
+    vararg val handlers: ConnectorIdHandler,
+)

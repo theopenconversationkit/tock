@@ -134,7 +134,8 @@ object IndicatorService {
         namespace: String,
         botId: String,
     ): Boolean =
-        dao.deleteByNameAndApplicationName(name, namespace, botId)
+        dao
+            .deleteByNameAndApplicationName(name, namespace, botId)
             .also { if (!it) throw IndicatorError.IndicatorDeletionFailed(name, namespace, botId) }
 
     /**

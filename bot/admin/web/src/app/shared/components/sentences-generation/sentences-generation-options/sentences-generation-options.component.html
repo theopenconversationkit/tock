@@ -1,21 +1,21 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
+@if (showAlert) {
 <nb-alert
-  *ngIf="showAlert"
   outline="warning"
   closable
   (close)="closeAlert()"
@@ -28,6 +28,7 @@
     Please note that data will be transmitted to an external partner. Be careful not to send sentences containing "sensitive" information.
   </div>
 </nb-alert>
+}
 
 <form
   class="d-flex flex-column"
@@ -35,8 +36,8 @@
 >
   <div>
     <div class="mb-3">
+      @if (sentences.length) {
       <nb-select
-        *ngIf="sentences.length"
         class="mb-1"
         multiple
         placeholder="Choose until 5 examples among the existing sentences"
@@ -44,19 +45,15 @@
         optionsListClass="option-list--break-word"
         formControlName="sentencesExample"
       >
-        <nb-option
-          *ngFor="let sentence of sentences"
-          value="{{ sentence }}"
-        >
+        @for (sentence of sentences; track sentence) {
+        <nb-option value="{{ sentence }}">
           <span class="initial-capitalize">{{ sentence }}</span>
         </nb-option>
+        }
       </nb-select>
-      <small
-        *ngIf="sentencesExample.errors?.maxlength"
-        class="text-danger"
-      >
-        The model can only take {{ sentencesExampleMax }} sentences as examples
-      </small>
+      } @if (sentencesExample.errors?.maxlength) {
+      <small class="text-danger"> The model can only take {{ sentencesExampleMax }} sentences as examples </small>
+      }
     </div>
 
     <div class="d-flex flex-column gap-1">

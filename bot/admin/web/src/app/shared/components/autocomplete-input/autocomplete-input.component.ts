@@ -21,16 +21,17 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'tock-autocomplete-input',
-  templateUrl: './autocomplete-input.component.html',
-  styleUrls: ['./autocomplete-input.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => AutocompleteInputComponent),
-      multi: true
-    }
-  ]
+    selector: 'tock-autocomplete-input',
+    templateUrl: './autocomplete-input.component.html',
+    styleUrls: ['./autocomplete-input.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => AutocompleteInputComponent),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 export class AutocompleteInputComponent implements OnInit, ControlValueAccessor {
   @Input() activeFirst: boolean = true;

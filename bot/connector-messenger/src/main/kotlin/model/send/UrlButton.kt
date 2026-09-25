@@ -32,13 +32,12 @@ data class UrlButton(
     @JsonProperty("messenger_extensions") val messengerExtensions: String? = null,
     @JsonProperty("fallback_url") val fallBackUrl: String? = null,
 ) : Button(ButtonType.web_url) {
-    override fun toChoice(): Choice {
-        return Choice(
+    override fun toChoice(): Choice =
+        Choice(
             EXIT_INTENT,
             mapOf(
                 URL_PARAMETER to url,
                 TITLE_PARAMETER to title,
             ),
         )
-    }
 }

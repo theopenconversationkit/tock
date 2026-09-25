@@ -20,9 +20,10 @@ import { StateService } from '../../../../core-nlp/state.service';
 import { flatMap } from '../../../../model/commons';
 
 @Component({
-  selector: 'tock-sentence-review-request',
-  templateUrl: './sentence-review-request.component.html',
-  styleUrls: ['./sentence-review-request.component.scss']
+    selector: 'tock-sentence-review-request',
+    templateUrl: './sentence-review-request.component.html',
+    styleUrls: ['./sentence-review-request.component.scss'],
+    standalone: false
 })
 export class SentenceReviewRequestComponent implements OnInit {
   @Input() beforeClassification;

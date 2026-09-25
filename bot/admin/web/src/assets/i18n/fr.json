@@ -1,0 +1,579 @@
+{
+  "common": {
+    "actions": {
+      "refresh": "Rafraichir",
+      "refresh-dialogs": "Rafraichir les dialogues",
+      "clear": "Effacer",
+      "clear-selection": "Tout désélectionner",
+      "clear-filter": "Effacer le filtre",
+      "all": "Tout",
+      "display-tests": "Afficher les tests",
+      "unknown": "Unknown",
+      "close": "Fermer",
+      "delete": "Supprimer",
+      "permanently-delete": "supprimer définitivement",
+      "remove": "Supprimer",
+      "cancel": "Annuler",
+      "add": "Ajouter",
+      "create": "Créer",
+      "update": "Mettre à jour",
+      "reset": "Réinitialiser",
+      "edit": "Modifier",
+      "export": "Exporter",
+      "import": "Importer",
+      "save": "Enregistrer",
+      "select": "Sélectionner",
+      "yes": "Oui",
+      "no": "Non",
+      "overwrite": "Ecraser",
+      "confirm": "Confirmer"
+    },
+    "sort": {
+      "ascending": "Croissant",
+      "descending": "Décroissant"
+    },
+    "feedback": {
+      "positive": "Retour positif",
+      "negative": "Retour négatif"
+    },
+    "connectors": {
+      "unknown-connector": "Inconnu"
+    },
+    "messages": {
+      "error": "Erreur",
+      "an-error-occured": "Une erreur est survenue",
+      "success": "Succès",
+      "emptyInput": "Veuillez saisir une valeur non vide",
+      "noBotConfiguration": "Aucune configuration de bot détectée",
+      "info": "Info",
+      "stringCopiedToClipboard": "Chaîne copiée dans le presse-papiers",
+      "clipboard": "Presse-papiers"
+    },
+    "storyTypes": {
+      "builtIn": "Story intégrée",
+      "message": "Story de message",
+      "messageFaq": "Story de FAQ",
+      "script": "Story de script"
+    },
+    "fileTypes": {
+      "image": "Fichiers image",
+      "audio": "Fichiers audio",
+      "video": "Fichiers vidéo",
+      "file": "Autres types de fichiers",
+      "link": "Liens externes"
+    },
+    "ragAnswerStatus": {
+      "foundInContext": "Trouvé dans le contexte",
+      "notFoundInContext": "Non trouvé dans le contexte",
+      "smallTalk": "Échanges informels",
+      "humanEscalation": "Escalade humaine",
+      "outOfScope": "Hors périmètre",
+      "injectionAttempt": "Tentative d'injection",
+      "technicalError": "Erreur technique"
+    },
+    "responseIssueReasons": {
+      "questionNotOrMisunderstood": "Question mal comprise/incomprise",
+      "inaccurateAnswer": "Réponse inexacte",
+      "incompleteAnswer": "Réponse incomplète",
+      "incompleteSourcesOrDocuments": "Sources/documents incomplets",
+      "obsoleteSourcesOrDocuments": "Sources/documents obsolètes",
+      "businessLexiconProblem": "Problème de lexique métier",
+      "wrongAnswerFormat": "Format de réponse incorrect",
+      "hallucination": "Hallucination",
+      "other": "Autre"
+    },
+    "dialogUser": {
+      "human": "Humain",
+      "bot": "Bot"
+    }
+  },
+  "env-banner": { "hide": "Masquer l'indicateur d'environnement" },
+  "header": {
+    "interface-language": "Langue de l'interface",
+    "theme-switch-light": "Passer en mode clair",
+    "theme-switch-dark": "Passer en mode sombre",
+    "select-application": "Sélectionner l'application courante",
+    "select-namespace": "Sélectionner le namespace courant",
+    "select-locale": "Sélectionner la locale courante",
+    "go-to-dialogs": "Accéder au monitoring des dialogues",
+    "open-test-dialog": "Ouvrir un dialogue de test",
+    "logout": "Se déconnecter"
+  },
+  "menu": {
+    "dashboard": "Tableau de bord",
+    "language-understanding": "Compréhension du langage",
+    "stories-answers": "Stories & Réponses",
+    "gen-ai": "IA Générative",
+    "test": "Test",
+    "analytics": "Analytique",
+    "custom-metrics": "Métriques",
+    "answers-quality": "Qualité des réponses",
+    "model-quality": "Qualité du modèle",
+    "settings": "Paramètres"
+  },
+  "menu-items": {
+    "new-sentence": "Nouvelle phrase",
+    "inbox-sentences": "Phrases à entrainer",
+    "search-sentences": "Rechercher des phrases",
+    "unknown-sentences": "Phrases inconnues",
+    "intents": "Intentions",
+    "entities": "Entités",
+    "sentences-logs": "Journaux des phrases",
+    "new-story": "Nouvelle story",
+    "all-stories": "Toutes les stories",
+    "faq-stories": "Stories FAQ",
+    "answers": "Réponses",
+    "documents": "Documents",
+    "rules": "Règles",
+    "rag-settings": "Paramètres RAG",
+    "rag-exclusions": "Exclusions RAG",
+    "compressor-settings": "Paramètres de compression",
+    "sentence-generation-settings": "Génération de phrases",
+    "observability-settings": "Paramètres d'observabilité",
+    "vector-db-settings": "Paramètres base vectorielle",
+    "playground": "Bac à sable",
+    "vector-store-inspection-exploration": "Exploration base vectorielle",
+    "vector-store-inspection-diagnostic": "Diagnostic de recherche",
+    "test": "Test",
+    "test-plans": "Plans de test",
+    "activity": "Activité",
+    "behavior": "Comportement",
+    "flow": "Flux",
+    "users": "Utilisateurs",
+    "dialogs": "Dialogues",
+    "preferences": "Préférences",
+    "satisfaction": "Satisfaction",
+    "metrics": "Métriques",
+    "indicators": "Indicateurs",
+    "evaluations": "Évaluations",
+    "datasets": "Jeux de données",
+    "model-stats": "Statistiques du modèle",
+    "intent-distance": "Distance des intentions",
+    "count-stats": "Statistiques de comptage",
+    "model-builds": "Compilations du modèle",
+    "test-trends": "Tendances des tests",
+    "test-intent-errors": "Erreurs d'intentions (test)",
+    "test-entity-errors": "Erreurs d'entités (test)",
+    "applications": "Applications",
+    "configurations": "Configurations",
+    "namespaces": "Namespaces",
+    "log": "Journal",
+    "synchronization": "Synchronisation"
+  },
+  "shared": {
+    "pagination": {
+      "items-per-page": "Éléments par page",
+      "previous-page": "Page précédente",
+      "next-page": "Page suivante",
+      "summary": "{{start}} - {{end}} sur {{total}}"
+    },
+    "chat-ui-dialog-evaluator": {
+      "user_inputs_tooltip": "Nombre d'entrées utilisateur",
+      "bot_responses_tooltip": "Nombre de réponses du bot",
+      "rag_answers_tooltip": "Nombre de réponses RAG",
+      "open_dialog_tooltip": "Ouvrir le dialogue",
+      "evaluation_summary": "{evaluated} réponses de bot évaluées sur {total}",
+      "evaluation_summary_with_expand": "{evaluated} réponses de bot évaluées sur {total}.\nCliquez pour développer.",
+      "evaluate_positively_tooltip": "Évaluer positivement",
+      "evaluated_positively_by": "Réponse évaluée positivement par «{evaluator}»",
+      "evaluate_negatively_tooltip": "Évaluer négativement",
+      "evaluated_negatively_by_with_reason": "Réponse évaluée négativement par «{evaluator}». Raison : «{reason}»"
+    },
+    "chat-ui-dialog-logger": {
+      "nb-user-inputs": "Nombre d'entrées utilisateur",
+      "nb-bot-responses": "Nombre de réponses du bot",
+      "nb-rag-answers": "Nombre de réponses RAG",
+      "nb-annotations": "Nombre d'annotations",
+      "replay-dialog": "Rejouer tout le dialogue",
+      "replay-sentence": "Rejouer cette phrase",
+      "show-nlp-stats": "Afficher les stats NLP",
+      "show-debug": "Afficher les infos de débogage",
+      "open-playground": "Ouvrir la requête dans le playground",
+      "display-dialog-alone": "Afficher ce dialogue seul",
+      "display-annotation": "Afficher l'annotation",
+      "annotate-exchange": "Annoter cet échange",
+      "create-faq": "Créer une FAQ avec cette paire question/réponse",
+      "view-observability": "Voir les détails d'observabilité",
+      "feedback-positive": "Ce message a reçu un retour positif.",
+      "feedback-negative": "Ce message a reçu un retour négatif.",
+      "open-in-vector-store-diagnostic": "Diagnostiquer la recherche"
+    },
+    "chat-ui-message": {
+      "switch-formatting-tooltip": "Mise en forme du message",
+      "copy-message-tooltip": "Copier le contenu du message",
+      "configuration-tooltip": "Configuration : {{name}}"
+    },
+    "intent-story-details": {
+      "not-found": {
+        "title": "Intention introuvable",
+        "message": "Il n'existe aucune intention avec le nom '{{ intentName }}'. Peut-être a-t-elle été supprimée."
+      },
+      "header": {
+        "title": "Détails de la story associée à l'intent «{{ intentLabel }}»"
+      },
+      "tooltips": {
+        "locale": "Locale",
+        "test-sentence": "Tester cette phrase dans un dialog",
+        "usage-count": "Nombre d'utilisations"
+      },
+      "warnings": {
+        "no-story": "Aucune story n'est actuellement associée à cette intent"
+      },
+      "labels": {
+        "story-name": "Nom de la story",
+        "type": "Type",
+        "category": "Catégorie",
+        "default-sentence": "Phrase par défaut",
+        "default-answers": "Réponse(s) par défaut"
+      },
+      "story-types": {
+        "built-in": "Intégrée",
+        "simple": "Simple",
+        "simple-faq": "Simple (FAQ)",
+        "scripted": "Scriptée"
+      },
+      "buttons": {
+        "show-all-sentences": "Afficher toutes les phrases de l'intent"
+      }
+    },
+    "intent-dialog": {
+      "header": {
+        "create": "Créer {dialogType, select, story {une nouvelle Story} intent {une nouvelle Intention} other {}}",
+        "update": "Mettre à jour {dialogType, select, story {la Story} intent {l'Intention} other {le}} {nameOrLabel}"
+      },
+      "placeholders": {
+        "label": "Libellé",
+        "name": "Nom*",
+        "category": "Catégorie",
+        "description": "Description"
+      },
+      "tooltips": {
+        "label": "Libellé affiché",
+        "name": "Identifiant technique",
+        "category": "Catégorie"
+      }
+    },
+    "sentence-training": {
+      "no-data": {
+        "title": "Aucune phrase trouvée",
+        "message": "Pour ajouter des phrases, commencez par Compréhension du langage > Nouvelle phrase ou testez le bot dans Tock Studio, ou discutez avec le bot sur n'importe quel canal connecté."
+      },
+      "batch-actions": {
+        "validate-tooltip": "Valider toutes les phrases sélectionnées",
+        "delete-tooltip": "Supprimer toutes les phrases sélectionnées",
+        "unknown-tooltip": "Définir toutes les phrases sélectionnées comme inconnues",
+        "ragexcluded-tooltip": "Définir toutes les phrases sélectionnées comme exclues du RAG"
+      },
+      "sort-by-creation-date": "Trier par date de création",
+      "action-titles": {
+        "delete": "Supprimer",
+        "unknown": "Inconnu",
+        "ragexcluded": "Exclu du RAG",
+        "validate": "Valider"
+      },
+      "errors": {
+        "please-select-intent": "Veuillez d'abord sélectionner une intention"
+      },
+      "success": {
+        "dump-provided": "Export fourni",
+        "sentences-dump-title": "Export des phrases"
+      },
+      "dialogs": {
+        "no-sentence-selected-title": "Aucune phrase sélectionnée",
+        "change-intent-all-subtitle": "Vous n'avez sélectionné aucune phrase.\nSouhaitez-vous modifier l'intention de toutes les phrases correspondant aux critères de recherche ci-dessus ?",
+        "change-entity-all-subtitle": "Vous n'avez sélectionné aucune phrase.\nSouhaitez-vous modifier l'entité de toutes les phrases correspondant aux critères de recherche ci-dessus ?",
+        "change-entity-all-action": "Modifier l'intention de tous les résultats",
+        "translate-all-subtitle": "Vous n'avez sélectionné aucune phrase à traduire.\nSouhaitez-vous traduire toutes les phrases correspondant aux critères de recherche ci-dessus ?",
+        "translate-all-action": "Traduire tous les résultats",
+        "change-all-action": "Modifier toutes les résultats"
+      },
+      "messages": {
+        "no-sentence-updated": "Aucune phrase mise à jour",
+        "one-sentence-updated": "1 phrase mise à jour",
+        "multiple-sentences-updated": "{{count}} phrases mises à jour",
+        "no-sentence-translated": "Aucune phrase traduite",
+        "one-sentence-translated": "1 phrase traduite",
+        "multiple-sentences-translated": "{{count}} phrases traduites",
+        "batch-action-success": "{{action}} {{count}} phrases"
+      }
+    },
+    "sentence-training-filters": {
+      "search-placeholder": "Rechercher une phrase",
+      "search-tooltip": "Recherche en texte intégral. Les expressions régulières sont prises en charge (format PCRE)",
+      "clear": "Effacer",
+      "display-advanced-search": "Afficher les options de recherche avancée",
+      "hide-advanced-search": "Masquer les options de recherche avancée",
+      "status": "Statut",
+      "status-all": "Tous",
+      "status-inbox": "Boîte de réception",
+      "status-validated": "Validé",
+      "status-included-in-model": "Inclus dans le modèle",
+      "sentences-to-review": "Phrases à réviser",
+      "intent-placeholder": "Intention",
+      "intent-tooltip": "Filtrer par intention",
+      "entity-type-placeholder": "Type d'entité",
+      "entity-type-tooltip": "Filtrer par type d'entité",
+      "all": "Tous",
+      "entity-roles-to-include-placeholder": "Rôles d'entités à inclure",
+      "entity-roles-to-include-tooltip": "Filtrer par rôles d'entités à inclure",
+      "entity-roles-to-exclude-placeholder": "Rôles d'entités à exclure",
+      "entity-roles-to-exclude-tooltip": "Filtrer par rôles d'entités à exclure",
+      "clear-selection": "Effacer la sélection",
+      "modified-after-placeholder": "Modifié après le",
+      "modified-after-tooltip": "Filtrer les phrases modifiées après la date donnée",
+      "modified-before-placeholder": "Modifié avant le",
+      "modified-before-tooltip": "Filtrer les phrases modifiées avant la date donnée",
+      "validated-by-placeholder": "Validé par",
+      "validated-by-tooltip": "Filtrer les phrases validées par l'utilisateur donné",
+      "anyone": "N'importe qui",
+      "not-validated-by-placeholder": "Non validé par",
+      "not-validated-by-tooltip": "Filtrer les phrases non validées par l'utilisateur donné",
+      "nobody": "Personne",
+      "configuration-placeholder": "Configuration",
+      "configuration-tooltip": "Filtrer les phrases par configuration",
+      "all-configurations": "Toutes les configurations",
+      "detection-probability": "Probabilité de détection",
+      "advanced-tools": "Outils avancés",
+      "advanced-tools-tooltip": "Afficher les outils de gestion des intentions et des entités",
+      "change-intent-title": "Changer l'intention des phrases sélectionnées",
+      "select-intent-placeholder": "Sélectionner une intention",
+      "select-intent-tooltip": "Sélectionner l'intention à attribuer aux phrases sélectionnées",
+      "change-intent-button": "Appliquer le changement d'intention",
+      "change-intent": "Changer l'intention",
+      "change-entity-title": "Changer l'entité des phrases sélectionnées",
+      "select-old-entity-placeholder": "Sélectionner l'ancienne entité",
+      "select-old-entity-tooltip": "Sélectionner l'entité à remplacer",
+      "select-new-entity-placeholder": "Sélectionner la nouvelle entité",
+      "select-new-entity-tooltip": "Sélectionner la nouvelle entité à attribuer",
+      "change-entity-button": "Appliquer le changement d'entité",
+      "change-entity": "Changer l'entité",
+      "translate-title": "Traduire les phrases sélectionnées",
+      "target-language-placeholder": "Langue cible",
+      "target-language-tooltip": "Sélectionner la langue dans laquelle traduire les phrases",
+      "translate-button": "Traduire les phrases",
+      "translate": "Traduire"
+    },
+    "sentence-training-entry": {
+      "review-comment": "Commentaire de révision",
+      "copy-sentence": "Copier la phrase",
+      "test-sentence": "Tester cette phrase dans un dialogue",
+      "sentence-status": "Statut de la phrase",
+      "sentence-configuration": "Configuration de la phrase",
+      "qualifier": "Qualificateur",
+      "intent-association": "Association d'intention",
+      "show-intent-story-details": "Afficher les détails de l'histoire de l'intention",
+      "intent-detection-probability": "Probabilité de détection de l'intention. Cliquez pour plus de détails",
+      "intent-probability": "Probabilité de l'intention",
+      "other-intents-probability": "Probabilité pour les autres intentions",
+      "associate-intent": "Associer cette intention à la phrase",
+      "entities-probability": "Probabilité des entités",
+      "other-entities-probability": "Probabilité pour les autres entités",
+      "validate": "Valider",
+      "ask-for-review": "Demander une révision",
+      "set-as-unknown": "Définir comme inconnu",
+      "exclude-from-rag": "Exclure du traitement RAG",
+      "delete": "Supprimer",
+      "set-sentence-language": "Définir la langue de la phrase",
+      "sentence-language": "Langue de la phrase",
+      "create-new-intent": "Créer une nouvelle intention",
+      "create-faq": "Créer une FAQ basée sur cette phrase",
+      "show-dialog": "Afficher le dialogue",
+      "action-titles": {
+        "delete": "Supprimer",
+        "unknown": "Inconnu",
+        "ragexcluded": "Exclu du RAG",
+        "validate": "Valider"
+      },
+      "errors": {
+        "please-select-intent": "Veuillez d'abord sélectionner une intention",
+        "intent-creation-error": "Erreur lors de la création de l'intention"
+      },
+      "messages": {
+        "language-change-message": "Changement de langue vers {{language}}",
+        "language-change-title": "Changement de langue",
+        "sentence-copied": "Phrase copiée dans le presse-papiers",
+        "clipboard": "Presse-papiers",
+        "intent-already-exists": "L'intention {{name}} existe déjà"
+      },
+      "dialogs": {
+        "intent-already-used-title": "Cette intention est déjà utilisée dans une autre application",
+        "intent-already-used-subtitle": "Si vous confirmez le nom, l'intention sera partagée entre les deux applications."
+      }
+    },
+    "sentence-training-sentence": {
+      "assign-entity-to": "Assigner une entité à",
+      "assign-entity-tooltip": "Assigner « {{entityName}} »",
+      "add-entity": "Ajouter une entité",
+      "errors": {
+        "creating-entity-type": "Erreur lors de la création du type d'entité {{name}}",
+        "error-title": "Erreur",
+        "recursive-sub-entity-not-allowed": "L'ajout d'une sous-entité récursive n'est pas autorisé",
+        "operation-not-allowed-title": "Opération non autorisée"
+      },
+      "success": {
+        "entity-added-message": "Le type d'entité {{qualifiedRole}} a été ajouté à l'intention de cette phrase",
+        "entity-added-title": "Entité ajoutée"
+      }
+    },
+    "token-view": {
+      "entity-tooltip": "Entité : {{role}}",
+      "remove-entity": "Supprimer l'entité « {{entityName}} »"
+    },
+    "sentence-training-create-entity": {
+      "header": "Ajouter une entité",
+      "select-existing-entity": "Sélectionner une entité existante :",
+      "select-entity-tooltip": "Sélectionner « {{entityName}} »",
+      "or-create": "Ou créer :",
+      "entity-type-placeholder": "Type d'entité",
+      "role-placeholder": "Rôle"
+    },
+    "sentence-review-request": {
+      "header": "Demander une révision",
+      "description-placeholder": "Description",
+      "delete-review": "Supprimer la révision"
+    },
+    "sentence-training-dialog": {
+      "header": "Dialogue contenant cette phrase",
+      "dialog-selector-placeholder": "Dialogue n°{{index}}",
+      "dialog-option": "Dialogue n°{{index}}",
+      "no-dialog-found": "Aucun dialogue contenant cette phrase n'a été trouvé."
+    },
+    "select-bot": {
+      "selectConfigurationTooltip": "Sélectionner une configuration",
+      "selectConfigurationPlaceholder": "Sélectionner une configuration",
+      "selectConnectorTooltip": "Sélectionner un connecteur",
+      "selectConnectorPlaceholder": "Sélectionner un connecteur",
+      "configurationNotFound": "Configuration de test introuvable",
+      "noConfigurationLabel": "Aucune configuration",
+      "noConnectorLabel": "Aucun connecteur"
+    },
+    "ai-settings-engine-config-param-input": {
+      "activatedLabel": "Activé",
+      "deactivatedLabel": "Désactivé",
+      "useDefaultPromptButton": "Utiliser le prompt par défaut"
+    },
+    "annotation": {
+      "title": "Annotation",
+      "closeTooltip": "Fermer",
+      "questionPrefix": "Question :",
+      "condensedQuestionPrefix": "Question condensée :",
+      "answerPrefix": "Réponse :",
+      "stateLabel": "État",
+      "reasonLabel": "Raison",
+      "reasonPlaceholder": "Sélectionner la raison du rapport",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Ajouter une description ici",
+      "groundTruthLabel": "Vérité terrain",
+      "groundTruthPlaceholder": "Ajouter la vérité terrain ici",
+      "changesAndCommentsTitle": "Modifications et commentaires",
+      "reverseOrderTooltip": "Cliquer pour inverser l'ordre",
+      "showChangeEventsTooltip": "Cliquer pour afficher les événements de modification",
+      "hideChangeEventsTooltip": "Cliquer pour masquer les événements de modification",
+      "hideChangeEventsLabel": "Masquer les événements de modification",
+      "noDataToDisplay": "Aucune donnée à afficher",
+      "modifiedLabel": "a modifié",
+      "fromLabel": "de",
+      "toLabel": "en",
+      "onLabel": "le",
+      "addCommentLabel": "Ajouter un commentaire",
+      "addCommentPlaceholder": "Ajouter un nouveau commentaire ici",
+      "cancelButton": "Annuler",
+      "closeButton": "Fermer",
+      "submitButton": "Soumettre",
+      "updateButton": "Mettre à jour",
+      "states": {
+        "opened": "Ouvert",
+        "reviewNeeded": "Revue nécessaire",
+        "resolved": "Résolu",
+        "wontFix": "Ne sera pas corrigé"
+      },
+      "comment": {
+        "addedOn": "a ajouté un commentaire le",
+        "editTooltip": "Modifier ce commentaire",
+        "deleteTooltip": "Supprimer ce commentaire",
+        "submitTooltip": "Valider les modifications",
+        "cancelTooltip": "Annuler"
+      }
+    },
+    "date-range": {
+      "title": "Du {start} au {end}",
+      "update": "Mettre à jour",
+      "shortcuts": {
+        "yesterday": "Hier",
+        "today": "Aujourd'hui",
+        "last7Days": "7 derniers jours",
+        "last14Days": "14 derniers jours",
+        "last30Days": "30 derniers jours",
+        "last90Days": "90 derniers jours",
+        "last180Days": "180 derniers jours"
+      }
+    },
+    "debug-viewer-dialog": {
+      "title": "Visualiseur de débogage",
+      "close_tooltip": "Fermer",
+      "documents_title": "Documents ({count})",
+      "used": "utilisés",
+      "unused": "non utilisés",
+      "group_label_used": "Utilisés",
+      "group_label_unused": "Non utilisés",
+      "reason": "Raison :",
+      "sentences": "Phrases ({count})",
+      "content": "Contenu",
+      "metadata": "Métadonnées",
+      "full_debug_json": "JSON de débogage complet"
+    },
+    "error-helper": {
+      "required": "Ce champ est obligatoire",
+      "minlength": "Ce champ doit contenir au moins {requiredLength, plural, =1 {1 caractère} other {{requiredLength} caractères}}",
+      "maxlength": "Ce champ est limité à {requiredLength, plural, =1 {1 caractère} other {{requiredLength} caractères}}",
+      "min": "La valeur minimale est {min}",
+      "max": "La valeur maximale est {max}",
+      "files_name_with_wrong_type": "Les fichiers suivants ne sont pas des types acceptés :",
+      "files_name_with_wrong_format": "Les fichiers suivants n'ont pas le format requis :"
+    },
+    "file-upload": {
+      "remove_file_tooltip": "Supprimer ce fichier",
+      "or": "ou",
+      "drag_and_drop_here": "Glissez-déposez {count, plural, =1 {un fichier} other {des fichiers}} ici",
+      "browse_for_files": "Parcourir pour {count, plural, =1 {un fichier} other {des fichiers}}",
+      "file_types_accepted": "{count, plural, =1 {Type de fichier} other {Types de fichiers}} acceptés : {fileTypes}"
+    },
+    "form-control": {
+      "required": "Obligatoire"
+    },
+    "json-iterator": {
+      "expand_recursively_tooltip": "Développer récursivement",
+      "copy_tooltip": "Copier la valeur",
+      "copied_tooltip": "Copié !"
+    },
+    "scroll-top-button": {
+      "scroll_to_top_tooltip": "Retour en haut de page"
+    },
+    "sentences-generation": {
+      "title": "Génération de phrases",
+      "close_tooltip": "Fermer",
+      "not_enabled": "La génération de phrases n'est pas activée.",
+      "contact_admin": "Contactez un administrateur pour activer cette fonctionnalité",
+      "configure_feature": "Vous pouvez configurer cette fonctionnalité via le lien ci-dessous",
+      "settings_button": "Paramètres de génération de phrases",
+      "no_results_warning": "La requête n'a retourné aucun résultat. Essayez de relancer la demande ou de sélectionner d'autres exemples de phrases.",
+      "generate_button": "Générer",
+      "validate_selection_button": "Valider la sélection"
+    },
+    "sticky-menu": {
+      "expand_menu_tooltip": "Développer ce menu",
+      "reduce_menu_tooltip": "Réduire ce menu"
+    },
+    "test-dialog": {
+      "no_bot_configuration_title": "Aucune configuration de bot détectée",
+      "no_bot_configuration_message": "Allez dans Paramètres > Configurations pour en définir une",
+      "options_label": "Options",
+      "select_dialog_locale_tooltip": "Sélectionnez la locale de la conversation",
+      "rag_debug_label": "Débogage RAG",
+      "sources_content_label": "Contenu des sources",
+      "view_nlp_stats_tooltip": "Voir les statistiques NLP",
+      "clear_conversation_tooltip": "Effacer la conversation",
+      "user_message_placeholder": "Saisissez un texte"
+    }
+  }
+}

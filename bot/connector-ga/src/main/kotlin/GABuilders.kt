@@ -91,9 +91,7 @@ fun <T : Bus<T>> T.endForGoogleAssistant(
  * Adds a Google Assistant [ConnectorMessage] if the current connector is Google Assistant.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun <T : Bus<T>> T.withGoogleAssistant(messageProvider: () -> GAResponseConnectorMessage): T {
-    return withMessage(gaConnectorType, messageProvider)
-}
+fun <T : Bus<T>> T.withGoogleAssistant(messageProvider: () -> GAResponseConnectorMessage): T = withMessage(gaConnectorType, messageProvider)
 
 /**
  * If the device supports audio, adds a Google Assistant [ConnectorMessage] if the current connector is Google Assistant.
@@ -197,21 +195,20 @@ fun I18nTranslator.gaMessage(
 fun I18nTranslator.permissionIntent(
     optionalContext: CharSequence? = null,
     vararg permissions: GAPermission,
-): GAExpectedIntent {
-    return GAExpectedIntent(
+): GAExpectedIntent =
+    GAExpectedIntent(
         GAIntent.permission,
         GAPermissionValueSpec(
             translate(optionalContext).toString(),
             permissions.toSet(),
         ),
     )
-}
 
 /**
  * Google Assistant Message asking for update [GAPermission].
  */
-fun I18nTranslator.updatePermissionIntent(intent: String): GAExpectedIntent {
-    return GAExpectedIntent(
+fun I18nTranslator.updatePermissionIntent(intent: String): GAExpectedIntent =
+    GAExpectedIntent(
         GAIntent.permission,
         GAPermissionValueSpec(
             null,
@@ -219,7 +216,6 @@ fun I18nTranslator.updatePermissionIntent(intent: String): GAExpectedIntent {
             GAUpdatePermissionValueSpec(intent),
         ),
     )
-}
 
 /**
  * Provides a [GALinkOutSuggestion].
@@ -304,9 +300,7 @@ fun I18nTranslator.inputPrompt(
 fun I18nTranslator.gaButton(
     title: CharSequence,
     url: String,
-): GAButton {
-    return GAButton(translate(title).toString(), GAOpenUrlAction(url))
-}
+): GAButton = GAButton(translate(title).toString(), GAOpenUrlAction(url))
 
 /**
  * Provides a [GAOptionInfo] with all available parameters.
@@ -348,7 +342,8 @@ internal fun concat(
 
 internal fun String.removeEmojis(): String =
     EmojiParser.removeAllEmojis(
-        EmojiParser.parseToUnicode(this.replace("://", "_____"))
+        EmojiParser
+            .parseToUnicode(this.replace("://", "_____"))
             .replace("\uD83D\uDC68", ":3")
             .replace("\uD83D\uDE2E", ":0")
             .replace("_____", "://"),

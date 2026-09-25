@@ -74,30 +74,18 @@ internal object TestPlanMongoDAO : TestPlanDAO {
         testPlanExecutionCol.save(testPlanExecution)
     }
 
-    override fun getTestPlan(testPlanId: Id<TestPlan>): TestPlan? {
-        return testPlanCol.findOneById(testPlanId)
-    }
+    override fun getTestPlan(testPlanId: Id<TestPlan>): TestPlan? = testPlanCol.findOneById(testPlanId)
 
     override fun getTestPlanExecution(
         testPlan: TestPlan,
         testPlanExecutionId: Id<TestPlanExecution>,
-    ): TestPlanExecution? {
-        return testPlanExecutionCol.findOneById(testPlanExecutionId)
-    }
+    ): TestPlanExecution? = testPlanExecutionCol.findOneById(testPlanExecutionId)
 
-    override fun getPlansByApplicationId(applicationId: String): List<TestPlan> {
-        return testPlanCol.find(ApplicationId eq applicationId).ascendingSort(Name).toList()
-    }
+    override fun getPlansByApplicationId(applicationId: String): List<TestPlan> = testPlanCol.find(ApplicationId eq applicationId).ascendingSort(Name).toList()
 
-    override fun getTestPlans(): List<TestPlan> {
-        return testPlanCol.find().ascendingSort(Name).toList()
-    }
+    override fun getTestPlans(): List<TestPlan> = testPlanCol.find().ascendingSort(Name).toList()
 
-    override fun getPlanExecutions(testPlanId: Id<TestPlan>): List<TestPlanExecution> {
-        return testPlanExecutionCol.find(TestPlanId eq testPlanId).descendingSort(Date).toList()
-    }
+    override fun getPlanExecutions(testPlanId: Id<TestPlan>): List<TestPlanExecution> = testPlanExecutionCol.find(TestPlanId eq testPlanId).descendingSort(Date).toList()
 
-    override fun getPlanExecution(testPlanId: Id<TestPlan>): TestPlanExecution? {
-        return testPlanExecutionCol.findOneById(testPlanId)
-    }
+    override fun getPlanExecution(testPlanId: Id<TestPlan>): TestPlanExecution? = testPlanExecutionCol.findOneById(testPlanId)
 }

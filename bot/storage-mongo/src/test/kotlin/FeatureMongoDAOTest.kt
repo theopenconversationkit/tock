@@ -54,7 +54,10 @@ internal class FeatureMongoDAOTest {
         feature,
     }
 
-    private data class FeatureID(val id: String, val key: String)
+    private data class FeatureID(
+        val id: String,
+        val key: String,
+    )
 
     private val botId = "id"
     private val namespace = "namespace"

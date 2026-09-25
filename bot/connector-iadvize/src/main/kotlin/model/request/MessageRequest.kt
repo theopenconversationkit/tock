@@ -18,8 +18,15 @@ package ai.tock.bot.connector.iadvize.model.request
 
 import ai.tock.bot.connector.iadvize.model.payload.TextPayload
 
-data class MessageRequest(override val idOperator: String, override val idConversation: String, val message: Message<TextPayload>) : IadvizeRequest {
-    data class MessageRequestJson(val idOperator: String, val message: Message<TextPayload>)
+data class MessageRequest(
+    override val idOperator: String,
+    override val idConversation: String,
+    val message: Message<TextPayload>,
+) : IadvizeRequest {
+    data class MessageRequestJson(
+        val idOperator: String,
+        val message: Message<TextPayload>,
+    )
 
     constructor(messageRequestJson: MessageRequestJson, idConversation: String) :
         this(messageRequestJson.idOperator, idConversation, messageRequestJson.message)

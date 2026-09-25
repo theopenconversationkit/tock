@@ -1,53 +1,39 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<div *ngIf="i18nLabel?.i18n.length">
+@if (i18nLabel?.i18n.length) {
+<div>
   <nb-card>
     <nb-card-header>
       <div class="d-flex justify-content-between align-items-start">
         <div>
           <span
             class="label-title"
-            nbTooltip="ns: {{ i18nLabel.namespace }}, key: {{ i18nLabel._id }}"
-            >{{ !i18nLabel.defaultLocalizedLabel().label.length ? i18nLabel._id : i18nLabel.defaultLocalizedLabel().label }}
+            [nbTooltip]="'bot.i18n-label.tooltipNamespaceAndKey' | transloco: { namespace: i18nLabel.namespace, key: i18nLabel._id }"
+          >
+            {{ !i18nLabel.defaultLocalizedLabel().label.length ? i18nLabel._id : i18nLabel.defaultLocalizedLabel().label }}
           </span>
-
           <div class="font-size-small lineHeight-1 mt-1">
             <div>{{ i18nLabel.category }}</div>
-
-            <span
-              *ngIf="i18nLabel.defaultLocalizedLabel().label !== i18nLabel.defaultLabel"
-              nbTooltip="Original Label"
-            >
+            @if (i18nLabel.defaultLocalizedLabel().label !== i18nLabel.defaultLabel) {
+            <span [nbTooltip]="'bot.i18n-label.originalLabelTooltip' | transloco">
               {{ i18nLabel.defaultLabel }}
             </span>
-
+            }
             <span class="text-muted">
-              <span *ngIf="i18nLabel.statCount">used {{ i18nLabel.statCount }} times, </span>
-              <span *ngIf="i18nLabel.lastUpdate">last used {{ i18nLabel.lastUpdate | amTimeAgo }}</span>
+              @if (i18nLabel.statCount) {
+              <span> {{ 'bot.i18n-label.usedTimesLabel' | transloco: { count: i18nLabel.statCount } }}, </span>
+              } @if (i18nLabel.lastUpdate) {
+              <span>
+                {{ 'bot.i18n-label.lastUsedLabel' | transloco: { timeAgo: (i18nLabel.lastUpdate | amTimeAgo) } }}
+              </span>
+              }
             </span>
           </div>
         </div>
-
         <button
           nbButton
           ghost
           shape="round"
           status="danger"
-          nbTooltip="Delete Label (including alternative, type, connector and localized configs)"
+          [nbTooltip]="'bot.i18n-label.deleteLabelTooltip' | transloco"
           [disabled]="!deleteLabelAllowed"
           (click)="deleteLabel()"
         >
@@ -55,13 +41,11 @@
         </button>
       </div>
     </nb-card-header>
-
     <nb-card-body>
-      <div *ngFor="let l of i18nLabel.i18n; let isLast = last; let index = index">
-        <div
-          *ngIf="isLocalizedVisible(l) && isLocalizedNotHidden(l)"
-          class="mb-3"
-        >
+      @for (l of i18nLabel.i18n; track l; let isLast = $last; let index = $index) {
+      <div>
+        @if (isLocalizedVisible(l) && isLocalizedNotHidden(l)) {
+        <div class="mb-3">
           <div class="d-flex">
             <div class="d-flex gap-1 label-block-actions">
               <!-- Locale -->
@@ -72,32 +56,33 @@
               >
                 {{ l.locale }}
               </div>
-
               <!-- Interface type -->
               <div>
+                @if (l.interfaceType === 0) {
                 <nb-icon
-                  *ngIf="l.interfaceType === 0"
                   icon="chat-right-text-fill"
-                  nbTooltip="Answer in Text Channels"
+                  [nbTooltip]="'bot.i18n-label.textChannelTooltip' | transloco"
                 ></nb-icon>
+                } @if (l.interfaceType === 1) {
                 <nb-icon
-                  *ngIf="l.interfaceType === 1"
                   icon="telephone-fill"
-                  nbTooltip="Answer in Voice Channels"
+                  [nbTooltip]="'bot.i18n-label.voiceChannelTooltip' | transloco"
                 ></nb-icon>
+                }
               </div>
-
               <!-- Connector -->
-              <div *ngIf="l.connectorId">
+              @if (l.connectorId) {
+              <div>
+                @if (l.connectorId) {
                 <img
-                  *ngIf="l.connectorId"
                   src="{{ l.iconUrl() }}"
                   class="icons"
                   [nbTooltip]="l.connectorId"
                 />
+                }
               </div>
+              }
             </div>
-
             <!-- Label -->
             <div class="flex-grow-1">
               <textarea
@@ -110,20 +95,23 @@
                 [nbTooltip]="
                   isSupportedLocale(l)
                     ? l.stats && l.stats.length !== 0
-                      ? 'used ' + l.mergedStats().count + ' times, last used ' + (l.mergedStats().lastUpdate | amTimeAgo)
-                      : 'No stats'
-                    : 'Delete-only since locale is not supported by current application'
+                      ? ('bot.i18n-label.usedTimesLabel' | transloco: { count: l.mergedStats().count }) +
+                        ', ' +
+                        ('bot.i18n-label.lastUsedLabel' | transloco: { timeAgo: (l.mergedStats().lastUpdate | amTimeAgo) })
+                      : ('bot.i18n-label.noStatsTooltip' | transloco)
+                    : ('bot.i18n-label.deleteOnlyTooltip' | transloco)
                 "
               ></textarea>
             </div>
-
             <div class="d-flex align-items-center label-block-actions">
               <!-- Add alternative -->
               <button
                 nbButton
                 ghost
                 [nbTooltip]="
-                  isSupportedLocale(l) ? 'Add an alternative' : 'Delete-only since locale is not supported by current application'
+                  isSupportedLocale(l)
+                    ? ('bot.i18n-label.addAlternativeTooltip' | transloco)
+                    : ('bot.i18n-label.deleteOnlyTooltip' | transloco)
                 "
                 status="info"
                 (click)="addNewAlternative(l)"
@@ -131,20 +119,17 @@
               >
                 <nb-icon icon="plus-lg"></nb-icon>
               </button>
-
               <!-- Delete label -->
               <button
                 (click)="removeLocalizedLabel(l)"
                 nbButton
-                nbTooltip="Delete Localized Label"
+                [nbTooltip]="'bot.i18n-label.deleteLocalizedLabelTooltip' | transloco"
                 status="danger"
                 ghost
               >
                 <nb-icon icon="trash"></nb-icon>
               </button>
-
               <!-- Validate label -->
-
               <nb-checkbox
                 class="ml-2"
                 [(ngModel)]="l.validated"
@@ -152,43 +137,37 @@
                 status="info"
                 [nbTooltip]="
                   isSupportedLocale(l)
-                    ? 'Validate label (for exports/imports)'
-                    : 'Delete-only since locale is not supported by current application'
+                    ? ('bot.i18n-label.validateLabelTooltip' | transloco)
+                    : ('bot.i18n-label.deleteOnlyTooltip' | transloco)
                 "
                 [disabled]="!isSupportedLocale(l)"
               ></nb-checkbox>
             </div>
           </div>
-
           <!-- Alternatives -->
-          <div
-            class="d-flex"
-            *ngFor="let a of l.alternatives; let index = index"
-          >
+          @for (a of l.alternatives; track a; let index = $index) {
+          <div class="d-flex">
             <div class="d-flex gap-1 label-block-actions text-muted">
               <div class="text-uppercase">{{ l.locale }}</div>
-
               <div>
-                <nb-icon
-                  *ngIf="l.interfaceType === 0"
-                  icon="chat-right-text-fill"
-                ></nb-icon>
-                <nb-icon
-                  *ngIf="l.interfaceType === 1"
-                  icon="telephone-fill"
-                ></nb-icon>
+                @if (l.interfaceType === 0) {
+                <nb-icon icon="chat-right-text-fill"></nb-icon>
+                } @if (l.interfaceType === 1) {
+                <nb-icon icon="telephone-fill"></nb-icon>
+                }
               </div>
-
-              <div *ngIf="l.connectorId">
+              @if (l.connectorId) {
+              <div>
+                @if (l.connectorId) {
                 <img
-                  *ngIf="l.connectorId"
                   src="{{ l.iconUrl() }}"
                   class="icons icon-muted"
                   [nbTooltip]="l.connectorId"
                 />
+                }
               </div>
+              }
             </div>
-
             <div class="flex-grow-1">
               <textarea
                 class="label-textarea"
@@ -199,13 +178,12 @@
                 rows="1"
               ></textarea>
             </div>
-
             <div class="label-block-actions">
               <!-- Remove alternative -->
               <button
                 nbButton
                 ghost
-                nbTooltip="Remove alternative"
+                [nbTooltip]="'bot.i18n-label.removeAlternativeTooltip' | transloco"
                 status="danger"
                 (click)="removeAlternative(l, index)"
               >
@@ -213,42 +191,37 @@
               </button>
             </div>
           </div>
-
+          }
           <!-- Add specific label for connector -->
-          <div
-            *ngIf="isLast || i18nLabel.i18n[index + 1].interfaceType !== l.interfaceType || i18nLabel.i18n[index + 1].locale !== l.locale"
-          >
+          @if (isLast || i18nLabel.i18n[index + 1].interfaceType !== l.interfaceType || i18nLabel.i18n[index + 1].locale !== l.locale) {
+          <div>
             <div class="d-flex flex-wrap justify-content-between">
-              <ng-container *ngFor="let connector of connectorTypes">
-                <ng-container
-                  *ngIf="
-                    isSupportedLocale(l) &&
-                    !i18nLabel.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)
-                  "
-                >
-                  <button
-                    nbButton
-                    ghost
-                    shape="round"
-                    nbTooltip="Add specific label for connector {{ connector.connectorType.id }}"
-                    (click)="addLocalizedLabelForConnector(l, connector.connectorType.id)"
-                  >
-                    <img
-                      src="{{ connector.connectorType.iconUrl() }}"
-                      class="icons"
-                    />
-                  </button>
-                </ng-container>
-              </ng-container>
+              @for (connector of connectorTypes; track connector) { @if ( isSupportedLocale(l) &&
+              !i18nLabel.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id) ) {
+              <button
+                nbButton
+                ghost
+                shape="round"
+                [nbTooltip]="'bot.i18n-label.addSpecificLabelTooltip' | transloco: { connectorId: connector.connectorType.id }"
+                (click)="addLocalizedLabelForConnector(l, connector.connectorType.id)"
+              >
+                <img
+                  src="{{ connector.connectorType.iconUrl() }}"
+                  class="icons"
+                />
+              </button>
+              } }
             </div>
-
-            <hr
-              *ngIf="!isLast"
-              class="divider"
-            />
+            @if (!isLast) {
+            <hr class="divider" />
+            }
           </div>
+          }
         </div>
+        }
       </div>
+      }
     </nb-card-body>
   </nb-card>
 </div>
+}

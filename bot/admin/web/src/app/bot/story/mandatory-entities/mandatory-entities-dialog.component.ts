@@ -21,13 +21,15 @@ import { take } from 'rxjs';
 import { StateService } from '../../../core-nlp/state.service';
 import { AnswerConfigurationType, IntentName, MandatoryEntity, SimpleAnswerConfiguration } from '../../model/story';
 import { EntityDefinition, Intent, IntentsCategory } from '../../../model/nlp';
-import { IntentDialogComponent } from '../../../language-understanding/intent-dialog/intent-dialog.component';
+
 import { CreateEntityDialogComponent } from '../create-entity-dialog/create-entity-dialog.component';
+import { IntentDialogComponent } from '../../../shared/components';
 
 @Component({
-  selector: 'tock-mandatory-entities-dialog',
-  templateUrl: './mandatory-entities-dialog.component.html',
-  styleUrls: ['./mandatory-entities-dialog.component.scss']
+    selector: 'tock-mandatory-entities-dialog',
+    templateUrl: './mandatory-entities-dialog.component.html',
+    styleUrls: ['./mandatory-entities-dialog.component.scss'],
+    standalone: false
 })
 export class MandatoryEntitiesDialogComponent implements OnInit {
   entities: MandatoryEntity[];

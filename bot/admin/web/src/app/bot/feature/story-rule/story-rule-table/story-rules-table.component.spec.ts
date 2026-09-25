@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StoryRulesTableComponent } from './story-rules-table.component';
+import { TestSharedModule } from '../../../../shared/test-shared.module';
 
 describe('StoryRuleTableComponent', () => {
   let component: StoryRulesTableComponent;
@@ -24,7 +25,8 @@ describe('StoryRuleTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [StoryRulesTableComponent]
+      declarations: [StoryRulesTableComponent],
+      imports: [TestSharedModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(StoryRulesTableComponent);

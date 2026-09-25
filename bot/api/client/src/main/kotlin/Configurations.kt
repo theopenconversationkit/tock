@@ -30,8 +30,8 @@ fun ClientBotDefinition.toConfiguration(): ClientConfiguration =
         version = ResponseContextVersion.V3,
     )
 
-private fun ClientStoryDefinition.mapToStoryConfiguration(): StoryConfiguration {
-    return StoryConfiguration(
+private fun ClientStoryDefinition.mapToStoryConfiguration(): StoryConfiguration =
+    StoryConfiguration(
         this.mainIntent.wrappedIntent().name,
         this.otherStarterIntents.map { it.wrappedIntent().name }.toSet(),
         this.secondaryIntents.map { it.wrappedIntent().name }.toSet(),
@@ -44,4 +44,3 @@ private fun ClientStoryDefinition.mapToStoryConfiguration(): StoryConfiguration 
             )
         },
     )
-}

@@ -16,4 +16,7 @@
 
 package ai.tock.bot.api.model.message.bot
 
-data class Action(val title: I18nText, var url: String? = null)
+data class Action(
+    val title: I18nText,
+    var url: String? = null,
+)

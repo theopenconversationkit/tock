@@ -48,7 +48,5 @@ data class FaqSettings(
      */
     val updateDate: Instant,
 ) {
-    fun toFaqSettingsQuery(): FaqSettingsQuery {
-        return FaqSettingsQuery(satisfactionEnabled, satisfactionStoryId)
-    }
+    fun toFaqSettingsQuery(): FaqSettingsQuery = FaqSettingsQuery(satisfactionEnabled, satisfactionStoryId)
 }

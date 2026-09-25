@@ -44,19 +44,20 @@ class RAGValidationServiceTest {
     companion object {
         init {
             tockInternalInjector = KodeinInjector()
-            Kodein.Module {
-                bind<LLMProviderService>() with singleton { llmProviderService }
-                bind<EMProviderService>() with singleton { emProviderService }
-                bind<BotObservabilityConfigurationDAO>() with singleton { botObservabilityConfigurationDAO }
-                bind<BotVectorStoreConfigurationDAO>() with provider { mockk<BotVectorStoreConfigurationDAO>(relaxed = true) }
-                bind<VectorStoreProviderService>() with provider { mockk<VectorStoreProviderService>(relaxed = true) }
-            }.also {
-                tockInternalInjector.inject(
-                    Kodein {
-                        import(it)
-                    },
-                )
-            }
+            Kodein
+                .Module {
+                    bind<LLMProviderService>() with singleton { llmProviderService }
+                    bind<EMProviderService>() with singleton { emProviderService }
+                    bind<BotObservabilityConfigurationDAO>() with singleton { botObservabilityConfigurationDAO }
+                    bind<BotVectorStoreConfigurationDAO>() with provider { mockk<BotVectorStoreConfigurationDAO>(relaxed = true) }
+                    bind<VectorStoreProviderService>() with provider { mockk<VectorStoreProviderService>(relaxed = true) }
+                }.also {
+                    tockInternalInjector.inject(
+                        Kodein {
+                            import(it)
+                        },
+                    )
+                }
         }
 
         private val llmProviderService: LLMProviderService = mockk(relaxed = false)
@@ -184,7 +185,8 @@ class RAGValidationServiceTest {
                 valid = false,
                 errors =
                     listOf(
-                        createFakeErrorResponse("10"), createFakeErrorResponse("20"),
+                        createFakeErrorResponse("10"),
+                        createFakeErrorResponse("20"),
                     ),
             )
         every {

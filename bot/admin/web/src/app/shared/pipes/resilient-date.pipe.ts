@@ -2,7 +2,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DatePipe } from '@angular/common';
 
-@Pipe({ name: 'resilientDate' })
+@Pipe({
+    name: 'resilientDate',
+    standalone: false
+})
 export class ResilientDatePipe implements PipeTransform {
   constructor(private datePipe: DatePipe) {}
 

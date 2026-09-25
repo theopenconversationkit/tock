@@ -31,19 +31,17 @@ import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 
 @OptIn(ExperimentalTockCoroutines::class)
-internal class LegacyNlpListenerAdapter(private val wrapped: NlpListener) : AsyncNlpListener {
-    override suspend fun detectKeyword(sentence: String): Intent? {
-        return wrapped.handleKeyword(sentence)
-    }
+internal class LegacyNlpListenerAdapter(
+    private val wrapped: NlpListener,
+) : AsyncNlpListener {
+    override suspend fun detectKeyword(sentence: String): Intent? = wrapped.handleKeyword(sentence)
 
     override suspend fun precompute(
         sentence: SendSentence,
         userTimeline: UserTimeline,
         dialog: Dialog,
         botDefinition: BotDefinition,
-    ): NlpResult? {
-        return wrapped.precompute(sentence, userTimeline, dialog, botDefinition)
-    }
+    ): NlpResult? = wrapped.precompute(sentence, userTimeline, dialog, botDefinition)
 
     override suspend fun updateQuery(
         sentence: SendSentence,
@@ -51,39 +49,29 @@ internal class LegacyNlpListenerAdapter(private val wrapped: NlpListener) : Asyn
         dialog: Dialog,
         botDefinition: BotDefinition,
         nlpQuery: NlpQuery,
-    ): NlpQuery {
-        return wrapped.updateQuery(sentence, userTimeline, dialog, botDefinition, nlpQuery)
-    }
+    ): NlpQuery = wrapped.updateQuery(sentence, userTimeline, dialog, botDefinition, nlpQuery)
 
     override suspend fun findIntent(
         userTimeline: UserTimeline,
         dialog: Dialog,
         event: Event,
         nlpResult: NlpResult,
-    ): IntentAware? {
-        return wrapped.findIntent(userTimeline, dialog, event, nlpResult)
-    }
+    ): IntentAware? = wrapped.findIntent(userTimeline, dialog, event, nlpResult)
 
     override suspend fun evaluateEntities(
         userTimeline: UserTimeline,
         dialog: Dialog,
         event: Event,
         nlpResult: NlpResult,
-    ): List<EntityValue> {
-        return wrapped.evaluateEntities(userTimeline, dialog, event, nlpResult)
-    }
+    ): List<EntityValue> = wrapped.evaluateEntities(userTimeline, dialog, event, nlpResult)
 
-    override suspend fun sortEntitiesBeforeMerge(entities: List<NlpEntityMergeContext>): List<NlpEntityMergeContext> {
-        return wrapped.sortEntitiesToMerge(entities)
-    }
+    override suspend fun sortEntitiesBeforeMerge(entities: List<NlpEntityMergeContext>): List<NlpEntityMergeContext> = wrapped.sortEntitiesToMerge(entities)
 
     override suspend fun mergeEntityValues(
         dialogState: DialogState,
         action: Action,
         entityToMerge: NlpEntityMergeContext,
-    ): NlpEntityMergeContext {
-        return wrapped.mergeEntityValues(dialogState, action, entityToMerge)
-    }
+    ): NlpEntityMergeContext = wrapped.mergeEntityValues(dialogState, action, entityToMerge)
 
     override suspend fun onSuccess(
         query: NlpQuery,

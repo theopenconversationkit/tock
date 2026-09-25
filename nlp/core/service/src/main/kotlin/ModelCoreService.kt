@@ -136,8 +136,7 @@ internal object ModelCoreService : ModelCore {
         val entityModels =
             modelExpressions
                 .groupBy { it.intent }
-                .mapNotNull { (intent, expressions),
-                    ->
+                .mapNotNull { (intent, expressions) ->
                     try {
                         intent to
                             nlpClassifier.buildEntityModel(
@@ -149,8 +148,7 @@ internal object ModelCoreService : ModelCore {
                         logger.error(e)
                         null
                     }
-                }
-                .toMap()
+                }.toMap()
 
         val buildDuration = Duration.between(startDate, Instant.now())
 
@@ -188,8 +186,8 @@ internal object ModelCoreService : ModelCore {
     private fun hasNotSameEntities(
         expectedEntities: List<SampleEntity>,
         entities: List<EntityRecognition>,
-    ): Boolean {
-        return expectedEntities.any { e ->
+    ): Boolean =
+        expectedEntities.any { e ->
             entities.none {
                 it.role == e.definition.role && it.entityType == e.definition.entityType &&
                     it.isSameRange(
@@ -205,7 +203,6 @@ internal object ModelCoreService : ModelCore {
                         )
                 }
             }
-    }
 
     override fun getCurrentModelConfiguration(
         applicationName: String,
@@ -218,19 +215,17 @@ internal object ModelCoreService : ModelCore {
         configuration: NlpApplicationConfiguration,
     ) = nlpClassifier.updateModelConfiguration(applicationName, engineType, configuration)
 
-    private fun BuildContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> {
-        return if (application.normalizeText) {
+    private fun BuildContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> =
+        if (application.normalizeText) {
             expressions.map { e -> e.copy(text = e.text.normalize(language)) }
         } else {
             expressions
         }
-    }
 
-    private fun TestContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> {
-        return if (callContext.application.normalizeText) {
+    private fun TestContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> =
+        if (callContext.application.normalizeText) {
             expressions.map { e -> e.copy(text = e.text.normalize(callContext.language)) }
         } else {
             expressions
         }
-    }
 }

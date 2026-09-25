@@ -27,9 +27,8 @@ data class GAOptionValueSpec(
     val listSelect: GAListSelect? = null,
     val carouselSelect: GACarouselSelect? = null,
 ) : GAInputValueData(option.type!!) {
-    override fun toGenericMessage(): GenericMessage? {
-        return simpleSelect?.toGenericMessage()
+    override fun toGenericMessage(): GenericMessage? =
+        simpleSelect?.toGenericMessage()
             ?: listSelect?.toGenericMessage()
             ?: carouselSelect?.toGenericMessage()
-    }
 }

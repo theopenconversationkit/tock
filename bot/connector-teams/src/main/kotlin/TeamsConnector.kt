@@ -160,22 +160,20 @@ internal class TeamsConnector(
     override fun loadProfile(
         callback: ConnectorCallback,
         userId: PlayerId,
-    ): UserPreferences {
-        return when (callback) {
+    ): UserPreferences =
+        when (callback) {
             is TeamsConnectorCallback -> UserPreferences().apply { locale = locale(callback.activity.locale) }
             else -> UserPreferences()
         }
-    }
 
     override fun refreshProfile(
         callback: ConnectorCallback,
         userId: PlayerId,
-    ): UserPreferences? {
-        return when (callback) {
+    ): UserPreferences? =
+        when (callback) {
             is TeamsConnectorCallback -> UserPreferences().apply { locale = locale(callback.activity.locale) }
             else -> null
         }
-    }
 
     private fun locale(code: String?): Locale =
         try {
@@ -240,6 +238,7 @@ internal class TeamsConnector(
                         ),
                     )
                 }
+
                 is MediaCarousel -> {
                     listOf(
                         teamsCarousel(
@@ -249,9 +248,14 @@ internal class TeamsConnector(
                         ),
                     )
                 }
-                else -> emptyList()
+
+                else -> {
+                    emptyList()
+                }
             }
         }
 }
 
-class NoMessageException(exception: String) : Exception(exception)
+class NoMessageException(
+    exception: String,
+) : Exception(exception)

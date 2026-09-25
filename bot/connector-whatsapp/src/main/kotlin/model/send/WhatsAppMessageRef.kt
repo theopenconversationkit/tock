@@ -19,4 +19,6 @@ package ai.tock.bot.connector.whatsapp.model.send
 /**
  *
  */
-data class WhatsAppMessageRef(val id: String)
+data class WhatsAppMessageRef(
+    val id: String,
+)

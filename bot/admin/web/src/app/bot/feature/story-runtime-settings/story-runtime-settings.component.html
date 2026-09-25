@@ -1,32 +1,16 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card
   class="mt-2"
   [nbSpinner]="loading"
 >
   <nb-card-header class="position-relative">
-    Tagged Stories <span class="font-weight-normal">({{ taggedStoriesCount }})</span>
+    {{ 'bot.story-runtime-settings.title' | transloco }} <span class="font-weight-normal">({{ taggedStoriesCount }})</span>
     <button
       nbButton
       ghost
       shape="round"
       type="button"
       class="ml-3"
-      nbTooltip="Refresh"
+      [nbTooltip]="'bot.story-runtime-settings.refreshTooltip' | transloco"
       (click)="refresh()"
     >
       <nb-icon icon="arrow-clockwise"></nb-icon>
@@ -40,27 +24,26 @@
   <nb-card-body>
     <div class="d-flex gap-1 justify-content-between border-bottom pb-2 mb-3">
       <label class="font-weight-bold w-50">
-        Bot disabling stories
+        {{ 'bot.story-runtime-settings.disableStoriesLabel' | transloco }}
         <tock-info-button
-          message="Stories tagged to disable the bot."
+          [message]="'bot.story-runtime-settings.disableStoriesTooltip' | transloco"
           position="inline"
         ></tock-info-button>
       </label>
 
       <div class="w-50">
-        <div
-          *ngIf="!disableStories?.length"
-          class="text-muted font-italic"
-        >
-          None
+        @if (!disableStories?.length) {
+        <div class="text-muted font-italic">
+          {{ 'bot.story-runtime-settings.noneLabel' | transloco }}
         </div>
-
-        <div *ngIf="disableStories?.length > 0">
-          <div *ngFor="let story of disableStories">
+        } @if (disableStories?.length > 0) {
+        <div>
+          @for (story of disableStories; track story) {
+          <div>
             <span
               (click)="editStory(story)"
               class="pointer"
-              nbTooltip="Click to view story details"
+              [nbTooltip]="'bot.story-runtime-settings.clickToViewStoryDetailsTooltip' | transloco"
             >
               <nb-icon
                 [icon]="getStoryIcon(story)"
@@ -69,33 +52,34 @@
               {{ story.name }}
             </span>
           </div>
+          }
         </div>
+        }
       </div>
     </div>
 
     <div class="d-flex gap-1 justify-content-between border-bottom pb-2 mb-3">
       <label class="font-weight-bold w-50">
-        Bot enabling stories
+        {{ 'bot.story-runtime-settings.enableStoriesLabel' | transloco }}
         <tock-info-button
-          message="Stories tagged to enable the bot."
+          [message]="'bot.story-runtime-settings.enableStoriesTooltip' | transloco"
           position="inline"
         ></tock-info-button>
       </label>
 
       <div class="w-50">
-        <div
-          *ngIf="!enableStories?.length"
-          class="text-muted font-italic"
-        >
-          None
+        @if (!enableStories?.length) {
+        <div class="text-muted font-italic">
+          {{ 'bot.story-runtime-settings.noneLabel' | transloco }}
         </div>
-
-        <div *ngIf="enableStories?.length > 0">
-          <div *ngFor="let story of enableStories">
+        } @if (enableStories?.length > 0) {
+        <div>
+          @for (story of enableStories; track story) {
+          <div>
             <span
               (click)="editStory(story)"
               class="pointer"
-              nbTooltip="Click to view story details"
+              [nbTooltip]="'bot.story-runtime-settings.clickToViewStoryDetailsTooltip' | transloco"
             >
               <nb-icon
                 [icon]="getStoryIcon(story)"
@@ -104,33 +88,34 @@
               {{ story.name }}
             </span>
           </div>
+          }
         </div>
+        }
       </div>
     </div>
 
     <div class="d-flex gap-1 justify-content-between border-bottom pb-2 mb-3">
       <label class="font-weight-bold w-50">
-        Only sub steps entities are checked to decide if the user stays in the same story
+        {{ 'bot.story-runtime-settings.checkOnlySubEntitiesLabel' | transloco }}
         <tock-info-button
-          message="Stories tagged to indicate that only sub steps entities are checked to decide if the user stays in the same story."
+          [message]="'bot.story-runtime-settings.checkOnlySubEntitiesTooltip' | transloco"
           position="inline"
         ></tock-info-button>
       </label>
 
       <div class="w-50">
-        <div
-          *ngIf="!checkOnlySubEntitiesForStorySelection?.length"
-          class="text-muted font-italic"
-        >
-          None
+        @if (!checkOnlySubEntitiesForStorySelection?.length) {
+        <div class="text-muted font-italic">
+          {{ 'bot.story-runtime-settings.noneLabel' | transloco }}
         </div>
-
-        <div *ngIf="checkOnlySubEntitiesForStorySelection?.length > 0">
-          <div *ngFor="let story of checkOnlySubEntitiesForStorySelection">
+        } @if (checkOnlySubEntitiesForStorySelection?.length > 0) {
+        <div>
+          @for (story of checkOnlySubEntitiesForStorySelection; track story) {
+          <div>
             <span
               (click)="editStory(story)"
               class="pointer"
-              nbTooltip="Click to view story details"
+              [nbTooltip]="'bot.story-runtime-settings.clickToViewStoryDetailsTooltip' | transloco"
             >
               <nb-icon
                 [icon]="getStoryIcon(story)"
@@ -139,33 +124,34 @@
               {{ story.name }}
             </span>
           </div>
+          }
         </div>
+        }
       </div>
     </div>
 
     <div class="d-flex gap-1 justify-content-between">
       <label class="font-weight-bold w-50">
-        Only intents supported by the story checked for entity action selection
+        {{ 'bot.story-runtime-settings.checkSubEntitiesOnlyWithStoryIntentsLabel' | transloco }}
         <tock-info-button
-          message="Stories tagged to indicate that only intents supported by the story are checked for entity action selection."
+          [message]="'bot.story-runtime-settings.checkSubEntitiesOnlyWithStoryIntentsTooltip' | transloco"
           position="inline"
         ></tock-info-button>
       </label>
 
       <div class="w-50">
-        <div
-          *ngIf="!checkSubEntitiesOnlyWithStoryIntents?.length"
-          class="text-muted font-italic"
-        >
-          None
+        @if (!checkSubEntitiesOnlyWithStoryIntents?.length) {
+        <div class="text-muted font-italic">
+          {{ 'bot.story-runtime-settings.noneLabel' | transloco }}
         </div>
-
-        <div *ngIf="checkSubEntitiesOnlyWithStoryIntents?.length > 0">
-          <div *ngFor="let story of checkSubEntitiesOnlyWithStoryIntents">
+        } @if (checkSubEntitiesOnlyWithStoryIntents?.length > 0) {
+        <div>
+          @for (story of checkSubEntitiesOnlyWithStoryIntents; track story) {
+          <div>
             <span
               (click)="editStory(story)"
               class="pointer"
-              nbTooltip="Click to view story details"
+              [nbTooltip]="'bot.story-runtime-settings.clickToViewStoryDetailsTooltip' | transloco"
             >
               <nb-icon
                 [icon]="getStoryIcon(story)"
@@ -174,7 +160,9 @@
               {{ story.name }}
             </span>
           </div>
+          }
         </div>
+        }
       </div>
     </div>
   </nb-card-body>

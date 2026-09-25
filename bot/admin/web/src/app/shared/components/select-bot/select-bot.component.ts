@@ -20,11 +20,13 @@ import { BotApplicationConfiguration } from '../../../core/model/configuration';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { NbComponentSize } from '@nebular/theme';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-select-bot',
-  templateUrl: './select-bot.component.html',
-  styleUrls: ['./select-bot.component.css']
+    selector: 'tock-select-bot',
+    templateUrl: './select-bot.component.html',
+    styleUrls: ['./select-bot.component.css'],
+    standalone: false
 })
 export class SelectBotComponent implements OnInit {
   @Input()
@@ -49,10 +51,10 @@ export class SelectBotComponent implements OnInit {
   returnsRestConfiguration: boolean = false;
 
   @Input()
-  noConfigurationLabel: string = 'No Configuration';
+  noConfigurationLabel: string = 'not_defined';
 
   @Input()
-  noConnectorLabel: string = 'No Connector';
+  noConnectorLabel: string = 'not_defined';
 
   @Input()
   size: NbComponentSize = 'small';
@@ -68,13 +70,24 @@ export class SelectBotComponent implements OnInit {
   currentBotName: string;
   currentConfiguration: BotApplicationConfiguration;
 
-  constructor(private botConfiguration: BotConfigurationService, private dialog: DialogService, private state: StateService) {}
+  constructor(
+    private botConfiguration: BotConfigurationService,
+    private dialog: DialogService,
+    private state: StateService,
+    private transloco: TranslocoService
+  ) {}
 
   private getName(conf: BotApplicationConfiguration): string {
     return this.displayConnectorChoice ? conf.name : conf.botId;
   }
 
   ngOnInit() {
+    if (this.noConfigurationLabel === 'not_defined') {
+      this.noConfigurationLabel = this.transloco.translate('shared.select-bot.noConfigurationLabel');
+    }
+    if (this.noConnectorLabel === 'not_defined') {
+      this.noConnectorLabel = this.transloco.translate('shared.select-bot.noConnectorLabel');
+    }
     this.botConfiguration.configurations.subscribe((conf) => {
       this.allConfigurations = conf;
       this.updateConfigurations(conf, false);
@@ -136,10 +149,7 @@ export class SelectBotComponent implements OnInit {
         this.selectionChange.emit(new SelectBotEvent(confResult.name, noConnectorSelection, noConnectorSelection ? null : confResult._id));
         this.configurationIdChange.emit(confResult._id);
       } else {
-        this.dialog.notify('Test Configuration not found', null, {
-          duration: 3000,
-          status: 'danger'
-        });
+        this.dialog.notify(this.transloco.translate('shared.select-bot.configurationNotFound'), null, { duration: 3000, status: 'danger' });
       }
     } else {
       this.currentBotName = 'None';

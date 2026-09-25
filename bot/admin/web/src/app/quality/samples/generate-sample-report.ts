@@ -1,9 +1,10 @@
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+import { TranslocoService } from '@jsverse/transloco';
 import { EvaluationSampleDataDefinition, EvaluationSampleDefinition, EvaluationStatus } from './models';
 import { getEvaluationRate, getSampleCoverage } from './utils';
 import { ActionReport, Sentence } from '../../shared/model/dialog-data';
-import { ResponseIssueReasons } from '../../shared/model/response-issue';
+import { ResponseIssueReason, ResponseIssueReasons } from '../../shared/model/response-issue';
 import { getExportFileName } from '../../shared/utils';
 
 (<any>pdfMake).addVirtualFileSystem(pdfFonts);
@@ -14,22 +15,49 @@ const color_green = '#00b377';
 const color_orange = '#ffaa00';
 const color_paleBlue = '#edf1f7';
 
+// Scoped translate helper: tr('report_title') => 'quality.sample-report.report_title'
+type TranslateFn = (key: string, params?: object) => string;
+
 export async function generateSampleReport(
   namespace: string,
   botName: string,
   datePipe,
   sample: EvaluationSampleDefinition,
-  data: EvaluationSampleDataDefinition
+  data: EvaluationSampleDataDefinition,
+  transloco: TranslocoService
 ) {
+  const tr: TranslateFn = (key, params) => transloco.translate(`quality.sample-report.${key}`, params);
+
+  const reasonKeyByValue: Record<ResponseIssueReason, string> = {
+    [ResponseIssueReason.QUESTION_MISUNDERSTOOD]: 'questionNotOrMisunderstood',
+    [ResponseIssueReason.INACCURATE_ANSWER]: 'inaccurateAnswer',
+    [ResponseIssueReason.INCOMPLETE_ANSWER]: 'incompleteAnswer',
+    [ResponseIssueReason.INCOMPLETE_SOURCES]: 'incompleteSourcesOrDocuments',
+    [ResponseIssueReason.OBSOLETE_SOURCES]: 'obsoleteSourcesOrDocuments',
+    [ResponseIssueReason.BUSINESS_LEXICON_PROBLEM]: 'businessLexiconProblem',
+    [ResponseIssueReason.WRONG_ANSWER_FORMAT]: 'wrongAnswerFormat',
+    [ResponseIssueReason.HALLUCINATION]: 'hallucination',
+    [ResponseIssueReason.OTHER]: 'other'
+  };
+
+  const getReasonLabel = (reason: ResponseIssueReason): string =>
+    reason ? transloco.translate(`common.responseIssueReasons.${reasonKeyByValue[reason]}`) : '';
+
   const dateFormat = 'y/MM/dd HH:mm';
 
   const sampleName = sample.name;
   const sampleStart = datePipe.transform(sample.dialogActivityFrom, dateFormat);
   const sampleEnd = datePipe.transform(sample.dialogActivityTo, dateFormat);
 
-  const sampleCreation = `${sample.createdBy} on ${datePipe.transform(sample.creationDate, dateFormat)}`;
-  const sampleValidation = `${sample.statusChangedBy} on ${datePipe.transform(sample.statusChangeDate, dateFormat)}`;
-  const includeTests = sample.allowTestDialogs ? 'Yes' : 'No';
+  const sampleCreation = tr('by_on', {
+    by: sample.createdBy,
+    date: datePipe.transform(sample.creationDate, dateFormat)
+  });
+  const sampleValidation = tr('by_on', {
+    by: sample.statusChangedBy,
+    date: datePipe.transform(sample.statusChangeDate, dateFormat)
+  });
+  const includeTests = sample.allowTestDialogs ? tr('yes') : tr('no');
   const requestedDialogCount = sample.requestedDialogCount;
   const dialogsCount = sample.dialogsCount;
   const totalDialogCount = sample.totalDialogCount;
@@ -56,7 +84,7 @@ export async function generateSampleReport(
           body: [
             [
               {
-                text: 'Tock Bot Dialogue Sample Evaluation Report',
+                text: tr('report_title'),
                 style: 'header',
                 color: 'white',
                 margin: [15, 5, 15, 5],
@@ -84,15 +112,15 @@ export async function generateSampleReport(
           body: [
             [
               {
-                text: [{ text: 'Tock Namespace: ', bold: true }, namespace]
+                text: [{ text: tr('namespace') + ': ', bold: true }, namespace]
               },
               {
-                text: [{ text: 'Tock Bot Name: ', bold: true }, botName]
+                text: [{ text: tr('bot_name') + ': ', bold: true }, botName]
               }
             ],
             [
               {
-                text: [{ text: 'Sample Name: ', bold: true }, sampleName],
+                text: [{ text: tr('sample_name') + ': ', bold: true }, sampleName],
                 colSpan: 2
               },
 
@@ -100,56 +128,56 @@ export async function generateSampleReport(
             ],
             [
               {
-                text: [{ text: 'Created by: ', bold: true }, sampleCreation]
+                text: [{ text: tr('created_by') + ': ', bold: true }, sampleCreation]
               },
               {
-                text: [{ text: 'Validated by: ', bold: true }, sampleValidation]
+                text: [{ text: tr('validated_by') + ': ', bold: true }, sampleValidation]
               }
             ],
             [
               {
-                text: [{ text: 'Coverage Period From: ', bold: true }, sampleStart]
+                text: [{ text: tr('coverage_from') + ': ', bold: true }, sampleStart]
               },
               {
-                text: [{ text: 'Coverage Period To: ', bold: true }, sampleEnd]
+                text: [{ text: tr('coverage_to') + ': ', bold: true }, sampleEnd]
               }
             ],
             [
               {
-                text: [{ text: 'Number of Requested Dialogues: ', bold: true }, requestedDialogCount]
+                text: [{ text: tr('requested_dialogues') + ': ', bold: true }, requestedDialogCount]
               },
               {
                 text: [
-                  { text: 'Number of Actual Dialogues: ', bold: true },
+                  { text: tr('actual_dialogues') + ': ', bold: true },
                   { text: dialogsCount, color: color_blue }
                 ]
               }
             ],
             [
               {
-                text: [{ text: 'Total dialogues recorded for the period: ', bold: true }, totalDialogCount]
+                text: [{ text: tr('total_dialogues') + ': ', bold: true }, totalDialogCount]
               },
               {
                 text: [
-                  { text: 'Sample Coverage Rate: ', bold: true },
+                  { text: tr('coverage_rate') + ': ', bold: true },
                   { text: sampleCoverage, color: color_blue }
                 ]
               }
             ],
             [
               {
-                text: [{ text: 'May Include Test Dialogues: ', bold: true }, includeTests]
+                text: [{ text: tr('include_tests') + ': ', bold: true }, includeTests]
               },
 
               ''
             ],
             [
               {
-                text: [{ text: 'Sample Description: ', bold: true }, description]
+                text: [{ text: tr('description') + ': ', bold: true }, description]
               },
 
               {
-                text: [{ text: 'Validation Comment: ', bold: true }, validationComment]
+                text: [{ text: tr('validation_comment') + ': ', bold: true }, validationComment]
               }
             ]
           ]
@@ -167,12 +195,12 @@ export async function generateSampleReport(
           widths: ['*', 'auto', 'auto'],
           body: [
             [
-              { text: 'Answers Evaluated', bold: true, color: color_blue, fillColor: color_paleBlue, margin: [lr, tb, lr, 0] },
+              { text: tr('answers_evaluated'), bold: true, color: color_blue, fillColor: color_paleBlue, margin: [lr, tb, lr, 0] },
               { text: botActionCount, color: color_blue, alignment: 'right', fillColor: color_paleBlue, margin: [5, tb, 5, 0] },
               { text: '', alignment: 'right', fillColor: color_paleBlue, margin: [5, tb, lr, 0] }
             ],
             [
-              { text: 'Positive Evaluations', color: color_green, bold: true, fillColor: color_paleBlue, margin: [lr, 0, lr, 0] },
+              { text: tr('positive_evaluations'), color: color_green, bold: true, fillColor: color_paleBlue, margin: [lr, 0, lr, 0] },
               { text: positiveVal, color: color_green, alignment: 'right', fillColor: color_paleBlue, margin: [5, 0, 5, 0] },
               {
                 text: positiveScore,
@@ -184,7 +212,7 @@ export async function generateSampleReport(
               }
             ],
             [
-              { text: 'Negative Evaluations', color: color_orange, bold: true, fillColor: color_paleBlue, margin: [lr, 0, lr, tb] },
+              { text: tr('negative_evaluations'), color: color_orange, bold: true, fillColor: color_paleBlue, margin: [lr, 0, lr, tb] },
               { text: negativeVal, color: color_orange, alignment: 'right', fillColor: color_paleBlue, margin: [5, 0, 5, tb] },
               {
                 text: negativeScore,
@@ -205,7 +233,7 @@ export async function generateSampleReport(
         table: {
           headerRows: 1,
           widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
-          body: getDetailedRows(datePipe, dateFormat, data),
+          body: getDetailedRows(datePipe, dateFormat, data, tr, getReasonLabel),
           dontBreakRows: true
         }
       }
@@ -245,15 +273,21 @@ export async function generateSampleReport(
   pdfDoc.download(exportFileName);
 }
 
-function getDetailedRows(datePipe, dateFormat: string, data: EvaluationSampleDataDefinition) {
+function getDetailedRows(
+  datePipe,
+  dateFormat: string,
+  data: EvaluationSampleDataDefinition,
+  tr: TranslateFn,
+  getReasonLabel: (reason: ResponseIssueReason) => string
+) {
   const result = [
     [
-      { text: 'Dialog ID', style: 'tableHeader' },
-      { text: 'Date', style: 'tableHeader' },
-      { text: 'Question / Answer', style: 'tableHeader' },
-      { text: 'Evaluation', style: 'tableHeader' },
-      { text: 'Reason', style: 'tableHeader' },
-      { text: 'Evaluator', style: 'tableHeader' }
+      { text: tr('col_dialog_id'), style: 'tableHeader' },
+      { text: tr('col_date'), style: 'tableHeader' },
+      { text: tr('col_question_answer'), style: 'tableHeader' },
+      { text: tr('col_evaluation'), style: 'tableHeader' },
+      { text: tr('col_reason'), style: 'tableHeader' },
+      { text: tr('col_evaluator'), style: 'tableHeader' }
     ]
   ];
 
@@ -284,8 +318,8 @@ function getDetailedRows(datePipe, dateFormat: string, data: EvaluationSampleDat
 
   data.evaluations.forEach((evaluation) => {
     let actionDate = '';
-    let questionText = 'NA';
-    let actionText = 'NA';
+    let questionText = tr('not_available');
+    let actionText = tr('not_available');
     const dialog = data.dialogs.find((d) => d.id === evaluation.dialogId);
     if (dialog) {
       const action = dialog.actions.find((a) => a.id === evaluation.actionId);
@@ -300,22 +334,22 @@ function getDetailedRows(datePipe, dateFormat: string, data: EvaluationSampleDat
             actionText = truncateString(sentence.text, 140);
           } else {
             if (sentence.messages[0].attachments.length) {
-              actionText = '[Attachment message]';
+              actionText = tr('attachment_message');
             }
             if (sentence.messages[0].choices.length) {
-              actionText = '[Choice message]';
+              actionText = tr('choice_message');
             }
             if (sentence.messages[0].locations.length) {
-              actionText = '[Location message]';
+              actionText = tr('location_message');
             }
           }
         }
       }
     }
 
-    const evaluationStatus = evaluation.status === EvaluationStatus.UP ? 'Good' : 'Bad';
+    const evaluationStatus = evaluation.status === EvaluationStatus.UP ? tr('eval_good') : tr('eval_bad');
     const evaluationColor = evaluation.status === EvaluationStatus.UP ? color_green : color_orange;
-    const reason = ResponseIssueReasons.find((r) => r.value === evaluation.reason)?.label || '';
+    const reason = getReasonLabel(evaluation.reason as ResponseIssueReason);
     const evaluatedBy = evaluation.evaluator?.id;
 
     const margin = [0, 10, 0, 10];

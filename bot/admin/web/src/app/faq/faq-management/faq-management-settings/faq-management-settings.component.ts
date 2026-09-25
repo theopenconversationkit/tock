@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of, Subject } from 'rxjs';
@@ -27,6 +11,7 @@ import { StateService } from '../../../core-nlp/state.service';
 import { Settings } from '../../models';
 import { FaqService } from '../../services/faq.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
+import { TranslocoService } from '@jsverse/transloco';
 
 interface SettingsForm {
   satisfactionEnabled: FormControl<boolean>;
@@ -34,9 +19,10 @@ interface SettingsForm {
 }
 
 @Component({
-  selector: 'tock-faq-management-settings',
-  templateUrl: './faq-management-settings.component.html',
-  styleUrls: ['./faq-management-settings.component.scss']
+    selector: 'tock-faq-management-settings',
+    templateUrl: './faq-management-settings.component.html',
+    styleUrls: ['./faq-management-settings.component.scss'],
+    standalone: false
 })
 export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
   @Output() onClose = new EventEmitter<boolean>();
@@ -70,7 +56,8 @@ export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
     private stateService: StateService,
     private faqService: FaqService,
     private dialogService: DialogService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -134,20 +121,20 @@ export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
   }
 
   close(): Observable<any> {
-    const action = 'yes';
+    const action = this.transloco.translate('common.actions.yes');
     if (this.form.dirty) {
       const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
-          title: `Cancel edit settings`,
-          subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
+          title: this.transloco.translate('faq.faq-management-settings.cancel_edit_settings_title'),
+          subtitle: this.transloco.translate('faq.faq-management-settings.cancel_edit_settings_message'),
           actions: [
-            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
             { actionName: action, buttonStatus: 'danger' }
           ]
         }
       });
       dialogRef.onClose.subscribe((result) => {
-        if (result === action) {
+        if (result.toLowerCase() === action.toLowerCase()) {
           this.onClose.emit(true);
         }
       });
@@ -163,19 +150,19 @@ export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
 
     if (this.canSave) {
       if (!this.satisfactionEnabled.value) {
-        const action = 'yes';
+        const action = this.transloco.translate('common.actions.yes');
         const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
           context: {
-            title: `Disable satisfaction`,
-            subtitle: 'This will disable the satisfaction question for all FAQs. Do you confirm ?',
+            title: this.transloco.translate('faq.faq-management-settings.disable_satisfaction_title'),
+            subtitle: this.transloco.translate('faq.faq-management-settings.disable_satisfaction_message'),
             actions: [
-              { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+              { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
               { actionName: action, buttonStatus: 'danger' }
             ]
           }
         });
         dialogRef.onClose.subscribe((result) => {
-          if (result === action) {
+          if (result.toLowerCase() === action.toLowerCase()) {
             this.saveSettings(this.form.value as Settings);
           }
         });
@@ -196,7 +183,11 @@ export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
           this.loading = false;
           this.form.reset();
           this.close();
-          this.toastrService.success(`Settings successfully updated`, 'Success', { duration: 5000 });
+          this.toastrService.success(
+            this.transloco.translate('faq.faq-management-settings.settings_updated_success'),
+            this.transloco.translate('faq.faq-management-settings.success_title'),
+            { duration: 5000 }
+          );
         },
         error: () => {
           this.loading = false;

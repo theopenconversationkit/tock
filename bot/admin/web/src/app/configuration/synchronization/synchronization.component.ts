@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnInit } from '@angular/core';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { Application, UserNamespace } from '../../model/application';
@@ -24,11 +8,13 @@ import { NbToastrService } from '@nebular/theme';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CopyContext, SynchronizationConfiguration } from '../../core/model/synchronizationConfiguration';
 import { ChoiceDialogComponent } from '../../shared/components';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-bot-synchronization',
-  templateUrl: './synchronization.component.html',
-  styleUrls: ['./synchronization.component.css']
+    selector: 'tock-bot-synchronization',
+    templateUrl: './synchronization.component.html',
+    styleUrls: ['./synchronization.component.css'],
+    standalone: false
 })
 export class SynchronizationComponent implements OnInit {
   sourceNamespace: UserNamespace;
@@ -46,8 +32,10 @@ export class SynchronizationComponent implements OnInit {
     private dialog: DialogService,
     private toastrService: NbToastrService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private transloco: TranslocoService
   ) {}
+
   ngOnInit(): void {
     this.sourceApplications = this.state.applications;
   }
@@ -70,29 +58,29 @@ export class SynchronizationComponent implements OnInit {
 
   copyConfiguration() {
     const inboxMessagesCopySubtitle = this.shouldSynchronizeInboxMessages
-      ? 'Inbox messages will be synchronized.'
-      : 'Inbox messages will NOT be synchronized by default. If you want to, just check the "Copy inbox messages" checkbox on the duplication form.';
+      ? this.transloco.translate('configuration.synchronization.inboxMessagesSynchronized')
+      : this.transloco.translate('configuration.synchronization.inboxMessagesNotSynchronized');
 
-    const action = 'overwrite';
+    const action = this.transloco.translate('common.actions.overwrite');
 
     let dialogRef = this.dialog.openDialog(ChoiceDialogComponent, {
       context: {
-        title: 'Overwrite configuration?',
-        subtitle: `During synchronization, configuration will be copied from the source application to the target application (answers, stories, training).
+        title: this.transloco.translate('configuration.synchronization.overwriteTitle'),
+        subtitle: `${this.transloco.translate('configuration.synchronization.overwriteSubtitlePart1')}
+${this.transloco.translate('configuration.synchronization.overwriteSubtitlePart2')}
 
-Please note : ${inboxMessagesCopySubtitle}
+${this.transloco.translate('configuration.synchronization.overwriteSubtitlePart3')} ${inboxMessagesCopySubtitle}
 
-The synchronization of both applications will be permanent, and there will be no way to reverse it. Do you want to continue?
-`,
+${this.transloco.translate('configuration.synchronization.overwriteWarning')}`,
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
           { actionName: action, buttonStatus: 'danger' }
         ],
         modalStatus: 'danger'
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === action) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         let conf = new SynchronizationConfiguration(
           new CopyContext(this.sourceNamespace.namespace, this.sourceApplication.name, this.sourceApplication._id),
           new CopyContext(this.targetNamespace.namespace, this.targetApplication.name, this.targetApplication._id),
@@ -100,16 +88,18 @@ The synchronization of both applications will be permanent, and there will be no
         );
         this.botConfigurationService.synchronize(conf).subscribe((result) => {
           if (result) {
-            this.toastrService.show(`Configuration has been copied`, 'Overwrite configuration', {
-              duration: 2000,
-              status: 'success'
-            });
+            this.toastrService.show(
+              this.transloco.translate('configuration.synchronization.configurationCopied'),
+              this.transloco.translate('configuration.synchronization.overwriteTitle'),
+              { duration: 2000, status: 'success' }
+            );
             this.state.resetConfiguration();
           } else {
-            this.toastrService.show(`Copy configuration failed`, 'Error', {
-              duration: 5000,
-              status: 'danger'
-            });
+            this.toastrService.show(
+              this.transloco.translate('configuration.synchronization.copyFailed'),
+              this.transloco.translate('common.messages.error'),
+              { duration: 5000, status: 'danger' }
+            );
           }
           this.redirect();
         });

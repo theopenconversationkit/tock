@@ -1,6 +1,6 @@
 <div class="d-flex align-items-center mb-3">
   <div class="flex-grow-1">
-    <h1 class="m-0">Dataset run</h1>
+    <h1 class="m-0">{{ 'quality.dataset-detail.title' | transloco }}</h1>
     <div class="lead">{{ dataset?.name }}</div>
     <small>
       {{ dataset?.description }}
@@ -8,18 +8,17 @@
   </div>
 </div>
 
-<tock-sticky-menu
-  *ngIf="!loading"
-  [hideable]="true"
->
+@if (!loading) {
+<tock-sticky-menu [hideable]="true">
   <div class="vs-wrapper mb-1">
     <nb-card class="mb-0">
       <nb-card-body>
         <div class="d-flex gap-05 justify-content-between">
-          <span class="text-uppercase monospace text-primary text-nowrap"> Run A </span>
+          <span class="text-uppercase monospace text-primary text-nowrap">
+            {{ 'quality.dataset-detail.run_a_label' | transloco }}
+          </span>
           <span class="text-muted font-size-small ellipsis"> {{ currentRun.id }} </span>
         </div>
-
         <div class="d-flex flex-wrap column-gap-1 justify-content-between text-muted font-size-small mt-1">
           <span class="text-nowrap">{{ currentRun.startTime | date: 'y/MM/dd - HH:mm' }}</span>
           <i class="bi bi-chevron-bar-left"></i>
@@ -27,56 +26,87 @@
           <i class="bi bi-chevron-bar-right"></i>
           <span class="text-nowrap">{{ currentRun.endTime | date: 'y/MM/dd - HH:mm' }}</span>
         </div>
-
         <div class="d-flex flex-wrap gap-05 justify-content-between mt-2">
           <div
             class="flex-fill justify-content-center tag prompt pointer"
             [class.diff]="showComparison && hasPromptsDiff()"
-            nbTooltip="Click to see the prompts used when executing this run"
+            [nbTooltip]="'quality.dataset-detail.prompts_tooltip' | transloco"
             (click)="compareSettings(settingsDiffCurrentTabs.AnsweringPrompt)"
           >
-            prompts
+            {{ 'quality.dataset-detail.prompts_label' | transloco }}
           </div>
           <div
             class="flex-fill justify-content-center tag settings pointer"
             [class.diff]="showComparison && hasSettingsDiff()"
-            nbTooltip="Click to see the settings used when executing this run"
+            [nbTooltip]="'quality.dataset-detail.settings_tooltip' | transloco"
             (click)="compareSettings(settingsDiffCurrentTabs.RagSettings)"
           >
-            settings
+            {{ 'quality.dataset-detail.settings_label' | transloco }}
           </div>
           <div
             class="flex-fill justify-content-center tag corpus"
             [class.diff]="showComparison && hasIndexingSessionDiff()"
-            nbTooltip="Indexing session id"
+            [nbTooltip]="'quality.dataset-detail.indexing_session_tooltip' | transloco"
           >
-            {{ currentRun.settingsSnapshot.indexSessionId }}
+            {{ currentRun.settingsSnapshot?.indexSessionId }}
           </div>
         </div>
-
         <div class="font-size-small lineHeight-1 d-flex flex-wrap gap-05 row-gap-05 justify-content-between mt-1">
-          <div class="text-nowrap">Completed questions : {{ currentRun.stats.completedQuestions }}</div>
-          <div class="text-nowrap">Failed questions : {{ currentRun.stats.failedQuestions }}</div>
-          <div class="text-nowrap">Total questions : {{ currentRun.stats.totalQuestions }}</div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.completed_questions_label' | transloco: { count: currentRun.stats.completedQuestions } }}
+          </div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.failed_questions_label' | transloco: { count: currentRun.stats.failedQuestions } }}
+          </div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.total_questions_label' | transloco: { count: currentRun.stats.totalQuestions } }}
+          </div>
         </div>
         <div class="font-size-xsmall lineHeight-1 text-muted d-flex flex-wrap gap-05 row-gap-05 justify-content-between">
-          <div class="text-nowrap">Intent : {{ currentRun.stats.nonRagAnswers }}</div>
-          <div class="text-nowrap">Small talk : {{ currentRun.stats.ragAnswerStatusCounts.small_talk }}</div>
-          <div class="text-nowrap">Found in context : {{ currentRun.stats.ragAnswerStatusCounts.found_in_context }}</div>
-          <div class="text-nowrap">Not found in context : {{ currentRun.stats.ragAnswerStatusCounts.not_found_in_context }}</div>
-          <div class="text-nowrap">Human escalation :{{ currentRun.stats.ragAnswerStatusCounts.human_escalation }}</div>
-          <div class="text-nowrap">Out of scope : {{ currentRun.stats.ragAnswerStatusCounts.out_of_scope }}</div>
-          <div class="text-nowrap">Injection attempt : {{ currentRun.stats.ragAnswerStatusCounts.injection_attempt }}</div>
-          <div class="text-nowrap">Technical error : {{ currentRun.stats.ragAnswerStatusCounts.technical_error }}</div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.intent_label' | transloco: { count: currentRun.stats.nonRagAnswers } }}
+          </div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.small_talk_label' | transloco: { count: currentRun.stats.ragAnswerStatusCounts.small_talk } }}
+          </div>
+          <div class="text-nowrap">
+            {{
+              'quality.dataset-detail.found_in_context_label'
+                | transloco: { count: currentRun.stats.ragAnswerStatusCounts.found_in_context }
+            }}
+          </div>
+          <div class="text-nowrap">
+            {{
+              'quality.dataset-detail.not_found_in_context_label'
+                | transloco: { count: currentRun.stats.ragAnswerStatusCounts.not_found_in_context }
+            }}
+          </div>
+          <div class="text-nowrap">
+            {{
+              'quality.dataset-detail.human_escalation_label'
+                | transloco: { count: currentRun.stats.ragAnswerStatusCounts.human_escalation }
+            }}
+          </div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.out_of_scope_label' | transloco: { count: currentRun.stats.ragAnswerStatusCounts.out_of_scope } }}
+          </div>
+          <div class="text-nowrap">
+            {{
+              'quality.dataset-detail.injection_attempt_label'
+                | transloco: { count: currentRun.stats.ragAnswerStatusCounts.injection_attempt }
+            }}
+          </div>
+          <div class="text-nowrap">
+            {{
+              'quality.dataset-detail.technical_error_label' | transloco: { count: currentRun.stats.ragAnswerStatusCounts.technical_error }
+            }}
+          </div>
         </div>
       </nb-card-body>
-
-      <nb-card-footer
-        *ngIf="comparableRuns.length > 1"
-        class="p-0 background-basic-color-2 d-flex align-items-stretch"
-      >
+      @if (comparableRuns.length > 1) {
+      <nb-card-footer class="p-0 background-basic-color-2 d-flex align-items-stretch">
+        @if (canScrollLeft('current')) {
         <button
-          *ngIf="canScrollLeft('current')"
           class="scroll-arrow"
           nbButton
           size="tiny"
@@ -90,15 +120,15 @@
             pack="nebular-essentials"
           ></nb-icon>
         </button>
-
+        }
         <div
           #runsScrollA
           class="d-flex gap-05 px-2 py-1 prev-entries flex-grow-1"
           [class.scrolled-left]="canScrollLeft('current')"
           (scroll)="onRunsScroll('current')"
         >
+          @for (entry of comparableRuns; track entry; let i = $index) {
           <button
-            *ngFor="let entry of comparableRuns; let i = index"
             nbButton
             size="tiny"
             shape="round"
@@ -109,10 +139,10 @@
           >
             {{ i }}
           </button>
+          }
         </div>
-
+        @if (canScrollRight('current')) {
         <button
-          *ngIf="canScrollRight('current')"
           class="scroll-arrow"
           nbButton
           size="tiny"
@@ -126,28 +156,26 @@
             pack="nebular-essentials"
           ></nb-icon>
         </button>
+        }
       </nb-card-footer>
+      }
     </nb-card>
-
+    @if (comparisonRun) {
     <button
-      *ngIf="comparisonRun"
       nbButton
       shape="round"
       status="basic"
       class="vs-badge align-self-center"
       [class.comparison-off]="!showComparison"
-      [nbTooltip]="showComparison ? 'Disable comparison' : 'Enable comparison'"
+      [nbTooltip]="'quality.dataset-detail.toggle_comparison_tooltip' | transloco: { state: showComparison ? 'enabled' : 'disabled' }"
       (click)="toggleShowComparison()"
     >
       VS
     </button>
-
-    <nb-card
-      *ngIf="comparisonRun && !showComparison"
-      class="mb-0 vs-no-comparison"
-    >
+    } @if (comparisonRun && !showComparison) {
+    <nb-card class="mb-0 vs-no-comparison">
       <nb-card-body class="d-flex flex-column align-items-center justify-content-center gap-1">
-        <span class="text-muted font-size-small">Comparison disabled</span>
+        <span class="text-muted font-size-small">{{ 'quality.dataset-detail.comparison_disabled_message' | transloco }}</span>
         <button
           nbButton
           ghost
@@ -155,21 +183,19 @@
           status="basic"
           (click)="toggleShowComparison()"
         >
-          Enable
+          {{ 'quality.dataset-detail.enable_button' | transloco }}
         </button>
       </nb-card-body>
     </nb-card>
-
-    <nb-card
-      class="mb-0"
-      *ngIf="comparisonRun && showComparison"
-    >
+    } @if (comparisonRun && showComparison) {
+    <nb-card class="mb-0">
       <nb-card-body>
         <div class="d-flex gap-05 justify-content-between">
-          <span class="text-uppercase monospace text-success text-nowrap"> Run B </span>
+          <span class="text-uppercase monospace text-success text-nowrap">
+            {{ 'quality.dataset-detail.run_b_label' | transloco }}
+          </span>
           <span class="text-muted font-size-small ellipsis"> {{ comparisonRun.id }} </span>
         </div>
-
         <div class="d-flex flex-wrap column-gap-1 justify-content-between text-muted font-size-small mt-1">
           <span class="text-nowrap">{{ comparisonRun.startTime | date: 'y/MM/dd - HH:mm' }}</span>
           <i class="bi bi-chevron-bar-left"></i>
@@ -177,50 +203,84 @@
           <i class="bi bi-chevron-bar-right"></i>
           <span class="text-nowrap">{{ comparisonRun.endTime | date: 'y/MM/dd - HH:mm' }}</span>
         </div>
-
         <div class="d-flex flex-wrap gap-05 justify-content-between mt-2">
           <div
             class="flex-fill justify-content-center tag prompt pointer"
-            nbTooltip="Click to see answering the prompt used when executing this run"
+            [nbTooltip]="'quality.dataset-detail.run_b_prompts_tooltip' | transloco"
             (click)="compareSettings(settingsDiffCurrentTabs.AnsweringPrompt)"
           >
-            prompts
+            {{ 'quality.dataset-detail.prompts_label' | transloco }}
           </div>
           <div
             class="flex-fill justify-content-center tag settings pointer"
-            nbTooltip="Click to see the settings used when executing this run"
+            [nbTooltip]="'quality.dataset-detail.run_b_settings_tooltip' | transloco"
             (click)="compareSettings(settingsDiffCurrentTabs.RagSettings)"
           >
-            settings
+            {{ 'quality.dataset-detail.settings_label' | transloco }}
           </div>
           <div
             class="flex-fill justify-content-center tag corpus"
-            nbTooltip="Indexing session id"
+            [nbTooltip]="'quality.dataset-detail.indexing_session_tooltip' | transloco"
           >
-            {{ comparisonRun.settingsSnapshot.indexSessionId }}
+            {{ comparisonRun.settingsSnapshot?.indexSessionId }}
           </div>
         </div>
-
         <div class="font-size-small lineHeight-1 d-flex flex-wrap gap-05 row-gap-05 justify-content-between mt-1">
-          <div class="text-nowrap">Completed questions : {{ comparisonRun.stats.completedQuestions }}</div>
-          <div class="text-nowrap">Failed questions : {{ comparisonRun.stats.failedQuestions }}</div>
-          <div class="text-nowrap">Total questions : {{ comparisonRun.stats.totalQuestions }}</div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.completed_questions_label' | transloco: { count: comparisonRun.stats.completedQuestions } }}
+          </div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.failed_questions_label' | transloco: { count: comparisonRun.stats.failedQuestions } }}
+          </div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.total_questions_label' | transloco: { count: comparisonRun.stats.totalQuestions } }}
+          </div>
         </div>
         <div class="font-size-xsmall lineHeight-1 text-muted d-flex flex-wrap gap-05 row-gap-05 justify-content-between">
-          <div class="text-nowrap">Intent : {{ comparisonRun.stats.nonRagAnswers }}</div>
-          <div class="text-nowrap">Small talk : {{ comparisonRun.stats.ragAnswerStatusCounts.small_talk }}</div>
-          <div class="text-nowrap">Found in context : {{ comparisonRun.stats.ragAnswerStatusCounts.found_in_context }}</div>
-          <div class="text-nowrap">Not found in context : {{ comparisonRun.stats.ragAnswerStatusCounts.not_found_in_context }}</div>
-          <div class="text-nowrap">Human escalation :{{ comparisonRun.stats.ragAnswerStatusCounts.human_escalation }}</div>
-          <div class="text-nowrap">Out of scope : {{ comparisonRun.stats.ragAnswerStatusCounts.out_of_scope }}</div>
-          <div class="text-nowrap">Injection attempt : {{ comparisonRun.stats.ragAnswerStatusCounts.injection_attempt }}</div>
-          <div class="text-nowrap">Technical error : {{ comparisonRun.stats.ragAnswerStatusCounts.technical_error }}</div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.intent_label' | transloco: { count: comparisonRun.stats.nonRagAnswers } }}
+          </div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.small_talk_label' | transloco: { count: comparisonRun.stats.ragAnswerStatusCounts.small_talk } }}
+          </div>
+          <div class="text-nowrap">
+            {{
+              'quality.dataset-detail.found_in_context_label'
+                | transloco: { count: comparisonRun.stats.ragAnswerStatusCounts.found_in_context }
+            }}
+          </div>
+          <div class="text-nowrap">
+            {{
+              'quality.dataset-detail.not_found_in_context_label'
+                | transloco: { count: comparisonRun.stats.ragAnswerStatusCounts.not_found_in_context }
+            }}
+          </div>
+          <div class="text-nowrap">
+            {{
+              'quality.dataset-detail.human_escalation_label'
+                | transloco: { count: comparisonRun.stats.ragAnswerStatusCounts.human_escalation }
+            }}
+          </div>
+          <div class="text-nowrap">
+            {{ 'quality.dataset-detail.out_of_scope_label' | transloco: { count: comparisonRun.stats.ragAnswerStatusCounts.out_of_scope } }}
+          </div>
+          <div class="text-nowrap">
+            {{
+              'quality.dataset-detail.injection_attempt_label'
+                | transloco: { count: comparisonRun.stats.ragAnswerStatusCounts.injection_attempt }
+            }}
+          </div>
+          <div class="text-nowrap">
+            {{
+              'quality.dataset-detail.technical_error_label'
+                | transloco: { count: comparisonRun.stats.ragAnswerStatusCounts.technical_error }
+            }}
+          </div>
         </div>
       </nb-card-body>
-
       <nb-card-footer class="p-0 background-basic-color-2 d-flex align-items-stretch">
+        @if (canScrollLeft('compared')) {
         <button
-          *ngIf="canScrollLeft('compared')"
           class="scroll-arrow"
           nbButton
           size="tiny"
@@ -234,15 +294,15 @@
             pack="nebular-essentials"
           ></nb-icon>
         </button>
-
+        }
         <div
           #runsScrollB
           class="d-flex gap-05 px-2 py-1 prev-entries flex-grow-1"
           [class.scrolled-left]="canScrollLeft('compared')"
           (scroll)="onRunsScroll('compared')"
         >
+          @for (entry of comparableRuns; track entry; let i = $index) {
           <button
-            *ngFor="let entry of comparableRuns; let i = index"
             nbButton
             size="tiny"
             shape="round"
@@ -253,10 +313,10 @@
           >
             {{ i }}
           </button>
+          }
         </div>
-
+        @if (canScrollRight('compared')) {
         <button
-          *ngIf="canScrollRight('compared')"
           class="scroll-arrow"
           nbButton
           size="tiny"
@@ -270,104 +330,91 @@
             pack="nebular-essentials"
           ></nb-icon>
         </button>
+        }
       </nb-card-footer>
     </nb-card>
+    }
   </div>
-
   <!-- ── Filter bar — only available when a comparison run is selected ── -->
-  <div
-    *ngIf="comparisonRun && showComparison"
-    class="d-flex align-items-center gap-1 flex-wrap mt-1"
-  >
-    <span class="text-muted font-size-small text-nowrap">Show only diffs:</span>
-
+  @if (comparisonRun && showComparison) {
+  <div class="d-flex align-items-center gap-1 flex-wrap mt-1">
+    <span class="text-muted font-size-small text-nowrap">{{ 'quality.dataset-detail.show_only_diffs_label' | transloco }}</span>
     <button
       nbButton
       size="tiny"
       [status]="allFiltersActive ? 'warning' : 'basic'"
       [ghost]="!allFiltersActive"
       shape="round"
-      nbTooltip="Toggle all diff filters at once"
+      [nbTooltip]="'quality.dataset-detail.toggle_all_filters_tooltip' | transloco"
       (click)="toggleAllFilters()"
     >
-      All
+      {{ 'quality.dataset-detail.all_button' | transloco }}
     </button>
-
     <button
       nbButton
       size="tiny"
       [status]="filters.statusDiff ? 'warning' : 'basic'"
       [ghost]="!filters.statusDiff"
       shape="round"
-      nbTooltip="Only show questions whose answer status changed between Run A and Run B"
+      [nbTooltip]="'quality.dataset-detail.status_filter_tooltip' | transloco"
       (click)="filters.statusDiff = !filters.statusDiff"
     >
-      <i class="bi bi-tag-fill mr-1"></i> Status
+      <i class="bi bi-tag-fill mr-1"></i> {{ 'quality.dataset-detail.status_button' | transloco }}
     </button>
-
     <button
       nbButton
       size="tiny"
       [status]="filters.sourceDiff ? 'warning' : 'basic'"
       [ghost]="!filters.sourceDiff"
       shape="round"
-      nbTooltip="Only show questions where sources were added, modified, or removed between runs"
+      [nbTooltip]="'quality.dataset-detail.sources_filter_tooltip' | transloco"
       (click)="filters.sourceDiff = !filters.sourceDiff"
     >
-      <i class="bi bi-file-earmark-fill mr-1"></i> Sources
+      <i class="bi bi-file-earmark-fill mr-1"></i> {{ 'quality.dataset-detail.sources_button' | transloco }}
     </button>
-
     <button
       nbButton
       size="tiny"
       [status]="filters.typeDiff ? 'warning' : 'basic'"
       [ghost]="!filters.typeDiff"
       shape="round"
-      nbTooltip="Only show questions whose answer type changed (RAG ↔ Intent) between runs"
+      [nbTooltip]="'quality.dataset-detail.type_filter_tooltip' | transloco"
       (click)="filters.typeDiff = !filters.typeDiff"
     >
-      <i class="bi bi-arrow-left-right mr-1"></i> Type
+      <i class="bi bi-arrow-left-right mr-1"></i> {{ 'quality.dataset-detail.type_button' | transloco }}
     </button>
-
     <button
       nbButton
       size="tiny"
       [status]="filters.questionDiff ? 'warning' : 'basic'"
       [ghost]="!filters.questionDiff"
       shape="round"
-      nbTooltip="Only show questions whose wording differed between Run A and Run B"
+      [nbTooltip]="'quality.dataset-detail.question_filter_tooltip' | transloco"
       (click)="filters.questionDiff = !filters.questionDiff"
     >
-      <i class="bi bi-pencil-fill mr-1"></i> Question
+      <i class="bi bi-pencil-fill mr-1"></i> {{ 'quality.dataset-detail.question_button' | transloco }}
     </button>
-
-    <span
-      *ngIf="anyFilterActive"
-      class="text-muted font-size-small text-nowrap ml-1"
-    >
-      {{ filteredQuestions.length }} / {{ dataset.questions.length }}
-    </span>
+    @if (anyFilterActive) {
+    <span class="text-muted font-size-small text-nowrap ml-1"> {{ filteredQuestions.length }} / {{ dataset.questions.length }} </span>
+    }
   </div>
+  }
 </tock-sticky-menu>
-
-<div
-  *ngIf="!loading"
-  class="mt-4"
->
+} @if (!loading) {
+<div class="mt-4">
+  @if (!loading && filteredQuestions.length === 0) {
   <tock-no-data-found
-    *ngIf="!loading && filteredQuestions.length === 0"
-    title="No entry found"
+    [title]="'quality.dataset-detail.no_entry_found' | transloco"
     class="mt-3"
   ></tock-no-data-found>
-
-  <ng-container *ngFor="let question of filteredQuestions">
-    <tock-dataset-detail-entry
-      *ngIf="currentRunActions"
-      [currentRunActions]="currentRunActions"
-      [comparisonRunActions]="showComparison ? comparisonRunActions : null"
-      [question]="question"
-    ></tock-dataset-detail-entry>
-  </ng-container>
+  } @for (question of filteredQuestions; track question) { @if (currentRunActions) {
+  <tock-dataset-detail-entry
+    [currentRunActions]="currentRunActions"
+    [comparisonRunActions]="showComparison ? comparisonRunActions : null"
+    [question]="question"
+  ></tock-dataset-detail-entry>
+  } }
 </div>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

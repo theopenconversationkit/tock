@@ -1,0 +1,37 @@
+.identity-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.identity-display-name {
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.identity-unset {
+  font-style: italic;
+}
+
+.identity-technical-name {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+  padding-top: 0.375rem;
+}
+
+.identity-notes {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--card-divider-color);
+}
+
+.identity-notes-text {
+  margin: 0;
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

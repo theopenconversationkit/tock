@@ -29,4 +29,6 @@ import kotlin.reflect.KClass
 @ConnectorHandler(connectorTypeId = TEAMS_CONNECTOR_TYPE_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class TeamsHandler(val value: KClass<out ConnectorSpecificHandling>)
+annotation class TeamsHandler(
+    val value: KClass<out ConnectorSpecificHandling>,
+)

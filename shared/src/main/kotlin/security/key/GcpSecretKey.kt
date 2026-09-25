@@ -21,4 +21,5 @@ package ai.tock.shared.security.key
  */
 data class GcpSecretKey(
     override val secretName: String,
-) : SecretKey(SecretKeyType.GcpSecretManager), NamedSecretKey
+) : SecretKey(SecretKeyType.GcpSecretManager),
+    NamedSecretKey

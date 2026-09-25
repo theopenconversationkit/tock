@@ -28,7 +28,9 @@ import javax.crypto.spec.SecretKeySpec
 /**
  * Utility object : calculate HMAC signature (protocol used for iAdvize message authentication)
  */
-class IadvizeSecurity(private val secretToken: String) {
+class IadvizeSecurity(
+    private val secretToken: String,
+) {
     companion object {
         const val HMAC_SHA256 = "HmacSHA256"
         const val HEADER_NAME = "X-iAdvize-Signature"

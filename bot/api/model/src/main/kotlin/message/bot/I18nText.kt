@@ -24,7 +24,8 @@ data class I18nText(
     val args: List<String?> = emptyList(),
     val toBeTranslated: Boolean = true,
     val key: String? = null,
-) : CharSequence by text, TranslatedSequence {
+) : CharSequence by text,
+    TranslatedSequence {
     companion object {
         private val logger = KotlinLogging.logger {}
     }

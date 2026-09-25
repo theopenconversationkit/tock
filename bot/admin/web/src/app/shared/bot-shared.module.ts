@@ -89,7 +89,8 @@ import {
   ChatUiDisplayMarkupComponent,
   AnnotationComponent,
   AnnotationCommentComponent,
-  JsonViewerDialogComponent
+  JsonViewerDialogComponent,
+  IntentDialogComponent
 } from './components';
 
 import { AutofocusDirective, TextareaAutocompleteDirective } from './directives';
@@ -100,6 +101,7 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { ScrollComponent } from '../scroll/scroll.component';
 import { SortByOrderPipe } from './pipes/sort-by-order.pipe';
 import { ResilientDatePipe } from './pipes/resilient-date.pipe';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @NgModule({
   imports: [
@@ -128,7 +130,8 @@ import { ResilientDatePipe } from './pipes/resilient-date.pipe';
     NbListModule,
     NbToggleModule,
     NbTagModule,
-    NbContextMenuModule
+    NbContextMenuModule,
+    TranslocoModule
   ],
   declarations: [
     SelectBotComponent,
@@ -183,7 +186,8 @@ import { ResilientDatePipe } from './pipes/resilient-date.pipe';
     AnnotationCommentComponent,
     SortByOrderPipe,
     ResilientDatePipe,
-    JsonViewerDialogComponent
+    JsonViewerDialogComponent,
+    IntentDialogComponent
   ],
   exports: [
     SelectBotComponent,
@@ -220,7 +224,8 @@ import { ResilientDatePipe } from './pipes/resilient-date.pipe';
     TextareaAutocompleteDirective,
     SortByOrderPipe,
     ResilientDatePipe,
-    JsonViewerDialogComponent
+    JsonViewerDialogComponent,
+    IntentDialogComponent
   ],
   providers: [BotSharedService, SortByOrderPipe, AnalyticsService, ResilientDatePipe, DatePipe]
 })

@@ -28,9 +28,10 @@ interface FilterForm {
 }
 
 @Component({
-  selector: 'tock-count-stats',
-  templateUrl: './count-stats.component.html',
-  styleUrls: ['./count-stats.component.scss']
+    selector: 'tock-count-stats',
+    templateUrl: './count-stats.component.html',
+    styleUrls: ['./count-stats.component.scss'],
+    standalone: false
 })
 export class CountStatsComponent implements OnInit, OnDestroy {
   destroy = new Subject();

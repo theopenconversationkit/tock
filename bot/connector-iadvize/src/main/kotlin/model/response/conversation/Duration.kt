@@ -16,9 +16,12 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation
 
-data class Duration(val value: Long, val unit: TimeUnit) {
+data class Duration(
+    val value: Long,
+    val unit: TimeUnit,
+) {
     @Suppress("ktlint:standard:enum-entry-name-case")
-    enum class TimeUnit() {
+    enum class TimeUnit {
         millis,
         seconds,
         minutes,

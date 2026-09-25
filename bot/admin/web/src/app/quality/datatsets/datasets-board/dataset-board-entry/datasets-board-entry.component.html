@@ -8,60 +8,59 @@
     <div
       (click)="switchQuestionsDetail()"
       class="pointer unselectable"
-      nbTooltip="Show questions"
+      [nbTooltip]="'quality.dataset-board-entry.show_questions_tooltip' | transloco"
     >
       <div
         class="rounded px-2 py-1"
         [ngClass]="{ 'background-basic-color-2': displayQuestionsDetail }"
       >
         <div class="list-entry-name">{{ dataset.questions.length }}</div>
-        <div class="list-entry-desc text-muted">questions</div>
+        <div class="list-entry-desc text-muted">{{ 'quality.dataset-board-entry.questions_label' | transloco }}</div>
       </div>
     </div>
 
     <div
       (click)="switchRunsDetail()"
       class="pointer unselectable"
-      nbTooltip="Show runs"
+      [nbTooltip]="'quality.dataset-board-entry.show_runs_tooltip' | transloco"
     >
       <div
         class="rounded px-2 py-1"
         [ngClass]="{ 'background-basic-color-2': displayRunsDetail }"
       >
         <div class="list-entry-name">{{ dataset.runs.length }}</div>
-        <div class="list-entry-desc text-muted">runs</div>
+        <div class="list-entry-desc text-muted">{{ 'quality.dataset-board-entry.runs_label' | transloco }}</div>
       </div>
     </div>
 
     <div class="d-flex flex-column justify-content-center">
+      @if (getLatestRun(); as latestRun) {
       <div
         class="list-entry-name initial-capitalize"
-        *ngIf="getLatestRun() as latestRun"
         [ngClass]="getStateColor(latestRun.state)"
       >
         {{ latestRun.state }}
       </div>
-      <div
-        class="list-entry-desc text-muted"
-        *ngIf="getLatestRun() as latestRun"
-      >
+      } @if (getLatestRun(); as latestRun) {
+      <div class="list-entry-desc text-muted">
         {{ latestRun.startTime | date: 'y/MM/dd - HH:mm' }}
       </div>
+      }
     </div>
 
     <div>
+      @if (getLatestRun(); as latestRun) {
       <div
         class="list-entry-desc"
-        *ngIf="getLatestRun() as latestRun"
         [ngClass]="{
           'text-muted': ![datasetRunState.QUEUED, datasetRunState.RUNNING].includes(latestRun.state),
           'text-info': latestRun.state === datasetRunState.RUNNING,
           'text-warning': latestRun.state === datasetRunState.QUEUED
         }"
       >
-        <!-- {{ latestRunDuration$ | async }} -->
         {{ runDurations$[latestRun.id] | async }}
       </div>
+      }
     </div>
 
     <div>
@@ -71,7 +70,7 @@
           ghost
           shape="round"
           status="info"
-          nbTooltip="View runs details"
+          [nbTooltip]="'quality.dataset-board-entry.view_runs_details_tooltip' | transloco"
           class="mb-2"
           [disabled]="!canViewHistory"
           routerLink="/quality/datasets/detail/{{ dataset.id }}"
@@ -79,38 +78,38 @@
           <nb-icon icon="bar-chart"></nb-icon>
         </button>
 
+        @if (canCancel) {
         <button
-          *ngIf="canCancel"
           nbButton
           ghost
           shape="round"
           status="warning"
-          nbTooltip="Cancel active run"
+          [nbTooltip]="'quality.dataset-board-entry.cancel_active_run_tooltip' | transloco"
           class="mb-2"
           (click)="confirmCancelRun(getLatestRun())"
         >
           <nb-icon icon="stop-circle"></nb-icon>
         </button>
-
+        } @if (canPlay) {
         <button
-          *ngIf="canPlay"
           nbButton
           ghost
           shape="round"
           status="success"
-          nbTooltip="Run dataset"
+          [nbTooltip]="'quality.dataset-board-entry.run_dataset_tooltip' | transloco"
           class="mb-2"
           (click)="runDataset()"
         >
           <nb-icon icon="play-circle"></nb-icon>
         </button>
+        }
 
         <button
           nbButton
           ghost
           shape="round"
           status="warning"
-          nbTooltip="Edit dataset"
+          [nbTooltip]="'quality.dataset-board-entry.edit_dataset_tooltip' | transloco"
           class="mb-2"
           [disabled]="!canEdit"
           (click)="editDataset()"
@@ -123,7 +122,7 @@
           ghost
           shape="round"
           status="danger"
-          nbTooltip="Delete dataset"
+          [nbTooltip]="'quality.dataset-board-entry.delete_dataset_tooltip' | transloco"
           class="mb-2"
           [disabled]="!canDelete"
           (click)="confirmDeleteDataset()"
@@ -134,218 +133,203 @@
     </div>
   </nb-card-body>
 
-  <nb-card-body
-    *ngIf="displayQuestionsDetail"
-    class="background-basic-color-2 p-2 pt-1 inner-shade-top"
-  >
+  @if (displayQuestionsDetail) {
+  <nb-card-body class="background-basic-color-2 p-2 pt-1 inner-shade-top">
     <div class="details-wrapper scrollbar-narrow">
+      @for (question of dataset.questions; track question) {
       <div
         class="background-basic-color-1 rounded px-2 py-1 mt-1 font-size-small text-muted d-flex justify-content-between align-items-center"
-        *ngFor="let question of dataset.questions"
       >
         {{ question.question }}
-
         <div class="d-flex">
           <button
             nbButton
             ghost
             size="tiny"
-            nbTooltip="Copy question"
+            [nbTooltip]="'quality.dataset-board-entry.copy_question_tooltip' | transloco"
             (click)="copyString(question.question)"
           >
             <nb-icon icon="copy"></nb-icon>
           </button>
-
           <button
             nbButton
             ghost
             size="tiny"
-            nbTooltip="Test this question in a dialog"
+            [nbTooltip]="'quality.dataset-board-entry.test_question_in_dialog_tooltip' | transloco"
             (click)="testSentence(question.question)"
           >
             <nb-icon icon="terminal-plus"></nb-icon>
           </button>
         </div>
       </div>
+      }
     </div>
   </nb-card-body>
-
-  <nb-card-body
-    *ngIf="displayRunsDetail"
-    class="background-basic-color-2 p-2 inner-shade-top"
-  >
-    <div
-      class="text-center text-muted"
-      *ngIf="!dataset.runs?.length"
-    >
-      No runs yet
+  } @if (displayRunsDetail) {
+  <nb-card-body class="background-basic-color-2 p-2 inner-shade-top">
+    @if (!dataset.runs?.length) {
+    <div class="text-center text-muted">
+      {{ 'quality.dataset-board-entry.no_runs_yet' | transloco }}
     </div>
-
-    <ng-container *ngIf="dataset.runs?.length">
-      <div class="runs-grid runs-grid-header px-2 mb-2 mr-2">
-        <div
-          class="ellipsis"
-          nbTooltip="Run started at"
-        >
-          Start
-        </div>
-        <div
-          class="ellipsis"
-          nbTooltip="Run ended at"
-        >
-          End
-        </div>
-        <div
-          class="ellipsis"
-          nbTooltip="Run duration"
-        >
-          Duration
-        </div>
-        <div
-          class="ellipsis"
-          nbTooltip="Number of questions in the dataset at the time the run is executed"
-        >
-          Questions
-        </div>
-        <div
-          class="ellipsis"
-          nbTooltip="Number of successful questions"
-        >
-          Completed
-        </div>
-        <div
-          class="ellipsis"
-          nbTooltip="Number of questions processed by intent detection"
-        >
-          Intent
-        </div>
-        <div
-          class="ellipsis"
-          nbTooltip="Number of failed questions (Execution failures | Technical errors)"
-        >
-          Failed
-        </div>
-        <div
-          class="ellipsis"
-          nbTooltip="Number of questions processed by RAG chain with relevant documentation retrieved"
-        >
-          Found in context
-        </div>
-        <div
-          class="ellipsis"
-          nbTooltip="Number of questions processed by RAG chain with no relevant documentation retrieved"
-        >
-          Not found in context
-        </div>
-        <div
-          class="ellipsis"
-          nbTooltip="Current run status"
-        >
-          Run State
-        </div>
-        <div class="ellipsis"></div>
-        <div class="ellipsis"></div>
-        <div class="ellipsis"></div>
+    } @if (dataset.runs?.length) {
+    <div class="runs-grid runs-grid-header px-2 mb-2 mr-2">
+      <div
+        class="ellipsis"
+        [nbTooltip]="'quality.dataset-board-entry.run_started_at_tooltip' | transloco"
+      >
+        {{ 'quality.dataset-board-entry.start_column' | transloco }}
       </div>
-
-      <div class="details-wrapper scrollbar-narrow">
+      <div
+        class="ellipsis"
+        [nbTooltip]="'quality.dataset-board-entry.run_ended_at_tooltip' | transloco"
+      >
+        {{ 'quality.dataset-board-entry.end_column' | transloco }}
+      </div>
+      <div
+        class="ellipsis"
+        [nbTooltip]="'quality.dataset-board-entry.run_duration_tooltip' | transloco"
+      >
+        {{ 'quality.dataset-board-entry.duration_column' | transloco }}
+      </div>
+      <div
+        class="ellipsis"
+        [nbTooltip]="'quality.dataset-board-entry.questions_in_dataset_tooltip' | transloco"
+      >
+        {{ 'quality.dataset-board-entry.questions_column' | transloco }}
+      </div>
+      <div
+        class="ellipsis"
+        [nbTooltip]="'quality.dataset-board-entry.successful_questions_tooltip' | transloco"
+      >
+        {{ 'quality.dataset-board-entry.completed_column' | transloco }}
+      </div>
+      <div
+        class="ellipsis"
+        [nbTooltip]="'quality.dataset-board-entry.intent_detection_questions_tooltip' | transloco"
+      >
+        {{ 'quality.dataset-board-entry.intent_column' | transloco }}
+      </div>
+      <div
+        class="ellipsis"
+        [nbTooltip]="'quality.dataset-board-entry.failed_questions_tooltip' | transloco"
+      >
+        {{ 'quality.dataset-board-entry.failed_column' | transloco }}
+      </div>
+      <div
+        class="ellipsis"
+        [nbTooltip]="'quality.dataset-board-entry.found_in_context_questions_tooltip' | transloco"
+      >
+        {{ 'quality.dataset-board-entry.found_in_context_column' | transloco }}
+      </div>
+      <div
+        class="ellipsis"
+        [nbTooltip]="'quality.dataset-board-entry.not_found_in_context_questions_tooltip' | transloco"
+      >
+        {{ 'quality.dataset-board-entry.not_found_in_context_column' | transloco }}
+      </div>
+      <div
+        class="ellipsis"
+        [nbTooltip]="'quality.dataset-board-entry.current_run_status_tooltip' | transloco"
+      >
+        {{ 'quality.dataset-board-entry.run_state_column' | transloco }}
+      </div>
+      <div class="ellipsis"></div>
+      <div class="ellipsis"></div>
+      <div class="ellipsis"></div>
+    </div>
+    <div class="details-wrapper scrollbar-narrow">
+      @for (run of dataset.runs; track run) {
+      <div class="background-basic-color-1 rounded px-2 py-1 mt-1 font-size-small runs-grid">
         <div
-          class="background-basic-color-1 rounded px-2 py-1 mt-1 font-size-small runs-grid"
-          *ngFor="let run of dataset.runs"
+          class="runs-grid-entry text-muted"
+          [nbTooltip]="run.startTime | date: 'y/MM/dd - HH:mm'"
         >
-          <div
-            class="runs-grid-entry text-muted"
-            nbTooltip="{{ run.startTime | date: 'y/MM/dd - HH:mm' }}"
+          {{ run.startTime | date: 'y/MM/dd - HH:mm' }}
+        </div>
+        <div
+          class="runs-grid-entry text-muted"
+          [nbTooltip]="run.endTime | date: 'y/MM/dd - HH:mm'"
+        >
+          @if (run.endTime) {
+          {{ run.endTime | date: 'y/MM/dd - HH:mm' }}
+          } @else { - }
+        </div>
+        <div
+          class="runs-grid-entry"
+          [ngClass]="{
+            'text-muted': ![datasetRunState.QUEUED, datasetRunState.RUNNING].includes(run.state),
+            'text-info': run.state === datasetRunState.RUNNING,
+            'text-warning': run.state === datasetRunState.QUEUED
+          }"
+        >
+          {{ runDurations$[run.id] | async }}
+        </div>
+        <div class="runs-grid-entry text-muted">{{ run.stats.totalQuestions }}</div>
+        <div class="runs-grid-entry text-muted">{{ run.stats.completedQuestions }}</div>
+        <div class="runs-grid-entry text-muted">{{ run.stats.nonRagAnswers }}</div>
+        <div class="runs-grid-entry text-muted">
+          {{ run.stats.failedQuestions }} | {{ run.stats.ragAnswerStatusCounts.technical_error }}
+        </div>
+        <div class="runs-grid-entry text-muted">{{ run.stats.ragAnswerStatusCounts.found_in_context }}</div>
+        <div class="runs-grid-entry text-muted">
+          {{ run.stats.ragAnswerStatusCounts.not_found_in_context }}
+          @if (!run.stats.failedQuestions && !run.stats.ragAnswerStatusCounts.technical_error) {
+          <small class="font-small text-warning"> ({{ getPercentageNotFound(run) | number: '1.0-0' }}%) </small>
+          }
+        </div>
+        <div
+          class="runs-grid-entry"
+          [ngClass]="getStateColor(run.state)"
+        >
+          {{ run.state }}
+        </div>
+        <div>
+          @if (run.state === datasetRunState.COMPLETED && run !== getLatestRun()) {
+          <button
+            nbButton
+            size="tiny"
+            shape="round"
+            [nbTooltip]="'quality.dataset-board-entry.compare_with_latest_run_tooltip' | transloco"
+            [routerLink]="['/quality/datasets/detail', dataset.id]"
+            [queryParams]="{ compareRunId: run.id }"
           >
-            {{ run.startTime | date: 'y/MM/dd - HH:mm' }}
-          </div>
-          <div
-            class="runs-grid-entry text-muted"
-            nbTooltip="{{ run.endTime | date: 'y/MM/dd - HH:mm' }}"
+            <nb-icon icon="plus-slash-minus"></nb-icon>
+          </button>
+          }
+        </div>
+        <div>
+          @if (run.state === datasetRunState.COMPLETED) {
+          <button
+            nbButton
+            size="tiny"
+            shape="round"
+            status="primary"
+            [nbTooltip]="'quality.dataset-board-entry.create_evaluation_sample_tooltip' | transloco"
+            (click)="createSample(run)"
+            [disabled]="run.stats.completedQuestions < 1"
           >
-            <ng-container *ngIf="run.endTime; else noEndTime">
-              {{ run.endTime | date: 'y/MM/dd - HH:mm' }}
-            </ng-container>
-            <ng-template #noEndTime>-</ng-template>
-          </div>
-          <div
-            class="runs-grid-entry"
-            [ngClass]="{
-              'text-muted': ![datasetRunState.QUEUED, datasetRunState.RUNNING].includes(run.state),
-              'text-info': run.state === datasetRunState.RUNNING,
-              'text-warning': run.state === datasetRunState.QUEUED
-            }"
+            <nb-icon icon="eyedropper"></nb-icon>
+          </button>
+          }
+        </div>
+        <div>
+          @if ([datasetRunState.COMPLETED, datasetRunState.CANCELLED].includes(run.state)) {
+          <button
+            nbButton
+            size="tiny"
+            shape="round"
+            status="danger"
+            [nbTooltip]="'quality.dataset-board-entry.delete_this_run_tooltip' | transloco"
+            (click)="confirmDeleteRun(run)"
           >
-            {{ runDurations$[run.id] | async }}
-          </div>
-
-          <div class="runs-grid-entry text-muted">{{ run.stats.totalQuestions }}</div>
-          <div class="runs-grid-entry text-muted">{{ run.stats.completedQuestions }}</div>
-
-          <div class="runs-grid-entry text-muted">{{ run.stats.nonRagAnswers }}</div>
-          <div class="runs-grid-entry text-muted">
-            {{ run.stats.failedQuestions }} | {{ run.stats.ragAnswerStatusCounts.technical_error }}
-          </div>
-          <div class="runs-grid-entry text-muted">{{ run.stats.ragAnswerStatusCounts.found_in_context }}</div>
-          <div class="runs-grid-entry text-muted">
-            {{ run.stats.ragAnswerStatusCounts.not_found_in_context }}
-            <small
-              class="font-small text-warning"
-              *ngIf="!run.stats.failedQuestions && !run.stats.ragAnswerStatusCounts.technical_error"
-            >
-              ({{ getPercentageNotFound(run) | number: '1.0' }}%)
-            </small>
-          </div>
-
-          <div
-            class="runs-grid-entry"
-            [ngClass]="getStateColor(run.state)"
-          >
-            {{ run.state }}
-          </div>
-
-          <div>
-            <button
-              *ngIf="run.state === datasetRunState.COMPLETED && run !== getLatestRun()"
-              nbButton
-              size="tiny"
-              shape="round"
-              nbTooltip="Compare with latest run"
-              [routerLink]="['/quality/datasets/detail', dataset.id]"
-              [queryParams]="{ compareRunId: run.id }"
-            >
-              <nb-icon icon="plus-slash-minus"></nb-icon>
-            </button>
-          </div>
-          <div>
-            <button
-              *ngIf="run.state === datasetRunState.COMPLETED"
-              nbButton
-              size="tiny"
-              shape="round"
-              status="primary"
-              nbTooltip="Create an evaluation sample based on the results of this run"
-              (click)="createSample(run)"
-              [disabled]="run.stats.completedQuestions < 1"
-            >
-              <nb-icon icon="eyedropper"></nb-icon>
-            </button>
-          </div>
-          <div>
-            <button
-              *ngIf="[datasetRunState.COMPLETED, datasetRunState.CANCELLED].includes(run.state)"
-              nbButton
-              size="tiny"
-              shape="round"
-              status="danger"
-              nbTooltip="Delete this run"
-              (click)="confirmDeleteRun(run)"
-            >
-              <nb-icon icon="trash"></nb-icon>
-            </button>
-          </div>
+            <nb-icon icon="trash"></nb-icon>
+          </button>
+          }
         </div>
       </div>
-    </ng-container>
+      }
+    </div>
+    }
   </nb-card-body>
+  }
 </nb-card>

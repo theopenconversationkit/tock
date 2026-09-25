@@ -24,6 +24,7 @@ import { TestSharedModule } from '../../shared/test-shared.module';
 import { BotService } from '../bot-service';
 import { AnswerConfigurationType, IntentName, SimpleAnswerConfiguration, StoryDefinitionConfiguration, StoryStep } from '../model/story';
 import { StoryComponent } from './story.component';
+import { TranslocoService } from '@jsverse/transloco';
 
 const stepMock = new StoryStep(
   'testStep',

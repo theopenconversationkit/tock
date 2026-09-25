@@ -60,8 +60,7 @@ class ConnectorRestClient(
                 retrofitBuilderWithTimeoutAndLogger(
                     ms = timeout,
                     level = Level.BODY,
-                )
-                    .baseUrl("$baseUrl/$p/")
+                ).baseUrl("$baseUrl/$p/")
                     .addConverterFactory(JacksonConverterFactory.create(mapper))
                     .build()
             retrofit.create(ConnectorRestService::class.java)
@@ -75,7 +74,5 @@ class ConnectorRestClient(
         path: String,
         locale: Locale,
         query: ClientMessageRequest,
-    ): Response<ClientMessageResponse> {
-        return getService(path).talk(locale.toLanguageTag(), query).execute()
-    }
+    ): Response<ClientMessageResponse> = getService(path).talk(locale.toLanguageTag(), query).execute()
 }

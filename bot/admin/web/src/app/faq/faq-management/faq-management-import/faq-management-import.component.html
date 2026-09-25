@@ -1,0 +1,52 @@
+<nb-card [nbSpinner]="loading">
+  <nb-card-header>{{ 'faq.faq-management-import.title' | transloco }}</nb-card-header>
+
+  <nb-card-body>
+    <form
+      [formGroup]="form"
+      (submit)="import()"
+    >
+      <tock-form-control
+        [label]="'faq.faq-management-import.fileLabel' | transloco"
+        name="importFile"
+        [required]="true"
+        [controls]="file"
+        [showError]="isSubmitted"
+      >
+        @if (fileFormatError) {
+        <div class="font-weight-bold text-danger font-italic mb-2">
+          {{ 'faq.faq-management-import.invalidFileMessage' | transloco }}
+        </div>
+        }
+
+        <tock-file-upload
+          id="importFile"
+          formControlName="file"
+          [autofocus]="true"
+          [fullWidth]="true"
+          [multiple]="false"
+          [fileTypeAccepted]="['json']"
+        ></tock-file-upload>
+      </tock-form-control>
+    </form>
+  </nb-card-body>
+
+  <nb-card-footer class="card-footer-actions">
+    <button
+      nbButton
+      ghost
+      (click)="cancel()"
+    >
+      {{ 'common.actions.cancel' | transloco }}
+    </button>
+    <button
+      nbButton
+      outline
+      status="primary"
+      [disabled]="form.invalid || loading"
+      (click)="import()"
+    >
+      {{ 'common.actions.import' | transloco }}
+    </button>
+  </nb-card-footer>
+</nb-card>

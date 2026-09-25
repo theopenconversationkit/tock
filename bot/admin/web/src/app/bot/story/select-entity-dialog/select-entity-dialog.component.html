@@ -1,44 +1,28 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card class="m-0">
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1 flex-wrap">
-    Select an Entity with Predefined Values
+    {{ 'bot.select-entity-dialog.title' | transloco }}
     <button
       type="button"
       nbButton
       ghost
       shape="round"
-      nbTooltip="Close"
+      [nbTooltip]="'common.actions.close' | transloco"
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>
     </button>
   </nb-card-header>
   <nb-card-body>
+    @if (generate) {
     <tock-form-control
-      *ngIf="generate"
-      label="Intent"
+      [label]="'bot.select-entity-dialog.intentLabel' | transloco"
       name="intent"
-      information="Intent starting the Action"
+      [information]="'bot.select-entity-dialog.intentInformation' | transloco"
     >
       <input
         nbInput
         name="intent"
-        placeholder="Intent"
+        [placeholder]="'bot.select-entity-dialog.intentPlaceholder' | transloco"
         fullWidth
         fieldSize="small"
         autocomplete="off"
@@ -48,29 +32,30 @@
         (focus)="onIntentChange($any($event.target))"
       />
     </tock-form-control>
+    }
 
     <tock-form-control
-      label="Entity"
+      [label]="'bot.select-entity-dialog.entityLabel' | transloco"
       name="entity"
     >
       <nb-tag-list>
+        @for (e of entities; track e) {
         <nb-tag
-          *ngFor="let e of entities"
           class="pointer"
           [text]="e.nameWithoutNamespace(stateService.currentApplication.namespace)"
           [status]="e === selectedEntity ? 'info' : e.dictionary ? 'success' : 'basic'"
           (click)="selectEntityType(e)"
         ></nb-tag>
+        }
       </nb-tag-list>
-      <small
-        *ngIf="!entities?.length"
-        class="font-italic"
-      >
-        No value found
+      @if (!entities?.length) {
+      <small class="font-italic">
+        {{ 'bot.select-entity-dialog.noValueFound' | transloco }}
       </small>
+      }
     </tock-form-control>
     <tock-form-control
-      label="With role"
+      [label]="'bot.select-entity-dialog.withRoleLabel' | transloco"
       name="role"
     >
       <input
@@ -78,25 +63,27 @@
         id="role"
         fieldSize="small"
         fullWidth
-        placeholder="Role"
+        [placeholder]="'bot.select-entity-dialog.rolePlaceholder' | transloco"
         [(ngModel)]="role"
       />
     </tock-form-control>
+    @if (!generate && entityValues.length !== 0) {
     <tock-form-control
-      *ngIf="!generate && entityValues.length !== 0"
-      label="Entity value"
+      [label]="'bot.select-entity-dialog.entityValueLabel' | transloco"
       name="entityValue"
     >
       <nb-tag-list>
+        @for (e of entityValues; track e) {
         <nb-tag
-          *ngFor="let e of entityValues"
           class="pointer"
           [text]="e"
           status="info"
           (click)="selectEntityValue(e)"
         ></nb-tag>
+        }
       </nb-tag-list>
     </tock-form-control>
+    }
   </nb-card-body>
   <nb-card-footer class="card-footer-actions">
     <button
@@ -105,36 +92,37 @@
       size="small"
       (click)="cancel()"
     >
-      Cancel
+      {{ 'common.actions.cancel' | transloco }}
     </button>
+    @if (generate) {
     <button
-      *ngIf="generate"
       nbButton
       size="small"
       status="primary"
       [disabled]="!selectedEntity || !role"
       (click)="validateEntity()"
     >
-      Generate
+      {{ 'bot.select-entity-dialog.generateButton' | transloco }}
     </button>
+    } @if (!generate) {
     <button
-      *ngIf="!generate"
       nbButton
       size="small"
       status="danger"
       (click)="removeEntityValue()"
     >
-      Remove
+      {{ 'bot.select-entity-dialog.removeButton' | transloco }}
     </button>
+    } @if (!generate) {
     <button
-      *ngIf="!generate"
       nbButton
       size="small"
       status="primary"
       (click)="validateEntityValue()"
     >
-      Change
+      {{ 'bot.select-entity-dialog.changeButton' | transloco }}
     </button>
+    }
   </nb-card-footer>
 </nb-card>
 
@@ -142,15 +130,13 @@
   #intentAuto
   [activeFirst]="true"
 >
-  <nb-option-group
-    *ngFor="let category of currentIntentCategories"
-    [title]="category.category"
-  >
-    <nb-option
-      *ngFor="let intent of category.intents"
-      [value]="intent.name"
-    >
+  @for (category of currentIntentCategories; track category) {
+  <nb-option-group [title]="category.category">
+    @for (intent of category.intents; track intent) {
+    <nb-option [value]="intent.name">
       {{ intent.intentLabel() }}
     </nb-option>
+    }
   </nb-option-group>
+  }
 </nb-autocomplete>

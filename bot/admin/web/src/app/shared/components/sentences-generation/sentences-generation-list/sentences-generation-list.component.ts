@@ -18,9 +18,10 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { GeneratedSentence } from './../models';
 
 @Component({
-  selector: 'tock-sentences-generation-list',
-  templateUrl: './sentences-generation-list.component.html',
-  styleUrls: ['./sentences-generation-list.component.scss']
+    selector: 'tock-sentences-generation-list',
+    templateUrl: './sentences-generation-list.component.html',
+    styleUrls: ['./sentences-generation-list.component.scss'],
+    standalone: false
 })
 export class SentencesGenerationListComponent implements OnChanges {
   @Input() generatedSentences: GeneratedSentence[] = [];

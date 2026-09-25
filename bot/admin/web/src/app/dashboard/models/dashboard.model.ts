@@ -1,0 +1,242 @@
+/*
+ * Copyright (C) 2017/2025 SNCF Connect & Tech
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { RagAnswerStatus } from '../../shared/utils/dialog.utils';
+import { VectorDbProvider } from '../../configuration/vector-db-settings/models/providers-configuration';
+
+/**
+ * Reporting window, in days. Shared by every time-based widget of the dashboard.
+ */
+export type DashboardPeriod = 7 | 30 | 90;
+
+export const DASHBOARD_PERIODS: DashboardPeriod[] = [7, 30, 90];
+
+/**
+ * Every widget loads independently and must be able to fail on its own.
+ */
+export enum WidgetState {
+  loading = 'loading',
+  ready = 'ready',
+  /** Configured, but nothing to report over the selected period. */
+  empty = 'empty',
+  /** Not applicable to this bot (RAG disabled, no index, no metrics emitted). */
+  unavailable = 'unavailable',
+  error = 'error'
+}
+
+/** POST /bots/{applicationName}/usage - current and previous periods, with optional test exchanges. */
+export interface DashboardUsage {
+  total: number;
+  previousTotal: number | null;
+  byDate: DashboardDailyCount[];
+  /** Same length as byDate, aligned index by index, for the visual comparison. */
+  previousByDate: DashboardDailyCount[];
+  feedbackUp: number;
+  feedbackDown: number;
+  previousPositiveRate: number | null;
+}
+
+export interface DashboardDailyCount {
+  date: string;
+  count: number;
+}
+
+/** POST /bot/{applicationName}/metrics - indicator `rag_status`. */
+export interface DashboardAnswerOutcome {
+  counts: Partial<Record<RagAnswerStatus, number>>;
+  previousCounts: Partial<Record<RagAnswerStatus, number>> | null;
+}
+
+/** POST /bot/{applicationName}/metrics - indicator `rag_topics`. */
+export interface DashboardTopic {
+  name: string;
+  count: number;
+}
+
+/** vector-store-inspection API. */
+export interface KnowledgeIndex {
+  indexSessionId: string;
+  indexName: string;
+  /** Read from the `index_datetime` chunk metadata. Null when the pipeline did not set it. */
+  indexDatetime: string | null;
+  documentCount: number | null;
+  chunkCount: number | null;
+  provider: VectorDbProvider;
+  embeddingLabel: string | null;
+  /** False when the session configured in the RAG settings has no matching collection. */
+  existsInStore: boolean;
+  inspectionSupported?: boolean;
+}
+
+/** Free-form notes attached to one ingestion session. */
+export interface IngestionNotes {
+  indexSessionId: string;
+  text: string;
+  updatedAt: string | null;
+  updatedBy: string | null;
+}
+
+/**
+ * Contacts are held on the application, not on a connector configuration.
+ * `role` is free text on purpose: a closed list would not survive contact with reality.
+ */
+export interface BotContact {
+  /** Generated server side on first save; absent when adding a new contact. */
+  id?: string;
+  role: string;
+  name: string;
+  email?: string;
+  link?: string;
+  note?: string;
+  comment?: string;
+}
+
+export const CONTACT_ROLE_SUGGESTIONS: string[] = [
+  'Business owner',
+  'Technical owner',
+  'Corpus & ingestion',
+  'Escalation',
+  'Security & compliance'
+];
+
+export type GenAiCheckStatus = 'ok' | 'warning' | 'error';
+
+export interface GenAiConfigurationCheck {
+  label: string;
+  value: string;
+  status: GenAiCheckStatus;
+  note?: string;
+}
+
+export interface GenAiConfiguration {
+  checks: GenAiConfigurationCheck[];
+  lastCheckedAt: string | null;
+}
+
+/**
+ * Identity of the bot as the business sees it. The technical bot id and the name the
+ * end user is given in the prompt are almost never the same, and only the former is
+ * stored today.
+ */
+export interface BotIdentity {
+  /** Name the assistant introduces itself with. */
+  displayName: string;
+  /** Free-form notes about the bot: purpose, audience, decisions worth remembering. */
+  notes: string;
+  updatedAt: string | null;
+  updatedBy: string | null;
+}
+
+export enum BotHistoryEventType {
+  created = 'created',
+  connector = 'connector',
+  evaluation = 'evaluation',
+  /**
+   * The whole BotRAGConfiguration lives in one document, prompts and indexSessionId
+   * included: a single save produces a single event, whatever it touched. Nothing is
+   * excluded from the snapshot — an audit trail must not hide a change.
+   */
+  ragSettings = 'rag-settings',
+  /** Bot-level vector database override (configuration/vector-db-settings). */
+  vectorStore = 'vector-store',
+  compressor = 'compressor',
+  observability = 'observability',
+  /** Stored under the business-rules configuration; covered/excluded topics. */
+  promptContext = 'prompt-context'
+}
+
+/**
+ * How a config snapshot is rendered in the detail modal.
+ * - `kv`   flat key/value diff (vector store, compressor, observability)
+ * - `rag`  composite: key/value for settings, text diff for each prompt
+ * - `tags` added/removed topics (prompt-context)
+ */
+export type BotHistorySnapshotKind = 'kv' | 'rag' | 'tags';
+
+/** Which event types carry an inspectable snapshot, and how to render it. */
+export const BOT_HISTORY_SNAPSHOT_KINDS: Partial<Record<BotHistoryEventType, BotHistorySnapshotKind>> = {
+  [BotHistoryEventType.ragSettings]: 'rag',
+  [BotHistoryEventType.vectorStore]: 'kv',
+  [BotHistoryEventType.compressor]: 'kv',
+  [BotHistoryEventType.observability]: 'kv',
+  [BotHistoryEventType.promptContext]: 'tags'
+};
+
+/**
+ * A config snapshot, already sanitized server side (no API keys, no secrets).
+ * `previous` is the state at the preceding change of the same type, null for the first
+ * one, in which case the modal shows the current snapshot alone with no diff.
+ */
+export interface BotHistorySnapshot {
+  previous: Record<string, unknown> | null;
+  current: Record<string, unknown>;
+}
+
+/**
+ * An event carries a stable type and raw interpolation values, never a rendered label:
+ * the backend has no business knowing the reader's locale, and a label frozen at write
+ * time would never translate nor format numbers correctly.
+ *
+ * The front resolves `dashboard.history.event.<type>.label` / `.detail` and interpolates
+ * `params`. An unknown type degrades to a generic label rather than breaking.
+ */
+export interface BotHistoryEvent {
+  id: string;
+  date: string;
+  type: BotHistoryEventType;
+  /** Interpolation values for the translated label and detail. Keys are per type. */
+  params?: Record<string, string | number>;
+  author?: string;
+  /** Creation date inferred from the application identifier for older bots. */
+  estimated?: boolean;
+  /** Present only on config events; drives the clickable detail modal. */
+  snapshot?: BotHistorySnapshot;
+}
+
+export const BOT_HISTORY_EVENT_ICONS: Record<BotHistoryEventType, string> = {
+  [BotHistoryEventType.created]: 'stars',
+  [BotHistoryEventType.connector]: 'plug',
+  [BotHistoryEventType.evaluation]: 'eyedropper',
+  [BotHistoryEventType.ragSettings]: 'sliders',
+  [BotHistoryEventType.vectorStore]: 'hdd-network',
+  [BotHistoryEventType.compressor]: 'file-zip',
+  [BotHistoryEventType.observability]: 'graph-up',
+  [BotHistoryEventType.promptContext]: 'card-list'
+};
+
+/** Fields of the RAG snapshot rendered as text diffs rather than key/value. */
+export const RAG_PROMPT_SNAPSHOT_FIELDS: { key: string; labelKey: string }[] = [
+  { key: 'questionCondensingPrompt', labelKey: 'dashboard.history.snapshot.condensing-prompt' },
+  { key: 'questionAnsweringPrompt', labelKey: 'dashboard.history.snapshot.answering-prompt' }
+];
+
+/**
+ * The index session lives in BotRAGConfiguration like any other field, so a corpus
+ * change is a plain RAG settings event. It matters far more than a threshold tweak
+ * though, so the front derives a facet from the snapshot to surface and filter it.
+ */
+export const INDEX_SESSION_SNAPSHOT_FIELD = 'indexSessionId';
+
+/** Pseudo-type used only as a client-side filter facet, never emitted by the backend. */
+export const INDEX_SESSION_FACET = 'index-session';
+
+export const INDEX_SESSION_FACET_ICON = 'database-add';
+
+/** Cursor page returned by the history endpoint. */
+export interface BotHistoryPage {
+  events: BotHistoryEvent[];
+  hasMore: boolean;
+  nextCursor: string | null;
+}

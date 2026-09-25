@@ -73,25 +73,26 @@ internal object EvaluationMongoDAO : EvaluationDAO {
         sampleId: Id<EvaluationSample>,
         start: Int,
         size: Int,
-    ): List<Evaluation> {
-        return col.find(Evaluation::evaluationSampleId eq sampleId)
+    ): List<Evaluation> =
+        col
+            .find(Evaluation::evaluationSampleId eq sampleId)
             .skip(start)
             .limit(size)
             .sort(descending(Evaluation::creationDate))
             .toList()
-    }
 
     override fun findByEvaluationSampleIdAndDialogIds(
         sampleId: Id<EvaluationSample>,
         dialogIds: List<Id<Dialog>>,
     ): List<Evaluation> {
         if (dialogIds.isEmpty()) return emptyList()
-        return col.find(
-            and(
-                Evaluation::evaluationSampleId eq sampleId,
-                Evaluation::dialogId `in` dialogIds,
-            ),
-        ).toList()
+        return col
+            .find(
+                and(
+                    Evaluation::evaluationSampleId eq sampleId,
+                    Evaluation::dialogId `in` dialogIds,
+                ),
+            ).toList()
     }
 
     override fun findGroupedEvaluationsBySampleId(
@@ -101,25 +102,22 @@ internal object EvaluationMongoDAO : EvaluationDAO {
     ): List<GroupedEvaluations> {
         if (size <= 0) return emptyList()
 
-        return col.aggregate<GroupedEvaluations>(
-            match(Evaluation::evaluationSampleId eq sampleId),
-            // Ensures stable ordering inside each grouped array.
-            sort(ascending(Evaluation::dialogId, Evaluation::actionId)),
-            group(Evaluation::dialogId, push("evaluations", "\$\$ROOT")),
-            // Stable pagination by dialogId.
-            sort(ascending(GroupedEvaluations::_id)),
-            skip(start),
-            limit(size),
-        ).toList()
+        return col
+            .aggregate<GroupedEvaluations>(
+                match(Evaluation::evaluationSampleId eq sampleId),
+                // Ensures stable ordering inside each grouped array.
+                sort(ascending(Evaluation::dialogId, Evaluation::actionId)),
+                group(Evaluation::dialogId, push("evaluations", "\$\$ROOT")),
+                // Stable pagination by dialogId.
+                sort(ascending(GroupedEvaluations::_id)),
+                skip(start),
+                limit(size),
+            ).toList()
     }
 
-    override fun countByEvaluationSampleId(sampleId: Id<EvaluationSample>): Long {
-        return col.countDocuments(Evaluation::evaluationSampleId eq sampleId)
-    }
+    override fun countByEvaluationSampleId(sampleId: Id<EvaluationSample>): Long = col.countDocuments(Evaluation::evaluationSampleId eq sampleId)
 
-    override fun findById(id: Id<Evaluation>): Evaluation? {
-        return col.findOneById(id)
-    }
+    override fun findById(id: Id<Evaluation>): Evaluation? = col.findOneById(id)
 
     override fun update(evaluation: Evaluation): Evaluation? {
         col.save(evaluation)
@@ -127,20 +125,22 @@ internal object EvaluationMongoDAO : EvaluationDAO {
     }
 
     override fun countByStatus(sampleId: Id<EvaluationSample>): Map<EvaluationStatus, Long> {
-        data class StatusCount(val _id: EvaluationStatus, val count: Long)
+        data class StatusCount(
+            val _id: EvaluationStatus,
+            val count: Long,
+        )
 
         val results =
-            col.aggregate<StatusCount>(
-                match(Evaluation::evaluationSampleId eq sampleId),
-                group(Evaluation::status, StatusCount::count sum 1),
-            ).toList()
+            col
+                .aggregate<StatusCount>(
+                    match(Evaluation::evaluationSampleId eq sampleId),
+                    group(Evaluation::status, StatusCount::count sum 1),
+                ).toList()
 
         return EvaluationStatus.entries.associateWith { status ->
             results.find { it._id == status }?.count ?: 0L
         }
     }
 
-    override fun deleteByEvaluationSampleId(sampleId: Id<EvaluationSample>): Long {
-        return col.deleteMany(Evaluation::evaluationSampleId eq sampleId).deletedCount
-    }
+    override fun deleteByEvaluationSampleId(sampleId: Id<EvaluationSample>): Long = col.deleteMany(Evaluation::evaluationSampleId eq sampleId).deletedCount
 }

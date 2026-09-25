@@ -58,15 +58,14 @@ class UserTimeline(
     /**
      * Does this timeline has at least one answer of a bot?
      */
-    fun containsBotAction(): Boolean {
-        return dialogs.any {
+    fun containsBotAction(): Boolean =
+        dialogs.any {
             it.stories.any {
                 it.actions.any {
                     it.playerId.type == PlayerType.bot
                 }
             }
         }
-    }
 
     /**
      * Last action if any.
@@ -78,7 +77,5 @@ class UserTimeline(
      */
     val lastUserAction: Action? get() = dialogs.findLast { it.lastUserAction != null }?.lastUserAction
 
-    override fun toString(): String {
-        return "UserTimeline(playerId=$playerId)"
-    }
+    override fun toString(): String = "UserTimeline(playerId=$playerId)"
 }

@@ -154,16 +154,14 @@ private object NoOpCache : TockCache {
         map[id to type] = data
     }
 
-    override fun <T> getAll(type: String): Map<Id<T>, Any> {
-        return map
+    override fun <T> getAll(type: String): Map<Id<T>, Any> =
+        map
             .entries
             .filter { it.key.second == type }
             .map {
                 @Suppress("UNCHECKED_CAST")
                 it.key.first as Id<T> to it.value
-            }
-            .toMap()
-    }
+            }.toMap()
 
     override fun <T> remove(
         id: Id<T>,
@@ -191,12 +189,11 @@ class SimpleExecutor(
                 private val group = Thread.currentThread().threadGroup
                 private val threadNumber = AtomicInteger(1)
 
-                override fun newThread(r: Runnable): Thread {
-                    return Thread(group, r, "$threadPoolName-thread-${threadNumber.getAndIncrement()}").apply {
+                override fun newThread(r: Runnable): Thread =
+                    Thread(group, r, "$threadPoolName-thread-${threadNumber.getAndIncrement()}").apply {
                         if (isDaemon) setDaemon(false)
                         if (priority != Thread.NORM_PRIORITY) setPriority(Thread.NORM_PRIORITY)
                     }
-                }
             },
         )
 
@@ -210,13 +207,12 @@ class SimpleExecutor(
     override fun <T> executeBlockingTask(
         delay: Duration,
         task: () -> T,
-    ): CompletableFuture<T> {
-        return newIncompleteFuture<T>().apply {
+    ): CompletableFuture<T> =
+        newIncompleteFuture<T>().apply {
             executor.schedule({
                 complete(task())
             }, delay.toMillis(), MILLISECONDS)
         }
-    }
 
     override fun executeBlocking(runnable: () -> Unit) {
         executor.schedule(runnable, 0L, MILLISECONDS)

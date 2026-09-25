@@ -1,32 +1,20 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card
   class="mb-0"
   [nbSpinner]="loading"
 >
   <nb-card-header>
     <div class="d-flex justify-content-between align-items-start">
-      {{ indicatorEdition.existing ? 'Edit "' + indicatorEdition.indicator.label + '"' : 'New indicator' }}
+      {{
+        indicatorEdition.existing
+          ? ('metrics.indicators-edit.title_edit' | transloco: { label: indicatorEdition.indicator.label })
+          : ('metrics.indicators-edit.title_new' | transloco)
+      }}
       <button
         type="button"
         nbButton
         ghost
         shape="round"
-        nbTooltip="Close"
+        [nbTooltip]="'metrics.indicators-edit.close_tooltip' | transloco"
         (click)="close()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -37,7 +25,7 @@
   <nb-card-body>
     <form [formGroup]="form">
       <tock-form-control
-        label="Label"
+        [label]="'metrics.indicators-edit.label_field' | transloco"
         name="label"
         [controls]="label"
         [showError]="isSubmitted"
@@ -49,12 +37,12 @@
           id="label"
           fullWidth
           type="text"
-          placeholder="Enter an indicator label"
+          [placeholder]="'metrics.indicators-edit.label_placeholder' | transloco"
         />
       </tock-form-control>
 
       <tock-form-control
-        label="Description"
+        [label]="'metrics.indicators-edit.description_field' | transloco"
         name="description"
         [controls]="description"
         [showError]="isSubmitted"
@@ -66,33 +54,37 @@
           id="description"
           type="text"
           rows="3"
-          placeholder="Enter a description"
+          [placeholder]="'metrics.indicators-edit.description_placeholder' | transloco"
         ></textarea>
         <small [ngClass]="getDescMaxLengthIndicatorClass()">
-          {{ form.controls.description.value.length }} characters out of {{ descriptionMaxLength }} max
+          {{
+            'metrics.indicators-edit.description_length_indicator'
+              | transloco: { count: form.controls.description.value.length, max: descriptionMaxLength }
+          }}
         </small>
       </tock-form-control>
 
       <tock-form-control
-        label="Dimensions"
+        [label]="'metrics.indicators-edit.dimensions_field' | transloco"
         name="dimensions"
         [controls]="dimensions"
         [showError]="isSubmitted"
         [required]="true"
       >
         <nb-tag-list (tagRemove)="onDimensionRemove($event)">
+          @for (dimension of dimensions.value; track dimension) {
           <nb-tag
-            *ngFor="let dimension of dimensions.value"
             removable
             [text]="dimension"
           ></nb-tag>
+          }
           <input
             nbTagInput
             #dimensionInput
             fullWidth
             id="dimensions"
             type="text"
-            placeholder="Type dimension name and press enter"
+            [placeholder]="'metrics.indicators-edit.dimensions_placeholder' | transloco"
             autocomplete="off"
             (tagAdd)="onDimensionAdd($event)"
             (keyup)="updateDimensionsAutocompleteValues($event)"
@@ -102,76 +94,74 @@
             #dimensionsAutocomplete
             (selectedChange)="dimensionSelected($event)"
           >
+            @for (option of dimensionsAutocompleteValues | async; track option) {
             <nb-option
-              *ngFor="let option of dimensionsAutocompleteValues | async"
               [value]="option"
               class="text-capitalize"
             >
               {{ option }}
             </nb-option>
+            }
           </nb-autocomplete>
         </nb-tag-list>
       </tock-form-control>
 
       <tock-form-control
-        label="Indicator values"
+        [label]="'metrics.indicators-edit.indicator_values_field' | transloco"
         [controls]="values"
         [required]="true"
         [hasMargin]="false"
         [showError]="isSubmitted"
       >
-        <div
-          *ngIf="!values.controls.length"
-          class="text-center text-warning font-italic mb-3"
-        >
-          Define at least one possible value.
+        @if (!values.controls.length) {
+        <div class="text-center text-warning font-italic mb-3">
+          {{ 'metrics.indicators-edit.define_at_least_one_value' | transloco }}
         </div>
-
+        } @if (values.controls.length) {
         <div
           formArrayName="values"
           class="mt-2"
-          *ngIf="values.controls.length"
         >
-          <ng-container *ngFor="let valueDefinition of values.controls; let i = index">
-            <div
-              [formGroup]="$any(valueDefinition)"
-              class="row"
-            >
-              <div class="col-10 pr-0">
-                <tock-form-control
-                  name="valueLabel"
-                  [controls]="$any(valueDefinition).controls.label"
-                  [showError]="isSubmitted"
-                  [required]="true"
-                >
-                  <input
-                    #labelInput
-                    nbInput
-                    fullWidth
-                    type="text"
-                    fieldSize="small"
-                    formControlName="label"
-                    placeholder="Enter an indicator value label"
-                  />
-                </tock-form-control>
-              </div>
-
-              <div class="col-2 pr-0">
-                <button
-                  type="button"
-                  nbButton
-                  ghost
-                  shape="round"
-                  status="danger"
-                  nbTooltip="Remove this value"
-                  (click)="removeValueDefinition(i)"
-                >
-                  <nb-icon icon="trash"></nb-icon>
-                </button>
-              </div>
+          @for (valueDefinition of values.controls; track valueDefinition; let i = $index) {
+          <div
+            [formGroup]="$any(valueDefinition)"
+            class="row"
+          >
+            <div class="col-10 pr-0">
+              <tock-form-control
+                name="valueLabel"
+                [controls]="$any(valueDefinition).controls.label"
+                [showError]="isSubmitted"
+                [required]="true"
+              >
+                <input
+                  #labelInput
+                  nbInput
+                  fullWidth
+                  type="text"
+                  fieldSize="small"
+                  formControlName="label"
+                  [placeholder]="'metrics.indicators-edit.value_label_placeholder' | transloco"
+                />
+              </tock-form-control>
             </div>
-          </ng-container>
+            <div class="col-2 pr-0">
+              <button
+                type="button"
+                nbButton
+                ghost
+                shape="round"
+                status="danger"
+                [nbTooltip]="'metrics.indicators-edit.remove_value_tooltip' | transloco"
+                (click)="removeValueDefinition(i)"
+              >
+                <nb-icon icon="trash"></nb-icon>
+              </button>
+            </div>
+          </div>
+          }
         </div>
+        }
       </tock-form-control>
 
       <button
@@ -179,11 +169,11 @@
         nbButton
         size="small"
         fullWidth
-        nbTooltip="Add a new value"
+        [nbTooltip]="'metrics.indicators-edit.add_new_value_button' | transloco"
         (click)="addValueDefinition()"
       >
         <nb-icon icon="plus-circle"></nb-icon>
-        Add a new value
+        {{ 'metrics.indicators-edit.add_new_value_button' | transloco }}
       </button>
     </form>
   </nb-card-body>
@@ -198,7 +188,7 @@
         size="small"
         (click)="close()"
       >
-        Cancel
+        {{ 'metrics.indicators-edit.cancel_button' | transloco }}
       </button>
       <button
         type="button"
@@ -208,7 +198,7 @@
         [disabled]="!canSave"
         (click)="save()"
       >
-        Save
+        {{ 'metrics.indicators-edit.save_button' | transloco }}
       </button>
     </div>
   </nb-card-footer>

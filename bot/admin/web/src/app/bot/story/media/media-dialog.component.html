@@ -1,27 +1,12 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
 <nb-card>
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1 flex-wrap">
-    Media Card
+    {{ 'bot.media-dialog.title' | transloco }}
     <button
       type="button"
       nbButton
       ghost
       shape="round"
-      nbTooltip="Close"
+      [nbTooltip]="'common.actions.close' | transloco"
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>
@@ -36,12 +21,12 @@
         icon="info-circle"
         status="info"
       ></nb-icon>
-      At least one of Title, Subtitle or File is required.
+      {{ 'bot.media-dialog.alertMessage' | transloco }}
     </nb-alert>
     <tock-form-control
-      label="Carousel auto"
+      [label]="'bot.media-dialog.carouselAutoLabel' | transloco"
       name="fillCarousel"
-      information="If selected, if there are consecutive cards in the answer and if current connector supports carousel, then consecutive cards will be replaced by a carousel"
+      [information]="'bot.media-dialog.carouselAutoInformation' | transloco"
     >
       <nb-toggle
         id="fillCarousel"
@@ -52,7 +37,7 @@
     </tock-form-control>
     <form #mediaForm="ngForm">
       <tock-form-control
-        label="Card title"
+        [label]="'bot.media-dialog.cardTitleLabel' | transloco"
         name="titleLabel"
       >
         <input
@@ -61,12 +46,12 @@
           tockAutofocusElement
           id="titleLabel"
           name="titleLabel"
-          placeholder="Enter a title"
+          [placeholder]="'bot.media-dialog.cardTitlePlaceholder' | transloco"
           [(ngModel)]="media.titleLabel"
         />
       </tock-form-control>
       <tock-form-control
-        label="Card subtitle"
+        [label]="'bot.media-dialog.cardSubtitleLabel' | transloco"
         name="subTitle"
       >
         <input
@@ -74,56 +59,57 @@
           fullWidth
           id="subTitle"
           name="subTitle"
-          placeholder="Enter a subtitle"
+          [placeholder]="'bot.media-dialog.cardSubtitlePlaceholder' | transloco"
           [(ngModel)]="media.subTitleLabel"
         />
       </tock-form-control>
 
       <!-- File -->
-      <p *ngIf="media.file">
-        File:
+      @if (media.file) {
+      <p>
+        {{ 'bot.media-dialog.fileLabel' | transloco }}
         <a
           href="{{ media.file.url(restService.url) }}"
           target="_blank"
           >{{ media.file.name }}</a
         >
+        @if (media.file.isImage()) {
         <img
-          *ngIf="media.file.isImage()"
           class="image"
           src="{{ media.file.url(restService.url) }}"
         />
+        }
         <button
           nbButton
-          (click)="media.file = null; fileUpload = 'upload'"
+          (click)="media.file = undefined; fileUpload = 'upload'"
           ghost
           shape="round"
           status="danger"
           size="medium"
-          nbTooltip="Remove"
+          [nbTooltip]="'bot.media-dialog.removeFileTooltip' | transloco"
         >
           <nb-icon icon="trash"></nb-icon>
         </button>
       </p>
-      <p *ngIf="!media.file">
+      } @if (!media.file) {
+      <p>
         <nb-radio-group (valueChange)="fileTypeChange($event)">
           <nb-radio
             class="inline-radio"
             value="upload"
             [checked]="true"
-            nbTooltip="Could be an image, a video or a binary file"
-            >File Upload</nb-radio
+            [nbTooltip]="'bot.media-dialog.fileUploadTooltip' | transloco"
+            >{{ 'bot.media-dialog.fileUploadLabel' | transloco }}</nb-radio
           >
           <nb-radio
             class="inline-radio"
             value="url"
-            nbTooltip="Could be an image, a video or a binary file"
-            >External URL</nb-radio
+            [nbTooltip]="'bot.media-dialog.externalUrlTooltip' | transloco"
+            >{{ 'bot.media-dialog.externalUrlLabel' | transloco }}</nb-radio
           >
         </nb-radio-group>
-        <span
-          *ngIf="fileUpload === 'upload'"
-          class="file-block"
-        >
+        @if (fileUpload === 'upload') {
+        <span class="file-block">
           <input
             type="file"
             ng2FileSelect
@@ -131,26 +117,26 @@
             class="file"
           />
         </span>
-        <span
-          *ngIf="fileUpload === 'url'"
-          class="file-block"
-        >
+        } @if (fileUpload === 'url') {
+        <span class="file-block">
           <input
             nbInput
             type="text"
             name="url"
             fullWidth
             fieldSize="small"
-            placeholder="External URL"
+            [placeholder]="'bot.media-dialog.externalUrlPlaceholder' | transloco"
             [(ngModel)]="fileExternalUrl"
             (blur)="checkFileName()"
           />
         </span>
+        }
       </p>
-      <!--- Description -->
+      }
+      <!-- Description -->
+      @if (media.file) {
       <tock-form-control
-        *ngIf="media.file"
-        label="File description"
+        [label]="'bot.media-dialog.fileDescriptionLabel' | transloco"
         name="description"
       >
         <input
@@ -158,45 +144,45 @@
           fullWidth
           id="description"
           name="description"
-          placeholder="Description"
+          [placeholder]="'bot.media-dialog.fileDescriptionPlaceholder' | transloco"
           [(ngModel)]="media.file.descriptionLabel"
         />
       </tock-form-control>
+      }
       <hr />
       <div>
-        <div class="h6 mb-3">Actions</div>
-        <div
-          *ngFor="let action of media.actions"
-          class="grid mb-2"
-        >
+        <div class="h6 mb-3">{{ 'bot.media-dialog.actionsTitle' | transloco }}</div>
+        @for (action of media.actions; track action) {
+        <div class="grid mb-2">
           <div class="d-flex flex-column align-self-center">
+            @if (canUpward(action)) {
             <button
-              *ngIf="canUpward(action)"
               nbButton
               ghost
               size="small"
               shape="round"
               status="info"
-              nbTooltip="Move upward"
+              [nbTooltip]="'bot.media-dialog.moveUpwardTooltip' | transloco"
               (click)="upward(action)"
             >
               <nb-icon icon="arrow-up"></nb-icon>
             </button>
+            } @if (canDownward(action)) {
             <button
-              *ngIf="canDownward(action)"
               nbButton
               ghost
               size="small"
               shape="round"
               status="info"
-              nbTooltip="Move downward"
+              [nbTooltip]="'bot.media-dialog.moveDownwardTooltip' | transloco"
               (click)="downward(action)"
             >
               <nb-icon icon="arrow-down"></nb-icon>
             </button>
+            }
           </div>
           <tock-form-control
-            label="Title"
+            [label]="'bot.media-dialog.actionTitleLabel' | transloco"
             name="titleLabel{{ action.internalId }}"
             [boldLabel]="false"
             [hasMargin]="false"
@@ -207,12 +193,12 @@
               fieldSize="small"
               id="titleLabel{{ action.internalId }}"
               name="titleLabel{{ action.internalId }}"
-              placeholder="Enter a title"
+              [placeholder]="'bot.media-dialog.actionTitlePlaceholder' | transloco"
               [(ngModel)]="action.titleLabel"
             />
           </tock-form-control>
           <tock-form-control
-            label="Optional action Url"
+            [label]="'bot.media-dialog.actionUrlLabel' | transloco"
             name="url{{ action.internalId }}"
             [boldLabel]="false"
             [hasMargin]="false"
@@ -222,23 +208,23 @@
               fieldSize="small"
               id="url{{ action.internalId }}"
               name="url{{ action.internalId }}"
-              placeholder="Enter an url"
+              [placeholder]="'bot.media-dialog.actionUrlPlaceholder' | transloco"
               [(ngModel)]="action.url"
             />
           </tock-form-control>
-
           <button
             nbButton
             ghost
             size="small"
             status="danger"
             shape="round"
-            nbTooltip="Remove"
+            [nbTooltip]="'common.actions.remove' | transloco"
             (click)="removeAction(action)"
           >
             <nb-icon icon="trash"></nb-icon>
           </button>
         </div>
+        }
       </div>
 
       <div class="text-center mt-3">
@@ -249,7 +235,7 @@
           size="small"
         >
           <nb-icon icon="plus-circle"></nb-icon>
-          Add Action
+          {{ 'bot.media-dialog.addActionButton' | transloco }}
         </button>
       </div>
     </form>
@@ -261,24 +247,25 @@
       size="small"
       (click)="cancel()"
     >
-      Cancel
+      {{ 'common.actions.cancel' | transloco }}
     </button>
+    @if (!create) {
     <button
-      *ngIf="!create"
       nbButton
       size="small"
       status="danger"
       (click)="remove()"
     >
-      Remove
+      {{ 'common.actions.remove' | transloco }}
     </button>
+    }
     <button
       nbButton
       size="small"
       status="primary"
       (click)="save()"
     >
-      {{ create ? 'Create' : 'Update' }}
+      {{ create ? ('common.actions.create' | transloco) : ('common.actions.update' | transloco) }}
     </button>
   </nb-card-footer>
 </nb-card>

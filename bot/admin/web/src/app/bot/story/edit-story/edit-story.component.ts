@@ -21,9 +21,10 @@ import { BotService } from '../../bot-service';
 import { StoryDefinitionConfiguration } from '../../model/story';
 
 @Component({
-  selector: 'tock-edit-story',
-  templateUrl: './edit-story.component.html',
-  styleUrls: ['./edit-story.component.scss']
+    selector: 'tock-edit-story',
+    templateUrl: './edit-story.component.html',
+    styleUrls: ['./edit-story.component.scss'],
+    standalone: false
 })
 export class EditStoryComponent implements OnInit, OnDestroy {
   destroy = new Subject();

@@ -31,7 +31,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
 
-internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) : WebVerticle() {
+internal class WebhookVerticle(
+    private val botDefinition: ClientBotDefinition,
+) : WebVerticle() {
     override fun configure() {
         blocking(HttpMethod.POST, "/webhook") { context ->
             val content = context.body().asString()
@@ -65,7 +67,8 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
                 context.response().setupSSE(addEndHandler = true)
                 val bus =
                     TockClientBus(botDefinition, request) { response ->
-                        context.response()
+                        context
+                            .response()
                             .sendSseMessage(mapper.writeValueAsString(ResponseData(request.requestId, response)))
                         if (response.context.lastResponse) {
                             vertx.setTimer(1000) {
@@ -82,9 +85,9 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
 
     override val defaultPort: Int = 8887
 
-    override fun defaultHealthcheck(): (RoutingContext) -> Unit {
-        return { it.response().end() }
-    }
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit = { it.response().end() }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = ai.tock.shared.vertx.detailedHealthcheck()
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit =
+        ai.tock.shared.vertx
+            .detailedHealthcheck()
 }

@@ -21,9 +21,10 @@ import { PaginatedQuery, SearchMark } from '../model/commons';
 import { Observable, Subscription } from 'rxjs';
 
 @Component({
-  selector: 'tock-scroll',
-  templateUrl: './scroll.component.html',
-  styleUrls: ['./scroll.component.css']
+    selector: 'tock-scroll',
+    templateUrl: './scroll.component.html',
+    styleUrls: ['./scroll.component.css'],
+    standalone: false
 })
 export class ScrollComponent<T> implements OnInit, OnDestroy {
   @Input() title: string;

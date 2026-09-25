@@ -28,13 +28,13 @@ data class Button(
     val value: String,
     val type: String = "button",
 ) {
-    fun toChoice(): Choice {
-        return SendChoice.decodeChoiceId(value)
+    fun toChoice(): Choice =
+        SendChoice
+            .decodeChoiceId(value)
             .let { (intent, params) ->
                 Choice(
                     intent,
                     params + (SendChoice.TITLE_PARAMETER to text),
                 )
             }
-    }
 }

@@ -23,24 +23,24 @@ import ai.tock.genai.orchestratorclient.services.LLMProviderService
 import ai.tock.shared.exception.error.ErrorMessage
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+
 object SentenceGenerationValidationService {
     private val llmProviderService: LLMProviderService get() = injector.provide()
 
-    fun validate(sentenceGenerationConfig: BotSentenceGenerationConfiguration): Set<ErrorMessage> {
-        return llmProviderService
+    fun validate(sentenceGenerationConfig: BotSentenceGenerationConfiguration): Set<ErrorMessage> =
+        llmProviderService
             .checkSetting(
                 LLMProviderSettingStatusRequest(
                     sentenceGenerationConfig.llmSetting,
-                    ObservabilityService.getObservabilityConfiguration(
-                        sentenceGenerationConfig.namespace,
-                        sentenceGenerationConfig.botId,
-                        enabled = true,
-                    )?.setting,
+                    ObservabilityService
+                        .getObservabilityConfiguration(
+                            sentenceGenerationConfig.namespace,
+                            sentenceGenerationConfig.botId,
+                            enabled = true,
+                        )?.setting,
                 ),
-            )
-            .getErrors("LLM setting check failed")
+            ).getErrors("LLM setting check failed")
             .toSet()
-    }
 
     private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> = this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
 }

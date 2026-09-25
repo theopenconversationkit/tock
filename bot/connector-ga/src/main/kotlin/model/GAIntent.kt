@@ -43,8 +43,6 @@ enum class GAIntent(
     ;
 
     companion object {
-        fun findIntent(name: String): GAIntent? {
-            return GAIntent.values().firstOrNull { it.value == name }
-        }
+        fun findIntent(name: String): GAIntent? = GAIntent.values().firstOrNull { it.value == name }
     }
 }

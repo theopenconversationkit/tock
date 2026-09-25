@@ -1,23 +1,5 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<nb-card
-  *ngFor="let faq of faqs"
-  [ngClass]="{ 'mb-2': true, selected: selectedFaq?.id === faq.id }"
->
+@for (faq of faqs; track faq) {
+<nb-card [ngClass]="{ 'mb-2': true, selected: selectedFaq?.id === faq.id }">
   <nb-card-body class="grid-columns">
     <div>
       <div
@@ -25,89 +7,92 @@
         data-testid="title"
       >
         {{ faq.title }}
+        @if (state.intentIdExistsInOtherApplication(faq.intentId)) {
         <span
-          *ngIf="state.intentIdExistsInOtherApplication(faq.intentId)"
           class="align-middle text-primary"
-          nbTooltip="This faq uses an intent that is shared by at least one other application. Any change to the intent will also affect other applications that use that intent."
+          [nbTooltip]="'faq.faq-management-list.sharedIntentTooltip' | transloco"
         >
           <nb-icon icon="share"></nb-icon>
         </span>
+        }
       </div>
-
       <div class="row">
         <div class="col-md-6">
           <div class="truncate text-muted">
             <div class="text-nowrap">
-              <small *ngIf="faq.utterances.length === 1"> Question </small>
-              <small *ngIf="faq.utterances.length > 1"> First question (out of {{ faq.utterances.length }}) </small>
+              @if (faq.utterances.length === 1) {
+              <small>{{ 'faq.faq-management-list.questionLabel' | transloco }}</small>
+              } @if (faq.utterances.length > 1) {
+              <small>
+                {{ 'faq.faq-management-list.firstQuestionLabel' | transloco: { count: faq.utterances.length } }}
+              </small>
+              }
               <button
                 nbButton
                 ghost
                 size="tiny"
-                nbTooltip="Copy question"
+                [nbTooltip]="'faq.faq-management-list.copyQuestionTooltip' | transloco"
                 (click)="copyString(faq.utterances[0])"
               >
                 <nb-icon icon="copy"></nb-icon>
               </button>
-
               <button
                 nbButton
                 ghost
                 size="tiny"
-                nbTooltip="Test this question in a dialog"
+                [nbTooltip]="'faq.faq-management-list.testQuestionTooltip' | transloco"
                 (click)="testDialogSentence(faq.utterances[0], faq.language)"
               >
                 <nb-icon icon="terminal-plus"></nb-icon>
               </button>
             </div>
-
             {{ faq.utterances[0] }}
           </div>
         </div>
-
         <div class="col-md-6">
           <div class="truncate text-muted answer-col">
-            <small class="d-block">Answer</small>
+            <small class="d-block">{{ 'faq.faq-management-list.answerLabel' | transloco }}</small>
+            @if (!isCurrentLocaleAnswerLabelProvided(faq)) {
             <nb-icon
-              *ngIf="!isCurrentLocaleAnswerLabelProvided(faq)"
               icon="exclamation-triangle"
               class="mr-1 text-danger align-text-middle"
-              nbTooltip="Answer content not provided for the current locale"
+              [nbTooltip]="'faq.faq-management-list.answerNotProvidedTooltip' | transloco"
             ></nb-icon>
+            }
             {{ getCurrentLocaleAnswerLabel(faq) }}
           </div>
         </div>
       </div>
     </div>
-
     <div>
       <nb-tag-list>
+        @for (tag of faq.tags; track tag) {
         <nb-tag
-          *ngFor="let tag of faq.tags"
           appearance="filled"
           status="basic"
           size="tiny"
           [text]="tag"
         ></nb-tag>
+        }
       </nb-tag-list>
     </div>
-
     <div class="d-flex flex-wrap align-items-center justify-content-end">
       <nb-toggle
         class="mx-2"
-        [nbTooltip]="faq.enabled ? 'Disable' : 'Enable'"
+        [nbTooltip]="
+          faq.enabled ? ('faq.faq-management-list.disableTooltip' | transloco) : ('faq.faq-management-list.enableTooltip' | transloco)
+        "
         [ngModel]="faq.enabled"
         (mousedown)="toggleEnabled(faq)"
         data-testid="toggle"
       ></nb-toggle>
-
       <div class="d-flex flex-wrap align-items-center justify-content-between">
         <button
           nbButton
           ghost
           shape="round"
           status="info"
-          nbTooltip="Edit"
+          [nbTooltip]="'faq.faq-management-list.editTooltip' | transloco"
           class="mb-2"
           (click)="editFaq(faq)"
           data-testid="edit"
@@ -118,7 +103,7 @@
           nbButton
           ghost
           shape="round"
-          nbTooltip="Download"
+          [nbTooltip]="'faq.faq-management-list.downloadTooltip' | transloco"
           class="mb-2"
           (click)="download(faq)"
           data-testid="download"
@@ -129,7 +114,7 @@
           nbButton
           ghost
           shape="round"
-          nbTooltip="Show story details"
+          [nbTooltip]="'faq.faq-management-list.showStoryDetailsTooltip' | transloco"
           class="mb-2"
           (click)="displayStoryDetails(faq)"
         >
@@ -140,7 +125,7 @@
           ghost
           shape="round"
           status="danger"
-          nbTooltip="Delete"
+          [nbTooltip]="'faq.faq-management-list.deleteTooltip' | transloco"
           class="mb-2"
           (click)="delete(faq)"
           data-testid="delete"
@@ -151,3 +136,4 @@
     </div>
   </nb-card-body>
 </nb-card>
+}

@@ -69,15 +69,14 @@ private fun simpleTextAndVoiceResponse(text: TextAndVoiceTranslatedString): GASi
     return simpleResponse(t, s, d)
 }
 
-internal fun simpleResponseWithoutTranslate(text: CharSequence): GASimpleResponse {
-    return if (text is TextAndVoiceTranslatedString) {
+internal fun simpleResponseWithoutTranslate(text: CharSequence): GASimpleResponse =
+    if (text is TextAndVoiceTranslatedString) {
         simpleTextAndVoiceResponse(text)
     } else if (text.isSSML()) {
         flexibleSimpleResponseWithoutTranslate(ssml = text)
     } else {
         flexibleSimpleResponseWithoutTranslate(textToSpeech = text)
     }
-}
 
 internal fun flexibleSimpleResponseWithoutTranslate(
     textToSpeech: CharSequence? = null,

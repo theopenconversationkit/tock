@@ -19,4 +19,6 @@ package ai.tock.nlp.admin.model
 /**
  *
  */
-data class UpdateSentencesReport(val nbUpdates: Int = 0)
+data class UpdateSentencesReport(
+    val nbUpdates: Int = 0,
+)

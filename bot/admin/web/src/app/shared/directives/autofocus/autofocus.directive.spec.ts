@@ -19,14 +19,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { AutofocusDirective } from './autofocus.directive';
+import { TestSharedModule } from '../../test-shared.module';
 
 @Component({
-  template: `<div>
+    template: `<div>
     <input
       id="focusElement"
       tockAutofocusElement
     />
-  </div>`
+  </div>`,
+    standalone: false
 })
 class TestComponent {}
 
@@ -36,7 +38,8 @@ describe('AutofocusDirective', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AutofocusDirective, TestComponent]
+      declarations: [AutofocusDirective, TestComponent],
+      imports: [TestSharedModule]
     }).compileComponents();
   });
 

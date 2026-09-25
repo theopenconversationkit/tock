@@ -37,8 +37,7 @@ open class SendSentenceWithFootnotes(
     metadata: ActionMetadata = ActionMetadata(),
     override var annotation: BotAnnotation? = null,
     val ragDebug: Any? = null,
-) :
-    Action(playerId, recipientId, applicationId, id, date, state, metadata) {
+) : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
     @Deprecated(
         "Use constructor with connectorId",
         ReplaceWith(

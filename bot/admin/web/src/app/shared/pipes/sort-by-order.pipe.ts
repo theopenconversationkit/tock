@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'sortByOrder' })
+@Pipe({
+    name: 'sortByOrder',
+    standalone: false
+})
 export class SortByOrderPipe implements PipeTransform {
   transform(items: Record<string, string>, order: string[] = []): { key: string; value: string }[] {
     return Object.entries(items)

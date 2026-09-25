@@ -1,18 +1,18 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
 <h1>Test trends</h1>
 
@@ -35,17 +35,15 @@
           (selectedChange)="search(null)"
         >
           <nb-option value="">All intents</nb-option>
-          <nb-option-group
-            *ngFor="let category of state.currentIntentsCategories | async"
-            [title]="category.category"
-          >
-            <nb-option
-              *ngFor="let intent of category.intents"
-              [value]="intent.qualifiedName()"
-            >
+          @for (category of state.currentIntentsCategories | async; track category) {
+          <nb-option-group [title]="category.category">
+            @for (intent of category.intents; track intent) {
+            <nb-option [value]="intent.qualifiedName()">
               {{ intent.intentLabel() }}
             </nb-option>
+            }
           </nb-option-group>
+          }
           <nb-option value="unknown">Unknown</nb-option>
         </nb-select>
       </nb-form-field>
@@ -74,15 +72,10 @@
   </nb-card-body>
 </nb-card>
 
-<tock-no-data-found
-  *ngIf="nodata"
-  title="No data found"
-></tock-no-data-found>
-
-<nb-card
-  *ngIf="!nodata && errorChartOptions"
-  class="mb-2"
->
+@if (nodata) {
+<tock-no-data-found title="No data found"></tock-no-data-found>
+} @if (!nodata && errorChartOptions) {
+<nb-card class="mb-2">
   <nb-card-body>
     <h5>Errors</h5>
     <div
@@ -91,11 +84,8 @@
     ></div>
   </nb-card-body>
 </nb-card>
-
-<nb-card
-  *ngIf="!nodata && durationChartOptions"
-  class="mb-2"
->
+} @if (!nodata && durationChartOptions) {
+<nb-card class="mb-2">
   <nb-card-body>
     <h5>Duration</h5>
     <div
@@ -104,11 +94,8 @@
     ></div>
   </nb-card-body>
 </nb-card>
-
-<nb-card
-  *ngIf="!nodata && sizeChartOptions"
-  class="mb-2"
->
+} @if (!nodata && sizeChartOptions) {
+<nb-card class="mb-2">
   <nb-card-body>
     <h5>Size</h5>
     <div
@@ -117,5 +104,6 @@
     ></div>
   </nb-card-body>
 </nb-card>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

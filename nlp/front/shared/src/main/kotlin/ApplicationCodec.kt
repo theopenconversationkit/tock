@@ -79,9 +79,7 @@ interface ApplicationCodec {
     fun exportSentences(
         query: SentencesQuery,
         dumpType: DumpType,
-    ): SentencesDump {
-        return exportSentences(listOf(query), dumpType)
-    }
+    ): SentencesDump = exportSentences(listOf(query), dumpType)
 
     /**
      * Export sentences dump.

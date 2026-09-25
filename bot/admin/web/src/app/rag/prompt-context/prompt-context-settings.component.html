@@ -1,6 +1,6 @@
 <tock-sticky-menu [offset]="50">
   <div class="d-flex flex-wrap align-items-center">
-    <h1 class="flex-grow-1 mb-0">Rag prompt context</h1>
+    <h1 class="flex-grow-1 mb-0">{{ 'rag.prompt-context.title' | transloco }}</h1>
 
     <section class="grid-actions">
       <button
@@ -8,7 +8,7 @@
         nbButton
         ghost
         shape="round"
-        nbTooltip="Export prompt context settings dump"
+        [nbTooltip]="'rag.prompt-context.export_tooltip' | transloco"
         (click)="exportSettings()"
       >
         <nb-icon icon="download"></nb-icon>
@@ -17,43 +17,46 @@
         nbButton
         ghost
         shape="round"
-        nbTooltip="Import prompt context settings dump"
+        [nbTooltip]="'rag.prompt-context.import_tooltip' | transloco"
         (click)="importSettings()"
       >
         <nb-icon icon="upload"></nb-icon>
       </button>
 
-      <ng-container *ngIf="isDirty">
-        <button
-          nbButton
-          ghost
-          status="basic"
-          nbTooltip="Discard changes and revert to last saved state"
-          [disabled]="isSaving"
-          (click)="cancel()"
-        >
-          <nb-icon icon="x-circle"></nb-icon>
-          CANCEL
-        </button>
-
-        <button
-          nbButton
-          status="primary"
-          [nbTooltip]="isValid ? 'Save settings' : 'Some lexicon groups have fewer than 2 terms'"
-          [nbSpinner]="isSaving"
-          [disabled]="isSaving || !isValid"
-          (click)="save()"
-        >
-          <nb-icon icon="floppy"></nb-icon>
-          SAVE CHANGES
-        </button>
-      </ng-container>
+      @if (isDirty) {
+      <button
+        nbButton
+        ghost
+        status="basic"
+        [nbTooltip]="'rag.prompt-context.discard_changes_tooltip' | transloco"
+        [disabled]="isSaving"
+        (click)="cancel()"
+      >
+        <nb-icon icon="x-circle"></nb-icon>
+        {{ 'rag.prompt-context.cancel_button' | transloco }}
+      </button>
+      <button
+        nbButton
+        status="primary"
+        [nbTooltip]="
+          isValid
+            ? ('rag.prompt-context.save_settings_tooltip' | transloco)
+            : ('rag.prompt-context.save_settings_disabled_tooltip' | transloco)
+        "
+        [nbSpinner]="isSaving"
+        [disabled]="isSaving || !isValid"
+        (click)="save()"
+      >
+        <nb-icon icon="floppy"></nb-icon>
+        {{ 'rag.prompt-context.save_changes_button' | transloco }}
+      </button>
+      }
     </section>
   </div>
 
-  <small class="sticky-menu-scrolled-hidden"
-    >These elements are injected dynamically into the RAG chain prompt. Changes take effect on new queries after saving.</small
-  >
+  <small class="sticky-menu-scrolled-hidden">
+    {{ 'rag.prompt-context.sticky_info' | transloco }}
+  </small>
 </tock-sticky-menu>
 
 <div class="mt-3">
@@ -71,8 +74,8 @@
       </div>
 
       <div class="d-flex flex-column flex-grow-1 font-size-medium text-muted">
-        <span class="font-weight-bold">Covered Topics</span>
-        <span class="font-size-small">Topics used to categorize conversations </span>
+        <span class="font-weight-bold">{{ 'rag.prompt-context.covered_topics_title' | transloco }}</span>
+        <span class="font-size-small">{{ 'rag.prompt-context.covered_topics_subtitle' | transloco }}</span>
       </div>
       <nb-badge
         [text]="coveredTopics.length.toString()"
@@ -86,76 +89,67 @@
       ></nb-icon>
     </nb-card-header>
 
-    <nb-card-body *ngIf="sections.covered">
+    @if (sections.covered) {
+    <nb-card-body>
       <p class="font-size-small text-muted">
-        See RAG Topics classification in the <a routerLink="/business-metrics/board">Custom Metrics</a> view. <br />
-        Note that questions not covered by these topics will still be processed, unless they match an excluded topic below or are
-        specifically handled at the prompt level.
+        {{ 'rag.prompt-context.covered_topics_info_part1' | transloco }}
+        <a routerLink="/business-metrics/board">{{ 'rag.prompt-context.custom_metrics' | transloco }}</a>
+        {{ 'rag.prompt-context.covered_topics_info_part2' | transloco }}
       </p>
       <div>
+        @if (coveredTopics.length) {
         <nb-tag-list
           (tagRemove)="removeTag('covered', $event)"
           class="mb-3"
-          *ngIf="coveredTopics.length"
         >
+          @for (topic of coveredTopics; track topic) {
           <nb-tag
-            *ngFor="let topic of coveredTopics"
             [text]="topic"
             [status]="isTopicRemovable(topic) ? 'success' : 'primary'"
             [removable]="isTopicRemovable(topic)"
-            nbTooltip="This topic is mandatory"
+            [nbTooltip]="'rag.prompt-context.mandatory_topic_tooltip' | transloco"
             [nbTooltipDisabled]="isTopicRemovable(topic)"
           ></nb-tag>
+          }
         </nb-tag-list>
-
-        <div
-          class="d-flex gap-1"
-          *ngIf="coveredTopics.length < maxCoverTopics"
-        >
+        } @if (coveredTopics.length < maxCoverTopics) {
+        <div class="d-flex gap-1">
           <input
             nbInput
             type="text"
             [maxLength]="coveredTopicMaxLength"
-            placeholder="Add a covered topic…"
+            [placeholder]="'rag.prompt-context.add_covered_topic_placeholder' | transloco"
             #coveredInput
             fullWidth
             (keyup.enter)="addTag('covered', coveredInput)"
           />
-
           <button
             nbButton
             outline
             status="primary"
-            nbTooltip="Add the topic"
+            [nbTooltip]="'rag.prompt-context.add_topic_tooltip' | transloco"
             [disabled]="!coveredInput.value"
             (click)="addTag('covered', coveredInput)"
           >
-            <nb-icon icon="plus"></nb-icon> Add
+            <nb-icon icon="plus"></nb-icon> {{ 'rag.prompt-context.add_topic_tooltip' | transloco | titlecase }}
           </button>
         </div>
-
-        <div
-          *ngIf="_coveredWarning"
-          class="text-warning"
-        >
+        } @if (_coveredWarning) {
+        <div class="text-warning">
           {{ _coveredWarning }}
         </div>
+        }
       </div>
     </nb-card-body>
-
-    <nb-card-footer
-      class="background-basic-color-2"
-      *ngIf="sections.covered && suggestedTopics.length"
-    >
+    } @if (sections.covered && suggestedTopics.length) {
+    <nb-card-footer class="background-basic-color-2">
       <div
         class="d-flex align-items-center gap-1 pointer pb-1"
         (click)="showSuggestedTopics = !showSuggestedTopics"
       >
         <div class="flex-grow-1">
           <div class="font-weight-bold text-muted">
-            There {{ suggestedTopics.length === 1 ? 'is' : 'are' }} {{ suggestedTopics.length }} suggested topic{{
-              suggestedTopics.length !== 1 ? 's' : ''
-            }}
+            {{ 'rag.prompt-context.suggested_topics_text' | transloco: { count: suggestedTopics.length } }}
           </div>
         </div>
         <nb-icon
@@ -163,30 +157,25 @@
           pack="nebular-essentials"
         ></nb-icon>
       </div>
-
-      <p
-        *ngIf="showSuggestedTopics"
-        class="font-size-small text-muted lineHeight-1 m-0"
-      >
-        The following topic{{ suggestedTopics.length !== 1 ? 's' : '' }} {{ suggestedTopics.length === 1 ? 'was' : 'were' }} suggested by
-        the RAG chain when it couldn't categorize a conversation based on the covered topics list at the moment of execution. Review and add
-        {{ suggestedTopics.length === 1 ? 'it' : 'them' }} to your Covered Topics if relevant to improve future categorization.
+      @if (showSuggestedTopics) {
+      <p class="font-size-small text-muted lineHeight-1 m-0">
+        {{ 'rag.prompt-context.suggested_topics_info' | transloco: { count: suggestedTopics.length } }}
       </p>
-
-      <div
-        *ngIf="showSuggestedTopics"
-        class="d-flex gap-05 row-gap-1 flex-wrap align-items-center mt-2"
-      >
+      } @if (showSuggestedTopics) {
+      <div class="d-flex gap-05 row-gap-1 flex-wrap align-items-center mt-2">
+        @for (topic of suggestedTopics; track topic) {
         <div
           class="tag tag-small tag-rounded tag-warning tag-hover pointer"
-          *ngFor="let topic of suggestedTopics"
-          nbTooltip="Click to add this suggested topic to the list of covered topics"
+          [nbTooltip]="'rag.prompt-context.suggested_topic_tooltip' | transloco"
           (click)="addSuggestedTag(topic); $event.stopPropagation()"
         >
           {{ topic }}
         </div>
+        }
       </div>
+      }
     </nb-card-footer>
+    }
   </nb-card>
 
   <!-- TOPICS EXCLUDED -->
@@ -203,8 +192,8 @@
       </div>
 
       <div class="d-flex flex-column flex-grow-1 font-size-medium text-muted">
-        <span class="font-weight-bold">Excluded topics</span>
-        <span class="font-size-small">Subjects outside the bot's scope of competence</span>
+        <span class="font-weight-bold">{{ 'rag.prompt-context.excluded_topics_title' | transloco }}</span>
+        <span class="font-size-small">{{ 'rag.prompt-context.excluded_topics_subtitle' | transloco }}</span>
       </div>
 
       <nb-badge
@@ -219,29 +208,31 @@
       ></nb-icon>
     </nb-card-header>
 
-    <nb-card-body *ngIf="sections.excluded">
+    @if (sections.excluded) {
+    <nb-card-body>
       <p class="font-size-small text-muted">
-        Topics listed here are explicitly mentioned in the prompt as out of scope. The bot will decline questions on these subjects.
+        {{ 'rag.prompt-context.excluded_topics_info' | transloco }}
       </p>
       <div>
+        @if (excludedTopics.length) {
         <nb-tag-list
           (tagRemove)="removeTag('excluded', $event)"
           class="mb-3"
-          *ngIf="excludedTopics.length"
         >
+          @for (topic of excludedTopics; track topic) {
           <nb-tag
-            *ngFor="let topic of excludedTopics"
             [text]="topic"
             status="danger"
             removable
           ></nb-tag>
+          }
         </nb-tag-list>
-
+        }
         <div class="d-flex gap-1">
           <input
             nbInput
             type="text"
-            placeholder="Add an excluded topic…"
+            [placeholder]="'rag.prompt-context.add_excluded_topic_placeholder' | transloco"
             #excludedInput
             fullWidth
             (keyup.enter)="addTag('excluded', excludedInput)"
@@ -250,22 +241,21 @@
             nbButton
             outline
             status="primary"
-            nbTooltip="Add the excluded topic"
+            [nbTooltip]="'rag.prompt-context.add_excluded_topic_tooltip' | transloco"
             [disabled]="!excludedInput.value"
             (click)="addTag('excluded', excludedInput)"
           >
-            <nb-icon icon="plus"></nb-icon> Add
+            <nb-icon icon="plus"></nb-icon> {{ 'rag.prompt-context.add_excluded_topic_tooltip' | transloco | titlecase }}
           </button>
         </div>
-
-        <div
-          *ngIf="_excludedWarning"
-          class="text-warning"
-        >
+        @if (_excludedWarning) {
+        <div class="text-warning">
           {{ _excludedWarning }}
         </div>
+        }
       </div>
     </nb-card-body>
+    }
   </nb-card>
 
   <nb-card
@@ -281,8 +271,8 @@
       </div>
 
       <div class="d-flex flex-column flex-grow-1 font-size-medium text-muted">
-        <span class="font-weight-bold">Business lexicon</span>
-        <span class="font-size-small">Synonym groups and acronym expansions to standardize user queries before search</span>
+        <span class="font-weight-bold">{{ 'rag.prompt-context.business_lexicon_title' | transloco }}</span>
+        <span class="font-size-small">{{ 'rag.prompt-context.business_lexicon_subtitle' | transloco }}</span>
       </div>
 
       <nb-badge
@@ -297,17 +287,13 @@
       ></nb-icon>
     </nb-card-header>
 
-    <nb-card-body *ngIf="sections.lexicon">
+    @if (sections.lexicon) {
+    <nb-card-body>
       <p class="font-size-small text-muted">
-        When a user asks a question, the bot expands it behind the scenes using these groups — replacing or enriching terms with their
-        synonyms and acronym equivalents before searching. This helps surface relevant documents even when the user's wording doesn't
-        exactly match what's written in the knowledge base.
+        {{ 'rag.prompt-context.business_lexicon_info' | transloco }}
       </p>
-
-      <div
-        class="d-flex gap-1 align-items-center mb-3"
-        *ngIf="lexiconGroups.length"
-      >
+      @if (lexiconGroups.length) {
+      <div class="d-flex gap-1 align-items-center mb-3">
         <nb-form-field class="flex-grow-1">
           <nb-icon
             nbPrefix
@@ -317,85 +303,78 @@
             nbInput
             fullWidth
             fieldSize="small"
-            placeholder="Search term…"
+            [placeholder]="'rag.prompt-context.search_placeholder' | transloco"
             [(ngModel)]="lexiconSearch"
           />
         </nb-form-field>
         <span class="font-size-small text-nowrap text-muted">
-          {{ filteredLexiconGroups.length }}
-          <ng-container *ngIf="lexiconSearch">/ {{ lexiconGroups.length }}</ng-container>
-          group{{ lexiconGroups.length !== 1 ? 's' : '' }}
+          {{ 'rag.prompt-context.groups_count' | transloco: { count: filteredLexiconGroups.length } }}
+          @if (lexiconSearch) { / {{ lexiconGroups.length }}
+          }
+          {{ 'rag.prompt-context.groups_count' | transloco: { count: 1 } | slice: 0:1 }}
         </span>
       </div>
-
+      } @if (lexiconSearch && !filteredLexiconGroups.length) {
       <tock-no-data-found
-        *ngIf="lexiconSearch && !filteredLexiconGroups.length"
-        title="No matching groups"
-        message="Try a different search term."
+        [title]="'rag.prompt-context.no_matching_groups' | transloco"
+        [message]="'rag.prompt-context.try_different_search' | transloco"
       ></tock-no-data-found>
-
+      }
       <div class="pcs-lex-list">
-        <nb-card
-          *ngFor="let group of filteredLexiconGroups; trackBy: trackById"
-          class="mb-2"
-        >
+        @for (group of filteredLexiconGroups; track trackById($index, group)) {
+        <nb-card class="mb-2">
           <nb-card-header class="d-flex gap-05 align-items-center p-2">
             <nb-icon
               icon="hash"
               class="font-size-small text-muted"
             ></nb-icon>
+            @if (getLexLabel(group); as label) {
             <span
-              *ngIf="getLexLabel(group) as label"
               class="flex-grow-1 font-size-small text-muted"
               [nbTooltip]="label"
               >{{ label }}</span
             >
-            <span
-              *ngIf="!getLexLabel(group)"
-              class="flex-grow-1 font-size-small text-muted font-italic"
-              >Add terms to name this group…</span
-            >
+            } @if (!getLexLabel(group)) {
+            <span class="flex-grow-1 font-size-small text-muted font-italic">{{
+              'rag.prompt-context.new_synonym_group_button' | transloco
+            }}</span>
+            }
             <button
               nbButton
               ghost
               shape="round"
               status="danger"
               size="tiny"
-              nbTooltip="Delete this group"
+              [nbTooltip]="'rag.prompt-context.delete_group_tooltip' | transloco"
               (click)="deleteLexGroup(group.id)"
             >
               <nb-icon icon="trash"></nb-icon>
             </button>
           </nb-card-header>
-
           <nb-card-body class="p-2">
-            <nb-tag-list
-              (tagRemove)="removeTerm(group.id, $event)"
-              *ngIf="group.terms?.length"
-            >
+            @if (group.terms?.length) {
+            <nb-tag-list (tagRemove)="removeTerm(group.id, $event)">
+              @for (term of group.terms; track term) {
               <nb-tag
-                *ngFor="let term of group.terms"
                 [text]="term"
                 status="primary"
                 appearance="outline"
                 removable
               ></nb-tag>
+              }
             </nb-tag-list>
-
-            <div
-              *ngIf="group.terms.length < 2"
-              class="d-flex gap-05 align-items-center font-size-small text-danger mt-1"
-            >
+            } @if (group.terms.length < 2) {
+            <div class="d-flex gap-05 align-items-center font-size-small text-danger mt-1">
               <nb-icon icon="exclamation-triangle"></nb-icon>
-              A synonym group must contain at least 2 terms.
+              {{ 'rag.prompt-context.min_terms_warning' | transloco }}
             </div>
-
+            }
             <div class="d-flex align-items-center gap-1 mt-3">
               <input
                 nbInput
                 type="text"
                 fieldSize="small"
-                placeholder="Add an acronym or synonym…"
+                [placeholder]="'rag.prompt-context.add_term_placeholder' | transloco"
                 #addTermInput
                 fullWidth
                 (keyup.enter)="addTerm(group.id, addTermInput)"
@@ -405,17 +384,17 @@
                 outline
                 status="primary"
                 size="small"
-                nbTooltip="Add the term"
+                [nbTooltip]="'rag.prompt-context.add_term_tooltip' | transloco"
                 [disabled]="!addTermInput.value"
                 (click)="addTerm(group.id, addTermInput)"
               >
-                <nb-icon icon="plus"></nb-icon> Add
+                <nb-icon icon="plus"></nb-icon> {{ 'rag.prompt-context.add_term_tooltip' | transloco | titlecase }}
               </button>
             </div>
           </nb-card-body>
         </nb-card>
+        }
       </div>
-
       <button
         nbButton
         ghost
@@ -427,21 +406,22 @@
           icon="plus"
           class="mr-2"
         ></nb-icon>
-        New synonym group
+        {{ 'rag.prompt-context.new_synonym_group_button' | transloco }}
       </button>
     </nb-card-body>
+    }
   </nb-card>
 </div>
 
 <ng-template #importModal>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Import prompt context settings dump
+      {{ 'rag.prompt-context.import_modal_title' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'rag.prompt-context.close_tooltip' | transloco"
         (click)="closeImportModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -454,7 +434,7 @@
         (submit)="submitImportSettings()"
       >
         <tock-form-control
-          label="Rag prompt context settings dump file"
+          [label]="'rag.prompt-context.import_file_label' | transloco"
           name="importFile"
           [required]="true"
           [controls]="fileSource"
@@ -479,7 +459,7 @@
         size="small"
         (click)="closeImportModal()"
       >
-        Cancel
+        {{ 'rag.prompt-context.cancel_button' | transloco }}
       </button>
       <button
         type="button"
@@ -488,7 +468,7 @@
         size="small"
         (click)="submitImportSettings()"
       >
-        Import
+        {{ 'rag.prompt-context.import_button' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>

@@ -31,4 +31,6 @@ import kotlin.reflect.KClass
 @ConnectorHandler(connectorTypeId = WEB_CONNECTOR_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class WebHandler(val value: KClass<out ConnectorSpecificHandling>)
+annotation class WebHandler(
+    val value: KClass<out ConnectorSpecificHandling>,
+)

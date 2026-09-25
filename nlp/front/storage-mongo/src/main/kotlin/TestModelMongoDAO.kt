@@ -73,16 +73,16 @@ internal object TestModelMongoDAO : TestModelDAO {
         c
     }
 
-    override fun getTestBuilds(query: TestErrorQuery): List<TestBuild> {
-        return with(query) {
-            buildCol.find(
-                and(
-                    Language eq language,
-                    ApplicationId eq applicationId,
-                    if (after != null) StartDate gte after else null,
-                ),
-            )
-                .descendingSort(StartDate)
+    override fun getTestBuilds(query: TestErrorQuery): List<TestBuild> =
+        with(query) {
+            buildCol
+                .find(
+                    and(
+                        Language eq language,
+                        ApplicationId eq applicationId,
+                        if (after != null) StartDate gte after else null,
+                    ),
+                ).descendingSort(StartDate)
                 .mapNotNull {
                     val intent = intentName
                     if (intent == null) {
@@ -97,10 +97,8 @@ internal object TestModelMongoDAO : TestModelDAO {
                             entityErrors = entityErrors,
                         )
                     }
-                }
-                .toList()
+                }.toList()
         }
-    }
 
     override fun saveTestBuild(build: TestBuild) {
         buildCol.insertOne(build)
@@ -137,7 +135,8 @@ internal object TestModelMongoDAO : TestModelDAO {
                 ApplicationId eq intentError.applicationId,
             )
         val newError = intentError.count != 0
-        intentErrorCol.findOne(filter)
+        intentErrorCol
+            .findOne(filter)
             ?.apply {
                 intentErrorCol.replaceOne(
                     filter,
@@ -173,7 +172,8 @@ internal object TestModelMongoDAO : TestModelDAO {
                 Language eq query.language,
                 ApplicationId eq query.applicationId,
                 query.intentName?.let { intentName ->
-                    IntentDefinitionMongoDAO.getIntentByNamespaceAndName(intentName.namespace(), intentName.name())
+                    IntentDefinitionMongoDAO
+                        .getIntentByNamespaceAndName(intentName.namespace(), intentName.name())
                         ?.let { IntentId eq it._id }
                 },
             )
@@ -201,7 +201,8 @@ internal object TestModelMongoDAO : TestModelDAO {
                 ApplicationId eq entityError.applicationId,
             )
         val newError = entityError.count != 0
-        entityErrorCol.findOne(filter)
+        entityErrorCol
+            .findOne(filter)
             ?.apply {
                 entityErrorCol.replaceOne(
                     filter,

@@ -47,6 +47,7 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.bot.engine.user.PlayerType.user
 import ai.tock.bot.engine.user.UserPreferences
+import ai.tock.bot.engine.user.UserState
 import ai.tock.bot.orchestration.bot.secondary.OrchestrationCallback
 import ai.tock.bot.orchestration.bot.secondary.RestOrchestrationCallback
 import ai.tock.bot.orchestration.connector.OrchestrationConnector
@@ -82,7 +83,10 @@ internal const val WEB_CONNECTOR_ID = "web"
  */
 val webConnectorType = ConnectorType(WEB_CONNECTOR_ID)
 
-private val corsPattern = property("tock_web_cors_pattern", ".*")
+private const val WILDCARD_CORS_PATTERN = ".*"
+private const val CORS_PATTERN_PROPERTY = "tock_web_cors_pattern"
+
+private val corsPattern = property(CORS_PATTERN_PROPERTY, WILDCARD_CORS_PATTERN)
 private val sseEnabled = booleanProperty("tock_web_sse", false)
 private val directSseEnabled = booleanProperty("tock_web_direct_sse", false)
 
@@ -96,11 +100,16 @@ class WebConnector internal constructor(
     val connectorId: String,
     val path: String,
     private val webSecurityHandler: WebSecurityHandler,
-) : ConnectorBase(webConnectorType, setOf(CAROUSEL)), OrchestrationConnector {
+    private val publicPath: String,
+) : ConnectorBase(webConnectorType, setOf(CAROUSEL)),
+    OrchestrationConnector {
     @Deprecated("Use the more aptly named connectorId field", ReplaceWith("connectorId"))
     val applicationId: String get() = connectorId
 
     companion object {
+        const val CONNECTOR_PUBLIC_PATH_CONTEXT_KEY = WebSecurityHandler.CONNECTOR_PUBLIC_PATH_CONTEXT_KEY
+        const val CONNECTOR_ID_CONTEXT_KEY = WebSecurityHandler.CONNECTOR_ID_CONTEXT_KEY
+
         private val logger = KotlinLogging.logger {}
         private val messageProcessor =
             WebMessageProcessor(
@@ -116,16 +125,21 @@ class WebConnector internal constructor(
         controller.coRegisterServices(path) { router ->
             logger.debug("deploy web connector services for root path $path ")
 
+            if (webSecurityHandler is WebSecurityCookiesHandler && corsPattern == WILDCARD_CORS_PATTERN) {
+                logger.warn { "CORS config is allowing any website, requests are susceptible to CSRF!! Please set $CORS_PATTERN_PROPERTY to match only the domains you trust." }
+            }
+
             val corsHandler =
-                CorsHandler.create()
+                CorsHandler
+                    .create()
                     .addOriginWithRegex(corsPattern)
                     .allowedMethod(HttpMethod.POST)
                     .run {
                         if (sseEnabled || directSseEnabled) allowedMethod(HttpMethod.GET) else this
-                    }
-                    .allowedHeader("Access-Control-Allow-Origin")
+                    }.allowedHeader("Access-Control-Allow-Origin")
                     .allowedHeader("Content-Type")
-                    .allowedHeader("X-Requested-With").apply {
+                    .allowedHeader("X-Requested-With")
+                    .apply {
                         webConnectorExtraHeaders.forEach {
                             this.allowedHeader(it)
                         }
@@ -133,15 +147,25 @@ class WebConnector internal constructor(
                     // browsers do not send or save cookies unless credentials are allowed
                     .allowCredentials(webSecurityHandler is WebSecurityCookiesHandler)
 
-            // Apply CORS Handler for all paths and all methods (OPTIONS handled automatically)
-            router.route("$path*").handler(corsHandler)
+            router
+                .routeWithRegex("${Regex.escape(path)}(/.*)?")
+                .order(-10)
+                // Apply CORS Handler for all paths and all methods (OPTIONS handled automatically)
+                .handler(corsHandler)
+                // add context for additional handlers
+                .handler { context ->
+                    context.put(CONNECTOR_PUBLIC_PATH_CONTEXT_KEY, publicPath)
+                    context.put(CONNECTOR_ID_CONTEXT_KEY, connectorId)
+                    context.next()
+                }
 
             if (sseEnabled) {
                 sseEndpoint.configureRoute(router, "$path/sse", connectorId, webSecurityHandler)
             }
 
             if (directSseEnabled) {
-                router.route("$path/sse/direct")
+                router
+                    .route("$path/sse/direct")
                     .coHandler { context ->
                         try {
                             val body =
@@ -157,7 +181,8 @@ class WebConnector internal constructor(
             }
 
             // Main connector endpoint
-            router.post(path)
+            router
+                .post(path)
                 .handler(webSecurityHandler)
                 .coHandler { context ->
                     // Override the user on the request body
@@ -374,7 +399,10 @@ class WebConnector internal constructor(
                 }
             }
 
-            is MetadataEvent -> (callback as? WebConnectorCallback)?.addMetadata(event)
+            is MetadataEvent -> {
+                (callback as? WebConnectorCallback)?.addMetadata(event)
+            }
+
             else -> {
                 logger.trace { "unsupported event: $event" }
             }
@@ -420,12 +448,33 @@ class WebConnector internal constructor(
     override fun loadProfile(
         callback: ConnectorCallback,
         userId: PlayerId,
-    ): UserPreferences {
-        return when (callback) {
+    ): UserPreferences =
+        when (callback) {
             is WebConnectorCallback -> UserPreferences().apply { locale = callback.locale }
             else -> UserPreferences()
         }
+
+    override fun shouldRefreshProfile(
+        profile: UserPreferences,
+        state: UserState,
+        connectorData: ConnectorData,
+    ): Boolean {
+        (connectorData.callback as? WebConnectorCallback)?.let {
+            if (it.locale != profile.locale) {
+                return true
+            }
+        }
+        return super.shouldRefreshProfile(profile, state, connectorData)
     }
+
+    override fun refreshProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences? =
+        when (callback) {
+            is WebConnectorCallback -> UserPreferences(locale = callback.locale)
+            else -> super.refreshProfile(callback, userId)
+        }
 
     override fun addSuggestions(
         text: CharSequence,
@@ -480,7 +529,9 @@ class WebConnector internal constructor(
                         )
                     }
 
-                    else -> null
+                    else -> {
+                        null
+                    }
                 },
             )
         }

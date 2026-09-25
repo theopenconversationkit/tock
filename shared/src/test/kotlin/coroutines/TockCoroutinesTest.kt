@@ -50,16 +50,17 @@ class TockCoroutinesTest {
         var timestamp2: Instant? = null
         val threadNames = mutableListOf<String>()
         runBlocking {
-            executor.launchCoroutine {
-                threadNames += Thread.currentThread().name
-                launch {
+            executor
+                .launchCoroutine {
                     threadNames += Thread.currentThread().name
-                    delay(1000)
-                    threadNames += Thread.currentThread().name
-                    timestamp1 = Instant.now()
-                }
-                timestamp2 = Instant.now()
-            }.join()
+                    launch {
+                        threadNames += Thread.currentThread().name
+                        delay(1000)
+                        threadNames += Thread.currentThread().name
+                        timestamp1 = Instant.now()
+                    }
+                    timestamp2 = Instant.now()
+                }.join()
         }
         assertNotNull(timestamp1)
         assertNotNull(timestamp2)

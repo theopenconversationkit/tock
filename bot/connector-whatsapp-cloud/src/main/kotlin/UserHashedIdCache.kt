@@ -51,7 +51,8 @@ object UserHashedIdCache {
             }
 
     private val idCache: Cache<String, String> =
-        CacheBuilder.newBuilder()
+        CacheBuilder
+            .newBuilder()
             .expireAfterAccess(longProperty("tock_whatsapp_memory_timeout_in_minutes", 60), TimeUnit.MINUTES)
             .build()
 
@@ -86,4 +87,6 @@ object UserHashedIdCache {
         }
 }
 
-class CacheExpiredException(message: String) : RuntimeException(message)
+class CacheExpiredException(
+    message: String,
+) : RuntimeException(message)

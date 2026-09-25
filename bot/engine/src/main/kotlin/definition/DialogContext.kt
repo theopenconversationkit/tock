@@ -141,9 +141,7 @@ class DialogContextMap private constructor(
 
     override fun asMap() = entries
 
-    override operator fun <T : Any> get(key: DialogContextKey<T>): T? {
-        return key.type.safeCast(entries[key])
-    }
+    override operator fun <T : Any> get(key: DialogContextKey<T>): T? = key.type.safeCast(entries[key])
 
     override fun <T : Any> set(
         key: DialogContextKey<T>,
@@ -175,9 +173,7 @@ class DialogContextMap private constructor(
         entries.clear()
     }
 
-    override fun toString(): String {
-        return entries.toString()
-    }
+    override fun toString(): String = entries.toString()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -188,7 +184,5 @@ class DialogContextMap private constructor(
         return entries == other.entries
     }
 
-    override fun hashCode(): Int {
-        return entries.hashCode()
-    }
+    override fun hashCode(): Int = entries.hashCode()
 }

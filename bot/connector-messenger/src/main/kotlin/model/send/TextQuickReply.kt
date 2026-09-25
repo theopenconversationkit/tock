@@ -26,8 +26,9 @@ data class TextQuickReply(
     val payload: String,
     @JsonProperty("image_url") val imageUrl: String? = null,
 ) : QuickReply(QuickReplyContentType.text) {
-    override fun toChoice(): Choice? {
-        return SendChoice.decodeChoiceId(payload)
+    override fun toChoice(): Choice? =
+        SendChoice
+            .decodeChoiceId(payload)
             .let { (intent, params) ->
                 Choice(
                     intent,
@@ -38,5 +39,4 @@ data class TextQuickReply(
                         ),
                 )
             }
-    }
 }

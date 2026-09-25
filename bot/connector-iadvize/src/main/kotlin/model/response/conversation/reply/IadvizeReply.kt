@@ -31,7 +31,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(name = "message", value = IadvizeMessage::class),
     JsonSubTypes.Type(name = "transfer", value = IadvizeTransfer::class),
 )
-abstract class IadvizeReply(val type: ReplyType) {
+abstract class IadvizeReply(
+    val type: ReplyType,
+) {
     /**
      * Convert the REST reply [IadvizeReply] to a GraphQL type [ChatbotActionOrMessageInput]
      */

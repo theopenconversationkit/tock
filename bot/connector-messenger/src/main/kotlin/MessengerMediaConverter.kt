@@ -113,7 +113,7 @@ object MessengerMediaConverter {
         val actions = message.actions
         return if (file != null) {
             when (file.type) {
-                image ->
+                image -> {
                     listOf(
                         if (title == null && subTitle == null && actions.isNotEmpty()) {
                             mediaTemplate(file.url, actions = toUserActions(actions))
@@ -133,7 +133,9 @@ object MessengerMediaConverter {
                             toAttachment(file.type, file.url)
                         },
                     )
-                video ->
+                }
+
+                video -> {
                     listOfNotNull(
                         if (subTitle != null) title?.let { text(it) } else null,
                         if (title == null && subTitle == null && actions.isNotEmpty()) {
@@ -147,7 +149,9 @@ object MessengerMediaConverter {
                             null
                         },
                     )
-                else ->
+                }
+
+                else -> {
                     listOfNotNull(
                         if (subTitle != null) title?.let { text(it) } else null,
                         toAttachment(file.type, file.url),
@@ -157,6 +161,7 @@ object MessengerMediaConverter {
                             null
                         },
                     )
+                }
             }
         } else {
             listOfNotNull(

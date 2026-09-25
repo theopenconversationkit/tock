@@ -84,7 +84,8 @@ object ParserService : Parser {
     init {
         if (booleanProperty("tock_nlp_model_fill_cache", false)) {
             try {
-                config.getApplications()
+                config
+                    .getApplications()
                     .forEach { app ->
                         app.supportedLocales.forEach { locale ->
                             modelCore.warmupModels(BuildContext(toApplication(app), locale, app.nlpEngineType))
@@ -103,15 +104,13 @@ object ParserService : Parser {
         val intentsQualifiers: Set<IntentQualifier>,
     )
 
-    internal fun formatQuery(query: String): String {
-        return query.replace(tabCarriageRegexp, "").trim()
-    }
+    internal fun formatQuery(query: String): String = query.replace(tabCarriageRegexp, "").trim()
 
     internal fun findLanguage(
         application: ApplicationDefinition,
         locale: Locale,
-    ): Locale {
-        return application.supportedLocales.let { locales ->
+    ): Locale =
+        application.supportedLocales.let { locales ->
             if (locales.contains(locale)) {
                 locale
             } else {
@@ -128,7 +127,6 @@ object ParserService : Parser {
                 }
             }
         }
-    }
 
     override fun parse(query: ParseQuery): ParseResult {
         val time = System.currentTimeMillis()
@@ -209,8 +207,7 @@ object ParserService : Parser {
                             onlyExactMatch = true,
                             normalizeText = application.normalizeText,
                         ),
-                    )
-                    .sentences
+                    ).sentences
                     .firstOrNull()
 
             val intents = ConfigurationRepository.getSharedNamespaceIntentsByApplicationId(application._id)
@@ -242,7 +239,8 @@ object ParserService : Parser {
                     core.evaluateEntities(
                         callContext,
                         q,
-                        validatedSentence!!.classification
+                        validatedSentence!!
+                            .classification
                             .entities
                             .mapNotNull { it.toEntityRecognition(ConfigurationRepository::toEntity) },
                     )
@@ -268,7 +266,8 @@ object ParserService : Parser {
 
             val intentSelector = IntentSelectorService.selector(data)
             val result =
-                core.parse(callContext, q, intentSelector)
+                core
+                    .parse(callContext, q, intentSelector)
                     .run {
                         var realIntent = intent
                         var realIntentProbability = intentProbability
@@ -305,7 +304,10 @@ object ParserService : Parser {
                             q,
                             // Sort the other real intentions in descending order of probability.
                             realOtherIntents.toList().sortedByDescending { it.second }.toMap(),
-                            intentSelector.originalIntents.toList().sortedByDescending { it.second }.toMap(),
+                            intentSelector.originalIntents
+                                .toList()
+                                .sortedByDescending { it.second }
+                                .toMap(),
                         )
                     }
 
@@ -371,8 +373,8 @@ object ParserService : Parser {
     private fun ClassifiedSentence.hasSameContent(
         app: ApplicationDefinition,
         sentence: ClassifiedSentence?,
-    ): Boolean {
-        return copy(text = if (app.normalizeText) text.normalize(language) else text) ==
+    ): Boolean =
+        copy(text = if (app.normalizeText) text.normalize(language) else text) ==
             sentence?.copy(
                 text = if (app.normalizeText) sentence.text.normalize(language) else sentence.text,
                 status = status,
@@ -382,7 +384,6 @@ object ParserService : Parser {
                 lastEntityProbability = lastEntityProbability,
                 otherIntentsProbabilities = otherIntentsProbabilities,
             )
-    }
 
     override fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult {
         with(query) {
@@ -466,7 +467,5 @@ object ParserService : Parser {
         ConfigurationRepository.getApplicationByNamespaceAndName(namespace, applicationName)
             ?: throw UnknownApplicationException(namespace, applicationName)
 
-    override fun healthcheck(): Boolean {
-        return core.healthcheck()
-    }
+    override fun healthcheck(): Boolean = core.healthcheck()
 }

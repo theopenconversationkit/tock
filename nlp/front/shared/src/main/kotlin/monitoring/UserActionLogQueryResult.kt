@@ -16,4 +16,7 @@
 
 package ai.tock.nlp.front.shared.monitoring
 
-data class UserActionLogQueryResult(val total: Long, val logs: List<UserActionLog>)
+data class UserActionLogQueryResult(
+    val total: Long,
+    val logs: List<UserActionLog>,
+)

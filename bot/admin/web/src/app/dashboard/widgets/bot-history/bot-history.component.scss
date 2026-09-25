@@ -1,0 +1,220 @@
+.history-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--card-divider-color);
+}
+
+.history-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.1875rem 0.5rem;
+  border: 1px solid var(--border-basic-color-4);
+  border-radius: 1rem;
+  background: transparent;
+  color: var(--text-basic-color);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--background-basic-color-2);
+  }
+
+  &.history-filter-off {
+    color: var(--text-disabled-color);
+    border-style: dashed;
+  }
+}
+
+.history-filter-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-hint-color);
+}
+
+.history-filter-all {
+  margin-right: 0.25rem;
+  font-weight: 600;
+}
+
+/* The widget is the only place this history is shown, so it carries its own scroll
+   rather than relying on a dedicated view. */
+.history-scroller {
+  position: relative;
+  max-height: 22rem;
+  overflow-y: auto;
+  /* Only vertical scrolling: a long session id or detail line must wrap, never
+     push a horizontal scrollbar. */
+  overflow-x: hidden;
+  padding-right: 0.25rem;
+}
+
+.history-year {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.25rem 0;
+  background: var(--card-background-color);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-hint-color);
+}
+
+.history-event {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.history-event-marker {
+  position: relative;
+  flex: none;
+  width: 1.5rem;
+  display: flex;
+  justify-content: center;
+
+  /* Continuous line running through the whole timeline. */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border-basic-color-4);
+  }
+}
+
+.history-event-dot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.125rem;
+  border-radius: 50%;
+  background: var(--background-basic-color-3);
+  color: var(--text-hint-color);
+  font-size: 0.6875rem;
+}
+
+.history-event-created {
+  background: var(--color-primary-transparent-200);
+  color: var(--color-primary-hover);
+}
+
+.history-event-evaluation {
+  background: var(--color-success-transparent-200);
+  color: var(--color-success-hover);
+}
+
+.history-event-connector {
+  background: var(--color-info-transparent-200);
+  color: var(--color-info-hover);
+}
+
+.history-event-rag-settings {
+  background: var(--color-primary-transparent-200);
+  color: var(--color-primary-hover);
+}
+
+.history-event-vector-store {
+  background: var(--color-info-transparent-200);
+  color: var(--color-info-hover);
+}
+
+.history-event-compressor {
+  background: var(--color-warning-transparent-200);
+  color: var(--color-warning-hover);
+}
+
+.history-event-observability {
+  background: var(--color-warning-transparent-200);
+  color: var(--color-warning-hover);
+}
+
+.history-event-prompt-context {
+  background: var(--color-warning-transparent-200);
+  color: var(--color-warning-hover);
+}
+
+/* Creation date inferred from the ObjectId: dashed outline to flag it as an estimate. */
+.history-event-estimated {
+  background: transparent;
+  color: var(--text-hint-color);
+  border: 1px dashed var(--color-basic-500);
+}
+
+.history-event-body {
+  flex: 1;
+  min-width: 0;
+  padding: 0 0 0.875rem;
+}
+
+.history-event-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.history-event-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-event-date {
+  flex: none;
+  font-size: 0.75rem;
+  color: var(--text-hint-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.history-event-author {
+  font-style: italic;
+}
+
+.history-event-body .metric-label {
+  overflow-wrap: anywhere;
+}
+
+/* an event carrying a snapshot is clickable */
+.history-event-body.actionable {
+  cursor: pointer;
+  margin: 0 -0.5rem;
+  padding: 0.125rem 0.5rem 0.875rem;
+  border-radius: var(--border-radius);
+
+  &:hover {
+    background: var(--background-basic-color-2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary-default);
+    outline-offset: -2px;
+  }
+}
+
+.history-event-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1875rem;
+  margin-top: 0.1875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary-default);
+}
+
+/* The corpus facet is derived from RAG snapshots, not a backend event type. */
+.history-filter-derived {
+  border-style: dashed;
+  border-color: var(--color-info-default);
+}

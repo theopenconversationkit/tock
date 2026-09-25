@@ -1,29 +1,13 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card class="mb-0">
   <nb-card-header>
     <div class="d-flex justify-content-between align-items-start">
-      Dialog featuring this sentence
+      {{ 'shared.sentence-training-dialog.header' | transloco }}
       <button
         type="button"
         nbButton
         ghost
         shape="round"
-        nbTooltip="Close"
+        [nbTooltip]="'common.actions.close' | transloco"
         (click)="close()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -32,43 +16,36 @@
   </nb-card-header>
 
   <nb-card-body class="p-0">
-    <div
-      class="p-3"
-      *ngIf="dialogs?.length > 1"
-    >
+    @if (dialogs?.length > 1) {
+    <div class="p-3">
       <nb-form-field>
         <nb-icon
           nbPrefix
           icon="wechat"
         ></nb-icon>
         <nb-select
-          placeholder="Dialog #{{ displayedDialogIndex + 1 }}"
+          [placeholder]="'shared.sentence-training-dialog.dialog-selector-placeholder' | transloco: { index: displayedDialogIndex + 1 }"
           status="basic"
           size="small"
           fullWidth
         >
+          @for (dialog of dialogs; track dialog; let index = $index) {
           <nb-option
-            *ngFor="let dialog of dialogs; let index = index"
             [value]="null"
             (click)="displayDialog(index)"
           >
-            Dialog #{{ index + 1 }}
+            {{ 'shared.sentence-training-dialog.dialog-option' | transloco: { index: index + 1 } }}
           </nb-option>
+          }
         </nb-select>
       </nb-form-field>
     </div>
-
-    <div
-      *ngIf="!displayedDialog"
-      class="p-3 text-center text-danger"
-    >
-      No dialog with this phrase were found.
+    } @if (!displayedDialog) {
+    <div class="p-3 text-center text-danger">
+      {{ 'shared.sentence-training-dialog.no-dialog-found' | transloco }}
     </div>
-
-    <tock-chat-ui
-      *ngIf="displayedDialog?.actions"
-      height="calc(100vh - 330px)"
-    >
+    } @if (displayedDialog?.actions) {
+    <tock-chat-ui height="calc(100vh - 330px)">
       <tock-chat-ui-dialog-logger
         [dialog]="displayedDialog"
         [userMessageIsClickable]="true"
@@ -76,5 +53,6 @@
         [highlightedAction]="getCurrentSentenceAction()"
       ></tock-chat-ui-dialog-logger>
     </tock-chat-ui>
+    }
   </nb-card-body>
 </nb-card>

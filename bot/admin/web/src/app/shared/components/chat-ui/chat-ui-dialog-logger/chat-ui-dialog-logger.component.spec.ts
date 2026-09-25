@@ -17,6 +17,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChatUiDialogLoggerComponent } from './chat-ui-dialog-logger.component';
+import { TestSharedModule } from '../../../test-shared.module';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { StateServiceMock } from '../../../test-shared/state-service.mock';
+import { StateService } from '../../../../core-nlp/state.service';
+import { BotConfigurationService } from '../../../../core/bot-configuration.service';
+import { BehaviorSubject } from 'rxjs';
 
 describe('ChatUiDialogLoggerComponent', () => {
   let component: ChatUiDialogLoggerComponent;
@@ -24,12 +30,23 @@ describe('ChatUiDialogLoggerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChatUiDialogLoggerComponent]
-    })
-    .compileComponents();
+      declarations: [ChatUiDialogLoggerComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        {
+          provide: BotConfigurationService,
+          useValue: { configurations: new BehaviorSubject([]), restConfigurations: new BehaviorSubject([]) }
+        }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ChatUiDialogLoggerComponent);
     component = fixture.componentInstance;
+
+    component.dialog = { id: 'd1', actions: [] } as any;
+
     fixture.detectChanges();
   });
 

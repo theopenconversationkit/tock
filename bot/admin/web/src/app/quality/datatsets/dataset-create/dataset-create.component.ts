@@ -7,6 +7,8 @@ import { Dataset } from '../models';
 import { DatasetsService } from '../services/datasets.service';
 import { getExportFileName } from '../../../shared/utils';
 import { saveAs } from 'file-saver-es';
+import { TranslocoService } from '@jsverse/transloco';
+import { questionsToCsv } from '../dataset-csv';
 
 interface QuestionForm {
   question: FormControl<string>;
@@ -19,11 +21,7 @@ interface DatasetForm {
   questions: FormArray<FormGroup<QuestionForm>>;
 }
 
-function atLeastOneFilledQuestion(control: AbstractControl): ValidationErrors | null {
-  const array = control as FormArray;
-  const hasFilled = array.controls.some((g) => (g as FormGroup).get('question')?.value?.trim());
-  return hasFilled ? null : { custom: 'At least one question is required.' };
-}
+export type DatasetExportFormat = 'json' | 'csv';
 
 const question_minLength = 2;
 const question_maxLength = 1500;
@@ -32,7 +30,8 @@ const groundtruth_maxLength = 1500;
 @Component({
   selector: 'tock-dataset-create',
   templateUrl: './dataset-create.component.html',
-  styleUrl: './dataset-create.component.scss'
+  styleUrl: './dataset-create.component.scss',
+  standalone: false
 })
 export class DatasetCreateComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
@@ -59,7 +58,7 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
   form = new FormGroup<DatasetForm>({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(5), Validators.maxLength(100)] }),
     description: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(750)] }),
-    questions: new FormArray<FormGroup<QuestionForm>>([], [atLeastOneFilledQuestion])
+    questions: new FormArray<FormGroup<QuestionForm>>([], [(control) => this.validateAtLeastOneQuestion(control)])
   });
 
   @ViewChildren('questionInput') questionInputs: QueryList<ElementRef<HTMLInputElement>>;
@@ -69,8 +68,15 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
     public dialogRef: NbDialogRef<DatasetCreateComponent>,
     private stateService: StateService,
     private datasetsService: DatasetsService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private transloco: TranslocoService
   ) {}
+
+  validateAtLeastOneQuestion(control: AbstractControl): ValidationErrors | null {
+    const array = control as FormArray;
+    const hasFilled = array.controls.some((g) => (g as FormGroup).get('question')?.value?.trim());
+    return hasFilled ? null : { custom: this.transloco.translate('quality.dataset-create.at_least_one_question_required') };
+  }
 
   ngOnInit(): void {
     if (this.isEditMode && this.dataset) {
@@ -240,7 +246,11 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
         next: (created: Dataset) => this.dialogRef.close(created),
         error: () => {
           this.isLoading = false;
-          this.toastrService.danger('An error occured', 'Error', { duration: 5000 });
+          this.toastrService.danger(
+            this.transloco.translate('quality.dataset-create.an_error_occurred'),
+            this.transloco.translate('quality.dataset-create.error_title'),
+            { duration: 5000 }
+          );
         }
       });
   }
@@ -257,27 +267,41 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
         next: (updated: Dataset) => this.dialogRef.close(updated),
         error: () => {
           this.isLoading = false;
-          this.toastrService.danger('An error occured', 'Error', { duration: 5000 });
+          this.toastrService.danger(
+            this.transloco.translate('quality.dataset-create.an_error_occurred'),
+            this.transloco.translate('quality.dataset-create.error_title'),
+            { duration: 5000 }
+          );
         }
       });
   }
 
-  exportDataset(): void {
-    const dataStr = JSON.stringify({
-      name: this.form.controls.name.value,
-      description: this.form.controls.description.value,
-      questions: this._getFilledQuestions(true) // Omit question IDs in export since they are only relevant for diffing during updates
-    });
+  /**
+   * JSON exports the whole dataset. CSV exports questions only:
+   * name and description have no place in a flat two-column file.
+   */
+  exportDataset(format: DatasetExportFormat = 'json'): void {
+    // Question IDs are omitted in exports since they are only relevant for diffing during updates
+    const questions = this._getFilledQuestions(true);
+
+    const content =
+      format === 'json'
+        ? JSON.stringify({
+            name: this.form.controls.name.value,
+            description: this.form.controls.description.value,
+            questions
+          })
+        : questionsToCsv(questions);
 
     const exportFileName = getExportFileName(
       this.stateService.currentApplication.namespace,
       this.stateService.currentApplication.name,
       'dataset',
-      'json'
+      format
     );
 
-    const blob = new Blob([dataStr], {
-      type: 'application/json'
+    const blob = new Blob([content], {
+      type: format === 'json' ? 'application/json' : 'text/csv;charset=utf-8'
     });
 
     saveAs(blob, exportFileName);

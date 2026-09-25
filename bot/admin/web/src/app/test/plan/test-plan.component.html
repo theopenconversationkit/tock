@@ -1,31 +1,10 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<nb-card
-  *ngIf="(botConfiguration.restConfigurations | async).length === 0"
-  class="plans"
->
-  No bot configuration detected
+@if ((botConfiguration.restConfigurations | async).length === 0) {
+<nb-card class="plans">
+  {{ 'test.test-plan.noBotConfiguration' | transloco }}
 </nb-card>
-
-<nb-card
-  *ngIf="xray"
-  class="plans"
->
-  <nb-card-header>Execute XRay plan</nb-card-header>
+} @if (xray) {
+<nb-card class="plans">
+  <nb-card-header>{{ 'test.test-plan.executeXRayPlanTitle' | transloco }}</nb-card-header>
   <nb-card-body>
     <tock-select-bot
       [configurationId]="xrayBotConfigurationId"
@@ -33,24 +12,23 @@
       (selectionChange)="changeBotConfiguration($event)"
       [allowNoSelection]="true"
     ></tock-select-bot>
-
     <input
       nbInput
       status="primary"
       class="input-text"
-      placeholder="JIRA Test Plan"
+      [placeholder]="'test.test-plan.jiraTestPlanPlaceholder' | transloco"
       [(ngModel)]="xray.testPlanKey"
       (keyup.enter)="executeXRay()"
     />
-
     <button
-      nbbutton
+      nbButton
       (click)="executeXRay()"
       color="primary"
     >
-      Create
+      {{ 'test.test-plan.createButton' | transloco }}
     </button>
-    <div *ngIf="executeXray">
+    @if (executeXray) {
+    <div>
       <br />
       <img
         src="{{ baseHref }}assets/images/loading.gif"
@@ -58,37 +36,34 @@
         height="40px"
       />
     </div>
+    }
   </nb-card-body>
 </nb-card>
-
-<nb-card
-  *ngIf="(botConfiguration.restConfigurations | async).length !== 0"
-  class="plans"
->
-  <nb-card-header style="display: flex"
-    >Test Plans
+} @if ((botConfiguration.restConfigurations | async).length !== 0) {
+<nb-card class="plans">
+  <nb-card-header style="display: flex">
+    {{ 'test.test-plan.testPlansTitle' | transloco }}
     <nb-actions
       size="small"
       style="cursor: pointer"
     >
+      @if (!testPlanCreation) {
       <nb-action
         class="control-item"
         (click)="prepareCreateTestPlan()"
-        *ngIf="!testPlanCreation"
-        nbTooltip="Create a new Test Plan"
+        [nbTooltip]="'test.test-plan.createTestPlanTooltip' | transloco"
       >
         <nb-icon icon="plus-square"></nb-icon>
       </nb-action>
+      }
     </nb-actions>
   </nb-card-header>
   <nb-card-body style="background: #dadfe638">
-    <div
-      *ngIf="testPlanCreation"
-      class="new-plan"
-    >
+    @if (testPlanCreation) {
+    <div class="new-plan">
       <input
         nbInput
-        placeholder="Test Plan name"
+        [placeholder]="'test.test-plan.testPlanNamePlaceholder' | transloco"
         status="primary"
         class="input-new-plan"
         [(ngModel)]="testPlanName"
@@ -98,7 +73,6 @@
         [(configurationId)]="testBotConfigurationId"
         [returnsRestConfiguration]="true"
       ></tock-select-bot>
-
       <nb-actions
         size="tiny"
         style="cursor: pointer"
@@ -106,7 +80,7 @@
         <nb-action
           class="control-item"
           (click)="createTestPlan()"
-          nbTooltip="Create"
+          [nbTooltip]="'test.test-plan.createTooltip' | transloco"
           class="create"
         >
           <nb-icon
@@ -117,7 +91,7 @@
         <nb-action
           class="control-item"
           (click)="resetCreateTestPlan()"
-          nbTooltip="Cancel"
+          [nbTooltip]="'test.test-plan.cancelTooltip' | transloco"
         >
           <nb-icon
             icon="x-circle"
@@ -126,26 +100,25 @@
         </nb-action>
       </nb-actions>
     </div>
-
-    <div *ngIf="testPlans">
-      <nb-card
-        *ngFor="let p of testPlans"
-        style="margin-bottom: 10px"
-      >
+    } @if (testPlans) {
+    <div>
+      @for (p of testPlans; track p) {
+      <nb-card style="margin-bottom: 10px">
         <nb-card-header>
           <div>
             Plan "{{ p.name }}" - {{ p.botName }}
+            @if (p.dialogs.length !== 0) {
             <button
-              *ngIf="p.dialogs.length !== 0"
               nbButton
               ghost
               (click)="exec(p)"
               style="color: #73a1ff"
-              nbTooltip="Launch"
+              [nbTooltip]="'test.test-plan.launchTooltip' | transloco"
             >
               <nb-icon icon="box-arrow-up-right"></nb-icon>
             </button>
-            <div *ngIf="executePlan && p === this.runningTestPlan">
+            } @if (executePlan && p === this.runningTestPlan) {
+            <div>
               <br />
               <img
                 src="{{ baseHref }}assets/images/loading.gif"
@@ -153,6 +126,7 @@
                 height="40px"
               />
             </div>
+            }
             <nb-actions
               size="small"
               style="cursor: pointer; float: right"
@@ -160,7 +134,7 @@
               <nb-action
                 class="control-item"
                 (click)="deleteTestPlan(p)"
-                nbTooltip="Delete"
+                [nbTooltip]="'test.test-plan.deleteTooltip' | transloco"
               >
                 <nb-icon
                   icon="trash"
@@ -170,192 +144,221 @@
             </nb-actions>
           </div>
           <div style="font-size: 14px; font-weight: 300; margin-top: 10px">
-            {{ p.dialogs.length }} Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
-            <span *ngIf="p.dialogs.length !== 0">
-              -
+            {{ 'test.test-plan.conversationsLabel' | transloco: { count: p.dialogs.length } }}
+            @if (p.dialogs.length !== 0) {
+            <span>
+              - @if (!p.displayDialog) {
               <button
-                *ngIf="!p.displayDialog"
                 nbButton
                 (click)="showDialogs(p)"
               >
                 <nb-icon icon="eye"></nb-icon>
-                Display Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
+                {{ 'test.test-plan.displayConversationsButton' | transloco: { count: p.dialogs.length } }}
               </button>
+              } @if (p.displayDialog) {
               <button
-                *ngIf="p.displayDialog"
                 nbButton
                 (click)="hideDialogs(p)"
               >
                 <nb-icon icon="eye-slash"></nb-icon>
-                Hide Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
+                {{ 'test.test-plan.hideConversationsButton' | transloco: { count: p.dialogs.length } }}
               </button>
+              }
             </span>
-            <span *ngIf="p.dialogs.length === 0"> - you can add dialogs via the Analytics menu. </span>
+            } @if (p.dialogs.length === 0) {
+            <span>{{ 'test.test-plan.noDialogsLabel' | transloco }}</span>
+            }
           </div>
         </nb-card-header>
         <nb-card-body>
-          <ol *ngIf="p.displayDialog">
-            <li *ngFor="let d of p.dialogs">
-              <span *ngIf="d.actions.length === 0"> (no content) </span>
-              <span *ngIf="d.actions.length !== 0">
+          @if (p.displayDialog) {
+          <ol>
+            @for (d of p.dialogs; track d) {
+            <li>
+              @if (d.actions.length === 0) {
+              <span>{{ 'test.test-plan.noContentLabel' | transloco }}</span>
+              } @if (d.actions.length !== 0) {
+              <span>
                 <tock-chat-ui-message
                   [message]="d.actions[0].messages[0]"
                   [reply]="false"
                   [replay]="true"
                 ></tock-chat-ui-message>
               </span>
-              ...
+              } ... @if (!d.displayActions) {
               <button
-                *ngIf="!d.displayActions"
                 nbButton
                 (click)="d.displayActions = true"
               >
                 <nb-icon icon="eye"></nb-icon>
-                Display all sentences
+                {{ 'test.test-plan.displayAllSentencesButton' | transloco }}
               </button>
+              } @if (d.displayActions) {
               <button
-                *ngIf="d.displayActions"
                 nbButton
                 (click)="d.displayActions = false"
               >
                 <nb-icon icon="eye-slash"></nb-icon>
-                Hide all sentences
+                {{ 'test.test-plan.hideAllSentencesButton' | transloco }}
               </button>
+              }
               <button
                 nbButton
                 (click)="removeDialog(p, d)"
                 color="warn"
               >
                 <nb-icon icon="trash"></nb-icon>
-                Remove dialog
+                {{ 'test.test-plan.removeDialogButton' | transloco }}
               </button>
-              <tock-chat-ui *ngIf="d.displayActions">
-                <ng-container *ngFor="let action of d.toDialogReport().actions">
-                  <tock-chat-ui-message
-                    [message]="action.message"
-                    [date]="action.date"
-                    [reply]="action.isBot()"
-                    [replay]="true"
-                    [sender]="getUserName(action)"
-                    [avatar]="getUserAvatar(action)"
-                  ></tock-chat-ui-message>
-                </ng-container>
+              @if (d.displayActions) {
+              <tock-chat-ui>
+                @for (action of d.toDialogReport().actions; track action) {
+                <tock-chat-ui-message
+                  [message]="action.message"
+                  [date]="action.date"
+                  [reply]="action.isBot()"
+                  [replay]="true"
+                  [sender]="getUserNameKey(action) | transloco"
+                  [avatar]="getUserAvatar(action)"
+                ></tock-chat-ui-message>
+                }
               </tock-chat-ui>
+              }
             </li>
+            }
           </ol>
-
-          <nb-accordion *ngIf="p.testPlanExecutions && p.testPlanExecutions.length > 0">
+          } @if (p.testPlanExecutions && p.testPlanExecutions.length > 0) {
+          <nb-accordion>
             <nb-accordion-item>
               <nb-accordion-item-header>
-                {{ p.testPlanExecutions.length }} Executions
-                <span class="last-execution-status">&nbsp;- last execution status :</span>
-                <span *ngIf="p.testPlanExecutions[0].nbErrors === 0">
+                {{ 'test.test-plan.executionsTitle' | transloco: { count: p.testPlanExecutions.length } }}
+                <span class="last-execution-status">{{ 'test.test-plan.lastExecutionStatusLabel' | transloco }}</span>
+                @if (p.testPlanExecutions[0].nbErrors === 0) {
+                <span>
                   <nb-icon
                     icon="check-circle"
                     status="success"
                   ></nb-icon>
                 </span>
-                <span *ngIf="p.testPlanExecutions[0].nbErrors !== 0">
+                } @if (p.testPlanExecutions[0].nbErrors !== 0) {
+                <span>
                   <nb-icon
                     icon="x-circle"
                     status="danger"
                   ></nb-icon>
                 </span>
+                }
               </nb-accordion-item-header>
               <nb-accordion-item-body>
                 <ol>
-                  <li *ngFor="let e of p.testPlanExecutions">
+                  @for (e of p.testPlanExecutions; track e) {
+                  <li>
                     {{ e.date | amDateFormat: 'HH:mm:ss YYYY-MM-DD' }}
+                    @if (!e.displayExecution) {
                     <button
-                      *ngIf="!e.displayExecution"
                       nbButton
                       (click)="e.displayExecution = true"
                     >
                       <nb-icon icon="eye"></nb-icon>
-                      Display details
+                      {{ 'test.test-plan.displayDetailsButton' | transloco }}
                     </button>
+                    } @if (e.displayExecution) {
                     <button
-                      *ngIf="e.displayExecution"
                       nbButton
                       (click)="e.displayExecution = false"
                     >
                       <nb-icon icon="eye-slash"></nb-icon>
-                      Hide details
+                      {{ 'test.test-plan.hideDetailsButton' | transloco }}
                     </button>
-                    <span *ngIf="e.nbErrors === 0">
+                    } @if (e.nbErrors === 0) {
+                    <span>
                       <nb-icon
                         icon="check-circle"
                         status="success"
                       ></nb-icon>
-                      {{ e.dialogs.length }} conversation{{ e.dialogs.length < 2 ? '' : 's' }}
+                      {{ 'test.test-plan.executionSuccessLabel' | transloco: { count: e.dialogs.length } }}
                     </span>
-                    <span *ngIf="e.nbErrors !== 0">
+                    } @if (e.nbErrors !== 0) {
+                    <span>
                       <nb-icon
                         icon="x-circle"
                         status="danger"
                       ></nb-icon>
-                      {{ e.nbErrors }} error{{ e.nbErrors ? '' : 's' }} / {{ e.dialogs.length }} conversation{{
-                        e.dialogs.length < 2 ? '' : 's'
+                      {{
+                        'test.test-plan.executionErrorLabel' | transloco: { errorCount: e.nbErrors, conversationCount: e.dialogs.length }
                       }}
                     </span>
-                    <ol *ngIf="e.displayExecution">
-                      <li *ngFor="let details of e.dialogs">
-                        <span *ngIf="!details.error">
+                    } @if (e.displayExecution) {
+                    <ol>
+                      @for (details of e.dialogs; track details) {
+                      <li>
+                        @if (!details.error) {
+                        <span>
                           <nb-icon
                             icon="check-circle"
                             status="success"
                           ></nb-icon>
-                          Success</span
-                        >
-
-                        <span *ngIf="details.error">
+                          {{ 'test.test-plan.successLabel' | transloco }}
+                        </span>
+                        } @if (details.error) {
+                        <span>
                           <nb-icon
                             icon="x-circle"
                             status="danger"
                           ></nb-icon>
-                          Error
-                          <span *ngIf="details.dialogReport">
-                            <h4>Expected dialog:</h4>
-
+                          {{ 'test.test-plan.errorLabel' | transloco }}
+                          @if (details.dialogReport) {
+                          <span>
+                            <h4>{{ 'test.test-plan.expectedDialogLabel' | transloco }}</h4>
                             <tock-chat-ui>
-                              <ng-container *ngFor="let action of details.dialogReport.actions">
-                                <tock-chat-ui-message
-                                  [message]="action.message"
-                                  [date]="action.date"
-                                  [reply]="action.isBot()"
-                                  [replay]="true"
-                                  [sender]="getUserName(action)"
-                                  [avatar]="getUserAvatar(action)"
-                                ></tock-chat-ui-message>
-                              </ng-container>
+                              @for (action of details.dialogReport.actions; track action) {
+                              <tock-chat-ui-message
+                                [message]="action.message"
+                                [date]="action.date"
+                                [reply]="action.isBot()"
+                                [replay]="true"
+                                [sender]="getUserNameKey(action) | transloco"
+                                [avatar]="getUserAvatar(action)"
+                              ></tock-chat-ui-message>
+                              }
                             </tock-chat-ui>
-
-                            <span *ngIf="details.returnedMessage">
-                              <h4>But last answer was:</h4>
-
+                            @if (details.returnedMessage) {
+                            <span>
+                              <h4>{{ 'test.test-plan.butLastAnswerWasLabel' | transloco }}</h4>
                               <tock-chat-ui-message
                                 [message]="details.returnedMessage"
                                 [reply]="true"
                                 [replay]="true"
                               ></tock-chat-ui-message>
                             </span>
+                            }
                           </span>
-                          <span *ngIf="details.errorMessage">{{ details.errorMessage }}</span>
+                          } @if (details.errorMessage) {
+                          <span>{{ details.errorMessage }}</span>
+                          }
                           <br />
                         </span>
+                        }
                       </li>
+                      }
                     </ol>
+                    }
                   </li>
+                  }
                 </ol>
               </nb-accordion-item-body>
             </nb-accordion-item>
           </nb-accordion>
-
-          <span *ngIf="p.displayExecutions"> </span>
+          } @if (p.displayExecutions) {
+          <span> </span>
+          }
         </nb-card-body>
       </nb-card>
+      }
     </div>
+    }
   </nb-card-body>
 </nb-card>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

@@ -39,8 +39,8 @@ import ai.tock.bot.engine.message.GenericElement
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.shared.mapNotNullValues
 
-fun WebCard.toGenericMessage(): GenericMessage {
-    return GenericMessage(
+fun WebCard.toGenericMessage(): GenericMessage =
+    GenericMessage(
         choices = buttons.map { it.toChoice() },
         texts =
             mapNotNullValues(
@@ -52,25 +52,23 @@ fun WebCard.toGenericMessage(): GenericMessage {
                 ?.let { listOf(Attachment(it.url, attachmentType(it.url))) }
                 ?: emptyList(),
     )
-}
 
 fun WebCarousel.toGenericMessage(): GenericMessage = GenericMessage(subElements = cards.map { it.toGenericMessage() }.map { GenericElement(it) })
 
-fun WebImage.toGenericMessage(): GenericMessage {
-    return GenericMessage(
+fun WebImage.toGenericMessage(): GenericMessage =
+    GenericMessage(
         texts =
             mapNotNullValues(
                 GenericMessage.TITLE_PARAM to title.toString(),
             ),
         attachments = listOf(Attachment(file.url, attachmentType(file.url))),
     )
-}
 
 fun WebWidget.toGenericMessage(): GenericMessage = GenericMessage(texts = mapOf("widget" to this.toString()))
 
 fun Button.toChoice(): Choice =
     when (this) {
-        is PostbackButton ->
+        is PostbackButton -> {
             payload?.let { p ->
                 SendChoice.decodeChoiceId(p).let { (intent, params) ->
                     Choice(
@@ -83,11 +81,13 @@ fun Button.toChoice(): Choice =
                     )
                 }
             } ?: Choice.fromText(text = title, nlpText = title, imageUrl = imageUrl)
+        }
 
-        is QuickReply ->
+        is QuickReply -> {
             payload
                 ?.let { p ->
-                    SendChoice.decodeChoiceId(p)
+                    SendChoice
+                        .decodeChoiceId(p)
                         .let { (intent, params) ->
                             Choice(
                                 intent,
@@ -99,8 +99,9 @@ fun Button.toChoice(): Choice =
                             )
                         }
                 } ?: Choice.fromText(title, nlpText, imageUrl)
+        }
 
-        is UrlButton ->
+        is UrlButton -> {
             Choice(
                 EXIT_INTENT,
                 mapNotNullValues(
@@ -109,8 +110,11 @@ fun Button.toChoice(): Choice =
                     IMAGE_PARAMETER to imageUrl,
                 ),
             )
+        }
 
-        else -> error("unsupported Button type: $this")
+        else -> {
+            error("unsupported Button type: $this")
+        }
     }
 
 fun WebMediaFile.toMediaFile(): MediaFile = MediaFile(url, name, attachmentType(type), description)

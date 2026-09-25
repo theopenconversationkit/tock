@@ -69,9 +69,7 @@ data class EntityStateValue(
         entity: Entity,
         newValue: Value?,
         action: Action? = null,
-    ): EntityStateValue {
-        return changeValue(EntityValue(entity, newValue), action)
-    }
+    ): EntityStateValue = changeValue(EntityValue(entity, newValue), action)
 
     internal fun changeValue(
         newValue: EntityValue?,
@@ -106,9 +104,8 @@ data class EntityStateValue(
         }
     }
 
-    override fun toString(): String {
-        return "EntityStateValue(currentValue=$currentValue, currentHistory=$currentHistory, initialUpdate=$initialUpdate, stateValueId=$stateValueId, updated=$updated, loaded=$loaded)"
-    }
+    override fun toString(): String =
+        "EntityStateValue(currentValue=$currentValue, currentHistory=$currentHistory, initialUpdate=$initialUpdate, stateValueId=$stateValueId, updated=$updated, loaded=$loaded)"
 
     /**
      * Current entity value

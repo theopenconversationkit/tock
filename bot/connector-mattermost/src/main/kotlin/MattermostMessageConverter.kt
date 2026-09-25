@@ -31,9 +31,9 @@ internal object MattermostMessageConverter {
         action: Action,
         channelId: String? = null,
         tockUsername: String? = null,
-    ): MattermostConnectorMessage? {
-        return when (action) {
-            is SendSentence ->
+    ): MattermostConnectorMessage? =
+        when (action) {
+            is SendSentence -> {
                 if (action.hasMessage(MattermostConnectorProvider.connectorType)) {
                     action.message(MattermostConnectorProvider.connectorType) as MattermostConnectorMessage
                 } else {
@@ -49,6 +49,7 @@ internal object MattermostMessageConverter {
                         }
                     }
                 }
+            }
 
             is SendSentenceWithFootnotes -> {
                 val stringText = action.text.toString()
@@ -75,5 +76,4 @@ internal object MattermostMessageConverter {
                 null
             }
         }
-    }
 }

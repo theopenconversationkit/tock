@@ -37,7 +37,9 @@ import org.litote.kmongo.reactivestreams.getCollection
 /**
  *
  */
-abstract class AbstractTest(private val initDb: Boolean = true) {
+abstract class AbstractTest(
+    private val initDb: Boolean = true,
+) {
     companion object {
         init {
             System.setProperty("tock_bot_encrypted_flags", "test1,test2")

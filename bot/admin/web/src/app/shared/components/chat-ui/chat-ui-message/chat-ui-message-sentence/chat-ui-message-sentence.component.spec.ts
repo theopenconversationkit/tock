@@ -18,6 +18,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Sentence } from '../../../../model/dialog-data';
 
 import { ChatUiMessageSentenceComponent } from './chat-ui-message-sentence.component';
+import { TestSharedModule } from '../../../../test-shared.module';
 
 const sentence = new Sentence(0, []);
 
@@ -27,7 +28,8 @@ describe('ChatUiMessageSentenceComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ChatUiMessageSentenceComponent]
+      declarations: [ChatUiMessageSentenceComponent],
+      imports: [TestSharedModule]
     }).compileComponents();
   });
 

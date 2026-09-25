@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChatUiMessageSentenceElementComponent } from './chat-ui-message-sentence-element.component';
+import { TestSharedModule } from '../../../../test-shared.module';
 
 describe('ChatUiMessageSentenceElementComponent', () => {
   let component: ChatUiMessageSentenceElementComponent;
@@ -24,9 +25,9 @@ describe('ChatUiMessageSentenceElementComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ChatUiMessageSentenceElementComponent ]
-    })
-    .compileComponents();
+      declarations: [ChatUiMessageSentenceElementComponent],
+      imports: [TestSharedModule]
+    }).compileComponents();
   });
 
   beforeEach(() => {

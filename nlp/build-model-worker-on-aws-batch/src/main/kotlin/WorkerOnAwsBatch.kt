@@ -62,8 +62,7 @@ internal class WorkerOnAwsBatch(
                     ContainerOverrides()
                         .withEnvironment(
                             *workerProperties.toKeyValuePairs().toTypedArray(),
-                        )
-                        .withVcpus(workerOnAwsBatchProperties.vcpus)
+                        ).withVcpus(workerOnAwsBatchProperties.vcpus)
                         .withMemory(workerOnAwsBatchProperties.memory),
                 )
 
@@ -71,14 +70,12 @@ internal class WorkerOnAwsBatch(
         batchClient
             .describeJobs(
                 DescribeJobsRequest().withJobs(jobId),
-            )
-            .run {
+            ).run {
                 jobs
                     .first { it.jobId == jobId }
                     .apply {
                         logger.info { "Job $jobName with id $jobId is $status" }
-                    }
-                    .toWorkerOnDemandSummary()
+                    }.toWorkerOnDemandSummary()
             }
 
     private fun runningJob(): JobSummary? =
@@ -88,17 +85,15 @@ internal class WorkerOnAwsBatch(
             ?: jobSummaryByStatus(JobStatus.SUBMITTED)
             ?: jobSummaryByStatus(JobStatus.STARTING)
 
-    private fun jobSummaryByStatus(jobStatus: JobStatus): JobSummary? {
-        return batchClient
+    private fun jobSummaryByStatus(jobStatus: JobStatus): JobSummary? =
+        batchClient
             .listJobs(
                 ListJobsRequest()
                     .withJobQueue(workerOnAwsBatchProperties.jobQueueName)
                     .withJobStatus(jobStatus),
-            )
-            .run {
+            ).run {
                 this.jobSummaryList.firstOrNull { it.jobName == workerOnAwsBatchProperties.jobName }
             }
-    }
 
     override fun start(callback: (status: WorkerOnDemandStatus) -> Unit) {
         logger.info("WorkerOnAwsBatch starting for ${workerProperties["TOCK_BUILD_TYPE"]} build type")
@@ -116,14 +111,17 @@ internal class WorkerOnAwsBatch(
                         callback(WorkerOnDemandStatus.SUCCEEDED)
                         vertx.cancelTimer(periodicId)
                     }
+
                     WorkerOnDemandStatus.FAILED -> {
                         logger.info("Job $jobId failed")
                         callback(WorkerOnDemandStatus.FAILED)
                         vertx.cancelTimer(periodicId)
                     }
+
                     WorkerOnDemandStatus.RUNNING -> {
                         logger.info("Job $jobId is running")
                     }
+
                     WorkerOnDemandStatus.WAITING -> {
                         logger.info("Job $jobId is waiting")
                     }

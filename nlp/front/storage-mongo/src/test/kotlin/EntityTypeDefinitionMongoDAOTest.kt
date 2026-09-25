@@ -74,7 +74,12 @@ internal class EntityTypeDefinitionMongoDAOTest : AbstractTest() {
         entityTypeDAO.deletePredefinedValueLabelByName(entityType.name, "A", ENGLISH, "C")
         assertEquals(
             listOf("B"),
-            entityTypeDAO.getDictionaryDataByEntityName(entityType.name)?.values?.first()?.labels?.get(ENGLISH),
+            entityTypeDAO
+                .getDictionaryDataByEntityName(entityType.name)
+                ?.values
+                ?.first()
+                ?.labels
+                ?.get(ENGLISH),
         )
     }
 }

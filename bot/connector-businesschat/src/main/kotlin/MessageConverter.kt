@@ -31,8 +31,8 @@ internal object MessageConverter {
     /**
      * Converts a [BotBus] [Action] to a [BusinessChatConnectorMessage]
      */
-    fun toMessage(action: Action): BusinessChatConnectorMessage? {
-        return if (action is SendSentence) {
+    fun toMessage(action: Action): BusinessChatConnectorMessage? =
+        if (action is SendSentence) {
             if (action.text == null) {
                 action.messages.firstOrNull() as? BusinessChatConnectorMessage
             } else {
@@ -45,7 +45,6 @@ internal object MessageConverter {
         } else {
             null
         }
-    }
 
     /**
      * Converts a message to a [Event]
@@ -64,6 +63,7 @@ internal object MessageConverter {
                     text = message.body,
                 )
             }
+
             MessageType.interactive -> {
                 val listPickerChoice = businessChatClient.receiveListPickerChoice(message)
                 if (listPickerChoice != null) {
@@ -77,9 +77,13 @@ internal object MessageConverter {
                     null
                 }
             }
+
             MessageType.pass_thread_control -> {
                 businessChatClient.integrationService.parseThreadControl(message, connectorId)
             }
-            else -> null
+
+            else -> {
+                null
+            }
         }
 }

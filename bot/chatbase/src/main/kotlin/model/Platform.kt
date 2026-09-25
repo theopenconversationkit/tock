@@ -16,7 +16,9 @@
 
 package ai.tock.analytics.chatbase.model
 
-enum class Platform(val label: String) {
+enum class Platform(
+    val label: String,
+) {
     FACEBOOK("Facebook"),
     MESSENGER("Facebook"),
     SMS("SMS"),

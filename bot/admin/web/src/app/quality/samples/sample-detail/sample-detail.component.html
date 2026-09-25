@@ -1,22 +1,25 @@
 <div class="d-flex align-items-center mb-3">
   <div class="flex-grow-1">
-    <h1 class="m-0">Sample</h1>
+    <h1 class="m-0">{{ 'quality.sample-detail.title' | transloco }}</h1>
     <div class="lead">{{ sample?.name }}</div>
     <small>
-      Period covered: {{ sample?.dialogActivityFrom | date: 'y/MM/dd HH:mm' }} to {{ sample?.dialogActivityTo | date: 'y/MM/dd HH:mm' }}
+      {{ 'quality.sample-detail.period_covered' | transloco }} {{ sample?.dialogActivityFrom | date: 'y/MM/dd HH:mm' }}
+      {{ 'quality.sample-detail.to' | transloco }} {{ sample?.dialogActivityTo | date: 'y/MM/dd HH:mm' }}
     </small>
   </div>
 
-  <section
-    class="d-flex gap-1"
-    *ngIf="!loading"
-  >
+  @if (!loading) {
+  <section class="d-flex gap-1">
+    @if (sample.status !== evaluationSampleStatus.VALIDATED) {
     <button
-      *ngIf="sample.status !== evaluationSampleStatus.VALIDATED"
       nbButton
       status="success"
       class="d-flex align-items-center"
-      [nbTooltip]="!isSampleCompleted() ? 'All responses must be evaluated in order to validate the sample.' : 'Validate this sample'"
+      [nbTooltip]="
+        !isSampleCompleted()
+          ? ('quality.sample-detail.validate_tooltip_disabled' | transloco)
+          : ('quality.sample-detail.validate_tooltip' | transloco)
+      "
       [nbTooltipStatus]="!isSampleCompleted() ? 'danger' : ''"
       [disabled]="!isSampleCompleted()"
       (click)="validationModal()"
@@ -25,14 +28,13 @@
         icon="check"
         class="mr-2"
       ></nb-icon>
-      Validate
+      {{ 'quality.sample-detail.validate_button' | transloco }}
     </button>
-
+    } @if (sample.status === evaluationSampleStatus.VALIDATED) {
     <button
-      *ngIf="sample.status === evaluationSampleStatus.VALIDATED"
       nbButton
       status="primary"
-      nbTooltip="Export sample as PDF"
+      [nbTooltip]="'quality.sample-detail.export_tooltip' | transloco"
       class="d-flex align-items-center"
       (click)="exportSample()"
     >
@@ -40,139 +42,145 @@
         icon="download"
         class="mr-2"
       ></nb-icon>
-      Export
+      {{ 'quality.sample-detail.export_button' | transloco }}
     </button>
+    }
   </section>
+  }
 </div>
 
 <nb-card
   [nbSpinner]="loading"
   class="mb-3"
 >
-  <nb-card-body *ngIf="!loading">
+  @if (!loading) {
+  <nb-card-body>
     <div
       class="d-flex gap-1 align-items-center justify-content-between pointer"
       (click)="switchDetails()"
-      nbTooltip="Click to show details"
+      [nbTooltip]="'quality.sample-detail.show_details_tooltip' | transloco"
     >
       <div class="d-flex align-items-center">
         <div
           class="d-flex align-items-center text-muted mr-4"
-          nbTooltip="Number of dialogues contained in this sample"
+          [nbTooltip]="'quality.sample-detail.dialogues_tooltip' | transloco"
         >
           <nb-icon
             icon="wechat"
             class="mr-2"
           ></nb-icon>
-
-          {{ sample.dialogsCount }} dialogues
+          {{ sample.dialogsCount }} {{ 'quality.sample-detail.dialogues_tooltip' | transloco | lowercase }}
         </div>
-
         <div
           class="d-flex align-items-center text-muted mr-4"
-          nbTooltip="Number of answers contained in this sample"
+          [nbTooltip]="'quality.sample-detail.answers_tooltip' | transloco"
         >
           <nb-icon
             icon="chat"
             class="mr-2"
           ></nb-icon>
-          <span class="lineHeight-1">{{ sample.botActionCount }} answers</span>
+          <span class="lineHeight-1"
+            >{{ sample.botActionCount }} {{ 'quality.sample-detail.answers_tooltip' | transloco | lowercase }}</span
+          >
         </div>
       </div>
-
+      @if (!detailsVisible) {
       <nb-icon
-        *ngIf="!detailsVisible"
         icon="chevron-down-outline"
         pack="nebular-essentials"
       ></nb-icon>
+      } @if (detailsVisible) {
       <nb-icon
-        *ngIf="detailsVisible"
         icon="chevron-up-outline"
         pack="nebular-essentials"
       ></nb-icon>
+      }
     </div>
-
-    <div
-      *ngIf="detailsVisible"
-      class="text-muted mt-3"
-    >
+    @if (detailsVisible) {
+    <div class="text-muted mt-3">
       <table class="table mb-0">
         <tbody>
-          <tr *ngIf="!sample.createdFromRun">
-            <td>Type</td>
-            <td>Randomly sampled evaluation</td>
-          </tr>
-
-          <tr *ngIf="sample.createdFromRun">
-            <td>Type</td>
-            <td>
-              Generated from dataset run <span class="font-size-small">(Run {{ sample.createdFromRun }})</span>
-            </td>
-          </tr>
-
+          @if (!sample.createdFromRun) {
           <tr>
-            <td style="width: 35%">Created by</td>
+            <td>{{ 'quality.sample-detail.type' | transloco }}</td>
+            <td>{{ 'quality.sample-detail.type_random' | transloco }}</td>
+          </tr>
+          } @if (sample.createdFromRun) {
+          <tr>
+            <td>{{ 'quality.sample-detail.type' | transloco }}</td>
+            <td>{{ 'quality.sample-detail.type_generated' | transloco: { runId: sample.createdFromRun } }}</td>
+          </tr>
+          }
+          <tr>
+            <td style="width: 35%">{{ 'quality.sample-detail.created_by' | transloco }}</td>
             <td>
-              <span class="font-italic">{{ sample?.createdBy }}</span> on {{ sample?.creationDate | date: 'y/MM/dd HH:mm' }}
+              <span class="font-italic">{{ sample?.createdBy }}</span> {{ 'quality.sample-detail.on_date' | transloco }}
+              {{ sample?.creationDate | date: 'y/MM/dd HH:mm' }}
             </td>
           </tr>
-          <tr *ngIf="sample.status === evaluationSampleStatus.VALIDATED">
-            <td>Validated by</td>
+          @if (sample.status === evaluationSampleStatus.VALIDATED) {
+          <tr>
+            <td>{{ 'quality.sample-detail.validated_by' | transloco }}</td>
             <td>
-              <span class="font-italic">{{ sample.statusChangedBy }}</span> on
+              <span class="font-italic">{{ sample.statusChangedBy }}</span> {{ 'quality.sample-detail.on_date' | transloco }}
               {{ sample?.statusChangeDate | date: 'y/MM/dd HH:mm' }}
             </td>
           </tr>
-
-          <tr *ngIf="!sample.createdFromRun">
-            <td>May include test dialogues</td>
+          } @if (!sample.createdFromRun) {
+          <tr>
+            <td>{{ 'quality.sample-detail.may_include_test_dialogues' | transloco }}</td>
             <td>
-              {{ sample?.allowTestDialogs ? 'Yes' : 'No' }}
+              {{ sample?.allowTestDialogs ? ('quality.sample-detail.yes' | transloco) : ('quality.sample-detail.no' | transloco) }}
             </td>
           </tr>
-
-          <tr *ngIf="!sample.createdFromRun">
-            <td>Number of requested dialogues</td>
+          } @if (!sample.createdFromRun) {
+          <tr>
+            <td>{{ 'quality.sample-detail.requested_dialogues_count' | transloco }}</td>
             <td>
               {{ sample?.requestedDialogCount }}
             </td>
           </tr>
-          <tr *ngIf="!sample.createdFromRun">
-            <td>Number of actual dialogues</td>
+          } @if (!sample.createdFromRun) {
+          <tr>
+            <td>{{ 'quality.sample-detail.actual_dialogues_count' | transloco }}</td>
             <td>
               {{ sample?.dialogsCount }}
             </td>
           </tr>
-
-          <tr *ngIf="!sample.createdFromRun">
-            <td>Total number of dialogues recorded for this bot during the period covered</td>
+          } @if (!sample.createdFromRun) {
+          <tr>
+            <td>{{ 'quality.sample-detail.total_dialogues_recorded' | transloco }}</td>
             <td>
               {{ sample?.totalDialogCount }}
             </td>
           </tr>
-          <tr *ngIf="!sample.createdFromRun">
-            <td>Sample coverage rate</td>
+          } @if (!sample.createdFromRun) {
+          <tr>
+            <td>{{ 'quality.sample-detail.coverage_rate' | transloco }}</td>
             <td>{{ getCoverage() }}%</td>
           </tr>
-
+          }
           <tr>
-            <td>Description</td>
+            <td>{{ 'quality.sample-detail.description_label' | transloco }}</td>
             <td>
-              {{ sample?.description ? sample?.description : 'N/A' }}
+              {{ sample?.description ? sample?.description : ('quality.sample-detail.not_available' | transloco) }}
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+    }
   </nb-card-body>
+  }
 </nb-card>
 
-<tock-sticky-menu *ngIf="!loading">
+@if (!loading) {
+<tock-sticky-menu>
   <div class="mt-2 mb-1 d-flex gap-1 align-items-center">
     <div class="d-flex gap-05 align-items-center">
       <div
         class="tag success d-flex align-items-center"
-        nbTooltip="Positive evaluations: {{ sample.evaluationsResult.positiveCount }}"
+        [nbTooltip]="'quality.sample-detail.positive_evaluations' | transloco: { count: sample.evaluationsResult.positiveCount }"
       >
         <nb-icon
           icon="hand-thumbs-up-fill"
@@ -182,7 +190,7 @@
       </div>
       <div
         class="tag warning d-flex align-items-center"
-        nbTooltip="Negative evaluations: {{ sample.evaluationsResult.negativeCount }}"
+        [nbTooltip]="'quality.sample-detail.negative_evaluations' | transloco: { count: sample.evaluationsResult.negativeCount }"
       >
         <nb-icon
           icon="hand-thumbs-down-fill"
@@ -191,66 +199,59 @@
         <strong>{{ getEvaluationRate('negative') }}%</strong>
       </div>
     </div>
-
     <div class="flex-grow-1">
+      @if (getCompletionRate() > 0) {
       <nb-progress-bar
-        *ngIf="getCompletionRate() > 0"
         [value]="getCompletionRate()"
         status="primary"
         class="flex-grow-1 progress-bar-bg-card"
         size="giant"
-        nbTooltip="Progress of the evaluation for this sample"
+        [nbTooltip]="'quality.sample-detail.progress_tooltip' | transloco"
       >
-        <span *ngIf="getCompletionRate() > 5"> {{ getCompletionRate() }}% </span>
-        <span
-          class="d-none d-xl-inline"
-          *ngIf="getCompletionRate() > 30"
-          >&nbsp;completed</span
-        ></nb-progress-bar
-      >
+        @if (getCompletionRate() > 5) {
+        <span> {{ getCompletionRate() }}% </span>
+        } @if (getCompletionRate() > 30) {
+        <span class="d-none d-xl-inline">&nbsp;{{ 'quality.sample-detail.completed_label' | transloco }}</span>
+        }
+      </nb-progress-bar>
+      }
     </div>
-
     <tock-pagination
       [pagination]="pagination"
       (onPaginationChange)="paginationChange()"
     ></tock-pagination>
   </div>
-
+  @if (missingDialogsWarning) {
   <nb-alert
-    *ngIf="missingDialogsWarning"
     class="my-3"
     status="danger"
     closable
     (close)="onMissingDialogsWarningAlertClose()"
   >
-    At least {{ missingDialogsCount }} dialog(s) linked to this sample were not found. This is likely due to a scheduled data purge of old
-    dialogues.
-    <br />
-    WARNING: It will not be possible to validate this sample.
+    {{ 'quality.sample-detail.missing_dialogs_warning' | transloco: { count: missingDialogsCount } }}
   </nb-alert>
+  }
 </tock-sticky-menu>
-
+} @if (!loading && pagination.total === 0) {
 <tock-no-data-found
-  *ngIf="!loading && pagination.total === 0"
-  title="No sample found"
+  [title]="'quality.sample-detail.no_sample_found' | transloco"
   class="mt-3"
 ></tock-no-data-found>
-
+} @if (!loading && pagination.total > 0 && !data?.dialogs?.length) {
 <tock-no-data-found
-  *ngIf="!loading && pagination.total > 0 && !data?.dialogs?.length"
-  title="No dialog found"
+  [title]="'quality.sample-detail.no_dialog_found' | transloco"
   class="mt-3"
 ></tock-no-data-found>
-
+} @if (!loading && data?.dialogs?.length) {
 <div
   class="mt-3"
-  *ngIf="!loading && data?.dialogs?.length"
   infinite-scroll
   [infiniteScrollDistance]="2"
   [infiniteScrollThrottle]="300"
   (scrolled)="onScroll()"
 >
-  <div *ngFor="let dialog of data.dialogs">
+  @for (dialog of data.dialogs; track dialog) {
+  <div>
     <nb-card
       id="dialog-wrapper-{{ dialog.id }}"
       status="basic"
@@ -267,24 +268,25 @@
         </tock-chat-ui>
       </nb-card-body>
     </nb-card>
-    <div
-      *ngIf="dialogEvaluator.isVisible"
-      class="mb-3"
-    ></div>
+    @if (dialogEvaluator.isVisible) {
+    <div class="mb-3"></div>
+    }
   </div>
+  }
 </div>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>
 
 <ng-template #sampleValidationModal>
   <nb-card class="min-width-90vw">
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Validate sample
+      {{ 'quality.sample-detail.validation_modal_title' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'quality.sample-detail.close_tooltip' | transloco"
         (click)="closeValidationModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -294,13 +296,13 @@
     <nb-card-body>
       <tock-form-control
         name="comment"
-        label="Comment"
+        [label]="'quality.sample-detail.comment_label' | transloco"
       >
         <nb-form-field>
           <textarea
             nbInput
             fullWidth
-            placeholder="Validation comment"
+            [placeholder]="'quality.sample-detail.validation_comment_placeholder' | transloco"
             [(ngModel)]="validationComment"
             rows="5"
           ></textarea>
@@ -315,7 +317,7 @@
         size="small"
         (click)="closeValidationModal()"
       >
-        Cancel
+        {{ 'quality.sample-detail.cancel_button' | transloco }}
       </button>
       <button
         type="button"
@@ -324,7 +326,7 @@
         size="small"
         (click)="validateSample()"
       >
-        Validate
+        {{ 'quality.sample-detail.validate_modal_button' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>

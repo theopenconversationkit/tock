@@ -18,9 +18,10 @@ import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@
 import { AnnotationEvent } from './annotations';
 
 @Component({
-  selector: 'tock-annotation-comment',
-  templateUrl: './annotation-comment.component.html',
-  styleUrl: './annotation-comment.component.scss'
+    selector: 'tock-annotation-comment',
+    templateUrl: './annotation-comment.component.html',
+    styleUrl: './annotation-comment.component.scss',
+    standalone: false
 })
 export class AnnotationCommentComponent {
   @Input() event: AnnotationEvent;

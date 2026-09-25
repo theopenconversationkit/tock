@@ -61,7 +61,10 @@ internal data class GAConnectorCallback(
         private val logger = KotlinLogging.logger {}
     }
 
-    data class ActionWithDelay(val action: Action, val delayInMs: Long = 0)
+    data class ActionWithDelay(
+        val action: Action,
+        val delayInMs: Long = 0,
+    )
 
     fun addAction(
         event: Event,
@@ -92,16 +95,15 @@ internal data class GAConnectorCallback(
             linkOutSuggestion = linkOutSuggestion ?: other.linkOutSuggestion,
         )
 
-    private fun GASimpleResponse.isMergeable(other: GASimpleResponse): Boolean {
-        return (
-            textToSpeech != null && other.textToSpeech != null ||
+    private fun GASimpleResponse.isMergeable(other: GASimpleResponse): Boolean =
+        (
+            (textToSpeech != null && other.textToSpeech != null) ||
                 (textToSpeech == null && other.textToSpeech == null)
         ) &&
             (
-                ssml != null && other.ssml != null ||
+                (ssml != null && other.ssml != null) ||
                     (ssml == null && other.ssml == null)
             )
-    }
 
     private fun GASimpleResponse.merge(other: GASimpleResponse): GASimpleResponse =
         copy(
@@ -167,31 +169,33 @@ internal data class GAConnectorCallback(
         val simpleResponse =
             if (texts.isNotEmpty()) {
                 GAItem(
-                    texts.reduce { s, t ->
-                        s.copy(
-                            textToSpeech = concat(s.textToSpeech, t.textToSpeech),
-                            ssml = concat(s.ssml, t.ssml),
-                            displayText = concat(s.displayText ?: s.textToSpeech, t.displayText ?: t.textToSpeech),
-                        )
-                    }.run {
-                        val newSSML =
-                            ssml
-                                ?.replace("<speak>", "", true)
-                                ?.replace("</speak>", "", true)
-                                ?.run { if (isBlank()) null else "<speak>$this</speak>" }
-                        copy(
-                            textToSpeech = if (newSSML.isNullOrBlank()) textToSpeech else null,
-                            ssml = newSSML,
-                            displayText = displayText?.run { if (isBlank()) null else this },
-                        )
-                    },
+                    texts
+                        .reduce { s, t ->
+                            s.copy(
+                                textToSpeech = concat(s.textToSpeech, t.textToSpeech),
+                                ssml = concat(s.ssml, t.ssml),
+                                displayText = concat(s.displayText ?: s.textToSpeech, t.displayText ?: t.textToSpeech),
+                            )
+                        }.run {
+                            val newSSML =
+                                ssml
+                                    ?.replace("<speak>", "", true)
+                                    ?.replace("</speak>", "", true)
+                                    ?.run { if (isBlank()) null else "<speak>$this</speak>" }
+                            copy(
+                                textToSpeech = if (newSSML.isNullOrBlank()) textToSpeech else null,
+                                ssml = newSSML,
+                                displayText = displayText?.run { if (isBlank()) null else this },
+                            )
+                        },
                 )
             } else {
                 null
             }
 
         val connectorMessages =
-            actions.map { it.action }
+            actions
+                .map { it.action }
                 .filterIsInstance<SendSentence>()
                 .mapNotNull {
                     (it.message(gaConnectorType) as GAResponseConnectorMessage?)
@@ -212,12 +216,21 @@ internal data class GAConnectorCallback(
                     }
         } else {
             val firstExpectedInputWithCard =
-                connectorMessages.firstOrNull { it.expectedInput?.inputPrompt?.richInitialPrompt?.items?.any { item -> item.basicCard != null } == true }?.expectedInput
+                connectorMessages
+                    .firstOrNull {
+                        it.expectedInput
+                            ?.inputPrompt
+                            ?.richInitialPrompt
+                            ?.items
+                            ?.any { item -> item.basicCard != null } == true
+                    }?.expectedInput
             val message: GAExpectedInput? =
                 connectorMessages
                     .mapNotNull { it.expectedInput }
-                    .filter { it.inputPrompt.richInitialPrompt.items.all { item -> item.basicCard == null } || it == firstExpectedInputWithCard }
-                    .run {
+                    .filter {
+                        it.inputPrompt.richInitialPrompt.items
+                            .all { item -> item.basicCard == null } || it == firstExpectedInputWithCard
+                    }.run {
                         if (isEmpty()) {
                             null
                         } else {
@@ -286,8 +299,8 @@ internal data class GAConnectorCallback(
         )
     }
 
-    private fun rebuildGASuitableResponse(expectedInput: GAExpectedInput): GAExpectedInput {
-        return GAExpectedInput(
+    private fun rebuildGASuitableResponse(expectedInput: GAExpectedInput): GAExpectedInput =
+        GAExpectedInput(
             GAInputPrompt(
                 rebuildGASuitableRichResponse(
                     richResponse = expectedInput.inputPrompt.richInitialPrompt,
@@ -298,13 +311,11 @@ internal data class GAConnectorCallback(
             expectedInput.possibleIntents,
             expectedInput.speechBiasingHints,
         )
-    }
 
-    private fun rebuildGASuitableResponse(finalResponse: GAFinalResponse): GAFinalResponse {
-        return GAFinalResponse(
+    private fun rebuildGASuitableResponse(finalResponse: GAFinalResponse): GAFinalResponse =
+        GAFinalResponse(
             rebuildGASuitableRichResponse(finalResponse.richResponse, true),
         )
-    }
 
     private fun rebuildGASuitableRichResponse(
         richResponse: GARichResponse,
@@ -391,13 +402,13 @@ internal data class GAConnectorCallback(
     /**
      * test if is logout event for account unlinking
      */
-    private fun isLogoutEvent(): Boolean {
-        return actions.map { it.action }
+    private fun isLogoutEvent(): Boolean =
+        actions
+            .map { it.action }
             .filterIsInstance<SendSentence>()
             .mapNotNull {
                 (it.message(gaConnectorType) as GAResponseConnectorMessage?)
             }.firstOrNull { it.logoutEvent } != null
-    }
 
     override fun eventSkipped(event: Event) {
         super.eventSkipped(event)

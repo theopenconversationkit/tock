@@ -1,0 +1,30 @@
+.metadata-grid {
+  display: grid;
+  grid-template-columns: minmax(6rem, max-content) 1fr;
+  gap: 0.1rem 0.75rem;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+dt {
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+dd {
+  word-break: break-word;
+
+  // Nested objects indent slightly so the hierarchy reads.
+  tock-vector-store-metadata .metadata-grid {
+    margin-top: 0.1rem;
+  }
+}
+
+.metadata-link {
+  word-break: break-all;
+}
+
+.metadata-array-item:not(:last-child)::after {
+  content: ', ';
+  color: var(--text-hint-color);
+}

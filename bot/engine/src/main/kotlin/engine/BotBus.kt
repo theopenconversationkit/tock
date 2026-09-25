@@ -68,7 +68,9 @@ import java.util.Locale
 /**
  * Bus implementation for Tock integrated mode.
  */
-interface BotBus : Bus<BotBus>, DialogEntityAccess {
+interface BotBus :
+    Bus<BotBus>,
+    DialogEntityAccess {
     companion object {
         /**
          * Helper method to return the current bus,
@@ -211,9 +213,7 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     /**
      * Returns true if the current action has the specified entity role.
      */
-    fun hasActionEntity(role: String): Boolean {
-        return action.hasEntity(role)
-    }
+    fun hasActionEntity(role: String): Boolean = action.hasEntity(role)
 
     /**
      * Returns true if the current action has the specified entity role.
@@ -228,9 +228,7 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     override fun <T : Value> entityValue(
         role: String,
         valueTransformer: (EntityValue) -> T?,
-    ): T? {
-        return entities[role]?.value?.let { valueTransformer.invoke(it) }
-    }
+    ): T? = entities[role]?.value?.let { valueTransformer.invoke(it) }
 
     fun <T : Value> entityValue(entity: Entity): T? = entityValue(entity, @Suppress("UNCHECKED_CAST") { it.value as? T? })
 
@@ -356,9 +354,7 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     /**
      * Returns the persistent current context value.
      */
-    fun <T : Any> contextValue(key: DialogContextKey<T>): T? {
-        return dialog.state.context[key]
-    }
+    fun <T : Any> contextValue(key: DialogContextKey<T>): T? = dialog.state.context[key]
 
     /**
      * Returns the persistent current context value.
@@ -454,9 +450,7 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     override fun endRawText(
         plainText: CharSequence?,
         delay: Long,
-    ): BotBus {
-        return end(SendSentence(botId, connectorId, userId, plainText), delay)
-    }
+    ): BotBus = end(SendSentence(botId, connectorId, userId, plainText), delay)
 
     /**
      * Sends [Message] as last bot answer.
@@ -464,9 +458,7 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     fun end(
         message: Message,
         delay: Long = defaultDelay(currentAnswerIndex),
-    ): BotBus {
-        return end(message.toAction(this), delay)
-    }
+    ): BotBus = end(message.toAction(this), delay)
 
     /**
      * Sends [Action] as last bot answer.
@@ -500,9 +492,7 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     fun send(
         message: Message,
         delay: Long = defaultDelay(currentAnswerIndex),
-    ): BotBus {
-        return send(message.toAction(this), delay)
-    }
+    ): BotBus = send(message.toAction(this), delay)
 
     /**
      * Sends a [MessagesList].
@@ -595,7 +585,12 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
         trackedStoryId = getTrackedStoryId(),
         playerIds = dialog.playerIds,
         dialogId = dialog.id,
-        applicationId = dialog.stories.first().actions.first().applicationId,
+        applicationId =
+            dialog.stories
+                .first()
+                .actions
+                .first()
+                .applicationId,
         botId = botDefinition.botId,
         namespace = botDefinition.namespace,
     )
@@ -606,7 +601,9 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      */
     fun getTrackedStoryId() =
         dialog.stories
-            .lastOrNull { !it.metricStory }?.definition?.id
+            .lastOrNull { !it.metricStory }
+            ?.definition
+            ?.id
             ?: story.definition.id
 
     /**
@@ -627,7 +624,8 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
         feature: FeatureType,
         default: Boolean = false,
     ) = runBlocking {
-        injector.provide<FeatureDAO>()
+        injector
+            .provide<FeatureDAO>()
             .isEnabled(botDefinition.botId, botDefinition.namespace, feature, connectorId, default, userId.id)
     }
 

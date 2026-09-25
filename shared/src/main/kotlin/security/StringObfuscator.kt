@@ -33,12 +33,11 @@ interface StringObfuscator {
     /**
      * Obfuscate the parameter.
      */
-    fun obfuscate(text: String): String {
-        return regex
+    fun obfuscate(text: String): String =
+        regex
             .toPattern()
             .matcher(text)
             .run {
                 replaceAll(replacement)
             }
-    }
 }

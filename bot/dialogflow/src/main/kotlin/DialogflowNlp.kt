@@ -157,8 +157,8 @@ internal class DialogflowNlp : NlpController {
             return i ?: botDefinition.findIntent(nlpResult.intent, sentence.connectorId)
         }
 
-        private suspend fun findKeyword(sentence: String?): Intent? {
-            return if (sentence != null) {
+        private suspend fun findKeyword(sentence: String?): Intent? =
+            if (sentence != null) {
                 var i: Intent? = null
                 BotRepository.forEachNlpListener {
                     if (i == null) {
@@ -175,7 +175,6 @@ internal class DialogflowNlp : NlpController {
             } else {
                 null
             }
-        }
 
         private suspend fun listenNlpSuccessCall(
             query: NlpQuery,
@@ -218,18 +217,22 @@ internal class DialogflowNlp : NlpController {
             )
         }
 
-        private fun toNlpQuery(): NlpQuery {
-            return NlpQuery(
+        private fun toNlpQuery(): NlpQuery =
+            NlpQuery(
                 listOf(sentence.stringText ?: ""),
                 botDefinition.namespace,
                 botDefinition.nlpModelName,
                 toQueryContext(),
                 NlpQueryState(
                     dialog.state.nextActionState?.states
-                        ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet(),
+                        ?: listOfNotNull(
+                            dialog.currentStory
+                                ?.definition
+                                ?.mainIntent()
+                                ?.name,
+                        ).toSet(),
                 ),
             )
-        }
 
         private fun parse(request: NlpQuery): NlpResult? {
             logger.debug { "Sending sentence '${sentence.stringText}' to NLP" }
@@ -242,27 +245,30 @@ internal class DialogflowNlp : NlpController {
                     nlpClient.parse(
                         request.copy(
                             intentsSubset =
-                                intentsQualifiers.asSequence().map {
-                                    it.copy(
-                                        intent =
-                                            it.intent.withNamespace(
-                                                request.namespace,
-                                            ),
-                                    )
-                                }.toSet(),
+                                intentsQualifiers
+                                    .asSequence()
+                                    .map {
+                                        it.copy(
+                                            intent =
+                                                it.intent.withNamespace(
+                                                    request.namespace,
+                                                ),
+                                        )
+                                    }.toSet(),
                         ),
                     )
                 }
             if (result != null && useQualifiers) {
                 // force intents qualifiers if unknown answer
                 if (intentsQualifiers.none { it.intent == result.intent }) {
-                    return result.copy(
-                        intent =
-                            intentsQualifiers.maxByOrNull { it.modifier }?.intent
-                                ?: intentsQualifiers.first().intent,
-                    ).also {
-                        logger.warn { "${result.intent} not in intents qualifier $intentsQualifiers - use $it" }
-                    }
+                    return result
+                        .copy(
+                            intent =
+                                intentsQualifiers.maxByOrNull { it.modifier }?.intent
+                                    ?: intentsQualifiers.first().intent,
+                        ).also {
+                            logger.warn { "${result.intent} not in intents qualifier $intentsQualifiers - use $it" }
+                        }
                 }
             }
             return result

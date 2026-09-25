@@ -30,7 +30,10 @@ import kotlin.reflect.KClass
  *
  * @param <T> the type of the value
  */
-class DialogContextKey<T : Any>(val id: String, val type: KClass<T>) {
+class DialogContextKey<T : Any>(
+    val id: String,
+    val type: KClass<T>,
+) {
     companion object {
         /**
          * Factory method for [DialogContextKey]
@@ -52,7 +55,5 @@ class DialogContextKey<T : Any>(val id: String, val type: KClass<T>) {
         return id == other.id
     }
 
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
+    override fun hashCode(): Int = id.hashCode()
 }

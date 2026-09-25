@@ -1,32 +1,17 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="d-flex flex-wrap">
-  <h1 class="flex-grow-1">Indicators</h1>
+  <h1 class="flex-grow-1">{{ 'metrics.indicators.title' | transloco }}</h1>
 
   <section>
+    @if (configurations?.length) {
     <button
       nbButton
       status="primary"
       (click)="addOrEditIndicator()"
-      *ngIf="configurations?.length"
     >
       <nb-icon icon="plus-lg"></nb-icon>
-      NEW INDICATOR
+      {{ 'metrics.indicators.new_indicator_button' | transloco }}
     </button>
+    }
   </section>
 </div>
 
@@ -34,15 +19,12 @@
   [class.grid]="isSidePanelOpen.edit"
   class="mt-1"
 >
-  <tock-no-data-found
-    *ngIf="configurations?.length === 0"
-    title="No bot configuration detected"
-  ></tock-no-data-found>
-
+  @if (configurations?.length === 0) {
+  <tock-no-data-found [title]="'metrics.indicators.no_bot_configuration_detected' | transloco"></tock-no-data-found>
+  } @if (configurations?.length) {
   <div
     class="main"
     [nbSpinner]="loading.list || loading.delete"
-    *ngIf="configurations?.length"
   >
     <nb-card class="mb-2">
       <nb-card-body>
@@ -52,52 +34,46 @@
         ></tock-indicators-filters>
       </nb-card-body>
     </nb-card>
-
+    @if (!filteredIndicators?.length && !loading.list) {
     <tock-no-data-found
-      *ngIf="!filteredIndicators?.length && !loading.list"
-      title="No Indicator found"
-      message="You may create a new one using above button &#34;NEW INDICATOR&#34;."
+      [title]="'metrics.indicators.no_indicator_found' | transloco"
+      [message]="'metrics.indicators.no_indicator_found_message' | transloco"
     ></tock-no-data-found>
-
-    <nb-card
-      *ngFor="let indicator of filteredIndicators"
-      class="mb-2"
-    >
+    } @for (indicator of filteredIndicators; track indicator) {
+    <nb-card class="mb-2">
       <nb-card-body>
         <div class="indicator">
           <div class="d-flex align-items-center justify-content-between">
             <strong>{{ indicator.label }}</strong>
             <div>
+              @for (dimension of indicator.dimensions; track dimension) {
               <nb-tag
-                *ngFor="let dimension of indicator.dimensions"
                 appearance="filled"
                 status="basic"
                 size="tiny"
                 [text]="dimension"
                 class="mx-1"
               ></nb-tag>
+              }
             </div>
           </div>
-
           <small class="text-muted">
             {{ indicator.description }}
           </small>
-
           <div class="d-flex gap-2">
             <ul class="flex-grow-1 pl-3 w-50 mb-0">
-              <li *ngFor="let value of indicator.values">{{ value.label }}</li>
+              @for (value of indicator.values; track value) {
+              <li>{{ value.label }}</li>
+              }
             </ul>
-
-            <div
-              *ngIf="indicatorIsNotPredefined(indicator)"
-              class="d-flex flex-wrap align-items-center justify-content-between"
-            >
+            @if (indicatorIsNotPredefined(indicator)) {
+            <div class="d-flex flex-wrap align-items-center justify-content-between">
               <button
                 nbButton
                 ghost
                 shape="round"
                 status="info"
-                nbTooltip="Edit"
+                [nbTooltip]="'metrics.indicators.edit_tooltip' | transloco"
                 class="mb-2"
                 (click)="addOrEditIndicator(indicator)"
               >
@@ -108,22 +84,23 @@
                 ghost
                 shape="round"
                 status="danger"
-                nbTooltip="Delete"
+                [nbTooltip]="'metrics.indicators.delete_tooltip' | transloco"
                 class="mb-2"
                 (click)="confirmDeleteIndicator(indicator)"
               >
                 <nb-icon icon="trash"></nb-icon>
               </button>
             </div>
+            }
           </div>
         </div>
       </nb-card-body>
     </nb-card>
+    }
   </div>
-
+  } @if (isSidePanelOpen.edit) {
   <tock-indicators-edit
     #indicatorsEditComponent
-    *ngIf="isSidePanelOpen.edit"
     class="aside"
     [indicatorEdition]="indicatorEdition"
     [indicators]="indicators"
@@ -132,4 +109,5 @@
     (onSave)="saveOrCreateIndicator($event)"
     [nbSpinner]="loading.edit"
   ></tock-indicators-edit>
+  }
 </section>

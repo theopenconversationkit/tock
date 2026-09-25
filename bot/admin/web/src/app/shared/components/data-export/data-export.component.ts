@@ -88,9 +88,10 @@ interface DeepeningPropStrategy {
 }
 
 @Component({
-  selector: 'tock-data-export',
-  templateUrl: './data-export.component.html',
-  styleUrl: './data-export.component.scss'
+    selector: 'tock-data-export',
+    templateUrl: './data-export.component.html',
+    styleUrl: './data-export.component.scss',
+    standalone: false
 })
 export class DataExportComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();

@@ -84,7 +84,8 @@ object SynchronizationService {
         deleteStories(targetNamespace, targetAppName)
 
         // Import source stories to the target namespace and application name
-        sourceStories.groupBy { it.userSentenceLocale }
+        sourceStories
+            .groupBy { it.userSentenceLocale }
             .forEach { group ->
                 importStories(
                     targetNamespace,
@@ -188,13 +189,14 @@ object SynchronizationService {
                     _id = newId(),
                     nlpModel = tempAppName,
                 )
-            BotAdminService.getBotConfigurationByApplicationIdAndBotId(
-                tempNamespaceName,
-                tempApplicationId,
-                tempAppName,
-            )?.let {
-                BotAdminService.deleteApplicationConfiguration(it)
-            }
+            BotAdminService
+                .getBotConfigurationByApplicationIdAndBotId(
+                    tempNamespaceName,
+                    tempApplicationId,
+                    tempAppName,
+                )?.let {
+                    BotAdminService.deleteApplicationConfiguration(it)
+                }
 
             BotAdminService.saveApplicationConfiguration(tempBotAppConfig)
             botApplicationConfigurationFitMap[targetBotAppConfig] = tempBotAppConfig
@@ -245,14 +247,21 @@ object SynchronizationService {
         second: BotApplicationConfiguration,
     ): Pair<BotApplicationConfiguration, BotApplicationConfiguration> {
         val firstPath = first.path!!
-        val nonConflictingFirstPath = first.path!!.removeSuffix(TEMP_POSTFIX).removeSuffix("/").plus("_")
+        val nonConflictingFirstPath =
+            first.path!!
+                .removeSuffix(TEMP_POSTFIX)
+                .removeSuffix("/")
+                .plus("_")
         val secondPath = second.path!!.removeSuffix("/").removeSuffix("_")
 
-        botConfigurationDAO.getConfigurationByPath(nonConflictingFirstPath)
+        botConfigurationDAO
+            .getConfigurationByPath(nonConflictingFirstPath)
             .ifNull { BotAdminService.saveApplicationConfiguration(first.copy(path = nonConflictingFirstPath)) }
-        botConfigurationDAO.getConfigurationByPath(firstPath)
+        botConfigurationDAO
+            .getConfigurationByPath(firstPath)
             .ifNull { BotAdminService.saveApplicationConfiguration(second.copy(path = firstPath)) }
-        botConfigurationDAO.getConfigurationByPath(secondPath)
+        botConfigurationDAO
+            .getConfigurationByPath(secondPath)
             .ifNull { BotAdminService.saveApplicationConfiguration(first.copy(path = secondPath)) }
         val firstUpdated = BotAdminService.getBotConfigurationById(first._id)
         val secondUpdated = BotAdminService.getBotConfigurationById(second._id)

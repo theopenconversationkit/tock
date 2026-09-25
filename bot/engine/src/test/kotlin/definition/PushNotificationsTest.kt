@@ -29,6 +29,7 @@ import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.event.SkippedEventException
+import ai.tock.bot.engine.user.LockAcquisitionException
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
@@ -123,13 +124,13 @@ internal class PushNotificationsTest : BotEngineTest() {
     @OptIn(ExperimentalTockCoroutines::class)
     @Test
     suspend fun `GIVEN locked user session WHEN pushNotification is called THEN throw SkippedEventException`() {
-        coEvery { userLock.tryLock(recipientId.id) } returns false
+        coEvery { userLock.withLock(recipientId.id, any(), postLockRelease = any(), op = any<suspend () -> Unit>()) } throws LockAcquisitionException("test")
         coEvery { connector.notify(any(), any(), any(), notificationType = any(), errorListener = any()) } coAnswers {
             firstArg<ConnectorController>().handleUserEvent(
                 SendChoice(
-                    PlayerId(botDefinition.botId, PlayerType.bot),
-                    CONNECTOR_ID,
                     recipientId,
+                    CONNECTOR_ID,
+                    PlayerId(botDefinition.botId, PlayerType.bot),
                     intent.wrappedIntent().name,
                     null,
                     emptyMap(),

@@ -17,6 +17,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ModelBuildsComponent } from './model-builds.component';
+import { TestSharedModule } from '../../shared/test-shared.module';
+import { StateService } from '../../core-nlp/state.service';
+import { StateServiceMock } from '../../shared/test-shared/state-service.mock';
+import { ApplicationService } from '../../core-nlp/applications.service';
+import { BehaviorSubject, of } from 'rxjs';
 
 describe('ModelBuildsComponent', () => {
   let component: ModelBuildsComponent;
@@ -24,9 +29,13 @@ describe('ModelBuildsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ModelBuildsComponent ]
-    })
-    .compileComponents();
+      declarations: [ModelBuildsComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        { provide: ApplicationService, useValue: { builds: () => of({ data: [], total: 0 }) } }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ModelBuildsComponent);
     component = fixture.componentInstance;

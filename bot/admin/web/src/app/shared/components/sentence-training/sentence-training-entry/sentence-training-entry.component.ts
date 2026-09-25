@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -35,7 +19,7 @@ import { Observable, Subject, lastValueFrom, of, takeUntil } from 'rxjs';
 import { Intent, IntentsCategory, nameFromQualifiedName, SentenceStatus } from '../../../../model/nlp';
 import { SentenceReviewRequestComponent } from '../sentence-review-request/sentence-review-request.component';
 import { Action, SentenceTrainingMode } from '../models';
-import { IntentDialogComponent } from '../../../../language-understanding/intent-dialog/intent-dialog.component';
+
 import { UserRole } from '../../../../model/auth';
 import { NlpService } from '../../../../core-nlp/nlp.service';
 import { Router } from '@angular/router';
@@ -46,12 +30,15 @@ import { IntentStoryDetailsComponent } from '../../intent-story-details/intent-s
 import { ChoiceDialogComponent } from '../../choice-dialog/choice-dialog.component';
 import { TestDialogService } from '../../test-dialog/test-dialog.service';
 import { KeyValue } from '@angular/common';
+import { IntentDialogComponent } from '../../intent-dialog/intent-dialog.component';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-sentence-training-entry',
-  templateUrl: './sentence-training-entry.component.html',
-  styleUrls: ['./sentence-training-entry.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'tock-sentence-training-entry',
+    templateUrl: './sentence-training-entry.component.html',
+    styleUrls: ['./sentence-training-entry.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestroy {
   private readonly _destroy$: Subject<boolean> = new Subject();
@@ -85,7 +72,8 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
     private nbDialogService: NbDialogService,
     private toastrService: NbToastrService,
     private cd: ChangeDetectorRef,
-    private testDialogService: TestDialogService
+    private testDialogService: TestDialogService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -167,7 +155,6 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
 
   async handleAction(action: Action, clearSentence = true): Promise<void> {
     const actionTitle = this.getActionTitle(action);
-
     this.setSentenceAccordingToAction(action);
 
     await lastValueFrom(this.nlp.updateSentence(this.sentence));
@@ -178,7 +165,12 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
       s.language = this.state.currentLocale;
       s.status = SentenceStatus.deleted;
       this.nlp.updateSentence(s).subscribe((_) => {
-        this.toastrService.success(`Language change to ${this.state.localeName(this.sentence.language)}`, 'Language change');
+        this.toastrService.success(
+          this.transloco.translate('shared.sentence-training-entry.messages.language-change-message', {
+            language: this.state.localeName(this.sentence.language)
+          }),
+          this.transloco.translate('shared.sentence-training-entry.messages.language-change-title')
+        );
       });
     }
 
@@ -199,13 +191,13 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
   private getActionTitle(action: Action): string {
     switch (action) {
       case Action.DELETE:
-        return 'Delete';
+        return this.transloco.translate('shared.sentence-training-entry.action-titles.delete');
       case Action.UNKNOWN:
-        return 'Unknown';
+        return this.transloco.translate('shared.sentence-training-entry.action-titles.unknown');
       case Action.RAGEXCLUDED:
-        return 'Rag excluded';
+        return this.transloco.translate('shared.sentence-training-entry.action-titles.ragexcluded');
       case Action.VALIDATE:
-        return 'Validate';
+        return this.transloco.translate('shared.sentence-training-entry.action-titles.validate');
     }
   }
 
@@ -226,9 +218,8 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
         break;
       case Action.VALIDATE:
         const intentId = this.sentence.classification.intentId;
-
         if (!intentId) {
-          this.toastrService.show(`Please select an intent first`);
+          this.toastrService.show(this.transloco.translate('shared.sentence-training-entry.errors.please-select-intent'));
           break;
         }
         if (intentId === Intent.unknown) {
@@ -349,7 +340,10 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
 
   async copySentence() {
     copyToClipboard(this.sentence.getText());
-    this.toastrService.success(`Sentence copied to clipboard`, 'Clipboard');
+    this.toastrService.success(
+      this.transloco.translate('shared.sentence-training-entry.messages.sentence-copied'),
+      this.transloco.translate('shared.sentence-training-entry.messages.clipboard')
+    );
   }
 
   testDialogSentence() {
@@ -379,14 +373,14 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
       name === nameFromQualifiedName(Intent.unknown) ||
       name === nameFromQualifiedName(Intent.ragExcluded)
     ) {
-      this.toastrService.warning(`Intent ${name} already exists`);
+      this.toastrService.warning(this.transloco.translate('shared.sentence-training-entry.messages.intent-already-exists', { name }));
     } else {
       if (this.state.intentExistsInOtherApplication(name)) {
-        const action = 'confirm';
+        const action = this.transloco.translate('common.actions.confirm');
         const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
           context: {
-            title: 'This intent is already used in an other application',
-            subtitle: 'If you confirm the name, the intent will be shared between the two applications.',
+            title: this.transloco.translate('shared.sentence-training-entry.dialogs.intent-already-used-title'),
+            subtitle: this.transloco.translate('shared.sentence-training-entry.dialogs.intent-already-used-subtitle'),
             actions: [
               { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
               { actionName: action, buttonStatus: 'danger' }
@@ -394,7 +388,7 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
           }
         });
         dialogRef.onClose.subscribe((result) => {
-          if (result === action) {
+          if (result.toLowerCase() === action.toLowerCase()) {
             this.saveIntent(name, label, description, category);
           }
         });
@@ -412,7 +406,6 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
       .subscribe({
         next: (intent) => {
           this.state.addIntent(intent);
-
           this.sentence.classification.intentId = intent._id;
           const oldSentenceIndex = this.sentences.findIndex((s) => s === this.sentence);
           const oldSentence = this.sentence;
@@ -428,7 +421,7 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
           this.cd.markForCheck();
         },
         error: () => {
-          this.toastrService.warning(`Error on intent creation`);
+          this.toastrService.warning(this.transloco.translate('shared.sentence-training-entry.errors.intent-creation-error'));
         }
       });
   }

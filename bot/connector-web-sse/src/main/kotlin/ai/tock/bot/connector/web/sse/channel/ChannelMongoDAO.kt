@@ -33,6 +33,7 @@ import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
 import org.litote.kmongo.setTo
+import org.litote.kmongo.updateMany
 import org.litote.kmongo.updateOneById
 import java.util.concurrent.TimeUnit
 import com.mongodb.reactivestreams.client.MongoDatabase as ReactiveMongoDatabase
@@ -92,7 +93,7 @@ internal object ChannelMongoDAO : ChannelDAO {
     override fun listenChanges(listener: ChannelEvent.Handler) {
         asyncWebChannelResponseCol.watch {
             val channelEvent = it.fullDocument
-            if (channelEvent != null) {
+            if (channelEvent?.status == ChannelEvent.Status.ENQUEUED) {
                 process(channelEvent, listener)
             }
         }
@@ -103,15 +104,16 @@ internal object ChannelMongoDAO : ChannelDAO {
         recipientId: String,
         handler: ChannelEvent.Handler,
     ) {
-        webChannelResponseCol.find(
-            and(
-                ChannelEvent::appId eq appId,
-                ChannelEvent::recipientId eq recipientId,
-                ChannelEvent::status eq ChannelEvent.Status.ENQUEUED,
-            ),
-        ).forEach { event ->
-            process(event, handler)
-        }
+        webChannelResponseCol
+            .find(
+                and(
+                    ChannelEvent::appId eq appId,
+                    ChannelEvent::recipientId eq recipientId,
+                    ChannelEvent::status eq ChannelEvent.Status.ENQUEUED,
+                ),
+            ).forEach { event ->
+                process(event, handler)
+            }
     }
 
     private fun process(
@@ -135,7 +137,29 @@ internal object ChannelMongoDAO : ChannelDAO {
         }
     }
 
+    override fun updateRecipientId(
+        oldRecipientId: String,
+        newRecipientId: String,
+    ): Long {
+        require(oldRecipientId.encodedSize() == newRecipientId.encodedSize()) {
+            "SSE message recipient IDs must have the same UTF-8 byte length to migrate capped queue events"
+        }
+        return webChannelResponseCol
+            .updateMany(
+                ChannelEvent::recipientId eq oldRecipientId,
+                ChannelEvent::recipientId setTo newRecipientId,
+            ).modifiedCount
+    }
+
+    override fun deleteByRecipientId(recipientId: String): Long =
+        webChannelResponseCol
+            .deleteMany(
+                ChannelEvent::recipientId eq recipientId,
+            ).deletedCount
+
     override fun save(channelEvent: ChannelEvent) {
         webChannelResponseCol.save(channelEvent)
     }
+
+    private fun String.encodedSize(): Int = toByteArray(Charsets.UTF_8).size
 }

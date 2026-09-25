@@ -1,32 +1,17 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="event-comment">
   <div class="event-comment-body d-flex gap-1">
     <div class="flex-grow-1 mt-1">
       <div class="event-comment-body-header">
-        <q>{{ event.user }}</q> added a comment on {{ event.lastUpdateDate | date: 'y/MM/dd' }} at
+        <q>{{ event.user }}</q> {{ 'shared.annotation.comment.addedOn' | transloco }} {{ event.lastUpdateDate | date: 'y/MM/dd' }} at
         {{ event.lastUpdateDate | date: 'HH:mm' }}:
       </div>
 
-      <span *ngIf="!event._edited">
+      @if (!event._edited) {
+      <span>
         {{ event.comment }}
       </span>
-
-      <div *ngIf="event._edited">
+      } @if (event._edited) {
+      <div>
         <textarea
           nbInput
           fullWidth
@@ -36,58 +21,57 @@
           >{{ event.comment }}</textarea
         >
       </div>
+      }
     </div>
 
-    <div
-      *ngIf="event.canEdit"
-      class="d-flex align-items-center"
-    >
+    @if (event.canEdit) {
+    <div class="d-flex align-items-center">
+      @if (!event._edited) {
       <button
-        *ngIf="!event._edited"
         nbButton
         ghost
         size="small"
         (click)="edit()"
-        nbTooltip="Edit this comment"
+        [nbTooltip]="'shared.annotation.comment.editTooltip' | transloco"
       >
         <nb-icon icon="pencil"></nb-icon>
       </button>
+      } @if (!event._edited) {
       <button
-        *ngIf="!event._edited"
         nbButton
         ghost
         size="small"
         status="danger"
         (click)="delete()"
-        nbTooltip="Delete this comment"
+        [nbTooltip]="'shared.annotation.comment.deleteTooltip' | transloco"
       >
         <nb-icon icon="trash"></nb-icon>
       </button>
-
+      } @if (event._edited) {
       <button
-        *ngIf="event._edited"
         status="success"
         nbButton
         ghost
         size="small"
         (click)="submit()"
-        nbTooltip="Submit changes"
+        [nbTooltip]="'shared.annotation.comment.submitTooltip' | transloco"
         [disabled]="!commentSubmittable()"
       >
         <nb-icon icon="check-lg"></nb-icon>
       </button>
+      } @if (event._edited) {
       <button
-        *ngIf="event._edited"
         status="warning"
         nbButton
         ghost
         size="small"
-        status="danger"
         (click)="cancel()"
-        nbTooltip="Cancel"
+        [nbTooltip]="'shared.annotation.comment.cancelTooltip' | transloco"
       >
         <nb-icon icon="x-lg"></nb-icon>
       </button>
+      }
     </div>
+    }
   </div>
 </div>

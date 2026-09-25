@@ -16,12 +16,13 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>ai.tock</groupId>
     <artifactId>tock-bot-admin</artifactId>
-    <version>26.3.4-SNAPSHOT</version>
+    <version>26.3.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>tock-bot-admin-web</artifactId>
@@ -31,11 +32,14 @@
 
   <properties>
     <project.build.frontend.directory>${project.build.directory}/frontend</project.build.frontend.directory>
+    <env>UNDEFINED</env>
   </properties>
 
   <build>
     <sourceDirectory>src/main/kotlin</sourceDirectory>
+
     <plugins>
+
       <plugin>
         <groupId>pl.project13.maven</groupId>
         <artifactId>git-commit-id-plugin</artifactId>
@@ -49,6 +53,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -67,10 +72,12 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
+
           <execution>
             <id>merge-bot-admin-sources</id>
             <phase>generate-resources</phase>
@@ -95,6 +102,7 @@
               <overwrite>true</overwrite>
             </configuration>
           </execution>
+
           <execution>
             <id>merge-tock-info</id>
             <phase>generate-resources</phase>
@@ -115,6 +123,27 @@
               <overwrite>true</overwrite>
             </configuration>
           </execution>
+
+        </executions>
+      </plugin>
+
+      <!-- Log the selected environment -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>log-build-environment</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <echo message="Build environment: ${env}" />
+              </target>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
 
@@ -125,6 +154,7 @@
           <workingDirectory>${project.build.frontend.directory}</workingDirectory>
         </configuration>
         <executions>
+
           <execution>
             <id>install node and npm</id>
             <phase>process-resources</phase>
@@ -135,6 +165,7 @@
               <nodeVersion>${node}</nodeVersion>
             </configuration>
           </execution>
+
           <execution>
             <id>npm ci</id>
             <phase>process-resources</phase>
@@ -145,6 +176,7 @@
               <arguments>ci -d --loglevel warn --force</arguments>
             </configuration>
           </execution>
+
           <execution>
             <id>npm run-script mavenbuild</id>
             <phase>compile</phase>
@@ -155,8 +187,10 @@
               <arguments>run-script mavenbuild --loglevel warn --force</arguments>
             </configuration>
           </execution>
+
         </executions>
       </plugin>
+
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -175,7 +209,55 @@
           </execution>
         </executions>
       </plugin>
+
     </plugins>
   </build>
+
+  <profiles>
+
+    <!--
+      REC environment:
+      overwrite the generated env-banner.json after the web sources
+      have been copied to the frontend build directory.
+    -->
+    <profile>
+      <id>rec</id>
+
+      <activation>
+        <property>
+          <name>env</name>
+          <value>REC</value>
+        </property>
+      </activation>
+
+      <build>
+        <plugins>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>configure-rec-banner</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <echo message="REC environment detected: overwriting env-banner.json with REC banner" />
+
+                    <echo file="${project.build.frontend.directory}/src/assets/env-banner.json" message="{ &quot;label&quot;: &quot;REC&quot;, &quot;color&quot;: &quot;#e2504f&quot; }" encoding="UTF-8" />
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
 
 </project>

@@ -17,4 +17,9 @@ package ai.tock.bot.connector.web.sse.channel
 
 import java.util.UUID
 
-internal data class SseChannel(val appId: String, val uuid: UUID, val userId: String, val onAction: ChannelCallback)
+internal data class SseChannel(
+    val appId: String,
+    val uuid: UUID,
+    val userId: String,
+    val onAction: ChannelCallback,
+)

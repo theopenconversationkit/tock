@@ -27,7 +27,9 @@ import ai.tock.nlp.api.client.model.NlpIntentQualifier
 
 const val SATISFACTION_MODULE_ID: String = "satisfaction_review"
 
-enum class SatisfactionIntent(val id: String) {
+enum class SatisfactionIntent(
+    val id: String,
+) {
     REVIEW_COMMENT("satisfaction_review_comment"),
     REVIEW_ASK("satisfaction_review_ask"),
     REVIEW_ADDED("satisfaction_review_added"),
@@ -51,7 +53,9 @@ private val satisfactionModule =
                 val ratingIndex =
                     storyReview.steps.indexOfFirst {
                         (it as? StoryDefinitionConfigurationStep.Step)
-                            ?.configuration?.userSentenceLabel?.defaultLabel == userText?.trim()
+                            ?.configuration
+                            ?.userSentenceLabel
+                            ?.defaultLabel == userText?.trim()
                     }
                 if (ratingIndex >= 0) {
                     dialog.rating = ratingIndex + 1

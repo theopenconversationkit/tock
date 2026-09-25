@@ -53,7 +53,8 @@ class OkHttpDeeplClient(
     okHttpCustomizer: OkHttpClient.Builder.() -> Unit = {},
 ) : DeeplClient {
     private val client =
-        OkHttpClient.Builder()
+        OkHttpClient
+            .Builder()
             .apply(TockProxyAuthenticator::install)
             .apply(okHttpCustomizer)
             .build()
@@ -112,7 +113,8 @@ class OkHttpDeeplClient(
         }
 
         val request =
-            Request.Builder()
+            Request
+                .Builder()
                 .url(apiURL)
                 .addHeader("Authorization", "DeepL-Auth-Key $apiKey")
                 .post(requestBody)

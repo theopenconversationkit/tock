@@ -44,9 +44,7 @@ object BusinessRulesService {
     fun getBusinessRulesConfiguration(
         namespace: String,
         botId: String,
-    ): BotBusinessRulesConfiguration? {
-        return businessRulesConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-    }
+    ): BotBusinessRulesConfiguration? = businessRulesConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
 
     /**
      * Save Business Rules configuration.
@@ -59,6 +57,7 @@ object BusinessRulesService {
         namespace: String,
         botId: String,
         businessRulesConfig: BotBusinessRulesConfigurationDTO,
+        author: String? = null,
     ): BotBusinessRulesConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(namespace, botId).firstOrNull()
             ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: $namespace, botId = $botId]")
@@ -66,7 +65,14 @@ object BusinessRulesService {
         logger.info {
             "Saving the Business Rules Configuration [namespace: $namespace, botId: $botId]"
         }
-        return saveBusinessRulesConfiguration(namespace, botId, businessRulesConfig)
+        return BotHistoryService.configuration(
+            namespace,
+            botId,
+            "prompt-context",
+            author,
+            previous = { businessRulesConfigurationDAO.findByNamespaceAndBotId(namespace, botId) },
+            save = { saveBusinessRulesConfiguration(namespace, botId, businessRulesConfig) },
+        )
     }
 
     private fun saveBusinessRulesConfiguration(
@@ -101,7 +107,8 @@ object BusinessRulesService {
     private fun BotBusinessRulesConfigurationDTO.withAssignedLexiconGroupIds(existingLexiconGroups: List<BotBusinessRulesLexiconGroup>): BotBusinessRulesConfigurationDTO {
         val providedIds = lexiconGroups.mapNotNull { it.id }
         val duplicatedIds =
-            providedIds.groupingBy { it }
+            providedIds
+                .groupingBy { it }
                 .eachCount()
                 .filterValues { it > 1 }
                 .keys

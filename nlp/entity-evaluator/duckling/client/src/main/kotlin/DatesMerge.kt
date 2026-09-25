@@ -46,7 +46,8 @@ internal object DatesMerge {
 
     private val removeDuplicateSpaceRegexp = "\\s+".toRegex()
     private val frenchAddRegex =
-        ".*prochaine?$|.*suivante?$|.*qui suit$|.*(d')? ?apr[eèé]s$|.*plus tard$|.*derni[èe]re?$|.*pass[ée]e?$|.*pr[eé]c[eé]dente?$|.*(d')? ?avant$|.*plus t[oô]t$|lendemain|le lendemain|la veille|ce jour|(le |la )?m[eê]me jour(n[eé]e)?".toRegex()
+        ".*prochaine?$|.*suivante?$|.*qui suit$|.*(d')? ?apr[eèé]s$|.*plus tard$|.*derni[èe]re?$|.*pass[ée]e?$|.*pr[eé]c[eé]dente?$|.*(d')? ?avant$|.*plus t[oô]t$|lendemain|le lendemain|la veille|ce jour|(le |la )?m[eê]me jour(n[eé]e)?"
+            .toRegex()
     private val frenchChangeHourRegex =
         (
             "(dans )?(le |la |en |(en )?fin de |(en )?d[ée]but de |(en )?milieu de )?soir[ée]?e?" +
@@ -60,7 +61,10 @@ internal object DatesMerge {
 
     private val parser: Parser by injector.instance()
 
-    data class MergeGrain(val additional: Boolean, val grain: DateEntityGrain)
+    data class MergeGrain(
+        val additional: Boolean,
+        val grain: DateEntityGrain,
+    )
 
     private fun ValueDescriptor.start(zoneId: ZoneId = defaultZoneId): ZonedDateTime = (value as DateEntityRange).start().withZoneSameInstant(zoneId)
 
@@ -80,8 +84,8 @@ internal object DatesMerge {
     fun merge(
         context: EntityCallContextForEntity,
         values: List<ValueDescriptor>,
-    ): ValueDescriptor? {
-        return if (context.entityType.name != DucklingDimensions.datetimeEntityType) {
+    ): ValueDescriptor? =
+        if (context.entityType.name != DucklingDimensions.datetimeEntityType) {
             logger.warn { "merge not supported for $context" }
             null
         } else {
@@ -93,18 +97,24 @@ internal object DatesMerge {
                 mergeDateEntityValue(context.language, context.referenceDate, initial, concatenated)
             }
         }
-    }
 
     private fun concatEntityValues(
         language: Locale,
         referenceDateTime: ZonedDateTime,
         values: List<ValueDescriptor>,
-    ): ValueDescriptor {
-        return values.filter { !it.initial }
+    ): ValueDescriptor =
+        values
+            .filter { !it.initial }
             .run {
                 when (size) {
-                    0 -> error("at least one non initial value should be present")
-                    1 -> first()
+                    0 -> {
+                        error("at least one non initial value should be present")
+                    }
+
+                    1 -> {
+                        first()
+                    }
+
                     else -> {
                         val differentGrain = map { it.grain() }.distinct().size == size
                         if (differentGrain) {
@@ -120,7 +130,6 @@ internal object DatesMerge {
                     }
                 }
             }
-    }
 
     private fun mergeDateEntityValue(
         language: Locale,
@@ -226,8 +235,8 @@ internal object DatesMerge {
         language: Locale,
         oldValue: ValueDescriptor,
         newValue: ValueDescriptor,
-    ): MergeGrain? {
-        return if (oldValue.end() < now()) {
+    ): MergeGrain? =
+        if (oldValue.end() < now()) {
             null
         } else if (language.language == "fr" && isChangeHourPattern(newValue.content)) {
             MergeGrain(false, day)
@@ -239,25 +248,22 @@ internal object DatesMerge {
         } else {
             null
         }
-    }
 
     private fun hasToChangeDayInMonth(
         language: Locale,
         newValue: ValueDescriptor,
-    ): Boolean {
-        return language.language == "fr" &&
+    ): Boolean =
+        language.language == "fr" &&
             newValue.content != null &&
             frenchChangeDayInMonth.matches(normalize(newValue.content!!))
-    }
 
     private fun hasToChangeDayInWeek(
         language: Locale,
         newValue: ValueDescriptor,
-    ): Boolean {
-        return language.language == "fr" &&
+    ): Boolean =
+        language.language == "fr" &&
             newValue.content != null &&
             frenchChangeDayInWeek.matches(normalize(newValue.content!!))
-    }
 
     private fun hasToAdd(
         language: Locale,
@@ -305,9 +311,9 @@ internal object DatesMerge {
         language: Locale,
         referenceDateTime: ZonedDateTime,
         text: String,
-    ): ValueDescriptor? {
-        return parser.parse(language.language, DucklingDimensions.TIME_DIMENSION, referenceDateTime, text)
+    ): ValueDescriptor? =
+        parser
+            .parse(language.language, DucklingDimensions.TIME_DIMENSION, referenceDateTime, text)
             .firstOrNull()
             ?.run { ValueDescriptor(value, text) }
-    }
 }

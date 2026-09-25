@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { NbDialogRef, NbToastrService } from '@nebular/theme';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
@@ -23,11 +7,13 @@ import { CreateI18nLabelRequest } from '../../model/i18n';
 import { BotService } from '../../bot-service';
 import { StateService } from '../../../core-nlp/state.service';
 import { RestService } from '../../../core-nlp/rest/rest.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-media-dialog',
-  templateUrl: './media-dialog.component.html',
-  styleUrls: ['./media-dialog.component.scss']
+    selector: 'tock-media-dialog',
+    templateUrl: './media-dialog.component.html',
+    styleUrls: ['./media-dialog.component.scss'],
+    standalone: false
 })
 export class MediaDialogComponent implements OnInit {
   @Input() media: MediaCard;
@@ -50,8 +36,10 @@ export class MediaDialogComponent implements OnInit {
     public restService: RestService,
     private stateService: StateService,
     private toastrService: NbToastrService,
-    private botService: BotService
+    private botService: BotService,
+    private transloco: TranslocoService
   ) {}
+
   ngOnInit(): void {
     this.category = this.category ? this.category : 'build';
     this.create = this.media === null;
@@ -112,10 +100,14 @@ export class MediaDialogComponent implements OnInit {
 
   save() {
     if (!this.isTitle() && !this.isSubtitle() && !this.isFile()) {
-      this.toastrService.show(`Please add a Title, Subtitle or File.`, 'Media Message is not complete', {
-        duration: 3000,
-        status: 'warning'
-      });
+      this.toastrService.show(
+        this.transloco.translate('bot.media-dialog.errorMessage'),
+        this.transloco.translate('bot.media-dialog.errorTitle'),
+        {
+          duration: 3000,
+          status: 'warning'
+        }
+      );
     } else {
       if (this.isTitle()) {
         this.loading = true;

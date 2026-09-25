@@ -66,7 +66,8 @@ class SseEndpointTest {
         val router = Router.router(vertx)
         endpoint.configureRoute(router, path, connectorId, webSecurityHandler)
 
-        vertx.createHttpServer()
+        vertx
+            .createHttpServer()
             .requestHandler(router)
             .listen(0)
             .onComplete(
@@ -88,7 +89,8 @@ class SseEndpointTest {
         val checkpoint = checkpoint(1)
 
         // Connect to SSE endpoint
-        client.request(HttpMethod.GET, "$path?${SseEndpoint.USER_ID_QUERY_PARAM}=$userId")
+        client
+            .request(HttpMethod.GET, "$path?${SseEndpoint.USER_ID_QUERY_PARAM}=$userId")
             .compose(HttpClientRequest::send)
             .onComplete(
                 succeeding { httpResponse ->
@@ -131,7 +133,8 @@ class SseEndpointTest {
 
     @Test
     fun VertxTestContext.`SSE endpoint rejects request without userId`() {
-        client.request(HttpMethod.GET, path)
+        client
+            .request(HttpMethod.GET, path)
             .compose(HttpClientRequest::send)
             .onComplete(
                 succeeding { response ->
@@ -148,7 +151,8 @@ class SseEndpointTest {
             context.put(TOCK_USER_ID, "test")
             context.next()
         }
-        client.request(HttpMethod.GET, path)
+        client
+            .request(HttpMethod.GET, path)
             .compose(HttpClientRequest::send)
             .onComplete(
                 succeeding { response ->
@@ -163,7 +167,8 @@ class SseEndpointTest {
     fun VertxTestContext.`sendResponse saves to database when no local connection exists`() {
         val message = botResponse("Offline message")
 
-        endpoint.sendResponse(connectorId, "offline-user", message)
+        endpoint
+            .sendResponse(connectorId, "offline-user", message)
             .onComplete {
                 verifyMockk { channelDAO.save(any()) }
                 completeNow()
@@ -181,7 +186,8 @@ class SseEndpointTest {
 
         // Connect first client
         val future1 =
-            client.request(HttpMethod.GET, "$path?${SseEndpoint.USER_ID_QUERY_PARAM}=$user1")
+            client
+                .request(HttpMethod.GET, "$path?${SseEndpoint.USER_ID_QUERY_PARAM}=$user1")
                 .compose(HttpClientRequest::send)
                 .onComplete(
                     succeeding { response1 ->
@@ -196,7 +202,8 @@ class SseEndpointTest {
 
         // Connect second client
         val future2 =
-            client.request(HttpMethod.GET, "$path?${SseEndpoint.USER_ID_QUERY_PARAM}=$user2")
+            client
+                .request(HttpMethod.GET, "$path?${SseEndpoint.USER_ID_QUERY_PARAM}=$user2")
                 .compose(HttpClientRequest::send)
                 .onComplete(
                     succeeding { response2 ->

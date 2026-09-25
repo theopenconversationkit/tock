@@ -47,7 +47,11 @@ import kotlin.coroutines.EmptyCoroutineContext
 /**
  *
  */
-internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotApplicationConfiguration, val supportedLocales: Set<Locale> = emptySet()) {
+internal class Bot(
+    botDefinitionBase: BotDefinition,
+    val configuration: BotApplicationConfiguration,
+    val supportedLocales: Set<Locale> = emptySet(),
+) {
     companion object {
         private val currentBus = ThreadLocal<BotBus>()
 
@@ -167,9 +171,7 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
     private fun getDialog(
         action: Action,
         userTimeline: UserTimeline,
-    ): Dialog {
-        return userTimeline.currentDialog ?: createDialog(action, userTimeline)
-    }
+    ): Dialog = userTimeline.currentDialog ?: createDialog(action, userTimeline)
 
     private fun createDialog(
         action: Action,
@@ -251,7 +253,9 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
                     }
                 }
 
-                else -> logger.warn { "${action::class.simpleName} not yet supported" }
+                else -> {
+                    logger.warn { "${action::class.simpleName} not yet supported" }
+                }
             }
         } finally {
             // reinitialize lastActionState
@@ -328,7 +332,7 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
                         userPreferences.refreshWith(pref)
                     }
                 }
-            } else if (!userState.profileRefreshed) {
+            } else if (connector.connector.shouldRefreshProfile(userPreferences, userState, connectorData)) {
                 userState.profileRefreshed = true
                 val pref = connector.refreshProfile(connectorData, userTimeline.playerId)
                 if (pref != null) {
@@ -346,7 +350,5 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
         nlp.markAsUnknown(sendSentence, userTimeline, botDefinition)
     }
 
-    override fun toString(): String {
-        return "$botDefinition - ${configuration.name}"
-    }
+    override fun toString(): String = "$botDefinition - ${configuration.name}"
 }

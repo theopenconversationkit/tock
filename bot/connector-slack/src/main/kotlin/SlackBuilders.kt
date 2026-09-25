@@ -70,13 +70,9 @@ fun <T : Bus<T>> T.endForSlack(
  * Adds a Slack [ConnectorMessage] if the current connector is Slack.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun <T : Bus<T>> T.withSlack(messageProvider: () -> SlackConnectorMessage): T {
-    return withMessage(slackConnectorType, messageProvider)
-}
+fun <T : Bus<T>> T.withSlack(messageProvider: () -> SlackConnectorMessage): T = withMessage(slackConnectorType, messageProvider)
 
-fun I18nTranslator.textMessage(message: CharSequence): SlackMessageOut {
-    return SlackMessageOut(translate(message).toString())
-}
+fun I18nTranslator.textMessage(message: CharSequence): SlackMessageOut = SlackMessageOut(translate(message).toString())
 
 fun I18nTranslator.multiLineMessage(
     lines: List<CharSequence>,
@@ -86,17 +82,13 @@ fun I18nTranslator.multiLineMessage(
 fun I18nTranslator.slackMessage(
     message: CharSequence,
     vararg attachments: SlackMessageAttachment,
-): SlackMessageOut {
-    return slackMessage(message, null, attachments = *attachments)
-}
+): SlackMessageOut = slackMessage(message, null, attachments = *attachments)
 
 fun I18nTranslator.slackMessage(
     message: CharSequence,
     channel: String? = null,
     vararg attachments: SlackMessageAttachment,
-): SlackMessageOut {
-    return SlackMessageOut(translate(message).toString(), channel, attachments.toList())
-}
+): SlackMessageOut = SlackMessageOut(translate(message).toString(), channel, attachments.toList())
 
 fun I18nTranslator.slackAttachment(
     text: CharSequence? = null,

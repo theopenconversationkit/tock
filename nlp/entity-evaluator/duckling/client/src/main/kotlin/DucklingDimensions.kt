@@ -47,14 +47,11 @@ internal object DucklingDimensions {
 
     val entityTypes = dimensions.map { it.withDucklingPrefix() }.toSet()
 
-    fun tockTypeToDucklingType(type: String): String {
-        return when (type) {
+    fun tockTypeToDucklingType(type: String): String =
+        when (type) {
             DATETIME_DIMENSION -> TIME_DIMENSION
             else -> type
         }
-    }
 
-    fun tockTypeToDucklingType(entityType: EntityType): String {
-        return tockTypeToDucklingType(entityType.name.name())
-    }
+    fun tockTypeToDucklingType(entityType: EntityType): String = tockTypeToDucklingType(entityType.name.name())
 }

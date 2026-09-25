@@ -18,8 +18,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'tock-bot-tabs',
-  template: '<nb-route-tabset></nb-route-tabset>'
+    selector: 'tock-bot-tabs',
+    template: '<nb-route-tabset></nb-route-tabset>',
+    standalone: false
 })
 export class BotTabsComponent implements OnInit {
   constructor(private router: Router) {}

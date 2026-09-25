@@ -19,7 +19,9 @@ package ai.tock.duckling.client
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 
-internal class JSONValue(val value: Any?) {
+internal class JSONValue(
+    val value: Any?,
+) {
     companion object {
         val NULL_VALUE = JSONValue(null)
     }

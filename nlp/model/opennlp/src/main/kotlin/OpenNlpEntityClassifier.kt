@@ -31,36 +31,33 @@ import opennlp.tools.namefind.NameFinderME
 /**
  *
  */
-internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClassifier(model) {
+internal class OpenNlpEntityClassifier(
+    model: EntityModelHolder,
+) : NlpEntityClassifier(model) {
     private val logger = logger {}
 
     override fun classifyEntities(
         context: EntityCallContext,
         text: String,
         tokens: Array<String>,
-    ): List<EntityRecognition> {
-        return when (context) {
+    ): List<EntityRecognition> =
+        when (context) {
             is EntityCallContextForIntent -> classify(context, text, tokens)
             is EntityCallContextForEntity -> error("EntityCallContextForEntity is not supported")
             is EntityCallContextForSubEntities -> classify(context, text, tokens)
         }
-    }
 
     private fun classify(
         context: EntityCallContextForSubEntities,
         text: String,
         tokens: Array<String>,
-    ): List<EntityRecognition> {
-        return classify(text, tokens) { context.entityType.findSubEntity(it) }
-    }
+    ): List<EntityRecognition> = classify(text, tokens) { context.entityType.findSubEntity(it) }
 
     private fun classify(
         context: EntityCallContextForIntent,
         text: String,
         tokens: Array<String>,
-    ): List<EntityRecognition> {
-        return classify(text, tokens) { context.intent.getEntity(it) }
-    }
+    ): List<EntityRecognition> = classify(text, tokens) { context.intent.getEntity(it) }
 
     private fun classify(
         text: String,
@@ -74,51 +71,52 @@ internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClas
             var entityProbability = 0.0
             var nbEntitySpans = 0
 
-            return spans.mapIndexedNotNull { index, span ->
-                entityProbability += span.prob
-                nbEntitySpans++
-                val nextIndex = index + 1
-                if (nextIndex < spans.size &&
-                    spans[nextIndex].type == span.type &&
-                    span.end == spans[nextIndex].start
-                ) {
-                    null
-                } else {
-                    // reunify text
-                    var t = text
-                    var start = 0
-                    val tokenStart = span.start - (0 until nbEntitySpans - 1).sumOf { spans[index - it - 1].length() }
-                    for (i in 0 until tokenStart) {
-                        val nextTokenIndex = tokens[i].length + t.indexOf(tokens[i])
-                        start += nextTokenIndex
-                        t = t.substring(nextTokenIndex)
-                    }
-
-                    var end = start
-                    start += t.indexOf(tokens[tokenStart])
-
-                    for (i in tokenStart until span.end) {
-                        val nextTokenIndex = tokens[i].length + t.indexOf(tokens[i])
-                        end += nextTokenIndex
-                        t = t.substring(nextTokenIndex)
-                    }
-                    if (end > text.length) {
-                        error("Parsing error")
-                    }
-
-                    // probability
-                    val entityProba = entityProbability / nbEntitySpans
-                    entityProbability = 0.0
-                    nbEntitySpans = 0
-                    val entity = entityFinder.invoke(span.type)
-                    if (entity == null) {
-                        logger.warn { "unknown entity role ${span.type}" }
+            return spans
+                .mapIndexedNotNull { index, span ->
+                    entityProbability += span.prob
+                    nbEntitySpans++
+                    val nextIndex = index + 1
+                    if (nextIndex < spans.size &&
+                        spans[nextIndex].type == span.type &&
+                        span.end == spans[nextIndex].start
+                    ) {
                         null
                     } else {
-                        EntityRecognition(EntityValue(start, end, entity, null), entityProba)
+                        // reunify text
+                        var t = text
+                        var start = 0
+                        val tokenStart = span.start - (0 until nbEntitySpans - 1).sumOf { spans[index - it - 1].length() }
+                        for (i in 0 until tokenStart) {
+                            val nextTokenIndex = tokens[i].length + t.indexOf(tokens[i])
+                            start += nextTokenIndex
+                            t = t.substring(nextTokenIndex)
+                        }
+
+                        var end = start
+                        start += t.indexOf(tokens[tokenStart])
+
+                        for (i in tokenStart until span.end) {
+                            val nextTokenIndex = tokens[i].length + t.indexOf(tokens[i])
+                            end += nextTokenIndex
+                            t = t.substring(nextTokenIndex)
+                        }
+                        if (end > text.length) {
+                            error("Parsing error")
+                        }
+
+                        // probability
+                        val entityProba = entityProbability / nbEntitySpans
+                        entityProbability = 0.0
+                        nbEntitySpans = 0
+                        val entity = entityFinder.invoke(span.type)
+                        if (entity == null) {
+                            logger.warn { "unknown entity role ${span.type}" }
+                            null
+                        } else {
+                            EntityRecognition(EntityValue(start, end, entity, null), entityProba)
+                        }
                     }
-                }
-            }.toList()
+                }.toList()
         }
     }
 }

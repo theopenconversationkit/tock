@@ -26,13 +26,12 @@ data class GAButton(
     val title: String,
     val openUrlAction: GAOpenUrlAction,
 ) {
-    fun toChoice(): Choice {
-        return Choice(
+    fun toChoice(): Choice =
+        Choice(
             SendChoice.EXIT_INTENT,
             mapOf(
                 SendChoice.URL_PARAMETER to openUrlAction.url,
                 SendChoice.TITLE_PARAMETER to title,
             ),
         )
-    }
 }

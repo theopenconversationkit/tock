@@ -14,9 +14,10 @@ interface SampleCreateFromRunForm {
 }
 
 @Component({
-  selector: 'tock-sample-create-from-run',
-  templateUrl: './sample-create-from-run.component.html',
-  styleUrl: './sample-create-from-run.component.scss'
+    selector: 'tock-sample-create-from-run',
+    templateUrl: './sample-create-from-run.component.html',
+    styleUrl: './sample-create-from-run.component.scss',
+    standalone: false
 })
 export class SampleCreateFromRunComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

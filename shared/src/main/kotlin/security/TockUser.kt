@@ -35,13 +35,14 @@ data class TockUser(
     init {
         // Normalisation des rôles historiques
         this.roles =
-            roles.map { role ->
-                when (role) {
-                    TockUserRole.faqBotUser.name -> TockUserRole.botUser.name
-                    TockUserRole.faqNlpUser.name -> TockUserRole.nlpUser.name
-                    else -> role
-                }
-            }.toSet()
+            roles
+                .map { role ->
+                    when (role) {
+                        TockUserRole.faqBotUser.name -> TockUserRole.botUser.name
+                        TockUserRole.faqNlpUser.name -> TockUserRole.nlpUser.name
+                        else -> role
+                    }
+                }.toSet()
 
         // Publier les rôles sous forme d'Authorizations Vert.x (API v5: put(...), pas add(...))
         val authzs: MutableSet<Authorization> = mutableSetOf()

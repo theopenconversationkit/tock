@@ -4,16 +4,17 @@ import { ActionReport, DialogReport, Sentence } from '../../../model/dialog-data
 import { StateService } from '../../../../core-nlp/state.service';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../../../core/model/configuration';
-import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../../utils';
+import { getDialogMessageUserAvatar, getDialogMessageUserQualifierKey } from '../../../utils';
 import { EvaluationStatus } from '../../../../quality/samples/models';
 import { NbMenuBag, NbMenuItem, NbMenuService } from '@nebular/theme';
-import { ResponseIssueReasons } from '../../../model/response-issue';
+import { ResponseIssueReason, ResponseIssueReasons } from '../../../model/response-issue';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-chat-ui-dialog-evaluator',
-
-  templateUrl: './chat-ui-dialog-evaluator.component.html',
-  styleUrl: './chat-ui-dialog-evaluator.component.scss'
+    selector: 'tock-chat-ui-dialog-evaluator',
+    templateUrl: './chat-ui-dialog-evaluator.component.html',
+    styleUrl: './chat-ui-dialog-evaluator.component.scss',
+    standalone: false
 })
 export class ChatUiDialogEvaluatorComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
@@ -32,7 +33,12 @@ export class ChatUiDialogEvaluatorComponent implements OnInit, OnDestroy {
   isVisible: boolean = true;
   visibilityManualControl: boolean = false;
 
-  constructor(public state: StateService, private botConfiguration: BotConfigurationService, private nbMenuService: NbMenuService) {}
+  constructor(
+    public state: StateService,
+    private botConfiguration: BotConfigurationService,
+    private nbMenuService: NbMenuService,
+    private transloco: TranslocoService
+  ) {}
 
   switchVisibility() {
     if (!this.isDialogEvaluated()) return;
@@ -41,9 +47,22 @@ export class ChatUiDialogEvaluatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.reasonItems = ResponseIssueReasons.map((e) => {
-      return { title: e.label, data: e.value };
-    });
+    this.transloco
+      .selectTranslateObject('common.responseIssueReasons', {}, '')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((translatedRanges) => {
+        this.reasonItems = [
+          { title: translatedRanges.questionNotOrMisunderstood, data: ResponseIssueReason.QUESTION_MISUNDERSTOOD },
+          { title: translatedRanges.inaccurateAnswer, data: ResponseIssueReason.INACCURATE_ANSWER },
+          { title: translatedRanges.incompleteAnswer, data: ResponseIssueReason.INCOMPLETE_ANSWER },
+          { title: translatedRanges.incompleteSourcesOrDocuments, data: ResponseIssueReason.INCOMPLETE_SOURCES },
+          { title: translatedRanges.obsoleteSourcesOrDocuments, data: ResponseIssueReason.OBSOLETE_SOURCES },
+          { title: translatedRanges.businessLexiconProblem, data: ResponseIssueReason.BUSINESS_LEXICON_PROBLEM },
+          { title: translatedRanges.wrongAnswerFormat, data: ResponseIssueReason.WRONG_ANSWER_FORMAT },
+          { title: translatedRanges.hallucination, data: ResponseIssueReason.HALLUCINATION },
+          { title: translatedRanges.other, data: ResponseIssueReason.OTHER }
+        ];
+      });
 
     this.botConfiguration.configurations.pipe(take(1)).subscribe((conf) => {
       this.allConfigurations = conf;
@@ -64,8 +83,8 @@ export class ChatUiDialogEvaluatorComponent implements OnInit, OnDestroy {
     }
   }
 
-  getUserName(action: ActionReport): string {
-    return getDialogMessageUserQualifier(action.isBot());
+  getUserNameKey(action: ActionReport): string {
+    return getDialogMessageUserQualifierKey(action.isBot());
   }
 
   getUserAvatar(action: ActionReport): string {

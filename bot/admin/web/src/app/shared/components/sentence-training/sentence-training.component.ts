@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   ChangeDetectionStrategy,
@@ -25,7 +9,8 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  ViewChild
+  ViewChild,
+  DOCUMENT
 } from '@angular/core';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { Observable, Subject, Subscription } from 'rxjs';
@@ -52,16 +37,18 @@ import { UserRole } from '../../../model/auth';
 import { saveAs } from 'file-saver-es';
 import { SentenceTrainingService } from './sentence-training.service';
 import { getSentenceId } from './commons/utils';
-import { DOCUMENT } from '@angular/common';
+
 import { getExportFileName, scrollToPageTop } from '../../utils';
+import { TranslocoService } from '@jsverse/transloco';
 
 export type SentenceExtended = Sentence & { _showDialog?: boolean; _showStatsDetails?: boolean; _intentBeforeClassification?: string };
 
 @Component({
-  selector: 'tock-sentence-training',
-  templateUrl: './sentence-training.component.html',
-  styleUrls: ['./sentence-training.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'tock-sentence-training',
+    templateUrl: './sentence-training.component.html',
+    styleUrls: ['./sentence-training.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SentenceTrainingComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
@@ -103,7 +90,8 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private nbDialogService: NbDialogService,
     @Inject(DOCUMENT) private document: Document,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -309,10 +297,14 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
 
     this.loadSentencesAfterActionPerformed(actionPerformed);
 
-    this.toastrService.success(`${actionTitle} ${this.selection.selected.length} sentences`, actionTitle, {
-      duration: 2000,
-      status: 'basic'
-    });
+    this.toastrService.success(
+      this.transloco.translate('shared.sentence-training.messages.batch-action-success', {
+        action: actionTitle,
+        count: this.selection.selected.length
+      }),
+      actionTitle,
+      { duration: 2000, status: 'basic' }
+    );
 
     this.selection.clear();
 
@@ -351,7 +343,7 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
         const intentId = sentence.classification.intentId;
 
         if (!intentId) {
-          this.toastrService.show(`Please select an intent first`);
+          this.toastrService.show(this.transloco.translate('shared.sentence-training.errors.please-select-intent'));
           break;
         }
         if (intentId === Intent.unknown) {
@@ -366,13 +358,13 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
   private getActionTitle(action: Action): string {
     switch (action) {
       case Action.DELETE:
-        return 'Delete';
+        return this.transloco.translate('shared.sentence-training.action-titles.delete');
       case Action.UNKNOWN:
-        return 'Unknown';
+        return this.transloco.translate('shared.sentence-training.action-titles.unknown');
       case Action.RAGEXCLUDED:
-        return 'Rag excluded';
+        return this.transloco.translate('shared.sentence-training.action-titles.ragexcluded');
       case Action.VALIDATE:
-        return 'Validate';
+        return this.transloco.translate('shared.sentence-training.action-titles.validate');
     }
   }
 
@@ -430,7 +422,10 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
           'json'
         );
         saveAs(blob, exportFileName);
-        this.toastrService.success('Dump provided', 'Sentences dump');
+        this.toastrService.success(
+          this.transloco.translate('shared.sentence-training.success.dump-provided'),
+          this.transloco.translate('shared.sentence-training.success.sentences-dump-title')
+        );
       });
   }
 
@@ -440,12 +435,11 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
 
   changeSentencesIntent(intentId: string, changeAll?: boolean): void {
     if (!this.selection.selected.length && !changeAll) {
-      const action = 'Change intent of all results';
+      const action = this.transloco.translate('shared.sentence-training.dialogs.change-entity-all-action');
       const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
-          title: `No sentence selected`,
-          subtitle: `You haven't selected any sentences.
-Would you like to change the intent of all the sentences matching the search criteria above?`,
+          title: this.transloco.translate('shared.sentence-training.dialogs.no-sentence-selected-title'),
+          subtitle: this.transloco.translate('shared.sentence-training.dialogs.change-intent-all-subtitle'),
           actions: [
             { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
             { actionName: action, buttonStatus: 'danger' }
@@ -473,12 +467,14 @@ Would you like to change the intent of all the sentences matching the search cri
         .subscribe((r) => {
           const n = r.nbUpdates;
           let message = `No sentence updated`;
-          if (n === 1) {
-            message = `1 sentence updated`;
-          } else if (n > 1) {
-            message = `${n} sentences updated`;
+          if (n === 0) {
+            message = this.transloco.translate('shared.sentence-training.messages.no-sentence-updated');
+          } else if (n === 1) {
+            message = this.transloco.translate('shared.sentence-training.messages.one-sentence-updated');
+          } else {
+            message = this.transloco.translate('shared.sentence-training.messages.multiple-sentences-updated', { count: n });
           }
-          this.toastrService.show(message, 'UPDATE', { duration: 2000 });
+          this.toastrService.show(message, this.transloco.translate('common.actions.update'), { duration: 2000 });
 
           this.refresh(true);
         });
@@ -487,12 +483,11 @@ Would you like to change the intent of all the sentences matching the search cri
 
   changeSentencesEntity(entities: { old: EntityDefinition; new: EntityDefinition }, changeAll?: boolean): void {
     if (!this.selection.selected.length && !changeAll) {
-      const action = 'Change intent of all results';
+      const action = this.transloco.translate('shared.sentence-training.dialogs.change-entity-all-action');
       const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
-          title: `No sentence selected`,
-          subtitle: `You haven't selected any sentences.
-Would you like to change the entity of all the sentences matching the search criteria above?`,
+          title: this.transloco.translate('shared.sentence-training.dialogs.no-sentence-selected-title'),
+          subtitle: this.transloco.translate('shared.sentence-training.dialogs.change-entity-all-subtitle'),
           actions: [
             { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
             { actionName: action, buttonStatus: 'danger' }
@@ -522,12 +517,14 @@ Would you like to change the entity of all the sentences matching the search cri
         .subscribe((r) => {
           const n = r.nbUpdates;
           let message = `No sentence updated`;
-          if (n === 1) {
-            message = `1 sentence updated`;
-          } else if (n > 1) {
-            message = `${n} sentences updated`;
+          if (n === 0) {
+            message = this.transloco.translate('shared.sentence-training.messages.no-sentence-updated');
+          } else if (n === 1) {
+            message = this.transloco.translate('shared.sentence-training.messages.one-sentence-updated');
+          } else {
+            message = this.transloco.translate('shared.sentence-training.messages.multiple-sentences-updated', { count: n });
           }
-          this.toastrService.show(message, 'UPDATE', { duration: 2000 });
+          this.toastrService.show(message, this.transloco.translate('common.actions.update'), { duration: 2000 });
 
           this.refresh(true);
         });
@@ -536,12 +533,11 @@ Would you like to change the entity of all the sentences matching the search cri
 
   translateSentences(locale: string, translateAll?: boolean): void {
     if (!this.selection.selected.length && !translateAll) {
-      const action = 'Translate all results';
+      const action = this.transloco.translate('shared.sentence-training.dialogs.translate-all-action');
       const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
-          title: `No sentence selected`,
-          subtitle: `You haven't selected any sentences to translate.
-Would you like to translate all the sentences matching the search criteria above?`,
+          title: this.transloco.translate('shared.sentence-training.dialogs.no-sentence-selected-title'),
+          subtitle: this.transloco.translate('shared.sentence-training.dialogs.translate-all-subtitle'),
           actions: [
             { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
             { actionName: action, buttonStatus: 'danger' }
@@ -569,12 +565,14 @@ Would you like to translate all the sentences matching the search criteria above
         .subscribe((r) => {
           const n = r.nbTranslations;
           let message = `No sentence translated`;
-          if (n === 1) {
-            message = `1 sentence translated`;
-          } else if (n > 1) {
-            message = `${n} sentences translated`;
+          if (n === 0) {
+            message = this.transloco.translate('shared.sentence-training.messages.no-sentence-translated');
+          } else if (n === 1) {
+            message = this.transloco.translate('shared.sentence-training.messages.one-sentence-translated');
+          } else {
+            message = this.transloco.translate('shared.sentence-training.messages.multiple-sentences-translated', { count: n });
           }
-          this.toastrService.show(message, 'UPDATE', { duration: 2000 });
+          this.toastrService.show(message, this.transloco.translate('common.actions.update'), { duration: 2000 });
         });
     }
   }

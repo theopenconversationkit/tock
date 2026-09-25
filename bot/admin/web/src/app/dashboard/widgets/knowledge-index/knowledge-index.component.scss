@@ -1,0 +1,80 @@
+.index-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.index-fact {
+  flex: 1;
+  min-width: 9rem;
+}
+
+.index-fact-date {
+  min-width: 13rem;
+}
+
+.index-fact-session {
+  flex: 2;
+  min-width: 16rem;
+}
+
+.index-fact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-self: center;
+}
+
+.session-id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.index-notes {
+  margin-top: 1rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--card-divider-color);
+}
+
+.index-notes-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+
+  > span:first-of-type {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-hint-color);
+  }
+}
+
+.index-notes-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+
+  > i {
+    font-size: 1.25rem;
+    color: var(--text-disabled-color);
+  }
+}
+
+.index-notes-text {
+  margin: 0;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--card-divider-color);
+  border-radius: var(--border-radius);
+  background: var(--background-basic-color-2);
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

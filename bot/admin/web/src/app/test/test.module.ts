@@ -40,6 +40,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NlpService } from '../core-nlp/nlp.service';
 import { NlpStatsDisplayComponent } from './dialog/nlp-stats-display/nlp-stats-display.component';
 import { BotTestRoutingModule } from './test-routing.module';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @NgModule({
   imports: [
@@ -62,10 +63,17 @@ import { BotTestRoutingModule } from './test-routing.module';
     NbAutocompleteModule,
     NbCardModule,
     NbIconModule,
-    NbToggleModule
+    NbToggleModule,
+    TranslocoModule
   ],
   declarations: [TestTabsComponent, BotDialogComponent, TestPlanComponent, NlpStatsDisplayComponent],
   exports: [],
-  providers: [TestService, NlpService]
+  providers: [
+    TestService,
+    NlpService,
+    provideTranslocoScope({
+      scope: 'test'
+    })
+  ]
 })
 export class BotTestModule {}

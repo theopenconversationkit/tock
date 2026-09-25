@@ -17,6 +17,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SentenceGenerationSettingsComponent } from './sentence-generation-settings.component';
+import { TestSharedModule } from '../../shared/test-shared.module';
+import { StateService } from '../../core-nlp/state.service';
+import { StateServiceMock } from '../../shared/test-shared/state-service.mock';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { of } from 'rxjs';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('SentenceGenerationSettingsComponent', () => {
   let component: SentenceGenerationSettingsComponent;
@@ -24,9 +30,23 @@ describe('SentenceGenerationSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SentenceGenerationSettingsComponent ]
-    })
-    .compileComponents();
+      declarations: [SentenceGenerationSettingsComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        {
+          provide: BotConfigurationService,
+          useValue: {
+            configurations: of([]),
+            restConfigurations: of([]),
+            hasRestConfigurations: of(false),
+            supportedConnectors: of([]),
+            bots: of([])
+          }
+        }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SentenceGenerationSettingsComponent);
     component = fixture.componentInstance;

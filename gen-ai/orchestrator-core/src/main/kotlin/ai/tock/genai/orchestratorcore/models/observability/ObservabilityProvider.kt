@@ -21,8 +21,6 @@ enum class ObservabilityProvider {
     ;
 
     companion object {
-        fun findByName(provider: String): ObservabilityProvider? {
-            return entries.firstOrNull { it.name == provider }
-        }
+        fun findByName(provider: String): ObservabilityProvider? = entries.firstOrNull { it.name == provider }
     }
 }

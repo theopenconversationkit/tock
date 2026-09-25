@@ -1,0 +1,579 @@
+{
+  "common": {
+    "actions": {
+      "refresh": "Refresh",
+      "refresh-dialogs": "Refresh dialogs",
+      "clear": "Clear",
+      "clear-selection": "Clear selection",
+      "clear-filter": "Clear filter",
+      "all": "All",
+      "display-tests": "Display tests",
+      "unknown": "Unknown",
+      "close": "Close",
+      "delete": "Delete",
+      "permanently-delete": "permanently delete",
+      "remove": "Remove",
+      "cancel": "Cancel",
+      "add": "Add",
+      "create": "Create",
+      "update": "Update",
+      "reset": "Reset",
+      "edit": "Edit",
+      "export": "Export",
+      "import": "Import",
+      "save": "Save",
+      "select": "Select",
+      "yes": "Yes",
+      "no": "No",
+      "overwrite": "Overwrite",
+      "confirm": "Confirm"
+    },
+    "sort": {
+      "ascending": "Ascending",
+      "descending": "Descending"
+    },
+    "feedback": {
+      "positive": "Positive feedback",
+      "negative": "Negative feedback"
+    },
+    "connectors": {
+      "unknown-connector": "Unknown"
+    },
+    "messages": {
+      "error": "Error",
+      "an-error-occured": "An error occured",
+      "emptyInput": "Please enter a non-empty value",
+      "success": "Success",
+      "noBotConfiguration": "No bot configuration detected",
+      "info": "Info",
+      "stringCopiedToClipboard": "String copied to clipboard",
+      "clipboard": "Clipboard"
+    },
+    "storyTypes": {
+      "builtIn": "Built-in Story",
+      "message": "Message Story",
+      "messageFaq": "Message Faq Story",
+      "script": "Script Story"
+    },
+    "fileTypes": {
+      "image": "Image files",
+      "audio": "Audio files",
+      "video": "Video files",
+      "file": "Other file types",
+      "link": "External links"
+    },
+    "ragAnswerStatus": {
+      "foundInContext": "Found in context",
+      "notFoundInContext": "Not found in context",
+      "smallTalk": "Small talk",
+      "humanEscalation": "Human escalation",
+      "outOfScope": "Out of scope",
+      "injectionAttempt": "Injection attempt",
+      "technicalError": "Technical error"
+    },
+    "responseIssueReasons": {
+      "questionNotOrMisunderstood": "Question not/misunderstood",
+      "inaccurateAnswer": "Inaccurate answer",
+      "incompleteAnswer": "Incomplete answer",
+      "incompleteSourcesOrDocuments": "Incomplete sources / documents",
+      "obsoleteSourcesOrDocuments": "Obsolete sources / documents",
+      "businessLexiconProblem": "Business lexicon problem",
+      "wrongAnswerFormat": "Wrong answer format",
+      "hallucination": "Hallucination",
+      "other": "Other"
+    },
+    "dialogUser": {
+      "human": "Human",
+      "bot": "Bot"
+    }
+  },
+  "header": {
+    "interface-language": "Interface language",
+    "theme-switch-light": "Use light mode",
+    "theme-switch-dark": "Use dark mode",
+    "select-application": "Select current application",
+    "select-namespace": "Select current namespace",
+    "select-locale": "Select current locale",
+    "go-to-dialogs": "Go to dialogs monitoring",
+    "open-test-dialog": "Open a test dialog",
+    "logout": "Logout"
+  },
+  "env-banner": { "hide": "Hide environment indicator" },
+  "menu": {
+    "dashboard": "Dashboard",
+    "language-understanding": "Language Understanding",
+    "stories-answers": "Stories & Answers",
+    "gen-ai": "Gen AI",
+    "test": "Test",
+    "analytics": "Analytics",
+    "custom-metrics": "Metrics",
+    "answers-quality": "Answers Quality",
+    "model-quality": "Model Quality",
+    "settings": "Settings"
+  },
+  "menu-items": {
+    "new-sentence": "New sentence",
+    "inbox-sentences": "Inbox sentences",
+    "search-sentences": "Search sentences",
+    "unknown-sentences": "Unknown sentences",
+    "intents": "Intents",
+    "entities": "Entities",
+    "sentences-logs": "Sentences logs",
+    "new-story": "New Story",
+    "all-stories": "All stories",
+    "faq-stories": "FAQs stories",
+    "answers": "Answers",
+    "documents": "Documents",
+    "rules": "Rules",
+    "rag-settings": "Rag settings",
+    "rag-exclusions": "Sentences Rag exclusions",
+    "compressor-settings": "Compressor settings",
+    "sentence-generation-settings": "Sentence generation settings",
+    "observability-settings": "Observability settings",
+    "vector-db-settings": "Vector DB settings",
+    "playground": "Playground",
+    "vector-store-inspection-exploration": "Vector store exploration",
+    "vector-store-inspection-diagnostic": "Retrieval diagnostic",
+    "test": "Test",
+    "test-plans": "Test plans",
+    "activity": "Activity",
+    "behavior": "Behavior",
+    "flow": "Flow",
+    "users": "Users",
+    "dialogs": "Dialogs",
+    "preferences": "Preferences",
+    "satisfaction": "Satisfaction",
+    "metrics": "Metrics",
+    "indicators": "Indicators",
+    "evaluations": "Evaluations",
+    "datasets": "Datasets",
+    "model-stats": "Model Stats",
+    "intent-distance": "Intent Distance",
+    "count-stats": "Count Stats",
+    "model-builds": "Model Builds",
+    "test-trends": "Test Trends",
+    "test-intent-errors": "Test Intent Errors",
+    "test-entity-errors": "Test Entity Errors",
+    "applications": "Applications",
+    "configurations": "Configurations",
+    "namespaces": "Namespaces",
+    "log": "Log",
+    "synchronization": "Synchronization"
+  },
+  "shared": {
+    "pagination": {
+      "items-per-page": "Items per page",
+      "previous-page": "Previous page",
+      "next-page": "Next page",
+      "summary": "{{start}} - {{end}} of {{total}}"
+    },
+    "chat-ui-dialog-evaluator": {
+      "user_inputs_tooltip": "Number of user inputs",
+      "bot_responses_tooltip": "Number of bot responses",
+      "rag_answers_tooltip": "Number of Rag answers",
+      "open_dialog_tooltip": "Open dialog",
+      "evaluation_summary": "{evaluated} evaluated bot responses out of {total}",
+      "evaluation_summary_with_expand": "{evaluated} evaluated bot responses out of {total}.\nClick to expand.",
+      "evaluate_positively_tooltip": "Evaluate positively",
+      "evaluated_positively_by": "Response evaluated positively by «{evaluator}»",
+      "evaluate_negatively_tooltip": "Evaluate negatively",
+      "evaluated_negatively_by_with_reason": "Response evaluated negatively by «{evaluator}». Reason: «{reason}»"
+    },
+    "chat-ui-dialog-logger": {
+      "nb-user-inputs": "Number of user inputs",
+      "nb-bot-responses": "Number of bot responses",
+      "nb-rag-answers": "Number of RAG answers",
+      "nb-annotations": "Number of annotations",
+      "replay-dialog": "Replay the whole dialog",
+      "replay-sentence": "Replay this sentence",
+      "show-nlp-stats": "Show NLP stats",
+      "show-debug": "Show debug infos",
+      "open-playground": "Open query in playground",
+      "display-dialog-alone": "Display this dialog alone",
+      "display-annotation": "Display annotation",
+      "annotate-exchange": "Annotate this exchange",
+      "create-faq": "Create a FAQ with this question/answer pair",
+      "view-observability": "View observability details",
+      "feedback-positive": "This message received positive feedback.",
+      "feedback-negative": "This message received negative feedback.",
+      "open-in-vector-store-diagnostic": "Diagnose the retrieval"
+    },
+    "chat-ui-message": {
+      "switch-formatting-tooltip": "Switch message formatting",
+      "copy-message-tooltip": "Copy message content",
+      "configuration-tooltip": "Configuration: {{name}}"
+    },
+    "intent-story-details": {
+      "not-found": {
+        "title": "Intent not found",
+        "message": "There is no intention of the name '{{ intentName }}'. Perhaps it has been deleted."
+      },
+      "header": {
+        "title": "Intent «{{ intentLabel }}» story details"
+      },
+      "tooltips": {
+        "locale": "Locale",
+        "test-sentence": "Test this sentence in a dialog",
+        "usage-count": "Usage count"
+      },
+      "warnings": {
+        "no-story": "There is currently no story associated with this intent"
+      },
+      "labels": {
+        "story-name": "Story name",
+        "type": "Type",
+        "category": "Category",
+        "default-sentence": "Default sentence",
+        "default-answers": "Default answer(s)"
+      },
+      "story-types": {
+        "built-in": "BuiltIn",
+        "simple": "Simple",
+        "simple-faq": "Simple (Faq)",
+        "scripted": "Scripted"
+      },
+      "buttons": {
+        "show-all-sentences": "Show all intent sentences"
+      }
+    },
+    "intent-dialog": {
+      "header": {
+        "create": "Create New {dialogType, select, story {Story} intent {Intent} other {}}",
+        "update": "Update {dialogType, select, story {Story} intent {Intent} other {}} {nameOrLabel}"
+      },
+      "placeholders": {
+        "label": "Label",
+        "name": "Name*",
+        "category": "Category",
+        "description": "Description"
+      },
+      "tooltips": {
+        "label": "Displayed label",
+        "name": "Technical id",
+        "category": "Category"
+      }
+    },
+    "sentence-training": {
+      "no-data": {
+        "title": "No sentences found",
+        "message": "To add Sentences, start from Language Understanding > New Sentence or Test the Bot in Tock Studio, or talk to the bot on any connected channel."
+      },
+      "batch-actions": {
+        "validate-tooltip": "Validate all selected sentences",
+        "delete-tooltip": "Delete all selected sentences",
+        "unknown-tooltip": "Set all selected sentences as unknown",
+        "ragexcluded-tooltip": "Set all selected sentences as ragexcluded"
+      },
+      "sort-by-creation-date": "Sort by creation date",
+      "action-titles": {
+        "delete": "Delete",
+        "unknown": "Unknown",
+        "ragexcluded": "Rag excluded",
+        "validate": "Validate"
+      },
+      "errors": {
+        "please-select-intent": "Please select an intent first"
+      },
+      "success": {
+        "dump-provided": "Dump provided",
+        "sentences-dump-title": "Sentences dump"
+      },
+      "dialogs": {
+        "no-sentence-selected-title": "No sentence selected",
+        "change-intent-all-subtitle": "You haven't selected any sentences.\nWould you like to change the intent of all the sentences matching the search criteria above?",
+        "change-entity-all-subtitle": "You haven't selected any sentences.\nWould you like to change the entity of all the sentences matching the search criteria above?",
+        "change-entity-all-action": "Change intent of all results",
+        "translate-all-subtitle": "You haven't selected any sentences to translate.\nWould you like to translate all the sentences matching the search criteria above?",
+        "translate-all-action": "Translate all results",
+        "change-all-action": "Change all results"
+      },
+      "messages": {
+        "no-sentence-updated": "No sentence updated",
+        "one-sentence-updated": "1 sentence updated",
+        "multiple-sentences-updated": "{{count}} sentences updated",
+        "no-sentence-translated": "No sentence translated",
+        "one-sentence-translated": "1 sentence translated",
+        "multiple-sentences-translated": "{{count}} sentences translated",
+        "batch-action-success": "{{action}} {{count}} sentences"
+      }
+    },
+    "sentence-training-filters": {
+      "search-placeholder": "Search a sentence",
+      "search-tooltip": "Full text search. Regexp supported (PCRE format)",
+      "clear": "Clear",
+      "display-advanced-search": "Display advanced search options",
+      "hide-advanced-search": "Hide advanced search options",
+      "status": "Status",
+      "status-all": "All",
+      "status-inbox": "Inbox",
+      "status-validated": "Validated",
+      "status-included-in-model": "Included in model",
+      "sentences-to-review": "Sentences to review",
+      "intent-placeholder": "Intent",
+      "intent-tooltip": "Filter by intent",
+      "entity-type-placeholder": "Entity type",
+      "entity-type-tooltip": "Filter by entity type",
+      "all": "All",
+      "entity-roles-to-include-placeholder": "Entity roles to include",
+      "entity-roles-to-include-tooltip": "Filter by entity roles to include",
+      "entity-roles-to-exclude-placeholder": "Entity roles to exclude",
+      "entity-roles-to-exclude-tooltip": "Filter by entity roles to exclude",
+      "clear-selection": "Clear selection",
+      "modified-after-placeholder": "Modified after",
+      "modified-after-tooltip": "Filter sentences modified after the given date",
+      "modified-before-placeholder": "Modified before",
+      "modified-before-tooltip": "Filter sentences modified before the given date",
+      "validated-by-placeholder": "Validated by",
+      "validated-by-tooltip": "Filter sentences validated by the given user",
+      "anyone": "Anyone",
+      "not-validated-by-placeholder": "Not validated by",
+      "not-validated-by-tooltip": "Filter sentences not validated by the given user",
+      "nobody": "Nobody",
+      "configuration-placeholder": "Configuration",
+      "configuration-tooltip": "Filter sentences by configuration",
+      "all-configurations": "All configurations",
+      "detection-probability": "Detection probability",
+      "advanced-tools": "Advanced tools",
+      "advanced-tools-tooltip": "Display intent and entity management tools",
+      "change-intent-title": "Change the intent of selected sentences",
+      "select-intent-placeholder": "Select intent",
+      "select-intent-tooltip": "Select the intent to assign to selected sentences",
+      "change-intent-button": "Apply intent change",
+      "change-intent": "Change intent",
+      "change-entity-title": "Change the entity of selected sentences",
+      "select-old-entity-placeholder": "Select old entity",
+      "select-old-entity-tooltip": "Select the entity to replace",
+      "select-new-entity-placeholder": "Select new entity",
+      "select-new-entity-tooltip": "Select the new entity to assign",
+      "change-entity-button": "Apply entity swap",
+      "change-entity": "Change entity",
+      "translate-title": "Translate selected sentences",
+      "target-language-placeholder": "Target Language",
+      "target-language-tooltip": "Select the language in which to translate the sentences",
+      "translate-button": "Translate sentences",
+      "translate": "Translate"
+    },
+    "sentence-training-entry": {
+      "review-comment": "Review comment",
+      "copy-sentence": "Copy sentence",
+      "test-sentence": "Test this sentence in a dialog",
+      "sentence-status": "Sentence status",
+      "sentence-configuration": "Sentence configuration",
+      "qualifier": "Qualifier",
+      "intent-association": "Intent association",
+      "show-intent-story-details": "Show intent story details",
+      "intent-detection-probability": "Intent detection probability. Click for details",
+      "intent-probability": "Intent probability",
+      "other-intents-probability": "Probability for other intents",
+      "associate-intent": "Associate this intent with the sentence",
+      "entities-probability": "Entities probability",
+      "other-entities-probability": "Probability for other entities",
+      "validate": "Validate",
+      "ask-for-review": "Ask for review",
+      "set-as-unknown": "Set as unknown",
+      "exclude-from-rag": "Exclude from Rag handling",
+      "delete": "Delete",
+      "set-sentence-language": "Set sentence language",
+      "sentence-language": "Sentence language",
+      "create-new-intent": "Create new Intent",
+      "create-faq": "Create new FAQ based on this sentence",
+      "show-dialog": "Show dialog",
+      "action-titles": {
+        "delete": "Delete",
+        "unknown": "Unknown",
+        "ragexcluded": "Rag excluded",
+        "validate": "Validate"
+      },
+      "errors": {
+        "please-select-intent": "Please select an intent first",
+        "intent-creation-error": "Error on intent creation"
+      },
+      "messages": {
+        "language-change-message": "Language change to {{language}}",
+        "language-change-title": "Language change",
+        "sentence-copied": "Sentence copied to clipboard",
+        "clipboard": "Clipboard",
+        "intent-already-exists": "Intent {{name}} already exists"
+      },
+      "dialogs": {
+        "intent-already-used-title": "This intent is already used in an other application",
+        "intent-already-used-subtitle": "If you confirm the name, the intent will be shared between the two applications."
+      }
+    },
+    "sentence-training-sentence": {
+      "assign-entity-to": "Assign an entity to",
+      "assign-entity-tooltip": "Assign \"{{entityName}}\"",
+      "add-entity": "Add entity",
+      "errors": {
+        "creating-entity-type": "Error when creating Entity Type {{name}}",
+        "error-title": "Error",
+        "recursive-sub-entity-not-allowed": "adding recursive sub entity is not allowed",
+        "operation-not-allowed-title": "Operation not allowed"
+      },
+      "success": {
+        "entity-added-message": "Entity Type {{qualifiedRole}} added to this sentence intent",
+        "entity-added-title": "Entity added"
+      }
+    },
+    "token-view": {
+      "entity-tooltip": "Entity : {{role}}",
+      "remove-entity": "Remove entity \"{{entityName}}\""
+    },
+    "sentence-training-create-entity": {
+      "header": "Add Entity",
+      "select-existing-entity": "Select an existing Entity:",
+      "select-entity-tooltip": "Select \"{{entityName}}\"",
+      "or-create": "Or create:",
+      "entity-type-placeholder": "Entity Type",
+      "role-placeholder": "Role"
+    },
+    "sentence-review-request": {
+      "header": "Request a review",
+      "description-placeholder": "Description",
+      "delete-review": "Delete review"
+    },
+    "sentence-training-dialog": {
+      "header": "Dialog featuring this sentence",
+      "dialog-selector-placeholder": "Dialog #{{index}}",
+      "dialog-option": "Dialog #{{index}}",
+      "no-dialog-found": "No dialog with this phrase were found."
+    },
+    "select-bot": {
+      "selectConfigurationTooltip": "Select configuration",
+      "selectConfigurationPlaceholder": "Select a configuration",
+      "selectConnectorTooltip": "Select connector",
+      "selectConnectorPlaceholder": "Select a connector",
+      "configurationNotFound": "Test Configuration not found",
+      "noConfigurationLabel": "No Configuration",
+      "noConnectorLabel": "No Connector"
+    },
+    "ai-settings-engine-config-param-input": {
+      "activatedLabel": "Activated",
+      "deactivatedLabel": "Deactivated",
+      "useDefaultPromptButton": "Use default prompt"
+    },
+    "annotation": {
+      "title": "Annotation",
+      "closeTooltip": "Close",
+      "questionPrefix": "Question:",
+      "condensedQuestionPrefix": "Condensed question:",
+      "answerPrefix": "Answer:",
+      "stateLabel": "State",
+      "reasonLabel": "Reason",
+      "reasonPlaceholder": "Select the reason for the report",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Add a description here",
+      "groundTruthLabel": "Ground truth",
+      "groundTruthPlaceholder": "Add ground truth here",
+      "changesAndCommentsTitle": "Changes & comments",
+      "reverseOrderTooltip": "Click to reverse order",
+      "showChangeEventsTooltip": "Click to show change events",
+      "hideChangeEventsTooltip": "Click to hide change events",
+      "hideChangeEventsLabel": "Hide change events",
+      "noDataToDisplay": "No data to display",
+      "modifiedLabel": "modified",
+      "fromLabel": "from",
+      "toLabel": "to",
+      "onLabel": "on",
+      "addCommentLabel": "Add a comment",
+      "addCommentPlaceholder": "Add a new comment here",
+      "cancelButton": "Cancel",
+      "closeButton": "Close",
+      "submitButton": "Submit",
+      "updateButton": "Update",
+      "states": {
+        "opened": "Opened",
+        "reviewNeeded": "Review needed",
+        "resolved": "Resolved",
+        "wontFix": "Won't fix"
+      },
+      "comment": {
+        "addedOn": "added a comment on",
+        "editTooltip": "Edit this comment",
+        "deleteTooltip": "Delete this comment",
+        "submitTooltip": "Submit changes",
+        "cancelTooltip": "Cancel"
+      }
+    },
+    "date-range": {
+      "title": "From {start} to {end}",
+      "update": "Update",
+      "shortcuts": {
+        "yesterday": "Yesterday",
+        "today": "Today",
+        "last7Days": "Last 7 days",
+        "last14Days": "Last 14 days",
+        "last30Days": "Last 30 days",
+        "last90Days": "Last 90 days",
+        "last180Days": "Last 180 days"
+      }
+    },
+    "debug-viewer-dialog": {
+      "title": "Debug Viewer",
+      "close_tooltip": "Close",
+      "documents_title": "Documents ({count})",
+      "used": "used",
+      "unused": "unused",
+      "group_label_used": "Used",
+      "group_label_unused": "Unused",
+      "reason": "Reason:",
+      "sentences": "Sentences ({count})",
+      "content": "Content",
+      "metadata": "Metadata",
+      "full_debug_json": "Full debug JSON"
+    },
+    "error-helper": {
+      "required": "This field is required",
+      "minlength": "This field must contain at least {requiredLength, plural, =1 {1 character} other {{requiredLength} characters}}",
+      "maxlength": "This field is limited to {requiredLength, plural, =1 {1 character} other {{requiredLength} characters}}",
+      "min": "The minimum value is {min}",
+      "max": "The maximum value is {max}",
+      "files_name_with_wrong_type": "The following files are not accepted file types:",
+      "files_name_with_wrong_format": "The following files do not have the required format:"
+    },
+    "file-upload": {
+      "remove_file_tooltip": "Remove this file",
+      "or": "or",
+      "drag_and_drop_here": "Drag and drop {count, plural, =1 {file} other {files}} here",
+      "browse_for_files": "Browse for {count, plural, =1 {file} other {files}}",
+      "file_types_accepted": "{count, plural, =1 {File type} other {File types}} accepted: {fileTypes}"
+    },
+    "form-control": {
+      "required": "Required"
+    },
+    "json-iterator": {
+      "expand_recursively_tooltip": "Expand recursively",
+      "copy_tooltip": "Copy value",
+      "copied_tooltip": "Copied !"
+    },
+    "scroll-top-button": {
+      "scroll_to_top_tooltip": "Scroll to page top"
+    },
+    "sentences-generation": {
+      "title": "Sentences generation",
+      "close_tooltip": "Close",
+      "not_enabled": "Sentences generation is not enabled.",
+      "contact_admin": "Contact an administrator to enable this feature",
+      "configure_feature": "You can configure this feature by following the link below",
+      "settings_button": "Sentences generation settings",
+      "no_results_warning": "The query returned no results. Try restarting the request or selecting other example sentences.",
+      "generate_button": "Generate",
+      "validate_selection_button": "Validate selection"
+    },
+    "sticky-menu": {
+      "expand_menu_tooltip": "Expand this menu",
+      "reduce_menu_tooltip": "Reduce this menu"
+    },
+    "test-dialog": {
+      "no_bot_configuration_title": "No bot configuration detected",
+      "no_bot_configuration_message": "Go to Settings > Configurations to define one",
+      "options_label": "Options",
+      "select_dialog_locale_tooltip": "Select the dialog locale",
+      "rag_debug_label": "Rag debug",
+      "sources_content_label": "Sources content",
+      "view_nlp_stats_tooltip": "View Nlp Stats",
+      "clear_conversation_tooltip": "Clear conversation",
+      "user_message_placeholder": "Type some text"
+    }
+  }
+}

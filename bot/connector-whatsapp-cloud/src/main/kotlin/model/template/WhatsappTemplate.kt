@@ -76,7 +76,11 @@ enum class TemplateHeaderFormat {
 }
 
 @JsonTypeName("HEADER")
-data class TemplateHeader(val format: TemplateHeaderFormat, val text: String? = null, val example: BodyExample? = null) : TemplateComponent() {
+data class TemplateHeader(
+    val format: TemplateHeaderFormat,
+    val text: String? = null,
+    val example: BodyExample? = null,
+) : TemplateComponent() {
     companion object {
         fun text(
             text: String,
@@ -94,16 +98,23 @@ data class TemplateHeader(val format: TemplateHeaderFormat, val text: String? = 
 }
 
 @JsonTypeName("BODY")
-data class TemplateBody(val text: String, val example: BodyExample? = null) : TemplateComponent() {
+data class TemplateBody(
+    val text: String,
+    val example: BodyExample? = null,
+) : TemplateComponent() {
     constructor(text: String, singleVariableExample: String) : this(text, BodyExample(singleVariableExample))
     constructor(text: String, vararg variableExamples: String) : this(text, BodyExample(*variableExamples))
 }
 
 @JsonTypeName("FOOTER")
-data class TemplateFooter(val text: String) : TemplateComponent()
+data class TemplateFooter(
+    val text: String,
+) : TemplateComponent()
 
 @JsonTypeName("BUTTONS")
-data class TemplateButtons(val buttons: List<WhatsappTemplateButton>) : TemplateComponent() {
+data class TemplateButtons(
+    val buttons: List<WhatsappTemplateButton>,
+) : TemplateComponent() {
     constructor(vararg buttons: WhatsappTemplateButton) : this(listOf(*buttons))
 }
 
@@ -142,7 +153,12 @@ sealed interface WhatsappTemplateButton {
 }
 
 @JsonTypeName("QUICK_REPLY")
-data class TemplateQuickReply(override val text: String) : WhatsappTemplateButton
+data class TemplateQuickReply(
+    override val text: String,
+) : WhatsappTemplateButton
 
 @JsonTypeName("URL")
-data class TemplateUrlButton(override val text: String, val url: String) : WhatsappTemplateButton
+data class TemplateUrlButton(
+    override val text: String,
+    val url: String,
+) : WhatsappTemplateButton

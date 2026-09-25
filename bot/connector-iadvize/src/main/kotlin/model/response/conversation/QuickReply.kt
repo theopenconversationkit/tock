@@ -16,6 +16,8 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation
 
-data class QuickReply(val value: String) {
+data class QuickReply(
+    val value: String,
+) {
     val contentType: String = "text/quick-reply"
 }

@@ -30,14 +30,13 @@ import ai.tock.bot.engine.I18nTranslator
 /**
  * Provides a [GAExpectedIntent] with a [GASimpleSelect].
  */
-fun I18nTranslator.expectedIntentForSimpleSelect(items: List<GASelectItem>): GAExpectedIntent {
-    return GAExpectedIntent(
+fun I18nTranslator.expectedIntentForSimpleSelect(items: List<GASelectItem>): GAExpectedIntent =
+    GAExpectedIntent(
         GAIntent.option,
         optionValueSpec(
             simpleSelect = GASimpleSelect(items),
         ),
     )
-}
 
 /**
  * Provides a [GASelectItem] with [String] parameters.
@@ -78,8 +77,8 @@ fun <T : Bus<T>> T.selectItem(
     step: StoryStepDef? = null,
     optionTitle: CharSequence? = null,
     vararg parameters: Pair<String, String>,
-): GASelectItem {
-    return GASelectItem(
+): GASelectItem =
+    GASelectItem(
         optionInfo(
             title,
             targetIntent,
@@ -88,4 +87,3 @@ fun <T : Bus<T>> T.selectItem(
         ),
         optionTitle?.let { translate(it).toString() },
     )
-}

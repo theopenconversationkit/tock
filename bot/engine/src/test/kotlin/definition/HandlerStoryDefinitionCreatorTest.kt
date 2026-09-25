@@ -77,9 +77,14 @@ class HandlerStoryDefinitionCreatorTest {
 
     abstract class SubBotBus : BotBus
 
-    internal class DefWithDefaultParameter(bus: BotBus, val data: StoryData, val parameter: String = "parameter") :
-        HandlerDef<Connector>(bus)
+    internal class DefWithDefaultParameter(
+        bus: BotBus,
+        val data: StoryData,
+        val parameter: String = "parameter",
+    ) : HandlerDef<Connector>(bus)
 
-    internal class SimpleDefWithDefaultParameter(bus: BotBus, val parameter: String = "parameter") :
-        HandlerDef<Connector>(bus)
+    internal class SimpleDefWithDefaultParameter(
+        bus: BotBus,
+        val parameter: String = "parameter",
+    ) : HandlerDef<Connector>(bus)
 }

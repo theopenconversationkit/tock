@@ -64,7 +64,9 @@ data class AlcmeonConnectorWhatsappMessageIn(
     JsonSubTypes.Type(value = AlcmeonConnectorWhatsappMessageTextEvent::class, name = "text"),
     JsonSubTypes.Type(value = AlcmeonConnectorWhatsappMessageInteractiveEvent::class, name = "interactive"),
 )
-abstract class AlcmeonConnectorWhatsappMessageEvent(val type: AlcmeonConnectorWhatsappMessageEventType? = null)
+abstract class AlcmeonConnectorWhatsappMessageEvent(
+    val type: AlcmeonConnectorWhatsappMessageEventType? = null,
+)
 
 @Suppress("ktlint:standard:enum-entry-name-case")
 enum class AlcmeonConnectorWhatsappMessageEventType {
@@ -72,13 +74,17 @@ enum class AlcmeonConnectorWhatsappMessageEventType {
     interactive,
 }
 
-data class AlcmeonConnectorWhatsappMessageTextEvent(val text: WhatsAppTextBody) : AlcmeonConnectorWhatsappMessageEvent(
-    AlcmeonConnectorWhatsappMessageEventType.text,
-)
+data class AlcmeonConnectorWhatsappMessageTextEvent(
+    val text: WhatsAppTextBody,
+) : AlcmeonConnectorWhatsappMessageEvent(
+        AlcmeonConnectorWhatsappMessageEventType.text,
+    )
 
-data class AlcmeonConnectorWhatsappMessageInteractiveEvent(val interactive: WhatsAppInteractive) : AlcmeonConnectorWhatsappMessageEvent(
-    AlcmeonConnectorWhatsappMessageEventType.interactive,
-)
+data class AlcmeonConnectorWhatsappMessageInteractiveEvent(
+    val interactive: WhatsAppInteractive,
+) : AlcmeonConnectorWhatsappMessageEvent(
+        AlcmeonConnectorWhatsappMessageEventType.interactive,
+    )
 
 class AlcmeonConnectorWhatsappMessageDefaultEvent : AlcmeonConnectorWhatsappMessageEvent()
 
@@ -88,7 +94,9 @@ data class AlcmeonConnectorFacebookMessageIn(
     val event: AlcmeonConnectorFacebookMessageEvent,
 ) : AlcmeonConnectorMessageIn(facebookBackend)
 
-data class AlcmeonConnectorFacebookMessageEvent(val message: MessengerMessage)
+data class AlcmeonConnectorFacebookMessageEvent(
+    val message: MessengerMessage,
+)
 
 data class MessengerMessage(
     var text: String? = null,

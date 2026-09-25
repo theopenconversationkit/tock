@@ -60,19 +60,16 @@ data class Choice(
         playerId: PlayerId,
         applicationId: String,
         recipientId: PlayerId,
-    ): Action {
-        return SendChoice(
+    ): Action =
+        SendChoice(
             playerId,
             applicationId,
             recipientId,
             intentName,
             parameters,
         )
-    }
 
-    override fun toPrettyString(): String {
-        return "{$eventType:$intentName,${mapToString(parameters)}}"
-    }
+    override fun toPrettyString(): String = "{$eventType:$intentName,${mapToString(parameters)}}"
 
     override fun isSimpleMessage(): Boolean = false
 }

@@ -19,9 +19,10 @@ import { SentenceTrainingMode } from '../../../shared/components/sentence-traini
 import { SentenceTrainingComponent } from '../../../shared/components';
 
 @Component({
-  selector: 'tock-sentences-inbox',
-  templateUrl: './sentences-inbox.component.html',
-  styleUrls: ['./sentences-inbox.component.scss']
+    selector: 'tock-sentences-inbox',
+    templateUrl: './sentences-inbox.component.html',
+    styleUrls: ['./sentences-inbox.component.scss'],
+    standalone: false
 })
 export class SentencesInboxComponent {
   mode = SentenceTrainingMode.INBOX;

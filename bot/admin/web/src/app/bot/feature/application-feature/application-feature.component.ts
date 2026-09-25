@@ -22,9 +22,10 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'tock-application-feature',
-  templateUrl: './application-feature.component.html',
-  styleUrls: ['./application-feature.component.css']
+    selector: 'tock-application-feature',
+    templateUrl: './application-feature.component.html',
+    styleUrls: ['./application-feature.component.css'],
+    standalone: false
 })
 export class ApplicationFeatureComponent implements OnInit, OnDestroy {
   destroy = new Subject();

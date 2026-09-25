@@ -84,9 +84,7 @@ internal object EnvironmentManager {
                     error = false
                 }
 
-                override fun hasErrors(): Boolean {
-                    return error
-                }
+                override fun hasErrors(): Boolean = error
 
                 override fun report(
                     severity: CompilerMessageSeverity,
@@ -147,37 +145,27 @@ internal object EnvironmentManager {
 }
 
 private class DummyCodeStyleManager : CodeStyleManager() {
-    override fun getProject(): Project {
-        throw UnsupportedOperationException()
-    }
+    override fun getProject(): Project = throw UnsupportedOperationException()
 
-    override fun reformat(psiElement: PsiElement): PsiElement {
-        return psiElement
-    }
+    override fun reformat(psiElement: PsiElement): PsiElement = psiElement
 
     override fun reformat(
         psiElement: PsiElement,
         b: Boolean,
-    ): PsiElement {
-        return psiElement
-    }
+    ): PsiElement = psiElement
 
     override fun reformatRange(
         psiElement: PsiElement,
         i: Int,
         i1: Int,
-    ): PsiElement {
-        return psiElement
-    }
+    ): PsiElement = psiElement
 
     override fun reformatRange(
         psiElement: PsiElement,
         i: Int,
         i1: Int,
         b: Boolean,
-    ): PsiElement {
-        return psiElement
-    }
+    ): PsiElement = psiElement
 
     override fun reformatText(
         psiFile: PsiFile,
@@ -213,55 +201,39 @@ private class DummyCodeStyleManager : CodeStyleManager() {
     override fun adjustLineIndent(
         psiFile: PsiFile,
         i: Int,
-    ): Int {
-        return i
-    }
+    ): Int = i
 
     override fun adjustLineIndent(
         document: Document,
         i: Int,
-    ): Int {
-        return i
-    }
+    ): Int = i
 
     override fun isLineToBeIndented(
         psiFile: PsiFile,
         i: Int,
-    ): Boolean {
-        return false
-    }
+    ): Boolean = false
 
     override fun getLineIndent(
         psiFile: PsiFile,
         i: Int,
-    ): String? {
-        return null
-    }
+    ): String? = null
 
     override fun getLineIndent(
         document: Document,
         i: Int,
-    ): String? {
-        return null
-    }
+    ): String? = null
 
     override fun getIndent(
         s: String,
         fileType: FileType,
-    ): Indent? {
-        return null
-    }
+    ): Indent? = null
 
     override fun fillIndent(
         indent: Indent,
         fileType: FileType,
-    ): String? {
-        return null
-    }
+    ): String? = null
 
-    override fun zeroIndent(): Indent? {
-        return null
-    }
+    override fun zeroIndent(): Indent? = null
 
     override fun reformatNewlyAddedElement(
         astNode: ASTNode,
@@ -269,9 +241,7 @@ private class DummyCodeStyleManager : CodeStyleManager() {
     ) {
     }
 
-    override fun isSequentialProcessingAllowed(): Boolean {
-        return false
-    }
+    override fun isSequentialProcessingAllowed(): Boolean = false
 
     override fun performActionWithFormatterDisabled(runnable: Runnable) {
         runnable.run()
@@ -281,7 +251,5 @@ private class DummyCodeStyleManager : CodeStyleManager() {
         throwableRunnable.run()
     }
 
-    override fun <T> performActionWithFormatterDisabled(computable: Computable<T>): T {
-        return computable.compute()
-    }
+    override fun <T> performActionWithFormatterDisabled(computable: Computable<T>): T = computable.compute()
 }

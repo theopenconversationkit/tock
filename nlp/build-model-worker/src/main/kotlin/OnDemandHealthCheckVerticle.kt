@@ -31,19 +31,18 @@ class OnDemandHealthCheckVerticle(
         // do nothing
     }
 
-    override fun defaultHealthcheck(): (RoutingContext) -> Unit {
-        return {
-            it.response()
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit =
+        {
+            it
+                .response()
                 .setStatusCode(
                     if (workerOnDemandVerticles.none { workerOnDemandVerticle -> !workerOnDemandVerticle.isLoaded() }) {
                         200
                     } else {
                         500
                     },
-                )
-                .end()
+                ).end()
         }
-    }
 
     override fun detailedHealthcheck(): (RoutingContext) -> Unit =
         detailedHealthcheck(

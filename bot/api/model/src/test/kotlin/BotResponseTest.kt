@@ -27,11 +27,15 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class BotResponseTest {
-    data class Message1(val b: Boolean) : ConnectorMessage {
+    data class Message1(
+        val b: Boolean,
+    ) : ConnectorMessage {
         override val connectorType: ConnectorType = ConnectorType("m1")
     }
 
-    data class Message2(val b: Boolean) : ConnectorMessage {
+    data class Message2(
+        val b: Boolean,
+    ) : ConnectorMessage {
         override val connectorType: ConnectorType = ConnectorType("m2")
     }
 

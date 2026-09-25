@@ -31,13 +31,9 @@ class SSOTockAuthProviderTest {
     fun `excludedPaths match static files`() {
         val sso =
             object : SSOTockAuthProvider(VertxMock()) {
-                fun test(verticle: WebVerticle): Set<Regex> {
-                    return super.excludedPaths(verticle)
-                }
+                fun test(verticle: WebVerticle): Set<Regex> = super.excludedPaths(verticle)
 
-                override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler {
-                    return mockk()
-                }
+                override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler = mockk()
 
                 override fun authenticate(credentials: Credentials?): Future<User?> = mockk()
             }

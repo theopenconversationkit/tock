@@ -14,9 +14,10 @@ export enum SettingsDiffCurrentTabs {
 }
 
 @Component({
-  selector: 'tock-dataset-detail-settings-diff',
-  templateUrl: './settings-diff.component.html',
-  styleUrl: './settings-diff.component.scss'
+    selector: 'tock-dataset-detail-settings-diff',
+    templateUrl: './settings-diff.component.html',
+    styleUrl: './settings-diff.component.scss',
+    standalone: false
 })
 export class DatasetDetailSettingsDiffComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

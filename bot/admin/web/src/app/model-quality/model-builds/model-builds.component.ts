@@ -24,9 +24,10 @@ import { Subject, takeUntil } from 'rxjs';
 import { Pagination } from '../../shared/components';
 
 @Component({
-  selector: 'tock-model-builds',
-  templateUrl: './model-builds.component.html',
-  styleUrls: ['./model-builds.component.scss']
+    selector: 'tock-model-builds',
+    templateUrl: './model-builds.component.html',
+    styleUrls: ['./model-builds.component.scss'],
+    standalone: false
 })
 export class ModelBuildsComponent implements OnInit, OnDestroy {
   destroy = new Subject();

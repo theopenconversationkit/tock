@@ -77,6 +77,12 @@ internal class LogObfuscationServiceTest {
 
         assertEquals(listOf("****@********"), obfuscated.query.queries)
         assertEquals("****@********", obfuscated.result?.retainedQuery)
-        assertEquals(EmailValue("****@********"), obfuscated.result?.entities?.first()?.value)
+        assertEquals(
+            EmailValue("****@********"),
+            obfuscated.result
+                ?.entities
+                ?.first()
+                ?.value,
+        )
     }
 }

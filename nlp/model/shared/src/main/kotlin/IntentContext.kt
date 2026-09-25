@@ -45,12 +45,8 @@ data class IntentContext(
         val language: Locale,
         override val engineType: NlpEngineType,
     ) : ClassifierContextKey {
-        override fun id(): String {
-            return "$applicationName-$language-${engineType.name}"
-        }
+        override fun id(): String = "$applicationName-$language-${engineType.name}"
     }
 
-    override fun key(): IntentContextKey {
-        return IntentContextKey(applicationName, language, engineType)
-    }
+    override fun key(): IntentContextKey = IntentContextKey(applicationName, language, engineType)
 }

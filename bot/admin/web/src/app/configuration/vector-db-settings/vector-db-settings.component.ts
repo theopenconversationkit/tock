@@ -1,20 +1,4 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
@@ -29,6 +13,7 @@ import { ChoiceDialogComponent, DebugViewerWindowComponent } from '../../shared/
 import { saveAs } from 'file-saver-es';
 import { FileValidators } from '../../shared/validators';
 import { ProvidersConfigurationParam } from '../../shared/model/ai-settings';
+import { TranslocoService } from '@jsverse/transloco';
 
 interface VectorDbSettingsForm {
   id: FormControl<string>;
@@ -38,11 +23,12 @@ interface VectorDbSettingsForm {
 }
 
 @Component({
-  selector: 'tock-vector-db-settings',
-  templateUrl: './vector-db-settings.component.html',
-  styleUrls: ['./vector-db-settings.component.scss']
+    selector: 'tock-vector-db-settings',
+    templateUrl: './vector-db-settings.component.html',
+    styleUrls: ['./vector-db-settings.component.scss'],
+    standalone: false
 })
-export class VectorDbSettingsComponent implements OnInit {
+export class VectorDbSettingsComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
 
   loading: boolean = false;
@@ -64,7 +50,8 @@ export class VectorDbSettingsComponent implements OnInit {
     private toastrService: NbToastrService,
     private botConfiguration: BotConfigurationService,
     private nbWindowService: NbWindowService,
-    private nbDialogService: NbDialogService
+    private nbDialogService: NbDialogService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -201,21 +188,29 @@ export class VectorDbSettingsComponent implements OnInit {
           this.form.patchValue(vectorDbSettings);
           this.form.markAsPristine();
           this.isSubmitted = false;
-          this.toastrService.success(`Vector DB settings succesfully saved`, 'Success', {
-            duration: 5000,
-            status: 'success'
-          });
+          this.toastrService.success(
+            this.transloco.translate('configuration.vector-db-settings.settingsSavedSuccess'),
+            this.transloco.translate('common.messages.success'),
+            {
+              duration: 5000,
+              status: 'success'
+            }
+          );
           this.loading = false;
         },
         error: (error) => {
-          this.toastrService.danger('An error occured', 'Error', {
-            duration: 5000,
-            status: 'danger'
-          });
+          this.toastrService.danger(
+            this.transloco.translate('common.messages.an-error-occured'),
+            this.transloco.translate('common.messages.error'),
+            {
+              duration: 5000,
+              status: 'danger'
+            }
+          );
 
           if (error.error) {
             this.nbWindowService.open(DebugViewerWindowComponent, {
-              title: 'An error occured',
+              title: this.transloco.translate('common.messages.an-error-occured'),
               context: {
                 debug: error.error
               }
@@ -251,7 +246,12 @@ export class VectorDbSettingsComponent implements OnInit {
     if (shouldConfirm) {
       this.currentVectorDbProvider.params.forEach((entry) => {
         if (entry.confirmExport) {
-          this.sensitiveParams.push({ label: 'Vector DB provider', key: 'setting', include: false, param: entry });
+          this.sensitiveParams.push({
+            label: this.transloco.translate('configuration.vector-db-settings.vectorDbProviderTitle'),
+            key: 'setting',
+            include: false,
+            param: entry
+          });
         }
       });
 
@@ -293,16 +293,20 @@ export class VectorDbSettingsComponent implements OnInit {
     const exportFileName = getExportFileName(
       this.state.currentApplication.namespace,
       this.state.currentApplication.name,
-      'Vector DB settings',
+      this.transloco.translate('configuration.vector-db-settings.title'),
       'json'
     );
 
     saveAs(jsonBlob, exportFileName);
 
-    this.toastrService.show(`Vector DB settings dump provided`, 'Vector DB settings dump', {
-      duration: 3000,
-      status: 'success'
-    });
+    this.toastrService.show(
+      this.transloco.translate('configuration.vector-db-settings.exportSuccess'),
+      this.transloco.translate('configuration.vector-db-settings.title'),
+      {
+        duration: 3000,
+        status: 'success'
+      }
+    );
   }
 
   importModalRef;
@@ -346,8 +350,8 @@ export class VectorDbSettingsComponent implements OnInit {
 
         if (!hasCompatibleProvider) {
           this.toastrService.show(
-            `The file supplied does not reference a compatible provider. Please check the file.`,
-            'Vector DB settings import fails',
+            this.transloco.translate('configuration.vector-db-settings.importError'),
+            this.transloco.translate('configuration.vector-db-settings.importModalTitle'),
             {
               duration: 6000,
               status: 'danger'
@@ -365,13 +369,13 @@ export class VectorDbSettingsComponent implements OnInit {
   }
 
   confirmSettingsDeletion() {
-    const confirmAction = 'Delete';
-    const cancelAction = 'Cancel';
+    const confirmAction = this.transloco.translate('common.actions.delete');
+    const cancelAction = this.transloco.translate('common.actions.cancel');
 
     const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
-        title: `Delete application vector db settings`,
-        subtitle: `Are you sure you want to delete the currently saved application vector db settings?`,
+        title: this.transloco.translate('configuration.vector-db-settings.settingsDeletionTitle'),
+        subtitle: this.transloco.translate('configuration.vector-db-settings.confirmDeletionSubtitle'),
         modalStatus: 'danger',
         actions: [
           { actionName: cancelAction, buttonStatus: 'basic' },
@@ -392,10 +396,14 @@ export class VectorDbSettingsComponent implements OnInit {
       delete this.settingsBackup;
       this.form.reset();
       this.form.markAsPristine();
-      this.toastrService.success(`Application vector db settings succesfully deleted`, 'Success', {
-        duration: 5000,
-        status: 'success'
-      });
+      this.toastrService.success(
+        this.transloco.translate('configuration.vector-db-settings.settingsDeletedSuccess'),
+        this.transloco.translate('common.messages.success'),
+        {
+          duration: 5000,
+          status: 'success'
+        }
+      );
     });
   }
 

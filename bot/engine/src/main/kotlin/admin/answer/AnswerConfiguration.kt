@@ -19,7 +19,9 @@ package ai.tock.bot.admin.answer
 /**
  * Define an answer configured at runtime.
  */
-abstract class AnswerConfiguration(val answerType: AnswerConfigurationType) {
+abstract class AnswerConfiguration(
+    val answerType: AnswerConfigurationType,
+) {
     /**
      * Is there an answer set?
      */

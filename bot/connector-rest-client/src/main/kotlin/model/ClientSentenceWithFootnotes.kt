@@ -22,5 +22,4 @@ package ai.tock.bot.connector.rest.client.model
 data class ClientSentenceWithFootnotes(
     val text: String,
     val footnotes: List<ClientFootnote>,
-) :
-    ClientMessage(ClientEventType.sentenceWithFootnotes)
+) : ClientMessage(ClientEventType.sentenceWithFootnotes)

@@ -38,7 +38,9 @@ import java.util.Locale
 /**
  * Rest client used to find entities from a rest API.
  */
-class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_url", "http://localhost:5000/app/v1/")) {
+class RestEntityTypeClient(
+    targetUrl: String = property("tock_nlp_entity_type_url", "http://localhost:5000/app/v1/"),
+) {
     internal data class EntityTypeRequest(
         val text: String,
         val language: Locale = defaultLocale,
@@ -48,7 +50,10 @@ class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_ur
         val entities: List<EntityResponse>,
     )
 
-    internal data class EntityResponse(val entity: EntityDescription, val probability: Double = 1.0)
+    internal data class EntityResponse(
+        val entity: EntityDescription,
+        val probability: Double = 1.0,
+    )
 
     internal data class EntityDescription(
         val start: Int,
@@ -56,7 +61,9 @@ class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_ur
         val type: EntityTypeDescription,
     )
 
-    internal data class EntityTypeDescription(val name: String)
+    internal data class EntityTypeDescription(
+        val name: String,
+    )
 
     private interface EntityTypeApi {
         @Headers("Content-Type:application/json")
@@ -97,8 +104,12 @@ class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_ur
         language: Locale,
     ): List<EntityTypeRecognition> =
         try {
-            api.parse(EntityTypeRequest(text, language)).execute().body()
-                ?.entities?.map {
+            api
+                .parse(EntityTypeRequest(text, language))
+                .execute()
+                .body()
+                ?.entities
+                ?.map {
                     EntityTypeRecognition(
                         EntityTypeValue(
                             it.entity.start,

@@ -77,13 +77,9 @@ internal class ConfiguredStoryDefinition(
     override val unsupportedUserInterfaces: Set<UserInterfaceType> =
         configuration.storyDefinition(definition, configuration)?.unsupportedUserInterfaces ?: emptySet()
 
-    override fun toString(): String {
-        return "story[$id]"
-    }
+    override fun toString(): String = "story[$id]"
 
-    override fun equals(other: Any?): Boolean {
-        return (other as? ConfiguredStoryDefinition)?.id == id
-    }
+    override fun equals(other: Any?): Boolean = (other as? ConfiguredStoryDefinition)?.id == id
 
     override fun hashCode(): Int = id.hashCode()
 }

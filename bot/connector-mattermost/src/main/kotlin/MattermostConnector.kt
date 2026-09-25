@@ -74,8 +74,11 @@ class MattermostConnector(
                                 }
                                 Json.encode(metadata)
                             }
+
                             // else consider application/json
-                            else -> context.body().asString()
+                            else -> {
+                                context.body().asString()
+                            }
                         }
 
                     val message: MattermostMessageIn = mapper.readValue(body)

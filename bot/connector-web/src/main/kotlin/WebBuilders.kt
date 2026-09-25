@@ -41,9 +41,7 @@ import ai.tock.bot.engine.action.SendChoice
  * Adds a Web [ConnectorMessage] if the current connector is Web.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun <T : Bus<T>> T.withWeb(messageProvider: () -> WebConnectorMessage): T {
-    return withMessage(webConnectorType, messageProvider)
-}
+fun <T : Bus<T>> T.withWeb(messageProvider: () -> WebConnectorMessage): T = withMessage(webConnectorType, messageProvider)
 
 /**
  * Creates a text with buttons.
@@ -335,8 +333,8 @@ fun <T : Bus<T>> T.webCardWithAttachment(
     type: AttachmentType = AttachmentType.file,
     attachementName: String = "",
     fileDescription: CharSequence? = null,
-): WebCard {
-    return WebCard(
+): WebCard =
+    WebCard(
         title = translate(title).toString(),
         subTitle = translate(subTitle).toString(),
         file =
@@ -348,7 +346,6 @@ fun <T : Bus<T>> T.webCardWithAttachment(
             ),
         buttons = buttons,
     )
-}
 
 /**
  * Creates a [WebMessage] from a [WebImage].

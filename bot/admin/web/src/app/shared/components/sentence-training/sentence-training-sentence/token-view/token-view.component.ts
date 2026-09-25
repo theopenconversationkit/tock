@@ -24,9 +24,10 @@ import { StateService } from '../../../../../core-nlp/state.service';
 import { SentenceTrainingService } from '../../sentence-training.service';
 
 @Component({
-  selector: 'tock-token-view',
-  templateUrl: './token-view.component.html',
-  styleUrls: ['./token-view.component.scss']
+    selector: 'tock-token-view',
+    templateUrl: './token-view.component.html',
+    styleUrls: ['./token-view.component.scss'],
+    standalone: false
 })
 export class TokenViewComponent implements OnDestroy {
   destroy = new Subject();

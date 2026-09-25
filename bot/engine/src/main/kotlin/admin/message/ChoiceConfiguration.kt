@@ -39,13 +39,12 @@ data class ChoiceConfiguration(
         recipientId: PlayerId,
         locale: Locale,
         userInterfaceType: UserInterfaceType,
-    ): Action {
-        return SendChoice(
+    ): Action =
+        SendChoice(
             playerId,
             applicationId,
             recipientId,
             intentName,
             parameters,
         )
-    }
 }

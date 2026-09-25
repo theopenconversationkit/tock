@@ -52,8 +52,7 @@ class ScriptAnswerVersionedConfiguration(
             c.declaredFields
                 .firstOrNull { field ->
                     StoryDefinition::class.java.isAssignableFrom(field.type)
-                }
-                ?.run {
+                }?.run {
                     isAccessible = true
                     get(null) as? StoryDefinition
                 }

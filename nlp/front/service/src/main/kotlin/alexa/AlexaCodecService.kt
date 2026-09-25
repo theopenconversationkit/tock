@@ -49,8 +49,8 @@ object AlexaCodecService : AlexaCodec {
         intents: List<IntentDefinition>,
         sentences: List<ClassifiedSentence>,
         filter: AlexaFilter?,
-    ): List<AlexaIntent> {
-        return intents
+    ): List<AlexaIntent> =
+        intents
             .map { intent ->
                 AlexaIntent(
                     intent.name + "_intent",
@@ -62,9 +62,11 @@ object AlexaCodecService : AlexaCodec {
                     intent.entities
                         .filter { entity ->
                             filter == null ||
-                                filter.intents.first { intent.name == it.intent }.slots.any { it.name == entity.role }
-                        }
-                        .map {
+                                filter.intents
+                                    .first { intent.name == it.intent }
+                                    .slots
+                                    .any { it.name == entity.role }
+                        }.map {
                             AlexaSlot(
                                 (
                                     filter?.findSlot(intent, it)?.targetName
@@ -75,35 +77,34 @@ object AlexaCodecService : AlexaCodec {
                         },
                 )
             }
-    }
 
     private fun exportAlexaTypes(
         intents: List<IntentDefinition>,
         sentences: List<ClassifiedSentence>,
         filter: AlexaFilter?,
         transformer: AlexaModelTransformer,
-    ): List<AlexaType> {
-        return intents
+    ): List<AlexaType> =
+        intents
             .flatMap { intent -> intent.entities.map { entity -> intent to entity } }
             .filter { (intent, entity) ->
                 filter == null || filter.findSlot(intent, entity) != null
-            }
-            .map { (intent, entity) ->
+            }.map { (intent, entity) ->
                 AlexaType(
                     filter?.findSlot(intent, entity)?.targetType
                         ?: entity.entityTypeName.name().replace("-", "_"),
                     exportAlexaTypeDefinition(intent, entity, sentences, transformer)
-                        .distinctBy { type -> type.name.value.lowercase().trim() },
+                        .distinctBy { type ->
+                            type.name.value
+                                .lowercase()
+                                .trim()
+                        },
                 )
-            }
-            .groupBy { it.name }
+            }.groupBy { it.name }
             .map { (_, types) ->
                 types.first().run {
                     copy(values = (values + types.subList(1, types.size).flatMap { it.values }).distinct())
                 }
-            }
-            .toList()
-    }
+            }.toList()
 
     override fun exportIntentsSchema(
         invocationName: String,
@@ -140,7 +141,13 @@ object AlexaCodecService : AlexaCodec {
         sentences: List<ClassifiedSentence>,
         filter: AlexaFilter?,
     ): List<String> {
-        val filteredRoles = filter?.intents?.first { it.intent == intent.name }?.slots?.map { it.name }?.toSet()
+        val filteredRoles =
+            filter
+                ?.intents
+                ?.first { it.intent == intent.name }
+                ?.slots
+                ?.map { it.name }
+                ?.toSet()
 
         val startByLetter = "^[a-z\\{].*".toRegex()
         val nonChar = "[^a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿ\\{\\}'_]".toRegex()
@@ -158,8 +165,7 @@ object AlexaCodecService : AlexaCodec {
                         t = t.substring(0, it.start) + "{${it.role}_slot}" + t.substring(it.end, t.length)
                     }
                 t
-            }
-            .map { it.lowercase() }
+            }.map { it.lowercase() }
             .filter { !it.contains("*") }
             .map { sentence -> sentence.replace("'{", " {") }
             .map { sentence -> EmojiParser.removeAllEmojis(sentence) }
@@ -190,28 +196,26 @@ object AlexaCodecService : AlexaCodec {
         val nonChar = "[^0-9a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿ']".toRegex()
         val spaceRegex = "\\s{2,}".toRegex()
 
-        return transformer.filterCustomSlotSamples(
-            sentences
-                .filter { it.classification.intentId == intent._id }
-                .flatMap { sentence ->
-                    sentence
-                        .classification
-                        .entities
-                        .filter { it.type == entity.entityTypeName }
-                        .distinct()
-                        .map {
-                            sentence.text.substring(it.start, it.end).replace("\n", "")
-                        }
-                        .map { it.lowercase() }
-                        .map { it.replace(nonChar, " ") }
-                        .map { it.trim() }
-                        .map { it.replace(spaceRegex, " ") }
-                },
-        )
-            .filter {
+        return transformer
+            .filterCustomSlotSamples(
+                sentences
+                    .filter { it.classification.intentId == intent._id }
+                    .flatMap { sentence ->
+                        sentence
+                            .classification
+                            .entities
+                            .filter { it.type == entity.entityTypeName }
+                            .distinct()
+                            .map {
+                                sentence.text.substring(it.start, it.end).replace("\n", "")
+                            }.map { it.lowercase() }
+                            .map { it.replace(nonChar, " ") }
+                            .map { it.trim() }
+                            .map { it.replace(spaceRegex, " ") }
+                    },
+            ).filter {
                 !it.contains("*")
-            }
-            .map {
+            }.map {
                 AlexaTypeDefinition(
                     null,
                     AlexaTypeDefinitionName(

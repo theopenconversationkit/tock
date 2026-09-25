@@ -35,15 +35,14 @@ data class ArtifactVersion(
         private fun distance(
             v1: String,
             v2: String,
-        ): Long {
-            return if (v1 == v2) {
+        ): Long =
+            if (v1 == v2) {
                 0
             } else if (v1.toLongOrNull() != null && v2.toLongOrNull() != null) {
                 abs(v1.toLong() - v2.toLong())
             } else {
                 levenshtein(v1, v2).toLong()
             }
-        }
 
         private fun levenshtein(
             s: String,
@@ -56,28 +55,27 @@ data class ArtifactVersion(
             if (t == "") return s.length
 
             val initialRow: List<Int> = (0 until t.length + 1).map { it }.toList()
-            return (0 until s.length).fold(
-                initialRow,
-                { previous, u ->
-                    (0 until t.length).fold(
-                        mutableListOf(u + 1),
-                        { row, v ->
-                            row.add(
-                                listOf(
-                                    row.last() + 1,
-                                    previous[v + 1] + 1,
-                                    previous[v] + charScore(s[u], t[v]),
-                                ).minOrNull()!!,
-                            )
-                            row
-                        },
-                    )
-                },
-            ).last()
+            return (0 until s.length)
+                .fold(
+                    initialRow,
+                    { previous, u ->
+                        (0 until t.length).fold(
+                            mutableListOf(u + 1),
+                            { row, v ->
+                                row.add(
+                                    listOf(
+                                        row.last() + 1,
+                                        previous[v + 1] + 1,
+                                        previous[v] + charScore(s[u], t[v]),
+                                    ).minOrNull()!!,
+                                )
+                                row
+                            },
+                        )
+                    },
+                ).last()
         }
     }
 
-    internal fun distanceFrom(version: ArtifactVersion): Long {
-        return distance(major, version.major) * 100 + distance(minor, version.minor) * 10 + distance(iteration, version.iteration)
-    }
+    internal fun distanceFrom(version: ArtifactVersion): Long = distance(major, version.major) * 100 + distance(minor, version.minor) * 10 + distance(iteration, version.iteration)
 }

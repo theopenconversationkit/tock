@@ -170,20 +170,22 @@ private object BotEngineJacksonConfiguration {
                             config: SerializationConfig,
                             beanDesc: BeanDescription,
                             beanProperties: MutableList<BeanPropertyWriter>,
-                        ): List<BeanPropertyWriter> {
-                            return when {
+                        ): List<BeanPropertyWriter> =
+                            when {
                                 beanDesc.beanClass == ScriptAnswerVersionedConfiguration::class.java -> {
-                                    beanProperties.filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
+                                    beanProperties
+                                        .filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
                                         .toList()
                                 }
+
                                 CharSequence::class.java.isAssignableFrom(beanDesc.beanClass) -> {
                                     beanProperties.filter { it.name != "length" && it.name != "empty" }.toList()
                                 }
+
                                 else -> {
                                     super.changeProperties(config, beanDesc, beanProperties)
                                 }
                             }
-                        }
                     },
                 )
 
@@ -193,14 +195,14 @@ private object BotEngineJacksonConfiguration {
                             config: DeserializationConfig,
                             beanDesc: BeanDescription,
                             propDefs: MutableList<BeanPropertyDefinition>,
-                        ): List<BeanPropertyDefinition> {
-                            return if (beanDesc.beanClass == ScriptAnswerVersionedConfiguration::class.java) {
-                                propDefs.filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
+                        ): List<BeanPropertyDefinition> =
+                            if (beanDesc.beanClass == ScriptAnswerVersionedConfiguration::class.java) {
+                                propDefs
+                                    .filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
                                     .toList()
                             } else {
                                 super.updateProperties(config, beanDesc, propDefs)
                             }
-                        }
                     },
                 )
             }

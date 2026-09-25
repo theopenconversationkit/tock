@@ -18,13 +18,18 @@ package ai.tock.iadvize.client
 
 const val NOT_SUCCESS_MSG = "GraphQL request sent successfully but returns an unsuccessful response with status code"
 
-sealed class IadvizeGraphQLError(override val message: String) : Error(message)
+sealed class IadvizeGraphQLError(
+    override val message: String,
+) : Error(message)
 
 class AuthenticationFailedError : Exception("Fail to retrieve a non null access token")
 
 class DataNotFoundError : IadvizeGraphQLError("Data not found")
 
-class NotSuccessResponseError(msg: String?, statusCode: Int) : IadvizeGraphQLError(msg?.let { "code : $statusCode \nerrors:[\n $it \n]" } ?: "$NOT_SUCCESS_MSG [$statusCode]")
+class NotSuccessResponseError(
+    msg: String?,
+    statusCode: Int,
+) : IadvizeGraphQLError(msg?.let { "code : $statusCode \nerrors:[\n $it \n]" } ?: "$NOT_SUCCESS_MSG [$statusCode]")
 
 fun graphQlDataNotFoundError(): Nothing = throw DataNotFoundError()
 

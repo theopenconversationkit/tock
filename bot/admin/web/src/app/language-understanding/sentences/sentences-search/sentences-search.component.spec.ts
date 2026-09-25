@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SentencesSearchComponent } from './sentences-search.component';
+import { TestSharedModule } from '../../../shared/test-shared.module';
 
 describe('SentencesSearchComponent', () => {
   let component: SentencesSearchComponent;
@@ -24,9 +25,9 @@ describe('SentencesSearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SentencesSearchComponent ]
-    })
-    .compileComponents();
+      declarations: [SentencesSearchComponent],
+      imports: [TestSharedModule]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SentencesSearchComponent);
     component = fixture.componentInstance;

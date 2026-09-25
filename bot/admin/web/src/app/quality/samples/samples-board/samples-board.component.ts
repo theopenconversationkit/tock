@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { catchError, of, Subject, take, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
@@ -27,11 +11,13 @@ import { getEvaluationBaseUrl } from '../utils';
 import { NbToastrService } from '@nebular/theme';
 import { BotApplicationConfiguration } from '../../../core/model/configuration';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-samples-board',
-  templateUrl: './samples-board.component.html',
-  styleUrl: './samples-board.component.scss'
+    selector: 'tock-samples-board',
+    templateUrl: './samples-board.component.html',
+    styleUrl: './samples-board.component.scss',
+    standalone: false
 })
 export class SamplesBoardComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
@@ -47,7 +33,8 @@ export class SamplesBoardComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private rest: RestService,
     private stateService: StateService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -67,10 +54,14 @@ export class SamplesBoardComponent implements OnInit, OnDestroy {
       .pipe(
         catchError(() => {
           this.loading = false;
-          this.toastrService.danger('An error occured', 'Error', {
-            duration: 5000,
-            status: 'danger'
-          });
+          this.toastrService.danger(
+            this.transloco.translate('quality.samples-board.an_error_occurred'),
+            this.transloco.translate('quality.samples-board.error_title'),
+            {
+              duration: 5000,
+              status: 'danger'
+            }
+          );
 
           return of([]);
         })
@@ -84,9 +75,9 @@ export class SamplesBoardComponent implements OnInit, OnDestroy {
   getStatusInfo(status: EvaluationSampleStatus): { text: string; status: 'text-info' | 'text-success' } {
     switch (status) {
       case EvaluationSampleStatus.IN_PROGRESS:
-        return { text: 'In Progress', status: 'text-info' };
+        return { text: this.transloco.translate('quality.samples-board.in_progress_status'), status: 'text-info' };
       case EvaluationSampleStatus.VALIDATED:
-        return { text: 'Validated', status: 'text-success' };
+        return { text: this.transloco.translate('quality.samples-board.validated_status'), status: 'text-success' };
     }
   }
 
@@ -108,20 +99,20 @@ export class SamplesBoardComponent implements OnInit, OnDestroy {
   }
 
   confirmDeleteSample(sample: EvaluationSampleDefinition): void {
-    const action = 'delete';
+    const action = this.transloco.translate('common.actions.delete');
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: 'Delete an evaluation sample',
-        subtitle: `Are you sure you want to delete the sample "${sample.name}" ?`,
+        title: this.transloco.translate('quality.samples-board.delete_sample_dialog_title'),
+        subtitle: this.transloco.translate('quality.samples-board.delete_sample_dialog_message', { sampleName: sample.name }),
         modalStatus: 'danger',
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
           { actionName: action, buttonStatus: 'danger' }
         ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === action) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         this.deleteSample(sample);
       }
     });
@@ -136,17 +127,25 @@ export class SamplesBoardComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.samples = this.samples.filter((s) => s._id !== sample._id);
-          this.toastrService.success('Sample deleted', 'Success', {
-            duration: 5000,
-            status: 'success'
-          });
+          this.toastrService.success(
+            this.transloco.translate('quality.samples-board.sample_deleted_message'),
+            this.transloco.translate('quality.samples-board.success_title'),
+            {
+              duration: 5000,
+              status: 'success'
+            }
+          );
           this.loading = false;
         },
         error: () => {
-          this.toastrService.danger('An error occured', 'Error', {
-            duration: 5000,
-            status: 'danger'
-          });
+          this.toastrService.danger(
+            this.transloco.translate('quality.samples-board.an_error_occurred'),
+            this.transloco.translate('quality.samples-board.error_title'),
+            {
+              duration: 5000,
+              status: 'danger'
+            }
+          );
           this.loading = false;
         }
       });

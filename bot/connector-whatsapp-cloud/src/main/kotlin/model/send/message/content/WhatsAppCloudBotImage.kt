@@ -29,26 +29,33 @@ sealed interface WhatsAppCloudBotImage {
 
     fun toGenericAttachment(): Attachment
 
-    data class LinkedImage(val url: String, override val caption: String?, val uploadToWhatsapp: Boolean) : WhatsAppCloudBotImage {
-        override fun prepare(apiService: WhatsAppCloudApiService): WhatsAppCloudSendBotImageMessage.Image {
-            return WhatsAppCloudSendBotImageMessage.Image(
+    data class LinkedImage(
+        val url: String,
+        override val caption: String?,
+        val uploadToWhatsapp: Boolean,
+    ) : WhatsAppCloudBotImage {
+        override fun prepare(apiService: WhatsAppCloudApiService): WhatsAppCloudSendBotImageMessage.Image =
+            WhatsAppCloudSendBotImageMessage.Image(
                 id = if (uploadToWhatsapp) apiService.getUploadedImageId(url) else null,
                 link = url.takeUnless { uploadToWhatsapp },
                 caption = caption,
             )
-        }
 
         override fun toGenericAttachment() = Attachment(url, SendAttachment.AttachmentType.image)
     }
 
-    class UploadedImage(val id: String, val bytes: ByteArray, val mimeType: String, override val caption: String?) : WhatsAppCloudBotImage {
-        override fun prepare(apiService: WhatsAppCloudApiService): WhatsAppCloudSendBotImageMessage.Image {
-            return WhatsAppCloudSendBotImageMessage.Image(
+    class UploadedImage(
+        val id: String,
+        val bytes: ByteArray,
+        val mimeType: String,
+        override val caption: String?,
+    ) : WhatsAppCloudBotImage {
+        override fun prepare(apiService: WhatsAppCloudApiService): WhatsAppCloudSendBotImageMessage.Image =
+            WhatsAppCloudSendBotImageMessage.Image(
                 id = apiService.getUploadedImageId(id, bytes, mimeType),
                 link = null,
                 caption = caption,
             )
-        }
 
         override fun toGenericAttachment(): Attachment {
             val base64String = Base64.getEncoder().encodeToString(bytes)

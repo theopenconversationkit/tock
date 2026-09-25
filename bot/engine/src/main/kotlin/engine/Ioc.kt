@@ -26,6 +26,7 @@ import ai.tock.genai.orchestratorclient.services.EMProviderService
 import ai.tock.genai.orchestratorclient.services.LLMProviderService
 import ai.tock.genai.orchestratorclient.services.ObservabilityProviderService
 import ai.tock.genai.orchestratorclient.services.RAGService
+import ai.tock.genai.orchestratorclient.services.VectorStoreInspectionService
 import ai.tock.genai.orchestratorclient.services.VectorStoreProviderService
 import ai.tock.genai.orchestratorclient.services.impl.CompletionServiceImpl
 import ai.tock.genai.orchestratorclient.services.impl.DocumentCompressorProviderServiceImpl
@@ -33,6 +34,7 @@ import ai.tock.genai.orchestratorclient.services.impl.EMProviderServiceImpl
 import ai.tock.genai.orchestratorclient.services.impl.LLMProviderServiceImpl
 import ai.tock.genai.orchestratorclient.services.impl.ObservabilityProviderServiceImpl
 import ai.tock.genai.orchestratorclient.services.impl.RAGServiceImpl
+import ai.tock.genai.orchestratorclient.services.impl.VectorStoreInspectionServiceImpl
 import ai.tock.genai.orchestratorclient.services.impl.VectorStoreProviderServiceImpl
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.TockNlpClient
@@ -56,6 +58,7 @@ val botModule =
         bind<RAGService>() with singleton { RAGServiceImpl() }
         bind<ObservabilityProviderService>() with singleton { ObservabilityProviderServiceImpl() }
         bind<VectorStoreProviderService>() with singleton { VectorStoreProviderServiceImpl() }
+        bind<VectorStoreInspectionService>() with singleton { VectorStoreInspectionServiceImpl() }
         bind<DocumentCompressorProviderService>() with singleton { DocumentCompressorProviderServiceImpl() }
         bind<StoryConfigurationMonitor>() with singleton { StoryConfigurationMonitor(instance()) }
     }

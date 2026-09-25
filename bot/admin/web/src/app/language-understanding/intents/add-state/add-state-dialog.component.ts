@@ -18,9 +18,10 @@ import { Component, Input } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 
 @Component({
-  selector: 'tock-add-state-dialog',
-  templateUrl: './add-state-dialog.component.html',
-  styleUrls: ['./add-state-dialog.component.css']
+    selector: 'tock-add-state-dialog',
+    templateUrl: './add-state-dialog.component.html',
+    styleUrls: ['./add-state-dialog.component.css'],
+    standalone: false
 })
 export class AddStateDialogComponent {
   name: string;

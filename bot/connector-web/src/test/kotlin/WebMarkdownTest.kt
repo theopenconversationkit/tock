@@ -37,56 +37,66 @@ class WebMarkdownTest {
 
     @Test
     fun `test custom markdown`() {
-        Assertions.assertThat(WebMarkdown.markdown("*This is italic text*"))
+        Assertions
+            .assertThat(WebMarkdown.markdown("*This is italic text*"))
             .isEqualTo("<p><em style=\"font-style: italic\">This is italic text</em></p>")
-        Assertions.assertThat(WebMarkdown.markdown("**This is bold text**"))
+        Assertions
+            .assertThat(WebMarkdown.markdown("**This is bold text**"))
             .isEqualTo("<p><strong style=\"font-weight: bold\">This is bold text</strong></p>")
-        Assertions.assertThat(WebMarkdown.markdown("# h1 Heading "))
+        Assertions
+            .assertThat(WebMarkdown.markdown("# h1 Heading "))
             .isEqualTo("<h1 style=\"display: block; font-size: 2em; margin-top: 0.67em; margin-bottom: 0.67em; margin-left: 0; margin-right: 0; font-weight: bold;\">h1 Heading</h1>")
-        Assertions.assertThat(WebMarkdown.markdown("## h2 Heading "))
+        Assertions
+            .assertThat(WebMarkdown.markdown("## h2 Heading "))
             .isEqualTo("<h2 style=\"display: block; font-size: 1.5em; margin-top: 0.83em; margin-bottom: 0.83em; margin-left: 0; margin-right: 0; font-weight: bold;\">h2 Heading</h2>")
-        Assertions.assertThat(WebMarkdown.markdown("### h3 Heading "))
+        Assertions
+            .assertThat(WebMarkdown.markdown("### h3 Heading "))
             .isEqualTo("<h3 style=\"display: block; font-size: 1.17em; margin-top: 1em; margin-bottom: 1em; margin-left: 0; margin-right: 0; font-weight: bold;\">h3 Heading</h3>")
-        Assertions.assertThat(WebMarkdown.markdown("> Blockquote"))
+        Assertions
+            .assertThat(WebMarkdown.markdown("> Blockquote"))
             .isEqualTo(
                 "<blockquote style=\"font-style: normal; font-size: 15px; margin-left: 0px; font-family: Arial; border-left: 4px solid rgb(0 0 0 / 28%); padding-left: 8px; background-color: #f5f5f5;\">\n" +
                     "<p>Blockquote</p>\n" +
                     "</blockquote>",
             )
-        Assertions.assertThat(
-            WebMarkdown.markdown(
-                "title 1 :\n" +
-                    "# h1 Heading\n" +
-                    "title 2 :\n" +
-                    "## h2 Heading\n" +
-                    "title 3 :\n" +
-                    "### h3 Heading",
-            ),
-        ).isEqualTo(
-            "<p>title 1 :</p>\n" +
-                "<h1 style=\"display: block; font-size: 2em; margin-top: 0.67em; margin-bottom: 0.67em; margin-left: 0; margin-right: 0; font-weight: bold;\">h1 Heading</h1>\n" +
-                "<p>title 2 :</p>\n" +
-                "<h2 style=\"display: block; font-size: 1.5em; margin-top: 0.83em; margin-bottom: 0.83em; margin-left: 0; margin-right: 0; font-weight: bold;\">h2 Heading</h2>\n" +
-                "<p>title 3 :</p>\n" +
-                "<h3 style=\"display: block; font-size: 1.17em; margin-top: 1em; margin-bottom: 1em; margin-left: 0; margin-right: 0; font-weight: bold;\">h3 Heading</h3>",
-        )
-        Assertions.assertThat(WebMarkdown.markdown("`code`"))
+        Assertions
+            .assertThat(
+                WebMarkdown.markdown(
+                    "title 1 :\n" +
+                        "# h1 Heading\n" +
+                        "title 2 :\n" +
+                        "## h2 Heading\n" +
+                        "title 3 :\n" +
+                        "### h3 Heading",
+                ),
+            ).isEqualTo(
+                "<p>title 1 :</p>\n" +
+                    "<h1 style=\"display: block; font-size: 2em; margin-top: 0.67em; margin-bottom: 0.67em; margin-left: 0; margin-right: 0; font-weight: bold;\">h1 Heading</h1>\n" +
+                    "<p>title 2 :</p>\n" +
+                    "<h2 style=\"display: block; font-size: 1.5em; margin-top: 0.83em; margin-bottom: 0.83em; margin-left: 0; margin-right: 0; font-weight: bold;\">h2 Heading</h2>\n" +
+                    "<p>title 3 :</p>\n" +
+                    "<h3 style=\"display: block; font-size: 1.17em; margin-top: 1em; margin-bottom: 1em; margin-left: 0; margin-right: 0; font-weight: bold;\">h3 Heading</h3>",
+            )
+        Assertions
+            .assertThat(WebMarkdown.markdown("`code`"))
             .isEqualTo("<p><code style=\"padding: 2px 4px; font-size: 90%; background-color: #f5f5f5; border-radius: 4px;\">code</code></p>")
-        Assertions.assertThat(WebMarkdown.markdown("[TOCK STUDIO](https://doc.tock.ai/)"))
+        Assertions
+            .assertThat(WebMarkdown.markdown("[TOCK STUDIO](https://doc.tock.ai/)"))
             .isEqualTo("<p><a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://doc.tock.ai/\">TOCK STUDIO</a></p>")
     }
 
     @Test
     fun `regex for strikethrough `() {
-        Assertions.assertThat(WebMarkdown.extractAllDataWithRegex(regex, "~~some multiline strikethrough~~"))
+        Assertions
+            .assertThat(WebMarkdown.extractAllDataWithRegex(regex, "~~some multiline strikethrough~~"))
             .isEqualTo("<s style=\"text-decoration: line-through;\">some multiline strikethrough</s>")
-        Assertions.assertThat(
-            WebMarkdown.extractAllDataWithRegex(
-                regex,
-                "~~first strikethrblough~~ and blabla ~~ other information~~",
-            ),
-        )
-            .isEqualTo("<s style=\"text-decoration: line-through;\">first strikethrblough</s> and blabla <s style=\"text-decoration: line-through;\"> other information</s>")
+        Assertions
+            .assertThat(
+                WebMarkdown.extractAllDataWithRegex(
+                    regex,
+                    "~~first strikethrblough~~ and blabla ~~ other information~~",
+                ),
+            ).isEqualTo("<s style=\"text-decoration: line-through;\">first strikethrblough</s> and blabla <s style=\"text-decoration: line-through;\"> other information</s>")
     }
 
     @Test

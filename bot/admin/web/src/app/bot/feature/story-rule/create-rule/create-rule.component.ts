@@ -35,9 +35,10 @@ interface CreateRuleForm {
 }
 
 @Component({
-  selector: 'tock-create-rule',
-  templateUrl: './create-rule.component.html',
-  styleUrls: ['./create-rule.component.scss']
+    selector: 'tock-create-rule',
+    templateUrl: './create-rule.component.html',
+    styleUrls: ['./create-rule.component.scss'],
+    standalone: false
 })
 export class CreateRuleComponent implements OnInit {
   loading: boolean = false;

@@ -22,14 +22,18 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import kotlin.reflect.KClass
 
 @ExperimentalTockCoroutines
-class AsyncDef(private val bus: AsyncBus) : AsyncStoryHandling {
+class AsyncDef(
+    private val bus: AsyncBus,
+) : AsyncStoryHandling {
     override suspend fun handle() {
         bus.end("Hello, World!")
     }
 }
 
 @ExperimentalTockCoroutines
-class AsyncConn(ctx: AsyncDefWithData) : AsyncConnectorHandlingBase<AsyncDefWithData>(ctx) {
+class AsyncConn(
+    ctx: AsyncDefWithData,
+) : AsyncConnectorHandlingBase<AsyncDefWithData>(ctx) {
     suspend fun askToFillValue() {
         end {
             // Bus-specific methods can be called here
@@ -40,7 +44,10 @@ class AsyncConn(ctx: AsyncDefWithData) : AsyncConnectorHandlingBase<AsyncDefWith
 
 @ExperimentalTockCoroutines
 @TestHandler(AsyncConn::class)
-class AsyncDefWithData(bus: AsyncBus, val data: StoryData) : AsyncStoryHandlingBase<AsyncConn>(bus) {
+class AsyncDefWithData(
+    bus: AsyncBus,
+    val data: StoryData,
+) : AsyncStoryHandlingBase<AsyncConn>(bus) {
     override suspend fun answer() {
         when {
             data.entityValue == null -> c.askToFillValue()
@@ -63,4 +70,6 @@ class AsyncDefWithData(bus: AsyncBus, val data: StoryData) : AsyncStoryHandlingB
 @ConnectorHandler(connectorTypeId = "NONE")
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class TestHandler(val value: KClass<out ConnectorSpecificHandling>)
+annotation class TestHandler(
+    val value: KClass<out ConnectorSpecificHandling>,
+)
