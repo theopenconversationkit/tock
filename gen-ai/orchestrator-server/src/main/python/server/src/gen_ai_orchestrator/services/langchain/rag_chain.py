@@ -37,6 +37,9 @@ from langchain_core.runnables.config import RunnableConfig
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
 )
+from gen_ai_orchestrator.errors.handlers.aws_bedrock.aws_bedrock_exception_handler import (
+    aws_bedrock_exception_handler,
+)
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
@@ -154,6 +157,7 @@ def build_runnable_metadata(
 
 
 @opensearch_exception_handler
+@aws_bedrock_exception_handler(provider='AwsBedrock')
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
 async def execute_rag_chain(
     request: RAGRequest,

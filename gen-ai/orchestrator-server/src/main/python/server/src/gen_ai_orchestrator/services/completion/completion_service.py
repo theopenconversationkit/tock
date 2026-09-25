@@ -23,6 +23,9 @@ from langchain_core.output_parsers import (
 )
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
 
+from gen_ai_orchestrator.errors.handlers.aws_bedrock.aws_bedrock_exception_handler import (
+    aws_bedrock_exception_handler,
+)
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
@@ -48,6 +51,7 @@ from gen_ai_orchestrator.services.utils.prompt_utility import (
 logger = logging.getLogger(__name__)
 
 
+@aws_bedrock_exception_handler(provider='AwsBedrock')
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
 async def generate(
     request: CompletionRequest,
@@ -103,6 +107,7 @@ async def generate(
     )
 
 
+@aws_bedrock_exception_handler(provider='AwsBedrock')
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
 async def generate_sentences(
     request: CompletionRequest,
