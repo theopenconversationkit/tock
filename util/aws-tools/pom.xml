@@ -28,10 +28,6 @@
     <name>aws-tools</name>
     <url>http://maven.apache.org</url>
 
-    <properties>
-        <aws-secretsmanager-caching>2.2.0</aws-secretsmanager-caching>
-    </properties>
-
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>
@@ -72,7 +68,6 @@
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-serialization-json</artifactId>
-            <version>${serialization}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -98,11 +93,6 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>${caffeine}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws.secretsmanager</groupId>
-            <artifactId>aws-secretsmanager-caching-java</artifactId>
-            <version>${aws-secretsmanager-caching}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
