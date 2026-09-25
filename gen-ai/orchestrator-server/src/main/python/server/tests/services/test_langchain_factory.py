@@ -13,9 +13,17 @@
 #   limitations under the License.
 #
 
-import pytest
+from unittest.mock import patch
 
+import pytest
+from langchain_core.messages import AIMessage
+
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
+    GenAIAuthenticationException,
+    GenAIGuardCheckException,
     GenAIUnknownProviderSettingException,
 )
 from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
@@ -23,6 +31,9 @@ from gen_ai_orchestrator.errors.exceptions.observability.observability_exception
 )
 from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
     GenAIUnknownVectorStoreProviderSettingException,
+)
+from gen_ai_orchestrator.models.document_compressor.awsbedrock.aws_bedrock_compressor_setting import (
+    AwsBedrockCompressorSetting,
 )
 from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
     BloomzCompressorSetting,
@@ -32,6 +43,9 @@ from gen_ai_orchestrator.models.document_compressor.document_compressor_provider
 )
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
+)
+from gen_ai_orchestrator.models.em.awsbedrock.aws_bedrock_em_setting import (
+    AwsBedrockEMSetting,
 )
 from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
     BloomzEMSetting,
@@ -45,6 +59,9 @@ from gen_ai_orchestrator.models.guardrail.guardrail_provider import (
 )
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
+)
+from gen_ai_orchestrator.models.llm.awsbedrock.aws_bedrock_llm_setting import (
+    AwsBedrockLLMSetting,
 )
 from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
     FakeLLMSetting,
@@ -68,11 +85,17 @@ from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
     LangfuseCallbackHandlerFactory,
 )
+from gen_ai_orchestrator.services.langchain.factories.document_compressor.aws_bedrock_compressor_factory import (
+    AwsBedrockCompressorFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.document_compressor.bloomz_compressor_factory import (
     BloomzCompressorFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.em.aws_bedrock_em_factory import (
+    AwsBedrockEMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.em.bloomz_em_factory import (
     BloomzEMFactory,
@@ -94,6 +117,10 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
     AzureOpenAILLMFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.llm.aws_bedrock_llm_factory import (
+    AwsBedrockLLMFactory,
+    _check_guardrail_intervention,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import (
     FakeLLMFactory,
@@ -216,6 +243,189 @@ def test_get_fake_llm_factory():
     assert isinstance(fake_llm, FakeLLMFactory)
 
 
+def test_get_aws_bedrock_llm_factory():
+    aws_bedrock = get_llm_factory(
+        setting=AwsBedrockLLMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                'temperature': '0',
+            }
+        )
+    )
+    assert aws_bedrock.setting.provider == LLMProvider.AWS_BEDROCK
+    assert isinstance(aws_bedrock, AwsBedrockLLMFactory)
+
+
+def test_get_aws_bedrock_language_model_fails_when_credentials_profile_name_is_missing(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_profile_name', None
+    )
+    aws_bedrock = get_llm_factory(
+        setting=AwsBedrockLLMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                'temperature': '0',
+            }
+        )
+    )
+    with pytest.raises(GenAIAuthenticationException):
+        aws_bedrock.get_language_model()
+
+
+def test_get_aws_bedrock_language_model_succeeds_when_credentials_profile_name_is_set(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_profile_name', 'my-aws-profile'
+    )
+    aws_bedrock = get_llm_factory(
+        setting=AwsBedrockLLMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                'temperature': '0',
+            }
+        )
+    )
+    with patch(
+        'gen_ai_orchestrator.services.langchain.factories.llm.aws_bedrock_llm_factory.ChatBedrockConverse'
+    ) as mock_chat_bedrock_converse:
+        aws_bedrock.get_language_model()
+        mock_chat_bedrock_converse.assert_called_once_with(
+            model='anthropic.claude-3-5-sonnet-20240620-v1:0',
+            credentials_profile_name='my-aws-profile',
+            temperature=0.0,
+            guardrails=None,
+        )
+
+
+def test_get_aws_bedrock_language_model_succeeds_when_default_profile_is_allowed(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_profile_name', None
+    )
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_allow_default_profile', True
+    )
+    aws_bedrock = get_llm_factory(
+        setting=AwsBedrockLLMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                'temperature': '0',
+            }
+        )
+    )
+    with patch(
+        'gen_ai_orchestrator.services.langchain.factories.llm.aws_bedrock_llm_factory.ChatBedrockConverse'
+    ) as mock_chat_bedrock_converse:
+        aws_bedrock.get_language_model()
+        mock_chat_bedrock_converse.assert_called_once_with(
+            model='anthropic.claude-3-5-sonnet-20240620-v1:0',
+            credentials_profile_name=None,
+            temperature=0.0,
+            guardrails=None,
+        )
+
+
+def test_get_aws_bedrock_language_model_applies_guardrail_config_when_configured(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_profile_name', 'my-aws-profile'
+    )
+    aws_bedrock = get_llm_factory(
+        setting=AwsBedrockLLMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                'temperature': '0',
+                'guardrail_id': 'gr-12345',
+                'guardrail_version': 'DRAFT',
+                'guardrail_trace': True,
+            }
+        )
+    )
+    with patch(
+        'gen_ai_orchestrator.services.langchain.factories.llm.aws_bedrock_llm_factory.ChatBedrockConverse'
+    ) as mock_chat_bedrock_converse:
+        aws_bedrock.get_language_model()
+        mock_chat_bedrock_converse.assert_called_once_with(
+            model='anthropic.claude-3-5-sonnet-20240620-v1:0',
+            credentials_profile_name='my-aws-profile',
+            temperature=0.0,
+            guardrails={
+                'guardrailIdentifier': 'gr-12345',
+                'guardrailVersion': 'DRAFT',
+                'trace': 'enabled',
+            },
+        )
+
+
+def test_get_aws_bedrock_language_model_omits_guardrail_config_when_not_configured(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_profile_name', 'my-aws-profile'
+    )
+    aws_bedrock = get_llm_factory(
+        setting=AwsBedrockLLMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                'temperature': '0',
+            }
+        )
+    )
+    with patch(
+        'gen_ai_orchestrator.services.langchain.factories.llm.aws_bedrock_llm_factory.ChatBedrockConverse'
+    ) as mock_chat_bedrock_converse:
+        aws_bedrock.get_language_model()
+        mock_chat_bedrock_converse.assert_called_once_with(
+            model='anthropic.claude-3-5-sonnet-20240620-v1:0',
+            credentials_profile_name='my-aws-profile',
+            temperature=0.0,
+            guardrails=None,
+        )
+
+
+def test_check_guardrail_intervention_raises_when_guardrail_intervened():
+    message = AIMessage(
+        content='',
+        response_metadata={
+            'stopReason': 'guardrail_intervened',
+            'trace': {
+                'guardrail': {'actionReason': 'Blocked topic detected'},
+            },
+        },
+    )
+    with pytest.raises(GenAIGuardCheckException):
+        _check_guardrail_intervention(message)
+
+
+def test_check_guardrail_intervention_raises_with_generic_cause_when_no_trace():
+    message = AIMessage(
+        content='',
+        response_metadata={'stopReason': 'guardrail_intervened'},
+    )
+    with pytest.raises(GenAIGuardCheckException):
+        _check_guardrail_intervention(message)
+
+
+def test_check_guardrail_intervention_passes_through_when_no_intervention():
+    message = AIMessage(
+        content='Hello!',
+        response_metadata={'stopReason': 'end_turn'},
+    )
+    result = _check_guardrail_intervention(message)
+    assert result is message
+
+
 def test_get_unknown_em_factory():
     with pytest.raises(GenAIUnknownProviderSettingException):
         get_em_factory(setting='settings with incorrect type')
@@ -270,6 +480,88 @@ def test_get_bloomz_em_factory():
     )
     assert bloomz.setting.provider == EMProvider.BLOOMZ
     assert isinstance(bloomz, BloomzEMFactory)
+
+
+def test_get_aws_bedrock_em_factory():
+    aws_bedrock = get_em_factory(
+        setting=AwsBedrockEMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'amazon.titan-embed-text-v2:0',
+            }
+        )
+    )
+    assert aws_bedrock.setting.provider == EMProvider.AWS_BEDROCK
+    assert isinstance(aws_bedrock, AwsBedrockEMFactory)
+
+
+def test_get_aws_bedrock_embedding_model_fails_when_credentials_profile_name_is_missing(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_profile_name', None
+    )
+    aws_bedrock = get_em_factory(
+        setting=AwsBedrockEMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'amazon.titan-embed-text-v2:0',
+            }
+        )
+    )
+    with pytest.raises(GenAIAuthenticationException):
+        aws_bedrock.get_embedding_model()
+
+
+def test_get_aws_bedrock_embedding_model_succeeds_when_credentials_profile_name_is_set(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_profile_name', 'my-aws-profile'
+    )
+    aws_bedrock = get_em_factory(
+        setting=AwsBedrockEMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'amazon.titan-embed-text-v2:0',
+            }
+        )
+    )
+    with patch(
+        'gen_ai_orchestrator.services.langchain.factories.em.aws_bedrock_em_factory.BedrockEmbeddings'
+    ) as mock_bedrock_embeddings:
+        aws_bedrock.get_embedding_model()
+        mock_bedrock_embeddings.assert_called_once_with(
+            model_id='amazon.titan-embed-text-v2:0',
+            credentials_profile_name='my-aws-profile',
+        )
+
+
+def test_get_aws_bedrock_embedding_model_succeeds_when_default_profile_is_allowed(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_profile_name', None
+    )
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_allow_default_profile', True
+    )
+    aws_bedrock = get_em_factory(
+        setting=AwsBedrockEMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'amazon.titan-embed-text-v2:0',
+            }
+        )
+    )
+    with patch(
+        'gen_ai_orchestrator.services.langchain.factories.em.aws_bedrock_em_factory.BedrockEmbeddings'
+    ) as mock_bedrock_embeddings:
+        aws_bedrock.get_embedding_model()
+        mock_bedrock_embeddings.assert_called_once_with(
+            model_id='amazon.titan-embed-text-v2:0',
+            credentials_profile_name=None,
+        )
 
 
 def test_get_open_search_vector_store_factory():
@@ -378,3 +670,17 @@ def test_get_bloomz_compressor_factory():
 
     assert compressor.setting.provider == DocumentCompressorProvider.BLOOMZ
     assert isinstance(compressor, BloomzCompressorFactory)
+
+
+def test_get_aws_bedrock_compressor_factory():
+    compressor = get_compressor_factory(
+        setting=AwsBedrockCompressorSetting(
+            provider='AwsBedrockRerank',
+            min_score=0.5,
+            max_documents=25,
+            model_arn='arn:aws:bedrock:us-west-2::foundation-model/amazon.rerank-v1:0',
+        )
+    )
+
+    assert compressor.setting.provider == DocumentCompressorProvider.AWS_BEDROCK
+    assert isinstance(compressor, AwsBedrockCompressorFactory)

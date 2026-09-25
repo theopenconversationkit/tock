@@ -20,6 +20,7 @@ enum class EMProvider {
     OpenAI,
     AzureOpenAIService,
     Ollama,
+    AwsBedrock,
     ;
 
     companion object {
