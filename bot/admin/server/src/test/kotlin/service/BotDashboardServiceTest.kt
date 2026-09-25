@@ -38,7 +38,9 @@ import ai.tock.bot.admin.dialog.DialogUsageStats
 import ai.tock.bot.admin.evaluation.EvaluationSampleDAO
 import ai.tock.bot.admin.indicators.IndicatorDAO
 import ai.tock.bot.admin.indicators.metric.MetricDAO
+import ai.tock.bot.admin.knowledgebase.KnowledgeBaseDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.engine.user.UserLock
 import ai.tock.genai.orchestratorcore.models.vectorstore.PGVectorStoreSetting
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
@@ -50,6 +52,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -212,6 +215,9 @@ class BotDashboardServiceTest {
     fun `dashboard purge failure occurs after configuration and secret cleanup and is propagated`() {
         val vectorStoreDAO = mockk<BotVectorStoreConfigurationDAO>(relaxed = true)
         val evaluationDAO = mockk<EvaluationSampleDAO>(relaxed = true)
+        val knowledgeBaseDAO = mockk<KnowledgeBaseDAO>(relaxed = true)
+        val lock = mockk<UserLock>()
+        coEvery { lock.withLock<Unit>(any(), any(), any(), any()) } coAnswers { arg<suspend () -> Unit>(3).invoke() }
         val secret = RawSecretKey("test-secret")
         val config = BotVectorStoreConfiguration(newId(), "ns", "bot", true, PGVectorStoreSetting("localhost", 5432, "user", secret, "db"))
         tockInternalInjector = KodeinInjector()
@@ -230,6 +236,8 @@ class BotDashboardServiceTest {
                 bind<IndicatorDAO>() with singleton { mockk(relaxed = true) }
                 bind<MetricDAO>() with singleton { mockk(relaxed = true) }
                 bind<EvaluationSampleDAO>() with singleton { evaluationDAO }
+                bind<KnowledgeBaseDAO>() with singleton { knowledgeBaseDAO }
+                bind<UserLock>() with singleton { lock }
                 bind<I18nDAO>() with singleton { mockk(relaxed = true) }
             },
         )
@@ -241,6 +249,7 @@ class BotDashboardServiceTest {
             every { SecurityUtils.deleteSecret(secret) } returns Unit
             assertEquals(failure, assertFailsWith<IllegalStateException> { BotAdminService.deleteApplication(ApplicationDefinition("bot", namespace = "ns")) })
             verifyOrder {
+                knowledgeBaseDAO.deleteBot("ns", "bot")
                 vectorStoreDAO.delete(config._id)
                 SecurityUtils.deleteSecret(secret)
                 evaluationDAO.deleteByNamespaceAndBotId("ns", "bot")
