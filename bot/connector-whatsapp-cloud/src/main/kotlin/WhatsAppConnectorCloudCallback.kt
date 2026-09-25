@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorCallbackBase
 
 class WhatsAppConnectorCloudCallback(
     applicationId: String,
-    val phoneNumber: String? = null,
+    // Business-Scoped User ID (BSUID) of the user, if available
+    val userId: String? = null,
     val username: String? = null,
 ) : ConnectorCallbackBase(applicationId, whatsAppCloudConnectorType)

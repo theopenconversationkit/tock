@@ -26,7 +26,7 @@ data class SendSuccessfulResponse(
 
 data class Contact(
     val input: String,
-    @JsonProperty("wa_id") val waId: String,
+    @JsonProperty("wa_id") val waId: String? = null,
 )
 
 data class Message(
