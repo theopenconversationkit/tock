@@ -1,0 +1,3644 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="security.html">
+      
+      
+        <link rel="next" href="synchronization.html">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Supervision - Tock Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/css/style.css">
+    
+      <link rel="stylesheet" href="../../assets/css/badge.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#supervision" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../index.html" title="Tock Documentation" class="md-header__button md-logo" aria-label="Tock Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Tock Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Supervision
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sélectionner la langue">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../admin/supervision.html" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="supervision.html" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/theopenconversationkit/tock/tree/master/" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Tock Documentation" class="md-nav__button md-logo" aria-label="Tock Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Tock Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/theopenconversationkit/tock/tree/master/" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bienvenue !
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conventions.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conventions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            About
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/awards.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Récompenses
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/community.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Communauté
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/contact.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contact
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/contribute.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribuer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/jobs.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Emploi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/ressources.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ressources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/showcase.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vitrine
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/why.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pourquoi Tock
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Admin
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Admin
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="availability.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Haute disponibilité
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cloud.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cloud
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="installation.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="security.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sécurité
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Supervision
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="supervision.html" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Supervision
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lignes-de-vie-healthchecks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lignes de vie (healthchecks)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lignes de vie (healthchecks)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sondes-chemins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sondes &amp; chemins
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-detaille" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mode détaillé
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#details-par-composants" class="md-nav__link">
+    <span class="md-ellipsis">
+      Détails par composants
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supervision-des-lignes-de-vie" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supervision des lignes de vie
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#journalisation-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Journalisation (logs)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Journalisation (logs)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logs-applicatifs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logs applicatifs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Logs applicatifs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auto-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Auto-configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fichiers-logback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fichiers Logback
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Compose
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chiffrement-et-anonymisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chiffrement et anonymisation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="synchronization.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Documentation de la Fonctionnalité de Synchronisation Multilingue
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Dev
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Dev
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/api.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/bot-api.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bot API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/bot-integre.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bot intégré
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/connectors.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connecteurs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/examples-code.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Exemples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/i18n.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    i18n - développement
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/modes.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/test.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tester
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Advanced
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_9">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/bot-api.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BotApi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/collections.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Les collections Tock
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/coroutine-stories.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utilisation des coroutines dans les stories
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/main-classes-explanation.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Main classes explanation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/packages.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Explication des packages Tock
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_9_6" id="__nav_5_9_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Nlp
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            Nlp
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/nlp/nlp-evaluation-with-duckling-and-dictionary%20%28%20end%20of%20file%29.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Nlp evaluation with duckling and dictionary ( end of file)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/nlp/nlp-intents-and-entities-evaluation-simplifed-diagram.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Nlp intents and entities evaluation simplifed diagram
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/nlp/nlp-models-and-entity-models.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Les modèles NLP
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_10" id="__nav_5_10_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gen ai orchestrator
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_10">
+            <span class="md-nav__icon md-icon"></span>
+            Gen ai orchestrator
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/gen_ai_orchestrator/api.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Api
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/api.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/messenger.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Messenger
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/platform.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plateforme
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/slack.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Slack
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/studio.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Studio
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    User
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            User
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Studio
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            Studio
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_1_1" id="__nav_7_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gen ai
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            Gen ai
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_1_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_1_1_1" id="__nav_7_1_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Rag chain
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_1_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            Rag chain
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/rag-chain/rag-prompt-system.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Rag Chain - Prompt documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    User
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            User
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/concepts.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Concepts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/guides.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tock Studio
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_4">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/guides/build-model.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modèles conversationnels
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/guides/canaux.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Canaux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/guides/i18n.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    i18n - guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/guides/intents-restrictions.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Restriction d’intentions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_5" id="__nav_8_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Studio
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_5">
+            <span class="md-nav__icon md-icon"></span>
+            Studio
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/analytics.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Analytics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/configuration.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/custom-metrics.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom Metrics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/faq-management.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/faq-training.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/general.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    L'interface Tock Studio
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/nlu-qa.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Quality
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/nlu.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NLU
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/stories-and-answers.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stories and Answers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/test.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_5_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_5_11" id="__nav_8_5_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gen ai
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_5_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_5_11">
+            <span class="md-nav__icon md-icon"></span>
+            Gen ai
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/gen-ai.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gen AI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_5_11_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_5_11_2" id="__nav_8_5_11_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Features
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_8_5_11_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_5_11_2">
+            <span class="md-nav__icon md-icon"></span>
+            Features
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-observability.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gen AI - Observability Settings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-rag-exclusion.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gen AI / RAG Exclusions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-rag.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gen AI / RAG Settings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-sentence-generation.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gen AI - Sentence generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-vector-store.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Le menu Gen AI - Vector Store Settings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_5_11_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_5_11_3" id="__nav_8_5_11_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Providers
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_8_5_11_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_5_11_3">
+            <span class="md-nav__icon md-icon"></span>
+            Providers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/providers/gen-ai-provider-llm-and-embedding.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fournisseurs des modèles LLM et d'Embedding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/providers/gen-ai-provider-observability.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fournisseurs d'observabilité des LLMs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/providers/gen-ai-provider-vector-store.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fournisseurs de base vectorielle
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lignes-de-vie-healthchecks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lignes de vie (healthchecks)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lignes de vie (healthchecks)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sondes-chemins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sondes &amp; chemins
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-detaille" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mode détaillé
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#details-par-composants" class="md-nav__link">
+    <span class="md-ellipsis">
+      Détails par composants
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supervision-des-lignes-de-vie" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supervision des lignes de vie
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#journalisation-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Journalisation (logs)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Journalisation (logs)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logs-applicatifs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logs applicatifs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Logs applicatifs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auto-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Auto-configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fichiers-logback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fichiers Logback
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Compose
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chiffrement-et-anonymisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chiffrement et anonymisation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/theopenconversationkit/tock/tree/master/docs/docs/fr/admin/supervision.md" title="Editer cette page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="supervision">Supervision</h1>
+<p>Ce chapitre présente quelques aspects supervision et <em>monitoring</em> du fonctionnement de la plateforme 
+et des bots Tock.</p>
+<blockquote>
+<p>A venir : plus de détails sur la manière de monitorer les bots, voire des exemples de dashboards pour quelques 
+technologies de monitoring classiques. N'hésitez pas à partager les vôtres.</p>
+</blockquote>
+<h2 id="lignes-de-vie-healthchecks">Lignes de vie (healthchecks)</h2>
+<p>Les API des différents composants Tock comportent différentes sondes ou lignes de vie (<em>healthchecks</em>) permettant 
+de vérifier si tout fonctionne correctement.
+Ces lignes de vie peuvent être utilisées par les systèmes de supervision automatisés.</p>
+<h3 id="sondes-chemins">Sondes &amp; chemins</h3>
+<p>Chaque <code>WebVerticle</code> expose 3 sondes renvoyant le code <code>HTTP 200</code> si tout fonctionne.</p>
+<table>
+<thead>
+<tr>
+<th>Chemin par défaut</th>
+<th>Description</th>
+<th>Propriété pour modifier le chemin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/healthcheck</code></td>
+<td>Le composant fonctionne correctement. <em>(Mode détaillé : voir plus bas)</em></td>
+<td><code>tock_vertx_healthcheck_path</code></td>
+</tr>
+<tr>
+<td><code>/health/readiness</code></td>
+<td>Le composant est prêt à traiter des requêtes.</td>
+<td><code>tock_vertx_readinesscheck_path</code></td>
+</tr>
+<tr>
+<td><code>/health/liveness</code></td>
+<td>Le composant est démarré.</td>
+<td><code>tock_vertx_livenesscheck_path</code></td>
+</tr>
+</tbody>
+</table>
+<p>Pour certains composants et images, le ligne de vie ne pouvant pas être exposée directement à la racine, le chemin est
+modifié. En particulier :</p>
+<ul>
+<li>Pour <code>tock/admin</code>, la ligne de vie est localisée par défaut dans <code>/rest/admin/healthcheck</code></li>
+<li>Pour <code>tock/nlp_api</code>, la ligne de vie est <code>/rest/nlp/healthcheck</code></li>
+</ul>
+<p>Chaque chemin par défaut peut être modifiée avec une propriété dédiée (voir tableau ci-dessus).</p>
+<h3 id="mode-detaille">Mode détaillé</h3>
+<p>La ligne de vie principale <code>/healthcheck</code> peut effectuer une inspection plus détaillée (ie. généralement vérifier 
+la connexion à d'autres composants) si l'on active la propriété <code>tock_detailed_healthcheck_enabled</code>.
+La réponse de la ligne de vie précise alors les composants vérifiés.</p>
+<p>Voici un exemple d'activation dans l'image Docker <code>bot_admin</code> :</p>
+<ul>
+<li>
+<p>{: data-hl-lines="6"} docker-compose.yml
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3&#39;</span>
+<span class="w">    </span><span class="nt">services</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">admin_web</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tock/bot_admin:$TAG</span>
+<span class="w">        </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tock_detailed_healthcheck_enabled=true</span>
+</code></pre></div></p>
+</li>
+<li>
+<p class="tabbed-code">{: data-hl-lines="8"} dockerrun.aws.json
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;AWSEBDockerrunVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;containerDefinitions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin_web&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;image&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock/bot_admin:${TAG}&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;environment&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_detailed_healthcheck_enabled&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></p>
+</li>
+</ul>
+<p>Exemple de réponse de la ligne de vie en mode détaillé :</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;duckling_service&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_front_database&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_model_database&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_bot_database&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<blockquote>
+<p>Voir ci-dessous pour une synthèse des lignes de vie composant par composant.</p>
+</blockquote>
+<h3 id="details-par-composants">Détails par composants</h3>
+<p>Le tableau ci-dessous détaille le chemin et les vérifications effectuées par la ligne de vie principale composant 
+par composant, en mode normal et en mode détaillé :</p>
+<table>
+<thead>
+<tr>
+<th>Composant / image</th>
+<th>Chemin par défaut</th>
+<th>Vérification par défaut</th>
+<th>Vérification détaillée (<code>tock_detailed_healthcheck_enabled=true</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NLP</td>
+<td><code>/rest/nlp/healthcheck</code></td>
+<td>Duckling / entity providers OK.</td>
+<td>Bases de données <code>front</code> et <code>model</code> OK.</td>
+</tr>
+<tr>
+<td>Duckling / RestEntityProvider</td>
+<td><code>/healthcheck</code></td>
+<td>Duckling bridge initialisé.</td>
+<td><em>Idem</em></td>
+</tr>
+<tr>
+<td>Build Worker</td>
+<td><code>/healthcheck</code></td>
+<td>Worker prêt à analyser le modèle.</td>
+<td>Bases de données <code>front</code> et <code>model</code> OK.</td>
+</tr>
+<tr>
+<td>Bot / Bot Api</td>
+<td><code>/healthcheck</code></td>
+<td>Bot installé, connecté à la base de données, NLP OK.</td>
+<td><em>Idem</em></td>
+</tr>
+<tr>
+<td>WebHook (Bot Api)</td>
+<td><code>/healthcheck</code></td>
+<td>OK</td>
+<td><em>Idem</em></td>
+</tr>
+<tr>
+<td>Kotlin Compiler</td>
+<td><code>/healthcheck</code></td>
+<td>OK</td>
+<td><em>Idem</em></td>
+</tr>
+<tr>
+<td>NLP / Bot Admin</td>
+<td><code>/rest/admin/healthcheck</code></td>
+<td>OK</td>
+<td>Duckling / entity providers OK, bases de données <code>front</code> <code>model</code> et <code>bot</code> OK.</td>
+</tr>
+</tbody>
+</table>
+<p>Ci-dessous des exemples de réponses de différents composants en mode détaillé :</p>
+<ul>
+<li>
+<p>NLP
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;duckling_service&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_front_database&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_model_database&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Duckling
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;duckling_bridge&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Build Worker
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_front_database&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_model_database&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Bot Api
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;nlp_client&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Kotlin Compiler
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></p>
+</li>
+<li>
+<p class="tabbed-code">Bot Admin
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;duckling_service&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_front_database&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_model_database&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_bot_database&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></p>
+</li>
+</ul>
+<h3 id="supervision-des-lignes-de-vie">Supervision des lignes de vie</h3>
+<p>Les différentes sondes et lignes de vie peuvent être utilisées pour configurer les systèmes de supervision et autres 
+orchestrateurs de conteneurs par exemple, pour mesurer la disponibilité des services, déclencher des alertes ou 
+remédier aux problèmes dynamiquement.</p>
+<p>Selon les outils et technologies utilisées, la configuration des lignes de vie peut se faire de différentes manières.
+Voici quelques exemples à titre indicatif :</p>
+<ul>
+<li>Au niveau des répartiteurs de charge (<em>load balancers</em>) <em>Cloud</em> ou <em>on-premise</em>, par exemple :<ul>
+<li>dans la <a href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-elb-healthcheck.html">section <em>Health checks</em> au niveau <em>ELB</em> dans AWS</a></li>
+<li>avec la <a href="https://docs.nginx.com/nginx/admin-guide/load-balancer/http-health-check/">directive <code>health_check</code> dans NGINX</a></li>
+<li>avec l'<a href="https://www.haproxy.com/documentation/aloha/latest/traffic-management/lb-layer7/health-checks/#check-an-http-service"><code>option httpchk</code> dans HAProxy</a></li>
+</ul>
+</li>
+<li>Dans <em>Docker</em> (descripteurs <code>Dockerfile</code>) :<ul>
+<li>avec l'<a href="https://docs.docker.com/engine/reference/builder/#healthcheck">instruction <code>HEALTHCHECK</code></a> pour vérifier le
+  statut du composant</li>
+<li>avec <a href="https://docs.docker.com/engine/reference/builder/#understand-how-cmd-and-entrypoint-interact"><code>ENTRYPOINT</code> ou <code>CMD</code></a> 
+  pour attendre que le composant soit prêt au démarrage</li>
+</ul>
+</li>
+<li>Dans <em>Docker Compose</em> (descripteurs <code>docker-compose.yml</code>) :<ul>
+<li>avec <a href="https://docs.docker.com/compose/compose-file/compose-file-v3/#healthcheck"><code>healthcheck</code></a></li>
+</ul>
+</li>
+<li>Dans <em>Kubernetes</em> :<ul>
+<li>avec <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/"><code>livenessProbe</code> et <code>readinessProbe</code></a></li>
+</ul>
+</li>
+<li>Etc.</li>
+</ul>
+<h2 id="journalisation-logs">Journalisation (logs)</h2>
+<h3 id="logs-applicatifs">Logs applicatifs</h3>
+<p>Tock utilise <a href="http://www.slf4j.org">SLF4J</a> et <a href="http://logback.qos.ch/">Logback</a> pour générer ses logs applicatifs côté serveur.</p>
+<p>Par défaut Tock configure automatiquement ses logs et quelques propriétés permettent de modifier la configuration.</p>
+<p>Il est possible de configurer finement les logs en fonction des besoins, notamment avec des fichiers de 
+configuration Logback ou avec Docker Compose.</p>
+<h4 id="auto-configuration">Auto-configuration</h4>
+<p>Par défaut, en l'absence de configuration spécifique, Tock configure ses logs automatiquement grâce à la classe 
+<a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/LogbackConfigurator.kt"><code>LogbackConfigurator</code></a>.
+Celle-ci configure <a href="http://logback.qos.ch/">Logback</a> programmatiquement, avec le comportement suivant :</p>
+<ul>
+<li>Niveau de log général <code>DEBUG</code> si <code>tock_env=dev</code> (par défaut), ou <code>INFO</code> pour les autres environnements et la production<ul>
+<li>Exception pour les logs <code>org.mongodb.driver</code> toujours à <code>INFO</code></li>
+<li>Exception pour les logs <code>io.netty</code> toujours à <code>INFO</code></li>
+<li>Exception pour les logs <code>okhttp3</code> toujours à <code>INFO</code></li>
+<li>Exception pour les logs <code>io.mockk</code> toujours à <code>INFO</code></li>
+</ul>
+</li>
+<li>Logs dirigés vers la console (sortie standard) par défaut, mais possibilité d'écrire dans des fichiers<ul>
+<li>En mode logs fichiers, écriture dans <code>log/logFile.log</code>, archivage d'un fichier chaque jour 
+(<code>log/logFile.%d{yyyy-MM-dd}.log</code>), maximum <code>30</code> jours ou <code>3GB</code> de logs conservés</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Pour en savoir plus sur la configuration automatiques des logs Tock, se référer à l'implémentation 
+<a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/LogbackConfigurator.kt"><code>LogbackConfigurator</code></a>.</p>
+</blockquote>
+<p>Des variables d'environnement permettent de configurer ces différents modes de journalisation. 
+Elles peuvent être définies indépendamment sur chaque composant produisant des logs.</p>
+<table>
+<thead>
+<tr>
+<th>Variable d'environnement</th>
+<th>Valeur par défaut</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tock_env</code></td>
+<td><code>dev</code></td>
+<td>Environnement (attention : contrôle d'autres mécanismes que les logs).</td>
+</tr>
+<tr>
+<td><code>tock_logback_enabled</code></td>
+<td><code>true</code></td>
+<td>Activation des logs.</td>
+</tr>
+<tr>
+<td><code>tock_default_log_level</code></td>
+<td><code>DEBUG</code> si <code>tock_env=dev</code> (autrement <code>INFO</code>)</td>
+<td>Niveau de log général (hors exceptions, voir plus haut).</td>
+</tr>
+<tr>
+<td><code>tock_retrofit_log_level</code></td>
+<td><code>BASIC</code> si <code>tock_env=dev</code> (autrement <code>NONE</code>)</td>
+<td>Niveau de logs (requêtes et réponses) pour les services clients applicatifs utilisant Retrofit (TockNlpClient, BotApiClient, et bon nombre de connecteurs...)</td>
+</tr>
+<tr>
+<td><code>tock_logback_file_appender</code></td>
+<td><code>false</code></td>
+<td>Logs fichiers (voir détails plus haut) à la place des logs console (sortie standard).</td>
+</tr>
+</tbody>
+</table>
+<p>Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
+directement en ligne de commande, soit dans un descripteur type <code>docker-compose.yml</code>, <code>dockerrun.aws.json</code> ou autre.</p>
+<p>Voici un exemple configurant les logs de Tock Studio (<code>admin_web</code>) dans Docker :</p>
+<ul>
+<li>
+<p>{: data-hl-lines="6 7"} docker-compose.yml
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3&#39;</span>
+<span class="w">  </span><span class="nt">services</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">admin_web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tock/bot_admin:$TAG</span>
+<span class="w">      </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tock_default_log_level=WARN</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tock_logback_file_appender=true</span>
+</code></pre></div></p>
+</li>
+<li>
+<p class="tabbed-code">{: data-hl-lines="8"} dockerrun.aws.json
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;AWSEBDockerrunVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;containerDefinitions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin_web&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;image&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock/bot_admin:${TAG}&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;environment&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_default_log_level&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;WARN&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tock_logback_file_appender&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></p>
+</li>
+</ul>
+<h4 id="fichiers-logback">Fichiers Logback</h4>
+<p>Il est possible de configurer finement les logs Tock en configurant directement <a href="http://logback.qos.ch/">Logback</a>.
+Pour cela, différentes possibilités existent, notamment des fichiers de configuration en format XML ou Groovy. 
+Ci-dessous un exemple de configuration :</p>
+<ul>
+<li>logback.xml
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="w">    </span><span class="nt">&lt;configuration</span><span class="w"> </span><span class="na">debug=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+
+<span class="w">        </span><span class="nt">&lt;logger</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;ai.tock&quot;</span><span class="w"> </span><span class="na">level=</span><span class="s">&quot;DEBUG&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+
+<span class="w">        </span><span class="nt">&lt;logger</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;org.mongodb&quot;</span><span class="w"> </span><span class="na">level=</span><span class="s">&quot;WARN&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+
+<span class="w">        </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;console&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;encoder&gt;</span>
+<span class="w">                </span><span class="nt">&lt;pattern&gt;</span>
+<span class="w">                    </span>%d<span class="w"> </span>%-5level<span class="w"> </span>[%thread]<span class="w"> </span>%logger{1}:<span class="w"> </span>%msg%n
+<span class="w">                </span><span class="nt">&lt;/pattern&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/encoder&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/appender&gt;</span>
+
+<span class="w">        </span><span class="nt">&lt;root</span><span class="w"> </span><span class="na">level=</span><span class="s">&quot;INFO&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;console&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/root&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div></li>
+<li class="tabbed-code">logback.groovy
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="kn">import</span><span class="w"> </span><span class="nn">ch.qos.logback.classic.encoder.PatternLayoutEncoder</span>
+<span class="w">    </span><span class="kn">import</span><span class="w"> </span><span class="nn">ch.qos.logback.core.ConsoleAppender</span>
+
+<span class="w">    </span><span class="kn">import</span><span class="w"> </span><span class="nn">static</span><span class="w"> </span><span class="n">ch</span><span class="o">.</span><span class="na">qos</span><span class="o">.</span><span class="na">logback</span><span class="o">.</span><span class="na">classic</span><span class="o">.</span><span class="na">Level</span><span class="o">.</span><span class="na">DEBUG</span>
+<span class="w">    </span><span class="kn">import</span><span class="w"> </span><span class="nn">static</span><span class="w"> </span><span class="n">ch</span><span class="o">.</span><span class="na">qos</span><span class="o">.</span><span class="na">logback</span><span class="o">.</span><span class="na">classic</span><span class="o">.</span><span class="na">Level</span><span class="o">.</span><span class="na">INFO</span>
+<span class="w">    </span><span class="kn">import</span><span class="w"> </span><span class="nn">static</span><span class="w"> </span><span class="n">ch</span><span class="o">.</span><span class="na">qos</span><span class="o">.</span><span class="na">logback</span><span class="o">.</span><span class="na">classic</span><span class="o">.</span><span class="na">Level</span><span class="o">.</span><span class="na">WARN</span>
+
+<span class="w">    </span><span class="nf">appender</span><span class="o">(</span><span class="s2">&quot;console&quot;</span><span class="o">,</span><span class="w"> </span><span class="n">ConsoleAppender</span><span class="o">)</span><span class="w"> </span><span class="o">{</span>
+<span class="w">      </span><span class="n">encoder</span><span class="o">(</span><span class="n">PatternLayoutEncoder</span><span class="o">)</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="n">pattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;%d %-5level [%thread] %logger{1}: %msg%n&quot;</span>
+<span class="w">      </span><span class="o">}</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">    </span><span class="n">logger</span><span class="o">(</span><span class="s2">&quot;ai.tock&quot;</span><span class="o">,</span><span class="w"> </span><span class="n">DEBUG</span><span class="o">)</span>
+<span class="w">    </span><span class="n">logger</span><span class="o">(</span><span class="s2">&quot;org.mongodb&quot;</span><span class="o">,</span><span class="w"> </span><span class="n">WARN</span><span class="o">)</span>
+<span class="w">    </span><span class="n">root</span><span class="o">(</span><span class="n">INFO</span><span class="o">,</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;console&quot;</span><span class="o">])</span>
+</code></pre></div></li>
+</ul>
+<p>Dans cet exemple :</p>
+<ul>
+<li>Le niveau de log général est <code>INFO</code>, avec des exceptions :<ul>
+<li>Exception pour les logs <code>ai.tock</code> toujours à <code>DEBUG</code></li>
+<li>Exception pour les logs <code>org.mongodb</code> toujours à <code>WARN</code></li>
+</ul>
+</li>
+<li>Les logs sont dirigés vers la console (sortie standard)</li>
+</ul>
+<p>De nombreuses possibilités sont offertes pour configurer les logs grâce à ces fichiers de configuration :
+niveaux de logs ajustés en fonction des packages/frameworks embarqués, modification du pattern par défaut, 
+journalisation de logs fichiers et archivage auto avec un 
+<a href="http://logback.qos.ch/manual/appenders.html#RollingFileAppender"><code>RollingFileAppender</code></a>, redirection des logs 
+vers un serveur de base de données ou email, etc.
+Pour en savoir plus, se référer à la <a href="http://logback.qos.ch/manual/configuration.html">documentation Logback</a>.</p>
+<p>Une fois le fichier de configuration Logback créé, il faut s'assurer que celui-ci est dans la <em>classpath</em> du 
+composant Tock et que Logback l'identifie comme la configuration à suivre (pour cela on utilise généralement 
+la propriété <code>-Dlogback.configurationFile</code> au démarrage du composant Java).</p>
+<p>Ci-dessous un exemple complet dans Docker Compose avec :</p>
+<ul>
+<li>Un fichier <code>logback.xml</code> embarqué par Maven (<code>pom.xml</code>) dans l'image Docker</li>
+<li>Quelques variables d'environnement définies pour pouvoir rapidement ajuste les principaux niveaux de log 
+directement dans Docker-Compose (sans avoir à modifier le fichier XML ni l'image Docker)'</li>
+</ul>
+<p class="tabbed-code">^
+- logback.xml
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="w">    </span><span class="nt">&lt;configuration</span><span class="w"> </span><span class="na">debug=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+
+<span class="w">        </span><span class="cm">&lt;!-- Leverage env variables with defaults, for more flexibility --&gt;</span>
+<span class="w">        </span><span class="nt">&lt;variable</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;tock_default_log_level&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;${tock_default_log_level:-WARN}&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;variable</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;tock_service_log_level&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;${tock_service_log_level:-INFO}&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;variable</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;tock_database_log_level&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;${tock_database_log_level:-WARN}&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+
+<span class="w">        </span><span class="nt">&lt;logger</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;ai.tock&quot;</span><span class="w"> </span><span class="na">level=</span><span class="s">&quot;${tock_service_log_level}&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;logger</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;org.mongodb&quot;</span><span class="w"> </span><span class="na">level=</span><span class="s">&quot;${tock_database_log_level}&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+
+<span class="w">        </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;console&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;encoder&gt;</span>
+<span class="w">                </span><span class="nt">&lt;pattern&gt;</span>
+<span class="w">                    </span>%d<span class="w"> </span>%-5level<span class="w"> </span>[%thread]<span class="w"> </span>%logger{1}:<span class="w"> </span>%msg%n
+<span class="w">                </span><span class="nt">&lt;/pattern&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/encoder&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/appender&gt;</span>
+
+<span class="w">        </span><span class="nt">&lt;root</span><span class="w"> </span><span class="na">level=</span><span class="s">&quot;${tock_default_log_level}&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;console&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/root&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
+- {: data-hl-lines="21 22 23 24 29"} pom.xml
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="w">    </span><span class="nt">&lt;project</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span><span class="w"> </span><span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="w"> </span><span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>tock-docker-bot-admin<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;build&gt;</span>
+<span class="w">            </span><span class="nt">&lt;plugins&gt;</span>
+<span class="w">                </span><span class="nt">&lt;plugin&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;groupId&gt;</span>io.fabric8<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;artifactId&gt;</span>docker-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;configuration&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;images&gt;</span>
+<span class="w">                            </span><span class="nt">&lt;image&gt;</span>
+<span class="w">                                </span><span class="nt">&lt;name&gt;</span>tock/bot_admin:${project.version}<span class="nt">&lt;/name&gt;</span>
+<span class="w">                                </span><span class="nt">&lt;build&gt;</span>
+<span class="w">                                    </span><span class="nt">&lt;assembly&gt;</span>
+<span class="w">                                        </span><span class="nt">&lt;inline&gt;</span>
+<span class="w">                                            </span><span class="nt">&lt;dependencySets&gt;</span>
+<span class="w">                                                </span>...
+<span class="w">                                            </span><span class="nt">&lt;/dependencySets&gt;</span>
+<span class="w">                                            </span><span class="nt">&lt;files&gt;</span>
+<span class="w">                                                </span><span class="nt">&lt;file&gt;</span>
+<span class="w">                                                    </span><span class="nt">&lt;source&gt;</span>logback.xml<span class="nt">&lt;/source&gt;</span>
+<span class="w">                                                    </span><span class="nt">&lt;outputDirectory&gt;</span>.<span class="nt">&lt;/outputDirectory&gt;</span>
+<span class="w">                                                </span><span class="nt">&lt;/file&gt;</span>
+<span class="w">                                            </span><span class="nt">&lt;/files&gt;</span>
+<span class="w">                                        </span><span class="nt">&lt;/inline&gt;</span>
+<span class="w">                                    </span><span class="nt">&lt;/assembly&gt;</span>
+<span class="w">                                    </span><span class="nt">&lt;cmd&gt;</span>
+<span class="w">                                        </span><span class="nt">&lt;shell&gt;</span>java<span class="w"> </span>$JAVA_ARGS<span class="w"> </span>-Dlogback.configurationFile=&#39;file:///maven/logback.xml&#39;<span class="w"> </span>-Dfile.encoding=UTF-8<span class="w"> </span>-Dtock_nlp_model_refresh_rate=10<span class="w"> </span>-cp<span class="w"> </span>&#39;/maven/*&#39;<span class="w"> </span>ai.tock.bot.admin.StartBotAdminServerKt<span class="nt">&lt;/shell&gt;</span>
+<span class="w">                                    </span><span class="nt">&lt;/cmd&gt;</span>
+<span class="w">                                    </span>...
+</code></pre></div>
+- {: data-hl-lines="6 7 8"} docker-compose.yml
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3&#39;</span>
+<span class="w">    </span><span class="nt">services</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">admin_web</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tock/bot_admin:$TAG</span>
+<span class="w">        </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tock_default_log_level=WARN</span><span class="w"> </span><span class="c1"># Default, see logback.xml</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tock_service_log_level=INFO</span><span class="w"> </span><span class="c1"># Default, see logback.xml</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tock_database_log_level=WARN</span><span class="w"> </span><span class="c1"># Default, see logback.xml</span>
+</code></pre></div></p>
+<blockquote>
+<p>Le code complet de cet exemple appliqué à tous les modules Tock est disponible dans le dépôt <code>tock-docker</code> 
+sur la branche <a href="https://github.com/theopenconversationkit/tock-docker/tree/logbackxml"><code>logbackxml</code></a>.</p>
+</blockquote>
+<h4 id="docker-compose">Docker Compose</h4>
+<p>Pour les utilisateurs de <a href="https://docs.docker.com/compose/">Docker Compose</a>, un mécanisme permet de configurer les logs directement dans les 
+descripteurs en YAML. Voir le dépot <a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a> pour un 
+exemple d'implémentation de Tock dans Docker Compose.</p>
+<p>Chaque composant applicatif peut avoir sa propre configuration :</p>
+<ul>
+<li class="tabbed-code">docker-compose.yml
+<div class="highlight"><pre><span></span><code><span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;json-file&quot;</span>
+<span class="w">  </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">max-size</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10m&quot;</span>
+<span class="w">    </span><span class="nt">max-file</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;5&quot;</span>
+</code></pre></div></li>
+</ul>
+<p>L'exemple ci-dessus configure une rotation automatique des fichiers de logs, de manière à avoir maximum 
+<code>5</code> fichiers de logs de maximum <code>10 Mo</code> chacun (le plus ancien étant supprimé pour en créer un nouveau si besoin).</p>
+<p>Pour en savoir plus, voir la <a href="https://docs.docker.com/compose/compose-file/#logging">documentation Docker Compose</a> de ce mécanisme.</p>
+<h3 id="chiffrement-et-anonymisation">Chiffrement et anonymisation</h3>
+<p>Voir la page <a href="security.html">sécurité</a> concernant les possibilités de chiffrement et anonymisation des logs.</p>
+<!-- Chat inclusion start -->
+<div>
+  <script src="https://unpkg.com/vue@3.4/dist/vue.global.prod.js"></script>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/tock-vue-kit@0.3.6/dist/style.css"
+  />
+  <script
+    crossorigin
+    src="https://unpkg.com/tock-vue-kit@0.3.6/dist/tock-vue-kit.iife.js"
+  ></script>
+  <style>
+    :root {
+      --tvk_base_font-size: 1em;
+      --tvk_base_radius: 0;
+      --tvk_colors_brand-hue: 207;
+      --tvk_colors_brand-lightness: 54%;
+      --tvk_colors_brand-saturation: 90%;
+      --tvk_colors_light_background: white;
+      --tvk_colors_light_surface2: hsl(var(--tvk_colors_brand-hue) 10% 95%);
+      --tvk_footnotes_margin: 2em 0em 0em 0em;
+      --tvk_footnotes_sources-title_display: block;
+      --tvk_footnotes_flex-wrap: wrap;
+      --tvk_footnotes_margin: 1em 0em 0em 0em;
+      --tvk_question_box-shadow: inset 0px 0px 5px #00000030;
+      --tvk_message_body_line-height: 1.3;
+      --tvk_message_header_avatar_radius: unset;
+      --tvk_message_header_avatar_bot_background: transparent;
+      --tvk_message_header_font-weight: 300;
+      --tvk_wrapper_padding: 0.5em;
+      --tvk_wrapper_max-width: 45vw;
+      --tvk_wrapper_min-height: 25em;
+    }
+    #chat-wrapped {
+      display: none;
+      position: fixed;
+      bottom: 0.5em;
+      right: 0.5em;
+      min-width: 20em;
+      flex-direction: column;
+      background-color: white;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+    .chat-header {
+      background-color: var(--md-primary-fg-color);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      font-weight: 100;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chat-header-title {
+      display: flex;
+      align-items: center;
+    }
+    .chat-header-title-logo {
+      height: 1.5em !important;
+      margin-right: 0.25em;
+    }
+    #chat-header-close {
+      margin-top: -3px;
+    }
+    #chat-container {
+      flex-grow: 1;
+    }
+    #chat-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: var(--md-primary-fg-color);
+      border-radius: 50%;
+      color: white;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    #chat-icon:hover {
+      background-color: var(--md-accent-fg-color);
+    }
+    .pointer {
+      cursor: pointer;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+
+  <!-- Icône de chat flottant -->
+  <div id="chat-icon" onclick="toggleChat()" title="Chat with Tock">
+    <img src="../../img/Logo_Tock_White.svg" />
+  </div>
+
+  <!-- Fenêtre du chatbot -->
+  <div id="chat-wrapped">
+    <div class="chat-header">
+      <div class="chat-header-title">
+        <img src="../../img/Logo_Tock_White.svg" class="chat-header-title-logo" />
+        <span id="chat-header-title-string">Chat with Tock</span>
+      </div>
+      <span
+        id="chat-header-close"
+        onclick="closeChat()"
+        class="pointer"
+        title="Close chat"
+        >&times;</span
+      >
+    </div>
+    <div id="chat-container"></div>
+  </div>
+
+  <script>
+    function toggleChat() {
+      const chatWindow = document.getElementById("chat-wrapped");
+
+      if (
+        chatWindow.style.display === "" ||
+        chatWindow.style.display === "none"
+      ) {
+        chatWindow.style.display = "flex";
+      } else {
+        chatWindow.style.display = "none";
+      }
+    }
+
+    function closeChat() {
+      const chatWindow = document.getElementById("chat-wrapped");
+      chatWindow.style.display = "none";
+    }
+
+    let i18n = {
+      title: "Chat with Tock",
+      initialization: {
+        welcomeMessage: "Hello, would you like to talk about Tock?",
+      },
+      wording: {
+        messages: {
+          message: {
+            header: {
+              labelUser: "You",
+            },
+            footnotes: {
+              sources: "Sources:",
+              showMoreLink: "> Show more",
+            },
+          },
+        },
+        questionBar: {
+          clearHistoryAriaLabel: "Clear discussion and history button",
+          input: {
+            placeholder: "Ask me anything about Tock...",
+          },
+          submitAriaLabel: "Submit button",
+        },
+        connectionErrorMessage:
+          "An unexpected error occured. Please try again later.",
+      },
+    };
+
+    if (document.documentElement.getAttribute("lang") === "fr") {
+      document.getElementById("chat-icon").title = "Discutez avec Tock";
+      document.getElementById("chat-header-close").title = "Fermer le chat";
+      document.getElementById("chat-header-title-string").innerText =
+        "Discutez avec Tock";
+
+      i18n = {
+        initialization: {
+          welcomeMessage: "Bonjour, vous souhaitez parler de Tock ?",
+        },
+        wording: {
+          messages: {
+            message: {
+              header: {
+                labelUser: "Vous",
+              },
+              footnotes: {
+                sources: "Sources :",
+                showMoreLink: "> Plus",
+              },
+            },
+          },
+          questionBar: {
+            clearHistoryAriaLabel:
+              "Bouton d'effacement de la discussion et de l'historique",
+            input: {
+              placeholder: "Demandez-moi n'importe quoi sur Tock...",
+            },
+            submitAriaLabel: "Bouton d'envoi",
+          },
+          connectionErrorMessage:
+            "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
+        },
+      };
+    }
+
+    const tockUrl = "https://demo-bot.tock.ai/io/tock/tockbot/web";
+
+    TockVueKit.renderChat(document.getElementById("chat-container"), tockUrl, {
+      localStorage: {
+        enabled: true,
+      },
+      initialization: {
+        welcomeMessage: i18n.initialization.welcomeMessage,
+      },
+      preferences: {
+        messages: {
+          message: {
+            header: {
+              avatar: {
+                botImage: {
+                  src: "../../img/favicon.png",
+                  width: "1.5em",
+                  height: "1.5em",
+                },
+              },
+            },
+          },
+          footNotes: {
+            requireSourcesContent: true,
+          },
+        },
+      },
+      wording: {
+        messages: {
+          message: {
+            header: {
+              labelBot: "Toki",
+              labelUser: i18n.wording.messages.message.header.labelUser,
+            },
+            footnotes: {
+              sources: i18n.wording.messages.message.footnotes.sources,
+              showMoreLink:
+                i18n.wording.messages.message.footnotes.showMoreLink,
+            },
+          },
+        },
+        questionBar: {
+          clearHistoryAriaLabel: i18n.wording.questionBar.clearHistoryAriaLabel,
+          input: {
+            placeholder: i18n.wording.questionBar.input.placeholder,
+          },
+          submitAriaLabel: i18n.wording.questionBar.submitAriaLabel,
+        },
+        connectionErrorMessage: i18n.wording.connectionErrorMessage,
+      },
+    });
+  </script>
+</div>
+<!-- Chat inclusion end -->
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Dernière mise à jour">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">3 mai 2023</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Créé">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2 août 2019</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "content.code.copy", "navigation.expand", "navigation.path", "palette.toggle", "navigation.top"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>

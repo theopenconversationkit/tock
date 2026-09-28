@@ -1,0 +1,3258 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="messenger.html">
+      
+      
+        <link rel="next" href="slack.html">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Plateforme - Tock Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/css/style.css">
+    
+      <link rel="stylesheet" href="../../assets/css/badge.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deployer-une-plateforme-avec-docker" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../index.html" title="Tock Documentation" class="md-header__button md-logo" aria-label="Tock Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Tock Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Plateforme
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sélectionner la langue">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../guides/platform.html" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="platform.html" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/theopenconversationkit/tock/tree/master/" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Tock Documentation" class="md-nav__button md-logo" aria-label="Tock Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Tock Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/theopenconversationkit/tock/tree/master/" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bienvenue !
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conventions.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conventions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            About
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/awards.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Récompenses
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/community.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Communauté
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/contact.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contact
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/contribute.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribuer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/jobs.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Emploi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/ressources.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ressources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/showcase.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vitrine
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/why.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pourquoi Tock
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Admin
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Admin
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/architecture.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/availability.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Haute disponibilité
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/cloud.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cloud
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/installation.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/security.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sécurité
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/supervision.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Supervision
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/synchronization.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Documentation de la Fonctionnalité de Synchronisation Multilingue
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Dev
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Dev
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/api.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/bot-api.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bot API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/bot-integre.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bot intégré
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/connectors.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connecteurs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/examples-code.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Exemples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/i18n.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    i18n - développement
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/modes.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/test.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tester
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Advanced
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_9">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/bot-api.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BotApi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/collections.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Les collections Tock
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/coroutine-stories.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utilisation des coroutines dans les stories
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/main-classes-explanation.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Main classes explanation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/packages.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Explication des packages Tock
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_9_6" id="__nav_5_9_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Nlp
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            Nlp
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/nlp/nlp-evaluation-with-duckling-and-dictionary%20%28%20end%20of%20file%29.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Nlp evaluation with duckling and dictionary ( end of file)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/nlp/nlp-intents-and-entities-evaluation-simplifed-diagram.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Nlp intents and entities evaluation simplifed diagram
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/advanced/nlp/nlp-models-and-entity-models.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Les modèles NLP
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_10" id="__nav_5_10_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gen ai orchestrator
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_10">
+            <span class="md-nav__icon md-icon"></span>
+            Gen ai orchestrator
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/gen_ai_orchestrator/api.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Api
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="messenger.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Messenger
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Plateforme
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="platform.html" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Plateforme
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ce-que-vous-allez-creer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ce que vous allez creer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-requis
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployer-une-plateforme-tock-sans-les-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployer une plateforme Tock - sans les sources
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployer-une-plateforme-tock-depuis-les-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployer une plateforme Tock - depuis les sources
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acceder-a-tock-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acceder à Tock Studio
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creer-une-application-un-connecteur-et-une-intention" class="md-nav__link">
+    <span class="md-ellipsis">
+      Créer une application, un connecteur et une intention
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connecter-un-parcours-en-kotlin-optionnel" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connecter un parcours en Kotlin (optionnel)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#felicitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Felicitations!
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#continuer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Continuer...
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="slack.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Slack
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="studio.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Studio
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    User
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            User
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Studio
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            Studio
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_1_1" id="__nav_7_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gen ai
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            Gen ai
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_1_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_1_1_1" id="__nav_7_1_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Rag chain
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_1_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            Rag chain
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/rag-chain/rag-prompt-system.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Rag Chain - Prompt documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    User
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            User
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/concepts.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Concepts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/guides.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tock Studio
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_4">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/guides/build-model.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modèles conversationnels
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/guides/canaux.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Canaux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/guides/i18n.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    i18n - guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/guides/intents-restrictions.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Restriction d’intentions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_5" id="__nav_8_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Studio
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_5">
+            <span class="md-nav__icon md-icon"></span>
+            Studio
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/analytics.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Analytics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/configuration.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/custom-metrics.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom Metrics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/faq-management.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/faq-training.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/general.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    L'interface Tock Studio
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/nlu-qa.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Quality
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/nlu.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NLU
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/stories-and-answers.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stories and Answers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/test.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_5_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_5_11" id="__nav_8_5_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gen ai
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_5_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_5_11">
+            <span class="md-nav__icon md-icon"></span>
+            Gen ai
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/gen-ai.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gen AI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_5_11_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_5_11_2" id="__nav_8_5_11_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Features
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_8_5_11_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_5_11_2">
+            <span class="md-nav__icon md-icon"></span>
+            Features
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-observability.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gen AI - Observability Settings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-rag-exclusion.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gen AI / RAG Exclusions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-rag.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gen AI / RAG Settings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-sentence-generation.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gen AI - Sentence generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-vector-store.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Le menu Gen AI - Vector Store Settings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_5_11_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_5_11_3" id="__nav_8_5_11_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Providers
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_8_5_11_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_5_11_3">
+            <span class="md-nav__icon md-icon"></span>
+            Providers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/providers/gen-ai-provider-llm-and-embedding.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fournisseurs des modèles LLM et d'Embedding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/providers/gen-ai-provider-observability.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fournisseurs d'observabilité des LLMs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/providers/gen-ai-provider-vector-store.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fournisseurs de base vectorielle
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ce-que-vous-allez-creer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ce que vous allez creer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-requis
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployer-une-plateforme-tock-sans-les-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployer une plateforme Tock - sans les sources
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployer-une-plateforme-tock-depuis-les-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployer une plateforme Tock - depuis les sources
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acceder-a-tock-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acceder à Tock Studio
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creer-une-application-un-connecteur-et-une-intention" class="md-nav__link">
+    <span class="md-ellipsis">
+      Créer une application, un connecteur et une intention
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connecter-un-parcours-en-kotlin-optionnel" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connecter un parcours en Kotlin (optionnel)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#felicitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Felicitations!
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#continuer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Continuer...
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/theopenconversationkit/tock/tree/master/docs/docs/fr/guides/platform.md" title="Editer cette page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="deployer-une-plateforme-avec-docker">Deployer une plateforme avec Docker</h1>
+<p>Dans les sections précédentes pour découvrir et tester Tock, vous avez utilisé la 
+<a href="https://demo.tock.ai/">plateforme de démonstration</a>. Cela vous a permis de découvrir 
+la construction et la configuration des bots Tock sans avoir à installer la plateforme au préalable. </p>
+<p>Dans ce guide, vous allez apprendre à déployer une plateforme complète Tock en quelques minutes, grâce 
+ aux exemples d'implémentations <a href="https://www.docker.com/">Docker</a> / <a href="https://docs.docker.com/compose/">Docker Compose</a> fournies.</p>
+<p>Notez qu'il est tout à fait possible de déployer Tock sans utiliser Docker. </p>
+<h2 id="ce-que-vous-allez-creer">Ce que vous allez creer</h2>
+<ul>
+<li>
+<p>Une plateforme Tock complète en local : <em>Tock Studio</em>, <em>Bot API</em>, etc.</p>
+</li>
+<li>
+<p>Un bot et une configuration minimale pour tester la plateforme</p>
+</li>
+<li>
+<p>(Optionnel) Un programme <a href="https://kotlinlang.org/">Kotlin</a> se connectant à la plateforme locale en 
+<em>WebSocket</em></p>
+</li>
+</ul>
+<h2 id="pre-requis">Pre-requis</h2>
+<ul>
+<li>
+<p>Environ 20 minutes</p>
+</li>
+<li>
+<p>Pour déployer la plateforme en local, un environnement de développement avec des versions récentes de 
+<a href="https://www.docker.com/">Docker</a> et <a href="https://docs.docker.com/compose/">Docker Compose</a> installées</p>
+</li>
+</ul>
+<blockquote>
+<p>Si vous ne souhaitez pas utiliser Docker, pas de problème. Il y a d'autres manières de déployer la base MongoDB 
+et les services Kotlin sur JVM. Vous pouvez toutefois parcourir les <code>Dockerfile</code> et 
+<code>docker-compose.yml</code> à titre d'exemples pour instancier ces services.</p>
+</blockquote>
+<ul>
+<li>(Optionnel) Pour le programme en WebSocket, un environnement de développement (ou <em>IDE</em>) supportant 
+<a href="https://kotlinlang.org/">Kotlin</a>, par exemple <a href="https://www.jetbrains.com/idea/">IntelliJ</a> avec des versions récentes 
+du <a href="https://jdk.java.net/">JDK</a> et de <a href="https://maven.apache.org/">Maven</a></li>
+</ul>
+<blockquote>
+<p>Sans <em>IDE</em> ou sans Maven, pas de problème. Il est tout à fait possible de compiler et exécuter le programme avec d'autres outils.</p>
+</blockquote>
+<h2 id="deployer-une-plateforme-tock-sans-les-sources">Deployer une plateforme Tock - sans les sources</h2>
+<p>Il est possible de récupérer seulement quelques fichiers du dépôt GitHub, sans télécharger toutes les sources Tock. 
+ En quelques lignes de commande, la plateforme est opérationnelle.</p>
+<p>Il est cependant indispensable d'avoir des versions récentes de 
+ <a href="https://www.docker.com/">Docker</a> et <a href="https://docs.docker.com/compose/">Docker Compose</a>.</p>
+<blockquote>
+<p>Pour démarrer depuis les sources du dépôt Tock Docker, passez plutôt au 
+<a href="#deployer-une-plateforme-tock-depuis-les-sources">Paragraphe suivant</a>.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get the lastest docker-compose from GitHub (including Bot API)</span>
+$<span class="w"> </span>curl<span class="w"> </span>-o<span class="w"> </span>docker-compose.yml<span class="w"> </span>https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/docker-compose-bot.yml
+<span class="c1"># Get the lastest database-init script from GitHub</span>
+$<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>scripts<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>curl<span class="w"> </span>-o<span class="w"> </span>scripts/setup.sh<span class="w"> </span>https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/scripts/setup.sh<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span>scripts/setup.sh
+<span class="c1"># Get the lastest Tock version/tag from GitHub</span>
+$<span class="w"> </span>curl<span class="w"> </span>-o<span class="w"> </span>.env<span class="w"> </span>https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/.env
+
+<span class="c1"># Run the stack</span>
+$<span class="w"> </span>docker-compose<span class="w"> </span>up
+</code></pre></div>
+<h2 id="deployer-une-plateforme-tock-depuis-les-sources">Deployer une plateforme Tock - depuis les sources</h2>
+<p>Ceci est une manière alternative de démarrer Tock, à partir du dépôt 
+ <a href="https://github.com/theopenconversationkit/tock-docker">Tock Docker</a>. </p>
+<p>Il vous faut, en plus de <a href="https://www.docker.com/">Docker</a> et <a href="https://docs.docker.com/compose/">Docker Compose</a>, 
+  soit un client <a href="https://git-scm.com/">Git</a> pour récupérer les sources (commande <code>git clone</code>) soit avoir déjà copié 
+  les sources de GitHub en local.</p>
+<blockquote>
+<p>Pour démarrer sans Git ni les sources du dépôt en local, suivez le 
+<a href="#deployer-une-plateforme-tock-sans-les-sources">paragraphe précédent</a>.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get the lastest sources from GitHub</span>
+$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/theopenconversationkit/tock-docker.git<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>tock-docker
+<span class="c1"># Make the database-init script executable</span>
+$<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span>scripts/setup.sh
+
+<span class="c1"># Run the stack (including Bot API)</span>
+$<span class="w"> </span>docker-compose<span class="w"> </span>-f<span class="w"> </span>docker-compose-bot.yml<span class="w"> </span>up
+</code></pre></div>
+<h2 id="acceder-a-tock-studio">Acceder à <em>Tock Studio</em></h2>
+<p>Une fois la plateforme prête, les interfaces <em>Tock Studio</em> sont sur le port <code>80</code> par défaut :</p>
+<ul>
+<li>Allez sur <a href="http://localhost">http://localhost</a></li>
+</ul>
+<blockquote>
+<p>Après le déploiement de la plateforme, celle-ci s'initialise, et il peut falloir attendre quelques secondes 
+avant que les interfaces <em>Tock Studio</em> soient accessibles.</p>
+</blockquote>
+<ul>
+<li>Connectez-vous avec les identifiants <code>admin@app.com</code> / <code>password</code> par défaut</li>
+</ul>
+<blockquote>
+<p>Il est évidemment recommandé de changer ces valeurs à l'installation d'une plateforme destinée à une utilisation pérenne
+(production, plateforme partagée entre équipes, etc.). </p>
+</blockquote>
+<h2 id="creer-une-application-un-connecteur-et-une-intention">Créer une application, un connecteur et une intention</h2>
+<p>Comme dans le guide <a href="studio.html">premier bot</a> utilisant la plateforme de démonstration, vous allez créer une 
+<em>application</em> Tock et un connecteur pour commencer à utiliser la plateforme locale. N'hésitez pas à retourner voir les 
+précédents guides pour plus de commentaires.</p>
+<p>Au premier accès à la plateforme locale :</p>
+<ul>
+<li>
+<p>Saisissez un nom pour l'application</p>
+</li>
+<li>
+<p>Sélectionnez une langue - vous pourrez en ajouter d'autres par la suite</p>
+</li>
+<li>
+<p>Validez pour créer l'application</p>
+</li>
+<li>
+<p>Allez dans <em>Settings</em> &gt; <em>Configurations</em></p>
+</li>
+<li>
+<p><em>Create a new Configuration</em></p>
+</li>
+<li>
+<p>Sélectionnez le type de connecteur <em>Slack</em></p>
+</li>
+<li>
+<p><em>Create</em></p>
+</li>
+</ul>
+<blockquote>
+<p>Notez l'<em>API Key</em> automatiquement générée pour votre application. Elle vous servira si vous essayez le mode <em>WebSocket</em>
+dans la suite de ce guide (optionnel).</p>
+</blockquote>
+<ul>
+<li>
+<p>Allez dans <em>Stories &amp; Answers</em> &gt; <em>New Story</em></p>
+</li>
+<li>
+<p>Saisissez une phrase utilisateur par exemple "bonjour"</p>
+</li>
+<li>
+<p>Dans le champs <em>Add new Answer</em>, saisissez une réponse par exemple "quelle belle journée!"</p>
+</li>
+<li>
+<p>Terminez avec <em>Create Story</em></p>
+</li>
+<li>
+<p>Allez dans <em>Test</em> &gt; <em>Test the Bot</em></p>
+</li>
+<li>
+<p>Dites "bonjour" 🙋, le bot vous répond 🤖</p>
+</li>
+</ul>
+<h2 id="connecter-un-parcours-en-kotlin-optionnel">Connecter un parcours en Kotlin (optionnel)</h2>
+<p>Comme dans le guide <a href="api.html">programmer des parcours</a> utilisant la plateforme de démonstration, vous allez créer une 
+<em>application</em> Kotlin se connectant en <em>WebSocket</em> à la plateforme Tock locale. N'hésitez pas à retourner voir les 
+précédents guides pour plus de détails.</p>
+<ul>
+<li>Créez un projet Kotlin par exemple avec Maven comme indiqué dans le guide <a href="api.html">programmer des parcours</a></li>
+</ul>
+<blockquote>
+<p>Le <em>classpath</em> doit inclure <code>tock-bot-api-websocket</code> pour utiliser le mode <em>WebSocket</em>.</p>
+</blockquote>
+<ul>
+<li>
+<p>Créez un fichier Kotlin (par exemple dans `src/main/kotlin/StartWebSocket.kt)</p>
+</li>
+<li>
+<p>Editez-le avec le code suivant :</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="nn">ai.tock.bot.api.client.newBot</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">ai.tock.bot.api.client.newStory</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">ai.tock.bot.api.websocket.start</span>
+
+<span class="kd">fun</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">start</span><span class="p">(</span><span class="w"> </span><span class="c1">// Do not use #startWithDemo when integrating with a local platform </span>
+<span class="w">        </span><span class="n">newBot</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;PUT-YOUR-TOCK-APP-API-KEY-HERE&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// Get your app API key from Bot Configurations in Tock Studio</span>
+<span class="w">            </span><span class="n">newStory</span><span class="p">(</span><span class="s">&quot;qui-es-tu&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// Answer for the &#39;qui-es-tu&#39; story</span>
+<span class="w">                </span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Je suis un assistant conversationnel construit avec Tock&quot;</span><span class="p">)</span>
+<span class="w">                </span><span class="n">end</span><span class="p">(</span><span class="s">&quot;Comment puis-je aider ?&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">),</span>
+<span class="w">        </span><span class="s">&quot;http://localhost:8080&quot;</span><span class="w"> </span><span class="c1">// Local platform URL (default host/port)</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span>
+<span class="p">}</span>
+</code></pre></div>
+<blockquote>
+<p>Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt <a href="https://github.com/theopenconversationkit/tock-bot-samples">tock-bot-samples</a>.</p>
+</blockquote>
+<ul>
+<li>
+<p>Remplacez la clef d'API par celle de votre propre application Tock. Pour cela, dans <em>Tock Studio</em>, 
+allez dans <em>Settings</em> &gt; <em>Configurations</em> et reportez la valeur <em>API Key</em> dans le code.</p>
+</li>
+<li>
+<p>Exécutez la fonction (<em>main</em>) dans votre environnement de développement.</p>
+</li>
+<li>
+<p>Retournez dans Tock dans <em>Test</em> &gt; <em>Test the Bot</em> et dites "qui es-tu ?" : le bot ne répond pas encore.</p>
+</li>
+<li>
+<p>Allez dans <em>Language Understanding</em> &gt; <em>Inbox</em>, pour la phrase que vous venez de saisir :</p>
+<ul>
+<li>
+<p>Changez l'intention pour <em>New intent</em></p>
+</li>
+<li>
+<p>Nommez-la "qui-es-tu" comme dans le code (pour que le lien se fasse)</p>
+</li>
+<li>
+<p>Créez l'intention avec <em>Create</em></p>
+</li>
+<li>
+<p>Terminez la qualification de la phrase avec <em>Validate</em></p>
+</li>
+</ul>
+</li>
+<li>
+<p>Retournez dans <em>Test</em> &gt; <em>Test the Bot</em>. Dites "qui es-tu ?" : le bot répond !</p>
+</li>
+</ul>
+<h2 id="felicitations">Felicitations!</h2>
+<p>Vous venez de déployer votre propre plateforme conversationnelle Tock en local.</p>
+<p>Cela peut servir à mieux appréhender l'architecture et vérifier la <em>portabilité</em> de la solution, mais aussi lors de 
+développements, pour les contributeurs Tock ou encore si vous devez travailler sans accès à Internet 
+(en mobilité, sur un réseau restreint, etc.).</p>
+<blockquote>
+<p>Attention, l'implémentation Docker fournie ne suffit pas à garantir résilience et montée en charge de la plateforme 
+quelles que soient les conditions en production. Pour cela, quelques recommandations sont proposées dans la section 
+<a href="../admin/availability.html">haute disponibilité</a> du manuel Tock.</p>
+</blockquote>
+<h2 id="continuer">Continuer...</h2>
+<p>Vous venez de terminer les guides de démarrage rapide Tock.</p>
+<p>A partir de là, vous pouvez vous lancer directement sur une plateforme Tock</p>
+<p>D'autres pages présentent aussi des études de cas clients, des exemples de code, comment contacter la communauté Tock, etc.</p>
+<!-- Chat inclusion start -->
+<div>
+  <script src="https://unpkg.com/vue@3.4/dist/vue.global.prod.js"></script>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/tock-vue-kit@0.3.6/dist/style.css"
+  />
+  <script
+    crossorigin
+    src="https://unpkg.com/tock-vue-kit@0.3.6/dist/tock-vue-kit.iife.js"
+  ></script>
+  <style>
+    :root {
+      --tvk_base_font-size: 1em;
+      --tvk_base_radius: 0;
+      --tvk_colors_brand-hue: 207;
+      --tvk_colors_brand-lightness: 54%;
+      --tvk_colors_brand-saturation: 90%;
+      --tvk_colors_light_background: white;
+      --tvk_colors_light_surface2: hsl(var(--tvk_colors_brand-hue) 10% 95%);
+      --tvk_footnotes_margin: 2em 0em 0em 0em;
+      --tvk_footnotes_sources-title_display: block;
+      --tvk_footnotes_flex-wrap: wrap;
+      --tvk_footnotes_margin: 1em 0em 0em 0em;
+      --tvk_question_box-shadow: inset 0px 0px 5px #00000030;
+      --tvk_message_body_line-height: 1.3;
+      --tvk_message_header_avatar_radius: unset;
+      --tvk_message_header_avatar_bot_background: transparent;
+      --tvk_message_header_font-weight: 300;
+      --tvk_wrapper_padding: 0.5em;
+      --tvk_wrapper_max-width: 45vw;
+      --tvk_wrapper_min-height: 25em;
+    }
+    #chat-wrapped {
+      display: none;
+      position: fixed;
+      bottom: 0.5em;
+      right: 0.5em;
+      min-width: 20em;
+      flex-direction: column;
+      background-color: white;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+    .chat-header {
+      background-color: var(--md-primary-fg-color);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      font-weight: 100;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chat-header-title {
+      display: flex;
+      align-items: center;
+    }
+    .chat-header-title-logo {
+      height: 1.5em !important;
+      margin-right: 0.25em;
+    }
+    #chat-header-close {
+      margin-top: -3px;
+    }
+    #chat-container {
+      flex-grow: 1;
+    }
+    #chat-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: var(--md-primary-fg-color);
+      border-radius: 50%;
+      color: white;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    #chat-icon:hover {
+      background-color: var(--md-accent-fg-color);
+    }
+    .pointer {
+      cursor: pointer;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+
+  <!-- Icône de chat flottant -->
+  <div id="chat-icon" onclick="toggleChat()" title="Chat with Tock">
+    <img src="../../img/Logo_Tock_White.svg" />
+  </div>
+
+  <!-- Fenêtre du chatbot -->
+  <div id="chat-wrapped">
+    <div class="chat-header">
+      <div class="chat-header-title">
+        <img src="../../img/Logo_Tock_White.svg" class="chat-header-title-logo" />
+        <span id="chat-header-title-string">Chat with Tock</span>
+      </div>
+      <span
+        id="chat-header-close"
+        onclick="closeChat()"
+        class="pointer"
+        title="Close chat"
+        >&times;</span
+      >
+    </div>
+    <div id="chat-container"></div>
+  </div>
+
+  <script>
+    function toggleChat() {
+      const chatWindow = document.getElementById("chat-wrapped");
+
+      if (
+        chatWindow.style.display === "" ||
+        chatWindow.style.display === "none"
+      ) {
+        chatWindow.style.display = "flex";
+      } else {
+        chatWindow.style.display = "none";
+      }
+    }
+
+    function closeChat() {
+      const chatWindow = document.getElementById("chat-wrapped");
+      chatWindow.style.display = "none";
+    }
+
+    let i18n = {
+      title: "Chat with Tock",
+      initialization: {
+        welcomeMessage: "Hello, would you like to talk about Tock?",
+      },
+      wording: {
+        messages: {
+          message: {
+            header: {
+              labelUser: "You",
+            },
+            footnotes: {
+              sources: "Sources:",
+              showMoreLink: "> Show more",
+            },
+          },
+        },
+        questionBar: {
+          clearHistoryAriaLabel: "Clear discussion and history button",
+          input: {
+            placeholder: "Ask me anything about Tock...",
+          },
+          submitAriaLabel: "Submit button",
+        },
+        connectionErrorMessage:
+          "An unexpected error occured. Please try again later.",
+      },
+    };
+
+    if (document.documentElement.getAttribute("lang") === "fr") {
+      document.getElementById("chat-icon").title = "Discutez avec Tock";
+      document.getElementById("chat-header-close").title = "Fermer le chat";
+      document.getElementById("chat-header-title-string").innerText =
+        "Discutez avec Tock";
+
+      i18n = {
+        initialization: {
+          welcomeMessage: "Bonjour, vous souhaitez parler de Tock ?",
+        },
+        wording: {
+          messages: {
+            message: {
+              header: {
+                labelUser: "Vous",
+              },
+              footnotes: {
+                sources: "Sources :",
+                showMoreLink: "> Plus",
+              },
+            },
+          },
+          questionBar: {
+            clearHistoryAriaLabel:
+              "Bouton d'effacement de la discussion et de l'historique",
+            input: {
+              placeholder: "Demandez-moi n'importe quoi sur Tock...",
+            },
+            submitAriaLabel: "Bouton d'envoi",
+          },
+          connectionErrorMessage:
+            "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
+        },
+      };
+    }
+
+    const tockUrl = "https://demo-bot.tock.ai/io/tock/tockbot/web";
+
+    TockVueKit.renderChat(document.getElementById("chat-container"), tockUrl, {
+      localStorage: {
+        enabled: true,
+      },
+      initialization: {
+        welcomeMessage: i18n.initialization.welcomeMessage,
+      },
+      preferences: {
+        messages: {
+          message: {
+            header: {
+              avatar: {
+                botImage: {
+                  src: "../../img/favicon.png",
+                  width: "1.5em",
+                  height: "1.5em",
+                },
+              },
+            },
+          },
+          footNotes: {
+            requireSourcesContent: true,
+          },
+        },
+      },
+      wording: {
+        messages: {
+          message: {
+            header: {
+              labelBot: "Toki",
+              labelUser: i18n.wording.messages.message.header.labelUser,
+            },
+            footnotes: {
+              sources: i18n.wording.messages.message.footnotes.sources,
+              showMoreLink:
+                i18n.wording.messages.message.footnotes.showMoreLink,
+            },
+          },
+        },
+        questionBar: {
+          clearHistoryAriaLabel: i18n.wording.questionBar.clearHistoryAriaLabel,
+          input: {
+            placeholder: i18n.wording.questionBar.input.placeholder,
+          },
+          submitAriaLabel: i18n.wording.questionBar.submitAriaLabel,
+        },
+        connectionErrorMessage: i18n.wording.connectionErrorMessage,
+      },
+    });
+  </script>
+</div>
+<!-- Chat inclusion end -->
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Dernière mise à jour">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">24 octobre 2021</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Créé">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2 août 2019</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "content.code.copy", "navigation.expand", "navigation.path", "palette.toggle", "navigation.top"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>

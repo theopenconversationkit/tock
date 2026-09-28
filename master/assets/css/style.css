@@ -1,0 +1,157 @@
+@keyframes heart {
+    0%, 40%, 80%, 100% {
+        transform: scale(1);
+    }
+    20%, 60% {
+        transform: scale(1.15);
+    }
+}
+
+.md-typeset {
+    /* Twitter icon */
+    .twitter {
+        color: #00acee;
+    }
+
+    /* Mastodon icon */
+    .mastodon {
+        color: #897ff8;
+    }
+
+    /* Insiders video */
+    .mdx-video {
+        width: auto;
+    }
+
+    .mdx-video__inner {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.138%;
+    }
+
+    .mdx-video iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border: none;
+    }
+
+    /* Pumping heart */
+    .mdx-heart {
+        animation: heart 1000ms infinite;
+    }
+
+    /* Badge with heart */
+    .mdx-badge {
+        font-size: 0.85em;
+    }
+
+    .mdx-badge--heart {
+        --md-typeset-a-color: hsla(340, 100%, 56%, 1);
+        --md-accent-fg-color: hsla(340, 100%, 47%, 1);
+        --md-accent-fg-color--transparent: hsla(340, 100%, 56%, 0.1);
+    }
+
+    .mdx-badge--right {
+        float: right;
+        margin-left: 0.35em;
+    }
+
+    .mdx-badge__icon {
+        padding: 4px;
+        background: var(--md-accent-fg-color--transparent);
+        border-start-start-radius: 2px;
+        border-end-start-radius: 2px;
+    }
+
+    .mdx-badge__text {
+        padding: 4px 6px;
+        border-start-end-radius: 2px;
+        border-end-end-radius: 2px;
+        box-shadow: 0 0 0 1px inset var(--md-accent-fg-color--transparent);
+    }
+
+    /* Switch buttons */
+    .mdx-switch button {
+        cursor: pointer;
+        transition: opacity 250ms;
+    }
+
+    .mdx-switch button:focus, .mdx-switch button:hover {
+        opacity: 0.75;
+    }
+
+    .mdx-columns ol, .mdx-columns ul {
+        columns: 2;
+    }
+
+    .mdx-columns li {
+        break-inside: avoid;
+    }
+
+    .mdx-flags {
+        margin: 2em auto;
+    }
+
+    .mdx-flags ol {
+        list-style: none;
+    }
+
+    .mdx-flags__item {
+        display: flex;
+        gap: 12px;
+    }
+
+    .mdx-flags__content {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+    }
+
+    .mdx-flags__content span {
+        display: inline-flex;
+        align-items: baseline;
+        justify-content: space-between;
+    }
+
+    .mdx-flags__content span:nth-child(2) {
+        font-size: 80%;
+    }
+
+    .mdx-flags__content code {
+        float: right;
+    }
+
+    /* Social card */
+    .mdx-social {
+        position: relative;
+        height: min(540px, 80vw);
+    }
+
+    .mdx-social__layer {
+        position: absolute;
+        margin-top: 80px;
+        transition: 250ms cubic-bezier(0.7, 0, 0.3, 1);
+        transform-style: preserve-3d;
+    }
+
+    .mdx-social__image {
+        box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.05);
+        transition: all 250ms;
+        transform: rotate(-40deg) skew(15deg, 15deg) scale(0.7);
+    }
+
+    .mdx-social__label {
+        position: absolute;
+        display: block;
+        padding: 4px 8px;
+        color: var(--md-default-bg-color);
+        background-color: var(--md-default-fg-color--light);
+        opacity: 0;
+        transition: all 250ms;
+    }
+}
