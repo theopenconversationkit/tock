@@ -172,9 +172,12 @@ internal class MessengerConnectorTest {
         assertEquals(2, sendCount.get())
         assertTrue(secondSendStart.get() >= firstSendEnd.get(), "second action should be sent after the first one")
 
+        // sendEvent(action1) may run before send(action2) is called, so only check each ordering independently
         verifyOrder {
             connector.send(action1, any(), any())
             connector.send(action2, any(), any())
+        }
+        verifyOrder {
             connector.sendEvent(action1, any(), any(), any(), any())
             connector.sendEvent(action2, any(), any(), any(), any())
         }
