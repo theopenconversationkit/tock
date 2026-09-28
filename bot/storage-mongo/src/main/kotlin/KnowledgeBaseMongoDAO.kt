@@ -18,7 +18,6 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseDAO
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseEntry
-import ai.tock.bot.admin.knowledgebase.KnowledgeBaseIndex
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJob
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJobState
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseProjection
@@ -41,7 +40,6 @@ internal object KnowledgeBaseMongoDAO : KnowledgeBaseDAO {
     private val entries = MongoBotConfiguration.database.getCollection<KnowledgeBaseEntry>("knowledge_base_entry")
     private val projections = MongoBotConfiguration.database.getCollection<KnowledgeBaseProjection>("knowledge_base_projection")
     private val jobs = MongoBotConfiguration.database.getCollection<KnowledgeBaseJob>("knowledge_base_job")
-    private val indexes = MongoBotConfiguration.database.getCollection<KnowledgeBaseIndex>("knowledge_base_index")
 
     init {
         entries.ensureIndex(KnowledgeBaseEntry::namespace, KnowledgeBaseEntry::botIds)
@@ -58,7 +56,6 @@ internal object KnowledgeBaseMongoDAO : KnowledgeBaseDAO {
         entries.deleteMany(KnowledgeBaseEntry::namespace eq namespace, KnowledgeBaseEntry::botIds `in` listOf(botId))
         projections.deleteMany(KnowledgeBaseProjection::namespace eq namespace, KnowledgeBaseProjection::botId eq botId)
         jobs.deleteMany(KnowledgeBaseJob::namespace eq namespace, KnowledgeBaseJob::botId eq botId)
-        indexes.deleteMany(KnowledgeBaseIndex::namespace eq namespace, KnowledgeBaseIndex::botId eq botId)
     }
 
     override fun entries(
@@ -96,12 +93,6 @@ internal object KnowledgeBaseMongoDAO : KnowledgeBaseDAO {
 
     override fun deleteProjection(id: String) {
         projections.deleteOneById(id)
-    }
-
-    override fun index(id: String): KnowledgeBaseIndex? = indexes.findOneById(id)
-
-    override fun saveIndex(index: KnowledgeBaseIndex) {
-        indexes.save(index)
     }
 
     override fun saveJob(job: KnowledgeBaseJob) {

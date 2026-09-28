@@ -14,7 +14,7 @@
 #
 """Per-entry acknowledgements and the actual KB rows in an index."""
 
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -39,3 +39,15 @@ class KnowledgeBaseStoredRow(BaseModel):
 
 class KnowledgeBaseRowsResponse(BaseModel):
     rows: list[KnowledgeBaseStoredRow]
+
+
+class KnowledgeBaseIndexStateResponse(BaseModel):
+    """
+    State of the collection backing an index, read without ever creating it. For PGVector, row counts and cmetadata
+    come from a raw SQL read of the collection. For OpenSearch, only existence is known: counts and cmetadata are None.
+    """
+
+    exists: bool
+    row_count: Optional[int] = None
+    kb_row_count: Optional[int] = None
+    cmetadata: Optional[dict[str, Any]] = None

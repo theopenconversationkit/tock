@@ -34,16 +34,21 @@
     </nb-select>
     }
 
+    <!-- Checking the index only makes sense against a queryable one, so it is hidden outside READY. -->
+    @if (syncStatus?.indexState === IndexState.READY) {
     <button
       nbButton
       ghost
       size="medium"
       (click)="verifyIndex()"
-      [disabled]="!syncStatus?.indexSessionId"
+      [disabled]="jobRunning"
       [nbTooltip]="'knowledge-base.sync-banner.verify_button' | transloco"
     >
       <nb-icon icon="database-check"></nb-icon>
     </button>
+    }
+    <!-- Import and export are admin only. -->
+    @if (isAdmin) {
     <button
       nbButton
       ghost
@@ -64,6 +69,7 @@
     >
       <nb-icon icon="box-arrow-up"></nb-icon>
     </button>
+    }
     <button
       nbButton
       status="primary"
@@ -88,6 +94,7 @@
 <tock-knowledge-base-sync-banner
   [syncStatus]="syncStatus"
   [busy]="jobRunning"
+  [isAdmin]="isAdmin"
   (onSynchronize)="synchronize()"
   (onCreateIndex)="createIndex()"
   (onFilterPending)="filterByProjectionState(ProjectionState.PENDING)"

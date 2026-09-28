@@ -37,3 +37,12 @@ data class KnowledgeBaseStoredRow(
 data class KnowledgeBaseRowsResponse(
     val rows: List<KnowledgeBaseStoredRow>,
 )
+
+data class KnowledgeBaseIndexStateResponse(
+    val exists: Boolean,
+    // Total rows and KB-only rows in the collection, and the raw collection cmetadata. PGVector only; all three are
+    // null for OpenSearch, which is not covered by this check and is untested.
+    val rowCount: Int?,
+    val kbRowCount: Int?,
+    val cmetadata: Map<String, Any?>?,
+)

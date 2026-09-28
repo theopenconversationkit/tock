@@ -19,6 +19,7 @@ package ai.tock.genai.orchestratorclient.services
 import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseDeleteRequest
 import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseIndexRequest
 import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseTargetRequest
+import ai.tock.genai.orchestratorclient.responses.KnowledgeBaseIndexStateResponse
 import ai.tock.genai.orchestratorclient.responses.KnowledgeBaseRowsResponse
 import ai.tock.genai.orchestratorclient.responses.KnowledgeBaseWriteResponse
 
@@ -28,4 +29,6 @@ interface KnowledgeBaseIndexingService {
     fun delete(request: KnowledgeBaseDeleteRequest): KnowledgeBaseWriteResponse
 
     fun rows(request: KnowledgeBaseTargetRequest): KnowledgeBaseRowsResponse
+
+    fun indexState(request: KnowledgeBaseTargetRequest): KnowledgeBaseIndexStateResponse
 }

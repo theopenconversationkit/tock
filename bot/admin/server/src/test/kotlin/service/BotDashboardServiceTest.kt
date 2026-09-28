@@ -41,6 +41,7 @@ import ai.tock.bot.admin.indicators.metric.MetricDAO
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.engine.user.UserLock
+import ai.tock.genai.orchestratorclient.services.KnowledgeBaseIndexingService
 import ai.tock.genai.orchestratorcore.models.vectorstore.PGVectorStoreSetting
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
@@ -237,6 +238,9 @@ class BotDashboardServiceTest {
                 bind<MetricDAO>() with singleton { mockk(relaxed = true) }
                 bind<EvaluationSampleDAO>() with singleton { evaluationDAO }
                 bind<KnowledgeBaseDAO>() with singleton { knowledgeBaseDAO }
+                // KnowledgeBaseService.default is a lazy JVM singleton whose constructor resolves this binding on first
+                // access; bind it here so purge does not depend on another test having initialized default first.
+                bind<KnowledgeBaseIndexingService>() with singleton { mockk(relaxed = true) }
                 bind<UserLock>() with singleton { lock }
                 bind<I18nDAO>() with singleton { mockk(relaxed = true) }
             },

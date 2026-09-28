@@ -22,12 +22,14 @@ from gen_ai_orchestrator.routers.requests.knowledge_base_requests import (
     KnowledgeBaseTargetRequest,
 )
 from gen_ai_orchestrator.routers.responses.knowledge_base_responses import (
+    KnowledgeBaseIndexStateResponse,
     KnowledgeBaseRowsResponse,
     KnowledgeBaseWriteResponse,
 )
 from gen_ai_orchestrator.services.knowledge_base.knowledge_base_service import (
     delete_entries,
     index_entries,
+    index_state,
     inspect_rows,
 )
 
@@ -47,3 +49,10 @@ async def delete(request: KnowledgeBaseDeleteRequest) -> KnowledgeBaseWriteRespo
 @knowledge_base_router.post('/rows')
 async def rows(request: KnowledgeBaseTargetRequest) -> KnowledgeBaseRowsResponse:
     return await inspect_rows(request)
+
+
+@knowledge_base_router.post('/index-state')
+async def index_state_route(
+    request: KnowledgeBaseTargetRequest,
+) -> KnowledgeBaseIndexStateResponse:
+    return await index_state(request)

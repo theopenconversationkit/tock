@@ -51,4 +51,10 @@ data class KnowledgeBaseJob(
     val error: String? = null,
     // Allocated once, so CREATE_INDEX retries reuse the same collection.
     val indexSessionId: String? = null,
+    // Whether a completed CREATE_INDEX should point the bot's RAG settings at the new collection.
+    val switchIndex: Boolean = false,
+    // The bot's RAG indexSessionId at enqueue time (nullable), used to detect a concurrent configuration change.
+    val expectedIndexSessionId: String? = null,
+    // Login of the user who requested the job (written into the collection metadata as created_by).
+    val requestedBy: String? = null,
 )

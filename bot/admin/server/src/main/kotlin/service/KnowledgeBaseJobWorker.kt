@@ -19,13 +19,13 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseDAO
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseEntryStatus
-import ai.tock.bot.admin.knowledgebase.KnowledgeBaseIndex
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJob
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJobFailure
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJobProgress
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJobState
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJobType
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseProjection
+import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseIndexState
 import ai.tock.bot.engine.user.UserLock
 import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseDeleteRequest
 import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseDeletion
@@ -44,6 +44,7 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 class KnowledgeBaseJobProcessor(
@@ -86,10 +87,21 @@ class KnowledgeBaseJobProcessor(
         try {
             val create = job.type == KnowledgeBaseJobType.CREATE_INDEX
             val target = service.target(job.namespace, job.botId, if (create) job.indexSessionId else null)
+            // One probe of the collection per job (never in the per-entry loop). Errors surface, never masquerade.
+            val probe = target?.let { service.probe(it) }
             if (create) {
                 check(target != null) { "knowledge-base.validation.index_configuration" }
-                check(target.rag.indexSessionId.isNullOrBlank() || target.rag.indexSessionId == target.session) { "knowledge-base.job.configuration_changed" }
+                check(sessionMatches(target.rag.indexSessionId, job)) { "knowledge-base.job.configuration_changed" }
+            } else if (target != null && probe!!.state == KnowledgeBaseIndexState.MISSING) {
+                // MISSING: every write/delete job, and VERIFY/REPAIR, fails immediately before touching any projection.
+                // Entries keep their pending state (never acknowledged here) so a later repair catches up.
+                throw IllegalStateException("knowledge-base.job.index_missing")
             }
+            val embeddingIncompatible = probe?.embeddingIncompatible == true
+            // A non-switching creation must not acknowledge entries: their pending changes still target the current index.
+            val ackEntries = !(create && !job.switchIndex)
+            // On CREATE, the first write is allowed to create the collection, born with its Tock contract metadata.
+            val collectionMetadata = if (create) collectionMetadata(job, target!!) else null
             if (target != null && job.type in listOf(KnowledgeBaseJobType.REPAIR_INDEX, KnowledgeBaseJobType.VERIFY_INDEX)) verify(target)
             if (job.type == KnowledgeBaseJobType.VERIFY_INDEX) {
                 dao.saveJob(job.copy(state = KnowledgeBaseJobState.COMPLETED, endedAt = Instant.now()))
@@ -112,13 +124,12 @@ class KnowledgeBaseJobProcessor(
                 try {
                     if (target != null) {
                         val current = service.target(job.namespace, job.botId, if (create) target.session else null)
-                        check(current?.id == target.id && current.embeddingFingerprint == target.embeddingFingerprint) { "knowledge-base.job.configuration_changed" }
-                        if (create) check(current.rag.indexSessionId.isNullOrBlank() || current.rag.indexSessionId == target.session) { "knowledge-base.job.configuration_changed" }
+                        check(current?.id == target.id && current.embeddingModel == target.embeddingModel) { "knowledge-base.job.configuration_changed" }
+                        if (create) check(sessionMatches(current.rag.indexSessionId, job)) { "knowledge-base.job.configuration_changed" }
                         val published = entry != null && !entry.deleted && entry.status == KnowledgeBaseEntryStatus.PUBLISHED
                         if (published) {
-                            val index = dao.index(target.id)
-                            check(index == null || index.embeddingFingerprint == target.embeddingFingerprint) { "knowledge-base.job.embedding_changed" }
-                            if (index == null) dao.saveIndex(KnowledgeBaseIndex(target.id, job.namespace, job.botId, target.session, target.embeddingFingerprint, target.embeddingModel, create))
+                            // The collection's embedding model differs from the bot's: refuse to write into it.
+                            check(!embeddingIncompatible) { "knowledge-base.job.embedding_changed" }
                             val expectedRowId = "kb-" + KnowledgeBaseService.hash("${target.indexName}/$id")
                             if (projection?.contentHash != entry!!.contentHash || projection?.rowIds != listOf(expectedRowId)) {
                                 val response =
@@ -130,6 +141,7 @@ class KnowledgeBaseJobProcessor(
                                             target.rag.emSetting,
                                             target.session,
                                             listOf(KnowledgeBaseDocument(id, entry.title, entry.searchHints, entry.content, entry.sourceUrl)),
+                                            collectionMetadata,
                                         ),
                                     )
                                 kotlinx.coroutines.currentCoroutineContext().ensureActive()
@@ -147,10 +159,13 @@ class KnowledgeBaseJobProcessor(
                         }
                     }
                     kotlinx.coroutines.currentCoroutineContext().ensureActive()
-                    if (entry != null) dao.acknowledge(entry)
+                    if (entry != null && ackEntries) dao.acknowledge(entry)
                 } catch (e: Exception) {
                     if (e is kotlinx.coroutines.CancellationException) throw e
-                    if (entry != null) dao.markProjectionPending(entry, job._id)
+                    // A CREATE_INDEX failure concerns the collection being (re-)created, not the current index: never
+                    // mark the entry pending (that would disturb its projection on the live index). Record it on the job
+                    // only. This holds with and without switchIndex.
+                    if (entry != null && !create) dao.markProjectionPending(entry, job._id)
                     val safeError = e.message?.takeIf { it.startsWith("knowledge-base.") } ?: "knowledge-base.job.projection_failed"
                     job = job.copy(failures = job.failures + KnowledgeBaseJobFailure(id, entry?.title ?: projection?.title ?: id, safeError))
                 }
@@ -164,14 +179,16 @@ class KnowledgeBaseJobProcessor(
                     if (e is kotlinx.coroutines.CancellationException) throw e
                 }
             }
-            if (create && job.failures.isEmpty()) {
+            if (create && job.switchIndex && job.failures.isEmpty()) {
                 check(target != null && ids.isNotEmpty()) { "knowledge-base.validation.index_configuration" }
                 val current = checkNotNull(ragDAO.findByNamespaceAndBotId(job.namespace, job.botId))
                 val freshTarget = service.target(job.namespace, job.botId, target.session)
-                check(freshTarget?.id == target.id && freshTarget.embeddingFingerprint == target.embeddingFingerprint) { "knowledge-base.job.configuration_changed" }
-                check(current.indexSessionId.isNullOrBlank() || current.indexSessionId == target.session) { "knowledge-base.job.configuration_changed" }
-                val updated = current.copy(indexSessionId = target.session, enabled = true)
-                if (current != updated) RAGService.activateKnowledgeBaseIndex(current, updated)
+                check(freshTarget?.id == target.id && freshTarget.embeddingModel == target.embeddingModel) { "knowledge-base.job.configuration_changed" }
+                check(sessionMatches(current.indexSessionId, job)) { "knowledge-base.job.configuration_changed" }
+                // Point the bot at the new collection. Never touch `enabled`: switching the index and activating RAG
+                // are two different actions.
+                val updated = current.copy(indexSessionId = target.session)
+                if (current != updated) RAGService.switchKnowledgeBaseIndex(current, updated)
             }
             dao.saveJob(job.copy(state = KnowledgeBaseJobState.COMPLETED, endedAt = Instant.now()))
         } catch (e: Exception) {
@@ -185,6 +202,33 @@ class KnowledgeBaseJobProcessor(
             )
         }
     }
+
+    /**
+     * The bot's current RAG indexSessionId still matches what the job expects: either the value seen at enqueue
+     * (expectedIndexSessionId) or the collection the job itself is (re-)creating. Anything else is a concurrent change.
+     */
+    private fun sessionMatches(
+        current: String?,
+        job: KnowledgeBaseJob,
+    ): Boolean {
+        val normalized = current?.takeIf { it.isNotBlank() }
+        return normalized == job.expectedIndexSessionId || normalized == job.indexSessionId
+    }
+
+    /** The Tock contract metadata a CREATE_INDEX job writes so its collection is born certified (PGVector only). */
+    private fun collectionMetadata(
+        job: KnowledgeBaseJob,
+        target: KnowledgeBaseTarget,
+    ): Map<String, Any?> =
+        buildMap {
+            put("schema_version", 1)
+            put("created_at", Instant.now().truncatedTo(ChronoUnit.SECONDS).toString())
+            put("origin", "tock_kb")
+            job.requestedBy?.let { put("created_by", it) }
+            put("embedding_provider", target.rag.emSetting.provider.name)
+            // Omitted when unknown; a creation with an undefined model is already blocked upstream by createIndexBlocker.
+            target.embeddingModel?.let { put("embedding_model", it) }
+        }
 
     private suspend fun remove(
         target: KnowledgeBaseTarget,

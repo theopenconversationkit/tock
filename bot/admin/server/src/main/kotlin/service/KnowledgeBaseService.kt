@@ -28,9 +28,12 @@ import ai.tock.bot.admin.knowledgebase.KnowledgeBaseProjectionState
 import ai.tock.bot.admin.model.genai.VectorStoreInspectionCondenseRequestDTO
 import ai.tock.bot.admin.model.genai.VectorStoreInspectionSearchRequestDTO
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseBulkStatus
+import ai.tock.bot.admin.model.knowledgebase.CreateIndexBlocker
+import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseCollectionInfo
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseCounts
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseEntryDTO
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseEntryPayload
+import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseIndexState
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseJobDTO
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBasePage
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseRetrievalHit
@@ -39,6 +42,10 @@ import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseRetrievalTest
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseSaveResult
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseSyncStatus
 import ai.tock.bot.engine.user.UserLock
+import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseTargetRequest
+import ai.tock.genai.orchestratorclient.responses.KnowledgeBaseIndexStateResponse
+import ai.tock.genai.orchestratorclient.services.KnowledgeBaseIndexingService
+import ai.tock.genai.orchestratorcore.models.em.EMSettingBase
 import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchType
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreProvider
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
@@ -60,6 +67,7 @@ import java.util.UUID
 class KnowledgeBaseService(
     val dao: KnowledgeBaseDAO = injector.provide(),
     private val lock: UserLock = injector.provide(),
+    private val indexing: KnowledgeBaseIndexingService = injector.provide(),
 ) {
     companion object {
         val default: KnowledgeBaseService by lazy { KnowledgeBaseService() }
@@ -146,7 +154,6 @@ class KnowledgeBaseService(
         val (_, name) = VectorStoreUtils.getVectorStoreElements(namespace, botId, indexSession, rag.maxDocumentsRetrieved, rag.documentSearchType, setting)
         val (_, prefix) = VectorStoreUtils.getVectorStoreElements(namespace, botId, "", rag.maxDocumentsRetrieved, rag.documentSearchType, setting)
         val identity = mapper.writeValueAsString(BotHistoryService.snapshot(setting))
-        val em = BotHistoryService.snapshot(rag.emSetting).orEmpty()
         return KnowledgeBaseTarget(
             hash("$namespace/$botId/$name/$identity"),
             namespace,
@@ -156,9 +163,95 @@ class KnowledgeBaseService(
             prefix,
             rag,
             setting,
-            hash(mapper.writeValueAsString(em)),
-            (em["model"] ?: em["deploymentName"] ?: rag.emSetting.provider.name).toString(),
+            // Normalized embedding model (single source of truth); null when unknown (e.g. Azure without a model).
+            EmbeddingModelIdentity.normalized(rag.emSetting),
         )
+    }
+
+    /**
+     * Probes the orchestrator once for the collection backing [target] and derives the index state, row counts,
+     * contract metadata and embedding compatibility. Errors are not swallowed: an orchestrator outage must surface,
+     * never masquerade as a missing index.
+     */
+    fun probe(target: KnowledgeBaseTarget): KnowledgeBaseIndexProbe {
+        val state = indexing.indexState(KnowledgeBaseTargetRequest(target.setting, target.indexName, target.indexPrefix))
+        val cmetadata = state.cmetadata
+        val hasContractMetadata = cmetadata?.containsKey("schema_version") == true
+        val collectionModel = EmbeddingModelIdentity.normalizeCollectionModel(cmetadata?.get("embedding_model") as? String)
+        val rowCount = state.rowCount
+        val kbRowCount = state.kbRowCount
+        return KnowledgeBaseIndexProbe(
+            deriveIndexState(state),
+            kbRowCount,
+            if (rowCount != null && kbRowCount != null) rowCount - kbRowCount else null,
+            if (hasContractMetadata) {
+                KnowledgeBaseCollectionInfo(
+                    cmetadata["origin"] as? String,
+                    cmetadata["created_at"] as? String,
+                    cmetadata["created_by"] as? String,
+                    cmetadata["embedding_provider"] as? String,
+                    cmetadata["embedding_model"] as? String,
+                )
+            } else {
+                null
+            },
+            EmbeddingModelIdentity.coherence(collectionModel, target.embeddingModel) == EmbeddingCoherence.MISMATCH,
+        )
+    }
+
+    // PGVector only: MISSING when the collection is absent, or empty with no Tock contract metadata (created implicitly
+    // by a runtime query). OpenSearch reports null counts/cmetadata, so exists → READY, which is not covered here.
+    private fun deriveIndexState(state: KnowledgeBaseIndexStateResponse): KnowledgeBaseIndexState =
+        when {
+            !state.exists -> KnowledgeBaseIndexState.MISSING
+            state.rowCount != null && state.rowCount == 0 && state.cmetadata?.containsKey("schema_version") != true ->
+                KnowledgeBaseIndexState.MISSING
+            else -> KnowledgeBaseIndexState.READY
+        }
+
+    /**
+     * Resolves the collection a candidate RAG configuration would use (same resolution as [target]) and reports its
+     * state and embedding coherence against the candidate embedding setting. Used by the RAG settings save validation
+     * and its index-status endpoint. PGVector only. Errors are not swallowed.
+     */
+    fun indexStatusFor(
+        namespace: String,
+        botId: String,
+        indexSessionId: String?,
+        emSetting: EMSettingBase<*>,
+    ): KnowledgeBaseIndexStatus {
+        val botModel = EmbeddingModelIdentity.normalized(emSetting)
+        val session =
+            indexSessionId?.takeIf { it.isNotBlank() }
+                ?: return KnowledgeBaseIndexStatus(KnowledgeBaseIndexState.NONE, null, EmbeddingCoherence.UNKNOWN)
+        val setting = VectorStoreService.getVectorStoreConfiguration(namespace, botId, enabled = true)?.setting
+        // maxDocuments/searchType do not influence the collection name, so fixed defaults are fine here.
+        val (_, name) = VectorStoreUtils.getVectorStoreElements(namespace, botId, session, 4, DocumentSearchType.HYBRID_SEARCH, setting)
+        val (_, prefix) = VectorStoreUtils.getVectorStoreElements(namespace, botId, "", 4, DocumentSearchType.HYBRID_SEARCH, setting)
+        val response = indexing.indexState(KnowledgeBaseTargetRequest(setting, name, prefix))
+        val collectionModel = EmbeddingModelIdentity.normalizeCollectionModel(response.cmetadata?.get("embedding_model") as? String)
+        return KnowledgeBaseIndexStatus(
+            deriveIndexState(response),
+            collectionModel,
+            EmbeddingModelIdentity.coherence(collectionModel, botModel),
+        )
+    }
+
+    /**
+     * Why creating an index is currently impossible, evaluated in priority order. null means creation is allowed.
+     * A missing RAG configuration is never blocking for the vector store itself (it falls back to the environment
+     * default), but Tock cannot create a certified KB collection without one, nor without a known embedding model.
+     */
+    fun createIndexBlocker(
+        namespace: String,
+        botId: String,
+    ): CreateIndexBlocker? {
+        val rag = RAGService.getRAGConfiguration(namespace, botId) ?: return CreateIndexBlocker.RAG_NOT_CONFIGURED
+        if (EmbeddingModelIdentity.normalized(rag.emSetting) == null) return CreateIndexBlocker.EMBEDDING_MODEL_UNDEFINED
+        if (dao.entries(namespace, botId).none { !it.deleted && it.status == KnowledgeBaseEntryStatus.PUBLISHED }) {
+            return CreateIndexBlocker.NO_PUBLISHED_ENTRY
+        }
+        return null
     }
 
     private fun entry(
@@ -173,25 +266,25 @@ class KnowledgeBaseService(
     ): KnowledgeBaseSyncStatus {
         val entries = dao.entries(namespace, botId)
         val target = target(namespace, botId)
-        val index = target?.let { dao.index(it.id) }
+        val rag = RAGService.getRAGConfiguration(namespace, botId)
+        // Single orchestrator probe per request (never in a loop). Errors are not swallowed here.
+        val probe = target?.let { probe(it) }
         val projections = target?.let { dao.projections(namespace, botId, it.id) }.orEmpty()
         val byId = projections.associateBy { it.entryId }
-        val compatible = index == null || index.embeddingFingerprint == target?.embeddingFingerprint
+        val compatible = probe?.embeddingIncompatible != true
         val live = entries.filterNot { it.deleted }
         val states = live.map { projectionState(it, byId[it._id], compatible) }
         val wanted = live.filter { it.status == KnowledgeBaseEntryStatus.PUBLISHED }.map { it._id }.toSet()
         return KnowledgeBaseSyncStatus(
-            if (target == null) {
-                "NONE"
-            } else if (index?.managed == true) {
-                "TOCK_MANAGED"
-            } else {
-                "EXTERNAL"
-            },
+            probe?.state ?: KnowledgeBaseIndexState.NONE,
             target?.session,
             target?.indexName,
-            index?.managed == true,
-            index?.embeddingModel,
+            probe?.kbRowCount,
+            probe?.otherRowCount,
+            probe?.collection,
+            probe?.embeddingIncompatible == true,
+            createIndexBlocker(namespace, botId),
+            rag?.enabled == true,
             projections.maxOfOrNull { it.projectedAt },
             KnowledgeBaseCounts(
                 live.size,
@@ -200,13 +293,8 @@ class KnowledgeBaseService(
                 states.count { it == KnowledgeBaseProjectionState.INDEXED },
                 states.count { it == KnowledgeBaseProjectionState.PENDING },
                 projections.count { it.entryId !in wanted },
-                entries.count {
-                    projectionError(it) !=
-                        null
-                },
+                entries.count { projectionError(it) != null },
             ),
-            target == null && RAGService.getRAGConfiguration(namespace, botId) != null && wanted.isNotEmpty(),
-            !compatible,
         )
     }
 
@@ -248,7 +336,8 @@ class KnowledgeBaseService(
     ): KnowledgeBaseEntryDTO {
         val target = target(namespace, botId)
         val projection = target?.let { dao.projections(namespace, botId, it.id).firstOrNull { p -> p.entryId == id } }
-        val compatible = target == null || dao.index(target.id)?.embeddingFingerprint.let { it == null || it == target.embeddingFingerprint }
+        // Listing must stay usable even if the orchestrator is down: assume compatible on probe failure.
+        val compatible = target == null || runCatching { !probe(target).embeddingIncompatible }.getOrDefault(true)
         return dto(entry(namespace, botId, id), projection, compatible)
     }
 
@@ -262,7 +351,8 @@ class KnowledgeBaseService(
         require(start >= 0 && size in 1..100) { "Invalid pagination" }
         val target = target(namespace, botId)
         val projections = target?.let { dao.projections(namespace, botId, it.id) }.orEmpty().associateBy { it.entryId }
-        val compatible = target == null || dao.index(target.id)?.embeddingFingerprint.let { it == null || it == target.embeddingFingerprint }
+        // Listing must stay usable even if the orchestrator is down: assume compatible on probe failure.
+        val compatible = target == null || runCatching { !probe(target).embeddingIncompatible }.getOrDefault(true)
         val query = params["search"]?.trim().orEmpty()
         val filtered =
             dao.entries(namespace, botId).filterNot { it.deleted }.map { dto(it, projections[it._id], compatible) }.filter { e ->
@@ -399,12 +489,29 @@ class KnowledgeBaseService(
         namespace: String,
         botId: String,
         type: KnowledgeBaseJobType,
+        switchIndex: Boolean = false,
+        requestedBy: String? = null,
     ): KnowledgeBaseJobDTO =
         mutate(namespace, botId) {
             val create = type == KnowledgeBaseJobType.CREATE_INDEX
-            require(if (create) sync(namespace, botId).canCreateIndex else target(namespace, botId) != null) { "knowledge-base.validation.index_configuration" }
+            if (create) {
+                // CREATE_INDEX is allowed whether or not an index already exists ("re-create"); only the blockers gate it.
+                createIndexBlocker(namespace, botId)?.let { throw IllegalArgumentException(it.validationKey) }
+            } else {
+                require(target(namespace, botId) != null) { "knowledge-base.validation.index_configuration" }
+            }
             if (create) dao.activeJobs(namespace, botId).firstOrNull { it.type == type }?.let { return@mutate jobDTO(it) }
-            val job = KnowledgeBaseJob(namespace, botId, type, indexSessionId = if (create) UUID.randomUUID().toString() else null)
+            val rag = if (create) RAGService.getRAGConfiguration(namespace, botId) else null
+            val job =
+                KnowledgeBaseJob(
+                    namespace,
+                    botId,
+                    type,
+                    indexSessionId = if (create) UUID.randomUUID().toString() else null,
+                    switchIndex = create && switchIndex,
+                    expectedIndexSessionId = if (create) rag?.indexSessionId?.takeIf { it.isNotBlank() } else null,
+                    requestedBy = if (create) requestedBy else null,
+                )
             dao.saveJob(job)
             jobDTO(job)
         }
@@ -431,6 +538,7 @@ class KnowledgeBaseService(
             job.failures,
             job.projected,
             job.removed,
+            job.indexSessionId,
             if (job.state in listOf(KnowledgeBaseJobState.COMPLETED, KnowledgeBaseJobState.FAILED)) sync(job.namespace, job.botId) else null,
             job.error,
         )
@@ -511,6 +619,26 @@ data class KnowledgeBaseTarget(
     val indexPrefix: String,
     val rag: BotRAGConfiguration,
     val setting: VectorStoreSetting?,
-    val embeddingFingerprint: String,
-    val embeddingModel: String,
+    // Normalized embedding model of the bot, or null when unknown (never blocking).
+    val embeddingModel: String?,
+)
+
+/** Result of a single orchestrator probe of the collection backing a [KnowledgeBaseTarget]. */
+data class KnowledgeBaseIndexProbe(
+    val state: KnowledgeBaseIndexState,
+    val kbRowCount: Int?,
+    val otherRowCount: Int?,
+    val collection: KnowledgeBaseCollectionInfo?,
+    val embeddingIncompatible: Boolean,
+)
+
+/**
+ * Coherence of a candidate RAG embedding setting against the collection its indexSessionId resolves to. Used by the RAG
+ * settings save guard and its index-status endpoint. [collectionEmbeddingModel] is the model read from the collection's
+ * contract metadata, null when the collection is missing or has none (PGVector only).
+ */
+data class KnowledgeBaseIndexStatus(
+    val indexState: KnowledgeBaseIndexState,
+    val collectionEmbeddingModel: String?,
+    val coherence: EmbeddingCoherence,
 )

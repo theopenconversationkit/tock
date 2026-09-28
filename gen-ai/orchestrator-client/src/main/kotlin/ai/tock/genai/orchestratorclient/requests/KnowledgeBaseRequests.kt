@@ -40,6 +40,9 @@ data class KnowledgeBaseIndexRequest(
     val emSetting: EMSetting,
     val indexSessionId: String,
     val entries: List<KnowledgeBaseDocument>,
+    // When the PGVector collection does not yet exist, the orchestrator creates it with this cmetadata (PGVector
+    // only). null (the default) forbids implicit creation: a missing collection then fails every entry.
+    val collectionMetadata: Map<String, Any?>? = null,
 )
 
 data class KnowledgeBaseDeletion(

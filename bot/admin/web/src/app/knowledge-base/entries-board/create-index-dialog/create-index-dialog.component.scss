@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2017/2025 SNCF Connect & Tech
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.knowledgebase
+.create-index-dialog {
+  max-width: 32rem;
 
-import java.time.Instant
-
-data class KnowledgeBaseProjection(
-    val _id: String,
-    val namespace: String,
-    val botId: String,
-    val targetId: String,
-    val indexSessionId: String,
-    val entryId: String,
-    val contentHash: String,
-    val rowIds: List<String>,
-    val title: String,
-    val projectedAt: Instant = Instant.now(),
-)
+  .create-index-dialog-notes {
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+}

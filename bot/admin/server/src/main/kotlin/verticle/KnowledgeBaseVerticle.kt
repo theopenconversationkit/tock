@@ -42,6 +42,8 @@ class KnowledgeBaseVerticle {
 
     fun configure(webVerticle: WebVerticle) {
         val roles = setOf(TockUserRole.botUser, TockUserRole.admin, TockUserRole.technicalAdmin)
+        // Index lifecycle and bulk import/export are admin-only: they (re-)embed the corpus and switch the live index.
+        val adminRoles = setOf(TockUserRole.admin, TockUserRole.technicalAdmin)
         with(webVerticle) {
             val app: (RoutingContext) -> ApplicationDefinition? = { context ->
                 FrontClient.getApplicationByNamespaceAndName(context.organization, context.pathParam("botId"))
@@ -84,8 +86,17 @@ class KnowledgeBaseVerticle {
             }
             blockingJsonGet("$ROOT/tags", roles) { c -> checkNamespaceAndExecute(c, app) { a -> kb(c) { service.tags(a.namespace, a.name) } } }
             blockingJsonGet("$ROOT/sync", roles) { c -> checkNamespaceAndExecute(c, app) { a -> kb(c) { service.sync(a.namespace, a.name) } } }
-            mapOf("sync" to KnowledgeBaseJobType.REPAIR_INDEX, "verify" to KnowledgeBaseJobType.VERIFY_INDEX, "index" to KnowledgeBaseJobType.CREATE_INDEX).forEach { (path, type) ->
+            mapOf("sync" to KnowledgeBaseJobType.REPAIR_INDEX, "verify" to KnowledgeBaseJobType.VERIFY_INDEX).forEach { (path, type) ->
                 blockingJsonPost("$ROOT/$path", roles) { c, _: Map<String, Any?> -> checkNamespaceAndExecute(c, app) { a -> kb(c) { service.enqueue(a.namespace, a.name, type) } } }
+            }
+            // Creating/re-creating the index is admin-only. `switchIndex` (default false) decides whether a successful
+            // creation points the bot's RAG settings at the new collection. `requestedBy` is written into its metadata.
+            blockingJsonPost("$ROOT/index", adminRoles) { c, p: Map<String, Any?> ->
+                checkNamespaceAndExecute(c, app) { a ->
+                    kb(c) {
+                        service.enqueue(a.namespace, a.name, KnowledgeBaseJobType.CREATE_INDEX, switchIndex = p["switchIndex"] == true, requestedBy = c.userLogin)
+                    }
+                }
             }
             blockingJsonPost("$ROOT/bulk-status", roles) { c, p: KnowledgeBaseBulkStatus ->
                 checkNamespaceAndExecute(c, app) { a ->
@@ -103,12 +114,12 @@ class KnowledgeBaseVerticle {
             blockingJsonGet("$ROOT/jobs/active", roles) { c -> checkNamespaceAndExecute(c, app) { a -> kb(c) { service.activeJob(a.namespace, a.name) } } }
             blockingJsonGet("$ROOT/jobs/:jobId", roles) { c -> checkNamespaceAndExecute(c, app) { a -> kb(c) { service.job(a.namespace, a.name, c.pathParam("jobId")) } } }
             blockingJsonPost("$ROOT/retrieval-test", roles) { c, p: KnowledgeBaseRetrievalRequest -> checkNamespaceAndExecute(c, app) { a -> kb(c) { service.retrieval(a.namespace, a.name, p) } } }
-            blockingJsonPost("$ROOT/import/preview", roles) { c, p: KnowledgeBaseImportPreview -> checkNamespaceAndExecute(c, app) { a -> kb(c) { imports.preview(a.namespace, a.name, p) } } }
+            blockingJsonPost("$ROOT/import/preview", adminRoles) { c, p: KnowledgeBaseImportPreview -> checkNamespaceAndExecute(c, app) { a -> kb(c) { imports.preview(a.namespace, a.name, p) } } }
             blockingJsonPost(
                 "$ROOT/import",
-                roles,
+                adminRoles,
             ) { c, p: KnowledgeBaseImportRequest -> checkNamespaceAndExecute(c, app) { a -> kb(c) { imports.apply(a.namespace, a.name, p, c.userLogin ?: "unknown") } } }
-            blockingJsonGet("$ROOT/export", roles) { c -> checkNamespaceAndExecute(c, app) { a -> kb(c) { imports.export(a.namespace, a.name) } } }
+            blockingJsonGet("$ROOT/export", adminRoles) { c -> checkNamespaceAndExecute(c, app) { a -> kb(c) { imports.export(a.namespace, a.name) } } }
         }
     }
 }

@@ -20,7 +20,7 @@ import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
 import {
-  KnowledgeBaseIndexMode,
+  KnowledgeBaseIndexState,
   KnowledgeBaseRetrievalHit,
   KnowledgeBaseRetrievalTest,
   KnowledgeBaseSyncStatus,
@@ -66,7 +66,8 @@ export class KnowledgeBaseRetrievalTestComponent implements OnDestroy {
   result: KnowledgeBaseRetrievalTest | null = null;
 
   get hasIndex(): boolean {
-    return !!this.syncStatus && this.syncStatus.indexMode !== KnowledgeBaseIndexMode.NONE;
+    // READY only: retrieval against a MISSING index would query a collection that does not exist.
+    return !!this.syncStatus && this.syncStatus.indexState === KnowledgeBaseIndexState.READY;
   }
 
   /** The test needs a projected entry: no index, or an unsaved one, and it cannot run. */

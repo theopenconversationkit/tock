@@ -31,6 +31,7 @@ from gen_ai_orchestrator.routers.requests.knowledge_base_requests import (
     KnowledgeBaseTargetRequest,
 )
 from gen_ai_orchestrator.routers.responses.knowledge_base_responses import (
+    KnowledgeBaseIndexStateResponse,
     KnowledgeBaseRowsResponse,
     KnowledgeBaseStoredRow,
     KnowledgeBaseWriteResponse,
@@ -86,6 +87,32 @@ def factory_for(request: KnowledgeBaseTargetRequest, embedding=None):
     )
 
 
+def recognize_row(
+    identifier, content: str | None, metadata: dict
+) -> KnowledgeBaseStoredRow:
+    """
+    Pure recognition of one raw KB row (PGVector or OpenSearch shape) into a KnowledgeBaseStoredRow. A content_hash is
+    only recomputed for a well-formed single-chunk row whose stored content still matches its title/source; anything
+    else yields an empty hash, which the admin worker treats as "needs re-projection".
+    """
+    recomputable = (
+        'source' in metadata
+        and metadata.get('id') == metadata.get('kb_entry_id')
+        and metadata.get('chunk') == '1/1'
+        and (content or '').startswith(str(metadata.get('title', '')) + '\n\n')
+    )
+    return KnowledgeBaseStoredRow(
+        row_id=str(identifier),
+        entry_id=str(
+            metadata.get('kb_entry_id') or metadata.get('id') or identifier
+        ),
+        content_hash=(
+            content_hash(content or '', metadata.get('source')) if recomputable else ''
+        ),
+        title=str(metadata.get('title') or ''),
+    )
+
+
 async def stored_rows(factory) -> list[KnowledgeBaseStoredRow]:
     if isinstance(factory, PGVectorFactory):
         async with factory.pool.async_engine.connect() as connection:
@@ -138,21 +165,7 @@ async def stored_rows(factory) -> list[KnowledgeBaseStoredRow]:
 
         rows = await asyncio.to_thread(read)
     return [
-        KnowledgeBaseStoredRow(
-            row_id=str(identifier),
-            entry_id=str(
-                metadata.get('kb_entry_id') or metadata.get('id') or identifier
-            ),
-            content_hash=(
-                content_hash(content or '', metadata.get('source'))
-                if 'source' in metadata
-                and metadata.get('id') == metadata.get('kb_entry_id')
-                and metadata.get('chunk') == '1/1'
-                and (content or '').startswith(str(metadata.get('title', '')) + '\n\n')
-                else ''
-            ),
-            title=str(metadata.get('title') or ''),
-        )
+        recognize_row(identifier, content, metadata)
         for identifier, content, metadata in rows
     ]
 
@@ -163,12 +176,94 @@ async def inspect_rows(
     return KnowledgeBaseRowsResponse(rows=await stored_rows(factory_for(request)))
 
 
+async def collection_state(factory) -> KnowledgeBaseIndexStateResponse:
+    """
+    Read the state of the collection backing an index WITHOUT ever creating it. PGVector: a raw read of
+    langchain_pg_collection / langchain_pg_embedding (going through PGVector would get_or_create the collection).
+    OpenSearch: only existence is observable, so counts and cmetadata stay None.
+    """
+    if isinstance(factory, PGVectorFactory):
+        async with factory.pool.async_engine.connect() as connection:
+            # Fresh database: the langchain tables are created lazily on first write. Absent table => no collection,
+            # so report exists=False instead of letting the SELECT raise an UndefinedTable error.
+            if (
+                await connection.execute(
+                    text("SELECT to_regclass('langchain_pg_collection')")
+                )
+            ).scalar() is None:
+                return KnowledgeBaseIndexStateResponse(exists=False)
+            collection = (
+                await connection.execute(
+                    text(
+                        'SELECT uuid, cmetadata FROM langchain_pg_collection WHERE name = :name'
+                    ),
+                    {'name': factory.index_name},
+                )
+            ).first()
+            if collection is None:
+                return KnowledgeBaseIndexStateResponse(exists=False)
+            counts = (
+                await connection.execute(
+                    text("""
+                    SELECT
+                        count(*) AS total,
+                        count(*) FILTER (WHERE cmetadata->>'source_type' = 'internal_kb') AS kb
+                    FROM langchain_pg_embedding
+                    WHERE collection_id = :uuid
+                """),
+                    {'uuid': collection.uuid},
+                )
+            ).first()
+            return KnowledgeBaseIndexStateResponse(
+                exists=True,
+                row_count=int(counts.total),
+                kb_row_count=int(counts.kb),
+                cmetadata=collection.cmetadata or {},
+            )
+
+    def read():
+        client = factory.get_vector_store().client
+        return client.indices.exists(index=factory.index_name)
+
+    exists = await asyncio.to_thread(read)
+    return KnowledgeBaseIndexStateResponse(exists=bool(exists))
+
+
+async def index_state(
+    request: KnowledgeBaseTargetRequest,
+) -> KnowledgeBaseIndexStateResponse:
+    return await collection_state(factory_for(request))
+
+
 async def index_entries(
     request: KnowledgeBaseIndexRequest,
 ) -> KnowledgeBaseWriteResponse:
     embedding = get_em_factory(request.em_setting).get_embedding_model()
     factory = factory_for(request, embedding)
-    store = factory.get_vector_store()
+    # Guard implicit creation: without collection_metadata (i.e. not a creation job), refuse to let PGVector's
+    # get_or_create silently spawn an uncertified collection. A creation job carries the metadata and may create it.
+    if isinstance(factory, PGVectorFactory):
+        if request.collection_metadata is None and not (
+            await collection_state(factory)
+        ).exists:
+            # Not a creation job and the collection is absent: refuse to let PGVector's
+            # get_or_create silently spawn an uncertified collection. Surface a per-entry
+            # signal so the worker reports a missing index rather than a generic failure.
+            return KnowledgeBaseWriteResponse(
+                results=[
+                    KnowledgeBaseWriteResult(
+                        entry_id=entry.entry_id,
+                        error='knowledge-base.job.index_missing',
+                    )
+                    for entry in request.entries
+                ]
+            )
+        store = factory.get_vector_store(
+            collection_metadata=request.collection_metadata
+        )
+    else:
+        # OpenSearch collections carry no Tock contract metadata; collection_metadata is a PGVector-only concept.
+        store = factory.get_vector_store()
     results = []
     for entry in request.entries:
         identifier = row_id(request.index_name, entry.entry_id)

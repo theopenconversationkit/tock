@@ -102,8 +102,12 @@ export abstract class KnowledgeBaseService {
   /**
    * Standalone mode: creates an index session from the knowledge base alone,
    * writes the rows and returns the session so the RAG configuration can be updated.
+   *
+   * When `switchIndex` is true the bot is pointed at the new index session as part of
+   * the job; RAG activation is never touched. When false the index is created as a
+   * snapshot and the bot keeps using its current index.
    */
-  abstract createIndex(): Observable<KnowledgeBaseJob>;
+  abstract createIndex(switchIndex: boolean): Observable<KnowledgeBaseJob>;
 
   /**
    * Answers "would this entry be retrieved for that question, and at what rank".

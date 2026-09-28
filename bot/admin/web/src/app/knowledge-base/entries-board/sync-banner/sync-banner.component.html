@@ -28,31 +28,55 @@
     ></nb-icon>
 
     <div class="flex-grow-1">
-      @if (syncStatus.counts.failed) {
-      <p>{{ 'knowledge-base.sync-banner.failed_count' | transloco: { count: syncStatus.counts.failed } }}</p>
-      }
       <div class="sync-banner-title">{{ titleKey | transloco }}</div>
 
-      <!-- No index session configured yet: standalone mode entry point -->
-      @if (!hasIndex) {
+      <!-- No index session configured yet -->
+      @if (indexState === IndexState.NONE) { @if (blocker) {
       <div class="text-muted sync-banner-message">
-        {{ 'knowledge-base.sync-banner.no_index_message' | transloco: { published: syncStatus.counts.published } }}
-        @if (!syncStatus.canCreateIndex) {
-        <div>{{ 'knowledge-base.sync-banner.configuration_required' | transloco }}</div>
+        {{ blockerMessageKey | transloco }}
+        @if (blocker === Blocker.RAG_NOT_CONFIGURED) {
+        <div>
+          <a
+            class="sync-banner-link"
+            (click)="openRagSettings()"
+            >{{ 'knowledge-base.sync-banner.open_rag_settings' | transloco }}</a
+          >
+        </div>
         }
       </div>
-      }
-
-      <!-- Index configured but written by a third party pipeline: nothing is out of sync,
-           the risk is writing with an embedding model we cannot verify -->
-      @if (hasIndex && !outOfSync && embeddingWarning) {
+      } @else {
       <div class="text-muted sync-banner-message">
-        {{ 'knowledge-base.sync-banner.embedding_warning_message' | transloco }}
+        {{ 'knowledge-base.sync-banner.no_index_message' | transloco: { published: syncStatus.counts.published } }}
       </div>
-      }
+      } }
 
-      <!-- Index configured, projection out of date -->
-      @if (hasIndex && outOfSync) {
+      <!-- Index session configured but no usable collection behind it -->
+      @if (indexState === IndexState.MISSING) {
+      <div class="text-muted sync-banner-message">
+        {{ 'knowledge-base.sync-banner.missing_index_message' | transloco }}
+        @if (syncStatus.ragEnabled) {
+        <div>{{ 'knowledge-base.sync-banner.missing_index_rag_active' | transloco }}</div>
+        }
+      </div>
+      @if (blocker) {
+      <div class="text-muted sync-banner-message">
+        {{ blockerMessageKey | transloco }}
+        @if (blocker === Blocker.RAG_NOT_CONFIGURED) {
+        <div>
+          <a
+            class="sync-banner-link"
+            (click)="openRagSettings()"
+            >{{ 'knowledge-base.sync-banner.open_rag_settings' | transloco }}</a
+          >
+        </div>
+        }
+      </div>
+      } }
+
+      <!-- Index ready: composition, provenance and any drift -->
+      @if (indexState === IndexState.READY) { @if (syncStatus.counts.failed) {
+      <p class="sync-banner-message">{{ 'knowledge-base.sync-banner.failed_count' | transloco: { count: syncStatus.counts.failed } }}</p>
+      } @if (outOfSync) {
       <div class="text-muted sync-banner-message">
         @if (pending) {
         <a
@@ -70,8 +94,60 @@
       </div>
       }
 
+      <!-- Composition: knowledge base rows, and documentary chunks when the index is mixed -->
+      @if (syncStatus.kbRowCount !== null) {
       <div class="sync-banner-details text-muted mt-1">
-        @if (hasIndex) {
+        @if (syncStatus.otherRowCount) {
+        {{ 'knowledge-base.sync-banner.composition' | transloco: { kb: syncStatus.kbRowCount, other: syncStatus.otherRowCount } }}
+        } @else {
+        {{ 'knowledge-base.sync-banner.composition_kb_only' | transloco: { kb: syncStatus.kbRowCount } }}
+        }
+      </div>
+      }
+
+      <!-- Provenance -->
+      <div class="sync-banner-details text-muted">
+        @if (syncStatus.collection) { @if (syncStatus.collection.createdAt && syncStatus.collection.createdBy) {
+        {{
+          'knowledge-base.sync-banner.provenance_full'
+            | transloco: { date: (syncStatus.collection.createdAt | date: 'dd/MM/yyyy'), origin: originLabel, createdBy: syncStatus.collection.createdBy }
+        }}
+        } @else if (syncStatus.collection.createdAt) {
+        {{
+          'knowledge-base.sync-banner.provenance_no_author'
+            | transloco: { date: (syncStatus.collection.createdAt | date: 'dd/MM/yyyy'), origin: originLabel }
+        }}
+        } @else if (syncStatus.collection.createdBy) {
+        {{ 'knowledge-base.sync-banner.provenance_no_date' | transloco: { origin: originLabel, createdBy: syncStatus.collection.createdBy } }}
+        } @else {
+        {{ 'knowledge-base.sync-banner.provenance_minimal' | transloco: { origin: originLabel } }}
+        } } @else {
+        {{ 'knowledge-base.sync-banner.provenance_unknown' | transloco }}
+        }
+      </div>
+
+      @if (syncStatus.lastProjectionAt) {
+      <div class="sync-banner-details text-muted">
+        {{ 'knowledge-base.sync-banner.last_projection' | transloco }}
+        {{ syncStatus.lastProjectionAt | date: 'dd/MM/yyyy HH:mm' }}
+      </div>
+      }
+
+      <!-- Writing into an index whose embedding model differs is refused server side -->
+      @if (embeddingIncompatible) {
+      <div class="sync-banner-warning mt-2">
+        <nb-icon
+          icon="exclamation-triangle"
+          status="warning"
+          class="mr-1"
+        ></nb-icon>
+        {{ 'knowledge-base.sync-banner.embedding_incompatible_warning' | transloco: { indexModel: syncStatus.collection?.embeddingModel } }}
+      </div>
+      } }
+
+      <!-- Configured index session, shown whenever one exists -->
+      @if (syncStatus.indexSessionId) {
+      <div class="sync-banner-details text-muted mt-1">
         <span [nbTooltip]="syncStatus.indexName">
           <nb-icon
             icon="database"
@@ -79,59 +155,12 @@
           ></nb-icon>
           {{ syncStatus.indexSessionId }}
         </span>
-        <span class="mx-2">·</span>
-        <span>
-          {{
-            (syncStatus.indexMode === IndexMode.TOCK_MANAGED
-              ? 'knowledge-base.sync-banner.index_mode_tock'
-              : 'knowledge-base.sync-banner.index_mode_external'
-            ) | transloco
-          }}
-        </span>
-        } @if (syncStatus.lastProjectionAt) {
-        <span class="mx-2">·</span>
-        <span>
-          {{ 'knowledge-base.sync-banner.last_projection' | transloco }}
-          {{ syncStatus.lastProjectionAt | date: 'dd/MM/yyyy HH:mm' }}
-        </span>
-        }
-      </div>
-
-      <!-- Writing into an index whose embedding model is unknown may silently produce unusable vectors -->
-      @if (embeddingWarning) {
-      <div class="sync-banner-warning mt-2">
-        <nb-icon
-          icon="exclamation-triangle"
-          status="warning"
-          class="mr-1"
-        ></nb-icon>
-        {{
-          (syncStatus.embeddingMismatch
-            ? 'knowledge-base.job.embedding_changed'
-            : 'knowledge-base.sync-banner.unknown_embedding_model_warning'
-          ) | transloco
-        }}
       </div>
       }
     </div>
 
     <div class="sync-banner-actions">
-      @if (!hasIndex) {
-      <button
-        nbButton
-        status="primary"
-        size="small"
-        [disabled]="busy || !syncStatus.canCreateIndex"
-        [nbTooltip]="'knowledge-base.sync-banner.create_index_tooltip' | transloco"
-        (click)="onCreateIndex.emit()"
-      >
-        <nb-icon
-          icon="database-add"
-          class="mr-2"
-        ></nb-icon>
-        {{ 'knowledge-base.sync-banner.create_index_button' | transloco }}
-      </button>
-      } @if (hasIndex && outOfSync) {
+      @if (outOfSync) {
       <button
         nbButton
         status="primary"
@@ -145,6 +174,21 @@
           class="mr-2"
         ></nb-icon>
         {{ 'knowledge-base.sync-banner.repair_button' | transloco }}
+      </button>
+      } @if (canCreate) {
+      <button
+        nbButton
+        [status]="indexState === IndexState.NONE ? 'primary' : 'basic'"
+        size="small"
+        [disabled]="busy"
+        [nbTooltip]="'knowledge-base.sync-banner.create_index_tooltip' | transloco"
+        (click)="onCreateIndex.emit()"
+      >
+        <nb-icon
+          icon="database-add"
+          class="mr-2"
+        ></nb-icon>
+        {{ createButtonLabelKey | transloco }}
       </button>
       }
     </div>

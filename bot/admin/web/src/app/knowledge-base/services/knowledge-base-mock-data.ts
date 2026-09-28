@@ -23,21 +23,24 @@ import { KnowledgeBaseEntry, KnowledgeBaseEntryStatus, KnowledgeBaseProjectionSt
 
 /** Demo scenarios, switchable from the board while the feature is being discussed. */
 export enum KnowledgeBaseMockScenario {
-  /** No index session on the bot: standalone mode entry point */
+  /** No index session on the bot (indexState NONE): standalone mode entry point */
   NO_INDEX = 'NO_INDEX',
-  /** Index created and fed by Tock, everything up to date */
+  /** Index created and fed by Tock (READY, tock_kb collection), everything up to date */
   IN_SYNC = 'IN_SYNC',
-  /** Index created and fed by Tock, pending and orphan entries */
+  /** Index created and fed by Tock (READY, tock_kb collection), pending and orphan entries */
   OUT_OF_SYNC = 'OUT_OF_SYNC',
-  /** Index produced by a third party pipeline, embedding model unknown */
+  /** Index produced by an ingestion tool (READY, provenance known), KB entries not yet reprojected */
   EXTERNAL_INDEX = 'EXTERNAL_INDEX',
-  /** Empty knowledge base */
+  /** Empty knowledge base over a Qallam index with no Tock contract metadata (READY, collection unknown) */
   NO_ENTRIES = 'NO_ENTRIES'
 }
 
 export const MOCK_INDEX_SESSION_ID = '0e1c7a54-8b1d-4c22-9f3a-2f6b7c9d4e10';
 export const MOCK_EXTERNAL_INDEX_SESSION_ID = '7bd3f180-44ac-4d9e-8a71-15c0b2e6f933';
 export const MOCK_EMBEDDING_MODEL = 'text-embedding-3-large';
+
+/** Documentary chunks (ingested documents, not knowledge base entries) present in a mixed-mode index. */
+export const MOCK_DOCUMENTARY_ROW_COUNT = 128;
 
 /**
  * Physical index names, as the server would return them from the indexes endpoint.

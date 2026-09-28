@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { KnowledgeBaseIndexMode, KnowledgeBaseSyncStatus } from '../../models';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
+import { CreateIndexBlocker, KnowledgeBaseIndexState, KnowledgeBaseSyncStatus } from '../../models';
 
 type BannerStatus = 'basic' | 'info' | 'success' | 'warning' | 'danger';
 
@@ -26,28 +28,38 @@ type BannerStatus = 'basic' | 'info' | 'success' | 'warning' | 'danger';
   standalone: false
 })
 export class KnowledgeBaseSyncBannerComponent {
+  private router = inject(Router);
+  private transloco = inject(TranslocoService);
+
   @Input() syncStatus: KnowledgeBaseSyncStatus;
   @Input() busy: boolean = false;
+  /** Index creation and re-creation are admin only; the banner messages stay visible to everyone. */
+  @Input() isAdmin: boolean = false;
 
   @Output() onSynchronize = new EventEmitter<void>();
   @Output() onCreateIndex = new EventEmitter<void>();
   @Output() onFilterPending = new EventEmitter<void>();
   @Output() onFilterOrphan = new EventEmitter<void>();
 
-  IndexMode = KnowledgeBaseIndexMode;
+  IndexState = KnowledgeBaseIndexState;
+  Blocker = CreateIndexBlocker;
 
   /**
-   * The banner is a repair affordance, not a validation step: publishing, unpublishing and
-   * deleting all take effect immediately. It therefore only shows when something needs
-   * attention — no index yet, or a real drift between the knowledge base and the index.
-   * Showing a permanent "Synchronize" button would suggest edits are queued, which they are not.
+   * The banner is where the index status is surfaced: which state it is in, what it holds, where it
+   * came from, and the repair or creation actions that apply. It shows as soon as a status is known.
+   * The Repair button still appears only on a real drift, so it never suggests that edits are queued —
+   * publishing, unpublishing and deleting all take effect immediately.
    */
   get visible(): boolean {
-    return !!this.syncStatus && (!this.hasIndex || this.outOfSync || this.embeddingWarning);
+    return !!this.syncStatus;
   }
 
-  get hasIndex(): boolean {
-    return !!this.syncStatus && this.syncStatus.indexMode !== KnowledgeBaseIndexMode.NONE;
+  get indexState(): KnowledgeBaseIndexState | null {
+    return this.syncStatus?.indexState ?? null;
+  }
+
+  get blocker(): CreateIndexBlocker | null {
+    return this.syncStatus?.createIndexBlocker ?? null;
   }
 
   get pending(): number {
@@ -58,28 +70,95 @@ export class KnowledgeBaseSyncBannerComponent {
     return this.syncStatus?.counts.orphan ?? 0;
   }
 
+  /** A drift only exists against a queryable index, hence the READY guard. */
   get outOfSync(): boolean {
-    return this.pending > 0 || this.orphan > 0 || !!this.syncStatus?.counts.failed;
+    return (
+      this.indexState === KnowledgeBaseIndexState.READY &&
+      (this.pending > 0 || this.orphan > 0 || !!this.syncStatus?.counts.failed)
+    );
   }
 
-  /** True when entries would be written into an index whose embedding model cannot be verified. */
-  get embeddingWarning(): boolean {
-    return this.hasIndex && (!this.syncStatus.embeddingModelKnown || !!this.syncStatus.embeddingMismatch);
+  get embeddingIncompatible(): boolean {
+    return this.indexState === KnowledgeBaseIndexState.READY && !!this.syncStatus?.embeddingIncompatible;
+  }
+
+  /** Whether the create / re-create button can be offered: admin, and creation not blocked server side. */
+  get canCreate(): boolean {
+    return this.isAdmin && this.blocker === null;
+  }
+
+  get createButtonLabelKey(): string {
+    return this.indexState === KnowledgeBaseIndexState.NONE
+      ? 'knowledge-base.sync-banner.create_index_button'
+      : 'knowledge-base.sync-banner.recreate_index_button';
   }
 
   get titleKey(): string {
-    if (!this.hasIndex) return 'knowledge-base.sync-banner.no_index_title';
-    if (this.outOfSync) return 'knowledge-base.sync-banner.out_of_sync_title';
-    return 'knowledge-base.sync-banner.embedding_warning_title';
+    switch (this.indexState) {
+      case KnowledgeBaseIndexState.NONE:
+        return 'knowledge-base.sync-banner.no_index_title';
+      case KnowledgeBaseIndexState.MISSING:
+        return 'knowledge-base.sync-banner.missing_index_title';
+      default:
+        if (this.outOfSync) return 'knowledge-base.sync-banner.out_of_sync_title';
+        if (this.embeddingIncompatible) return 'knowledge-base.sync-banner.embedding_incompatible_title';
+        return 'knowledge-base.sync-banner.ready_title';
+    }
+  }
+
+  /** i18n key of the blocker message shown in NONE / MISSING, null when creation is not blocked. */
+  get blockerMessageKey(): string | null {
+    switch (this.blocker) {
+      case CreateIndexBlocker.RAG_NOT_CONFIGURED:
+        return 'knowledge-base.job.create_blocked_rag_not_configured';
+      case CreateIndexBlocker.EMBEDDING_MODEL_UNDEFINED:
+        return 'knowledge-base.job.create_blocked_embedding_model_undefined';
+      case CreateIndexBlocker.NO_PUBLISHED_ENTRY:
+        return 'knowledge-base.job.create_blocked_no_published_entry';
+      default:
+        return null;
+    }
+  }
+
+  /** Human-readable index origin: mapped label for known origins, the raw value otherwise. */
+  get originLabel(): string {
+    const origin = this.syncStatus?.collection?.origin ?? null;
+    switch (origin) {
+      case 'tock_kb':
+        return this.transloco.translate('knowledge-base.sync-banner.origin_tock_kb');
+      case 'qallam':
+        return this.transloco.translate('knowledge-base.sync-banner.origin_qallam');
+      case 'indexing_tools':
+        return this.transloco.translate('knowledge-base.sync-banner.origin_indexing_tools');
+      default:
+        return origin ?? this.transloco.translate('knowledge-base.sync-banner.origin_unknown');
+    }
   }
 
   get status(): BannerStatus {
-    if (!this.hasIndex) return 'info';
-    return 'warning';
+    switch (this.indexState) {
+      case KnowledgeBaseIndexState.NONE:
+        return this.blocker ? 'warning' : 'info';
+      case KnowledgeBaseIndexState.MISSING:
+        return 'warning';
+      default:
+        return this.outOfSync || this.embeddingIncompatible ? 'warning' : 'success';
+    }
   }
 
   get icon(): string {
-    if (!this.hasIndex) return 'database-add';
-    return 'exclamation-triangle';
+    switch (this.indexState) {
+      case KnowledgeBaseIndexState.NONE:
+        return this.blocker ? 'exclamation-triangle' : 'database-add';
+      case KnowledgeBaseIndexState.MISSING:
+        return 'exclamation-triangle';
+      default:
+        return this.outOfSync || this.embeddingIncompatible ? 'exclamation-triangle' : 'database-check';
+    }
+  }
+
+  /** Linked from the RAG_NOT_CONFIGURED blocker; the route lives in the rag module. */
+  openRagSettings(): void {
+    this.router.navigate(['/rag/settings']);
   }
 }

@@ -34,6 +34,7 @@ import {
 
 import { KnowledgeBaseRoutingModule } from './knowledge-base-routing.module';
 import { KnowledgeBaseEntriesBoardComponent } from './entries-board/entries-board.component';
+import { KnowledgeBaseCreateIndexDialogComponent } from './entries-board/create-index-dialog/create-index-dialog.component';
 import { KnowledgeBaseSyncBannerComponent } from './entries-board/sync-banner/sync-banner.component';
 import { KnowledgeBaseEntriesImportComponent } from './entries-import/entries-import.component';
 import { KnowledgeBaseEntryDetailComponent } from './entry-detail/entry-detail.component';
@@ -46,6 +47,7 @@ import { KnowledgeBaseJobProgressComponent } from './entries-board/job-progress/
 @NgModule({
   declarations: [
     KnowledgeBaseEntriesBoardComponent,
+    KnowledgeBaseCreateIndexDialogComponent,
     KnowledgeBaseSyncBannerComponent,
     KnowledgeBaseJobProgressComponent,
     KnowledgeBaseEntryDetailComponent,

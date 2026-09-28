@@ -25,6 +25,7 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.nlp.core.Intent
+import ai.tock.shared.exception.error.ErrorMessage
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -98,24 +99,45 @@ object RAGService {
     private fun saveWithValidation(ragConfig: BotRAGConfigurationDTO): BotRAGConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId).firstOrNull()
             ?: WebVerticle.badRequest("No RAG configuration is defined yet [namespace: ${ragConfig.namespace}, botId: ${ragConfig.botId}]")
+        rejectIncompatibleEmbedding(ragConfig)
         logger.info { "Saving the RAG Configuration [namespace: ${ragConfig.namespace}, botId: ${ragConfig.botId}]" }
         return saveRagConfiguration(ragConfig)
     }
 
     /**
-     * Save the RAG configuration
-     * @param ragConfiguration [BotRAGConfigurationDTO]
+     * Guard against silently pointing the bot at (or re-embedding against) a collection whose embedding model no longer
+     * matches: when the incoming config carries a non-blank indexSessionId and that session, or the embedding provider or
+     * model, changed compared to the stored config, resolve the target collection and reject a MISMATCH. UNKNOWN (no
+     * contract metadata, missing collection, or an undefined model) never blocks. PGVector only: OpenSearch collections
+     * expose no embedding metadata, so their coherence is always UNKNOWN and this guard is a no-op for them.
      */
-    internal fun activateKnowledgeBaseIndex(
+    private fun rejectIncompatibleEmbedding(ragConfig: BotRAGConfigurationDTO) {
+        // Work from the DTO's emSetting directly: converting to the entity form (toBotRAGConfiguration/toEntity) would
+        // create or update a secret through the secret manager. This guard must have no such side effect.
+        val session = ragConfig.indexSessionId?.takeIf { it.isNotBlank() } ?: return
+        val stored = ragConfigurationDAO.findByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId)
+        val changed =
+            stored == null ||
+                stored.indexSessionId != ragConfig.indexSessionId ||
+                stored.emSetting.provider != ragConfig.emSetting.provider ||
+                EmbeddingModelIdentity.normalized(stored.emSetting) != EmbeddingModelIdentity.normalized(ragConfig.emSetting)
+        if (!changed) return
+        val status = KnowledgeBaseService.default.indexStatusFor(ragConfig.namespace, ragConfig.botId, session, ragConfig.emSetting)
+        if (status.coherence == EmbeddingCoherence.MISMATCH) {
+            throw BadRequestException(setOf(ErrorMessage(message = "rag.embedding.incompatible_index")))
+        }
+    }
+
+    /**
+     * Point the bot's RAG configuration at a (re-)created knowledge base collection. Never touches `enabled`: switching
+     * the index and activating RAG are two distinct actions. Validates and saves only if the stored config is unchanged.
+     */
+    internal fun switchKnowledgeBaseIndex(
         previous: BotRAGConfiguration,
         updated: BotRAGConfiguration,
     ) {
         check(RAGValidationService.validate(updated).isEmpty()) { "knowledge-base.job.activation_failed" }
         check(ragConfigurationDAO.saveIfUnchanged(previous, updated)) { "knowledge-base.job.configuration_changed" }
-        // Same activation behavior as the existing settings screen.
-        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(updated.namespace, updated.botId, Intent.UNKNOWN_INTENT_NAME.withoutNamespace())?.let {
-            storyDefinitionDAO.save(it.copy(features = prepareEndingFeatures(it, !updated.enabled)))
-        }
     }
 
     private fun saveRagConfiguration(ragConfiguration: BotRAGConfigurationDTO): BotRAGConfiguration {

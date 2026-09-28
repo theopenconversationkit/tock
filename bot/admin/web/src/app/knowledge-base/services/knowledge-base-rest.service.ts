@@ -61,8 +61,8 @@ export class KnowledgeBaseRestService extends KnowledgeBaseService {
   verifyIndex(): Observable<KB.KnowledgeBaseJob> {
     return this.rest.post(this.url('/verify'), {});
   }
-  createIndex(): Observable<KB.KnowledgeBaseJob> {
-    return this.rest.post(this.url('/index'), {});
+  createIndex(switchIndex: boolean): Observable<KB.KnowledgeBaseJob> {
+    return this.rest.post(this.url('/index'), { switchIndex });
   }
   bulkUpdateStatus(entryIds: string[], status: KB.KnowledgeBaseEntryStatus): Observable<KB.KnowledgeBaseJob> {
     return this.rest.post(this.url('/bulk-status'), { entryIds, status });

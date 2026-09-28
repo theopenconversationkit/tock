@@ -119,6 +119,173 @@ async def test_partial_failure_has_per_entry_ack_and_does_not_leak_secret():
     assert 'secret-password' not in response.model_dump_json()
 
 
+def test_recognize_row_recomputes_hash_only_for_wellformed_single_chunk():
+    metadata = {
+        'id': 'entry',
+        'kb_entry_id': 'entry',
+        'chunk': '1/1',
+        'title': 'Titre',
+        'source': 'https://example.org',
+    }
+    content = 'Titre\n\nBody'
+    row = kb.recognize_row('kb-1', content, metadata)
+    assert row.entry_id == 'entry'
+    assert row.title == 'Titre'
+    assert row.content_hash == kb.content_hash(content, 'https://example.org')
+
+
+@pytest.mark.parametrize(
+    'metadata, content',
+    [
+        # A row split into several chunks is never a single-shot KB projection.
+        ({'id': 'e', 'kb_entry_id': 'e', 'chunk': '1/2', 'source': 's'}, 'x'),
+        # id and kb_entry_id disagree: not a KB pin row.
+        ({'id': 'other', 'kb_entry_id': 'e', 'chunk': '1/1', 'source': 's'}, 'x'),
+        # No source key at all.
+        ({'id': 'e', 'kb_entry_id': 'e', 'chunk': '1/1'}, 'x'),
+        # Stored content no longer starts with the title.
+        (
+            {
+                'id': 'e',
+                'kb_entry_id': 'e',
+                'chunk': '1/1',
+                'title': 'Titre',
+                'source': 's',
+            },
+            'drifted content',
+        ),
+    ],
+)
+def test_recognize_row_yields_empty_hash_when_not_recomputable(metadata, content):
+    assert kb.recognize_row('kb-1', content, metadata).content_hash == ''
+
+
+@pytest.mark.asyncio
+async def test_index_state_reads_pgvector_without_creating_collection():
+    connection = AsyncMock()
+    collection = SimpleNamespace(uuid='uuid-1', cmetadata={'schema_version': 1})
+    counts = SimpleNamespace(total=5, kb=3)
+    connection.execute.side_effect = [
+        SimpleNamespace(scalar=lambda: 'langchain_pg_collection'),
+        SimpleNamespace(first=lambda: collection),
+        SimpleNamespace(first=lambda: counts),
+    ]
+    engine = MagicMock()
+    engine.connect.return_value.__aenter__ = AsyncMock(return_value=connection)
+    engine.connect.return_value.__aexit__ = AsyncMock(return_value=False)
+    factory = MagicMock(spec=PGVectorFactory)
+    factory.index_name = 'ns_test_bot_kb_session_one'
+    factory.pool = SimpleNamespace(async_engine=engine)
+    with patch.object(kb, 'factory_for', return_value=factory):
+        state = await kb.index_state(
+            KnowledgeBaseTargetRequest(
+                index_name='ns_test_bot_kb_session_one',
+                index_name_prefix='ns_test_bot_kb_session_',
+            )
+        )
+    assert state.exists is True
+    assert state.row_count == 5
+    assert state.kb_row_count == 3
+    assert state.cmetadata == {'schema_version': 1}
+    factory.get_vector_store.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_index_state_reports_absent_pgvector_collection():
+    connection = AsyncMock()
+    # The langchain table exists, but holds no row for this collection name.
+    connection.execute.side_effect = [
+        SimpleNamespace(scalar=lambda: 'langchain_pg_collection'),
+        SimpleNamespace(first=lambda: None),
+    ]
+    engine = MagicMock()
+    engine.connect.return_value.__aenter__ = AsyncMock(return_value=connection)
+    engine.connect.return_value.__aexit__ = AsyncMock(return_value=False)
+    factory = MagicMock(spec=PGVectorFactory)
+    factory.index_name = 'ns_test_bot_kb_session_one'
+    factory.pool = SimpleNamespace(async_engine=engine)
+    state = await kb.collection_state(factory)
+    assert state.exists is False
+    assert state.row_count is None and state.kb_row_count is None
+    assert state.cmetadata is None
+
+
+@pytest.mark.asyncio
+async def test_index_state_reports_absent_pgvector_table_on_fresh_database():
+    connection = AsyncMock()
+    # Fresh database: the langchain tables have not been created yet. to_regclass returns NULL and no
+    # further query is run (a raw SELECT on the missing table would raise UndefinedTable).
+    connection.execute.return_value = SimpleNamespace(scalar=lambda: None)
+    engine = MagicMock()
+    engine.connect.return_value.__aenter__ = AsyncMock(return_value=connection)
+    engine.connect.return_value.__aexit__ = AsyncMock(return_value=False)
+    factory = MagicMock(spec=PGVectorFactory)
+    factory.index_name = 'ns_test_bot_kb_session_one'
+    factory.pool = SimpleNamespace(async_engine=engine)
+    state = await kb.collection_state(factory)
+    assert state.exists is False
+    assert state.row_count is None and state.kb_row_count is None
+    assert state.cmetadata is None
+    assert connection.execute.await_count == 1
+
+
+@pytest.mark.asyncio
+async def test_index_entries_refuses_implicit_creation_without_contract_metadata():
+    # Collection absent AND no contract metadata (not a creation job): every entry is returned
+    # with the index_missing signal, and no store is opened (no implicit get_or_create).
+    factory = MagicMock(spec=PGVectorFactory)
+    with (
+        patch.object(kb, 'factory_for', return_value=factory),
+        patch.object(kb, 'get_em_factory'),
+        patch.object(
+            kb,
+            'collection_state',
+            AsyncMock(return_value=kb.KnowledgeBaseIndexStateResponse(exists=False)),
+        ),
+    ):
+        response = await kb.index_entries(request())
+    assert [r.error for r in response.results] == ['knowledge-base.job.index_missing']
+    assert all(r.count == 0 for r in response.results)
+    factory.get_vector_store.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_index_entries_writes_into_existing_collection_without_contract_metadata():
+    # Legacy Qallam collection: exists but carries no Tock contract metadata, and the job
+    # provides none. Writes must still succeed against the existing collection.
+    factory = MagicMock(spec=PGVectorFactory)
+    store = SimpleNamespace(aadd_documents=AsyncMock())
+    factory.get_vector_store.return_value = store
+    with (
+        patch.object(kb, 'factory_for', return_value=factory),
+        patch.object(kb, 'get_em_factory'),
+        patch.object(
+            kb,
+            'collection_state',
+            AsyncMock(return_value=kb.KnowledgeBaseIndexStateResponse(exists=True)),
+        ),
+    ):
+        response = await kb.index_entries(request())
+    factory.get_vector_store.assert_called_once_with(collection_metadata=None)
+    assert response.results[0].count == 1
+    assert response.results[0].error is None
+
+
+@pytest.mark.asyncio
+async def test_index_entries_creation_passes_contract_metadata_to_store():
+    factory = MagicMock(spec=PGVectorFactory)
+    store = SimpleNamespace(aadd_documents=AsyncMock())
+    factory.get_vector_store.return_value = store
+    metadata = {'schema_version': 1, 'origin': 'tock_kb'}
+    with (
+        patch.object(kb, 'factory_for', return_value=factory),
+        patch.object(kb, 'get_em_factory'),
+    ):
+        response = await kb.index_entries(request(collection_metadata=metadata))
+    factory.get_vector_store.assert_called_once_with(collection_metadata=metadata)
+    assert response.results[0].count == 1
+
+
 @pytest.mark.asyncio
 async def test_delete_is_collection_scoped_and_cannot_remove_documentary_rows():
     factory = MagicMock(spec=PGVectorFactory)

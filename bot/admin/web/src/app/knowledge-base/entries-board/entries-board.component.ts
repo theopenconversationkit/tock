@@ -24,12 +24,17 @@ import { Observable, Subject, debounceTime, interval, exhaustMap, takeUntil, tak
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DialogService } from '../../core-nlp/dialog.service';
+import { StateService } from '../../core-nlp/state.service';
+import { UserRole } from '../../model/auth';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { Pagination } from '../../shared/components/pagination/pagination.component';
+import { copyToClipboard } from '../../shared/utils';
 import {
   KnowledgeBaseEntry,
   KnowledgeBaseEntryStatus,
+  KnowledgeBaseIndexState,
   KnowledgeBaseJobState,
+  KnowledgeBaseJobType,
   KnowledgeBaseExportEnvelope,
   KnowledgeBaseJob,
   KnowledgeBaseProjectionState,
@@ -42,6 +47,7 @@ import {
 import { KnowledgeBaseMockScenario } from '../services/knowledge-base-mock-data';
 import { KnowledgeBaseMockService } from '../services/knowledge-base-mock.service';
 import { KnowledgeBaseService } from '../services/knowledge-base.service';
+import { KnowledgeBaseCreateIndexDialogComponent } from './create-index-dialog/create-index-dialog.component';
 
 @Component({
   selector: 'tock-knowledge-base-entries-board',
@@ -53,6 +59,7 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
   private botConfiguration = inject(BotConfigurationService);
   private knowledgeBaseService = inject(KnowledgeBaseService);
   private dialogService = inject(DialogService);
+  private state = inject(StateService);
   private toastrService = inject(NbToastrService);
   private transloco = inject(TranslocoService);
   private router = inject(Router);
@@ -76,6 +83,19 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
 
   EntryStatus = KnowledgeBaseEntryStatus;
   ProjectionState = KnowledgeBaseProjectionState;
+  IndexState = KnowledgeBaseIndexState;
+
+  /** Import, export and index creation / re-creation are admin only. */
+  get isAdmin(): boolean {
+    return this.state.hasRole(UserRole.admin);
+  }
+
+  /**
+   * `switchIndex` chosen in the create dialog for the CREATE_INDEX job in flight, so the completion
+   * message can tell the "bot switched onto the new index" case from the "snapshot" case. Reset once
+   * consumed; null when the running job was not started from this session (discovery poll).
+   */
+  private pendingCreateSwitch: boolean | null = null;
 
   sortField: KnowledgeBaseSortField = 'updatedAt';
   sortDirection: SortDirection = 'desc';
@@ -294,19 +314,19 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
   }
 
   createIndex(): void {
-    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+    const dialogRef = this.dialogService.openDialog(KnowledgeBaseCreateIndexDialogComponent, {
       context: {
-        title: this.transloco.translate('knowledge-base.entries-board.create_index_title'),
-        subtitle: this.transloco.translate('knowledge-base.entries-board.create_index_subtitle'),
-        actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
-          { actionName: 'create', buttonStatus: 'primary' }
-        ]
+        indexState: this.syncStatus?.indexState ?? KnowledgeBaseIndexState.NONE,
+        ragEnabled: !!this.syncStatus?.ragEnabled,
+        otherRowCount: this.syncStatus?.otherRowCount ?? null
       }
     });
 
-    dialogRef.onClose.pipe(takeUntil(this.destroy$)).subscribe((result) => {
-      if (result === 'create') this.runJob(this.knowledgeBaseService.createIndex());
+    dialogRef.onClose.pipe(takeUntil(this.destroy$)).subscribe((switchIndex) => {
+      // undefined means the dialog was cancelled; false is a genuine "snapshot" confirmation.
+      if (typeof switchIndex !== 'boolean') return;
+      this.pendingCreateSwitch = switchIndex;
+      this.runJob(this.knowledgeBaseService.createIndex(switchIndex));
     });
   }
 
@@ -384,17 +404,20 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
     this.clearSelection();
     this.refresh();
 
-    const failed = job.state === KnowledgeBaseJobState.FAILED;
+    // Consume the create choice for this job, whatever its outcome, so a later discovery poll never
+    // reads a stale value.
+    const createSwitch = job.type === KnowledgeBaseJobType.CREATE_INDEX ? this.pendingCreateSwitch : null;
+    if (job.type === KnowledgeBaseJobType.CREATE_INDEX) this.pendingCreateSwitch = null;
 
-    this.toastrService.show(
-      this.transloco.translate(failed ? 'knowledge-base.job.failed_message' : `knowledge-base.job.done_${job.type.toLowerCase()}`, {
-        projected: job.projected,
-        removed: job.removed,
-        failed: job.failures.length
-      }),
-      this.transloco.translate(failed ? 'knowledge-base.entries-board.error_title' : 'knowledge-base.entries-board.success_title'),
-      { duration: 6000, status: failed ? 'danger' : job.failures.length ? 'warning' : 'success' }
-    );
+    if (job.state === KnowledgeBaseJobState.FAILED) {
+      this.notifyJobFailed();
+    } else if (job.type === KnowledgeBaseJobType.CREATE_INDEX) {
+      this.notifyIndexCreated(job, createSwitch);
+    } else if (job.type === KnowledgeBaseJobType.VERIFY_INDEX || job.type === KnowledgeBaseJobType.REPAIR_INDEX) {
+      this.notifyIndexChecked(job);
+    } else {
+      this.notifyJobDone(job);
+    }
 
     // The card stays on screen a moment so the outcome can be read, then clears itself.
     setTimeout(
@@ -403,6 +426,124 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
       },
       job.failures.length ? 15000 : 4000
     );
+  }
+
+  private notifyJobFailed(): void {
+    this.toastrService.show(
+      this.transloco.translate('knowledge-base.job.failed_message'),
+      this.transloco.translate('knowledge-base.entries-board.error_title'),
+      { duration: 6000, status: 'danger' }
+    );
+  }
+
+  private notifyJobDone(job: KnowledgeBaseJob): void {
+    this.toastrService.show(
+      this.transloco.translate(`knowledge-base.job.done_${job.type.toLowerCase()}`, {
+        projected: job.projected,
+        removed: job.removed,
+        failed: job.failures.length
+      }),
+      this.transloco.translate('knowledge-base.entries-board.success_title'),
+      { duration: 6000, status: job.failures.length ? 'warning' : 'success' }
+    );
+  }
+
+  /**
+   * VERIFY_INDEX and REPAIR_INDEX report against what the index actually holds once the job is over,
+   * so the toast is built from the post-job counts rather than from what the job wrote. When every
+   * published entry is present and no orphan remains it is a plain success; any gap turns it into a
+   * warning that stays longer and points to the next step (repair after a verify, failures after a repair).
+   */
+  private notifyIndexChecked(job: KnowledgeBaseJob): void {
+    const counts = job.syncStatus?.counts;
+    if (!counts) {
+      // No post-job status to summarize: fall back to the generic completion message.
+      this.notifyJobDone(job);
+      return;
+    }
+
+    if (counts.indexed === counts.published && counts.orphan === 0) {
+      this.toastrService.show(
+        this.transloco.translate('knowledge-base.job.verify_repair_up_to_date', {
+          indexed: counts.indexed,
+          published: counts.published
+        }),
+        this.transloco.translate('knowledge-base.entries-board.success_title'),
+        { duration: 6000, status: 'success' }
+      );
+      return;
+    }
+
+    const parts = [
+      this.transloco.translate('knowledge-base.job.verify_repair_gap', { indexed: counts.indexed, published: counts.published })
+    ];
+    if (counts.orphan > 0) {
+      parts.push(this.transloco.translate('knowledge-base.job.verify_repair_gap_orphan', { orphan: counts.orphan }));
+    }
+    parts.push(
+      this.transloco.translate(
+        job.type === KnowledgeBaseJobType.VERIFY_INDEX ? 'knowledge-base.job.verify_gap_hint' : 'knowledge-base.job.repair_gap_hint'
+      )
+    );
+
+    this.toastrService.show(parts.join(' '), this.transloco.translate('knowledge-base.entries-board.warning_title'), {
+      duration: 12000,
+      status: 'warning'
+    });
+  }
+
+  /**
+   * CREATE_INDEX ends on a dialog rather than a toast: when the bot was not switched onto the new
+   * index, its session id is the only handle the user has on it, so it is shown with a copy action
+   * instead of scrolling away in a toast. `switched` comes from the create dialog choice; a job picked
+   * up from the discovery poll has no choice recorded, so the bot's resulting session id is compared
+   * to the created one instead.
+   */
+  private notifyIndexCreated(job: KnowledgeBaseJob, switched: boolean | null): void {
+    const botSwitched = switched ?? (!!job.indexSessionId && job.syncStatus?.indexSessionId === job.indexSessionId);
+
+    const subtitle = botSwitched
+      ? this.transloco.translate('knowledge-base.job.create_done_switch', { projected: job.projected })
+      : this.transloco.translate('knowledge-base.job.create_done_snapshot', {
+          projected: job.projected,
+          indexSessionId: job.indexSessionId
+        });
+
+    const closeAction = {
+      actionName: this.transloco.translate('knowledge-base.job.create_done_close_button'),
+      buttonStatus: botSwitched ? 'primary' : 'basic',
+      ghost: !botSwitched,
+      returnValue: 'close'
+    };
+    const actions = botSwitched
+      ? [closeAction]
+      : [
+          closeAction,
+          {
+            actionName: this.transloco.translate('knowledge-base.job.create_done_copy_button'),
+            buttonStatus: 'primary',
+            returnValue: 'copy'
+          }
+        ];
+
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: this.transloco.translate('knowledge-base.job.create_done_title'),
+        subtitle,
+        actions
+      }
+    });
+
+    dialogRef.onClose.pipe(takeUntil(this.destroy$)).subscribe((result) => {
+      if (result === 'copy' && job.indexSessionId) {
+        copyToClipboard(job.indexSessionId);
+        this.toastrService.show(
+          this.transloco.translate('knowledge-base.job.session_id_copied'),
+          this.transloco.translate('knowledge-base.entries-board.success_title'),
+          { duration: 3000, status: 'success' }
+        );
+      }
+    });
   }
 
   private runJob(request: Observable<KnowledgeBaseJob>): void {

@@ -31,7 +31,7 @@ import {
   KnowledgeBaseEntry,
   KnowledgeBaseEntryPayload,
   KnowledgeBaseEntryStatus,
-  KnowledgeBaseIndexMode,
+  KnowledgeBaseIndexState,
   KnowledgeBaseJob,
   KnowledgeBaseJobState,
   KnowledgeBaseProjectionState,
@@ -68,6 +68,9 @@ export class KnowledgeBaseEntryDetailComponent implements OnInit, OnDestroy {
 
   entry: KnowledgeBaseEntry | null = null;
   syncStatus: KnowledgeBaseSyncStatus;
+
+  /** namespace/botId of the bot the editor was opened on, used to leave when the header switches bot. */
+  private currentBotKey: string | null = null;
 
   EntryStatus = KnowledgeBaseEntryStatus;
   ProjectionState = KnowledgeBaseProjectionState;
@@ -126,8 +129,27 @@ export class KnowledgeBaseEntryDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs) => {
       this.configurations = confs;
-      if (confs.length) this.load();
+      if (!confs.length) return;
+
+      const botKey = this.botKey(confs);
+
+      // The namespace/bot can be switched at any time from the header. The entry on screen belongs
+      // to the previous bot, so leave the editor for the list rather than show a foreign entry. The
+      // configurations subject replays on subscription, so the first emission is the bot we opened
+      // on, never a change: it must load, not redirect.
+      if (this.currentBotKey !== null && botKey !== this.currentBotKey) {
+        this.currentBotKey = botKey;
+        this.backToList();
+        return;
+      }
+
+      this.currentBotKey = botKey;
+      this.load();
     });
+  }
+
+  private botKey(confs: BotApplicationConfiguration[]): string | null {
+    return confs.length ? `${confs[0].namespace}/${confs[0].botId}` : null;
   }
 
   load(): void {
@@ -260,7 +282,9 @@ export class KnowledgeBaseEntryDetailComponent implements OnInit, OnDestroy {
   }
 
   get hasIndex(): boolean {
-    return !!this.syncStatus && this.syncStatus.indexMode !== KnowledgeBaseIndexMode.NONE;
+    // READY only: a MISSING index has no queryable collection, so saving a published entry into it
+    // would create rows the retrieval cannot reach, and the retrieval test would query nothing.
+    return !!this.syncStatus && this.syncStatus.indexState === KnowledgeBaseIndexState.READY;
   }
 
   get canSave(): boolean {

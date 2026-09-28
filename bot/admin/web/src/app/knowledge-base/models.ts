@@ -35,15 +35,26 @@ export enum KnowledgeBaseProjectionState {
 }
 
 /**
- * Origin of the index session currently configured on the bot.
- * TOCK_MANAGED: the index session was created by Tock from the knowledge base (standalone mode).
- * EXTERNAL: the index session was produced by a third party ingestion pipeline (mixed mode).
- * NONE: no index session configured on the bot yet.
+ * Derived state of the index session currently configured on the bot, computed server side.
+ * NONE: no index session configured yet.
+ * MISSING: an index session is configured but its backing collection is absent, or empty and
+ *   uncertified (created implicitly by a runtime query). Querying or projecting into it is unsafe.
+ * READY: the collection exists and can be queried.
  */
-export enum KnowledgeBaseIndexMode {
+export enum KnowledgeBaseIndexState {
   NONE = 'NONE',
-  TOCK_MANAGED = 'TOCK_MANAGED',
-  EXTERNAL = 'EXTERNAL'
+  MISSING = 'MISSING',
+  READY = 'READY'
+}
+
+/**
+ * Why creating an index is currently impossible, evaluated server side in priority order.
+ * null (absent) means creation is allowed, whatever the index state.
+ */
+export enum CreateIndexBlocker {
+  RAG_NOT_CONFIGURED = 'RAG_NOT_CONFIGURED',
+  EMBEDDING_MODEL_UNDEFINED = 'EMBEDDING_MODEL_UNDEFINED',
+  NO_PUBLISHED_ENTRY = 'NO_PUBLISHED_ENTRY'
 }
 
 export interface KnowledgeBaseEntry {
@@ -104,19 +115,34 @@ export interface KnowledgeBaseCounts {
   failed?: number;
 }
 
+/**
+ * Tock contract metadata read from a PGVector collection (PGVector only). Non-null exactly when the
+ * collection carries Tock contract metadata; a Qallam collection without it stays READY with a null
+ * collection here. Every field is nullable: a tool that does not fill a given key leaves it null.
+ */
+export interface KnowledgeBaseCollectionInfo {
+  origin: string | null;
+  createdAt: string | null; // ISO 8601
+  createdBy: string | null;
+  embeddingProvider: string | null;
+  embeddingModel: string | null;
+}
+
 export interface KnowledgeBaseSyncStatus {
-  indexMode: KnowledgeBaseIndexMode;
+  indexState: KnowledgeBaseIndexState;
   indexSessionId: string | null;
   indexName: string | null;
-  /**
-   * False when the index was not produced by Tock and the embedding model used to build it
-   * cannot be determined. Writing into such an index may silently produce unusable vectors
-   * when the dimension happens to match.
-   */
-  canCreateIndex?: boolean;
-  embeddingMismatch?: boolean;
-  embeddingModelKnown: boolean;
-  embeddingModel: string | null;
+  /** Rows recognized as knowledge base entries in the index, null when the store cannot report it */
+  kbRowCount: number | null;
+  /** Rows in the index that are not knowledge base entries (ingested documents), null when unknown */
+  otherRowCount: number | null;
+  collection: KnowledgeBaseCollectionInfo | null;
+  /** The index embedding model differs from the bot's: publishing to it is blocked server side */
+  embeddingIncompatible: boolean;
+  /** Why index creation is impossible right now, null when creation is allowed */
+  createIndexBlocker: CreateIndexBlocker | null;
+  /** Whether RAG is enabled on the bot, so the banner can tell whether a new index would be live */
+  ragEnabled: boolean;
   lastProjectionAt: string | null; // ISO 8601
   counts: KnowledgeBaseCounts;
 }
@@ -182,6 +208,8 @@ export interface KnowledgeBaseJob {
   /** Rows written and removed in the index, known once the job is over */
   projected: number;
   removed: number;
+  /** Index session the job targeted, set by CREATE_INDEX so the completion message can echo it */
+  indexSessionId: string | null;
   /** Index state once the job is over, so the banner refreshes without another call */
   syncStatus: KnowledgeBaseSyncStatus | null;
   /** Set when state is FAILED */

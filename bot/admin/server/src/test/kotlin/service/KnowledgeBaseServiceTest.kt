@@ -21,19 +21,22 @@ import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseDAO
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseEntry
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseEntryStatus
-import ai.tock.bot.admin.knowledgebase.KnowledgeBaseIndex
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJob
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJobState
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJobType
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseProjection
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseProjectionState
+import ai.tock.bot.admin.model.knowledgebase.CreateIndexBlocker
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseBulkStatus
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseDuplicatePolicy
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseEntryPayload
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseImportCandidate
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseImportRequest
+import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseIndexState
 import ai.tock.bot.engine.user.UserLock
+import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseIndexRequest
 import ai.tock.genai.orchestratorclient.requests.PromptTemplate
+import ai.tock.genai.orchestratorclient.responses.KnowledgeBaseIndexStateResponse
 import ai.tock.genai.orchestratorclient.responses.KnowledgeBaseRowsResponse
 import ai.tock.genai.orchestratorclient.responses.KnowledgeBaseStoredRow
 import ai.tock.genai.orchestratorclient.responses.KnowledgeBaseWriteResponse
@@ -45,6 +48,8 @@ import ai.tock.shared.security.key.RawSecretKey
 import ai.tock.shared.security.key.SecretKey
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
@@ -53,8 +58,11 @@ import org.litote.kmongo.newId
 import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class KnowledgeBaseServiceTest {
@@ -78,8 +86,8 @@ class KnowledgeBaseServiceTest {
                 return op()
             }
         }
-    private val service = spyk(KnowledgeBaseService(dao, lock))
     private val indexing = mockk<KnowledgeBaseIndexingService>()
+    private val service = spyk(KnowledgeBaseService(dao, lock, indexing))
     private val ragDAO = mockk<BotRAGConfigurationDAO>()
     private val target: KnowledgeBaseTarget
 
@@ -87,8 +95,14 @@ class KnowledgeBaseServiceTest {
         val llm = OpenAILLMSetting<SecretKey>(apiKey = RawSecretKey("test"), model = "test", temperature = "0", baseUrl = "https://example.org")
         val em = OpenAIEMSetting<SecretKey>(apiKey = RawSecretKey("test"), model = "test", baseUrl = "https://example.org")
         val rag = BotRAGConfiguration(newId(), "ns", "bot", true, llm, PromptTemplate(template = "test"), llm, PromptTemplate(template = "test"), em, indexSessionId = "session")
-        target = KnowledgeBaseTarget("target", "ns", "bot", "session", "index", "prefix", rag, null, "model", "test")
+        target = KnowledgeBaseTarget("target", "ns", "bot", "session", "index", "prefix", rag, null, "model")
         every { service.target(any(), any(), any()) } returns target
+        // sync()/createIndexBlocker resolve the bot's RAG configuration through the RAGService object.
+        mockkObject(RAGService)
+        every { RAGService.getRAGConfiguration(any(), any()) } returns rag
+        // Healthy default probe: collection exists, certified, and its embedding model matches the bot's ("model").
+        every { indexing.indexState(any()) } returns
+            KnowledgeBaseIndexStateResponse(true, 1, 1, mapOf("schema_version" to 1, "embedding_model" to "model"))
         every { indexing.rows(any()) } returns KnowledgeBaseRowsResponse(emptyList())
         every { indexing.index(any()) } answers {
             KnowledgeBaseWriteResponse(
@@ -370,7 +384,9 @@ class KnowledgeBaseServiceTest {
     @Test fun `embedding model mismatch blocks writes even when dimensions could match`() =
         runBlocking {
             val saved = create()
-            dao.saveIndex(KnowledgeBaseIndex("target", "ns", "bot", "session", "another-model", "another-model", true))
+            // The collection was created with a different embedding model than the bot now uses.
+            every { indexing.indexState(any()) } returns
+                KnowledgeBaseIndexStateResponse(true, 1, 1, mapOf("schema_version" to 1, "embedding_model" to "another-model"))
             processor().process(dao.jobs.getValue(saved.job.id))
             verify(exactly = 0) { indexing.index(any()) }
             assertEquals(
@@ -381,15 +397,190 @@ class KnowledgeBaseServiceTest {
                     .single()
                     .error,
             )
-            assertTrue(service.sync("ns", "bot").embeddingMismatch)
+            assertTrue(service.sync("ns", "bot").embeddingIncompatible)
         }
+
+    private fun createIndexJob(
+        session: String,
+        switchIndex: Boolean,
+        expected: String? = "session",
+    ) = KnowledgeBaseJob(
+        "ns",
+        "bot",
+        KnowledgeBaseJobType.CREATE_INDEX,
+        indexSessionId = session,
+        switchIndex = switchIndex,
+        expectedIndexSessionId = expected,
+        requestedBy = "author",
+    )
+
+    @Test fun `a switching creation points the bot at the new index and never toggles enabled`() =
+        runBlocking {
+            val switched = mutableListOf<BotRAGConfiguration>()
+            mockkObject(RAGService)
+            every { RAGService.switchKnowledgeBaseIndex(any(), capture(switched)) } returns Unit
+            // The bot's `enabled` flag must be preserved whether RAG was on or off before the switch.
+            for (enabled in listOf(true, false)) {
+                val session = "new-$enabled"
+                create()
+                every { service.target("ns", "bot", session) } returns target.copy(session = session)
+                every { ragDAO.findByNamespaceAndBotId("ns", "bot") } returns target.rag.copy(enabled = enabled, indexSessionId = "session")
+                val job = createIndexJob(session, switchIndex = true)
+                dao.saveJob(job)
+                processor().process(job)
+                assertEquals(KnowledgeBaseJobState.COMPLETED, dao.jobs.getValue(job._id).state)
+            }
+            assertEquals(listOf("new-true", "new-false"), switched.map { it.indexSessionId })
+            assertEquals(listOf(true, false), switched.map { it.enabled })
+        }
+
+    @Test fun `a non-switching creation leaves the settings and pending entries untouched for the current index`() =
+        runBlocking {
+            val saved = create()
+            val session = "shadow"
+            // A distinct target id, so the shadow index projections do not masquerade as the current index's.
+            every { service.target("ns", "bot", session) } returns target.copy(id = "shadow-target", session = session)
+            mockkObject(RAGService)
+            every { RAGService.switchKnowledgeBaseIndex(any(), any()) } returns Unit
+
+            processor().process(createIndexJob(session, switchIndex = false).also { dao.saveJob(it) })
+
+            // Settings never touched, and the pending change was NOT acknowledged by the shadow creation.
+            verify(exactly = 0) { RAGService.switchKnowledgeBaseIndex(any(), any()) }
+            assertEquals(saved.job.id, dao.entries.getValue(saved.entry.id).pendingJobId)
+
+            // Its own SAVE job still projects it into the current index and acknowledges it.
+            processor().process(dao.jobs.getValue(saved.job.id))
+            assertNull(dao.entries.getValue(saved.entry.id).pendingJobId)
+            assertTrue(dao.projections.values.any { it.targetId == target.id && it.entryId == saved.entry.id })
+        }
+
+    @Test fun `a failing non-switching creation records the failure on the job and leaves the current index entries and projections untouched`() =
+        runBlocking {
+            val saved = create()
+            // First, project the entry into the CURRENT index and acknowledge it.
+            processor().process(dao.jobs.getValue(saved.job.id))
+            assertNull(dao.entries.getValue(saved.entry.id).pendingJobId)
+            val currentProjection = dao.projections.values.single { it.targetId == target.id && it.entryId == saved.entry.id }
+
+            val session = "shadow"
+            every { service.target("ns", "bot", session) } returns target.copy(id = "shadow-target", session = session)
+            mockkObject(RAGService)
+            every { RAGService.switchKnowledgeBaseIndex(any(), any()) } returns Unit
+            // The write into the (re-)created collection fails. This concerns the new collection, not the current index.
+            every { indexing.index(any()) } throws IllegalStateException("knowledge-base.job.index_failed")
+
+            val job = createIndexJob(session, switchIndex = false).also { dao.saveJob(it) }
+            processor().process(job)
+
+            // The failure is recorded on the job only.
+            assertTrue(dao.jobs.getValue(job._id).failures.isNotEmpty())
+            // The current index entry is NOT marked pending, and its live projection is left exactly as it was.
+            assertNull(dao.entries.getValue(saved.entry.id).pendingJobId)
+            assertEquals(currentProjection, dao.projections.values.single { it.targetId == target.id && it.entryId == saved.entry.id })
+            verify(exactly = 0) { RAGService.switchKnowledgeBaseIndex(any(), any()) }
+        }
+
+    @Test fun `a collection embedding model matches the bot ignoring an Ollama latest tag`() {
+        val ollamaTarget = target.copy(embeddingModel = "nomic-embed-text")
+        every { indexing.indexState(any()) } returns
+            KnowledgeBaseIndexStateResponse(true, 1, 1, mapOf("schema_version" to 1, "embedding_model" to "nomic-embed-text:latest"))
+        assertFalse(service.probe(ollamaTarget).embeddingIncompatible)
+    }
+
+    @Test fun `a creation aborts when the settings index session changed after enqueue and succeeds once it matches`() =
+        runBlocking {
+            create()
+            val session = "job-session"
+            val job = createIndexJob(session, switchIndex = false)
+            dao.saveJob(job)
+
+            // The bot's RAG indexSessionId moved to an unrelated session after enqueue.
+            every { service.target("ns", "bot", session) } returns target.copy(session = session, rag = target.rag.copy(indexSessionId = "other-session"))
+            processor().process(job)
+            assertEquals(KnowledgeBaseJobState.FAILED, dao.jobs.getValue(job._id).state)
+            assertEquals("knowledge-base.job.configuration_changed", dao.jobs.getValue(job._id).error)
+            verify(exactly = 0) { indexing.index(any()) }
+
+            // Retry once this job's own switch has pointed the settings at its session.
+            every { service.target("ns", "bot", session) } returns target.copy(session = session, rag = target.rag.copy(indexSessionId = session))
+            processor().process(job)
+            assertEquals(KnowledgeBaseJobState.COMPLETED, dao.jobs.getValue(job._id).state)
+        }
+
+    @Test fun `a creation writes the Tock contract metadata into the new collection`() {
+        runBlocking {
+            create()
+            val session = "brand-new"
+            every { service.target("ns", "bot", session) } returns target.copy(session = session)
+            val request = slot<KnowledgeBaseIndexRequest>()
+            every { indexing.index(capture(request)) } answers {
+                KnowledgeBaseWriteResponse(
+                    firstArg<KnowledgeBaseIndexRequest>().entries.map {
+                        KnowledgeBaseWriteResult(it.entryId, listOf("kb-" + KnowledgeBaseService.hash("index/${it.entryId}")), 1)
+                    },
+                )
+            }
+
+            processor().process(createIndexJob(session, switchIndex = false).also { dao.saveJob(it) })
+
+            val metadata = request.captured.collectionMetadata!!
+            assertEquals(1, metadata["schema_version"])
+            assertEquals("tock_kb", metadata["origin"])
+            assertEquals("author", metadata["created_by"])
+            assertEquals("OpenAI", metadata["embedding_provider"])
+            assertEquals("model", metadata["embedding_model"])
+            assertNotNull(metadata["created_at"])
+        }
+    }
+
+    @Test fun `a missing index fails every write delete verify and repair job and keeps entries pending`() =
+        runBlocking {
+            every { indexing.indexState(any()) } returns KnowledgeBaseIndexStateResponse(false, null, null, null)
+            val saved = create()
+            for (job in listOf(
+                dao.jobs.getValue(saved.job.id),
+                KnowledgeBaseJob("ns", "bot", KnowledgeBaseJobType.DELETE_ENTRY, listOf(saved.entry.id)),
+                KnowledgeBaseJob("ns", "bot", KnowledgeBaseJobType.VERIFY_INDEX),
+                KnowledgeBaseJob("ns", "bot", KnowledgeBaseJobType.REPAIR_INDEX),
+            )) {
+                dao.saveJob(job)
+                processor().process(job)
+                assertEquals(KnowledgeBaseJobState.FAILED, dao.jobs.getValue(job._id).state)
+                assertEquals("knowledge-base.job.index_missing", dao.jobs.getValue(job._id).error)
+            }
+            assertNotNull(dao.entries.getValue(saved.entry.id).pendingJobId)
+            verify(exactly = 0) { indexing.index(any()) }
+            verify(exactly = 0) { indexing.delete(any()) }
+            verify(exactly = 0) { indexing.rows(any()) }
+        }
+
+    @Test fun `createIndexBlocker reports each cause in priority order and enqueue surfaces its key`() {
+        // RAG_NOT_CONFIGURED wins even with no published entry.
+        every { RAGService.getRAGConfiguration(any(), any()) } returns null
+        assertEquals(CreateIndexBlocker.RAG_NOT_CONFIGURED, service.createIndexBlocker("ns", "bot"))
+        val ex = assertFailsWith<IllegalArgumentException> { service.enqueue("ns", "bot", KnowledgeBaseJobType.CREATE_INDEX) }
+        assertEquals(CreateIndexBlocker.RAG_NOT_CONFIGURED.validationKey, ex.message)
+
+        // EMBEDDING_MODEL_UNDEFINED wins over a missing published entry.
+        val noModelRag = target.rag.copy(emSetting = (target.rag.emSetting as OpenAIEMSetting).copy(model = " "))
+        every { RAGService.getRAGConfiguration(any(), any()) } returns noModelRag
+        assertEquals(CreateIndexBlocker.EMBEDDING_MODEL_UNDEFINED, service.createIndexBlocker("ns", "bot"))
+
+        // NO_PUBLISHED_ENTRY when the RAG and embedding model are fine but nothing is published yet.
+        every { RAGService.getRAGConfiguration(any(), any()) } returns target.rag
+        assertEquals(CreateIndexBlocker.NO_PUBLISHED_ENTRY, service.createIndexBlocker("ns", "bot"))
+
+        // No blocker once a published entry exists.
+        create()
+        assertNull(service.createIndexBlocker("ns", "bot"))
+    }
 }
 
 private class MemoryKnowledgeBaseDAO : KnowledgeBaseDAO {
     val entries = linkedMapOf<String, KnowledgeBaseEntry>()
     val projections = linkedMapOf<String, KnowledgeBaseProjection>()
     val jobs = linkedMapOf<String, KnowledgeBaseJob>()
-    val indexes = linkedMapOf<String, KnowledgeBaseIndex>()
     var failJobWrite = false
 
     override fun deleteBot(
@@ -399,7 +590,6 @@ private class MemoryKnowledgeBaseDAO : KnowledgeBaseDAO {
         entries.values.removeIf { it.namespace == namespace && botId in it.botIds }
         projections.values.removeIf { it.namespace == namespace && it.botId == botId }
         jobs.values.removeIf { it.namespace == namespace && it.botId == botId }
-        indexes.values.removeIf { it.namespace == namespace && it.botId == botId }
     }
 
     override fun entries(
@@ -436,12 +626,6 @@ private class MemoryKnowledgeBaseDAO : KnowledgeBaseDAO {
 
     override fun deleteProjection(id: String) {
         projections.remove(id)
-    }
-
-    override fun index(id: String) = indexes[id]
-
-    override fun saveIndex(index: KnowledgeBaseIndex) {
-        indexes[index._id] = index
     }
 
     override fun saveJob(job: KnowledgeBaseJob) {

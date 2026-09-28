@@ -76,17 +76,45 @@ data class KnowledgeBaseCounts(
     val failed: Int = 0,
 )
 
+/** Derived state of the bot's configured index, exposed to the front. See KnowledgeBaseService.indexState. */
+enum class KnowledgeBaseIndexState { NONE, MISSING, READY }
+
+/**
+ * Why creating an index is currently impossible, evaluated in this priority order. null means creation is allowed.
+ * [validationKey] is the i18n key returned as the validation error when enqueue rejects a creation.
+ */
+enum class CreateIndexBlocker(val validationKey: String) {
+    RAG_NOT_CONFIGURED("knowledge-base.job.create_blocked_rag_not_configured"),
+    EMBEDDING_MODEL_UNDEFINED("knowledge-base.job.create_blocked_embedding_model_undefined"),
+    NO_PUBLISHED_ENTRY("knowledge-base.job.create_blocked_no_published_entry"),
+}
+
+/**
+ * Tock contract metadata read from a PGVector collection's cmetadata (PGVector only). All fields nullable: an older
+ * collection, or one created by a tool that does not fill a given key, simply leaves it null.
+ */
+@JsonInclude(JsonInclude.Include.ALWAYS)
+data class KnowledgeBaseCollectionInfo(
+    val origin: String?,
+    val createdAt: String?,
+    val createdBy: String?,
+    val embeddingProvider: String?,
+    val embeddingModel: String?,
+)
+
 @JsonInclude(JsonInclude.Include.ALWAYS)
 data class KnowledgeBaseSyncStatus(
-    val indexMode: String,
+    val indexState: KnowledgeBaseIndexState,
     val indexSessionId: String?,
     val indexName: String?,
-    val embeddingModelKnown: Boolean,
-    val embeddingModel: String?,
+    val kbRowCount: Int?,
+    val otherRowCount: Int?,
+    val collection: KnowledgeBaseCollectionInfo?,
+    val embeddingIncompatible: Boolean,
+    val createIndexBlocker: CreateIndexBlocker?,
+    val ragEnabled: Boolean,
     val lastProjectionAt: Instant?,
     val counts: KnowledgeBaseCounts,
-    val canCreateIndex: Boolean,
-    val embeddingMismatch: Boolean = false,
 )
 
 @JsonInclude(JsonInclude.Include.ALWAYS)
@@ -100,6 +128,7 @@ data class KnowledgeBaseJobDTO(
     val failures: List<KnowledgeBaseJobFailure>,
     val projected: Int,
     val removed: Int,
+    val indexSessionId: String?,
     val syncStatus: KnowledgeBaseSyncStatus?,
     val error: String?,
 )

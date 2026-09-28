@@ -14,7 +14,7 @@
 #
 """Internal requests: the admin server resolves all settings and index names."""
 
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -42,6 +42,9 @@ class KnowledgeBaseIndexRequest(KnowledgeBaseTargetRequest):
     em_setting: EMSetting
     index_session_id: str = Field(min_length=1)
     entries: list[KnowledgeBaseDocument] = Field(min_length=1, max_length=100)
+    # Tock contract metadata written onto the collection at creation time only (PGVector only). When set, the very
+    # first write is allowed to create the collection born certified; when None, the collection must already exist.
+    collection_metadata: Optional[dict[str, Any]] = None
 
 
 class KnowledgeBaseDeletion(BaseModel):

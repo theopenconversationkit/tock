@@ -24,8 +24,10 @@ import { deepCopy } from '../../shared/utils';
 import { KnowledgeBaseService } from './knowledge-base.service';
 import { ParsedImportRow, normalizeTitle } from '../utils/import.utils';
 import {
+  CreateIndexBlocker,
   KNOWLEDGE_BASE_EXPORT_FORMAT,
   KNOWLEDGE_BASE_EXPORT_VERSION,
+  KnowledgeBaseCollectionInfo,
   KnowledgeBaseCounts,
   KnowledgeBaseDuplicatePolicy,
   KnowledgeBaseEntry,
@@ -36,7 +38,7 @@ import {
   KnowledgeBaseImportCandidate,
   KnowledgeBaseImportCandidateState,
   KnowledgeBaseImportResult,
-  KnowledgeBaseIndexMode,
+  KnowledgeBaseIndexState,
   KnowledgeBaseJob,
   KnowledgeBaseJobState,
   KnowledgeBaseJobType,
@@ -51,6 +53,7 @@ import {
   buildMockEntries,
   KnowledgeBaseMockScenario,
   MOCK_DOCUMENT_HITS,
+  MOCK_DOCUMENTARY_ROW_COUNT,
   MOCK_EMBEDDING_MODEL,
   MOCK_EXTERNAL_INDEX_NAME,
   MOCK_EXTERNAL_INDEX_SESSION_ID,
@@ -241,34 +244,45 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
   }
 
   /**
-   * Standalone mode: Tock creates the index session itself from the knowledge base,
-   * writes the rows and returns the resulting session so that the RAG configuration can be updated.
+   * Standalone mode: Tock creates a fresh index session from the knowledge base and writes the
+   * published rows into it. When `switchIndex` is true the bot is pointed at the new session as
+   * part of the job (RAG activation is never touched); when false the index is created as a
+   * snapshot and the bot keeps using its current index, so the visible state does not change.
    */
-  createIndex(): Observable<KnowledgeBaseJob> {
+  createIndex(switchIndex: boolean): Observable<KnowledgeBaseJob> {
     const publishedCount = this.entries.filter((e) => e.status === KnowledgeBaseEntryStatus.PUBLISHED).length;
 
-    return this.startJob(KnowledgeBaseJobType.CREATE_INDEX, publishedCount, () => {
-      this.indexMode = KnowledgeBaseIndexMode.TOCK_MANAGED;
-      this.indexSessionId = MOCK_INDEX_SESSION_ID;
-      this.indexName = MOCK_INDEX_NAME;
-      this.embeddingModelKnown = true;
+    return this.startJob(
+      KnowledgeBaseJobType.CREATE_INDEX,
+      publishedCount,
+      () => {
+        if (switchIndex) {
+          this.indexState = KnowledgeBaseIndexState.READY;
+          this.indexSessionId = MOCK_INDEX_SESSION_ID;
+          this.indexName = MOCK_INDEX_NAME;
+          this.collection = this.tockCollection();
+          this.embeddingIncompatible = false;
+          this.otherRowCount = 0;
 
-      const now = new Date().toISOString();
-      this.entries = this.entries.map((entry) =>
-        entry.status === KnowledgeBaseEntryStatus.PUBLISHED
-          ? {
-              ...entry,
-              projectionState: KnowledgeBaseProjectionState.INDEXED,
-              projectedAt: now,
-              projectedIndexSessionId: MOCK_INDEX_SESSION_ID
-            }
-          : { ...entry, projectionState: KnowledgeBaseProjectionState.NONE, projectedAt: null, projectedIndexSessionId: null }
-      );
-      this.lastProjectionAt = now;
-      this.refreshSyncStatus();
+          const now = new Date().toISOString();
+          this.entries = this.entries.map((entry) =>
+            entry.status === KnowledgeBaseEntryStatus.PUBLISHED
+              ? {
+                  ...entry,
+                  projectionState: KnowledgeBaseProjectionState.INDEXED,
+                  projectedAt: now,
+                  projectedIndexSessionId: MOCK_INDEX_SESSION_ID
+                }
+              : { ...entry, projectionState: KnowledgeBaseProjectionState.NONE, projectedAt: null, projectedIndexSessionId: null }
+          );
+          this.lastProjectionAt = now;
+        }
+        this.refreshSyncStatus();
 
-      return { projected: publishedCount, removed: 0 };
-    });
+        return { projected: publishedCount, removed: 0 };
+      },
+      MOCK_INDEX_SESSION_ID
+    );
   }
 
   // --------------------------------------------------------------------- Retrieval test (see the abstract class)
@@ -295,7 +309,7 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
     }));
 
     const documentHits: KnowledgeBaseRetrievalHit[] =
-      this.indexMode === KnowledgeBaseIndexMode.EXTERNAL
+      this.otherRowCount > 0
         ? MOCK_DOCUMENT_HITS.map((doc, i) => ({
             rank: 0,
             score: 0.62 - i * 0.04,
@@ -509,7 +523,12 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
     return this.jobs.reduce((latest, tracked) => Math.max(latest, tracked.startAt + tracked.durationMs), Date.now());
   }
 
-  private enqueue(type: KnowledgeBaseJobType, total: number, apply: () => { projected: number; removed: number }): KnowledgeBaseJob {
+  private enqueue(
+    type: KnowledgeBaseJobType,
+    total: number,
+    apply: () => { projected: number; removed: number },
+    indexSessionId: string | null = null
+  ): KnowledgeBaseJob {
     const job: KnowledgeBaseJob = {
       id: `job-${Date.now()}-${this.jobs.length}`,
       type,
@@ -520,6 +539,7 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
       failures: [],
       projected: 0,
       removed: 0,
+      indexSessionId,
       syncStatus: null,
       error: null
     };
@@ -538,11 +558,12 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
   private startJob(
     type: KnowledgeBaseJobType,
     total: number,
-    apply: () => { projected: number; removed: number }
+    apply: () => { projected: number; removed: number },
+    indexSessionId: string | null = null
   ): Observable<KnowledgeBaseJob> {
     return of(null).pipe(
       delay(this.latency),
-      map(() => this.enqueue(type, total, apply))
+      map(() => this.enqueue(type, total, apply, indexSessionId))
     );
   }
 
@@ -612,10 +633,16 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
     this.scenarioSubject.next(scenario);
   }
 
-  private indexMode: KnowledgeBaseIndexMode = KnowledgeBaseIndexMode.TOCK_MANAGED;
+  private indexState: KnowledgeBaseIndexState = KnowledgeBaseIndexState.READY;
   private indexSessionId: string | null = MOCK_INDEX_SESSION_ID;
   private indexName: string | null = MOCK_INDEX_NAME;
-  private embeddingModelKnown: boolean = true;
+  private collection: KnowledgeBaseCollectionInfo | null = null;
+  private embeddingIncompatible: boolean = false;
+  private ragEnabled: boolean = true;
+  /** Documentary rows (ingested documents) present in the index alongside the knowledge base rows. */
+  private otherRowCount: number = 0;
+  /** Forced creation blocker for demos of the RAG-not-configured / embedding-undefined cases; null lets it be derived. */
+  private forcedBlocker: CreateIndexBlocker | null = null;
   private lastProjectionAt: string | null = null;
 
   private applyScenario(scenario: KnowledgeBaseMockScenario): void {
@@ -623,12 +650,17 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
     const botId = this.stateService.currentApplication?.name ?? 'bot';
     const seeded = buildMockEntries(namespace, botId);
 
+    this.embeddingIncompatible = false;
+    this.ragEnabled = true;
+    this.forcedBlocker = null;
+
     switch (scenario) {
       case KnowledgeBaseMockScenario.NO_INDEX:
-        this.indexMode = KnowledgeBaseIndexMode.NONE;
+        this.indexState = KnowledgeBaseIndexState.NONE;
         this.indexSessionId = null;
         this.indexName = null;
-        this.embeddingModelKnown = true;
+        this.collection = null;
+        this.otherRowCount = 0;
         this.lastProjectionAt = null;
         this.entries = seeded.map((entry) => ({
           ...entry,
@@ -639,10 +671,11 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
         break;
 
       case KnowledgeBaseMockScenario.IN_SYNC:
-        this.indexMode = KnowledgeBaseIndexMode.TOCK_MANAGED;
+        this.indexState = KnowledgeBaseIndexState.READY;
         this.indexSessionId = MOCK_INDEX_SESSION_ID;
         this.indexName = MOCK_INDEX_NAME;
-        this.embeddingModelKnown = true;
+        this.collection = this.tockCollection();
+        this.otherRowCount = 0;
         this.lastProjectionAt = new Date().toISOString();
         this.entries = seeded.map((entry) => ({
           ...entry,
@@ -652,19 +685,23 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
         break;
 
       case KnowledgeBaseMockScenario.OUT_OF_SYNC:
-        this.indexMode = KnowledgeBaseIndexMode.TOCK_MANAGED;
+        this.indexState = KnowledgeBaseIndexState.READY;
         this.indexSessionId = MOCK_INDEX_SESSION_ID;
         this.indexName = MOCK_INDEX_NAME;
-        this.embeddingModelKnown = true;
+        this.collection = this.tockCollection();
+        this.otherRowCount = 0;
         this.lastProjectionAt = null;
         this.entries = seeded;
         break;
 
       case KnowledgeBaseMockScenario.EXTERNAL_INDEX:
-        this.indexMode = KnowledgeBaseIndexMode.EXTERNAL;
+        // Index produced by an ingestion tool: provenance is known but Tock has not reprojected the
+        // knowledge base into it yet, and documentary rows sit alongside.
+        this.indexState = KnowledgeBaseIndexState.READY;
         this.indexSessionId = MOCK_EXTERNAL_INDEX_SESSION_ID;
         this.indexName = MOCK_EXTERNAL_INDEX_NAME;
-        this.embeddingModelKnown = false;
+        this.collection = this.toolCollection();
+        this.otherRowCount = MOCK_DOCUMENTARY_ROW_COUNT;
         this.lastProjectionAt = null;
         this.entries = seeded.map((entry) => ({
           ...entry,
@@ -676,10 +713,13 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
         break;
 
       case KnowledgeBaseMockScenario.NO_ENTRIES:
-        this.indexMode = KnowledgeBaseIndexMode.EXTERNAL;
+        // Qallam index with no Tock contract metadata: READY but provenance unknown (collection null),
+        // documentary rows only, and an empty knowledge base.
+        this.indexState = KnowledgeBaseIndexState.READY;
         this.indexSessionId = MOCK_EXTERNAL_INDEX_SESSION_ID;
         this.indexName = MOCK_EXTERNAL_INDEX_NAME;
-        this.embeddingModelKnown = false;
+        this.collection = null;
+        this.otherRowCount = MOCK_DOCUMENTARY_ROW_COUNT;
         this.lastProjectionAt = null;
         this.entries = [];
         break;
@@ -688,8 +728,31 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
 
   // --------------------------------------------------------------------- Private helpers
 
+  /** Querying or projecting is only safe against a collection that actually exists. */
   private hasIndex(): boolean {
-    return this.indexMode !== KnowledgeBaseIndexMode.NONE;
+    return this.indexState === KnowledgeBaseIndexState.READY;
+  }
+
+  /** Tock contract metadata a CREATE_INDEX job would stamp on the collection it creates. */
+  private tockCollection(): KnowledgeBaseCollectionInfo {
+    return {
+      origin: 'tock_kb',
+      createdAt: new Date().toISOString(),
+      createdBy: this.currentUser(),
+      embeddingProvider: 'OpenAI',
+      embeddingModel: MOCK_EMBEDDING_MODEL
+    };
+  }
+
+  /** Contract metadata as an external ingestion tool would leave it. */
+  private toolCollection(): KnowledgeBaseCollectionInfo {
+    return {
+      origin: 'indexing_tools',
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 9).toISOString(),
+      createdBy: 'ingestion-pipeline',
+      embeddingProvider: 'OpenAI',
+      embeddingModel: MOCK_EMBEDDING_MODEL
+    };
   }
 
   private currentIndexSessionId(): string | null {
@@ -713,8 +776,10 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
       orphan: entries.filter((e) => e.projectionState === KnowledgeBaseProjectionState.ORPHAN).length
     };
 
+    const ready = this.indexState === KnowledgeBaseIndexState.READY;
+
     this.syncStatusSubject.next({
-      indexMode: this.indexMode,
+      indexState: this.indexState,
       indexSessionId: this.indexSessionId,
       // The physical index name is NEVER built client side: PGVector and OpenSearch
       // normalize it differently (PGVector replaces every character outside
@@ -722,11 +787,27 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
       // and read from the indexes endpoint. The mock therefore stores it instead
       // of deriving it.
       indexName: this.indexName,
-      embeddingModelKnown: this.embeddingModelKnown,
-      embeddingModel: this.embeddingModelKnown ? MOCK_EMBEDDING_MODEL : null,
+      // Only observable once the collection exists; otherwise the store reports nothing.
+      kbRowCount: ready ? counts.indexed : null,
+      otherRowCount: ready ? this.otherRowCount : null,
+      collection: this.collection,
+      embeddingIncompatible: this.embeddingIncompatible,
+      createIndexBlocker: this.deriveCreateIndexBlocker(counts),
+      ragEnabled: this.ragEnabled,
       lastProjectionAt: this.lastProjectionAt,
       counts
     });
+  }
+
+  /**
+   * Why creating an index is currently impossible, in the backend's priority order. A forced blocker
+   * stands in for the RAG-not-configured / embedding-undefined demos; otherwise the only case the mock
+   * can reach on its own is an empty published set.
+   */
+  private deriveCreateIndexBlocker(counts: KnowledgeBaseCounts): CreateIndexBlocker | null {
+    if (this.forcedBlocker) return this.forcedBlocker;
+    if (counts.published === 0) return CreateIndexBlocker.NO_PUBLISHED_ENTRY;
+    return null;
   }
 
   private applyFilters(entries: KnowledgeBaseEntry[], query: KnowledgeBaseSearchQuery): KnowledgeBaseEntry[] {

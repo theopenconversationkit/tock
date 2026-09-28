@@ -33,6 +33,8 @@ class KnowledgeBaseIndexingServiceImpl : KnowledgeBaseIndexingService {
 
     override fun rows(request: KnowledgeBaseTargetRequest) = api.rows(request).checkedBody()
 
+    override fun indexState(request: KnowledgeBaseTargetRequest) = api.indexState(request).checkedBody()
+
     private fun <T> Call<T>.checkedBody(): T {
         val response = execute()
         check(response.isSuccessful) { "Knowledge base orchestrator request failed (HTTP ${response.code()})" }

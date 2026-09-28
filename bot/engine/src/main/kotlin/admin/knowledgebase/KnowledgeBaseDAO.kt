@@ -48,10 +48,6 @@ interface KnowledgeBaseDAO {
 
     fun deleteProjection(id: String)
 
-    fun index(id: String): KnowledgeBaseIndex?
-
-    fun saveIndex(index: KnowledgeBaseIndex)
-
     fun saveJob(job: KnowledgeBaseJob)
 
     fun job(id: String): KnowledgeBaseJob?

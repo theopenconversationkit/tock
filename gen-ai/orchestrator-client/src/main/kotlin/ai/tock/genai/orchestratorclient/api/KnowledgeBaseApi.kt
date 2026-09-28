@@ -19,6 +19,7 @@ package ai.tock.genai.orchestratorclient.api
 import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseDeleteRequest
 import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseIndexRequest
 import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseTargetRequest
+import ai.tock.genai.orchestratorclient.responses.KnowledgeBaseIndexStateResponse
 import ai.tock.genai.orchestratorclient.responses.KnowledgeBaseRowsResponse
 import ai.tock.genai.orchestratorclient.responses.KnowledgeBaseWriteResponse
 import retrofit2.Call
@@ -40,4 +41,9 @@ internal interface KnowledgeBaseApi {
     fun rows(
         @Body request: KnowledgeBaseTargetRequest,
     ): Call<KnowledgeBaseRowsResponse>
+
+    @POST("knowledge-base/index-state")
+    fun indexState(
+        @Body request: KnowledgeBaseTargetRequest,
+    ): Call<KnowledgeBaseIndexStateResponse>
 }

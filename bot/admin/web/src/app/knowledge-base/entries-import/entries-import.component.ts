@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { NbToastrService } from '@nebular/theme';
 import { Subject, interval, exhaustMap, takeUntil, takeWhile } from 'rxjs';
 
+import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { BotApplicationConfiguration } from '../../core/model/configuration';
 import {
   KnowledgeBaseDuplicatePolicy,
   KnowledgeBaseEntryStatus,
@@ -49,13 +51,17 @@ type ImportStep = 'file' | 'locale' | 'preview' | 'report';
   styleUrl: './entries-import.component.scss',
   standalone: false
 })
-export class KnowledgeBaseEntriesImportComponent implements OnDestroy {
+export class KnowledgeBaseEntriesImportComponent implements OnInit, OnDestroy {
+  private botConfiguration = inject(BotConfigurationService);
   private knowledgeBaseService = inject(KnowledgeBaseService);
   private toastrService = inject(NbToastrService);
   private transloco = inject(TranslocoService);
   private router = inject(Router);
 
   destroy$: Subject<unknown> = new Subject();
+
+  /** namespace/botId the wizard was opened on, used to leave when the header switches bot. */
+  private currentBotKey: string | null = null;
 
   ImportSource = KnowledgeBaseImportSource;
   CandidateState = KnowledgeBaseImportCandidateState;
@@ -80,6 +86,30 @@ export class KnowledgeBaseEntriesImportComponent implements OnDestroy {
 
   get publishing(): boolean {
     return !!this.publishJob && !isJobFinished(this.publishJob);
+  }
+
+  ngOnInit(): void {
+    this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs) => {
+      if (!confs.length) return;
+
+      const botKey = this.botKey(confs);
+
+      // The namespace/bot can be switched at any time from the header. An import in progress belongs
+      // to the previous bot, so leave the wizard for the list rather than write into a foreign bot.
+      // The configurations subject replays on subscription, so the first emission is the bot we opened
+      // on, never a change: it must be recorded, not redirected on.
+      if (this.currentBotKey !== null && botKey !== this.currentBotKey) {
+        this.currentBotKey = botKey;
+        this.backToList();
+        return;
+      }
+
+      this.currentBotKey = botKey;
+    });
+  }
+
+  private botKey(confs: BotApplicationConfiguration[]): string | null {
+    return confs.length ? `${confs[0].namespace}/${confs[0].botId}` : null;
   }
 
   // ---------------------------------------------------------------- File
