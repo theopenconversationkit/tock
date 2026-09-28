@@ -30,11 +30,11 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_not_found,
     create_error_response,
 )
-from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
-    AzureOpenAIEMSetting,
-)
 from gen_ai_orchestrator.models.em.awsbedrock.aws_bedrock_em_setting import (
     AwsBedrockEMSetting,
+)
+from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
+    AzureOpenAIEMSetting,
 )
 from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
     BloomzEMSetting,

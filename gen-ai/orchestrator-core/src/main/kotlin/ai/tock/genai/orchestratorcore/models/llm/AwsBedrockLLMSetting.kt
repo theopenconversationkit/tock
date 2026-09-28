@@ -23,7 +23,5 @@ data class AwsBedrockLLMSetting<T>(
     val guardrailVersion: String? = null,
     val guardrailTrace: Boolean = false,
 ) : LLMSettingBase<T>(provider = LLMProvider.AwsBedrock, temperature = temperature) {
-    override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
-        return this.copy(temperature = temperature)
-    }
+    override fun copyWithTemperature(temperature: String): LLMSettingBase<T> = this.copy(temperature = temperature)
 }

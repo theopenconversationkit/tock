@@ -41,11 +41,11 @@ from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_set
 from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import (
     DocumentCompressorProvider,
 )
-from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
-    AzureOpenAIEMSetting,
-)
 from gen_ai_orchestrator.models.em.awsbedrock.aws_bedrock_em_setting import (
     AwsBedrockEMSetting,
+)
+from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
+    AzureOpenAIEMSetting,
 )
 from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
     BloomzEMSetting,
@@ -57,11 +57,11 @@ from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
 from gen_ai_orchestrator.models.guardrail.guardrail_provider import (
     GuardrailProvider,
 )
-from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
-    AzureOpenAILLMSetting,
-)
 from gen_ai_orchestrator.models.llm.awsbedrock.aws_bedrock_llm_setting import (
     AwsBedrockLLMSetting,
+)
+from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
+    AzureOpenAILLMSetting,
 )
 from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
     FakeLLMSetting,
@@ -91,11 +91,11 @@ from gen_ai_orchestrator.services.langchain.factories.document_compressor.aws_be
 from gen_ai_orchestrator.services.langchain.factories.document_compressor.bloomz_compressor_factory import (
     BloomzCompressorFactory,
 )
-from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
-    AzureOpenAIEMFactory,
-)
 from gen_ai_orchestrator.services.langchain.factories.em.aws_bedrock_em_factory import (
     AwsBedrockEMFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
+    AzureOpenAIEMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.em.bloomz_em_factory import (
     BloomzEMFactory,
@@ -115,12 +115,12 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_llm_factory,
     get_vector_store_factory,
 )
-from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
-    AzureOpenAILLMFactory,
-)
 from gen_ai_orchestrator.services.langchain.factories.llm.aws_bedrock_llm_factory import (
     AwsBedrockLLMFactory,
     _check_guardrail_intervention,
+)
+from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
+    AzureOpenAILLMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import (
     FakeLLMFactory,

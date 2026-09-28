@@ -31,11 +31,11 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_not_found,
     create_error_response,
 )
-from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
-    AzureOpenAILLMSetting,
-)
 from gen_ai_orchestrator.models.llm.awsbedrock.aws_bedrock_llm_setting import (
     AwsBedrockLLMSetting,
+)
+from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
+    AzureOpenAILLMSetting,
 )
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
