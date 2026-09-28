@@ -4,7 +4,7 @@ This connector allows you to talk with a bot in Teams, the Microsoft solution fo
 
 
 ## Create your bot
-See [https://theopenconversationkit.github.io/tock/en/](https://theopenconversationkit.github.io/tock/en/)
+See the [Tock documentation](https://doc.tock.ai/tock/master/channels/teams.html)
 
 The Microsoft library used is [Microsoft Bot Framework Connector for Java](https://github.com/microsoft/botbuilder-java/tree/master/libraries/bot-connector)
 
@@ -41,7 +41,7 @@ class TeamsCarousel(val listMessage: List<TeamsBotMessage>)
 //use extension bus.teamsCarousel(...)
 ```
 
-Look at [Dokka documentation](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector.teams.messages/index.html)
+Look at the [API documentation](https://javadoc.io/doc/ai.tock/tock-bot-connector-teams/latest/ai/tock/bot/connector/teams/messages/package-summary.html)
 for more information.
 
 ## Deploy your bot on localhost (Tock Integrated Bot version)

@@ -19,11 +19,11 @@ Responsible for assembling RAGResponse objects from raw chain outputs,
 including footnotes, debug data, and observability metadata.
 """
 
-import json
 import logging
 from typing import List
 
 from langchain_core.documents import Document
+from langchain_core.utils.json import parse_json_markdown
 
 from gen_ai_orchestrator.models.observability.observability_trace import (
     ObservabilityTrace,
@@ -143,12 +143,15 @@ def get_rag_documents(handler: RAGCallbackHandler) -> List[RAGDocument]:
 
 
 def get_llm_answer_from_raw(output: str | None) -> LLMAnswer:
-    """Parse a raw JSON string (possibly fenced with ```json```) into an LLMAnswer."""
+    """Parse a raw JSON string (possibly fenced with ```json```) into an LLMAnswer.
+
+    Uses the same lenient parsing as the JsonOutputParser of the RAG chain, so that an answer
+    accepted by the chain (e.g. with some text around the JSON block) never fails in debug mode.
+    """
     if output is None:
         return LLMAnswer()
 
-    cleaned = output.strip().removeprefix('```json').removesuffix('```').strip()
-    return LLMAnswer(**json.loads(cleaned))
+    return LLMAnswer(**parse_json_markdown(output))
 
 
 def get_condensing_llm_answer_from_raw(output: str | None) -> LLMCondensedQuestion:
@@ -156,8 +159,7 @@ def get_condensing_llm_answer_from_raw(output: str | None) -> LLMCondensedQuesti
     if output is None:
         return LLMCondensedQuestion()
 
-    cleaned = output.strip().removeprefix('```json').removesuffix('```').strip()
-    return LLMCondensedQuestion(**json.loads(cleaned))
+    return LLMCondensedQuestion(**parse_json_markdown(output))
 
 
 def build_rag_debug_data(

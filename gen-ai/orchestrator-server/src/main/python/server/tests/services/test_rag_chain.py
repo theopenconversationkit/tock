@@ -46,6 +46,10 @@ from gen_ai_orchestrator.services.langchain.rag_chain_builder import (
     get_chunk_identifier,
     get_web_source_url,
 )
+from gen_ai_orchestrator.services.langchain.rag_response_builder import (
+    get_condensing_llm_answer_from_raw,
+    get_llm_answer_from_raw,
+)
 
 
 def _rag_request() -> RAGRequest:
@@ -628,3 +632,31 @@ def test_check_guardrail_output_is_ok():
     }
 
     assert check_guardrail_output(guardrail_output) is True
+
+
+@pytest.mark.parametrize(
+    'raw_output',
+    [
+        '{"status": "found_in_context", "answer": "Use Docker Compose."}',
+        '```json\n{"status": "found_in_context", "answer": "Use Docker Compose."}\n```',
+        'Here is the answer:\n```json\n{"status": "found_in_context", "answer": "Use Docker Compose."}\n```',
+    ],
+)
+def test_get_llm_answer_from_raw(raw_output):
+    llm_answer = get_llm_answer_from_raw(raw_output)
+
+    assert llm_answer.status == 'found_in_context'
+    assert llm_answer.answer == 'Use Docker Compose.'
+
+
+def test_get_llm_answer_from_raw_without_output():
+    assert get_llm_answer_from_raw(None) == LLMAnswer()
+
+
+def test_get_condensing_llm_answer_from_raw_with_text_around_json():
+    llm_answer = get_condensing_llm_answer_from_raw(
+        'Sure!\n```json\n{"condensed_question": "How to deploy Tock?", "key_words": ["deploy"]}\n```'
+    )
+
+    assert llm_answer.condensed_question == 'How to deploy Tock?'
+    assert llm_answer.key_words == ['deploy']
