@@ -34,7 +34,7 @@ Cette page liste en fait :
 - Les [kits utilisant le _connecteur Web_](#integrations-via-le-connecteur-web) pour intégrer d'autres canaux :  
 
 ![logo React](../img/React.png "React"){style="width:50px;"}
-![logo flutter](../img/flutter.png "Flutter"){style="width:50px;"}
+![logo Vue](../img/Vue.svg "Vue"){style="width:50px;"}
 ![logo Sharepoint](../img/sharepoint.png "SharePoint"){style="width:50px;"}
 
 - Les [intégrations possibles pour le traitement de la voix](index.md#technologies-vocales) :  
@@ -86,21 +86,23 @@ L'application Web communique avec le bot via un [connecteur Web](web.md).
 Pour en savoir plus, voir les sources et le _README_ dans le dépôt 
 [`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit) sur GitHub.
 
-### Flutter *(beta)*
+### Vue
 
+![logo Vue](../img/Vue.svg "Vue"){style="width:50px;"}
 
-![logo flutter](../img/flutter.png "Flutter"){style="width:50px;"}
+Ce widget de chat Vue 3 intègre un bot Tock et en assure le rendu graphique dans une page ou une application Web.  
+C'est une alternative au [kit React](#react) : il s'intègre aussi bien dans une simple page HTML que dans une
+application Vue, Angular, React ou Svelte. La page communique avec le bot via un [connecteur Web](web.md).
+Son apparence et ses libellés sont personnalisables, par exemple avec le
+[Tock Vue Kit Editor](https://github.com/theopenconversationkit/tock-vue-kit-editor).
 
-
-Ce composant Flutter intègre un bot Tock et en assure le rendu graphique dans une application mobile ou Web.  
-L'application communique avec le bot via un [connecteur Web](web.md).
-
-* **Intégration** : [Flutter](https://flutter.dev/) (Dart)
-* **Type** : applications mobiles natives et Web
-* **Status** : beta, en développement
+* **Intégration** : [Vue](https://fr.vuejs.org/) 3 (JavaScript / TypeScript)
+* **Type** : applications et sites Web
+* **Status** : utilisé en production, publié sur [npm](https://www.npmjs.com/package/tock-vue-kit),
+  voir la [page de démonstration](https://doc.tock.ai/tock-vue-kit/)
 
 Pour en savoir plus, voir les sources et le _README_ dans le dépôt 
-[`tock-flutter-kit`](https://github.com/theopenconversationkit/tock-flutter-kit) sur GitHub.
+[`tock-vue-kit`](https://github.com/theopenconversationkit/tock-vue-kit) sur GitHub.
 
 ### SharePoint *(beta)*
 

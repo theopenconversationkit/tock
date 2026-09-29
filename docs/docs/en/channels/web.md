@@ -5,7 +5,7 @@ title: Web
 # Web connector
 
 The Web connector exposes a generic HTTP API to talk to a Tock bot. It is used to integrate bots into websites and
-mobile apps, with the [React](index.md#react) and [Flutter](index.md#flutter-beta) kits, or any other client.
+mobile apps, with the [React](index.md#react) and [Vue](index.md#vue) kits, or any other client.
 
 * **Connector type**: `web`
 * **Sources and README**: [connector-web](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-web)

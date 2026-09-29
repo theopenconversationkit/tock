@@ -73,11 +73,11 @@ et _API_ tous langages (voir [_Bot API_](develop/bot-api.md))
 * Nombreux connecteurs texte et voix : [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
 [Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/),
 [Alcmeon](https://www.alcmeon.com/), clients compatibles OpenAI,
-un connecteur Web avec des kits [React](https://reactjs.org) et [Flutter](https://flutter.dev/)... (voir [canaux](channels/index.md))
+un connecteur Web avec des kits [React](https://reactjs.org) et [Vue](https://fr.vuejs.org/)... (voir [canaux](channels/index.md))
 * Installation _cloud_ ou _on-premise_, avec ou sans [Docker](https://www.docker.com/), sur [Kubernetes](operate/installation.md#installation-sur-kubernetes),
 même _"embarqué"_ sans Internet 
 
-![Réponse RAG avec ses sources, testée dans Tock Studio](img/gen-ai/gen-ai-rag-test.png "Réponse RAG avec ses sources, testée dans Tock Studio")
+![Réponse RAG avec ses sources, testée dans Tock Studio](img/gen-ai/gen-ai-rag-test-fr.png "Réponse RAG avec ses sources, testée dans Tock Studio")
 
 ## Technologies
 
@@ -94,7 +94,7 @@ Les interfaces graphiques _Tock Studio_ sont écrites avec [Angular](https://ang
 L'orchestrateur Gen AI est un service [Python](https://www.python.org/) construit avec [FastAPI](https://fastapi.tiangolo.com/)
 et [LangChain](https://www.langchain.com/), qui appelle les fournisseurs de LLM, d'embeddings et de bases vectorielles.
 
-Des intégrations [React](https://reactjs.org) et [Flutter](https://flutter.dev/) sont fournies pour les interfaces Web et Mobile.
+Des intégrations [React](https://reactjs.org) et [Vue](https://fr.vuejs.org/) sont fournies pour les interfaces Web.
 
 ## Démarrer...
 

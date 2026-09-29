@@ -93,4 +93,4 @@ Deux options sont possibles :
 * Mesurez la qualité des réponses avec les [datasets et les évaluations](answers-quality.md).
 * Suivez les appels aux LLM avec un [fournisseur d'observabilité](observability.md).
 
-![Test du RAG](../img/gen-ai/gen-ai-rag-test.png "Exécution du RAG")
+![Test du RAG](../img/gen-ai/gen-ai-rag-test-fr.png "Exécution du RAG")

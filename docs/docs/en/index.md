@@ -72,7 +72,7 @@ and any-language _REST API_ (see [_Bot API_](develop/bot-api.md))
 * Numerous text/voice integrations available with [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
 [Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/),
 [Alcmeon](https://www.alcmeon.com/), OpenAI-compatible clients,
-a Web connector with [React](https://reactjs.org) and [Flutter](https://flutter.dev/) kits... (see [channels](channels/index.md))
+a Web connector with [React](https://reactjs.org) and [Vue](https://vuejs.org/) kits... (see [channels](channels/index.md))
 * _Cloud_ or _on-premise_ setups, with or without [Docker](https://www.docker.com/), on [Kubernetes](operate/installation.md#installation-on-kubernetes),
 _"embedded"_ bots without Internet 
 
@@ -93,7 +93,7 @@ _Tock Studio_ graphical user interfaces are built with [Angular](https://angular
 The Gen AI orchestrator is a [Python](https://www.python.org/) service built with [FastAPI](https://fastapi.tiangolo.com/)
 and [LangChain](https://www.langchain.com/), which calls the LLM, embedding and vector store providers.
 
-[React](https://reactjs.org) and [Flutter](https://flutter.dev/) toolkits are provided for Web and Mobile integrations.
+[React](https://reactjs.org) and [Vue](https://vuejs.org/) toolkits are provided for Web integrations.
 
 ## Getting started...
 
