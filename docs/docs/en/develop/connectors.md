@@ -24,7 +24,9 @@ The [Multichannel Bot](../channels/index.md) page lists all available kits.
 
 > For example, the repository  
 [`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit)  
-contains the source code and the _README_ for the React kit.
+contains the source code and the _README_ for the React kit,
+and the repository [`tock-vue-kit`](https://github.com/theopenconversationkit/tock-vue-kit)
+those for the Vue kit.
 
 ## Developing Your Own Connector
 

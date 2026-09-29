@@ -33,7 +33,7 @@ This page actually lists:
 - The [kits using the _Web connector_](index.md#integrations-via-the-web-connector) to integrate other channels:
 
 ![logo React](../img/React.png "React"){style="width:50px;"}
-![logo flutter](../img/flutter.png "Flutter"){style="width:50px;"}
+![logo Vue](../img/Vue.svg "Vue"){style="width:50px;"}
 ![logo Sharepoint](../img/sharepoint.png "SharePoint"){style="width:50px;"}
 
 - The [possible integrations for voice processing](index.md#voice-technologies):
@@ -85,18 +85,23 @@ The web application communicates with the bot via a [Web connector](web.md).
 For more information, see the sources and the _README_ in the repository
 [`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit) on GitHub.
 
-### Flutter *(beta)*
+### Vue
 
-![logo flutter](../img/flutter.png "Flutter"){style="width:75px;"}
+![logo Vue](../img/Vue.svg "Vue"){style="width:75px;"}
 
-This Flutter component integrates a Tock bot and provides its graphical rendering in a mobile or web application. The app communicates with the bot via a [web connector](web.md).
+This Vue 3 chat widget integrates a Tock bot and renders it graphically in a web page or application.
+It is an alternative to the [React kit](#react): it can be embedded in a plain HTML page as well as in a Vue,
+Angular, React or Svelte application. The page communicates with the bot via a [Web connector](web.md).
+Its appearance and wording can be customized, for example with the
+[Tock Vue Kit Editor](https://github.com/theopenconversationkit/tock-vue-kit-editor).
 
-* **Integration**: [Flutter](https://flutter.dev/) (Dart)
-* **Type**: Native mobile and web apps
-* **Status**: Beta, in development
+* **Integration**: [Vue](https://vuejs.org/) 3 (JavaScript / TypeScript)
+* **Type**: Web applications and websites
+* **Status**: Used in production, published on [npm](https://www.npmjs.com/package/tock-vue-kit),
+  see the [demo page](https://doc.tock.ai/tock-vue-kit/)
 
 For more information, see the sources and the _README_ in the
-[`tock-flutter-kit`](https://github.com/theopenconversationkit/tock-flutter-kit) repository on GitHub.
+[`tock-vue-kit`](https://github.com/theopenconversationkit/tock-vue-kit) repository on GitHub.
 
 ### SharePoint *(beta)*
 

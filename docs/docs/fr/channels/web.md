@@ -5,7 +5,7 @@ title: Web
 # Connecteur Web
 
 Le connecteur Web expose une API HTTP générique pour dialoguer avec un bot Tock. Il sert à intégrer les bots dans des
-sites web et des applications mobiles, avec les kits [React](index.md#react) et [Flutter](index.md#flutter-beta),
+sites web et des applications mobiles, avec les kits [React](index.md#react) et [Vue](index.md#vue),
 ou avec n'importe quel autre client.
 
 * **Type de connecteur** : `web`

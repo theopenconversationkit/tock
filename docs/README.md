@@ -46,6 +46,9 @@ mkdocs build --strict
 - `hooks/i18n_parity.py` warns (and fails the strict build) when a page exists in `en/` but not in `fr/`, or the reverse.
 - Screenshots go in `docs/img/studio/`, `docs/img/gen-ai/` or `docs/img/channels/`, in PNG, taken with the light theme.
   Retake them when a _Tock Studio_ screen changes significantly, and give each image a descriptive alt text.
+  A screenshot showing language-specific content (e.g. a bot conversation) exists in each language:
+  the English one keeps the base name and the French one takes the `-fr` suffix
+  (`gen-ai-rag-test.png` for `en/`, `gen-ai-rag-test-fr.png` for `fr/`).
 - `etc/list-doc-properties.py --check docs/docs/en/operate/configuration.md` lists the configuration properties
   missing from the configuration reference.
 - The CI lints the pages with [markdownlint](https://github.com/DavidAnson/markdownlint) (rules in `.markdownlint-cli2.yaml`):

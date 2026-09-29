@@ -21,8 +21,8 @@ Open Conversational AI platform to build Bots:
 * _Natural Language Processing_ open source stack, compatible with OpenNLP, Stanford, Rasa and more
 * _Tock Studio_ user interface to build stories and analytics
 * _Conversational DSL_ for Kotlin, Nodejs, Python and REST API
-* _Built-in connectors_ for numerous text/voice channels: Messenger, WhatsApp, Google Assistant, Alexa, Twitter and more
-* _Provided toolkits_ for custom Web/Mobile integration with React and Flutter
+* _Built-in connectors_ for numerous channels: Web, WhatsApp, Messenger, Teams, Slack, Google Chat and more
+* _Provided toolkits_ for custom Web integration with React and Vue
 * _Deploy anywhere_ in the Cloud or On-Premise with Docker
  
 🏠 Home: [https://doc.tock.ai](https://doc.tock.ai)
