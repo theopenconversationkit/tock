@@ -1667,6 +1667,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/rag-aws.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RAG on AWS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/slack.html" class="md-nav__link">
         
   
@@ -3132,106 +3153,140 @@
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <h2 id="schemas">Schemas</h2>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">LLMProvider</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="n">OPEN_AI</span> <span class="o">=</span> <span class="s1">&#39;OpenAI&#39;</span>
-    <span class="n">AZURE_OPEN_AI_SERVICE</span> <span class="o">=</span> <span class="s1">&#39;AzureOpenAIService&#39;</span>
+<pre class="mermaid"><code>classDiagram
+    class LLMProvider {
+        &lt;&lt;enumeration&gt;&gt;
+        OPEN_AI
+        AZURE_OPEN_AI_SERVICE
+        AWS_BEDROCK
+    }
 
-<span class="k">class</span> <span class="nc">BaseLLMSetting</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">provider</span><span class="p">:</span> <span class="n">LLMProvider</span>
-    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">temperature</span><span class="p">:</span> <span class="nb">str</span>
+    class BaseLLMSetting {
+        &lt;&lt;abstract&gt;&gt;
+        +LLMProvider provider
+        +str api_key
+        +str temperature
+    }
+    class BaseEMSetting {
+        &lt;&lt;abstract&gt;&gt;
+        +LLMProvider provider
+        +str api_key
+    }
 
-<span class="k">class</span> <span class="nc">BaseEMSetting</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">provider</span><span class="p">:</span> <span class="n">LLMProvider</span>
-    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span>
+    class OpenAILLMSetting {
+        +str model
+    }
+    class AzureOpenAILLMSetting {
+        +str deployment_name
+        +Optional~str~ model
+        +str api_base
+        +str api_version
+    }
+    class AwsBedrockLLMSetting {
+        +str model
+    }
+    BaseLLMSetting &lt;|-- OpenAILLMSetting
+    BaseLLMSetting &lt;|-- AzureOpenAILLMSetting
+    BaseLLMSetting &lt;|-- AwsBedrockLLMSetting
 
-<span class="k">class</span> <span class="nc">OpenAILLMSetting</span><span class="p">(</span><span class="n">BaseLLMSetting</span><span class="p">):</span>
-    <span class="n">provider</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">LLMProvider</span><span class="o">.</span><span class="n">OPEN_AI</span><span class="p">]</span>
-    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span>
+    class LLMSetting {
+        &lt;&lt;union&gt;&gt;
+    }
+    LLMSetting ..&gt; OpenAILLMSetting
+    LLMSetting ..&gt; AzureOpenAILLMSetting
+    LLMSetting ..&gt; AwsBedrockLLMSetting
 
-<span class="k">class</span> <span class="nc">AzureOpenAILLMSetting</span><span class="p">(</span><span class="n">BaseLLMSetting</span><span class="p">):</span>
-    <span class="n">provider</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">LLMProvider</span><span class="o">.</span><span class="n">AZURE_OPEN_AI_SERVICE</span><span class="p">]</span>
-    <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-    <span class="n">api_base</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">api_version</span><span class="p">:</span> <span class="nb">str</span>
+    class OpenAIEMSetting {
+        +str model
+    }
+    class AzureOpenAIEMSetting {
+        +str deployment_name
+        +Optional~str~ model
+        +str api_base
+        +str api_version
+    }
+    class AwsBedrockEMSetting {
+        +str model
+    }
+    BaseEMSetting &lt;|-- OpenAIEMSetting
+    BaseEMSetting &lt;|-- AzureOpenAIEMSetting
+    BaseEMSetting &lt;|-- AwsBedrockEMSetting
 
-<span class="n">LLMSetting</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
-    <span class="n">Union</span><span class="p">[</span><span class="n">OpenAILLMSetting</span><span class="p">,</span> <span class="n">AzureOpenAILLMSetting</span><span class="p">],</span>
-    <span class="n">Body</span><span class="p">(</span><span class="n">discriminator</span><span class="o">=</span><span class="s1">&#39;provider&#39;</span><span class="p">)</span>
-<span class="p">]</span>
+    class EMSetting {
+        &lt;&lt;union&gt;&gt;
+    }
+    EMSetting ..&gt; OpenAIEMSetting
+    EMSetting ..&gt; AzureOpenAIEMSetting
+    EMSetting ..&gt; AwsBedrockEMSetting
 
-<span class="k">class</span> <span class="nc">OpenAIEMSetting</span><span class="p">(</span><span class="n">BaseEMSetting</span><span class="p">):</span>
-    <span class="n">provider</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">LLMProvider</span><span class="o">.</span><span class="n">OPEN_AI</span><span class="p">]</span>
-    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span>
+    class VectorStoreProvider {
+        &lt;&lt;enumeration&gt;&gt;
+        OPEN_SEARCH
+    }
+    class BaseVectorStoreSearchParams {
+        &lt;&lt;abstract&gt;&gt;
+        +VectorStoreProvider provider
+    }
+    class OpenSearchParams {
+        +int k
+        +List~OpenSearchTermParams~ filter
+    }
+    class OpenSearchTermParams {
+        +dict term
+    }
+    BaseVectorStoreSearchParams &lt;|-- OpenSearchParams
+    OpenSearchParams --&gt; OpenSearchTermParams : filter
 
-<span class="k">class</span> <span class="nc">AzureOpenAIEMSetting</span><span class="p">(</span><span class="n">BaseEMSetting</span><span class="p">):</span>
-    <span class="n">provider</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">LLMProvider</span><span class="o">.</span><span class="n">AZURE_OPEN_AI_SERVICE</span><span class="p">]</span>
-    <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-    <span class="n">api_base</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">api_version</span><span class="p">:</span> <span class="nb">str</span>
+    class DocumentSearchParams {
+        &lt;&lt;union&gt;&gt;
+    }
+    DocumentSearchParams ..&gt; OpenSearchParams
 
-<span class="n">EMSetting</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
-    <span class="n">Union</span><span class="p">[</span><span class="n">OpenAIEMSetting</span><span class="p">,</span> <span class="n">AzureOpenAIEMSetting</span><span class="p">],</span>
-    <span class="n">Body</span><span class="p">(</span><span class="n">discriminator</span><span class="o">=</span><span class="s1">&#39;provider&#39;</span><span class="p">)</span>
-<span class="p">]</span>
+    class Footnote {
+        +str identifier
+        +str title
+        +Optional~str~ url
+    }
+    class TextWithFootnotes {
+        +str text
+        +List~Footnote~ footnotes
+    }
+    TextWithFootnotes --&gt; Footnote : footnotes
 
-<span class="k">class</span> <span class="nc">VectorStoreProvider</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="n">OPEN_SEARCH</span> <span class="o">=</span> <span class="s1">&#39;OpenSearch&#39;</span>
+    class DialogDetails {
+        +Optional~str~ dialog_id
+        +Optional~str~ user_id
+        +List~ChatMessage~ history
+        +List~str~ tags
+    }
+    class ChatMessageType {
+        &lt;&lt;enumeration&gt;&gt;
+        USER
+        AI
+    }
+    class ChatMessage {
+        +str text
+        +ChatMessageType type
+    }
+    DialogDetails --&gt; ChatMessage : history
+    ChatMessage --&gt; ChatMessageType : type
 
-<span class="k">class</span> <span class="nc">BaseVectorStoreSearchParams</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">provider</span><span class="p">:</span> <span class="n">VectorStoreProvider</span>
+    class PromptTemplate {
+        +PromptFormatter formatter
+        +str template
+        +dict inputs
+    }
+    class PromptFormatter {
+        &lt;&lt;enumeration&gt;&gt;
+        F_STRING
+        JINJA2
+    }
+    PromptTemplate --&gt; PromptFormatter : formatter
 
-
-<span class="k">class</span> <span class="nc">OpenSearchParams</span><span class="p">(</span><span class="n">BaseVectorStoreSearchParams</span><span class="p">):</span>
-    <span class="n">provider</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">VectorStoreProvider</span><span class="o">.</span><span class="n">OPEN_SEARCH</span><span class="p">]</span>
-    <span class="n">k</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="nb">filter</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">OpenSearchTermParams</span><span class="p">]</span>
-
-<span class="k">class</span> <span class="nc">OpenSearchTermParams</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">term</span><span class="p">:</span> <span class="nb">dict</span>
-
-<span class="n">DocumentSearchParams</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
-    <span class="n">Union</span><span class="p">[</span><span class="n">OpenSearchParams</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">discriminator</span><span class="o">=</span><span class="s1">&#39;provider&#39;</span><span class="p">)</span>
-<span class="p">]</span>
-
-<span class="k">class</span> <span class="nc">Footnote</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-
-<span class="k">class</span> <span class="nc">TextWithFootnotes</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">footnotes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Footnote</span><span class="p">]</span>
-
-<span class="k">class</span> <span class="nc">DialogDetails</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">dialog_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-    <span class="n">user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-    <span class="n">history</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ChatMessage</span><span class="p">]</span>
-    <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-
-<span class="k">class</span> <span class="nc">ChatMessageType</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="n">USER</span> <span class="o">=</span> <span class="s1">&#39;HUMAN&#39;</span>
-    <span class="n">AI</span> <span class="o">=</span> <span class="s1">&#39;AI&#39;</span>
-
-<span class="k">class</span> <span class="nc">ChatMessage</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="n">ChatMessageType</span>
-
-<span class="k">class</span> <span class="nc">PromptTemplate</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">formatter</span><span class="p">:</span> <span class="n">PromptFormatter</span>
-    <span class="n">template</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span>
-
-<span class="k">class</span> <span class="nc">PromptFormatter</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="n">F_STRING</span> <span class="o">=</span> <span class="s1">&#39;f-string&#39;</span>
-    <span class="n">JINJA2</span> <span class="o">=</span> <span class="s1">&#39;jinja2&#39;</span>
-
-<span class="k">class</span> <span class="nc">Error</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">code</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
-</code></pre></div>
+    class Error {
+        +str code
+        +str message
+    }</code></pre>
 <hr />
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -3677,7 +3732,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 24, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
   </span>
 
     

@@ -9,25 +9,25 @@
       
       
       
-        <link rel="prev" href="../features/gen-ai-feature-vector-store.html">
+        <link rel="prev" href="platform.html">
       
       
-        <link rel="next" href="gen-ai-provider-observability.html">
+        <link rel="next" href="slack.html">
       
       
-      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Fournisseurs des modèles LLM et d'Embedding - Tock Documentation</title>
+        <title>RAG sur AWS - Tock Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
       
         
-        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -46,11 +46,11 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../assets/css/style.css">
+      <link rel="stylesheet" href="../../assets/css/style.css">
     
-      <link rel="stylesheet" href="../../../../../assets/css/badge.css">
+      <link rel="stylesheet" href="../../assets/css/badge.css">
     
-    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#fournisseurs-des-modeles-llm-et-dembedding" class="md-skip">
+        <a href="#faire-fonctionner-le-rag-sur-aws" class="md-skip">
           Aller au contenu
         </a>
       
@@ -92,7 +92,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="En-tête">
-    <a href="../../../../index.html" title="Tock Documentation" class="md-header__button md-logo" aria-label="Tock Documentation" data-md-component="logo">
+    <a href="../index.html" title="Tock Documentation" class="md-header__button md-logo" aria-label="Tock Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Fournisseurs des modèles LLM et d'Embedding
+              RAG sur AWS
             
           </span>
         </div>
@@ -159,13 +159,13 @@
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="../../../../../user/studio/gen-ai/providers/gen-ai-provider-llm-and-embedding.html" hreflang="en" class="md-select__link">
+            <a href="../../guides/rag-aws.html" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
         
           <li class="md-select__item">
-            <a href="gen-ai-provider-llm-and-embedding.html" hreflang="fr" class="md-select__link">
+            <a href="rag-aws.html" hreflang="fr" class="md-select__link">
               Français
             </a>
           </li>
@@ -251,7 +251,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../../index.html" title="Tock Documentation" class="md-nav__button md-logo" aria-label="Tock Documentation" data-md-component="logo">
+    <a href="../index.html" title="Tock Documentation" class="md-nav__button md-logo" aria-label="Tock Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -281,7 +281,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../index.html" class="md-nav__link">
+      <a href="../index.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -301,7 +301,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../conventions.html" class="md-nav__link">
+      <a href="../conventions.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -358,7 +358,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/awards.html" class="md-nav__link">
+      <a href="../about/awards.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -379,7 +379,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/community.html" class="md-nav__link">
+      <a href="../about/community.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -400,7 +400,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/contact.html" class="md-nav__link">
+      <a href="../about/contact.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -421,7 +421,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/contribute.html" class="md-nav__link">
+      <a href="../about/contribute.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -442,7 +442,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/jobs.html" class="md-nav__link">
+      <a href="../about/jobs.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -463,7 +463,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/ressources.html" class="md-nav__link">
+      <a href="../about/ressources.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -484,7 +484,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/showcase.html" class="md-nav__link">
+      <a href="../about/showcase.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -505,7 +505,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/why.html" class="md-nav__link">
+      <a href="../about/why.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -570,7 +570,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../admin/architecture.html" class="md-nav__link">
+      <a href="../admin/architecture.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -591,7 +591,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../admin/availability.html" class="md-nav__link">
+      <a href="../admin/availability.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -612,7 +612,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../admin/cloud.html" class="md-nav__link">
+      <a href="../admin/cloud.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -633,7 +633,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../admin/installation.html" class="md-nav__link">
+      <a href="../admin/installation.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -654,7 +654,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../admin/security.html" class="md-nav__link">
+      <a href="../admin/security.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -675,7 +675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../admin/supervision.html" class="md-nav__link">
+      <a href="../admin/supervision.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -696,7 +696,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../admin/synchronization.html" class="md-nav__link">
+      <a href="../admin/synchronization.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -761,7 +761,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/api.html" class="md-nav__link">
+      <a href="../dev/api.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -782,7 +782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/bot-api.html" class="md-nav__link">
+      <a href="../dev/bot-api.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -803,7 +803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/bot-integre.html" class="md-nav__link">
+      <a href="../dev/bot-integre.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -824,7 +824,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/connectors.html" class="md-nav__link">
+      <a href="../dev/connectors.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -845,7 +845,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/examples-code.html" class="md-nav__link">
+      <a href="../dev/examples-code.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -866,7 +866,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/i18n.html" class="md-nav__link">
+      <a href="../dev/i18n.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -887,7 +887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/modes.html" class="md-nav__link">
+      <a href="../dev/modes.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -908,7 +908,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/test.html" class="md-nav__link">
+      <a href="../dev/test.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -966,7 +966,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/advanced/bot-api.html" class="md-nav__link">
+      <a href="../dev/advanced/bot-api.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -987,7 +987,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/advanced/collections.html" class="md-nav__link">
+      <a href="../dev/advanced/collections.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1008,7 +1008,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/advanced/coroutine-stories.html" class="md-nav__link">
+      <a href="../dev/advanced/coroutine-stories.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1029,7 +1029,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/advanced/main-classes-explanation.html" class="md-nav__link">
+      <a href="../dev/advanced/main-classes-explanation.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1050,7 +1050,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/advanced/packages.html" class="md-nav__link">
+      <a href="../dev/advanced/packages.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1108,7 +1108,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/advanced/nlp/nlp-evaluation-with-duckling-and-dictionary%20%28%20end%20of%20file%29.html" class="md-nav__link">
+      <a href="../dev/advanced/nlp/nlp-evaluation-with-duckling-and-dictionary%20%28%20end%20of%20file%29.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1129,7 +1129,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/advanced/nlp/nlp-intents-and-entities-evaluation-simplifed-diagram.html" class="md-nav__link">
+      <a href="../dev/advanced/nlp/nlp-intents-and-entities-evaluation-simplifed-diagram.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1150,7 +1150,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/advanced/nlp/nlp-models-and-entity-models.html" class="md-nav__link">
+      <a href="../dev/advanced/nlp/nlp-models-and-entity-models.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1224,7 +1224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/gen_ai_orchestrator/api.html" class="md-nav__link">
+      <a href="../dev/gen_ai_orchestrator/api.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1257,19 +1257,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -1283,7 +1283,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Guides
@@ -1297,7 +1297,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../guides/api.html" class="md-nav__link">
+      <a href="api.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1318,7 +1318,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../guides/messenger.html" class="md-nav__link">
+      <a href="messenger.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1339,7 +1339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../guides/platform.html" class="md-nav__link">
+      <a href="platform.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1357,10 +1357,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../../guides/rag-aws.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    RAG sur AWS
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="rag-aws.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1369,6 +1389,209 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequis" class="md-nav__link">
+    <span class="md-ellipsis">
+      1) Prérequis
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-activer-lacces-aux-modeles-bedrock" class="md-nav__link">
+    <span class="md-ellipsis">
+      2) Activer l'accès aux modèles Bedrock
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-creer-une-identite-iam-pour-lorchestrateur" class="md-nav__link">
+    <span class="md-ellipsis">
+      3) Créer une identité IAM pour l'orchestrateur
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-creer-un-domaine-amazon-opensearch-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Créer un domaine Amazon OpenSearch Service
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-lancer-la-stack-tock" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Lancer la stack TOCK
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-indexer-vos-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      6) Indexer vos documents
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6) Indexer vos documents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-installer-loutillage" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.1) Installer l'outillage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-preparer-un-csv-pret-a-indexer" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.2) Préparer un CSV prêt à indexer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-ecrire-les-configs-json-des-embeddings-et-du-vector-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.3) Écrire les configs JSON des embeddings et du vector store
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-lancer-le-script-dindexation" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.4) Lancer le script d'indexation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-configurer-le-bot-dans-tock-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      7) Configurer le bot dans TOCK Studio
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7) Configurer le bot dans TOCK Studio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-vector-store-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.1) Vector Store Settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-rag-settings-llm-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.2) RAG Settings - LLM Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-rag-settings-embedding-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.3) RAG Settings - Embedding Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-configurer-le-flux-pas-de-reponse-et-activer-le-rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.4) Configurer le flux "pas de réponse" et activer le RAG
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-optionnel-configurer-des-guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      8) Optionnel : configurer des guardrails
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-tester" class="md-nav__link">
+    <span class="md-ellipsis">
+      9) Tester
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#depannage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dépannage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      Références
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1381,7 +1604,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../guides/slack.html" class="md-nav__link">
+      <a href="slack.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1402,7 +1625,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../guides/studio.html" class="md-nav__link">
+      <a href="studio.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1578,7 +1801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../rag-chain/rag-prompt-system.html" class="md-nav__link">
+      <a href="../user/studio/gen-ai/rag-chain/rag-prompt-system.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1627,19 +1850,19 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
         
           
           <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -1653,7 +1876,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             User
@@ -1667,7 +1890,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../concepts.html" class="md-nav__link">
+      <a href="../user/concepts.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1688,7 +1911,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides.html" class="md-nav__link">
+      <a href="../user/guides.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1709,7 +1932,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../studio.html" class="md-nav__link">
+      <a href="../user/studio.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1767,7 +1990,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/build-model.html" class="md-nav__link">
+      <a href="../user/guides/build-model.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1788,7 +2011,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/canaux.html" class="md-nav__link">
+      <a href="../user/guides/canaux.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1809,7 +2032,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/i18n.html" class="md-nav__link">
+      <a href="../user/guides/i18n.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1830,7 +2053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/intents-restrictions.html" class="md-nav__link">
+      <a href="../user/guides/intents-restrictions.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1856,19 +2079,19 @@
                 
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_5" >
         
           
           <label class="md-nav__link" for="__nav_8_5" id="__nav_8_5_label" tabindex="0">
@@ -1882,7 +2105,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8_5">
             <span class="md-nav__icon md-icon"></span>
             Studio
@@ -1896,7 +2119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../analytics.html" class="md-nav__link">
+      <a href="../user/studio/analytics.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1917,7 +2140,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration.html" class="md-nav__link">
+      <a href="../user/studio/configuration.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1938,7 +2161,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../custom-metrics.html" class="md-nav__link">
+      <a href="../user/studio/custom-metrics.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1959,7 +2182,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../faq-management.html" class="md-nav__link">
+      <a href="../user/studio/faq-management.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1980,7 +2203,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../faq-training.html" class="md-nav__link">
+      <a href="../user/studio/faq-training.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2001,7 +2224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../general.html" class="md-nav__link">
+      <a href="../user/studio/general.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2022,7 +2245,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../nlu-qa.html" class="md-nav__link">
+      <a href="../user/studio/nlu-qa.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2043,7 +2266,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../nlu.html" class="md-nav__link">
+      <a href="../user/studio/nlu.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2064,7 +2287,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../stories-and-answers.html" class="md-nav__link">
+      <a href="../user/studio/stories-and-answers.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2085,7 +2308,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../test.html" class="md-nav__link">
+      <a href="../user/studio/test.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2103,19 +2326,19 @@
                 
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5_11" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_5_11" >
         
           
           <label class="md-nav__link" for="__nav_8_5_11" id="__nav_8_5_11_label" tabindex="0">
@@ -2129,7 +2352,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_5_11_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_5_11_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8_5_11">
             <span class="md-nav__icon md-icon"></span>
             Gen ai
@@ -2143,7 +2366,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gen-ai.html" class="md-nav__link">
+      <a href="../user/studio/gen-ai/gen-ai.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2201,7 +2424,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../features/gen-ai-feature-observability.html" class="md-nav__link">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-observability.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2222,7 +2445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../features/gen-ai-feature-rag-exclusion.html" class="md-nav__link">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-rag-exclusion.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2243,7 +2466,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../features/gen-ai-feature-rag.html" class="md-nav__link">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-rag.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2264,7 +2487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../features/gen-ai-feature-sentence-generation.html" class="md-nav__link">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-sentence-generation.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2285,7 +2508,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../features/gen-ai-feature-vector-store.html" class="md-nav__link">
+      <a href="../user/studio/gen-ai/features/gen-ai-feature-vector-store.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2311,19 +2534,19 @@
                 
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5_11_3" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_5_11_3" >
         
           
           <label class="md-nav__link" for="__nav_8_5_11_3" id="__nav_8_5_11_3_label" tabindex="0">
@@ -2337,7 +2560,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_8_5_11_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_8_5_11_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8_5_11_3">
             <span class="md-nav__icon md-icon"></span>
             Providers
@@ -2348,19 +2571,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="gen-ai-provider-llm-and-embedding.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../user/studio/gen-ai/providers/gen-ai-provider-llm-and-embedding.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2369,7 +2583,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2382,7 +2595,7 @@
   
   
     <li class="md-nav__item">
-      <a href="gen-ai-provider-observability.html" class="md-nav__link">
+      <a href="../user/studio/gen-ai/providers/gen-ai-provider-observability.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2403,7 +2616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="gen-ai-provider-vector-store.html" class="md-nav__link">
+      <a href="../user/studio/gen-ai/providers/gen-ai-provider-vector-store.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2468,6 +2681,197 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-prerequis" class="md-nav__link">
+    <span class="md-ellipsis">
+      1) Prérequis
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-activer-lacces-aux-modeles-bedrock" class="md-nav__link">
+    <span class="md-ellipsis">
+      2) Activer l'accès aux modèles Bedrock
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-creer-une-identite-iam-pour-lorchestrateur" class="md-nav__link">
+    <span class="md-ellipsis">
+      3) Créer une identité IAM pour l'orchestrateur
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-creer-un-domaine-amazon-opensearch-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Créer un domaine Amazon OpenSearch Service
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-lancer-la-stack-tock" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Lancer la stack TOCK
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-indexer-vos-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      6) Indexer vos documents
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6) Indexer vos documents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-installer-loutillage" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.1) Installer l'outillage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-preparer-un-csv-pret-a-indexer" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.2) Préparer un CSV prêt à indexer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-ecrire-les-configs-json-des-embeddings-et-du-vector-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.3) Écrire les configs JSON des embeddings et du vector store
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-lancer-le-script-dindexation" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.4) Lancer le script d'indexation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-configurer-le-bot-dans-tock-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      7) Configurer le bot dans TOCK Studio
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7) Configurer le bot dans TOCK Studio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-vector-store-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.1) Vector Store Settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-rag-settings-llm-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.2) RAG Settings - LLM Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-rag-settings-embedding-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.3) RAG Settings - Embedding Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-configurer-le-flux-pas-de-reponse-et-activer-le-rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.4) Configurer le flux "pas de réponse" et activer le RAG
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-optionnel-configurer-des-guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      8) Optionnel : configurer des guardrails
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-tester" class="md-nav__link">
+    <span class="md-ellipsis">
+      9) Tester
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#depannage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dépannage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      Références
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2481,7 +2885,7 @@
                   
 
   
-    <a href="https://github.com/theopenconversationkit/tock/tree/master/docs/docs/fr/user/studio/gen-ai/providers/gen-ai-provider-llm-and-embedding.md" title="Editer cette page" class="md-content__button md-icon">
+    <a href="https://github.com/theopenconversationkit/tock/tree/master/docs/docs/fr/guides/rag-aws.md" title="Editer cette page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
     </a>
@@ -2489,88 +2893,307 @@
   
 
 
-<h1 id="fournisseurs-des-modeles-llm-et-dembedding">Fournisseurs des modèles LLM et d'Embedding</h1>
-<p>Voici la liste des fournisseurs des modèles LLM et d'Embedding pris en compte par Tock :</p>
+<h1 id="faire-fonctionner-le-rag-sur-aws">Faire fonctionner le RAG sur AWS</h1>
+<p>Ce guide vous accompagne dans la mise en place de la <a href="../user/studio/gen-ai/features/gen-ai-feature-rag.html">génération à enrichissement contextuel (RAG)</a>
+pour un bot TOCK entièrement sur AWS, depuis un compte tout neuf. Le résultat attendu est un bot
+capable de répondre à des questions à partir de vos propres documents. Pour ce faire, on utilisera :</p>
+<ul>
+<li><strong>Amazon Bedrock</strong> à la fois pour le LLM (génération des réponses) et pour le modèle d'embedding
+  (vectorisation des documents/questions).</li>
+<li><strong>Amazon OpenSearch Service</strong> (managé) comme vector store.</li>
+<li>Les images Docker de <a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a> pour faire tourner
+  la plateforme.</li>
+<li>Les scripts <code>tock-llm-indexing-tools</code> pour indexer vos documents.</li>
+</ul>
+<p>Aucun autre service AWS n'est nécessaire pour suivre ce guide.</p>
+<h2 id="1-prerequis">1) Prérequis</h2>
+<ul>
+<li>Un compte AWS avec les droits nécessaires pour créer des policies/rôles IAM, activer l'accès aux modèles
+  Bedrock, et créer un domaine OpenSearch.</li>
+<li>Docker et Docker Compose installés localement (ou sur la machine où tourne TOCK).</li>
+<li>Python &gt;= 3.9 et <a href="https://python-poetry.org/">Poetry</a> installés localement, pour exécuter l'outillage
+  d'indexation.</li>
+</ul>
+<h2 id="2-activer-lacces-aux-modeles-bedrock">2) Activer l'accès aux modèles Bedrock</h2>
+<p>L'accès aux modèles Bedrock doit être explicitement accordé par compte AWS et par région avant de pouvoir être
+invoqué.</p>
+<ol>
+<li>Ouvrez la <a href="https://console.aws.amazon.com/bedrock/">console Bedrock</a> dans la région que vous comptez utiliser
+   (par exemple <code>eu-west-3</code> ou <code>ap-east-2</code>).</li>
+<li>Allez dans <strong>Model access</strong> (menu de gauche) et demandez l'accès aux modèles que vous comptez utiliser, à la
+   fois pour le <strong>chat/texte</strong> et pour les <strong>embeddings</strong>. Pour un bon compromis coût/qualité pour démarrer, on
+   recommande :</li>
+<li>LLM : <code>amazon.nova-lite-v1:0</code> (économique, rapide, suffisant pour la plupart des scénarios RAG) ou
+     <code>anthropic.claude-3-5-haiku-20241022-v1:0</code> pour une meilleure qualité de réponse.</li>
+<li>Embedding : <code>amazon.titan-embed-text-v2:0</code>.</li>
+<li>Attendez que la demande d'accès soit approuvée (généralement instantané pour les modèles Amazon).</li>
+</ol>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Les identifiants de modèles sont spécifiques à chaque région : un modèle n'est pas forcément disponible dans
+toutes les régions. Vérifiez la disponibilité pour votre région avant de continuer.</p>
+</div>
+<h2 id="3-creer-une-identite-iam-pour-lorchestrateur">3) Créer une identité IAM pour l'orchestrateur</h2>
+<p>Le <code>GenAI Orchestrator</code> (le service qui dialogue réellement avec Bedrock) s'authentifie via la
+<a href="https://docs.aws.amazon.com/sdkref/latest/guide/standardized-credentials.html">chaîne de credentials AWS par défaut</a>
+(fichier de credentials partagé, variables d'environnement, instance profile EC2, task role ECS, ou rôle IRSA
+EKS). Aucune access key/secret n'est jamais stockée dans les paramètres TOCK - seulement un nom de profil (ou
+rien du tout, si vous vous reposez sur la chaîne par défaut).</p>
+<p>Créez une policy IAM accordant les droits d'invocation sur les modèles activés ci-dessus :</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;Version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BedrockInvoke&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Allow&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;bedrock:InvokeModel&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;bedrock:InvokeModelWithResponseStream&quot;</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;arn:aws:bedrock:*::foundation-model/amazon.nova-lite-v1:0&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;arn:aws:bedrock:*::foundation-model/amazon.titan-embed-text-v2:0&quot;</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Attachez cette policy à l'identité qui exécutera le conteneur de l'orchestrateur :</p>
+<ul>
+<li><strong>Docker Compose local/dev (ce guide)</strong> : créez un utilisateur IAM et lancez
+  <code>aws configure --profile bedrock-rag</code>, ce qui vous donne un profil nommé dans <code>~/.aws/credentials</code> que l'on va
+  monter dans le conteneur.</li>
+<li><strong>ECS/EKS/EC2 (recommandé en production)</strong> : attachez plutôt la policy à la task role / au service account IRSA
+  / à l'instance profile, et laissez de côté le nom de profil/montage de credentials - voir le paramètre
+  <code>..._allow_default_profile</code> ci-dessous.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Si vous comptez utiliser les <a href="#8-optionnel--configurer-des-guardrails">guardrails Bedrock</a>, ajoutez également
+l'ARN du guardrail à la liste <code>Resource</code> ci-dessus une fois celui-ci créé.</p>
+</div>
+<h2 id="4-creer-un-domaine-amazon-opensearch-service">4) Créer un domaine Amazon OpenSearch Service</h2>
+<ol>
+<li>Ouvrez la <a href="https://console.aws.amazon.com/aos/home">console OpenSearch Service</a> et créez un nouveau domaine.</li>
+<li>Choisissez <strong>Fine-grained access control</strong> avec une base d'utilisateurs internes, et définissez un
+   utilisateur/mot de passe maître (TOCK s'authentifie en HTTP basic auth classique, c'est donc l'option la plus
+   simple - pas besoin de signature IAM SigV4).<blockquote>
+<p>Amazon OpenSearch <strong>Serverless</strong> n'est pas supporté nativement : il n'accepte que des requêtes signées en
+SigV4 par IAM, ce que l'intégration OpenSearch de TOCK n'implémente pas. Utilisez un domaine OpenSearch
+classique (provisionné).</p>
+</blockquote>
+</li>
+<li>Dans <strong>Network</strong>, choisissez ce qui convient à votre contexte (l'accès VPC est recommandé en production ;
+   l'accès public avec une policy restreinte par IP convient très bien pour suivre ce guide).</li>
+<li>Une fois le domaine <code>Active</code>, notez son <strong>endpoint</strong> (sans le préfixe <code>https://</code>), par exemple
+   <code>search-my-domain-abc123xyz.eu-west-3.es.amazonaws.com</code>.</li>
+</ol>
+<h2 id="5-lancer-la-stack-tock">5) Lancer la stack TOCK</h2>
+<p>Récupérez la stack Docker Compose RAG/OpenSearch de <code>tock-docker</code> comme point de départ :</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>tock-aws-rag<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>tock-aws-rag
+curl<span class="w"> </span>-o<span class="w"> </span>docker-compose.yml<span class="w"> </span>https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/docker-compose-rag-opensearch.yml
+curl<span class="w"> </span>-o<span class="w"> </span>.env<span class="w"> </span>https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/.env
+mkdir<span class="w"> </span>-p<span class="w"> </span>scripts<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>curl<span class="w"> </span>-o<span class="w"> </span>scripts/setup.sh<span class="w"> </span>https://raw.githubusercontent.com/theopenconversationkit/tock-docker/master/scripts/setup.sh
+chmod<span class="w"> </span>+x<span class="w"> </span>scripts/setup.sh
+</code></pre></div>
+<p>Ce fichier embarque son propre cluster OpenSearch local à 2 nœuds (<code>opensearch-node1</code>/<code>opensearch-node2</code>/
+<code>opensearch-dashboards</code>) pour les tests en local. Puisqu'on utilise un domaine OpenSearch AWS managé à la place :</p>
+<ol>
+<li>Supprimez (ou commentez) les services <code>opensearch-node1</code>, <code>opensearch-node2</code> et <code>opensearch-dashboards</code>, ainsi
+   que les volumes <code>opensearch-data1</code>/<code>opensearch-data2</code> en bas du fichier.</li>
+<li>Faites pointer le service <code>gen_ai_orchestrator-server</code> vers votre domaine AWS au lieu du cluster local, et
+   montez vos credentials/config AWS locales pour que le conteneur puisse s'authentifier auprès de Bedrock :</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">gen_ai_orchestrator-server</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${PLATFORM}tock/gen-ai-orchestrator-server:${TAG}&quot;</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8000:8000&quot;</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~/.aws:/root/.aws:ro</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_application_environment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEV</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_em_provider_timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_llm_provider_timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_llm_provider_max_retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_vector_store_provider</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OpenSearch</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_vector_store_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">search-my-domain-abc123xyz.eu-west-3.es.amazonaws.com</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_vector_store_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_vector_store_user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_vector_store_pwd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;votre mot de passe maître&gt;</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_vector_store_timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_vector_store_test_query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">virement bancaire</span>
+<span class="w">      </span><span class="nt">tock_gen_ai_orchestrator_aws_bedrock_credentials_profile_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bedrock-rag</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Vous tournez sur ECS/EKS/EC2 plutôt qu'en Docker Compose ? Retirez le montage <code>volumes</code> et la variable
+<code>..._credentials_profile_name</code>, et définissez plutôt
+<code>tock_gen_ai_orchestrator_aws_bedrock_credentials_allow_default_profile: true</code>, pour que le SDK récupère
+automatiquement le rôle de la task/instance.</p>
+</div>
+<p>Puis lancez la stack :</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up
+</code></pre></div>
+<p>Une fois tout démarré, Bot Admin est accessible sur <a href="http://localhost">http://localhost</a>
+(identifiants par défaut <code>admin@app.com</code> / <code>password</code>), et l'orchestrateur lui-même écoute sur
+<code>http://localhost:8000</code>.</p>
+<h2 id="6-indexer-vos-documents">6) Indexer vos documents</h2>
+<p>Les documents sont découpés en morceaux, vectorisés, puis poussés dans OpenSearch à l'aide du script
+<code>index_documents.py</code> de <code>gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools</code> (dans le dépôt
+principal <a href="https://github.com/theopenconversationkit/tock"><code>tock</code></a>).</p>
+<h3 id="61-installer-loutillage">6.1) Installer l'outillage</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/theopenconversationkit/tock.git
+<span class="nb">cd</span><span class="w"> </span>tock/gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools
+poetry<span class="w"> </span>install<span class="w"> </span>--no-root
+</code></pre></div>
+<h3 id="62-preparer-un-csv-pret-a-indexer">6.2) Préparer un CSV prêt à indexer</h3>
+<p>Le script attend un CSV avec trois colonnes : <code>title</code>, <code>source</code>, <code>text</code>. Si votre contenu est déjà dans ce
+format, passez directement à l'étape suivante. Sinon, <code>smarttribune_formatter.py</code>/<code>smarttribune_consumer.py</code> et
+<code>webscraper.py</code> peuvent aider à le produire à partir d'un export Smart Tribune ou en scrapant des pages web -
+voir le <a href="https://github.com/theopenconversationkit/tock/blob/master/gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools/README.md">README de l'outil</a>
+pour le détail.</p>
+<h3 id="63-ecrire-les-configs-json-des-embeddings-et-du-vector-store">6.3) Écrire les configs JSON des embeddings et du vector store</h3>
+<p><code>embeddings_bedrock.json</code> (le script exécute localement la factory d'embeddings de l'orchestrateur, assurez-vous
+donc que votre shell dispose des mêmes credentials AWS, par exemple
+<code>export AWS_PROFILE=bedrock-rag AWS_REGION=eu-west-3</code>) :</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AwsBedrock&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon.titan-embed-text-v2:0&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>vector_store_opensearch.json</code> :</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OpenSearch&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;host&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;search-my-domain-abc123xyz.eu-west-3.es.amazonaws.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">443</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;password&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Raw&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;votre mot de passe maître&gt;&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="64-lancer-le-script-dindexation">6.4) Lancer le script d'indexation</h3>
+<div class="highlight"><pre><span></span><code>poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/indexing/index_documents.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input-csv<span class="o">=</span>data.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--namespace<span class="o">=</span>my_namespace<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--bot-id<span class="o">=</span>my_bot_id<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--embeddings-json-config<span class="o">=</span>embeddings_bedrock.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--vector-store-json-config<span class="o">=</span>vector_store_opensearch.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--chunks-size<span class="o">=</span><span class="m">1000</span>
+</code></pre></div>
+<p>À la fin, le script affiche un <strong>identifiant de session d'indexation</strong> (un UUID) et le nom de l'<strong>index</strong>
+généré (<code>ns-{namespace}-bot-{bot_id}-session-{uuid4}</code>). Gardez cet identifiant de session sous la main - vous en
+aurez besoin à l'étape suivante.</p>
+<h2 id="7-configurer-le-bot-dans-tock-studio">7) Configurer le bot dans TOCK Studio</h2>
+<p>Ouvrez votre bot dans TOCK Studio et allez d'abord dans <strong>Gen AI &gt; Vector Store Settings</strong>, puis dans
+<strong>Gen AI &gt; RAG Settings</strong> (le rôle <strong>botUser</strong> est requis pour les deux écrans).</p>
+<h3 id="71-vector-store-settings">7.1) Vector Store Settings</h3>
+<p>Configurez la connexion à votre domaine OpenSearch :</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OpenSearch&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;host&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;search-my-domain-abc123xyz.eu-west-3.es.amazonaws.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;port&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;443&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;password&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Raw&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;votre mot de passe maître&gt;&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="72-rag-settings-llm-engine">7.2) RAG Settings - LLM Engine</h3>
+<p>Sélectionnez <strong>AwsBedrock</strong> comme fournisseur et renseignez :</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AwsBedrock&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon.nova-lite-v1:0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.7&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Rédigez ensuite votre prompt système (voir les
+<a href="https://github.com/theopenconversationkit/tock/blob/master/docs/docs/en/user/studio/gen-ai/rag-chain/rag-prompt-system.md">guides de prompt RAG</a>
+pour des exemples).</p>
+<h3 id="73-rag-settings-embedding-engine">7.3) RAG Settings - Embedding Engine</h3>
+<p>Sélectionnez à nouveau <strong>AwsBedrock</strong>, en faisant correspondre le modèle utilisé pour l'indexation, et collez
+l'<strong>identifiant de session d'indexation</strong> de l'étape 6.4 dans le champ <strong>Indexing session</strong> :</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AwsBedrock&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon.titan-embed-text-v2:0&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Le modèle d'embedding ici <strong>doit</strong> correspondre à celui utilisé pour l'indexation - mélanger des modèles
+d'embedding différents entre l'indexation et l'interrogation dégrade silencieusement (voire casse) la qualité
+de la recherche, les vecteurs n'étant alors plus comparables entre eux.</p>
+</div>
+<h3 id="74-configurer-le-flux-pas-de-reponse-et-activer-le-rag">7.4) Configurer le flux "pas de réponse" et activer le RAG</h3>
+<p>Renseignez la section <strong>Conversation Flow</strong> (ce que dit le bot quand il ne trouve pas de réponse pertinente),
+puis activez le RAG. L'activation n'est possible qu'une fois tous les champs obligatoires renseignés.</p>
+<h2 id="8-optionnel-configurer-des-guardrails">8) Optionnel : configurer des guardrails</h2>
+<p>Les paramètres LLM AWS Bedrock supportent les <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html">guardrails Bedrock</a>
+en ligne, appliqués directement sur chaque appel LLM sans aller-retour réseau supplémentaire. Une fois un
+guardrail créé dans la console Bedrock, ajoutez son identifiant/sa version à la configuration
+<strong>RAG Settings &gt; LLM Engine</strong> :</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AwsBedrock&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon.nova-lite-v1:0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.7&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;guardrailId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;arn:aws:bedrock:eu-west-3:123456789012:guardrail/my-guardrail&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;guardrailVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;guardrailTrace&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>N'oubliez pas d'ajouter l'ARN du guardrail à la policy IAM de l'étape 3, sans quoi Bedrock rejettera l'appel avec
+une erreur d'accès refusé, même si l'invocation du modèle en elle-même aurait autrement fonctionné.</p>
+<h2 id="9-tester">9) Tester</h2>
+<p>Dans TOCK Studio, allez sur un canal du bot et envoyez une question dont vous savez qu'elle est couverte par vos
+documents indexés. Vous devriez obtenir une réponse générée à partir des morceaux de documents récupérés. Sinon,
+consultez le tableau de dépannage ci-dessous.</p>
+<h2 id="depannage">Dépannage</h2>
 <table>
 <thead>
 <tr>
-<th style="font-weight:bold">Fournisseur de l'IA</th>
-<th style="font-weight:bold">Configuration du LLM</th>
-<th style="font-weight:bold">Configuration de l'Embedding</th>
+<th>Symptôme</th>
+<th>Cause probable</th>
+<th>Solution</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: center;">
-OpenAI<br/>
-(<a href="https://platform.openai.com/docs/introduction">Docs</a>)
-</td>
-<td style="vertical-align: top;">
-<pre>
-{
-  "provider": "OpenAI",
-  "api_key": {
-    "type": "Raw",
-    "value": "aebb4b****************7b25e3371"
-  },
-  "temperature": "1.0",
-  "model": "gpt-3.5-turbo"
-}
-</pre>
-</td>
-<td style="vertical-align: top;">
-<pre>
-{
-  "provider": "OpenAI",
-  "api_key": {
-    "type": "Raw",
-    "value": "aebb4b****************7b25e3371"
-  },
-  "model": "text-embedding-ada-002"
-}
-</pre>
-</td>
+<td><code>AccessDeniedException</code> mentionnant <code>bedrock:InvokeModel</code></td>
+<td>Accès au modèle non accordé, ou policy IAM ne couvrant pas le modèle/la région</td>
+<td>Revérifiez l'étape 2 (accès aux modèles) et l'étape 3 (ARNs <code>Resource</code> de la policy IAM, région incluse)</td>
 </tr>
 <tr>
-<td style="text-align: center;">
-AzureOpenAIService <br />
-(<a href="https://azure.microsoft.com/fr-fr/products/ai-services/openai-service">Docs</a>)
-</td>
-<td style="vertical-align: top;">
-<pre>
-{
-  "provider": "AzureOpenAIService",
-  "api_key": {
-    "type": "Raw",
-    "value": "aebb4b****************7b25e3371"
-  },
-  "temperature": "1.0",
-  "api_base": "https://custom-api-name.azure-api.net",
-  "deployment_name": "custom-deployment-name",
-  "model": "gpt-4o",
-  "api_version": "2024-03-01-preview"
-}
-</pre>
-</td>
-<td style="vertical-align: top;">
-<pre>
-{
-  "provider": "AzureOpenAIService",
-  "api_key": {
-    "type": "Raw",
-    "value": "aebb4b****************7b25e3371"
-  },
-  "api_base": "https://custom-api-name.azure-api.net",
-  "deployment_name": "custom-deployment-name",
-  "model": "text-embedding-ada-002",
-  "api_version": "2024-03-01-preview"
-}
-</pre>
-</td>
+<td>Erreur <code>MissingCredentialsProfileName</code> venant de l'orchestrateur</td>
+<td>Ni un nom de profil, ni le repli sur le profil par défaut ne sont configurés</td>
+<td>Définissez <code>tock_gen_ai_orchestrator_aws_bedrock_credentials_profile_name</code>, ou <code>..._allow_default_profile=true</code></td>
+</tr>
+<tr>
+<td>Aucun document récupéré / le bot retombe toujours sur l'histoire "pas de réponse"</td>
+<td>Mauvais identifiant de session d'indexation, ou modèle d'embedding différent entre l'indexation et le RAG</td>
+<td>Revérifiez l'identifiant de session de l'étape 6.4, et que les deux utilisent le même modèle d'embedding</td>
+</tr>
+<tr>
+<td>Connexion refusée / timeout vers OpenSearch</td>
+<td>La policy réseau du domaine OpenSearch ou le security group ne laisse pas passer l'IP sortante du conteneur de l'orchestrateur</td>
+<td>Ajustez la policy d'accès du domaine OpenSearch / le security group VPC</td>
+</tr>
+<tr>
+<td><code>401 Unauthorized</code> de la part d'OpenSearch</td>
+<td>Mauvais utilisateur/mot de passe maître, ou fine-grained access control non activé</td>
+<td>Revérifiez l'étape 4 et les identifiants utilisés à la fois dans la config JSON du vector store et dans TOCK Studio</td>
 </tr>
 </tbody>
 </table>
-
+<h2 id="references">Références</h2>
+<ul>
+<li><a href="../user/studio/gen-ai/features/gen-ai-feature-rag.html">Présentation de la fonctionnalité RAG</a></li>
+<li><a href="../user/studio/gen-ai/providers/gen-ai-provider-vector-store.html">Fournisseurs de vector store</a></li>
+<li><a href="../user/studio/gen-ai/providers/gen-ai-provider-llm-and-embedding.html">Fournisseurs de LLM/embedding</a></li>
+<li><a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a> - images Docker et stacks Compose</li>
+<li><a href="https://github.com/theopenconversationkit/tock/blob/master/gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools/README.md">README de <code>tock-llm-indexing-tools</code></a></li>
+</ul>
 <!-- Chat inclusion start -->
 <div>
   <script src="https://unpkg.com/vue@3.4/dist/vue.global.prod.js"></script>
@@ -2676,14 +3299,14 @@ AzureOpenAIService <br />
 
   <!-- Icône de chat flottant -->
   <div id="chat-icon" onclick="toggleChat()" title="Chat with Tock">
-    <img src="../../../../../img/Logo_Tock_White.svg" />
+    <img src="../../img/Logo_Tock_White.svg" />
   </div>
 
   <!-- Fenêtre du chatbot -->
   <div id="chat-wrapped">
     <div class="chat-header">
       <div class="chat-header-title">
-        <img src="../../../../../img/Logo_Tock_White.svg" class="chat-header-title-logo" />
+        <img src="../../img/Logo_Tock_White.svg" class="chat-header-title-logo" />
         <span id="chat-header-title-string">Chat with Tock</span>
       </div>
       <span
@@ -2796,7 +3419,7 @@ AzureOpenAIService <br />
             header: {
               avatar: {
                 botImage: {
-                  src: "../../../../../img/favicon.png",
+                  src: "../../img/favicon.png",
                   width: "1.5em",
                   height: "1.5em",
                 },
@@ -2857,7 +3480,7 @@ AzureOpenAIService <br />
     <span class="md-icon" title="Dernière mise à jour">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">24 février 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">29 septembre 2026</span>
   </span>
 
     
@@ -2867,7 +3490,7 @@ AzureOpenAIService <br />
     <span class="md-icon" title="Créé">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">9 octobre 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">29 septembre 2026</span>
   </span>
 
     
@@ -2919,10 +3542,10 @@ AzureOpenAIService <br />
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../../../..", "features": ["content.action.edit", "content.code.copy", "navigation.expand", "navigation.path", "palette.toggle", "navigation.top"], "search": "../../../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "content.code.copy", "navigation.expand", "navigation.path", "palette.toggle", "navigation.top"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}}</script>
     
     
-      <script src="../../../../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
     
   </body>
