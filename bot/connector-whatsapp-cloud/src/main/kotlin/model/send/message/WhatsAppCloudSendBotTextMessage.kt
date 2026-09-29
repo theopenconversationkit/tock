@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class WhatsAppCloudSendBotTextMessage(
     val text: TextContent,
     override val recipientType: WhatsAppCloudBotRecipientType,
-    override val to: String,
+    override val recipient: String,
     @get:JsonProperty("preview_url")
     val previewUrl: Boolean = false,
 ) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.text)

@@ -76,6 +76,13 @@ class WhatsAppConnectorCloudConnector internal constructor(
             listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList())
                 .toSet()
                 .takeIf { it.isNotEmpty() }
+
+        // Business-Scoped User IDs (BSUIDs) allowed to interact with a restricted bot, in addition
+        // to (or instead of) phone numbers, since a message may only carry a BSUID.
+        private val restrictedUserIds =
+            listProperty("tock_whatsapp_cloud_restricted_user_ids", emptyList())
+                .toSet()
+                .takeIf { it.isNotEmpty() }
         private val templateProviders: List<WhatsappTemplateProvider> by lazy {
             ServiceLoader.load(WhatsappTemplateProvider::class.java).toList()
         }
@@ -211,12 +218,26 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     it.value.metadata.phoneNumberId == phoneNumberId
                 }.forEach { change: Change ->
                     change.value.messages
-                        .filter {
-                            restrictedPhoneNumbers?.contains(it.from) ?: true
+                        .filter { message ->
+                            // Restriction can be based on the phone number and/or the BSUID: a message
+                            // is accepted if it satisfies the restriction for whichever identifier(s) it
+                            // carries, so BSUID-only testers can also be allow-listed.
+                            val phoneNumberAllowed =
+                                message.from?.let { from -> restrictedPhoneNumbers?.contains(from) } ?: true
+                            val userIdAllowed =
+                                message.fromUserId?.let { userId -> restrictedUserIds?.contains(userId) } ?: true
+                            phoneNumberAllowed && userIdAllowed
                         }.forEach { message: WhatsAppCloudMessage ->
                             logger.debug { "received message $message" }
                             executor.executeBlocking {
-                                val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService)
+                                // The Business-Scoped User ID (BSUID) is carried on the contact entry, not on
+                                // the message itself, so it must be resolved before converting to an Event.
+                                val contact =
+                                    change.value.contacts.find {
+                                        message.fromUserId != null && it.userId == message.fromUserId
+                                    }
+                                val userId = message.fromUserId ?: contact?.userId
+                                val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService, userId)
                                 if (event != null) {
                                     whatsAppCloudApiService.sendTypingIndicator(phoneNumberId, message.id)
                                     controller.handle(
@@ -224,12 +245,8 @@ class WhatsAppConnectorCloudConnector internal constructor(
                                         ConnectorData(
                                             WhatsAppConnectorCloudCallback(
                                                 applicationId = event.connectorId,
-                                                phoneNumber = message.from,
-                                                username =
-                                                    change.value.contacts
-                                                        .find { it.waId == message.from }
-                                                        ?.profile
-                                                        ?.name,
+                                                userId = userId,
+                                                username = contact?.profile?.name,
                                             ),
                                         ),
                                     )
@@ -287,7 +304,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
         userId: PlayerId,
     ): UserPreferences? =
         (callback as? WhatsAppConnectorCloudCallback)
-            ?.run { UserPreferences(username = username, phoneNumber = "+$phoneNumber") }
+            ?.run { UserPreferences(username = username) }
 
     override fun addSuggestions(
         text: CharSequence,

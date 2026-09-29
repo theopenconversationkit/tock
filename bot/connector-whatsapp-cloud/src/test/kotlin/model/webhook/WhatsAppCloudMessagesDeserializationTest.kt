@@ -42,6 +42,22 @@ class WhatsAppCloudMessagesDeserializationTest {
     }
 
     @Test
+    fun testMessageWebhookDeserializationWithBsuid() {
+        val m =
+            WhatsAppCloudTextMessage(
+                text = TextContent("Hello, World!"),
+                id = "aaa",
+                from = "bbb",
+                fromUserId = "FR.4260778090837221",
+                timestamp = Instant.now().toString(),
+            )
+        val s = mapper.writeValueAsString(m)
+        val deserialized = mapper.readValue<WhatsAppCloudMessage>(s)
+        assertEquals(m, deserialized)
+        assertEquals("FR.4260778090837221", deserialized.fromUserId)
+    }
+
+    @Test
     fun testUnknownMessageDeserialization() {
         val m =
             WhatsAppCloudUnknownMessage(

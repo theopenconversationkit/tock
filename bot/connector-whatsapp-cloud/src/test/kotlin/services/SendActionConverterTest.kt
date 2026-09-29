@@ -16,7 +16,6 @@
 
 package services
 
-import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotInteractiveMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotAction
@@ -35,16 +34,13 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.user.PlayerId
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkObject
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class SendActionConverterTest {
     @Test
     fun `message conversion is correct for reply button`() {
-        mockkObject(UserHashedIdCache)
         val userId = "4567876543"
-        every { UserHashedIdCache.getRealId(userId) } returns userId
         val whatsAppCloudApiService =
             mockk<WhatsAppCloudApiService> {
                 every { getUploadedImageId("fish.png") } answers {
@@ -137,7 +133,7 @@ class SendActionConverterTest {
                             ),
                     ),
                 recipientType = WhatsAppCloudBotRecipientType.individual,
-                to = userId,
+                recipient = userId,
             ),
             result,
         )
