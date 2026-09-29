@@ -91,6 +91,7 @@
                   <includes>
                     <include>src/**</include>
                     <include>*.json</include>
+                    <include>scripts/hooks/install-hooks.js</include>
                   </includes>
                   <excludes>
                     <exclude>**/manifest.ts</exclude>
