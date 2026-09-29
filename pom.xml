@@ -268,7 +268,8 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
-                        <phase>verify</phase>
+                        <!-- package, not verify: gpg:sign (declared in tock-bom, so run first) signs in verify -->
+                        <phase>package</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
@@ -283,7 +284,7 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <releaseProfiles>deploy</releaseProfiles>
                     <tagNameFormat>tock-@{project.version}</tagNameFormat>
-                    <goals>dokka:javadocJar deploy</goals>
+                    <goals>deploy</goals>
                 </configuration>
             </plugin>
             <plugin>
@@ -439,5 +440,35 @@
         <url>git@github.com:theopenconversationkit/tock.git</url>
         <tag>tock-${project.version}</tag>
     </scm>
+
+    <profiles>
+        <profile>
+            <!-- javadoc jars are attached here rather than via a dokka:javadocJar CLI goal,
+                 which fails on tock-bom (the dokka mojo must be declared in the project build) -->
+            <id>deploy</id>
+            <activation>
+                <property>
+                    <name>deploy</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jetbrains.dokka</groupId>
+                        <artifactId>dokka-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadoc</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>javadocJar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
