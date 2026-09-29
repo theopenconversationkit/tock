@@ -50,13 +50,13 @@
         <coroutine>1.11.0</coroutine>
         <serialization>1.11.0</serialization>
 
-        <slf4j>2.0.19</slf4j>
-        <logback>1.6.3</logback>
+        <slf4j>2.0.20</slf4j>
+        <logback>1.6.4</logback>
 
         <kotlin-logging>3.0.5</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>5.6.0</kmongo>
+        <kmongo>5.12.0</kmongo>
         <jackson>2.22.3</jackson>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
@@ -85,10 +85,10 @@
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.88.1</google>
+        <google>26.89.0</google>
         <aws-sdk>1.12.797</aws-sdk>
-        <aws-sdk-v2>2.55.0</aws-sdk-v2>
-        <pac4j>6.5.8</pac4j>
+        <aws-sdk-v2>2.55.7</aws-sdk-v2>
+        <pac4j>6.5.9</pac4j>
         <vertx-pac4j>7.0.3</vertx-pac4j>
         <okhttp-eventsource>5.0.0</okhttp-eventsource>
         <graphql-kotlin>6.3.0</graphql-kotlin>
@@ -97,6 +97,8 @@
         <plugin.gpg>3.2.8</plugin.gpg>
         <plugin.publishing-maven>0.8.0</plugin.publishing-maven>
         <plugin.deploy>3.2.0</plugin.deploy>
+
+        <maven.version.ignore>(?i).*-(alpha|beta|m|rc)([-.]?\d+)?</maven.version.ignore>
     </properties>
 
     <dependencyManagement>

@@ -64,12 +64,12 @@
         <plugin.ktlint>1.8.0</plugin.ktlint>
         <plugin.enforcer>3.6.3</plugin.enforcer>
 
-        <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
+        <kotlin.compiler.jvmTarget>21</kotlin.compiler.jvmTarget>
 
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
 
-        <node>v24.14.0</node>
+        <node>v26.10.0</node>
         <maven.version.ignore>(?i).*-(alpha|beta|m|rc)([-.]?\d+)?</maven.version.ignore>
         <ktlint.fail>true</ktlint.fail>
     </properties>
