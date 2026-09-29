@@ -94,6 +94,16 @@ class _Settings(BaseSettings):
     # GCP project ID used for GCP Secrets
     gcp_project_id: Optional[str] = Field(alias='tock_gcp_project_id', default=None)
 
+    """AWS Bedrock"""
+    # The name of the AWS profile to use to resolve credentials from the default AWS
+    # credential chain (environment variables, shared credentials/config file, or an
+    # IAM role). If not set, the default profile/credential resolution order is used.
+    aws_bedrock_credentials_profile_name: Optional[str] = None
+    # Whether to allow falling back to the default AWS credential chain (e.g. IRSA,
+    # instance profile, environment variables) when aws_bedrock_credentials_profile_name
+    # is not set. Defaults to False, so requests fail fast when no profile is configured.
+    aws_bedrock_credentials_allow_default_profile: bool = False
+
 
 application_settings = _Settings()
 is_prod_environment = _Environment.PROD == application_settings.application_environment

@@ -18,6 +18,9 @@ from typing import Annotated, Union
 
 from fastapi import Body
 
+from gen_ai_orchestrator.models.llm.awsbedrock.aws_bedrock_llm_setting import (
+    AwsBedrockLLMSetting,
+)
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
@@ -32,6 +35,12 @@ from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
 )
 
 LLMSetting = Annotated[
-    Union[OpenAILLMSetting, AzureOpenAILLMSetting, FakeLLMSetting, OllamaLLMSetting],
+    Union[
+        OpenAILLMSetting,
+        AzureOpenAILLMSetting,
+        FakeLLMSetting,
+        OllamaLLMSetting,
+        AwsBedrockLLMSetting,
+    ],
     Body(discriminator='provider'),
 ]

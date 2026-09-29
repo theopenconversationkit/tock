@@ -1,4 +1,4 @@
-#   Copyright (C) 2024-2026 Credit Mutuel Arkea
+#   Copyright (C) 2025-2026 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,14 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from enum import Enum, unique
-
-
-@unique
-class DocumentCompressorProvider(str, Enum):
-    BLOOMZ = 'BloomzRerank'
-    AWS_BEDROCK = 'AwsBedrockRerank'
-
-    @classmethod
-    def has_value(cls, value) -> bool:
-        return value in cls._value2member_map_

@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorcore.models.llm
+package ai.tock.genai.orchestratorcore.models.em
 
-enum class LLMProvider {
-    OpenAI,
-    AzureOpenAIService,
-    Ollama,
-    AwsBedrock,
-    ;
-
-    companion object {
-        fun findByName(provider: String): LLMProvider? = entries.firstOrNull { it.name == provider }
-    }
-}
+data class AwsBedrockEMSetting<T>(
+    val model: String,
+) : EMSettingBase<T>(EMProvider.AwsBedrock)
