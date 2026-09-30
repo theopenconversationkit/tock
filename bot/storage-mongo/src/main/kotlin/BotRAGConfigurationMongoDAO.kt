@@ -23,6 +23,7 @@ import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
 import org.litote.kmongo.Id
+import org.litote.kmongo.and
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
@@ -62,6 +63,33 @@ internal object BotRAGConfigurationMongoDAO : BotRAGConfigurationDAO {
             BotRAGConfiguration::botId eq botId,
             BotRAGConfiguration::enabled eq enabled,
         )
+
+    override fun saveIfUnchanged(
+        previous: BotRAGConfiguration,
+        replacement: BotRAGConfiguration,
+    ): Boolean =
+        col
+            .replaceOne(
+                and(
+                    BotRAGConfiguration::_id eq previous._id,
+                    BotRAGConfiguration::namespace eq previous.namespace,
+                    BotRAGConfiguration::botId eq previous.botId,
+                    BotRAGConfiguration::enabled eq previous.enabled,
+                    BotRAGConfiguration::questionCondensingLlmSetting eq previous.questionCondensingLlmSetting,
+                    BotRAGConfiguration::questionCondensingPrompt eq previous.questionCondensingPrompt,
+                    BotRAGConfiguration::questionAnsweringLlmSetting eq previous.questionAnsweringLlmSetting,
+                    BotRAGConfiguration::questionAnsweringPrompt eq previous.questionAnsweringPrompt,
+                    BotRAGConfiguration::emSetting eq previous.emSetting,
+                    BotRAGConfiguration::indexSessionId eq previous.indexSessionId,
+                    BotRAGConfiguration::documentsRequired eq previous.documentsRequired,
+                    BotRAGConfiguration::debugEnabled eq previous.debugEnabled,
+                    BotRAGConfiguration::explainabilityEnabled eq previous.explainabilityEnabled,
+                    BotRAGConfiguration::maxDocumentsRetrieved eq previous.maxDocumentsRetrieved,
+                    BotRAGConfiguration::maxMessagesFromHistory eq previous.maxMessagesFromHistory,
+                    BotRAGConfiguration::documentSearchType eq previous.documentSearchType,
+                ),
+                replacement,
+            ).modifiedCount == 1L
 
     override fun save(conf: BotRAGConfiguration): BotRAGConfiguration {
         col.save(conf)

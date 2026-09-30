@@ -71,6 +71,10 @@ const routes: Routes = [
     path: 'vector-store-inspection',
     loadChildren: () => import('./vector-store-inspection/vector-store-inspection.module').then((m) => m.VectorStoreInspectionModule)
   },
+  {
+    path: 'knowledge-base',
+    loadChildren: () => import('./knowledge-base/knowledge-base.module').then((m) => m.KnowledgeBaseModule)
+  },
   { path: '**', redirectTo: '/dashboard' }
 ];
 

@@ -36,7 +36,9 @@ import ai.tock.genai.orchestratorclient.services.EMProviderService
 import ai.tock.genai.orchestratorclient.services.LLMProviderService
 import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSettingDTO
 import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSettingDTO
+import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.nlp.core.Intent
+import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.tockInternalInjector
 import ai.tock.shared.withoutNamespace
 import ai.tock.translator.I18nDAO
@@ -48,8 +50,12 @@ import com.github.salomonbrys.kodein.singleton
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import io.mockk.slot
 import io.mockk.verify
+import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseIndexState
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -143,6 +149,20 @@ class RAGServiceTest : AbstractTest() {
         private val storySlot = slot<StoryDefinitionConfiguration>()
     }
 
+    private val knowledgeBaseService: KnowledgeBaseService = mockk()
+
+    @BeforeEach
+    fun neutralizeEmbeddingGuard() {
+        // saveWithValidation now rejects an incompatible embedding by resolving the stored config and the target
+        // collection. These tests do not exercise that guard: report no stored config (a fresh save) and a non-blocking
+        // UNKNOWN coherence so the guard is a no-op. mockkObject avoids constructing KnowledgeBaseService.default.
+        every { ragDao.findByNamespaceAndBotId(any(), any()) } returns null
+        mockkObject(KnowledgeBaseService)
+        every { KnowledgeBaseService.default } returns knowledgeBaseService
+        every { knowledgeBaseService.indexStatusFor(any(), any(), any(), any()) } returns
+            KnowledgeBaseIndexStatus(KnowledgeBaseIndexState.MISSING, null, EmbeddingCoherence.UNKNOWN)
+    }
+
     @AfterEach
     fun tearDown() {
         clearAllMocks()
@@ -196,7 +216,8 @@ class RAGServiceTest : AbstractTest() {
         }
 
         val findCurrentUnknownFnNotCalled: TRunnable = {
-            verify(exactly = 0) { ragDao.findByNamespaceAndBotId(any(), any()) }
+            // The embedding-coherence guard reads the stored config once; no other lookup is expected.
+            verify(exactly = 1) { ragDao.findByNamespaceAndBotId(any(), any()) }
             verify(atLeast = 0) { storyDao.getStoryDefinitionById(any()) }
         }
 
@@ -487,6 +508,79 @@ class RAGServiceTest : AbstractTest() {
                 """.trimIndent(),
                 checks,
             ).run()
+    }
+
+    // --- Embedding-coherence guard (rejectIncompatibleEmbedding): real tests of the guard, not the neutralized default.
+
+    @Test
+    fun `save rejects a configuration whose embedding no longer matches its target collection`() {
+        mockkObject(BotAdminService)
+        every { BotAdminService.getBotConfigurationsByNamespaceAndBotId(any(), any()) } returns listOf(DEFAULT_BOT_CONFIG)
+        // A non-blank indexSessionId with no stored config is a change, so the guard resolves the target collection.
+        every { ragDao.findByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns null
+        every { knowledgeBaseService.indexStatusFor(NAMESPACE, BOT_ID, INDEX_SESSION_ID, any()) } returns
+            KnowledgeBaseIndexStatus(KnowledgeBaseIndexState.READY, "another-model", EmbeddingCoherence.MISMATCH)
+
+        val error =
+            Assertions.assertThrows(BadRequestException::class.java) {
+                RAGService.saveRag(getRAGConfigurationDTO(false, INDEX_SESSION_ID))
+            }
+        Assertions.assertTrue(error.httpResponseBody.errors.any { it.message == "rag.embedding.incompatible_index" })
+        verify(exactly = 0) { ragDao.save(any()) }
+    }
+
+    @Test
+    fun `save accepts a target collection whose coherence is unknown or a match`() {
+        mockkObject(BotAdminService)
+        every { BotAdminService.getBotConfigurationsByNamespaceAndBotId(any(), any()) } returns listOf(DEFAULT_BOT_CONFIG)
+        every { ragDao.findByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns null
+        every { ragDao.save(any()) } returns getRAGConfigurationDTO(false, INDEX_SESSION_ID).toBotRAGConfiguration()
+
+        // UNKNOWN (missing collection or no contract metadata) and MATCH are both non-blocking.
+        for (status in listOf(
+            KnowledgeBaseIndexStatus(KnowledgeBaseIndexState.MISSING, null, EmbeddingCoherence.UNKNOWN),
+            KnowledgeBaseIndexStatus(KnowledgeBaseIndexState.READY, "model", EmbeddingCoherence.MATCH),
+        )) {
+            every { knowledgeBaseService.indexStatusFor(any(), any(), any(), any()) } returns status
+            RAGService.saveRag(getRAGConfigurationDTO(false, INDEX_SESSION_ID))
+        }
+        verify(exactly = 2) { ragDao.save(any()) }
+    }
+
+    @Test
+    fun `save skips the coherence check when neither the index session nor the embedding changed`() {
+        mockkObject(BotAdminService)
+        every { BotAdminService.getBotConfigurationsByNamespaceAndBotId(any(), any()) } returns listOf(DEFAULT_BOT_CONFIG)
+        val dto = getRAGConfigurationDTO(false, INDEX_SESSION_ID)
+        // Stored config identical in index session, provider and normalized embedding model: nothing changed.
+        every { ragDao.findByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns dto.toBotRAGConfiguration()
+        every { ragDao.save(any()) } returns dto.toBotRAGConfiguration()
+
+        RAGService.saveRag(dto)
+
+        verify(exactly = 0) { knowledgeBaseService.indexStatusFor(any(), any(), any(), any()) }
+        verify(exactly = 1) { ragDao.save(any()) }
+    }
+
+    @Test
+    fun `the embedding guard resolves coherence without going through the entity mappers or creating a secret`() {
+        mockkObject(BotAdminService)
+        every { BotAdminService.getBotConfigurationsByNamespaceAndBotId(any(), any()) } returns listOf(DEFAULT_BOT_CONFIG)
+        every { ragDao.findByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns null
+        every { knowledgeBaseService.indexStatusFor(NAMESPACE, BOT_ID, INDEX_SESSION_ID, any()) } returns
+            KnowledgeBaseIndexStatus(KnowledgeBaseIndexState.READY, "another-model", EmbeddingCoherence.MISMATCH)
+        mockkObject(SecurityUtils)
+        try {
+            // MISMATCH: the guard rejects before any save. The DTO carries apiKeys, so had the guard converted it to the
+            // entity form (toBotRAGConfiguration/toEntity), the mappers would have called createSecretKey. It must not.
+            Assertions.assertThrows(BadRequestException::class.java) {
+                RAGService.saveRag(getRAGConfigurationDTO(false, INDEX_SESSION_ID))
+            }
+            verify(exactly = 0) { SecurityUtils.createSecretKey(any(), any(), any(), any(), any()) }
+            verify(exactly = 0) { ragDao.save(any()) }
+        } finally {
+            unmockkObject(SecurityUtils)
+        }
     }
 }
 

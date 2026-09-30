@@ -1,3 +1,4 @@
+import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
@@ -77,6 +78,8 @@ interface CompressorThresholds {
   standalone: false
 })
 export class DiagnosticComponent implements OnInit, OnDestroy {
+  private readonly route = inject(ActivatedRoute);
+  private kbPinApplied = false;
   @ViewChildren(NbTooltipDirective) tooltips: QueryList<NbTooltipDirective>;
 
   destroy$: Subject<unknown> = new Subject();
@@ -190,6 +193,16 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
       const botChanged = this.state.applyBotContext(this.botKey(confs));
 
       if (!confs.length) return;
+      if (!this.kbPinApplied) {
+        const params = this.route.snapshot.queryParamMap;
+        const chunkId = params.get('chunkId');
+        if (chunkId) {
+          this.kbPinApplied = true;
+          if (!this.state.isPinned(chunkId)) this.state.togglePin(chunkId);
+          this.question = params.get('question') || '';
+          this.navigationIndexName = params.get('indexName');
+        }
+      }
 
       if (botChanged) {
         this.clearResults();

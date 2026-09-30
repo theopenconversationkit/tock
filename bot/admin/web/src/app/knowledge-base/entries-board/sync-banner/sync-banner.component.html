@@ -1,0 +1,197 @@
+<!--
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
+
+@if (visible) {
+<nb-card
+  [nbSpinner]="busy"
+  class="sync-banner shadow-sm mb-3"
+  [class]="'sync-banner--' + status"
+>
+  <nb-card-body class="d-flex align-items-start gap-3">
+    <nb-icon
+      [icon]="icon"
+      [status]="status"
+      class="sync-banner-icon"
+    ></nb-icon>
+
+    <div class="flex-grow-1">
+      <div class="sync-banner-title">{{ titleKey | transloco }}</div>
+
+      <!-- No index session configured yet -->
+      @if (indexState === IndexState.NONE) { @if (blocker) {
+      <div class="text-muted sync-banner-message">
+        {{ blockerMessageKey | transloco }}
+        @if (blocker === Blocker.RAG_NOT_CONFIGURED) {
+        <div>
+          <a
+            class="sync-banner-link"
+            (click)="openRagSettings()"
+            >{{ 'knowledge-base.sync-banner.open_rag_settings' | transloco }}</a
+          >
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="text-muted sync-banner-message">
+        {{ 'knowledge-base.sync-banner.no_index_message' | transloco: { published: syncStatus.counts.published } }}
+      </div>
+      } }
+
+      <!-- Index session configured but no usable collection behind it -->
+      @if (indexState === IndexState.MISSING) {
+      <div class="text-muted sync-banner-message">
+        {{ 'knowledge-base.sync-banner.missing_index_message' | transloco }}
+        @if (syncStatus.ragEnabled) {
+        <div>{{ 'knowledge-base.sync-banner.missing_index_rag_active' | transloco }}</div>
+        }
+      </div>
+      @if (blocker) {
+      <div class="text-muted sync-banner-message">
+        {{ blockerMessageKey | transloco }}
+        @if (blocker === Blocker.RAG_NOT_CONFIGURED) {
+        <div>
+          <a
+            class="sync-banner-link"
+            (click)="openRagSettings()"
+            >{{ 'knowledge-base.sync-banner.open_rag_settings' | transloco }}</a
+          >
+        </div>
+        }
+      </div>
+      } }
+
+      <!-- Index ready: composition, provenance and any drift -->
+      @if (indexState === IndexState.READY) { @if (syncStatus.counts.failed) {
+      <p class="sync-banner-message">{{ 'knowledge-base.sync-banner.failed_count' | transloco: { count: syncStatus.counts.failed } }}</p>
+      } @if (outOfSync) {
+      <div class="text-muted sync-banner-message">
+        @if (pending) {
+        <a
+          class="sync-banner-link"
+          (click)="onFilterPending.emit()"
+          >{{ 'knowledge-base.sync-banner.pending_count' | transloco: { count: pending } }}</a
+        >
+        } @if (pending && orphan) { <span class="mx-1">·</span> } @if (orphan) {
+        <a
+          class="sync-banner-link"
+          (click)="onFilterOrphan.emit()"
+          >{{ 'knowledge-base.sync-banner.orphan_count' | transloco: { count: orphan } }}</a
+        >
+        }
+      </div>
+      }
+
+      <!-- Composition: knowledge base rows, and documentary chunks when the index is mixed -->
+      @if (syncStatus.kbRowCount !== null) {
+      <div class="sync-banner-details text-muted mt-1">
+        @if (syncStatus.otherRowCount) {
+        {{ 'knowledge-base.sync-banner.composition' | transloco: { kb: syncStatus.kbRowCount, other: syncStatus.otherRowCount } }}
+        } @else {
+        {{ 'knowledge-base.sync-banner.composition_kb_only' | transloco: { kb: syncStatus.kbRowCount } }}
+        }
+      </div>
+      }
+
+      <!-- Provenance -->
+      <div class="sync-banner-details text-muted">
+        @if (syncStatus.collection) { @if (syncStatus.collection.createdAt && syncStatus.collection.createdBy) {
+        {{
+          'knowledge-base.sync-banner.provenance_full'
+            | transloco: { date: (syncStatus.collection.createdAt | date: 'dd/MM/yyyy'), origin: originLabel, createdBy: syncStatus.collection.createdBy }
+        }}
+        } @else if (syncStatus.collection.createdAt) {
+        {{
+          'knowledge-base.sync-banner.provenance_no_author'
+            | transloco: { date: (syncStatus.collection.createdAt | date: 'dd/MM/yyyy'), origin: originLabel }
+        }}
+        } @else if (syncStatus.collection.createdBy) {
+        {{ 'knowledge-base.sync-banner.provenance_no_date' | transloco: { origin: originLabel, createdBy: syncStatus.collection.createdBy } }}
+        } @else {
+        {{ 'knowledge-base.sync-banner.provenance_minimal' | transloco: { origin: originLabel } }}
+        } } @else {
+        {{ 'knowledge-base.sync-banner.provenance_unknown' | transloco }}
+        }
+      </div>
+
+      @if (syncStatus.lastProjectionAt) {
+      <div class="sync-banner-details text-muted">
+        {{ 'knowledge-base.sync-banner.last_projection' | transloco }}
+        {{ syncStatus.lastProjectionAt | date: 'dd/MM/yyyy HH:mm' }}
+      </div>
+      }
+
+      <!-- Writing into an index whose embedding model differs is refused server side -->
+      @if (embeddingIncompatible) {
+      <div class="sync-banner-warning mt-2">
+        <nb-icon
+          icon="exclamation-triangle"
+          status="warning"
+          class="mr-1"
+        ></nb-icon>
+        {{ 'knowledge-base.sync-banner.embedding_incompatible_warning' | transloco: { indexModel: syncStatus.collection?.embeddingModel } }}
+      </div>
+      } }
+
+      <!-- Configured index session, shown whenever one exists -->
+      @if (syncStatus.indexSessionId) {
+      <div class="sync-banner-details text-muted mt-1">
+        <span [nbTooltip]="syncStatus.indexName">
+          <nb-icon
+            icon="database"
+            class="mr-1"
+          ></nb-icon>
+          {{ syncStatus.indexSessionId }}
+        </span>
+      </div>
+      }
+    </div>
+
+    <div class="sync-banner-actions">
+      @if (outOfSync) {
+      <button
+        nbButton
+        status="primary"
+        size="small"
+        [disabled]="busy"
+        [nbTooltip]="'knowledge-base.sync-banner.repair_tooltip' | transloco"
+        (click)="onSynchronize.emit()"
+      >
+        <nb-icon
+          icon="arrow-repeat"
+          class="mr-2"
+        ></nb-icon>
+        {{ 'knowledge-base.sync-banner.repair_button' | transloco }}
+      </button>
+      } @if (canCreate) {
+      <button
+        nbButton
+        [status]="indexState === IndexState.NONE ? 'primary' : 'basic'"
+        size="small"
+        [disabled]="busy"
+        [nbTooltip]="'knowledge-base.sync-banner.create_index_tooltip' | transloco"
+        (click)="onCreateIndex.emit()"
+      >
+        <nb-icon
+          icon="database-add"
+          class="mr-2"
+        ></nb-icon>
+        {{ createButtonLabelKey | transloco }}
+      </button>
+      }
+    </div>
+  </nb-card-body>
+</nb-card>
+}
