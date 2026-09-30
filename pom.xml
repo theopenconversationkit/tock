@@ -41,7 +41,7 @@
         <testcontainer>1.21.4</testcontainer>
 
         <mockk>1.14.11</mockk>
-        <assertj>3.22.0</assertj>
+        <assertj>3.27.7</assertj>
         <byte-buddy>1.18.14-jdk5</byte-buddy>
         <atrium>1.2.0</atrium>
 
