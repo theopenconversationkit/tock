@@ -87,7 +87,7 @@ plugins:
 extra:
   # Replaced in pages by hooks/variables.py, e.g. {{ tock_version }}
   variables:
-    tock_version: 26.3.4
+    tock_version: 26.9.0
     kotlin_version: 2.4.20
 
 markdown_extensions:

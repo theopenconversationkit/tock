@@ -26,10 +26,25 @@ Everything runs on your machine: the Tock platform with Docker, and the models w
 * Tock **26.3.5** or later: earlier versions of the indexing tool fail at startup, and their PostgreSQL schema
   does not support the hybrid search used below
 
-> **GPU or not?** With a GPU (or an Apple Silicon Mac), an answer takes a few seconds.
-> On a CPU only, a 7B model needs **several minutes** per answer: the platform must then be started with longer
-> timeouts, see [Running on a CPU](#running-on-a-cpu).
+> **GPU or not?** With a GPU (or an Apple Silicon Mac), an answer takes from a few seconds to about thirty seconds
+> (20 to 35 seconds on an M4 Mac with 16 GB of RAM). On a CPU only, a 7B model needs **several minutes** per answer:
+> the platform must then be started with longer timeouts, see [Running on a CPU](#running-on-a-cpu).
 > You can also use a hosted LLM, see [Using OpenAI instead of Ollama](#using-openai-instead-of-ollama).
+
+### On macOS
+
+* Install the [Ollama application](https://ollama.com/download/mac), not a Docker image:
+  Docker containers cannot use the GPU of the Mac.
+* Docker can be provided by [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+  or by [Colima](https://github.com/abiosoft/colima). With Colima:
+    * the virtual machine only has 2 GB of memory by default, whereas the platform uses almost 3 GB:
+      start it with more resources, for instance `colima start --cpu 4 --memory 6`
+      (the new values are kept for the next starts);
+    * the `docker compose` command needs the Docker Compose plugin: `brew install docker-compose`,
+      then add its folder to `cliPluginsExtraDirs` in `~/.docker/config.json`, as explained at the end of the installation;
+    * clone the repositories in your home folder: by default, Colima only shares this one with the virtual machine.
+      Elsewhere (for instance in `/tmp`), the files mounted by Docker Compose are empty in the containers:
+      neither the MongoDB replica set nor the PostgreSQL schema is initialized.
 
 ## Prepare the models
 
@@ -65,8 +80,8 @@ sudo systemctl edit ollama
 sudo systemctl restart ollama
 ```
 
-> With Docker Desktop (macOS, Windows), `host.docker.internal` is available out of the box
-> and this step is not needed.
+> On macOS (Docker Desktop or Colima) and Windows, `host.docker.internal` reaches Ollama without any configuration:
+> this step is not needed.
 
 ## Start the platform
 
@@ -138,11 +153,17 @@ from pathlib import Path
 docs_dir = Path(sys.argv[1])
 output = Path(sys.argv[2])
 base_url = sys.argv[3] if len(sys.argv) > 3 else 'https://doc.tock.ai/tock/master/'
+# Pages that are not published on doc.tock.ai (exclude_docs in mkdocs.yml)
+excluded_pages = 'prompt-example-type-*'
 
 
 def slugify(heading):
     # Same anchors as the MkDocs table of contents
-    text = re.sub(r'[`*_]|\[([^\]]*)\]\([^)]*\)', r'\1', heading)
+    custom_id = re.search(r'\{#([\w-]+)\}$', heading)
+    if custom_id:
+        return custom_id.group(1)
+    text = re.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', heading)  # links: keep the label
+    text = re.sub(r'[`*]|\b_|_\b', '', text)  # code and emphasis markers, not underscores inside words
     text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode()
     text = re.sub(r'[^\w\s-]', '', text).strip().lower()
     return re.sub(r'[-\s]+', '-', text)
@@ -158,6 +179,8 @@ def clean(text):
 
 rows = []
 for page in sorted(docs_dir.rglob('*.md')):
+    if page.match(excluded_pages):
+        continue
     content = page.read_text(encoding='utf-8')
     page_title = page.stem
     front_matter = re.match(r'^---\n(.*?)\n---\n', content, re.DOTALL)
@@ -184,11 +207,12 @@ for page in sorted(docs_dir.rglob('*.md')):
         text = clean('\n'.join(lines))
         if len(text) < 50:
             continue
-        rows.append({
-            'title': f'{page_title} - {heading}' if heading else page_title,
-            'source': f'{url}#{slugify(heading)}' if heading else url,
-            'text': text,
-        })
+        if heading:
+            label = re.sub(r'\s*\{#[\w-]+\}$', '', heading)  # without the custom anchor
+            title, source = f'{page_title} - {label}', f'{url}#{slugify(heading)}'
+        else:
+            title, source = page_title, url
+        rows.append({'title': title, 'source': source, 'text': text})
 
 output.parent.mkdir(parents=True, exist_ok=True)
 with output.open('w', encoding='utf-8', newline='') as f:
@@ -206,7 +230,7 @@ python3 docs_to_csv.py ../tock/docs/docs/en ingestion/app-new_assistant/input/to
 ```
 
 ```
-429 sections written to ingestion/app-new_assistant/input/tock-doc.csv
+405 sections written to ingestion/app-new_assistant/input/tock-doc.csv
 ```
 
 ## Index the documentation
@@ -272,15 +296,16 @@ docker run --rm \
 > The network name is `<folder of the Docker Compose file>_default`: `tock-docker_default` if you cloned
 > the repository with its default name. `docker network ls` lists the networks.
 
-Embedding the whole documentation takes a few minutes. At the end, the tool displays a summary:
+Embedding the whole documentation takes less than a minute with a GPU or an Apple Silicon Mac,
+and a few minutes on a CPU. At the end, the tool displays a summary:
 
 ```
 ------------------------------ RUN VECTORISATION OUTPUT ------------------------------
 Index name             : ns_app_bot_new_assistant_session_7fab9630_3a85_403d_ad43_233ec15fd7e7
 Index session ID       : 7fab9630-3a85-403d-ad43-233ec15fd7e7
-Documents extracted    : 429 (Docs)
-Documents chunked      : 715 (Chunks)
-Duration               : 3 minutes and 47.21 seconds
+Documents extracted    : 405 (Docs)
+Documents chunked      : 737 (Chunks)
+Duration               : 44.01 seconds
 ...
 Status                 : COMPLETED
 ```
