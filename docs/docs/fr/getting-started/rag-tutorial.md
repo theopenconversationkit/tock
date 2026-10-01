@@ -26,10 +26,26 @@ Tout tourne sur votre machine : la plateforme Tock avec Docker, et les modèles 
 * Tock **26.3.5** ou plus récent : les versions précédentes de l'outil d'indexation échouent au démarrage, et leur
   schéma PostgreSQL ne permet pas la recherche hybride utilisée plus bas
 
-> **GPU ou pas ?** Avec un GPU (ou un Mac Apple Silicon), une réponse prend quelques secondes.
-> Sur CPU uniquement, un modèle 7B demande **plusieurs minutes** par réponse : la plateforme doit alors être démarrée
-> avec des délais d'attente plus longs, voir [Utilisation sur CPU](#utilisation-sur-cpu).
+> **GPU ou pas ?** Avec un GPU (ou un Mac Apple Silicon), une réponse prend de quelques secondes à une trentaine
+> de secondes (20 à 35 secondes sur un Mac M4 avec 16 Go de RAM). Sur CPU uniquement, un modèle 7B demande
+> **plusieurs minutes** par réponse : la plateforme doit alors être démarrée avec des délais d'attente plus longs,
+> voir [Utilisation sur CPU](#utilisation-sur-cpu).
 > Vous pouvez aussi utiliser un LLM hébergé, voir [Utiliser OpenAI au lieu d'Ollama](#utiliser-openai-au-lieu-dollama).
+
+### Sous macOS
+
+* Installez l'[application Ollama](https://ollama.com/download/mac), et non une image Docker :
+  les conteneurs Docker n'ont pas accès au GPU du Mac.
+* Docker peut être fourni par [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+  ou par [Colima](https://github.com/abiosoft/colima). Avec Colima :
+    * la machine virtuelle n'a que 2 Go de mémoire par défaut, alors que la plateforme en utilise près de 3 :
+      démarrez-la avec plus de ressources, par exemple `colima start --cpu 4 --memory 6`
+      (les nouvelles valeurs sont conservées pour les démarrages suivants) ;
+    * la commande `docker compose` nécessite le plugin Docker Compose : `brew install docker-compose`,
+      puis ajoutez son dossier à `cliPluginsExtraDirs` dans `~/.docker/config.json`, comme indiqué à la fin de l'installation ;
+    * clonez les dépôts dans votre dossier personnel : par défaut, Colima ne partage que celui-ci avec la machine virtuelle.
+      Ailleurs (par exemple dans `/tmp`), les fichiers montés par Docker Compose apparaissent vides dans les conteneurs :
+      ni le replica set MongoDB ni le schéma PostgreSQL ne sont initialisés.
 
 ## Préparer les modèles
 
@@ -65,8 +81,8 @@ sudo systemctl edit ollama
 sudo systemctl restart ollama
 ```
 
-> Avec Docker Desktop (macOS, Windows), `host.docker.internal` est disponible d'office
-> et cette étape n'est pas nécessaire.
+> Sous macOS (Docker Desktop ou Colima) et Windows, `host.docker.internal` atteint Ollama sans configuration :
+> cette étape n'est pas nécessaire.
 
 ## Démarrer la plateforme
 
@@ -138,11 +154,17 @@ from pathlib import Path
 docs_dir = Path(sys.argv[1])
 output = Path(sys.argv[2])
 base_url = sys.argv[3] if len(sys.argv) > 3 else 'https://doc.tock.ai/tock/master/'
+# Pages that are not published on doc.tock.ai (exclude_docs in mkdocs.yml)
+excluded_pages = 'prompt-example-type-*'
 
 
 def slugify(heading):
     # Same anchors as the MkDocs table of contents
-    text = re.sub(r'[`*_]|\[([^\]]*)\]\([^)]*\)', r'\1', heading)
+    custom_id = re.search(r'\{#([\w-]+)\}$', heading)
+    if custom_id:
+        return custom_id.group(1)
+    text = re.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', heading)  # links: keep the label
+    text = re.sub(r'[`*]|\b_|_\b', '', text)  # code and emphasis markers, not underscores inside words
     text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode()
     text = re.sub(r'[^\w\s-]', '', text).strip().lower()
     return re.sub(r'[-\s]+', '-', text)
@@ -158,6 +180,8 @@ def clean(text):
 
 rows = []
 for page in sorted(docs_dir.rglob('*.md')):
+    if page.match(excluded_pages):
+        continue
     content = page.read_text(encoding='utf-8')
     page_title = page.stem
     front_matter = re.match(r'^---\n(.*?)\n---\n', content, re.DOTALL)
@@ -184,11 +208,12 @@ for page in sorted(docs_dir.rglob('*.md')):
         text = clean('\n'.join(lines))
         if len(text) < 50:
             continue
-        rows.append({
-            'title': f'{page_title} - {heading}' if heading else page_title,
-            'source': f'{url}#{slugify(heading)}' if heading else url,
-            'text': text,
-        })
+        if heading:
+            label = re.sub(r'\s*\{#[\w-]+\}$', '', heading)  # without the custom anchor
+            title, source = f'{page_title} - {label}', f'{url}#{slugify(heading)}'
+        else:
+            title, source = page_title, url
+        rows.append({'title': title, 'source': source, 'text': text})
 
 output.parent.mkdir(parents=True, exist_ok=True)
 with output.open('w', encoding='utf-8', newline='') as f:
@@ -206,7 +231,7 @@ python3 docs_to_csv.py ../tock/docs/docs/en ingestion/app-new_assistant/input/to
 ```
 
 ```
-429 sections written to ingestion/app-new_assistant/input/tock-doc.csv
+405 sections written to ingestion/app-new_assistant/input/tock-doc.csv
 ```
 
 > Pour indexer la documentation en français, lancez le script sur `../tock/docs/docs/fr` avec l'URL de base
@@ -275,15 +300,16 @@ docker run --rm \
 > Le nom du réseau est `<dossier du fichier Docker Compose>_default` : `tock-docker_default` si vous avez cloné
 > le dépôt avec son nom par défaut. `docker network ls` liste les réseaux.
 
-Le calcul des embeddings de toute la documentation prend quelques minutes. À la fin, l'outil affiche un résumé :
+Le calcul des embeddings de toute la documentation prend moins d'une minute avec un GPU ou un Mac Apple Silicon,
+et quelques minutes sur CPU. À la fin, l'outil affiche un résumé :
 
 ```
 ------------------------------ RUN VECTORISATION OUTPUT ------------------------------
 Index name             : ns_app_bot_new_assistant_session_7fab9630_3a85_403d_ad43_233ec15fd7e7
 Index session ID       : 7fab9630-3a85-403d-ad43-233ec15fd7e7
-Documents extracted    : 429 (Docs)
-Documents chunked      : 715 (Chunks)
-Duration               : 3 minutes and 47.21 seconds
+Documents extracted    : 405 (Docs)
+Documents chunked      : 737 (Chunks)
+Duration               : 44.01 seconds
 ...
 Status                 : COMPLETED
 ```
