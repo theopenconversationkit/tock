@@ -4613,11 +4613,11 @@ Kotlin.</p>
 <div class="highlight"><pre><span></span><code><span class="w">        </span><span class="nt">&lt;dependency&gt;</span>
 <span class="w">            </span><span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
 <span class="w">            </span><span class="nt">&lt;artifactId&gt;</span>bot-toolkit<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">            </span><span class="nt">&lt;version&gt;</span>26.3.4<span class="nt">&lt;/version&gt;</span>
+<span class="w">            </span><span class="nt">&lt;version&gt;</span>26.9.0<span class="nt">&lt;/version&gt;</span>
 <span class="w">        </span><span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 <p>Ou dans un projet <a href="https://gradle.org/">Gradle</a> :</p>
-<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="n">implementation</span><span class="w"> </span><span class="s1">'ai.tock:bot-toolkit:26.3.4'</span>
+<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="n">implementation</span><span class="w"> </span><span class="s1">'ai.tock:bot-toolkit:26.9.0'</span>
 </code></pre></div>
 <h3 id="aligner-les-versions-des-dependances-avec-le-bom-tock">Aligner les versions des dépendances avec le BOM Tock</h3>
 <p>Depuis Tock 26.3.5, le <em>bill of materials</em> <code>tock-bom</code> liste les artefacts Tock et les versions de leurs
@@ -4633,7 +4633,7 @@ Importer le BOM vous donne les versions avec lesquelles Tock est construit et te
 <span class="w">            </span><span class="nt">&lt;dependency&gt;</span>
 <span class="w">                </span><span class="nt">&lt;groupId&gt;</span>ai.tock<span class="nt">&lt;/groupId&gt;</span>
 <span class="w">                </span><span class="nt">&lt;artifactId&gt;</span>tock-bom<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">                </span><span class="nt">&lt;version&gt;</span>26.3.4<span class="nt">&lt;/version&gt;</span>
+<span class="w">                </span><span class="nt">&lt;version&gt;</span>26.9.0<span class="nt">&lt;/version&gt;</span>
 <span class="w">                </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
 <span class="w">                </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
 <span class="w">            </span><span class="nt">&lt;/dependency&gt;</span>
@@ -4648,7 +4648,7 @@ Importer le BOM vous donne les versions avec lesquelles Tock est construit et te
 <span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
 </code></pre></div>
 <p>Dans un projet <a href="https://gradle.org/">Gradle</a> :</p>
-<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="n">implementation</span><span class="w"> </span><span class="n">platform</span><span class="o">(</span><span class="s1">'ai.tock:tock-bom:26.3.4'</span><span class="o">)</span>
+<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="n">implementation</span><span class="w"> </span><span class="n">platform</span><span class="o">(</span><span class="s1">'ai.tock:tock-bom:26.9.0'</span><span class="o">)</span>
 <span class="w">      </span><span class="n">implementation</span><span class="w"> </span><span class="s1">'ai.tock:bot-toolkit'</span>
 </code></pre></div>
 <p>Seule la section <code>dependencyManagement</code> est importée : le BOM n'ajoute ni dépendance, ni plugin, ni propriété à votre projet.
