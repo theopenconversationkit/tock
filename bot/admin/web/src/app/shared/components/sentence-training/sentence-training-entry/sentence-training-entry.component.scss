@@ -140,12 +140,18 @@ tock-sentence-training-sentence {
       text-transform: none;
     }
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       background: rgba(143, 155, 179, 0.12) !important;
 
       nb-icon, .btn-text {
         color: var(--text-basic-color) !important;
       }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary-default) !important;
+      outline-offset: 2px;
     }
 
     &:active {
