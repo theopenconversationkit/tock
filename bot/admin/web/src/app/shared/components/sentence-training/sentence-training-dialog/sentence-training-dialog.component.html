@@ -16,10 +16,8 @@
   </nb-card-header>
 
   <nb-card-body class="p-0">
-    <div
-      class="p-3"
-      *ngIf="dialogs?.length > 1"
-    >
+    @if (dialogs?.length > 1) {
+    <div class="p-3">
       <nb-form-field>
         <nb-icon
           nbPrefix
@@ -31,30 +29,23 @@
           size="small"
           fullWidth
         >
+          @for (dialog of dialogs; track dialog; let index = $index) {
           <nb-option
-            *ngFor="let dialog of dialogs; let index = index"
             [value]="null"
             (click)="displayDialog(index)"
           >
             {{ 'shared.sentence-training-dialog.dialog-option' | transloco: { index: index + 1 } }}
           </nb-option>
+          }
         </nb-select>
       </nb-form-field>
     </div>
-
-    <div
-      *ngIf="!displayedDialog"
-      class="p-3 text-center text-danger"
-    >
+    } @if (!displayedDialog) {
+    <div class="p-3 text-center text-danger">
       {{ 'shared.sentence-training-dialog.no-dialog-found' | transloco }}
     </div>
-
-
-    <tock-chat-ui
-      *ngIf="displayedDialog?.actions"
-      height="calc(100vh - 330px)"
-    >
-
+    } @if (displayedDialog?.actions) {
+    <tock-chat-ui height="calc(100vh - 330px)">
       <tock-chat-ui-dialog-logger
         [dialog]="displayedDialog"
         [userMessageIsClickable]="true"
@@ -62,5 +53,6 @@
         [highlightedAction]="getCurrentSentenceAction()"
       ></tock-chat-ui-dialog-logger>
     </tock-chat-ui>
+    }
   </nb-card-body>
 </nb-card>

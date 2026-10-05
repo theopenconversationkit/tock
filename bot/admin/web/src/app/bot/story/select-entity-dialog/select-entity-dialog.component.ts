@@ -24,9 +24,10 @@ import { IntentName } from '../../model/story';
 import { NlpService } from '../../../core-nlp/nlp.service';
 
 @Component({
-  selector: 'tock-select-entity-dialog',
-  templateUrl: './select-entity-dialog.component.html',
-  styleUrls: ['./select-entity-dialog.component.scss']
+    selector: 'tock-select-entity-dialog',
+    templateUrl: './select-entity-dialog.component.html',
+    styleUrls: ['./select-entity-dialog.component.scss'],
+    standalone: false
 })
 export class SelectEntityDialogComponent implements OnInit {
   @Input() generate: boolean;

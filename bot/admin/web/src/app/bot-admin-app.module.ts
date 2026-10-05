@@ -21,7 +21,7 @@ import { BotAdminAppComponent } from './bot-admin-app.component';
 import { BotSharedModule } from './shared/bot-shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BotCoreModule } from './core/bot-core.module';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ThemeModule } from './theme/theme.module';
 import {
   NbDatepickerModule,
@@ -50,7 +50,6 @@ registerLocaleData(localeFr, 'fr');
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    HttpClientModule,
     CoreModule,
     BotSharedModule,
     BotCoreModule,
@@ -75,7 +74,8 @@ registerLocaleData(localeFr, 'fr');
       deps: [PlatformLocation]
     },
     BotService,
-    NlpService
+    NlpService,
+    provideHttpClient(withInterceptorsFromDi())
   ],
   bootstrap: [BotAdminAppComponent]
 })

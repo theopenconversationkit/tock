@@ -23,9 +23,10 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'tock-story-rule',
-  templateUrl: './story-rule.component.html',
-  styleUrls: ['./story-rule.component.css']
+    selector: 'tock-story-rule',
+    templateUrl: './story-rule.component.html',
+    styleUrls: ['./story-rule.component.css'],
+    standalone: false
 })
 export class StoryRuleComponent implements OnInit, OnDestroy {
   destroy = new Subject();

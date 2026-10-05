@@ -72,131 +72,121 @@
       }"
       (click)="switchVisibility()"
     >
-      <nb-icon
-        icon="check"
-        *ngIf="isDialogEvaluated()"
-      ></nb-icon>
-      <nb-icon
-        icon="inbox"
-        *ngIf="!isDialogEvaluated()"
-      ></nb-icon>
+      @if (isDialogEvaluated()) {
+      <nb-icon icon="check"></nb-icon>
+      } @if (!isDialogEvaluated()) {
+      <nb-icon icon="inbox"></nb-icon>
+      }
     </div>
   </div>
 </div>
 
-<div
-  class="pt-3 pl-3 pb-3"
-  *ngIf="isVisible"
->
-  <ng-container *ngFor="let action of dialog.actions; let first = first">
-    <div
-      *ngIf="$any(action).message.text || $any(action).message.messages?.length"
-      class="dialogs-messages-grid"
-      [class.mt-2]="!first && !action.isBot()"
-    >
-      <div class="flex-grow-1 align-self-center">
-        <tock-chat-ui-message
-          [message]="action.message"
-          [date]="action.date"
-          [reply]="action.isBot()"
-          [replay]="true"
-          [sender]="getUserNameKey(action) | transloco"
-          [avatar]="getUserAvatar(action)"
-          [applicationId]="action.applicationId"
-          [showDebug]="false"
-          [replyBgPositive]="action._evaluation?.status === evaluationDirection.UP"
-          [replyBgNegative]="action._evaluation?.status === evaluationDirection.DOWN"
-          id="action-anchor-{{ action.id }}"
-        >
+@if (isVisible) {
+<div class="pt-3 pl-3 pb-3">
+  @for (action of dialog.actions; track action; let first = $first) { @if ($any(action).message.text ||
+  $any(action).message.messages?.length) {
+  <div
+    class="dialogs-messages-grid"
+    [class.mt-2]="!first && !action.isBot()"
+  >
+    <div class="flex-grow-1 align-self-center">
+      <tock-chat-ui-message
+        [message]="action.message"
+        [date]="action.date"
+        [reply]="action.isBot()"
+        [replay]="true"
+        [sender]="getUserNameKey(action) | transloco"
+        [avatar]="getUserAvatar(action)"
+        [applicationId]="action.applicationId"
+        [showDebug]="false"
+        [replyBgPositive]="action._evaluation?.status === evaluationDirection.UP"
+        [replyBgNegative]="action._evaluation?.status === evaluationDirection.DOWN"
+        id="action-anchor-{{ action.id }}"
+      >
+        @if (action._nlpStats) {
+        <div class="d-flex align-items-center justify-content-between font-size-small mt-n2">
           <div
-            *ngIf="action._nlpStats"
-            class="d-flex align-items-center justify-content-between font-size-small mt-n2"
+            class="locale-display"
+            [nbTooltip]="state.localeName(action._nlpStats.locale)"
           >
-            <div
-              class="locale-display"
-              [nbTooltip]="state.localeName(action._nlpStats.locale)"
-            >
-              {{ normalizeLocaleCode(action._nlpStats.locale) }}
-            </div>
+            {{ normalizeLocaleCode(action._nlpStats.locale) }}
           </div>
-        </tock-chat-ui-message>
-      </div>
-
-      <div
-        class="dialog-vertical-separator"
-        [class.horizontal-separation-start]="!action.isBot()"
-        [class.horizontal-separation-end]="action.isBotAnswerWithContent()"
-      ></div>
-
-      <div>
-        <div
-          class="pl-1 text-center"
-          *ngIf="action.isBotAnswerWithContent()"
-        >
-          <div class="button-horizontal-separator mb-2"></div>
-          <ng-container *ngIf="action._evaluation">
-            <button
-              *ngIf="canEvaluate && action._evaluation?.status !== evaluationDirection.UP"
-              nbButton
-              size="small"
-              ghost
-              shape="round"
-              status="success"
-              [nbTooltip]="'shared.chat-ui-dialog-evaluator.evaluate_positively_tooltip' | transloco"
-              (click)="evaluateActionOk(action)"
-              class="mb-1"
-            >
-              <nb-icon icon="hand-thumbs-up-fill"></nb-icon>
-            </button>
-
-            <div
-              *ngIf="action._evaluation?.status === evaluationDirection.UP"
-              [nbTooltip]="
-                'shared.chat-ui-dialog-evaluator.evaluated_positively_by' | transloco: { evaluator: action._evaluation.evaluator?.id }
-              "
-              nbTooltipStatus="success"
-              class="bg-success text-white text-center p-2 rounded-circle"
-            >
-              <nb-icon
-                icon="hand-thumbs-up-fill"
-                class="font-size-small mt-n2"
-              ></nb-icon>
-            </div>
-
-            <div [nbTooltip]="'shared.chat-ui-dialog-evaluator.evaluate_negatively_tooltip' | transloco">
-              <button
-                nbButton
-                size="small"
-                ghost
-                shape="round"
-                status="warning"
-                *ngIf="canEvaluate && action._evaluation?.status !== evaluationDirection.DOWN"
-                class="mt-1"
-                [nbContextMenu]="reasonItems"
-                nbContextMenuTag="actionEvaluation_{{ dialog.id }}_{{ action.id }}"
-                nbContextMenuTrigger="click"
-              >
-                <nb-icon icon="hand-thumbs-down-fill"></nb-icon>
-              </button>
-            </div>
-
-            <div
-              [nbTooltip]="
-                'shared.chat-ui-dialog-evaluator.evaluated_negatively_by_with_reason'
-                  | transloco: { evaluator: action._evaluation.evaluator?.id, reason: getActionEvaluationReason(action) }
-              "
-              nbTooltipStatus="warning"
-              *ngIf="action._evaluation?.status === evaluationDirection.DOWN"
-              class="bg-warning text-white text-center p-2 rounded-circle"
-            >
-              <nb-icon
-                icon="hand-thumbs-down-fill"
-                class="font-size-small"
-              ></nb-icon>
-            </div>
-          </ng-container>
         </div>
-      </div>
+        }
+      </tock-chat-ui-message>
     </div>
-  </ng-container>
+    <div
+      class="dialog-vertical-separator"
+      [class.horizontal-separation-start]="!action.isBot()"
+      [class.horizontal-separation-end]="action.isBotAnswerWithContent()"
+    ></div>
+    <div>
+      @if (action.isBotAnswerWithContent()) {
+      <div class="pl-1 text-center">
+        <div class="button-horizontal-separator mb-2"></div>
+        @if (action._evaluation) { @if (canEvaluate && action._evaluation?.status !== evaluationDirection.UP) {
+        <button
+          nbButton
+          size="small"
+          ghost
+          shape="round"
+          status="success"
+          [nbTooltip]="'shared.chat-ui-dialog-evaluator.evaluate_positively_tooltip' | transloco"
+          (click)="evaluateActionOk(action)"
+          class="mb-1"
+        >
+          <nb-icon icon="hand-thumbs-up-fill"></nb-icon>
+        </button>
+        } @if (action._evaluation?.status === evaluationDirection.UP) {
+        <div
+          [nbTooltip]="
+            'shared.chat-ui-dialog-evaluator.evaluated_positively_by' | transloco: { evaluator: action._evaluation.evaluator?.id }
+          "
+          nbTooltipStatus="success"
+          class="bg-success text-white text-center p-2 rounded-circle"
+        >
+          <nb-icon
+            icon="hand-thumbs-up-fill"
+            class="font-size-small mt-n2"
+          ></nb-icon>
+        </div>
+        }
+        <div [nbTooltip]="'shared.chat-ui-dialog-evaluator.evaluate_negatively_tooltip' | transloco">
+          @if (canEvaluate && action._evaluation?.status !== evaluationDirection.DOWN) {
+          <button
+            nbButton
+            size="small"
+            ghost
+            shape="round"
+            status="warning"
+            class="mt-1"
+            [nbContextMenu]="reasonItems"
+            nbContextMenuTag="actionEvaluation_{{ dialog.id }}_{{ action.id }}"
+            nbContextMenuTrigger="click"
+          >
+            <nb-icon icon="hand-thumbs-down-fill"></nb-icon>
+          </button>
+          }
+        </div>
+        @if (action._evaluation?.status === evaluationDirection.DOWN) {
+        <div
+          [nbTooltip]="
+            'shared.chat-ui-dialog-evaluator.evaluated_negatively_by_with_reason'
+              | transloco: { evaluator: action._evaluation.evaluator?.id, reason: getActionEvaluationReason(action) }
+          "
+          nbTooltipStatus="warning"
+          class="bg-warning text-white text-center p-2 rounded-circle"
+        >
+          <nb-icon
+            icon="hand-thumbs-down-fill"
+            class="font-size-small"
+          ></nb-icon>
+        </div>
+        } }
+      </div>
+      }
+    </div>
+  </div>
+  } }
 </div>
+}

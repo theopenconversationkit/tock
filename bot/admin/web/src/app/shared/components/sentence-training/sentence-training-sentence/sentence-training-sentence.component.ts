@@ -40,10 +40,11 @@ interface Selection {
 }
 
 @Component({
-  selector: 'tock-sentence-training-sentence',
-  templateUrl: './sentence-training-sentence.component.html',
-  styleUrls: ['./sentence-training-sentence.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'tock-sentence-training-sentence',
+    templateUrl: './sentence-training-sentence.component.html',
+    styleUrls: ['./sentence-training-sentence.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SentenceTrainingSentenceComponent implements OnInit, OnDestroy {
   destroy = new Subject();

@@ -18,9 +18,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { BotMessage, SentenceElement } from '../../../../model/dialog-data';
 import linkifyHtml from 'linkify-html';
 @Component({
-  selector: 'tock-chat-ui-message-sentence-element',
-  templateUrl: './chat-ui-message-sentence-element.component.html',
-  styleUrls: ['./chat-ui-message-sentence-element.component.scss']
+    selector: 'tock-chat-ui-message-sentence-element',
+    templateUrl: './chat-ui-message-sentence-element.component.html',
+    styleUrls: ['./chat-ui-message-sentence-element.component.scss'],
+    standalone: false
 })
 export class ChatUiMessageSentenceElementComponent {
   @Input() element: SentenceElement;

@@ -50,41 +50,35 @@
       <div>
         <h4 class="text-uppercase monospace text-primary">{{ 'quality.settings-diff.run_a_label' | transloco }}</h4>
 
+        @if (currentTab !== currentTabs.RagSettings && htmlRunA) {
         <div
-          *ngIf="currentTab !== currentTabs.RagSettings && htmlRunA"
           class="chat-ui-message-content-styling"
           [innerHTML]="htmlRunA"
         ></div>
-
-        <div
-          *ngIf="currentTab === currentTabs.RagSettings"
-          class="chat-ui-message-content-styling"
-        >
+        } @if (currentTab === currentTabs.RagSettings) {
+        <div class="chat-ui-message-content-styling">
           <pre><code class="lineHeight-1-5" [innerHTML]="getJson('current')"></code></pre>
         </div>
+        }
       </div>
 
-      <div
-        class="separator"
-        *ngIf="comparisonRun"
-      ></div>
-
-      <div *ngIf="comparisonRun">
+      @if (comparisonRun) {
+      <div class="separator"></div>
+      } @if (comparisonRun) {
+      <div>
         <h4 class="text-uppercase monospace text-success">{{ 'quality.settings-diff.run_b_label' | transloco }}</h4>
-
+        @if (currentTab !== currentTabs.RagSettings && htmlRunB) {
         <div
-          *ngIf="currentTab !== currentTabs.RagSettings && htmlRunB"
           class="chat-ui-message-content-styling"
           [innerHTML]="htmlRunB"
         ></div>
-
-        <div
-          *ngIf="currentTab === currentTabs.RagSettings"
-          class="chat-ui-message-content-styling"
-        >
+        } @if (currentTab === currentTabs.RagSettings) {
+        <div class="chat-ui-message-content-styling">
           <pre><code class="lineHeight-1-5" [innerHTML]="getJson('compare')"></code></pre>
         </div>
+        }
       </div>
+      }
     </div>
   </nb-card-body>
 </nb-card>

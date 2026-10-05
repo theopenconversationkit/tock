@@ -44,7 +44,7 @@ import { DisplayUserDataComponent } from './user/display-user-data/display-user-
 import { MomentModule } from 'ngx-moment';
 import { ConfigurationTabsComponent } from './configuration-tabs.component';
 import { NamespacesComponent } from './namespace/namespaces.component';
-import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { JsonEditorComponent } from 'ang-jsoneditor';
 import { ApplicationConfig } from './application.config';
 import { CreateNamespaceComponent } from './namespace/create-namespace/create-namespace.component';
 import { ApplicationsRoutingModule } from './applications-routing.module';
@@ -83,7 +83,7 @@ export class NlpApplicationConfig implements ApplicationConfig {
     NbIconModule,
     NbToggleModule,
     NbInputModule,
-    NgJsonEditorModule,
+    JsonEditorComponent,
     NbDialogModule.forRoot(),
     FormsModule,
     ReactiveFormsModule,

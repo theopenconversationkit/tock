@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChatUiComponent } from './chat-ui.component';
+import { TestSharedModule } from '../../test-shared.module';
 
 describe('ChatUiComponent', () => {
   let component: ChatUiComponent;
@@ -24,7 +25,8 @@ describe('ChatUiComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ChatUiComponent]
+      declarations: [ChatUiComponent],
+      imports: [TestSharedModule]
     }).compileComponents();
   });
 

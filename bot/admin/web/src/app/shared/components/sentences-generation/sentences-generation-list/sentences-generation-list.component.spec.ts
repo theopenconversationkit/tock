@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SentencesGenerationListComponent } from './sentences-generation-list.component';
+import { TestSharedModule } from '../../../test-shared.module';
 
 describe('SentencesGenerationListComponent', () => {
   let component: SentencesGenerationListComponent;
@@ -24,9 +25,9 @@ describe('SentencesGenerationListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SentencesGenerationListComponent ]
-    })
-    .compileComponents();
+      declarations: [SentencesGenerationListComponent],
+      imports: [TestSharedModule]
+    }).compileComponents();
   });
 
   beforeEach(() => {

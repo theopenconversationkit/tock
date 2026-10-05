@@ -28,7 +28,8 @@ import { Subscription } from 'rxjs';
       useExisting: forwardRef(() => FileUploadComponent),
       multi: true
     }
-  ]
+  ],
+  standalone: false
 })
 export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @Input() autofocus: boolean = false;
@@ -75,7 +76,12 @@ export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAcces
     this.subscriptions.unsubscribe();
   }
 
-  @HostListener('change', ['$event.target.files']) emitFiles(fileList: FileList) {
+  @HostListener('change', ['$event']) onFileInputChange(event: Event) {
+    const fileList = (event.target as HTMLInputElement).files;
+    if (fileList) this.emitFiles(fileList);
+  }
+
+  emitFiles(fileList: FileList) {
     const files = this.getFiles(fileList);
 
     this.files = files;

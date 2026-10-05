@@ -15,9 +15,10 @@ import { getExportFileName } from '../../shared/utils';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-entities',
-  templateUrl: './entities.component.html',
-  styleUrls: ['./entities.component.scss']
+    selector: 'tock-entities',
+    templateUrl: './entities.component.html',
+    styleUrls: ['./entities.component.scss'],
+    standalone: false
 })
 export class EntitiesComponent implements OnInit {
   selectedEntityType: EntityType;

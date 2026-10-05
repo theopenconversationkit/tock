@@ -22,9 +22,10 @@ import { Subject, take, takeUntil } from 'rxjs';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 
 @Component({
-  selector: 'tock-satisfaction',
-  templateUrl: './satisfaction.component.html',
-  styleUrls: ['./satisfaction.component.css']
+    selector: 'tock-satisfaction',
+    templateUrl: './satisfaction.component.html',
+    styleUrls: ['./satisfaction.component.css'],
+    standalone: false
 })
 export class SatisfactionComponent implements OnInit, OnDestroy {
   destroy = new Subject();

@@ -34,10 +34,11 @@ import { IntentDialogComponent } from '../../intent-dialog/intent-dialog.compone
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-sentence-training-entry',
-  templateUrl: './sentence-training-entry.component.html',
-  styleUrls: ['./sentence-training-entry.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'tock-sentence-training-entry',
+    templateUrl: './sentence-training-entry.component.html',
+    styleUrls: ['./sentence-training-entry.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestroy {
   private readonly _destroy$: Subject<boolean> = new Subject();

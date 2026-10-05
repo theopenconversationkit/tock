@@ -42,7 +42,7 @@ import { SentenceNewComponent } from './sentences/sentence-new/sentence-new.comp
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IntentsLogsComponent } from './intents-logs/intents-logs.component';
 import { DisplayIntentFullLogComponent } from './intents-logs/display-intents-full-log/display-intents-full-log.component';
-import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { JsonEditorComponent } from 'ang-jsoneditor';
 import { MomentModule } from 'ngx-moment';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { EntitiesComponent } from './entities/entities.component';
@@ -78,7 +78,7 @@ import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
     NbTooltipModule,
     NbSelectModule,
     NbAutocompleteModule,
-    NgJsonEditorModule,
+    JsonEditorComponent,
     MomentModule,
     InfiniteScrollModule,
     FileUploadModule,

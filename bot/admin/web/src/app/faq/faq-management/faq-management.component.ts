@@ -28,9 +28,10 @@ export interface RagAnswerToFaqAnswerInfos {
 }
 
 @Component({
-  selector: 'tock-faq-management',
-  templateUrl: './faq-management.component.html',
-  styleUrls: ['./faq-management.component.scss']
+    selector: 'tock-faq-management',
+    templateUrl: './faq-management.component.html',
+    styleUrls: ['./faq-management.component.scss'],
+    standalone: false
 })
 export class FaqManagementComponent implements OnInit, OnDestroy {
   @ViewChild('faqEditComponent') faqEditComponent: FaqManagementEditComponent;

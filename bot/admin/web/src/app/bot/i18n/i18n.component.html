@@ -25,20 +25,12 @@
   (onExport)="onExport()"
 ></tock-i18n-filters>
 
-<tock-no-data-found
-  *ngIf="!loading && !i18n.length"
-  [title]="'bot.i18n.noAnswerFound' | transloco"
-></tock-no-data-found>
-
-<tock-no-data-found
-  *ngIf="!loading && i18n.length && !filteredI18n.length"
-  [title]="'bot.i18n.noAnswerMatchesCriteria' | transloco"
-></tock-no-data-found>
-
-<tock-sticky-menu
-  [offset]="300"
-  *ngIf="!loading && filteredI18n.length"
->
+@if (!loading && !i18n.length) {
+<tock-no-data-found [title]="'bot.i18n.noAnswerFound' | transloco"></tock-no-data-found>
+} @if (!loading && i18n.length && !filteredI18n.length) {
+<tock-no-data-found [title]="'bot.i18n.noAnswerMatchesCriteria' | transloco"></tock-no-data-found>
+} @if (!loading && filteredI18n.length) {
+<tock-sticky-menu [offset]="300">
   <div class="d-flex justify-content-between align-items-center">
     <div>
       <nb-checkbox
@@ -55,33 +47,32 @@
     ></tock-pagination>
   </div>
 </tock-sticky-menu>
+}
 
 <div
   [nbSpinner]="loading"
   class="mt-1"
 >
-  <ng-container *ngIf="!loading">
-    <tock-i18n-label
-      *ngFor="let i18nLabel of pagedItems()"
-      [i18nLabel]="i18nLabel"
-      [deleteLabelAllowed]="isDeleteLabelAllowed()"
-      (labelDeleted)="labelDeleted($event)"
-      (fillLabels)="fillMissingLabels()"
-      [showEmptyLabels]="showEmptyLabels"
-    >
-    </tock-i18n-label>
-  </ng-container>
+  @if (!loading) { @for (i18nLabel of pagedItems(); track i18nLabel) {
+  <tock-i18n-label
+    [i18nLabel]="i18nLabel"
+    [deleteLabelAllowed]="isDeleteLabelAllowed()"
+    (labelDeleted)="labelDeleted($event)"
+    (fillLabels)="fillMissingLabels()"
+    [showEmptyLabels]="showEmptyLabels"
+  >
+  </tock-i18n-label>
+  } }
 </div>
 
-<div
-  class="d-flex justify-content-between"
-  *ngIf="!loading && filteredI18n.length"
->
+@if (!loading && filteredI18n.length) {
+<div class="d-flex justify-content-between">
   &nbsp;
   <tock-pagination
     [pagination]="pagination"
     (onPaginationChange)="paginationChange()"
   ></tock-pagination>
 </div>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

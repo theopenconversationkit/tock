@@ -7,12 +7,13 @@
     class="grid-columns flex-wrap p-3"
     [ngClass]="{ 'grid-columns-without-selection': !selection }"
   >
+    @if (selection) {
     <nb-checkbox
-      *ngIf="selection"
       [checked]="isSentenceSelected()"
       (checkedChange)="toggle()"
       class="mt-1"
     ></nb-checkbox>
+    }
 
     <div class="flex-grow-1 d-flex flex-column">
       <div class="sentence-header-zone">
@@ -43,16 +44,17 @@
         </div>
       </div>
 
+      @if (sentence.forReview && sentence.reviewComment) {
       <nb-card
         class="mx-3 mt-2 mb-0"
         accent="info"
-        *ngIf="sentence.forReview && sentence.reviewComment"
       >
         <nb-card-body class="text-muted review">
           <strong class="d-block">{{ 'shared.sentence-training-entry.review-comment' | transloco }} :</strong>
           {{ sentence.reviewComment }}
         </nb-card-body>
       </nb-card>
+      }
 
       <div class="font-size-small text-muted unselectable d-flex justify-content-end align-items-center mt-auto pr-3">
         <div>
@@ -61,7 +63,9 @@
             {{ sentence.statusDisplayed() | transloco }}
           </span>
           <span [nbTooltip]="'shared.sentence-training-entry.sentence-configuration' | transloco">{{ sentence.configuration }}</span>
-          <span *ngIf="sentence.qualifier" [nbTooltip]="'shared.sentence-training-entry.qualifier' | transloco">{{ sentence.qualifier }}</span>
+          @if (sentence.qualifier) {
+          <span [nbTooltip]="'shared.sentence-training-entry.qualifier' | transloco">{{ sentence.qualifier }}</span>
+          }
         </div>
       </div>
     </div>
@@ -87,31 +91,38 @@
               [nbAutocomplete]="intentsAutocomplete"
               class="intent-input"
             />
+            @if (isIntentStorySearchable()) {
             <nb-icon
               nbSuffix
               icon="book"
-              *ngIf="isIntentStorySearchable()"
               (click)="displayIntentStoryDetails()"
               [nbTooltip]="'shared.sentence-training-entry.show-intent-story-details' | transloco"
               class="pointer mr-3"
             ></nb-icon>
+            }
           </nb-form-field>
 
           <nb-autocomplete size="tiny" #intentsAutocomplete (selectedChange)="addIntentToSentence($event)">
-            <nb-option-group *ngFor="let group of filteredIntentGroups | async" [title]="group.category">
-              <nb-option *ngFor="let intent of group.intents" [value]="intent._id">
+            @for (group of filteredIntentGroups | async; track group) {
+            <nb-option-group [title]="group.category">
+              @for (intent of group.intents; track intent) {
+              <nb-option [value]="intent._id">
                 {{ intent.label || intent.name }}
               </nb-option>
+              }
             </nb-option-group>
+            }
           </nb-autocomplete>
         </div>
 
         <nb-form-field [nbTooltip]="'shared.sentence-training-entry.set-sentence-language' | transloco" class="w-100">
           <nb-icon nbPrefix icon="globe2"></nb-icon>
           <nb-select [(ngModel)]="sentence.language" [placeholder]="'shared.sentence-training-entry.sentence-language' | transloco" fullWidth>
-            <nb-option *ngFor="let l of state.currentApplication.supportedLocales" [value]="l">
+            @for (l of state.currentApplication.supportedLocales; track l) {
+            <nb-option [value]="l">
               {{ state.localeName(l) }}
             </nb-option>
+            }
           </nb-select>
         </nb-form-field>
       </div>
@@ -143,8 +154,8 @@
           <nb-icon icon="search"></nb-icon>
         </button>
 
+        @if (sentenceTrainingMode !== SentenceTrainingMode.UNKNOWN) {
         <button
-          *ngIf="sentenceTrainingMode !== SentenceTrainingMode.UNKNOWN"
           nbButton
           [nbTooltip]="'shared.sentence-training-entry.set-as-unknown' | transloco"
           status="warning"
@@ -157,9 +168,8 @@
         >
           <nb-icon icon="question-circle"></nb-icon>
         </button>
-
+        } @if (sentenceTrainingMode !== SentenceTrainingMode.RAGEXCLUDED) {
         <button
-          *ngIf="sentenceTrainingMode !== SentenceTrainingMode.RAGEXCLUDED"
           nbButton
           [nbTooltip]="'shared.sentence-training-entry.exclude-from-rag' | transloco"
           status="warning"
@@ -172,6 +182,7 @@
         >
           <nb-icon icon="lightbulb-off"></nb-icon>
         </button>
+        }
 
         <button
           nbButton
@@ -196,8 +207,8 @@
           <nb-icon icon="compass"></nb-icon>
         </button>
 
+        @if (state.hasRole(UserRole.botUser)) {
         <button
-          *ngIf="state.hasRole(UserRole.botUser)"
           nbButton
           [nbTooltip]="'shared.sentence-training-entry.create-faq' | transloco"
           ghost
@@ -207,9 +218,10 @@
         >
           <nb-icon icon="chat-left-text"></nb-icon>
         </button>
+        }
 
+        @if (!standAlone) {
         <button
-          *ngIf="!standAlone"
           nbButton
           [nbTooltip]="'shared.sentence-training-entry.show-dialog' | transloco"
           ghost
@@ -220,6 +232,7 @@
         >
           <nb-icon icon="wechat"></nb-icon>
         </button>
+        }
       </div>
 
     </div>

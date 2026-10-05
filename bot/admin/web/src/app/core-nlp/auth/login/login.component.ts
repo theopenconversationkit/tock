@@ -20,9 +20,10 @@ import { Router } from '@angular/router';
 import { APP_BASE_HREF } from '@angular/common';
 
 @Component({
-  selector: 'tock-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+    selector: 'tock-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    standalone: false
 })
 export class LoginComponent implements OnInit {
   displayLogin: boolean = false;

@@ -17,6 +17,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { IntentQualityComponent } from './intent-quality.component';
+import { TestSharedModule } from '../../shared/test-shared.module';
+import { StateService } from '../../core-nlp/state.service';
+import { StateServiceMock } from '../../shared/test-shared/state-service.mock';
+import { QualityService } from '../quality.service';
+import { of } from 'rxjs';
 
 describe('IntentQualityComponent', () => {
   let component: IntentQualityComponent;
@@ -24,9 +29,13 @@ describe('IntentQualityComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ IntentQualityComponent ]
-    })
-    .compileComponents();
+      declarations: [IntentQualityComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        { provide: QualityService, useValue: { intentQA: () => of([]) } }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(IntentQualityComponent);
     component = fixture.componentInstance;

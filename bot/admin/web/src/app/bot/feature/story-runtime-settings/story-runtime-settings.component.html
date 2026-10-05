@@ -32,15 +32,14 @@
       </label>
 
       <div class="w-50">
-        <div
-          *ngIf="!disableStories?.length"
-          class="text-muted font-italic"
-        >
+        @if (!disableStories?.length) {
+        <div class="text-muted font-italic">
           {{ 'bot.story-runtime-settings.noneLabel' | transloco }}
         </div>
-
-        <div *ngIf="disableStories?.length > 0">
-          <div *ngFor="let story of disableStories">
+        } @if (disableStories?.length > 0) {
+        <div>
+          @for (story of disableStories; track story) {
+          <div>
             <span
               (click)="editStory(story)"
               class="pointer"
@@ -53,7 +52,9 @@
               {{ story.name }}
             </span>
           </div>
+          }
         </div>
+        }
       </div>
     </div>
 
@@ -67,15 +68,14 @@
       </label>
 
       <div class="w-50">
-        <div
-          *ngIf="!enableStories?.length"
-          class="text-muted font-italic"
-        >
+        @if (!enableStories?.length) {
+        <div class="text-muted font-italic">
           {{ 'bot.story-runtime-settings.noneLabel' | transloco }}
         </div>
-
-        <div *ngIf="enableStories?.length > 0">
-          <div *ngFor="let story of enableStories">
+        } @if (enableStories?.length > 0) {
+        <div>
+          @for (story of enableStories; track story) {
+          <div>
             <span
               (click)="editStory(story)"
               class="pointer"
@@ -88,7 +88,9 @@
               {{ story.name }}
             </span>
           </div>
+          }
         </div>
+        }
       </div>
     </div>
 
@@ -102,15 +104,14 @@
       </label>
 
       <div class="w-50">
-        <div
-          *ngIf="!checkOnlySubEntitiesForStorySelection?.length"
-          class="text-muted font-italic"
-        >
+        @if (!checkOnlySubEntitiesForStorySelection?.length) {
+        <div class="text-muted font-italic">
           {{ 'bot.story-runtime-settings.noneLabel' | transloco }}
         </div>
-
-        <div *ngIf="checkOnlySubEntitiesForStorySelection?.length > 0">
-          <div *ngFor="let story of checkOnlySubEntitiesForStorySelection">
+        } @if (checkOnlySubEntitiesForStorySelection?.length > 0) {
+        <div>
+          @for (story of checkOnlySubEntitiesForStorySelection; track story) {
+          <div>
             <span
               (click)="editStory(story)"
               class="pointer"
@@ -123,7 +124,9 @@
               {{ story.name }}
             </span>
           </div>
+          }
         </div>
+        }
       </div>
     </div>
 
@@ -137,15 +140,14 @@
       </label>
 
       <div class="w-50">
-        <div
-          *ngIf="!checkSubEntitiesOnlyWithStoryIntents?.length"
-          class="text-muted font-italic"
-        >
+        @if (!checkSubEntitiesOnlyWithStoryIntents?.length) {
+        <div class="text-muted font-italic">
           {{ 'bot.story-runtime-settings.noneLabel' | transloco }}
         </div>
-
-        <div *ngIf="checkSubEntitiesOnlyWithStoryIntents?.length > 0">
-          <div *ngFor="let story of checkSubEntitiesOnlyWithStoryIntents">
+        } @if (checkSubEntitiesOnlyWithStoryIntents?.length > 0) {
+        <div>
+          @for (story of checkSubEntitiesOnlyWithStoryIntents; track story) {
+          <div>
             <span
               (click)="editStory(story)"
               class="pointer"
@@ -158,7 +160,9 @@
               {{ story.name }}
             </span>
           </div>
+          }
         </div>
+        }
       </div>
     </div>
   </nb-card-body>

@@ -141,8 +141,11 @@
             formControlName="enabled"
             [nbTooltip]="'bot.create-feature.statusTooltip' | transloco"
           >
-            <span *ngIf="enabled.value">{{ 'bot.create-feature.featureEnabledLabel' | transloco }}</span>
-            <span *ngIf="!enabled.value">{{ 'bot.create-feature.featureDisabledLabel' | transloco }}</span>
+            @if (enabled.value) {
+            <span>{{ 'bot.create-feature.featureEnabledLabel' | transloco }}</span>
+            } @if (!enabled.value) {
+            <span>{{ 'bot.create-feature.featureDisabledLabel' | transloco }}</span>
+            }
           </nb-toggle>
         </div>
         <div class="w-50">

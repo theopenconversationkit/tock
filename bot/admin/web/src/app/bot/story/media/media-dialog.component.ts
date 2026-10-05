@@ -10,9 +10,10 @@ import { RestService } from '../../../core-nlp/rest/rest.service';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-media-dialog',
-  templateUrl: './media-dialog.component.html',
-  styleUrls: ['./media-dialog.component.scss']
+    selector: 'tock-media-dialog',
+    templateUrl: './media-dialog.component.html',
+    styleUrls: ['./media-dialog.component.scss'],
+    standalone: false
 })
 export class MediaDialogComponent implements OnInit {
   @Input() media: MediaCard;

@@ -18,9 +18,10 @@ import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { DialogsListComponent } from './dialogs-list/dialogs-list.component';
 
 @Component({
-  selector: 'tock-dialogs',
-  templateUrl: './dialogs.component.html',
-  styleUrls: ['./dialogs.component.css']
+    selector: 'tock-dialogs',
+    templateUrl: './dialogs.component.html',
+    styleUrls: ['./dialogs.component.css'],
+    standalone: false
 })
 export class DialogsComponent implements AfterViewInit {
   @ViewChild('dialogsList') dialogsList: DialogsListComponent;

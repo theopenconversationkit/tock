@@ -24,6 +24,7 @@ import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { FaqManagementComponent } from './faq-management.component';
 import { Location } from '@angular/common';
+import { TestSharedModule } from '../../shared/test-shared.module';
 
 class BotConfigurationServiceMock {
   configurations = of([
@@ -67,7 +68,7 @@ describe('FaqManagementComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [FaqManagementComponent],
-      imports: [],
+      imports: [TestSharedModule],
       providers: [
         { provide: BotConfigurationService, useClass: BotConfigurationServiceMock },
         {

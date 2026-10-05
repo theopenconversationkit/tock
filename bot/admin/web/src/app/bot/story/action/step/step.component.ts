@@ -24,9 +24,10 @@ interface IndicatorsValuesGroups {
 }
 
 @Component({
-  selector: 'tock-step',
-  templateUrl: './step.component.html',
-  styleUrls: ['./step.component.scss']
+    selector: 'tock-step',
+    templateUrl: './step.component.html',
+    styleUrls: ['./step.component.scss'],
+    standalone: false
 })
 export class StepComponent implements OnInit {
   @Input()

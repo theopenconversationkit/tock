@@ -20,9 +20,10 @@ import { StateService } from 'src/app/core-nlp/state.service';
 import { Intent } from 'src/app/model/nlp';
 
 @Component({
-  selector: 'tock-add-shared-intent-dialog',
-  templateUrl: './add-shared-intent-dialog.component.html',
-  styleUrls: ['./add-shared-intent-dialog.component.css']
+    selector: 'tock-add-shared-intent-dialog',
+    templateUrl: './add-shared-intent-dialog.component.html',
+    styleUrls: ['./add-shared-intent-dialog.component.css'],
+    standalone: false
 })
 export class AddSharedIntentDialogComponent {
   name: string;

@@ -1,4 +1,5 @@
-<div *ngIf="!exportAlexa && !tokenizerProperties">
+@if (!exportAlexa && !tokenizerProperties) {
+<div>
   <button
     nbButton
     outline
@@ -39,8 +40,8 @@
     {{ 'applications.application-advanced-options.alexaExportButton' | transloco }}
   </button>
 </div>
-
-<nb-card *ngIf="exportAlexa">
+} @if (exportAlexa) {
+<nb-card>
   <nb-card-body>
     <div class="d-flex">
       <nb-select
@@ -48,14 +49,12 @@
         [(ngModel)]="alexaLocale"
         class="mr-3"
       >
-        <nb-option
-          *ngFor="let locale of application.supportedLocales"
-          [value]="locale"
-        >
+        @for (locale of application.supportedLocales; track locale) {
+        <nb-option [value]="locale">
           {{ state.localeName(locale) }}
         </nb-option>
+        }
       </nb-select>
-
       <button
         nbButton
         outline
@@ -77,8 +76,8 @@
     </div>
   </nb-card-body>
 </nb-card>
-
-<nb-card *ngIf="tokenizerProperties">
+} @if (tokenizerProperties) {
+<nb-card>
   <nb-card-body>
     <div class="mb-2">
       <label>{{ 'applications.application-advanced-options.tokenizerPropertiesLabel' | transloco }}</label>
@@ -90,7 +89,6 @@
         rows="3"
       ></textarea>
     </div>
-
     <div class="mb-2">
       <label>{{ 'applications.application-advanced-options.intentClassifierPropertiesLabel' | transloco }}</label>
       <textarea
@@ -101,7 +99,6 @@
         rows="3"
       ></textarea>
     </div>
-
     <div class="mb-2">
       <label>{{ 'applications.application-advanced-options.entityClassifierPropertiesLabel' | transloco }}</label>
       <textarea
@@ -134,3 +131,4 @@
     </button>
   </nb-card-footer>
 </nb-card>
+}

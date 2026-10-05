@@ -28,9 +28,10 @@ import { toISOStringWithoutOffset } from '../../shared/utils';
 import { SelectBotEvent } from '../../shared/components';
 
 @Component({
-  selector: 'tock-behavior',
-  templateUrl: './behavior.component.html',
-  styleUrls: ['./behavior.component.css']
+    selector: 'tock-behavior',
+    templateUrl: './behavior.component.html',
+    styleUrls: ['./behavior.component.css'],
+    standalone: false
 })
 export class BehaviorComponent implements AfterViewInit {
   startDate: Date;

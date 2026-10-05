@@ -9,9 +9,10 @@ import { NbToastrService } from '@nebular/theme';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-application',
-  templateUrl: './application.component.html',
-  styleUrls: ['./application.component.scss']
+    selector: 'tock-application',
+    templateUrl: './application.component.html',
+    styleUrls: ['./application.component.scss'],
+    standalone: false
 })
 export class ApplicationComponent implements OnInit {
   applications: Application[];

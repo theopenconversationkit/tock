@@ -26,9 +26,10 @@ import { TranslocoService } from '@jsverse/transloco';
 import { Subject, filter, take, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'tock-bot-admin-root',
-  templateUrl: './bot-admin-app.component.html',
-  styleUrls: ['./bot-admin-app.component.css']
+    selector: 'tock-bot-admin-root',
+    templateUrl: './bot-admin-app.component.html',
+    styleUrls: ['./bot-admin-app.component.css'],
+    standalone: false
 })
 export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

@@ -20,9 +20,10 @@ import { NbToastrService } from '@nebular/theme';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-create-story',
-  templateUrl: './create-story.component.html',
-  styleUrls: ['./create-story.component.scss']
+    selector: 'tock-create-story',
+    templateUrl: './create-story.component.html',
+    styleUrls: ['./create-story.component.scss'],
+    standalone: false
 })
 export class CreateStoryComponent implements OnInit, OnDestroy {
   sentence: Sentence;

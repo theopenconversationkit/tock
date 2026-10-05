@@ -26,9 +26,10 @@ import { getExportFileName } from '../../shared/utils';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-story',
-  templateUrl: './story.component.html',
-  styleUrls: ['./story.component.scss']
+    selector: 'tock-story',
+    templateUrl: './story.component.html',
+    styleUrls: ['./story.component.scss'],
+    standalone: false
 })
 export class StoryComponent implements OnChanges {
   @Input() story: StoryDefinitionConfiguration = null;

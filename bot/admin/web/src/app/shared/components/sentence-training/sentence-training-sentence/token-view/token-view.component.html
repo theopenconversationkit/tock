@@ -6,15 +6,16 @@
   [style.color]="getContrastYIQ(token.color())"
   [style.borderColor]="getContrastYIQ(token.color(), 'rgba(0,0,0,0.3)', 'rgba(255,255,255,0.6)')"
   (click)="displayMenu($event)"
-  ><!-- NO carriage return here ! --><ng-container *ngIf="!token.subTokens">{{ token.text }}</ng-container
-  ><ng-container *ngIf="token.subTokens"
-    ><tock-token-view
-      *ngFor="let subtoken of token.subTokens"
-      [token]="subtoken"
-      [readOnly]="readOnly"
-      (deleteTokenEntity)="delete($event)"
-    ></tock-token-view></ng-container
-></span>
+  ><!-- NO carriage return here ! -->@if (!token.subTokens) {
+  {{ token.text }}
+  }@if (token.subTokens) { @for (subtoken of token.subTokens; track subtoken) {
+  <tock-token-view
+    [token]="subtoken"
+    [readOnly]="readOnly"
+    (deleteTokenEntity)="delete($event)"
+  ></tock-token-view>
+  } }</span
+>
 
 <ng-template #userMenu>
   <section class="token-menu pt-1">

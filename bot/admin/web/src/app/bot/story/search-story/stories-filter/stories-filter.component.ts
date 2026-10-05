@@ -17,9 +17,10 @@ export interface StoriesFilters {
 }
 
 @Component({
-  selector: 'tock-stories-filter',
-  templateUrl: './stories-filter.component.html',
-  styleUrls: ['./stories-filter.component.scss']
+    selector: 'tock-stories-filter',
+    templateUrl: './stories-filter.component.html',
+    styleUrls: ['./stories-filter.component.scss'],
+    standalone: false
 })
 export class StoriesFilterComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

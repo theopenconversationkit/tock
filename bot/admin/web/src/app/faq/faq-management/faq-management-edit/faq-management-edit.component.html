@@ -20,14 +20,11 @@
           "
           (click)="expandSidePanel()"
         >
-          <nb-icon
-            *ngIf="!expanded"
-            icon="arrows-angle-expand"
-          ></nb-icon>
-          <nb-icon
-            *ngIf="expanded"
-            icon="arrows-angle-contract"
-          ></nb-icon>
+          @if (!expanded) {
+          <nb-icon icon="arrows-angle-expand"></nb-icon>
+          } @if (expanded) {
+          <nb-icon icon="arrows-angle-contract"></nb-icon>
+          }
         </button>
         <button
           type="button"
@@ -81,7 +78,8 @@
         </nb-tab>
       </nb-tabset>
 
-      <div *ngIf="currentTab === faqTabs.INFO">
+      @if (currentTab === faqTabs.INFO) {
+      <div>
         <tock-form-control
           [label]="'faq.faq-management-edit.nameLabel' | transloco"
           name="name"
@@ -100,14 +98,12 @@
             [placeholder]="'faq.faq-management-edit.namePlaceholder' | transloco"
             (keyup)="resetAlerts()"
           />
-          <div
-            class="text-danger"
-            *ngIf="intentNameExistInApp"
-          >
+          @if (intentNameExistInApp) {
+          <div class="text-danger">
             <small>{{ 'faq.faq-management-edit.intentNameExistsWarning' | transloco }}</small>
           </div>
+          }
         </tock-form-control>
-
         <tock-form-control
           [label]="'faq.faq-management-edit.descriptionLabel' | transloco"
           name="description"
@@ -131,7 +127,6 @@
             }}
           </small>
         </tock-form-control>
-
         <tock-form-control
           [label]="'faq.faq-management-edit.tagsLabel' | transloco"
           name="tags"
@@ -140,11 +135,12 @@
           data-testid="tags"
         >
           <nb-tag-list (tagRemove)="onTagRemove($event)">
+            @for (tag of tags.value; track tag) {
             <nb-tag
-              *ngFor="let tag of tags.value"
               removable
               [text]="tag"
             ></nb-tag>
+            }
             <input
               nbTagInput
               #tagInput
@@ -161,19 +157,20 @@
               #tagsAutocomplete
               (selectedChange)="tagSelected($event)"
             >
+              @for (option of tagsAutocompleteValues | async; track option) {
               <nb-option
-                *ngFor="let option of tagsAutocompleteValues | async"
                 [value]="option"
                 class="text-capitalize"
               >
                 {{ option }}
               </nb-option>
+              }
             </nb-autocomplete>
           </nb-tag-list>
         </tock-form-control>
       </div>
-
-      <div *ngIf="currentTab === faqTabs.QUESTION">
+      } @if (currentTab === faqTabs.QUESTION) {
+      <div>
         <tock-form-control
           [label]="'faq.faq-management-edit.questionLabel' | transloco"
           name="question"
@@ -208,7 +205,6 @@
                 <nb-icon icon="plus-lg"></nb-icon>
               </button>
             </nb-form-field>
-
             <button
               nbButton
               type="button"
@@ -223,9 +219,8 @@
             </button>
           </div>
         </tock-form-control>
-
+        @if (utterances.controls.length && showInboxSentencesWarning) {
         <nb-alert
-          *ngIf="utterances.controls.length && showInboxSentencesWarning"
           accent="warning"
           closable
           (close)="onCloseInboxSentencesWarning()"
@@ -240,10 +235,9 @@
             </a>
           </div>
         </nb-alert>
-
+        } @if (existingUterranceInOtherintent) {
         <nb-alert
           status="danger"
-          *ngIf="existingUterranceInOtherintent"
           class="closable mt-2"
           data-testid="existing-uterrance-in-other-intent"
         >
@@ -260,27 +254,21 @@
             <strong>"{{ existingUterranceInOtherintent }}" </strong>
           </span>
         </nb-alert>
-
+        }
         <div
           #utterancesListWrapper
           class="entries-list d-flex flex-column mb-2"
           [nbSpinner]="lookingForSameUterranceInOtherInent"
         >
           <ul>
-            <li
-              *ngFor="let utterance of utterances.controls"
-              class="d-flex justify-content-between align-items-center"
-            >
-              <div
-                class="flex-grow-1"
-                *ngIf="utterance !== editedUtterance"
-              >
+            @for (utterance of utterances.controls; track utterance) {
+            <li class="d-flex justify-content-between align-items-center">
+              @if (utterance !== editedUtterance) {
+              <div class="flex-grow-1">
                 {{ utterance.value }}
               </div>
-              <div
-                class="flex-grow-1 mr-3"
-                *ngIf="utterance === editedUtterance"
-              >
+              } @if (utterance === editedUtterance) {
+              <div class="flex-grow-1 mr-3">
                 <textarea
                   nbInput
                   fullWidth
@@ -290,9 +278,8 @@
                   (keyup.enter)="validateEditUtterance(utterance)"
                 ></textarea>
               </div>
-
+              } @if (utterance !== editedUtterance) {
               <button
-                *ngIf="utterance !== editedUtterance"
                 type="button"
                 nbButton
                 [nbTooltip]="'faq.faq-management-edit.editTooltip' | transloco"
@@ -303,8 +290,8 @@
               >
                 <nb-icon icon="pencil"></nb-icon>
               </button>
+              } @if (utterance === editedUtterance) {
               <button
-                *ngIf="utterance === editedUtterance"
                 type="button"
                 nbButton
                 [nbTooltip]="'faq.faq-management-edit.validateChangesTooltip' | transloco"
@@ -315,9 +302,8 @@
               >
                 <nb-icon icon="check-lg"></nb-icon>
               </button>
-
+              } @if (utterance !== editedUtterance) {
               <button
-                *ngIf="utterance !== editedUtterance"
                 type="button"
                 nbButton
                 [nbTooltip]="'faq.faq-management-edit.deleteTooltip' | transloco"
@@ -329,9 +315,8 @@
               >
                 <nb-icon icon="trash"></nb-icon>
               </button>
-
+              } @if (utterance === editedUtterance) {
               <button
-                *ngIf="utterance === editedUtterance"
                 type="button"
                 nbButton
                 [nbTooltip]="'faq.faq-management-edit.cancelChangesTooltip' | transloco"
@@ -342,12 +327,14 @@
               >
                 <nb-icon icon="x-lg"></nb-icon>
               </button>
+              }
             </li>
+            }
           </ul>
         </div>
       </div>
-
-      <div *ngIf="currentTab === faqTabs.ANSWER">
+      } @if (currentTab === faqTabs.ANSWER) {
+      <div>
         <tock-form-control
           [label]="'faq.faq-management-edit.localeLabel' | transloco"
           class="mb-3"
@@ -366,10 +353,8 @@
                 size="small"
                 fullWidth
               >
-                <nb-select-label
-                  *ngIf="selectedAnswerI18nValue"
-                  class="ellipsis answer-selected-label"
-                >
+                @if (selectedAnswerI18nValue) {
+                <nb-select-label class="ellipsis answer-selected-label">
                   {{ longLocaleName(selectedAnswerI18nValue.locale) }} :
                   <img
                     src="{{ getConnectorTypeIconById(selectedAnswerI18nValue.connectorId) }}"
@@ -377,13 +362,10 @@
                   />
                   {{ getAnswerConnectorLabel(selectedAnswerI18nValue) }}
                 </nb-select-label>
-
-                <nb-option-group
-                  *ngFor="let locale of getAnswersLocales()"
-                  [title]="locale.second"
-                >
+                } @for (locale of getAnswersLocales(); track locale) {
+                <nb-option-group [title]="locale.second">
+                  @for (i18nValue of getAnswerI18nValueByLocale(locale.first); track i18nValue) {
                   <nb-option
-                    *ngFor="let i18nValue of getAnswerI18nValueByLocale(locale.first)"
                     [value]="i18nValue"
                     [class.selected]="compareSelectedAnswerByOptions(i18nValue, selectedAnswerI18nValue)"
                     class="align-items-center justify-content-between"
@@ -394,46 +376,44 @@
                         class="select-icon mr-2"
                         [nbTooltip]="getConnectorLabel(i18nValue.connectorId)"
                       />
-
                       <span
                         [nbTooltip]="getAnswerConnectorLabelTooltip(i18nValue)"
                         [ngClass]="{ 'font-italic': !getAnswerLabelTrimedLength(i18nValue) }"
                         >{{ getAnswerConnectorLabel(i18nValue) }}</span
                       >
-
+                      @if (getAnswerI18nLocalizedLabel(i18nValue)?.validated) {
                       <nb-icon
-                        *ngIf="getAnswerI18nLocalizedLabel(i18nValue)?.validated"
                         icon="check"
                         class="ml-2 text-success align-text-top"
                         [nbTooltip]="'faq.faq-management-edit.validatedTooltip' | transloco"
                       >
                       </nb-icon>
+                      }
                     </span>
-
+                    @if (getAnswerLabelTrimedLength(i18nValue)) {
                     <nb-icon
-                      *ngIf="getAnswerLabelTrimedLength(i18nValue)"
                       icon="info-square"
                       class="ml-3 opacity-50"
                       [nbTooltip]="i18nValue.label"
                       nbTooltipPlacement="bottom"
                     >
                     </nb-icon>
+                    } @if (!getAnswerLabelTrimedLength(i18nValue)) {
                     <nb-icon
-                      *ngIf="!getAnswerLabelTrimedLength(i18nValue)"
                       icon="exclamation-triangle"
                       class="ml-3 text-danger"
                       [nbTooltip]="'faq.faq-management-edit.labelNotProvidedTooltip' | transloco"
                     >
                     </nb-icon>
+                    }
                   </nb-option>
+                  }
                 </nb-option-group>
+                }
               </nb-select>
             </div>
-
-            <div
-              [nbTooltip]="'faq.faq-management-edit.addLocaleCombinationTooltip' | transloco"
-              *ngIf="hasUnassignedAnswerCombinations()"
-            >
+            @if (hasUnassignedAnswerCombinations()) {
+            <div [nbTooltip]="'faq.faq-management-edit.addLocaleCombinationTooltip' | transloco">
               <button
                 nbButton
                 size="tiny"
@@ -447,46 +427,46 @@
                 <nb-icon icon="plus-lg"></nb-icon>
               </button>
             </div>
+            }
           </div>
-
-          <div
-            *ngIf="isSubmitted && answers.invalid"
-            class="text-danger mt-1"
-          >
+          @if (isSubmitted && answers.invalid) {
+          <div class="text-danger mt-1">
             {{ 'faq.faq-management-edit.someAnswersMissingError' | transloco }}
           </div>
+          }
         </tock-form-control>
-
         <ng-template #answerCombinationSelectorPopover>
           <div
             class="p-3 text-center answer-combination-selector"
             (click)="stopPropagation($event)"
           >
-            <div *ngIf="!answerCombinationSelector.locale">
+            @if (!answerCombinationSelector.locale) {
+            <div>
               <div class="font-weight-bold mb-2">{{ 'faq.faq-management-edit.selectLocaleLabel' | transloco }}</div>
-
+              @for (locale of getSupportedLocalesWithUnassignedAnswerCombinations(); track locale) {
               <button
                 nbButton
                 status="control"
                 size="tiny"
                 fullWidth
                 class="my-1"
-                *ngFor="let locale of getSupportedLocalesWithUnassignedAnswerCombinations()"
                 (click)="setAnswerCombinationSelector('locale', locale.first)"
               >
                 {{ locale.second }}
               </button>
+              }
             </div>
-
-            <div *ngIf="answerCombinationSelector.locale && !answerCombinationSelector.connector">
+            } @if (answerCombinationSelector.locale && !answerCombinationSelector.connector) {
+            <div>
               <div class="font-weight-bold mb-2">{{ 'faq.faq-management-edit.selectConnectorLabel' | transloco }}</div>
+              @for (connector of getUnassignedConnectorsForLocale(answerCombinationSelector.locale) | keyvalue: originalOrder; track
+              connector) {
               <button
                 nbButton
                 status="control"
                 size="tiny"
                 fullWidth
                 class="my-1"
-                *ngFor="let connector of getUnassignedConnectorsForLocale(answerCombinationSelector.locale) | keyvalue: originalOrder"
                 (click)="setAnswerCombinationSelector('connector', connector.key)"
               >
                 <img
@@ -495,41 +475,35 @@
                 />
                 {{ connector.value }}
               </button>
+              }
             </div>
-
-            <div *ngIf="answerCombinationSelector.locale && answerCombinationSelector.connector && !answerCombinationSelector.interface">
+            } @if (answerCombinationSelector.locale && answerCombinationSelector.connector && !answerCombinationSelector.interface) {
+            <div>
               <div class="font-weight-bold mb-2">{{ 'faq.faq-management-edit.selectInterfaceLabel' | transloco }}</div>
+              @for ( interface of getUnassignedInterfacesForLocaleAndConnector( answerCombinationSelector.locale,
+              answerCombinationSelector.connector ) | keyvalue; track trackByInterface($index, interface)) {
               <button
                 nbButton
                 status="control"
                 size="tiny"
                 fullWidth
                 class="my-1"
-                *ngFor="
-                  let interface of getUnassignedInterfacesForLocaleAndConnector(
-                    answerCombinationSelector.locale,
-                    answerCombinationSelector.connector
-                  ) | keyvalue;
-                  trackBy: trackByInterface
-                "
                 (click)="setAnswerCombinationSelector('interface', interface.value.value)"
               >
-                <nb-icon
-                  *ngIf="interface.value.value === userInterfaceType.textChat"
-                  icon="chat-right-text-fill"
-                ></nb-icon>
-                <nb-icon
-                  *ngIf="interface.value.value === userInterfaceType.voiceAssistant"
-                  icon="telephone-fill"
-                ></nb-icon>
+                @if (interface.value.value === userInterfaceType.textChat) {
+                <nb-icon icon="chat-right-text-fill"></nb-icon>
+                } @if (interface.value.value === userInterfaceType.voiceAssistant) {
+                <nb-icon icon="telephone-fill"></nb-icon>
+                }
                 {{ interface.value.label }}
               </button>
+              }
             </div>
+            }
           </div>
         </ng-template>
-
+        @if (selectedAnswerI18nValue && doesSelectedAnswerSupportsRichText()) {
         <tock-form-control
-          *ngIf="selectedAnswerI18nValue && doesSelectedAnswerSupportsRichText()"
           [label]="'faq.faq-management-edit.answerFormatLabel' | transloco"
           name="answerExportFormat"
           [information]="'faq.faq-management-edit.answerFormatInformation' | transloco"
@@ -542,17 +516,17 @@
             [formControl]="getSelectedAnswerI18nControl().controls.answerExportFormat"
             class="d-flex mt-n1 mb-1"
           >
+            @for (format of answerExportFormatsRadios; track format) {
             <nb-radio
-              *ngFor="let format of answerExportFormatsRadios"
               [value]="format.value"
               class="text-nowrap"
               >{{ format.label }}</nb-radio
             >
+            }
           </nb-radio-group>
         </tock-form-control>
-
+        } @if (selectedAnswerI18nValue) {
         <tock-form-control
-          *ngIf="selectedAnswerI18nValue"
           [label]="'faq.faq-management-edit.answerContentLabel' | transloco"
           name="answer"
           [information]="'faq.faq-management-edit.answerContentInformation' | transloco"
@@ -567,7 +541,7 @@
             [placeholder]="'faq.faq-management-edit.answerContentPlaceholder' | transloco"
           ></tock-wysiwyg-editor>
         </tock-form-control>
-
+        }
         <tock-form-control
           [label]="'faq.faq-management-edit.footnotesLabel' | transloco"
           name="footnotes"
@@ -576,8 +550,8 @@
           [showError]="isSubmitted"
         >
           <div formArrayName="footnotes">
+            @for (footnote of footnotes.controls; track footnote; let i = $index) {
             <div
-              *ngFor="let footnote of footnotes.controls; let i = index"
               [formGroupName]="i"
               class="mb-2 font-size-small border rounded p-2 d-flex gap-1"
             >
@@ -606,7 +580,6 @@
                     required
                   />
                 </div>
-
                 <div class="d-flex gap-1 text-right text-muted mb-1">
                   <label class="min-width-5">{{ 'faq.faq-management-edit.footnoteUrlLabel' | transloco }}</label>
                   <input
@@ -619,7 +592,6 @@
                     type="url"
                   />
                 </div>
-
                 <div class="d-flex gap-1 text-right text-muted">
                   <label class="min-width-5">{{ 'faq.faq-management-edit.footnoteContentLabel' | transloco }}</label>
                   <textarea
@@ -632,10 +604,9 @@
                   ></textarea>
                 </div>
               </div>
-
               <div class="d-flex flex-column">
+                @if (i > 0) {
                 <button
-                  *ngIf="i > 0"
                   nbButton
                   size="tiny"
                   status="basic"
@@ -648,9 +619,8 @@
                     pack="nebular-essentials"
                   ></nb-icon>
                 </button>
-
+                } @if (canIncreaseFootnoteIndex(i)) {
                 <button
-                  *ngIf="canIncreaseFootnoteIndex(i)"
                   nbButton
                   size="tiny"
                   status="basic"
@@ -663,7 +633,7 @@
                     pack="nebular-essentials"
                   ></nb-icon>
                 </button>
-
+                }
                 <button
                   nbButton
                   size="tiny"
@@ -675,8 +645,8 @@
                 </button>
               </div>
             </div>
+            }
           </div>
-
           <button
             nbButton
             size="tiny"
@@ -687,14 +657,13 @@
           </button>
         </tock-form-control>
       </div>
+      }
     </form>
   </nb-card-body>
 
   <nb-card-footer>
-    <div
-      *ngIf="currentTab === 'answer' && getSelectedAnswerI18nControl()"
-      class="mt-n2 mb-1"
-    >
+    @if (currentTab === 'answer' && getSelectedAnswerI18nControl()) {
+    <div class="mt-n2 mb-1">
       <small [ngClass]="getAnswerLengthIndicatorClass()">
         {{
           'faq.faq-management-edit.answerLengthIndicator'
@@ -702,6 +671,7 @@
         }}
       </small>
     </div>
+    }
 
     <div class="grid-button">
       <button

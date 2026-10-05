@@ -58,9 +58,10 @@ export class SentenceFilter {
 }
 
 @Component({
-  selector: 'tock-bot-dialog',
-  templateUrl: './bot-dialog.component.html',
-  styleUrls: ['./bot-dialog.component.scss']
+    selector: 'tock-bot-dialog',
+    templateUrl: './bot-dialog.component.html',
+    styleUrls: ['./bot-dialog.component.scss'],
+    standalone: false
 })
 export class BotDialogComponent implements OnInit, OnDestroy {
   destroy = new Subject();

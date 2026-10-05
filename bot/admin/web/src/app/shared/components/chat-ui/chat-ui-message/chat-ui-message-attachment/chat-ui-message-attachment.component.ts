@@ -19,9 +19,10 @@ import { Attachment } from 'src/app/shared/model/dialog-data';
 import { RestService } from '../../../../../core-nlp/rest/rest.service';
 import { sanitizeURLSync } from 'url-sanitizer';
 @Component({
-  selector: 'tock-chat-ui-message-attachment',
-  templateUrl: './chat-ui-message-attachment.component.html',
-  styleUrls: ['./chat-ui-message-attachment.component.scss']
+    selector: 'tock-chat-ui-message-attachment',
+    templateUrl: './chat-ui-message-attachment.component.html',
+    styleUrls: ['./chat-ui-message-attachment.component.scss'],
+    standalone: false
 })
 export class ChatUiMessageAttachmentComponent {
   @Input() attachment: Attachment;

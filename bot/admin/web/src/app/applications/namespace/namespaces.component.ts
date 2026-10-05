@@ -12,9 +12,10 @@ import { ChoiceDialogComponent } from '../../shared/components';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-namespaces',
-  templateUrl: 'namespaces.component.html',
-  styleUrls: ['namespaces.component.scss']
+    selector: 'tock-namespaces',
+    templateUrl: 'namespaces.component.html',
+    styleUrls: ['namespaces.component.scss'],
+    standalone: false
 })
 export class NamespacesComponent implements OnInit, OnDestroy {
   destroy = new Subject();

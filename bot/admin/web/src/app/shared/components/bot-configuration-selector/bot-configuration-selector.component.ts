@@ -24,9 +24,10 @@ export interface currentConfigurationSelection {
   restConfiguration: BotApplicationConfiguration | undefined;
 }
 @Component({
-  selector: 'tock-bot-configuration-selector',
-  templateUrl: './bot-configuration-selector.component.html',
-  styleUrl: './bot-configuration-selector.component.scss'
+    selector: 'tock-bot-configuration-selector',
+    templateUrl: './bot-configuration-selector.component.html',
+    styleUrl: './bot-configuration-selector.component.scss',
+    standalone: false
 })
 export class BotConfigurationSelectorComponent implements OnDestroy, OnChanges {
   destroy = new Subject();

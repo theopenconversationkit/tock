@@ -14,9 +14,10 @@ import { NbToastrService } from '@nebular/theme';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-datasets-board-entry',
-  templateUrl: './datasets-board-entry.component.html',
-  styleUrl: './datasets-board-entry.component.scss'
+    selector: 'tock-datasets-board-entry',
+    templateUrl: './datasets-board-entry.component.html',
+    styleUrl: './datasets-board-entry.component.scss',
+    standalone: false
 })
 export class DatasetsBoardEntryComponent implements OnDestroy {
   destroy$: Subject<void> = new Subject<void>();

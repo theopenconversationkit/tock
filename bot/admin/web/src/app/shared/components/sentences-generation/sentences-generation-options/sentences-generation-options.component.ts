@@ -20,9 +20,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SentencesGenerationOptions } from './../models';
 
 @Component({
-  selector: 'tock-sentences-generation-options',
-  templateUrl: './sentences-generation-options.component.html',
-  styleUrls: ['./sentences-generation-options.component.scss']
+    selector: 'tock-sentences-generation-options',
+    templateUrl: './sentences-generation-options.component.html',
+    styleUrls: ['./sentences-generation-options.component.scss'],
+    standalone: false
 })
 export class SentencesGenerationOptionsComponent implements OnInit {
   @Input() sentences: string[] = [];

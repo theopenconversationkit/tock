@@ -24,11 +24,9 @@
                 [(selected)]="this.sourceNamespace"
                 (selectedChange)="selectSourceNamespace(this.sourceNamespace)"
               >
-                <nb-option
-                  *ngFor="let namespace of state.namespaces"
-                  [value]="namespace"
-                  >{{ namespace.displayLabel() }}</nb-option
-                >
+                @for (namespace of state.namespaces; track namespace) {
+                <nb-option [value]="namespace">{{ namespace.displayLabel() }}</nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </td>
@@ -50,11 +48,9 @@
                 [(selected)]="this.targetNamespace"
                 (selectedChange)="selectTargetNamespace(this.targetNamespace)"
               >
-                <nb-option
-                  *ngFor="let namespace of state.namespaces"
-                  [value]="namespace"
-                  >{{ namespace.displayLabel() }}</nb-option
-                >
+                @for (namespace of state.namespaces; track namespace) {
+                <nb-option [value]="namespace">{{ namespace.displayLabel() }}</nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </td>
@@ -71,11 +67,9 @@
                 [placeholder]="'configuration.synchronization.sourceApplicationPlaceholder' | transloco"
                 [(selected)]="this.sourceApplication"
               >
-                <nb-option
-                  *ngFor="let app of sourceApplications"
-                  [value]="app"
-                  >{{ app.name }}</nb-option
-                >
+                @for (app of sourceApplications; track app) {
+                <nb-option [value]="app">{{ app.name }}</nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </td>
@@ -90,11 +84,9 @@
                 [placeholder]="'configuration.synchronization.targetApplicationPlaceholder' | transloco"
                 [(selected)]="this.targetApplication"
               >
-                <nb-option
-                  *ngFor="let app of targetApplications"
-                  [value]="app"
-                  >{{ app.name }}</nb-option
-                >
+                @for (app of targetApplications; track app) {
+                <nb-option [value]="app">{{ app.name }}</nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </td>

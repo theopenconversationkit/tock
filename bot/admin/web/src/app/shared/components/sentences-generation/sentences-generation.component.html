@@ -14,21 +14,21 @@
   </nb-card-header>
 
   <nb-card-body>
-    <section *ngIf="llmNotEnabled">
+    @if (llmNotEnabled) {
+    <section>
       <div class="text-warning font-weight-bold">
         {{ 'shared.sentences-generation.not_enabled' | transloco }}
       </div>
-
-      <div *ngIf="!state.hasRole(UserRole.admin)">
+      @if (!state.hasRole(UserRole.admin)) {
+      <div>
         {{ 'shared.sentences-generation.contact_admin' | transloco }}
       </div>
-
-      <div *ngIf="state.hasRole(UserRole.admin)">
+      } @if (state.hasRole(UserRole.admin)) {
+      <div>
         {{ 'shared.sentences-generation.configure_feature' | transloco }}
       </div>
-
+      } @if (state.hasRole(UserRole.admin)) {
       <button
-        *ngIf="state.hasRole(UserRole.admin)"
         nbButton
         status="primary"
         class="mt-3"
@@ -36,11 +36,12 @@
       >
         {{ 'shared.sentences-generation.settings_button' | transloco }}
       </button>
+      }
     </section>
-
-    <section *ngIf="!llmNotEnabled">
+    } @if (!llmNotEnabled) {
+    <section>
+      @if (informNoResult) {
       <nb-alert
-        *ngIf="informNoResult"
         status="warning"
         closable
         (click)="informNoResult = false"
@@ -48,30 +49,28 @@
       >
         {{ 'shared.sentences-generation.no_results_warning' | transloco }}
       </nb-alert>
-
+      } @if (initialized && !generatedSentences.length) {
       <tock-sentences-generation-options
-        *ngIf="initialized && !generatedSentences.length"
         [options]="options"
         [sentences]="sentences"
         (onOptionsUpdate)="updateOptions($event)"
       ></tock-sentences-generation-options>
-
+      } @if (generatedSentences.length) {
       <tock-sentences-generation-list
         #sentencesGenerationListComp
-        *ngIf="generatedSentences.length"
         [generatedSentences]="generatedSentences"
         (onBackOptions)="backOptions()"
         (onGenerate)="generate()"
       ></tock-sentences-generation-list>
+      }
     </section>
+    }
   </nb-card-body>
 
-  <nb-card-footer
-    class="card-footer-actions"
-    *ngIf="!llmNotEnabled"
-  >
+  @if (!llmNotEnabled) {
+  <nb-card-footer class="card-footer-actions">
+    @if (!generatedSentences.length) {
     <button
-      *ngIf="!generatedSentences.length"
       type="submit"
       nbButton
       status="primary"
@@ -81,9 +80,8 @@
     >
       {{ 'shared.sentences-generation.generate_button' | transloco }}
     </button>
-
+    } @if (generatedSentences.length) {
     <button
-      *ngIf="generatedSentences.length"
       type="submit"
       nbButton
       status="primary"
@@ -93,5 +91,7 @@
     >
       {{ 'shared.sentences-generation.validate_selection_button' | transloco }}
     </button>
+    }
   </nb-card-footer>
+  }
 </nb-card>

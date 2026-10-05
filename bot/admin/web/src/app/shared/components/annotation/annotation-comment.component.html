@@ -6,11 +6,12 @@
         {{ event.lastUpdateDate | date: 'HH:mm' }}:
       </div>
 
-      <span *ngIf="!event._edited">
+      @if (!event._edited) {
+      <span>
         {{ event.comment }}
       </span>
-
-      <div *ngIf="event._edited">
+      } @if (event._edited) {
+      <div>
         <textarea
           nbInput
           fullWidth
@@ -20,14 +21,13 @@
           >{{ event.comment }}</textarea
         >
       </div>
+      }
     </div>
 
-    <div
-      *ngIf="event.canEdit"
-      class="d-flex align-items-center"
-    >
+    @if (event.canEdit) {
+    <div class="d-flex align-items-center">
+      @if (!event._edited) {
       <button
-        *ngIf="!event._edited"
         nbButton
         ghost
         size="small"
@@ -36,8 +36,8 @@
       >
         <nb-icon icon="pencil"></nb-icon>
       </button>
+      } @if (!event._edited) {
       <button
-        *ngIf="!event._edited"
         nbButton
         ghost
         size="small"
@@ -47,9 +47,8 @@
       >
         <nb-icon icon="trash"></nb-icon>
       </button>
-
+      } @if (event._edited) {
       <button
-        *ngIf="event._edited"
         status="success"
         nbButton
         ghost
@@ -60,8 +59,8 @@
       >
         <nb-icon icon="check-lg"></nb-icon>
       </button>
+      } @if (event._edited) {
       <button
-        *ngIf="event._edited"
         status="warning"
         nbButton
         ghost
@@ -71,6 +70,8 @@
       >
         <nb-icon icon="x-lg"></nb-icon>
       </button>
+      }
     </div>
+    }
   </div>
 </div>

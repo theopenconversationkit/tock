@@ -13,9 +13,10 @@ import { TranslocoService } from '@jsverse/transloco';
 import { take } from 'rxjs';
 
 @Component({
-  selector: 'tock-bot-test-plan',
-  templateUrl: './test-plan.component.html',
-  styleUrls: ['./test-plan.component.css']
+    selector: 'tock-bot-test-plan',
+    templateUrl: './test-plan.component.html',
+    styleUrls: ['./test-plan.component.css'],
+    standalone: false
 })
 export class TestPlanComponent implements OnInit {
   testPlans: TestPlan[];

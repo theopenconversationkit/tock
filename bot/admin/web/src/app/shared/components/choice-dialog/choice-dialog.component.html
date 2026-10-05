@@ -1,18 +1,18 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
 <nb-card [status]="modalStatus">
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
@@ -20,8 +20,8 @@
       {{ title }}
     </div>
 
+    @if (cancellable) {
     <button
-      *ngIf="cancellable"
       [status]="modalStatus"
       type="button"
       nbButton
@@ -31,21 +31,26 @@
     >
       <nb-icon icon="x-lg"></nb-icon>
     </button>
+    }
   </nb-card-header>
 
   <nb-card-body class="message">
     <pre>{{ subtitle }}</pre>
 
-    <ul *ngIf="list?.length">
-      <li *ngFor="let str of list">
+    @if (list?.length) {
+    <ul>
+      @for (str of list; track str) {
+      <li>
         {{ str }}
       </li>
+      }
     </ul>
+    }
   </nb-card-body>
 
   <nb-card-footer class="card-footer-actions">
+    @for (actionDef of actions; track actionDef) {
     <button
-      *ngFor="let actionDef of actions"
       nbButton
       size="small"
       [ghost]="actionDef.ghost"
@@ -54,5 +59,6 @@
     >
       {{ actionDef.actionName }}
     </button>
+    }
   </nb-card-footer>
 </nb-card>

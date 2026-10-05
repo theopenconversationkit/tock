@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StickyMenuComponent } from './sticky-menu.component';
+import { TestSharedModule } from '../../test-shared.module';
 
 describe('StickyMenuComponent', () => {
   let component: StickyMenuComponent;
@@ -24,9 +25,9 @@ describe('StickyMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StickyMenuComponent ]
-    })
-    .compileComponents();
+      declarations: [StickyMenuComponent],
+      imports: [TestSharedModule]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(StickyMenuComponent);
     component = fixture.componentInstance;

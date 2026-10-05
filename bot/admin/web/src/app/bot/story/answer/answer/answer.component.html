@@ -1,8 +1,10 @@
-<div *ngIf="answer && answer.currentAnswer()">
-  <div *ngIf="!fullDisplay">
+@if (answer && answer.currentAnswer()) {
+<div>
+  @if (!fullDisplay) {
+  <div>
     <span class="simple">{{ answer.simpleTextView(wide) }}</span>
+    @if (editable) {
     <button
-      *ngIf="editable"
       nbButton
       ghost
       shape="round"
@@ -12,12 +14,10 @@
     >
       <nb-icon icon="chat-right-quote"></nb-icon>
     </button>
+    }
   </div>
-
-  <div
-    *ngIf="fullDisplay"
-    class="fullDisplay"
-  >
+  } @if (fullDisplay) {
+  <div class="fullDisplay">
     <tock-form-control
       [label]="'bot.answer.typeLabel' | transloco"
       name="answer-type-label"
@@ -28,24 +28,27 @@
         class="d-flex"
       >
         <nb-radio [value]="0">{{ 'bot.answer.simpleAnswerLabel' | transloco }}</nb-radio>
-        <nb-radio
-          *ngIf="shared.configuration && shared.configuration.compilerAvailable"
-          [value]="2"
-        >
+        @if (shared.configuration && shared.configuration.compilerAvailable) {
+        <nb-radio [value]="2">
           {{ 'bot.answer.scriptAnswerLabel' | transloco }}
         </nb-radio>
+        }
       </nb-radio-group>
     </tock-form-control>
-
-    <div *ngIf="answer.isSimpleAnswer()">
+    @if (answer.isSimpleAnswer()) {
+    <div>
       <tock-simple-answer
         [container]="answer"
         [submit]="submit"
         [answerLabel]="answerLabel"
       ></tock-simple-answer>
     </div>
-    <div *ngIf="answer.isScriptAnswer()">
+    } @if (answer.isScriptAnswer()) {
+    <div>
       <tock-script-answer [container]="answer"></tock-script-answer>
     </div>
+    }
   </div>
+  }
 </div>
+}

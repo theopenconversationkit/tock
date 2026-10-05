@@ -24,9 +24,10 @@ import { StateService } from '../../../core-nlp/state.service';
 import { IntentStoryDetailsComponent } from '../../../shared/components';
 
 @Component({
-  selector: 'tock-intents-list',
-  templateUrl: './intents-list.component.html',
-  styleUrls: ['./intents-list.component.scss']
+    selector: 'tock-intents-list',
+    templateUrl: './intents-list.component.html',
+    styleUrls: ['./intents-list.component.scss'],
+    standalone: false
 })
 export class IntentsListComponent implements OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

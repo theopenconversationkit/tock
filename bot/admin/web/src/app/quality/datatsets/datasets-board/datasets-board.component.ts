@@ -16,9 +16,10 @@ export type DatasetSortField = 'name' | 'questions' | 'runs' | 'lastRun';
 export type SortDirection = 'asc' | 'desc';
 
 @Component({
-  selector: 'tock-datasets-board',
-  templateUrl: './datasets-board.component.html',
-  styleUrl: './datasets-board.component.scss'
+    selector: 'tock-datasets-board',
+    templateUrl: './datasets-board.component.html',
+    styleUrl: './datasets-board.component.scss',
+    standalone: false
 })
 export class DatasetsBoardComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();

@@ -25,9 +25,10 @@ const question_maxLength = 1500;
 const groundtruth_maxLength = 1500;
 
 @Component({
-  selector: 'tock-dataset-create',
-  templateUrl: './dataset-create.component.html',
-  styleUrl: './dataset-create.component.scss'
+    selector: 'tock-dataset-create',
+    templateUrl: './dataset-create.component.html',
+    styleUrl: './dataset-create.component.scss',
+    standalone: false
 })
 export class DatasetCreateComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

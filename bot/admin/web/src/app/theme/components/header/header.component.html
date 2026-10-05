@@ -1,18 +1,18 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
 <div class="d-flex align-items-center justify-content-between w-100">
   <div class="logo-containter">
@@ -37,18 +37,16 @@
         (click)="switchTheme()"
         [nbTooltip]="isDarkTheme() ? ('header.theme-switch-light' | transloco) : ('header.theme-switch-dark' | transloco)"
       >
-        <nb-icon
-          *ngIf="isDarkTheme()"
-          icon="brightness-high"
-        ></nb-icon>
-        <nb-icon
-          *ngIf="!isDarkTheme()"
-          icon="moon"
-        ></nb-icon>
+        @if (isDarkTheme()) {
+        <nb-icon icon="brightness-high"></nb-icon>
+        } @if (!isDarkTheme()) {
+        <nb-icon icon="moon"></nb-icon>
+        }
       </button>
     </div>
 
-    <nb-form-field *ngIf="state.currentApplication">
+    @if (state.currentApplication) {
+    <nb-form-field>
       <nb-icon
         nbPrefix
         icon="window"
@@ -59,15 +57,13 @@
         [nbTooltip]="'header.select-application' | transloco"
         class="mb-0"
       >
-        <nb-option
-          *ngFor="let app of state.applications"
-          [value]="app.name"
-          >{{ app.label }}
-        </nb-option>
+        @for (app of state.applications; track app) {
+        <nb-option [value]="app.name">{{ app.label }} </nb-option>
+        }
       </nb-select>
     </nb-form-field>
-
-    <nb-form-field *ngIf="state.namespaces">
+    } @if (state.namespaces) {
+    <nb-form-field>
       <nb-icon
         nbPrefix
         icon="folder"
@@ -78,15 +74,13 @@
         [nbTooltip]="'header.select-namespace' | transloco"
         class="mb-0"
       >
-        <nb-option
-          *ngFor="let namespace of state.namespaces"
-          [value]="namespace.namespace"
-          >{{ namespace.displayLabel() }}
-        </nb-option>
+        @for (namespace of state.namespaces; track namespace) {
+        <nb-option [value]="namespace.namespace">{{ namespace.displayLabel() }} </nb-option>
+        }
       </nb-select>
     </nb-form-field>
-
-    <nb-form-field *ngIf="state.currentApplication">
+    } @if (state.currentApplication) {
+    <nb-form-field>
       <nb-icon
         nbPrefix
         icon="globe2"
@@ -97,13 +91,12 @@
         [nbTooltip]="'header.select-locale' | transloco"
         class="mb-0"
       >
-        <nb-option
-          *ngFor="let l of state.currentApplication.supportedLocales"
-          [value]="l"
-          >{{ state.localeName(l) }}</nb-option
-        >
+        @for (l of state.currentApplication.supportedLocales; track l) {
+        <nb-option [value]="l">{{ state.localeName(l) }}</nb-option>
+        }
       </nb-select>
     </nb-form-field>
+    }
 
     <button
       nbButton
@@ -136,10 +129,8 @@
       </nb-select>
     </div>
 
-    <div
-      *ngIf="auth.isLoggedIn() && !auth.isSSO()"
-      class="border-left pl-3"
-    >
+    @if (auth.isLoggedIn() && !auth.isSSO()) {
+    <div class="border-left pl-3">
       <button
         nbButton
         ghost
@@ -150,5 +141,6 @@
         <nb-icon icon="box-arrow-right"></nb-icon>
       </button>
     </div>
+    }
   </div>
 </div>

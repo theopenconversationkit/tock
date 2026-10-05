@@ -18,8 +18,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'tock-model-quality-tabs',
-  template: '<nb-route-tabset></nb-route-tabset>'
+    selector: 'tock-model-quality-tabs',
+    template: '<nb-route-tabset></nb-route-tabset>',
+    standalone: false
 })
 export class ModelQualityTabsComponent implements OnInit {
   constructor(private router: Router) {}

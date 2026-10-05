@@ -6,8 +6,8 @@
   >
     {{ entity.qualifiedName(state.user) }}
 
+    @if (entityType) {
     <button
-      *ngIf="entityType"
       nbButton
       size="tiny"
       shape="round"
@@ -18,12 +18,11 @@
     >
       <nb-icon icon="trash"></nb-icon>
     </button>
+    }
   </div>
 
-  <div
-    *ngIf="entity.isDateType()"
-    class="d-flex gap-1 align-items-center"
-  >
+  @if (entity.isDateType()) {
+  <div class="d-flex gap-1 align-items-center">
     <nb-checkbox
       [checked]="$any(entity.atStartOfDay)"
       (checkedChange)="entity.atStartOfDay = !entity.atStartOfDay; update()"
@@ -32,12 +31,11 @@
       {{ 'lu.entity-details.evaluate-at-start-of-day-label' | transloco }}
     </nb-checkbox>
   </div>
+  }
 </div>
 
-<div
-  class="d-flex text-disabled"
-  *ngFor="let e of subEntities()"
->
+@for (e of subEntities(); track e) {
+<div class="d-flex text-disabled">
   <nb-icon
     icon="arrow-return-right"
     class="mt-1 mx-2"
@@ -47,3 +45,4 @@
     [entityType]="findEntityType()"
   ></tock-entity-details>
 </div>
+}

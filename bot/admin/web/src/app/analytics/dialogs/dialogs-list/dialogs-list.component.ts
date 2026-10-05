@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, DOCUMENT } from '@angular/core';
 import { DialogReport } from '../../../shared/model/dialog-data';
 import { StateService } from '../../../core-nlp/state.service';
 import { DialogReportQuery } from '../dialogs';
@@ -23,15 +23,16 @@ import { BotSharedService } from '../../../shared/bot-shared.service';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { saveAs } from 'file-saver-es';
 import { getExportFileName, scrollToPageTop } from '../../../shared/utils';
-import { DOCUMENT, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { Pagination } from '../../../shared/components';
 import { DialogListFilters } from './dialogs-list-filters/dialogs-list-filters.component';
 import { SortOrder } from '../../../shared/model/misc';
 
 @Component({
-  selector: 'tock-dialogs-list',
-  templateUrl: './dialogs-list.component.html',
-  styleUrls: ['./dialogs-list.component.scss']
+    selector: 'tock-dialogs-list',
+    templateUrl: './dialogs-list.component.html',
+    styleUrls: ['./dialogs-list.component.scss'],
+    standalone: false
 })
 export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

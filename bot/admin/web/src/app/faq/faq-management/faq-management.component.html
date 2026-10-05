@@ -55,31 +55,23 @@
   [class.sidePanelExpanded]="sidePanelExpanded"
   [nbSpinner]="loading.edit || loading.delete"
 >
-  <tock-no-data-found
-    *ngIf="configurations?.length === 0"
-    [title]="'faq.faq-management.noBotConfiguration' | transloco"
-  ></tock-no-data-found>
-
-  <div
-    *ngIf="configurations?.length"
-    class="main"
-  >
+  @if (configurations?.length === 0) {
+  <tock-no-data-found [title]="'faq.faq-management.noBotConfiguration' | transloco"></tock-no-data-found>
+  } @if (configurations?.length) {
+  <div class="main">
     <tock-faq-management-filters
       [tagsCache]="tagsCache"
       (onFilter)="filterFaqs($event)"
       class="d-block mb-2"
     ></tock-faq-management-filters>
-
-    <div
-      class="d-flex justify-content-end"
-      *ngIf="!loading.list && faqs?.length"
-    >
+    @if (!loading.list && faqs?.length) {
+    <div class="d-flex justify-content-end">
       <tock-pagination
         [pagination]="pagination"
         (onPaginationChange)="paginationChange($event)"
       ></tock-pagination>
     </div>
-
+    }
     <div
       class="loading mt-2"
       [nbSpinner]="loading.list"
@@ -87,26 +79,25 @@
       [infiniteScrollDistance]="1"
       (scrolled)="onScroll()"
     >
+      @if (!loading.list && !faqs?.length) {
       <tock-no-data-found
-        *ngIf="!loading.list && !faqs?.length"
         [title]="'faq.faq-management.noFaqFoundTitle' | transloco"
         [message]="'faq.faq-management.noFaqFoundMessage' | transloco"
       ></tock-no-data-found>
-
+      } @if (!loading.list && faqs?.length) {
       <tock-faq-management-list
-        *ngIf="!loading.list && faqs?.length"
         [faqs]="faqs"
         [selectedFaq]="faqEdit"
         (onEdit)="addOrEditFaq($event)"
         (onDelete)="deleteFaq($event)"
         (onEnable)="enableFaq($event)"
       ></tock-faq-management-list>
+      }
     </div>
   </div>
-
+  } @if (isSidePanelOpen.edit) {
   <tock-faq-management-edit
     #faqEditComponent
-    *ngIf="isSidePanelOpen.edit"
     class="aside"
     [loading]="loading.edit"
     [faq]="faqEdit"
@@ -116,16 +107,14 @@
     (onSave)="saveFaq($event)"
     (onExpandSidePanel)="onExpandSidePanel()"
   ></tock-faq-management-edit>
-
+  } @if (isSidePanelOpen.settings) {
   <tock-faq-management-settings
     #faqSettingsComponent
-    *ngIf="isSidePanelOpen.settings"
     class="aside"
     (onClose)="closeSidePanel()"
   ></tock-faq-management-settings>
-
+  } @if (isSidePanelOpen.export) {
   <tock-data-export
-    *ngIf="isSidePanelOpen.export"
     class="aside"
     [data]="faqs"
     [defaultColumns]="exportDefaultColumns"
@@ -142,6 +131,7 @@
     [searchQuery]="getExportSearchQuery()"
     (onClose)="closeSidePanel()"
   ></tock-data-export>
+  }
 </section>
 
 <tock-scroll-top-button></tock-scroll-top-button>

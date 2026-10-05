@@ -14,15 +14,10 @@
   </section>
 </div>
 
-<tock-no-data-found
-  *ngIf="configurations?.length === 0"
-  [title]="'playground.playground.noBotConfiguration' | transloco"
-></tock-no-data-found>
-
-<form
-  [formGroup]="form"
-  *ngIf="configurations?.length > 0"
->
+@if (configurations?.length === 0) {
+<tock-no-data-found [title]="'playground.playground.noBotConfiguration' | transloco"></tock-no-data-found>
+} @if (configurations?.length > 0) {
+<form [formGroup]="form">
   <nb-card class="mb-3">
     <nb-card-header class="p-0 border-bottom">
       <nb-accordion
@@ -35,17 +30,11 @@
         >
           <nb-accordion-item-header>
             {{ 'playground.playground.llmSettingsTitle' | transloco }}
-
-            <ng-container *ngIf="getCurrentProviderLabel()">
-              (
-              {{ getCurrentProviderLabel() }}
-              <ng-container *ngIf="questionAnsweringLlmSetting.value?.model">
-                | {{ questionAnsweringLlmSetting.value.model }}
-              </ng-container>
-              )
-            </ng-container>
+            @if (getCurrentProviderLabel()) { (
+            {{ getCurrentProviderLabel() }}
+            @if (questionAnsweringLlmSetting.value?.model) { | {{ questionAnsweringLlmSetting.value.model }}
+            } ) }
           </nb-accordion-item-header>
-
           <nb-accordion-item-body>
             <tock-form-control
               name="questionAnsweringLlmProvider"
@@ -59,40 +48,36 @@
                 name="questionAnsweringLlmProvider"
                 class="d-flex"
               >
-                <nb-radio
-                  *ngFor="let engine of enginesConfigurations[engineSettingKeyName.questionAnsweringLlmSetting]"
-                  [value]="engine.key"
-                >
+                @for (engine of enginesConfigurations[engineSettingKeyName.questionAnsweringLlmSetting]; track engine) {
+                <nb-radio [value]="engine.key">
                   {{ engine.label }}
                 </nb-radio>
+                }
               </nb-radio-group>
             </tock-form-control>
-
-            <div
-              *ngIf="currentQuestionAnsweringConfig"
-              class="mt-3"
-            >
+            @if (currentQuestionAnsweringConfig) {
+            <div class="mt-3">
               <div class="row">
-                <ng-container *ngFor="let param of currentQuestionAnsweringConfig.params">
-                  <div
-                    class="col-12 px-3"
-                    [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
-                  >
-                    <tock-ai-settings-engine-config-param-input
-                      [parentGroup]="engineSettingKeyName.questionAnsweringLlmSetting"
-                      [configurationParam]="param"
-                      [form]="form"
-                      [isSubmitted]="isSubmitted"
-                    ></tock-ai-settings-engine-config-param-input>
-                  </div>
-                </ng-container>
+                @for (param of currentQuestionAnsweringConfig.params; track param) {
+                <div
+                  class="col-12 px-3"
+                  [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
+                >
+                  <tock-ai-settings-engine-config-param-input
+                    [parentGroup]="engineSettingKeyName.questionAnsweringLlmSetting"
+                    [configurationParam]="param"
+                    [form]="form"
+                    [isSubmitted]="isSubmitted"
+                  ></tock-ai-settings-engine-config-param-input>
+                </div>
+                }
               </div>
             </div>
+            }
           </nb-accordion-item-body>
         </nb-accordion-item>
       </nb-accordion>
     </nb-card-header>
-
     <nb-card-body class="d-flex justify-content-between align-items-start pr-3">
       <nb-form-field class="w-100 align-items-start">
         <textarea
@@ -113,7 +98,6 @@
           class="scrollbar-narrow"
           [readonly]="testQueryInProgress"
         ></textarea>
-
         <button
           nbSuffix
           nbButton
@@ -126,7 +110,6 @@
             pack="nebular-essentials"
           ></nb-icon>
         </button>
-
         <button
           nbSuffix
           nbButton
@@ -138,7 +121,6 @@
           <nb-icon icon="arrows-angle-expand"></nb-icon>
         </button>
       </nb-form-field>
-
       <div
         class="ml-2"
         style="width: min-content"
@@ -153,9 +135,8 @@
         >
           <nb-icon icon="send"></nb-icon>
         </button>
-
+        @if (messages.length !== 0) {
         <button
-          *ngIf="messages.length !== 0"
           [nbTooltip]="'playground.playground.clearHistoryTooltip' | transloco"
           nbButton
           status="warning"
@@ -165,11 +146,8 @@
         >
           <nb-icon icon="trash"></nb-icon>
         </button>
-
-        <div
-          *ngIf="!testQueryInProgress && messagesHistory.length > 1"
-          class="border-top mt-2"
-        >
+        } @if (!testQueryInProgress && messagesHistory.length > 1) {
+        <div class="border-top mt-2">
           <button
             type="button"
             nbButton
@@ -185,7 +163,6 @@
               pack="nebular-essentials"
             ></nb-icon>
           </button>
-
           <button
             type="button"
             nbButton
@@ -202,55 +179,53 @@
             ></nb-icon>
           </button>
         </div>
+        }
       </div>
     </nb-card-body>
-
-    <nb-card-footer
-      class="overflow-visible px-2"
-      *ngIf="testQueryInProgress || messages.length"
-    >
+    @if (testQueryInProgress || messages.length) {
+    <nb-card-footer class="overflow-visible px-2">
       <div #resultWrapper>
         <tock-chat-ui
           padding="0.2em 0.5em 0 0.2em"
           [mayScroll]="false"
           [queryInProgress]="testQueryInProgress"
         >
-          <ng-container *ngFor="let message of messages">
-            <ng-container *ngIf="message.responseTime !== undefined">
-              <span class="response-timer ml-2 pl-1">
-                <nb-icon icon="clock"></nb-icon>
-                {{ message.responseTime / 1000 | number: '1.2-2' }}s
-              </span>
-            </ng-container>
-
-            <tock-chat-ui-message
-              [message]="message.message.message"
-              [reply]="message.message.bot"
-              [avatar]="getUserAvatar(message.message.bot)"
-              switchFormattingPos="afterAvatar"
-              [showDebug]="true"
-              [action]="message.debug"
+          @for (message of messages; track message) { @if (message.responseTime !== undefined) {
+          <span class="response-timer ml-2 pl-1">
+            <nb-icon icon="clock"></nb-icon>
+            {{ message.responseTime / 1000 | number: '1.2-2' }}s
+          </span>
+          }
+          <tock-chat-ui-message
+            [message]="message.message.message"
+            [reply]="message.message.bot"
+            [avatar]="getUserAvatar(message.message.bot)"
+            switchFormattingPos="afterAvatar"
+            [showDebug]="true"
+            [action]="message.debug"
+          >
+            @if (message.observabilityInfo) {
+            <br />
+            <button
+              nbButton
+              ghost
+              size="small"
+              [nbTooltip]="'playground.playground.viewObservabilityDetailsTooltip' | transloco"
+              class="mb-2"
+              (click)="openObservabilityTrace(message)"
             >
-              <ng-container *ngIf="message.observabilityInfo">
-                <br />
-                <button
-                  nbButton
-                  ghost
-                  size="small"
-                  [nbTooltip]="'playground.playground.viewObservabilityDetailsTooltip' | transloco"
-                  class="mb-2"
-                  (click)="openObservabilityTrace(message)"
-                >
-                  <nb-icon icon="display"></nb-icon>
-                </button>
-              </ng-container>
-            </tock-chat-ui-message>
-          </ng-container>
+              <nb-icon icon="display"></nb-icon>
+            </button>
+            }
+          </tock-chat-ui-message>
+          }
         </tock-chat-ui>
       </div>
     </nb-card-footer>
+    }
   </nb-card>
 </form>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>
 

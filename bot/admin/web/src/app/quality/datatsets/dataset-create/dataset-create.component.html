@@ -16,26 +16,29 @@
       </button>
     </div>
 
+    @if (isSubmitted && !form.valid) {
     <nb-alert
-      *ngIf="isSubmitted && !form.valid"
       status="danger"
       class="mt-2 mb-0"
     >
       <ul class="mb-0 ps-3 font-color-white">
-        <li *ngIf="form.controls.name.invalid">
+        @if (form.controls.name.invalid) {
+        <li>
           {{ 'quality.dataset-create.dataset_name_invalid' | transloco }}
         </li>
-        <li *ngIf="form.controls.description.invalid">
+        } @if (form.controls.description.invalid) {
+        <li>
           {{ 'quality.dataset-create.dataset_description_invalid' | transloco }}
         </li>
-        <li *ngIf="questions.invalid">
+        } @if (questions.invalid) {
+        <li>
           {{ 'quality.dataset-create.questions_invalid_message' | transloco: { count: invalidQuestionCount } }}
         </li>
+        }
       </ul>
     </nb-alert>
-
+    } @if (showQuestionEditWarning) {
     <nb-alert
-      *ngIf="showQuestionEditWarning"
       status="warning"
       class="mt-2 mb-0"
     >
@@ -53,6 +56,7 @@
         </div>
       </div>
     </nb-alert>
+    }
   </nb-card-header>
 
   <nb-card-body>
@@ -102,8 +106,8 @@
             [showError]="isSubmitted"
           >
             <div formArrayName="questions">
+              @for (questionGroup of questions.controls; track questionGroup; let i = $index) {
               <div
-                *ngFor="let questionGroup of questions.controls; let i = index"
                 [formGroupName]="i"
                 class="mb-3"
               >
@@ -121,20 +125,17 @@
                       (paste)="onQuestionPaste($event, i)"
                       class="scrollbar-narrow"
                     ></textarea>
-
-                    <small
-                      *ngIf="isSubmitted && questionGroup.controls.question.errors?.maxlength && !isLastEntry(i)"
-                      class="text-danger"
-                    >
+                    @if (isSubmitted && questionGroup.controls.question.errors?.maxlength && !isLastEntry(i)) {
+                    <small class="text-danger">
                       {{
                         'quality.dataset-create.question_exceeds_limit'
                           | transloco: { limit: questionGroup.controls.question.errors.maxlength.requiredLength }
                       }}
                     </small>
+                    }
                   </div>
-
+                  @if (!isLastEntry(i) || questions.length === 1) {
                   <button
-                    *ngIf="!isLastEntry(i) || questions.length === 1"
                     nbButton
                     ghost
                     shape="round"
@@ -145,10 +146,10 @@
                   >
                     <nb-icon icon="trash"></nb-icon>
                   </button>
+                  }
                 </div>
-
+                @if (questionGroup.controls.question.value.trim()) {
                 <textarea
-                  *ngIf="questionGroup.controls.question.value.trim()"
                   nbInput
                   fullWidth
                   formControlName="groundTruth"
@@ -157,17 +158,16 @@
                   class="mt-1 scrollbar-narrow"
                   [status]="isSubmitted && questionGroup.controls.groundTruth.invalid ? 'danger' : 'basic'"
                 ></textarea>
-
-                <small
-                  *ngIf="isSubmitted && questionGroup.controls.groundTruth.errors?.maxlength"
-                  class="text-danger"
-                >
+                } @if (isSubmitted && questionGroup.controls.groundTruth.errors?.maxlength) {
+                <small class="text-danger">
                   {{
                     'quality.dataset-create.ground_truth_exceeds_limit'
                       | transloco: { limit: questionGroup.controls.groundTruth.errors.maxlength.requiredLength }
                   }}
                 </small>
+                }
               </div>
+              }
             </div>
           </tock-form-control>
         </div>
@@ -179,8 +179,8 @@
     class="card-footer-actions"
     [ngClass]="{ 'justify-content-between': isEditMode }"
   >
+    @if (isEditMode) {
     <button
-      *ngIf="isEditMode"
       nbButton
       ghost="true"
       status="primary"
@@ -194,6 +194,7 @@
       ></nb-icon>
       {{ 'quality.dataset-create.export_dataset_button' | transloco }}
     </button>
+    }
 
     <div class="d-flex gap-1">
       <button

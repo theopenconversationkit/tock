@@ -65,18 +65,20 @@
       </tock-form-control>
 
       <!-- File -->
-      <p *ngIf="media.file">
+      @if (media.file) {
+      <p>
         {{ 'bot.media-dialog.fileLabel' | transloco }}
         <a
           href="{{ media.file.url(restService.url) }}"
           target="_blank"
           >{{ media.file.name }}</a
         >
+        @if (media.file.isImage()) {
         <img
-          *ngIf="media.file.isImage()"
           class="image"
           src="{{ media.file.url(restService.url) }}"
         />
+        }
         <button
           nbButton
           (click)="media.file = undefined; fileUpload = 'upload'"
@@ -89,7 +91,8 @@
           <nb-icon icon="trash"></nb-icon>
         </button>
       </p>
-      <p *ngIf="!media.file">
+      } @if (!media.file) {
+      <p>
         <nb-radio-group (valueChange)="fileTypeChange($event)">
           <nb-radio
             class="inline-radio"
@@ -105,10 +108,8 @@
             >{{ 'bot.media-dialog.externalUrlLabel' | transloco }}</nb-radio
           >
         </nb-radio-group>
-        <span
-          *ngIf="fileUpload === 'upload'"
-          class="file-block"
-        >
+        @if (fileUpload === 'upload') {
+        <span class="file-block">
           <input
             type="file"
             ng2FileSelect
@@ -116,10 +117,8 @@
             class="file"
           />
         </span>
-        <span
-          *ngIf="fileUpload === 'url'"
-          class="file-block"
-        >
+        } @if (fileUpload === 'url') {
+        <span class="file-block">
           <input
             nbInput
             type="text"
@@ -131,10 +130,12 @@
             (blur)="checkFileName()"
           />
         </span>
+        }
       </p>
+      }
       <!-- Description -->
+      @if (media.file) {
       <tock-form-control
-        *ngIf="media.file"
         [label]="'bot.media-dialog.fileDescriptionLabel' | transloco"
         name="description"
       >
@@ -147,16 +148,15 @@
           [(ngModel)]="media.file.descriptionLabel"
         />
       </tock-form-control>
+      }
       <hr />
       <div>
         <div class="h6 mb-3">{{ 'bot.media-dialog.actionsTitle' | transloco }}</div>
-        <div
-          *ngFor="let action of media.actions"
-          class="grid mb-2"
-        >
+        @for (action of media.actions; track action) {
+        <div class="grid mb-2">
           <div class="d-flex flex-column align-self-center">
+            @if (canUpward(action)) {
             <button
-              *ngIf="canUpward(action)"
               nbButton
               ghost
               size="small"
@@ -167,8 +167,8 @@
             >
               <nb-icon icon="arrow-up"></nb-icon>
             </button>
+            } @if (canDownward(action)) {
             <button
-              *ngIf="canDownward(action)"
               nbButton
               ghost
               size="small"
@@ -179,6 +179,7 @@
             >
               <nb-icon icon="arrow-down"></nb-icon>
             </button>
+            }
           </div>
           <tock-form-control
             [label]="'bot.media-dialog.actionTitleLabel' | transloco"
@@ -211,7 +212,6 @@
               [(ngModel)]="action.url"
             />
           </tock-form-control>
-
           <button
             nbButton
             ghost
@@ -224,6 +224,7 @@
             <nb-icon icon="trash"></nb-icon>
           </button>
         </div>
+        }
       </div>
 
       <div class="text-center mt-3">
@@ -248,8 +249,8 @@
     >
       {{ 'common.actions.cancel' | transloco }}
     </button>
+    @if (!create) {
     <button
-      *ngIf="!create"
       nbButton
       size="small"
       status="danger"
@@ -257,6 +258,7 @@
     >
       {{ 'common.actions.remove' | transloco }}
     </button>
+    }
     <button
       nbButton
       size="small"

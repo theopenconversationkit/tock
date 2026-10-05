@@ -12,9 +12,10 @@ import { getExportFileName } from '../../shared/utils';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-application-advanced-options',
-  templateUrl: './application-advanced-options.component.html',
-  styleUrls: ['./application-advanced-options.component.scss']
+    selector: 'tock-application-advanced-options',
+    templateUrl: './application-advanced-options.component.html',
+    styleUrls: ['./application-advanced-options.component.scss'],
+    standalone: false
 })
 export class ApplicationAdvancedOptionsComponent implements OnInit {
   @Input()

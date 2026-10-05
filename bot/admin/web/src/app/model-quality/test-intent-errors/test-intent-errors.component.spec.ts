@@ -17,6 +17,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TestIntentErrorsComponent } from './test-intent-errors.component';
+import { TestSharedModule } from '../../shared/test-shared.module';
+import { StateService } from '../../core-nlp/state.service';
+import { StateServiceMock } from '../../shared/test-shared/state-service.mock';
+import { QualityService } from '../quality.service';
+import { of } from 'rxjs';
 
 describe('TestIntentErrorsComponent', () => {
   let component: TestIntentErrorsComponent;
@@ -24,9 +29,22 @@ describe('TestIntentErrorsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TestIntentErrorsComponent ]
-    })
-    .compileComponents();
+      declarations: [TestIntentErrorsComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        {
+          provide: QualityService,
+          useValue: {
+            getIntentsErrors: () => of({ total: 0, data: [] }),
+            getEntitiesErrors: () => of({ total: 0, data: [] }),
+            buildStats: () => of({ total: 0, data: [] }),
+            searchIntentErrors: () => of({ total: 0, data: [] }),
+            searchEntityErrors: () => of({ total: 0, data: [] })
+          }
+        }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TestIntentErrorsComponent);
     component = fixture.componentInstance;

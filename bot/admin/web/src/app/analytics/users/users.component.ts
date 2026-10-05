@@ -34,9 +34,10 @@ export class UserFilter {
 }
 
 @Component({
-  selector: 'tock-users',
-  templateUrl: './users.component.html',
-  styleUrls: ['./users.component.scss']
+    selector: 'tock-users',
+    templateUrl: './users.component.html',
+    styleUrls: ['./users.component.scss'],
+    standalone: false
 })
 export class UsersComponent extends ScrollComponent<UserReport> {
   filter: UserFilter = new UserFilter([], false);

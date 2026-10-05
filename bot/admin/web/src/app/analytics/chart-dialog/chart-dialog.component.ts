@@ -19,9 +19,10 @@ import { UserAnalyticsPreferences } from '../preferences/UserAnalyticsPreference
 import { UserAnalyticsQueryResult } from '../users/users';
 
 @Component({
-  selector: 'tock-chart-dialog',
-  templateUrl: './chart-dialog.component.html',
-  styleUrls: ['./chart-dialog.component.css']
+    selector: 'tock-chart-dialog',
+    templateUrl: './chart-dialog.component.html',
+    styleUrls: ['./chart-dialog.component.css'],
+    standalone: false
 })
 export class ChartDialogComponent {
   @Input() title: string;

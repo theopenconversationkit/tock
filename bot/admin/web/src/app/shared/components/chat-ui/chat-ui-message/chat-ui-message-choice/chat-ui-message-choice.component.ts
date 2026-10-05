@@ -18,9 +18,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { BotMessage, Choice } from '../../../../model/dialog-data';
 
 @Component({
-  selector: 'tock-chat-ui-message-choice',
-  templateUrl: './chat-ui-message-choice.component.html',
-  styleUrls: ['./chat-ui-message-choice.component.scss']
+    selector: 'tock-chat-ui-message-choice',
+    templateUrl: './chat-ui-message-choice.component.html',
+    styleUrls: ['./chat-ui-message-choice.component.scss'],
+    standalone: false
 })
 export class ChatUiMessageChoiceComponent {
   @Input() choice: Choice;

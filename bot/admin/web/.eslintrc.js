@@ -44,7 +44,8 @@ module.exports = exports = {
           }
         ],
         'brace-style': ['error', '1tbs'],
-        '@angular-eslint/no-output-on-prefix': 0
+        '@angular-eslint/no-output-on-prefix': 0,
+        '@angular-eslint/prefer-standalone': 'off'
       }
     },
     {

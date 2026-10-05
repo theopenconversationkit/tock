@@ -10,9 +10,10 @@ import { ChoiceDialogComponent } from '../../../../shared/components';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-application-features-table',
-  templateUrl: './application-features-table.component.html',
-  styleUrls: ['./application-features-table.component.scss']
+    selector: 'tock-application-features-table',
+    templateUrl: './application-features-table.component.html',
+    styleUrls: ['./application-features-table.component.scss'],
+    standalone: false
 })
 export class ApplicationFeaturesTableComponent {
   @Input() type: 'tock' | 'application';

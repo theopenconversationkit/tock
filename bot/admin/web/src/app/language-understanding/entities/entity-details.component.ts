@@ -11,9 +11,10 @@ import { ChoiceDialogComponent } from '../../shared/components';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-entity-details',
-  templateUrl: './entity-details.component.html',
-  styleUrls: ['./entity-details.component.scss']
+    selector: 'tock-entity-details',
+    templateUrl: './entity-details.component.html',
+    styleUrls: ['./entity-details.component.scss'],
+    standalone: false
 })
 export class EntityDetailsComponent {
   @Input() entity: EntityDefinition;

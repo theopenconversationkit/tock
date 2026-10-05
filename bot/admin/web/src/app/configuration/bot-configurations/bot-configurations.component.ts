@@ -9,9 +9,10 @@ import { ChoiceDialogComponent } from '../../shared/components';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-bot-configurations',
-  templateUrl: './bot-configurations.component.html',
-  styleUrls: ['./bot-configurations.component.scss']
+    selector: 'tock-bot-configurations',
+    templateUrl: './bot-configurations.component.html',
+    styleUrls: ['./bot-configurations.component.scss'],
+    standalone: false
 })
 export class BotConfigurationsComponent implements OnInit, OnDestroy {
   destroy = new Subject();

@@ -19,9 +19,10 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { PromptDefinitionFormatter, ProvidersConfigurationParam } from '../../model/ai-settings';
 
 @Component({
-  selector: 'tock-ai-settings-engine-config-param-input',
-  templateUrl: './ai-settings-engine-config-param-input.component.html',
-  styleUrls: ['./ai-settings-engine-config-param-input.component.scss']
+    selector: 'tock-ai-settings-engine-config-param-input',
+    templateUrl: './ai-settings-engine-config-param-input.component.html',
+    styleUrls: ['./ai-settings-engine-config-param-input.component.scss'],
+    standalone: false
 })
 export class AiSettingsEngineConfigParamInputComponent {
   @Input() configurationParam: ProvidersConfigurationParam;

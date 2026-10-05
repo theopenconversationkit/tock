@@ -23,9 +23,10 @@ import { NbComponentSize } from '@nebular/theme';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-select-bot',
-  templateUrl: './select-bot.component.html',
-  styleUrls: ['./select-bot.component.css']
+    selector: 'tock-select-bot',
+    templateUrl: './select-bot.component.html',
+    styleUrls: ['./select-bot.component.css'],
+    standalone: false
 })
 export class SelectBotComponent implements OnInit {
   @Input()

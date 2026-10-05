@@ -20,6 +20,7 @@ import { NbDialogRef } from '@nebular/theme';
 import { AnswerConfigurationType } from '../../../bot/model/story';
 import { MetricResult, StorySummary } from '../../models';
 import { StoriesHitsComponent } from './stories-hits.component';
+import { TestSharedModule } from '../../../shared/test-shared.module';
 
 const storiesSummaries: StorySummary[] = [
   {
@@ -85,6 +86,7 @@ describe('StoriesHitsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [StoriesHitsComponent],
+      imports: [TestSharedModule],
       providers: [
         {
           provide: NbDialogRef,

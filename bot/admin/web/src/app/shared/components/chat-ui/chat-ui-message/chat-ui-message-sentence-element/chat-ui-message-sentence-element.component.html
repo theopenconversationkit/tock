@@ -1,80 +1,92 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
-<ng-container *ngIf="element">
-  <table *ngIf="element.subElements.length !== 0">
-    <tr>
-      <td *ngFor="let e of element.subElements">
-        <table>
-          <tr *ngFor="let a of e.attachments">
-            <td>
-              <tock-chat-ui-message-attachment [attachment]="a"></tock-chat-ui-message-attachment>
-            </td>
-          </tr>
-          <tr *ngFor="let l of e.locations">
-            <td>
-              <tock-chat-ui-message-location [location]="l"></tock-chat-ui-message-location>
-            </td>
-          </tr>
-          <tr *ngFor="let entry of e.texts | keyvalue">
-            <td>
-              <span class="text">{{ entry.value }}</span>
-              <span class="text-category">({{ entry.key }})</span>
-            </td>
-          </tr>
-          <tr *ngIf="e.choices.length !== 0">
-            <td>
-              <tock-chat-ui-message-choice
-                *ngFor="let c of e.choices"
-                [choice]="c"
-                [replay]="replay"
-                [reply]="reply"
-                (replyMessage)="replyMessage($event)"
-              ></tock-chat-ui-message-choice>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-
-  <ng-container *ngIf="!element.isEmptyElement()">
-    <div *ngFor="let a of element.attachments">
-      <tock-chat-ui-message-attachment [attachment]="a"></tock-chat-ui-message-attachment>
-    </div>
-    <div *ngFor="let l of element.locations">
-      <tock-chat-ui-message-location [location]="l"></tock-chat-ui-message-location>
-    </div>
-    <div *ngFor="let entry of element.texts | keyvalue">
-      <span
-        *ngIf="reply"
-        [innerHTML]="linkifyHtml(entry.value)"
-        class="chat-ui-message-content-styling"
-      ></span>
-      <span *ngIf="!reply">{{ entry.value }}</span>
-      <span class="text-category">({{ entry.key }})</span>
-    </div>
-    <div *ngIf="element.choices.length !== 0">
-      <tock-chat-ui-message-choice
-        *ngFor="let c of element.choices"
-        [choice]="c"
-        [replay]="replay"
-        [reply]="reply"
-        (replyMessage)="replyMessage($event)"
-      ></tock-chat-ui-message-choice>
-    </div>
-  </ng-container>
-</ng-container>
+@if (element) { @if (element.subElements.length !== 0) {
+<table>
+  <tr>
+    @for (e of element.subElements; track e) {
+    <td>
+      <table>
+        @for (a of e.attachments; track a) {
+        <tr>
+          <td>
+            <tock-chat-ui-message-attachment [attachment]="a"></tock-chat-ui-message-attachment>
+          </td>
+        </tr>
+        } @for (l of e.locations; track l) {
+        <tr>
+          <td>
+            <tock-chat-ui-message-location [location]="l"></tock-chat-ui-message-location>
+          </td>
+        </tr>
+        } @for (entry of e.texts | keyvalue; track entry) {
+        <tr>
+          <td>
+            <span class="text">{{ entry.value }}</span>
+            <span class="text-category">({{ entry.key }})</span>
+          </td>
+        </tr>
+        } @if (e.choices.length !== 0) {
+        <tr>
+          <td>
+            @for (c of e.choices; track c) {
+            <tock-chat-ui-message-choice
+              [choice]="c"
+              [replay]="replay"
+              [reply]="reply"
+              (replyMessage)="replyMessage($event)"
+            ></tock-chat-ui-message-choice>
+            }
+          </td>
+        </tr>
+        }
+      </table>
+    </td>
+    }
+  </tr>
+</table>
+} @if (!element.isEmptyElement()) { @for (a of element.attachments; track a) {
+<div>
+  <tock-chat-ui-message-attachment [attachment]="a"></tock-chat-ui-message-attachment>
+</div>
+} @for (l of element.locations; track l) {
+<div>
+  <tock-chat-ui-message-location [location]="l"></tock-chat-ui-message-location>
+</div>
+} @for (entry of element.texts | keyvalue; track entry) {
+<div>
+  @if (reply) {
+  <span
+    [innerHTML]="linkifyHtml(entry.value)"
+    class="chat-ui-message-content-styling"
+  ></span>
+  } @if (!reply) {
+  <span>{{ entry.value }}</span>
+  }
+  <span class="text-category">({{ entry.key }})</span>
+</div>
+} @if (element.choices.length !== 0) {
+<div>
+  @for (c of element.choices; track c) {
+  <tock-chat-ui-message-choice
+    [choice]="c"
+    [replay]="replay"
+    [reply]="reply"
+    (replyMessage)="replyMessage($event)"
+  ></tock-chat-ui-message-choice>
+  }
+</div>
+} } }

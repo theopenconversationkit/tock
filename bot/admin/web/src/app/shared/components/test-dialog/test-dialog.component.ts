@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { Observable, Subject, of, take, takeUntil } from 'rxjs';
 import { PaginatedQuery, randomString } from '../../../model/commons';
 import { StateService } from '../../../core-nlp/state.service';
@@ -36,9 +36,10 @@ import { currentConfigurationSelection } from '../bot-configuration-selector/bot
 import { TextareaAutocompleteDirective } from '../../directives';
 
 @Component({
-  selector: 'tock-test-dialog',
-  templateUrl: './test-dialog.component.html',
-  styleUrl: './test-dialog.component.scss'
+    selector: 'tock-test-dialog',
+    templateUrl: './test-dialog.component.html',
+    styleUrl: './test-dialog.component.scss',
+    standalone: false
 })
 export class TestDialogComponent implements OnInit, OnDestroy {
   destroy = new Subject();
@@ -91,6 +92,8 @@ export class TestDialogComponent implements OnInit, OnDestroy {
 
   @ViewChild('textareaElement') textareaElementRef!: ElementRef<HTMLTextAreaElement>;
 
+  private testDialogService = inject(TestDialogService);
+
   constructor(
     private botConfiguration: BotConfigurationService,
     public state: StateService,
@@ -99,7 +102,6 @@ export class TestDialogComponent implements OnInit, OnDestroy {
     private shared: BotSharedService,
     private nbDialogService: NbDialogService,
     private rest: RestService,
-    private testDialogService: TestDialogService,
     protected windowRef: NbWindowRef
   ) {}
 

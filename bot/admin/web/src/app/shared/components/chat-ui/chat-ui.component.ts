@@ -17,9 +17,10 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'tock-chat-ui',
-  templateUrl: './chat-ui.component.html',
-  styleUrls: ['./chat-ui.component.scss']
+    selector: 'tock-chat-ui',
+    templateUrl: './chat-ui.component.html',
+    styleUrls: ['./chat-ui.component.scss'],
+    standalone: false
 })
 export class ChatUiComponent {
   @Input() height?: string;

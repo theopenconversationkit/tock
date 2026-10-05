@@ -9,9 +9,10 @@ export interface EntityProvider {
 }
 
 @Component({
-  selector: 'tock-create-entity-dialog',
-  templateUrl: 'create-entity-dialog.component.html',
-  styleUrls: ['create-entity-dialog.component.scss']
+    selector: 'tock-create-entity-dialog',
+    templateUrl: 'create-entity-dialog.component.html',
+    styleUrls: ['create-entity-dialog.component.scss'],
+    standalone: false
 })
 export class CreateEntityDialogComponent {
   @Input() entityProvider: EntityProvider;

@@ -1,70 +1,50 @@
 <div class="text-danger">
-  <small
-    *ngIf="field?.errors?.required"
-    class="mr-1"
-  >
+  @if (field?.errors?.required) {
+  <small class="mr-1">
     {{ 'shared.error-helper.required' | transloco }}
   </small>
-
-  <small
-    *ngIf="field?.errors?.minlength"
-    class="mr-1"
-  >
+  } @if (field?.errors?.minlength) {
+  <small class="mr-1">
     {{ 'shared.error-helper.minlength' | transloco: { requiredLength: field?.errors?.minlength.requiredLength } }}
   </small>
-
-  <small
-    *ngIf="field?.errors?.maxlength"
-    class="mr-1"
-  >
+  } @if (field?.errors?.maxlength) {
+  <small class="mr-1">
     {{ 'shared.error-helper.maxlength' | transloco: { requiredLength: field?.errors?.maxlength.requiredLength } }}
   </small>
-
-  <small
-    *ngIf="field?.errors?.min"
-    class="mr-1"
-  >
+  } @if (field?.errors?.min) {
+  <small class="mr-1">
     {{ 'shared.error-helper.min' | transloco: { min: field?.errors?.min.min } }}
   </small>
-
-  <small
-    *ngIf="field?.errors?.max"
-    class="mr-1"
-  >
+  } @if (field?.errors?.max) {
+  <small class="mr-1">
     {{ 'shared.error-helper.max' | transloco: { max: field?.errors?.max.max } }}
   </small>
-
-  <small *ngIf="field?.errors?.filesNameWithWrongType">
+  } @if (field?.errors?.filesNameWithWrongType) {
+  <small>
     {{ 'shared.error-helper.files_name_with_wrong_type' | transloco }}
     <ul>
-      <li
-        *ngFor="let file of field.errors.filesNameWithWrongType"
-        class="text-danger"
-      >
+      @for (file of field.errors.filesNameWithWrongType; track file) {
+      <li class="text-danger">
         <small>{{ file }}</small>
       </li>
+      }
     </ul>
   </small>
-
-  <small
-    *ngIf="field?.errors?.filesNameWithWrongFormat"
-    class="mr-1"
-  >
-    <span *ngIf="field?.errors?.message">{{ field.errors.message }}<br /></span>
+  } @if (field?.errors?.filesNameWithWrongFormat) {
+  <small class="mr-1">
+    @if (field?.errors?.message) {
+    <span>{{ field.errors.message }}<br /></span>
+    }
     {{ 'shared.error-helper.files_name_with_wrong_format' | transloco }}
     <ul>
-      <li
-        *ngFor="let file of field.errors.filesNameWithWrongFormat"
-        class="text-danger"
-      >
+      @for (file of field.errors.filesNameWithWrongFormat; track file) {
+      <li class="text-danger">
         <small>{{ file }}</small>
       </li>
+      }
     </ul>
   </small>
-
-  <small
-    *ngIf="field?.errors?.custom"
-    class="mr-1"
-    >{{ field.errors.custom }}</small
-  >
+  } @if (field?.errors?.custom) {
+  <small class="mr-1">{{ field.errors.custom }}</small>
+  }
 </div>

@@ -1,18 +1,18 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
 <h1>{{ 'bot.create-story.title' | transloco }}</h1>
 
@@ -28,10 +28,8 @@
         class="mb-0"
       >
         <nb-card-body>
-          <span
-            class="sentence-input"
-            *ngIf="story"
-          >
+          @if (story) {
+          <span class="sentence-input">
             <input
               nbInput
               status="primary"
@@ -43,6 +41,7 @@
               (keyup.enter)="onSentence(newSentence.value)"
             />
           </span>
+          }
           <button
             nbButton
             outline
@@ -54,7 +53,8 @@
           </button>
         </nb-card-body>
       </nb-card>
-      <div *ngIf="displayStory">
+      @if (displayStory) {
+      <div>
         <tock-story
           class="story"
           [story]="story"
@@ -63,13 +63,12 @@
           [submit]="submit"
         ></tock-story>
       </div>
+      }
     </tock-select-bot>
   </nb-card-body>
 
-  <nb-card-footer
-    *ngIf="displayStory"
-    class="card-footer-actions"
-  >
+  @if (displayStory) {
+  <nb-card-footer class="card-footer-actions">
     <button
       (click)="resetState()"
       nbButton
@@ -89,18 +88,17 @@
       {{ 'bot.create-story.createStoryButton' | transloco }}
     </button>
   </nb-card-footer>
+  }
 </nb-card>
 
-<div
-  *ngIf="displayStory"
-  class="current-analysis text-center mb-4"
->
+@if (displayStory) {
+<div class="current-analysis text-center mb-4">
   {{ 'bot.create-story.orQualifyLabel' | transloco }}
 </div>
-
+} @if (sentence) {
 <tock-sentence-training-entry
-  *ngIf="sentence"
   [standAlone]="true"
   [sentence]="sentence"
   (onClearSentence)="resetState()"
 ></tock-sentence-training-entry>
+}

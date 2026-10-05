@@ -12,12 +12,11 @@
         [controls]="file"
         [showError]="isImportSubmitted"
       >
-        <div
-          *ngIf="fileFormatErrorMessage"
-          class="font-weight-bold text-danger font-italic mb-2"
-        >
+        @if (fileFormatErrorMessage) {
+        <div class="font-weight-bold text-danger font-italic mb-2">
           {{ fileFormatErrorMessage }}
         </div>
+        }
         <tock-file-upload
           id="importFile"
           formControlName="file"

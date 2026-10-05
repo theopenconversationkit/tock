@@ -19,21 +19,25 @@
     >
       {{ 'common.actions.cancel' | transloco }}
     </button>
+    @if (reviewComment) {
     <button
-      *ngIf="reviewComment"
       nbButton
       status="warning"
       (click)="delete()"
     >
       {{ 'shared.sentence-review-request.delete-review' | transloco }}
     </button>
+    }
     <button
       nbButton
       status="primary"
       (click)="save()"
     >
-      <span *ngIf="!reviewComment">{{ 'common.actions.add' | transloco }}</span>
-      <span *ngIf="reviewComment">{{ 'common.actions.update' | transloco }}</span>
+      @if (!reviewComment) {
+      <span>{{ 'common.actions.add' | transloco }}</span>
+      } @if (reviewComment) {
+      <span>{{ 'common.actions.update' | transloco }}</span>
+      }
     </button>
   </nb-card-footer>
 </nb-card>

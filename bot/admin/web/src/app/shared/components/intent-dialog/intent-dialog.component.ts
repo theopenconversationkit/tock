@@ -19,9 +19,10 @@ import { NbDialogRef } from '@nebular/theme';
 import { StateService } from '../../../core-nlp/state.service';
 
 @Component({
-  selector: 'tock-intent-dialog',
-  templateUrl: './intent-dialog.component.html',
-  styleUrls: ['./intent-dialog.component.css']
+    selector: 'tock-intent-dialog',
+    templateUrl: './intent-dialog.component.html',
+    styleUrls: ['./intent-dialog.component.css'],
+    standalone: false
 })
 export class IntentDialogComponent implements OnInit {
   @Input() create: boolean;

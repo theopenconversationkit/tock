@@ -1,11 +1,9 @@
 <div class="d-flex flex-wrap">
   <h1 class="flex-grow-1">
     {{ 'lu.intents-logs.title' | transloco }}
-    <span
-      *ngIf="pagination.total"
-      class="font-weight-normal"
-      >({{ pagination.total }})</span
-    >
+    @if (pagination.total) {
+    <span class="font-weight-normal">({{ pagination.total }})</span>
+    }
   </h1>
 
   <section class="d-flex flex-wrap align-items-center">
@@ -20,16 +18,17 @@
       <nb-icon icon="arrow-clockwise"></nb-icon>
     </button>
 
+    @if (pagination.total) {
     <button
       nbButton
       ghost
       shape="round"
       [nbTooltip]="'lu.intents-logs.download-csv-dump-tooltip' | transloco"
       (click)="downloadDump()"
-      *ngIf="pagination.total"
     >
       <nb-icon icon="download"></nb-icon>
     </button>
+    }
   </section>
 </div>
 
@@ -60,6 +59,7 @@
               type="text"
               formControlName="searchString"
             />
+            @if (searchString.value?.trim().length) {
             <button
               nbButton
               nbSuffix
@@ -67,10 +67,10 @@
               [nbTooltip]="'common.actions.clear' | transloco"
               type="button"
               (click)="resetSearch()"
-              *ngIf="searchString.value?.trim().length"
             >
               <nb-icon icon="x-lg"></nb-icon>
             </button>
+            }
           </nb-form-field>
 
           <nb-toggle
@@ -99,21 +99,15 @@
       </div>
     </tock-sticky-menu>
 
-    <tock-no-data-found
-      *ngIf="!loading && !logs?.length"
-      [title]="'lu.intents-logs.no-logs-found' | transloco"
-    ></tock-no-data-found>
-
-    <div
-      *ngIf="pagination.total"
-      class="mt-2"
-    >
-      <nb-card
-        *ngFor="let d of logs"
-        class="mb-1"
-      >
+    @if (!loading && !logs?.length) {
+    <tock-no-data-found [title]="'lu.intents-logs.no-logs-found' | transloco"></tock-no-data-found>
+    } @if (pagination.total) {
+    <div class="mt-2">
+      @for (d of logs; track d) {
+      <nb-card class="mb-1">
         <nb-card-header>
-          <h4 *ngIf="d.error">
+          @if (d.error) {
+          <h4>
             {{ d.textRequest() }}
             <nb-icon
               [nbTooltip]="'lu.intents-logs.error-tooltip' | transloco"
@@ -121,26 +115,26 @@
               icon="exclamation-triangle"
             ></nb-icon>
           </h4>
+          } @if (!d.error) {
           <tock-sentence-training-sentence
-            *ngIf="!d.error"
             [sentence]="d.sentence"
             [readOnly]="true"
           ></tock-sentence-training-sentence>
+          }
         </nb-card-header>
-
         <nb-card-body class="d-flex gap-1 align-items-center justify-content-between">
           <div>
             {{ state.intentLabelByName(d.intent) }}
-            <span
-              *ngIf="d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()"
-              [nbTooltip]="'lu.intents-logs.intent-probability-tooltip' | transloco"
-            >
+            @if (d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()) {
+            <span [nbTooltip]="'lu.intents-logs.intent-probability-tooltip' | transloco">
               <span class="intentProbability">({{ d.sentence.classification.intentProbability | percent: '1.0-2' }})</span>
             </span>
+            }
             {{ state.intentLabelByName(d.intent) ? '-' : '' }} {{ d.date | amTimeAgo }}
-            <span *ngIf="d.durationInMS !== 0">{{ 'lu.intents-logs.in' | transloco }} {{ d.durationInMS }} ms</span>
+            @if (d.durationInMS !== 0) {
+            <span>{{ 'lu.intents-logs.in' | transloco }} {{ d.durationInMS }} ms</span>
+            }
           </div>
-
           <div class="d-flex">
             <button
               nbButton
@@ -150,17 +144,16 @@
             >
               <nb-icon icon="eye"></nb-icon>
             </button>
-
+            @if (isRootSentence(d.sentence) && config.answerToSentenceUrl) {
             <button
               nbButton
               ghost
               [nbTooltip]="'lu.intents-logs.create-faq-tooltip' | transloco"
-              *ngIf="isRootSentence(d.sentence) && config.answerToSentenceUrl"
               (click)="redirectToFaqManagement(d.sentence)"
             >
               <nb-icon icon="chat-left-text"></nb-icon>
             </button>
-
+            }
             <button
               nbButton
               ghost
@@ -169,7 +162,6 @@
             >
               <nb-icon icon="copy"></nb-icon>
             </button>
-
             <button
               nbButton
               ghost
@@ -181,16 +173,19 @@
           </div>
         </nb-card-body>
       </nb-card>
+      }
     </div>
+    }
   </div>
 
+  @if (dialogDetailsSentence) {
   <tock-sentence-training-dialog
     #sentenceTrainingDialog
-    *ngIf="dialogDetailsSentence"
     class="aside"
     [sentence]="dialogDetailsSentence"
     (onClose)="closeDetails()"
   ></tock-sentence-training-dialog>
+  }
 </section>
 
 <tock-scroll-top-button></tock-scroll-top-button>

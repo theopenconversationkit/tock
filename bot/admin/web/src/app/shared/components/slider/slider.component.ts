@@ -18,16 +18,17 @@ import { AfterViewInit, Component, forwardRef, Input, OnInit } from '@angular/co
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'tock-slider',
-  templateUrl: './slider.component.html',
-  styleUrls: ['./slider.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: forwardRef(() => SliderComponent)
-    }
-  ]
+    selector: 'tock-slider',
+    templateUrl: './slider.component.html',
+    styleUrls: ['./slider.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: forwardRef(() => SliderComponent)
+        }
+    ],
+    standalone: false
 })
 export class SliderComponent implements AfterViewInit, ControlValueAccessor {
   @Input() min: number;

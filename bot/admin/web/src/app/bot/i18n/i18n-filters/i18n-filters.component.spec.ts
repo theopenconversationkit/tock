@@ -17,6 +17,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { I18nFiltersComponent } from './i18n-filters.component';
+import { TestSharedModule } from '../../../shared/test-shared.module';
+import { StateService } from '../../../core-nlp/state.service';
+import { StateServiceMock } from '../../../shared/test-shared/state-service.mock';
 
 describe('I18nFiltersComponent', () => {
   let component: I18nFiltersComponent;
@@ -24,9 +27,10 @@ describe('I18nFiltersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ I18nFiltersComponent ]
-    })
-    .compileComponents();
+      declarations: [I18nFiltersComponent],
+      imports: [TestSharedModule],
+      providers: [{ provide: StateService, useClass: StateServiceMock }]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(I18nFiltersComponent);
     component = fixture.componentInstance;

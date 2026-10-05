@@ -42,12 +42,11 @@
           [fullWidth]="true"
           [optionsListClass]="'option-list--break-word'"
         >
-          <nb-option
-            *ngFor="let story of availableStories"
-            [value]="story.storyId"
-          >
+          @for (story of availableStories; track story) {
+          <nb-option [value]="story.storyId">
             {{ story.name }}
           </nb-option>
+          }
         </nb-select>
       </tock-form-control>
     </nb-card-body>

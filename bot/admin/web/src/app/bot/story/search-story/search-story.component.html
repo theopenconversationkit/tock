@@ -1,40 +1,27 @@
 <h1>{{ 'bot.search-story.title' | transloco }}</h1>
 
+@if (loading) {
 <div
   class="loading-spinner-wrapper mt-2"
-  *ngIf="loading"
   [nbSpinner]="loading"
 ></div>
-
-<tock-no-data-found
-  *ngIf="configurations?.length === 0"
-  [title]="'common.messages.noBotConfiguration' | transloco"
-></tock-no-data-found>
-
+} @if (configurations?.length === 0) {
+<tock-no-data-found [title]="'common.messages.noBotConfiguration' | transloco"></tock-no-data-found>
+} @if (!loading && configurations?.length) {
 <tock-stories-filter
-  *ngIf="!loading && configurations?.length"
   [categories]="categories"
   (onFilter)="onFilterChange($event)"
   (onDownload)="download()"
   (onPrepareUpload)="prepareUpload()"
 ></tock-stories-filter>
-
-<tock-no-data-found
-  *ngIf="!loading && configurations?.length && !stories?.length"
-  [title]="'bot.search-story.noStoryFound' | transloco"
-></tock-no-data-found>
-
-<div
-  *ngIf="!loading && !displayStoriesByCategory && !filteredStories.length"
-  class="text-center font-italic mt-3"
->
+} @if (!loading && configurations?.length && !stories?.length) {
+<tock-no-data-found [title]="'bot.search-story.noStoryFound' | transloco"></tock-no-data-found>
+} @if (!loading && !displayStoriesByCategory && !filteredStories.length) {
+<div class="text-center font-italic mt-3">
   {{ 'bot.search-story.noStoryMatchCriteria' | transloco }}
 </div>
-
-<nb-card
-  class="mt-2 mb-2"
-  *ngIf="!loading && !displayStoriesByCategory && filteredStories.length"
->
+} @if (!loading && !displayStoriesByCategory && filteredStories.length) {
+<nb-card class="mt-2 mb-2">
   <nb-card-body>
     <tock-stories-list
       [stories]="filteredStories"
@@ -44,20 +31,16 @@
     ></tock-stories-list>
   </nb-card-body>
 </nb-card>
-
-<nb-accordion
-  class="no-shadow mb-4"
-  *ngIf="!loading && displayStoriesByCategory && storyCategories"
->
+} @if (!loading && displayStoriesByCategory && storyCategories) {
+<nb-accordion class="no-shadow mb-4">
+  @for (category of storyCategories; track category) {
   <nb-accordion-item
-    *ngFor="let category of storyCategories"
     [expanded]="isCategoryExpanded(category)"
     (collapsedChange)="collapsedChange(category)"
   >
     <nb-accordion-item-header class="h6 text-capitalize">
       {{ category.category }}
     </nb-accordion-item-header>
-
     <nb-accordion-item-body class="accordion-item-body">
       <div class="compensate-accordion-item-padding">
         <tock-stories-list
@@ -69,6 +52,8 @@
       </div>
     </nb-accordion-item-body>
   </nb-accordion-item>
+  }
 </nb-accordion>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

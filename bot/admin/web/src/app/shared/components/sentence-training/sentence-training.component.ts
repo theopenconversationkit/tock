@@ -9,7 +9,8 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  ViewChild
+  ViewChild,
+  DOCUMENT
 } from '@angular/core';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { Observable, Subject, Subscription } from 'rxjs';
@@ -36,17 +37,18 @@ import { UserRole } from '../../../model/auth';
 import { saveAs } from 'file-saver-es';
 import { SentenceTrainingService } from './sentence-training.service';
 import { getSentenceId } from './commons/utils';
-import { DOCUMENT } from '@angular/common';
+
 import { getExportFileName, scrollToPageTop } from '../../utils';
 import { TranslocoService } from '@jsverse/transloco';
 
 export type SentenceExtended = Sentence & { _showDialog?: boolean; _showStatsDetails?: boolean; _intentBeforeClassification?: string };
 
 @Component({
-  selector: 'tock-sentence-training',
-  templateUrl: './sentence-training.component.html',
-  styleUrls: ['./sentence-training.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'tock-sentence-training',
+    templateUrl: './sentence-training.component.html',
+    styleUrls: ['./sentence-training.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SentenceTrainingComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

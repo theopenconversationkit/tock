@@ -29,9 +29,10 @@ import { IndicatorDefinition } from '../../../../metrics/models';
 
 export type StoryStepExtended = StoryStep & { expanded?: boolean };
 @Component({
-  selector: 'tock-steps',
-  templateUrl: './steps.component.html',
-  styleUrls: ['./steps.component.scss']
+    selector: 'tock-steps',
+    templateUrl: './steps.component.html',
+    styleUrls: ['./steps.component.scss'],
+    standalone: false
 })
 export class StepsComponent implements OnInit, OnChanges {
   @Input() steps: StoryStep[] = [];

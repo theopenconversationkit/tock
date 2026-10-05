@@ -26,9 +26,10 @@ import { DialogService } from '../../../../core-nlp/dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-simple-answer',
-  templateUrl: './simple-answer.component.html',
-  styleUrls: ['./simple-answer.component.scss']
+    selector: 'tock-simple-answer',
+    templateUrl: './simple-answer.component.html',
+    styleUrls: ['./simple-answer.component.scss'],
+    standalone: false
 })
 export class SimpleAnswerComponent implements OnInit {
   @Input() container: AnswerContainer;

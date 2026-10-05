@@ -19,9 +19,10 @@ import { NbDialogRef } from '@nebular/theme';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 
 @Component({
-  selector: 'tock-display-intent-full-log',
-  templateUrl: './display-intents-full-log.component.html',
-  styleUrls: ['./display-intents-full-log.component.scss']
+    selector: 'tock-display-intent-full-log',
+    templateUrl: './display-intents-full-log.component.html',
+    styleUrls: ['./display-intents-full-log.component.scss'],
+    standalone: false
 })
 export class DisplayIntentFullLogComponent {
   public editorOptions: JsonEditorOptions;

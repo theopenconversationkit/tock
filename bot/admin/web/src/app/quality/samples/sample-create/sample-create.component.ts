@@ -21,9 +21,10 @@ interface DialogListFiltersForm {
 }
 
 @Component({
-  selector: 'tock-sample-create',
-  templateUrl: './sample-create.component.html',
-  styleUrl: './sample-create.component.scss'
+    selector: 'tock-sample-create',
+    templateUrl: './sample-create.component.html',
+    styleUrl: './sample-create.component.scss',
+    standalone: false
 })
 export class SampleCreateComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

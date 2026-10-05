@@ -17,13 +17,31 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { VectorDbSettingsComponent } from './vector-db-settings.component';
+import { TestSharedModule } from '../../shared/test-shared.module';
+import { StateService } from '../../core-nlp/state.service';
+import { StateServiceMock } from '../../shared/test-shared/state-service.mock';
+import { BehaviorSubject } from 'rxjs';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
 describe('VectorDbSettingsComponent', () => {
   let component: VectorDbSettingsComponent;
   let fixture: ComponentFixture<VectorDbSettingsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [VectorDbSettingsComponent]
+      declarations: [VectorDbSettingsComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: StateService, useClass: StateServiceMock },
+        {
+          provide: BotConfigurationService,
+          useValue: {
+            configurations: new BehaviorSubject([]),
+            restConfigurations: new BehaviorSubject([]),
+            getConfigurationById: () => undefined,
+            updateConfigurations: () => {}
+          }
+        }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(VectorDbSettingsComponent);

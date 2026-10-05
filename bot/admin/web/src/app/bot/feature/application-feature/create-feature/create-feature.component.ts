@@ -28,9 +28,10 @@ interface CreateFeatureForm {
 }
 
 @Component({
-  selector: 'tock-create-feature',
-  templateUrl: './create-feature.component.html',
-  styleUrls: ['./create-feature.component.scss']
+    selector: 'tock-create-feature',
+    templateUrl: './create-feature.component.html',
+    styleUrls: ['./create-feature.component.scss'],
+    standalone: false
 })
 export class CreateFeatureComponent implements OnInit {
   isSubmitted = false;

@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChatUiDisplayMarkupComponent } from './chat-ui-display-markup.component';
+import { TestSharedModule } from '../../../../test-shared.module';
 
 describe('ChatUiDisplayMarkupComponent', () => {
   let component: ChatUiDisplayMarkupComponent;
@@ -24,9 +25,9 @@ describe('ChatUiDisplayMarkupComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChatUiDisplayMarkupComponent]
-    })
-    .compileComponents();
+      declarations: [ChatUiDisplayMarkupComponent],
+      imports: [TestSharedModule]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ChatUiDisplayMarkupComponent);
     component = fixture.componentInstance;

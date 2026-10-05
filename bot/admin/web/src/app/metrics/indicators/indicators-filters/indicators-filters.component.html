@@ -24,16 +24,15 @@
     optionsListClass="option-list--break-word"
     formControlName="dimensions"
   >
-    <nb-option
-      *ngFor="let dimension of dimensionsCache"
-      value="{{ dimension }}"
-    >
+    @for (dimension of dimensionsCache; track dimension) {
+    <nb-option value="{{ dimension }}">
       <span class="initial-capitalize">{{ dimension }}</span>
     </nb-option>
+    }
   </nb-select>
 
+  @if (isFiltered) {
   <button
-    *ngIf="isFiltered"
     nbButton
     [nbTooltip]="'metrics.indicators-filters.clear_all_filters_tooltip' | transloco"
     ghost
@@ -43,4 +42,5 @@
   >
     <nb-icon icon="x-lg"></nb-icon>
   </button>
+  }
 </form>

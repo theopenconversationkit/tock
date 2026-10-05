@@ -1,14 +1,9 @@
 <h1>{{ 'metrics.metrics-board.title' | transloco }}</h1>
 
-<tock-no-data-found
-  *ngIf="configurations?.length === 0"
-  [title]="'metrics.metrics-board.no_bot_configuration_detected' | transloco"
-></tock-no-data-found>
-
-<nb-card
-  [nbSpinner]="loading"
-  *ngIf="configurations?.length > 0"
->
+@if (configurations?.length === 0) {
+<tock-no-data-found [title]="'metrics.metrics-board.no_bot_configuration_detected' | transloco"></tock-no-data-found>
+} @if (configurations?.length > 0) {
+<nb-card [nbSpinner]="loading">
   <nb-card-header>
     <div class="d-flex gap-1">
       <div class="row">
@@ -28,7 +23,6 @@
               (ngModelChange)="updateStart($event)"
             />
           </nb-form-field>
-
           <nb-date-timepicker
             #from_date
             [max]="max"
@@ -38,7 +32,6 @@
             format="y/MM/dd HH:mm"
           ></nb-date-timepicker>
         </div>
-
         <div class="col-12 col-xl-6">
           <nb-form-field class="mb-2">
             <nb-icon
@@ -55,7 +48,6 @@
               (ngModelChange)="updateEnd($event)"
             />
           </nb-form-field>
-
           <nb-date-timepicker
             #to_date
             [min]="min"
@@ -66,7 +58,6 @@
           ></nb-date-timepicker>
         </div>
       </div>
-
       <div class="d-flex flex-wrap align-items-start">
         <button
           nbButton
@@ -124,7 +115,6 @@
         </button>
       </div>
     </div>
-
     <nb-checkbox
       [nbTooltip]="'metrics.metrics-board.display_tests_tooltip' | transloco"
       class="text-nowrap"
@@ -134,7 +124,6 @@
       {{ 'metrics.metrics-board.display_tests_label' | transloco }}
     </nb-checkbox>
   </nb-card-header>
-
   <nb-card-body class="main-card-body">
     <div class="row mt-0">
       <div class="col-12 mb-3">
@@ -142,47 +131,40 @@
           <strong>&nbsp;</strong>
           <div class="d-flex">
             <span class="stats-value">{{ 'metrics.metrics-board.end_user_label' | transloco }}</span>
-            <span
-              *ngIf="displayTests"
-              class="stats-value test"
-            >
+            @if (displayTests) {
+            <span class="stats-value test">
               {{ 'metrics.metrics-board.tests_label' | transloco }}
             </span>
+            }
           </div>
         </div>
-
         <h6 class="mt-3 mb-2">{{ 'metrics.metrics-board.bot_global_activity_title' | transloco }}</h6>
-
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
           {{ 'metrics.metrics-board.total_user_messages_label' | transloco }}
           <div class="d-flex">
             <span class="stats-value"
               ><strong>{{ dialogStats?.prod?.allUserActions || 0 }}</strong></span
             >
-            <span
-              *ngIf="displayTests"
-              class="stats-value test"
-            >
+            @if (displayTests) {
+            <span class="stats-value test">
               <strong>{{ dialogStats?.test?.allUserActions || 0 }}</strong>
             </span>
+            }
           </div>
         </div>
-
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
           {{ 'metrics.metrics-board.unknown_user_messages_label' | transloco }}
           <div class="d-flex">
             <span class="stats-value"
               ><strong>{{ dialogStats?.prod?.unknownIntentUserActions || 0 }}</strong></span
             >
-            <span
-              *ngIf="displayTests"
-              class="stats-value test"
-            >
+            @if (displayTests) {
+            <span class="stats-value test">
               <strong>{{ dialogStats?.test?.unknownIntentUserActions || 0 }}</strong>
             </span>
+            }
           </div>
         </div>
-
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
           <div>
             {{ 'common.feedback.positive' | transloco }}
@@ -193,15 +175,13 @@
           </div>
           <div class="d-flex">
             <span class="stats-value">{{ dialogStats?.prod?.allFeedbackUp || 0 }}</span>
-            <span
-              *ngIf="displayTests"
-              class="stats-value test"
-            >
+            @if (displayTests) {
+            <span class="stats-value test">
               {{ dialogStats?.test?.allFeedbackUp || 0 }}
             </span>
+            }
           </div>
         </div>
-
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
           <div>
             {{ 'common.feedback.negative' | transloco }}
@@ -212,92 +192,80 @@
           </div>
           <div class="d-flex">
             <span class="stats-value">{{ dialogStats?.prod?.allFeedbackDown || 0 }}</span>
-            <span
-              *ngIf="displayTests"
-              class="stats-value test"
-            >
+            @if (displayTests) {
+            <span class="stats-value test">
               {{ dialogStats?.test?.allFeedbackDown || 0 }}
             </span>
+            }
           </div>
         </div>
-
         <h6 class="mt-3 mb-2">{{ 'metrics.metrics-board.bot_nlp_statistics_title' | transloco }}</h6>
-
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
           {{ 'metrics.metrics-board.total_nlp_messages_label' | transloco }}
           <div class="d-flex">
             <span class="stats-value"
               ><strong>{{ dialogStats?.prod?.allUserActionsExceptRag || 0 }}</strong></span
             >
-            <span
-              *ngIf="displayTests"
-              class="stats-value test"
-            >
+            @if (displayTests) {
+            <span class="stats-value test">
               <strong>{{ dialogStats?.test?.allUserActionsExceptRag || 0 }}</strong>
             </span>
+            }
           </div>
         </div>
-
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
           {{ 'metrics.metrics-board.known_intent_messages_label' | transloco }}
           <div class="d-flex">
             <span class="stats-value">{{ dialogStats?.prod?.knownIntentUserActions || 0 }}</span>
-            <span
-              *ngIf="displayTests"
-              class="stats-value test"
-            >
+            @if (displayTests) {
+            <span class="stats-value test">
               {{ dialogStats?.test?.knownIntentUserActions || 0 }}
             </span>
+            }
           </div>
         </div>
-
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
           {{ 'metrics.metrics-board.unknown_classified_messages_label' | transloco }}
           <div class="d-flex">
             <span class="stats-value">{{ dialogStats?.prod?.unknownIntentUserActionsExceptRag || 0 }}</span>
-            <span
-              *ngIf="displayTests"
-              class="stats-value test"
-            >
+            @if (displayTests) {
+            <span class="stats-value test">
               {{ dialogStats?.test?.unknownIntentUserActionsExceptRag || 0 }}
             </span>
+            }
           </div>
         </div>
-
         <h6 class="mt-3 mb-2">{{ 'metrics.metrics-board.gen_ai_rag_statistics_title' | transloco }}</h6>
-
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
           {{ 'metrics.metrics-board.total_rag_messages_label' | transloco }}
           <div class="d-flex">
             <span class="stats-value"
               ><strong>{{ dialogStats?.prod?.allUserRagActions || 0 }}</strong></span
             >
-            <span
-              *ngIf="displayTests"
-              class="stats-value test"
-            >
+            @if (displayTests) {
+            <span class="stats-value test">
               <strong>{{ dialogStats?.test?.allUserRagActions || 0 }}</strong>
             </span>
+            }
           </div>
         </div>
       </div>
     </div>
-
     <div class="row mt-3">
       <div
         class="col-12 col-xl-6"
         [ngClass]="{ 'force-col-12': doesStoriesHitsExceed(24) }"
       >
         <h6>{{ 'metrics.metrics-board.number_of_user_messages_title' | transloco }}</h6>
+        @if (messagesChartOptions) {
         <div
-          *ngIf="messagesChartOptions"
           echarts
           [options]="messagesChartOptions"
           class="messages-height"
           [ngClass]="{ 'height-250': doesStoriesHitsExceed(24) }"
         ></div>
+        }
       </div>
-
       <div
         class="col-12 col-xl-6"
         [ngClass]="{ 'force-col-12': doesStoriesHitsExceed(24) }"
@@ -306,12 +274,10 @@
           <div class="col-6">
             <h6>{{ 'metrics.metrics-board.distribution_of_stories_title' | transloco }}</h6>
           </div>
-          <div
-            class="col-6 text-right"
-            *ngIf="indicatorsDimensions.length"
-          >
+          @if (indicatorsDimensions.length) {
+          <div class="col-6 text-right">
+            @if (indicators) {
             <nb-select
-              *ngIf="indicators"
               [nbTooltip]="'metrics.metrics-board.filter_stories_tooltip' | transloco"
               [placeholder]="'metrics.metrics-board.filters_placeholder' | transloco"
               size="small"
@@ -325,30 +291,24 @@
                 {{ 'metrics.metrics-board.show_metrics_stories_option' | transloco }}
               </nb-option>
               <nb-option-group [title]="'metrics.metrics-board.stories_types_title' | transloco">
-                <ng-container *ngFor="let filter of storiesFilters">
-                  <nb-option
-                    *ngIf="filter.type === storiesFilterType.currentType"
-                    [value]="filter"
-                  >
-                    {{ filter.value }}
-                  </nb-option>
-                </ng-container>
+                @for (filter of storiesFilters; track filter) { @if (filter.type === storiesFilterType.currentType) {
+                <nb-option [value]="filter">
+                  {{ filter.value }}
+                </nb-option>
+                } }
               </nb-option-group>
-
               <nb-option-group [title]="'metrics.metrics-board.stories_categories_title' | transloco">
-                <ng-container *ngFor="let filter of storiesFilters">
-                  <nb-option
-                    *ngIf="filter.type === storiesFilterType.category"
-                    [value]="filter"
-                  >
-                    {{ filter.value }}
-                  </nb-option>
-                </ng-container>
+                @for (filter of storiesFilters; track filter) { @if (filter.type === storiesFilterType.category) {
+                <nb-option [value]="filter">
+                  {{ filter.value }}
+                </nb-option>
+                } }
               </nb-option-group>
             </nb-select>
+            }
           </div>
+          }
         </div>
-
         <div
           echarts
           [options]="storiesChart"
@@ -356,21 +316,16 @@
         ></div>
       </div>
     </div>
-
     <div class="row mt-3">
       <div class="col-12">
         <div class="row mb-3">
           <div class="col-6">
             <h6>Indicators</h6>
           </div>
-          <div
-            class="col-6 text-right"
-            *ngIf="indicatorsDimensions.length"
-          >
-            <nb-form-field
-              *ngIf="indicators"
-              class="d-inline-flex"
-            >
+          @if (indicatorsDimensions.length) {
+          <div class="col-6 text-right">
+            @if (indicators) {
+            <nb-form-field class="d-inline-flex">
               <nb-icon
                 nbPrefix
                 icon="sign-merge-left"
@@ -382,37 +337,33 @@
                 (selectedChange)="dimensionSelected($event)"
                 [(ngModel)]="currentDimension"
               >
-                <nb-option
-                  *ngFor="let dimension of indicatorsDimensions"
-                  [value]="dimension"
-                >
+                @for (dimension of indicatorsDimensions; track dimension) {
+                <nb-option [value]="dimension">
                   {{ dimension }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
+            }
           </div>
+          }
         </div>
-
-        <div
-          *ngIf="!indicatorsDimensions.length"
-          class="text-muted font-italic"
-        >
+        @if (!indicatorsDimensions.length) {
+        <div class="text-muted font-italic">
           {{ 'metrics.metrics-board.no_indicator_defined' | transloco }}
         </div>
-
+        }
         <div class="row">
-          <div
-            class="col-12 col-md-6"
-            *ngFor="let chart of currentDimensionCharts"
-          >
+          @for (chart of currentDimensionCharts; track chart) {
+          <div class="col-12 col-md-6">
             <div class="dimension-chart">
               <div class="row">
                 <div class="col-8 initial-capitalize">
                   <strong>{{ chart.name }}</strong>
                 </div>
                 <div class="col-4 text-right">
+                  @if (chart.indicatorType === indicatorType.CUSTOM) {
                   <button
-                    *ngIf="chart.indicatorType === indicatorType.CUSTOM"
                     nbButton
                     ghost
                     size="tiny"
@@ -421,8 +372,8 @@
                   >
                     {{ 'metrics.metrics-board.detail_by_stories_button' | transloco }}
                   </button>
+                  } @if (chart.indicatorType === indicatorType.PREDEFINED) {
                   <button
-                    *ngIf="chart.indicatorType === indicatorType.PREDEFINED"
                     nbButton
                     ghost
                     size="tiny"
@@ -431,19 +382,21 @@
                   >
                     {{ 'metrics.metrics-board.metric_details_button' | transloco }}
                   </button>
+                  }
                 </div>
               </div>
-
               <div
                 echarts
                 [options]="chart"
               ></div>
             </div>
           </div>
+          }
         </div>
       </div>
     </div>
   </nb-card-body>
 </nb-card>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

@@ -23,9 +23,10 @@ interface CompressorSettingsForm {
 }
 
 @Component({
-  selector: 'tock-compressor-settings',
-  templateUrl: './compressor-settings.component.html',
-  styleUrl: './compressor-settings.component.scss'
+    selector: 'tock-compressor-settings',
+    templateUrl: './compressor-settings.component.html',
+    styleUrl: './compressor-settings.component.scss',
+    standalone: false
 })
 export class CompressorSettingsComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();

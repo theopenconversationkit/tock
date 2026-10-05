@@ -26,9 +26,10 @@ interface ActiveFilters {
 }
 
 @Component({
-  selector: 'tock-dataset-detail',
-  templateUrl: './dataset-detail.component.html',
-  styleUrl: './dataset-detail.component.scss'
+    selector: 'tock-dataset-detail',
+    templateUrl: './dataset-detail.component.html',
+    styleUrl: './dataset-detail.component.scss',
+    standalone: false
 })
 export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

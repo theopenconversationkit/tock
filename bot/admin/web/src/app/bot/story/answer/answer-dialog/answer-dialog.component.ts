@@ -23,9 +23,10 @@ import { AnswerController } from '../../controller';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-answer-dialog',
-  templateUrl: './answer-dialog.component.html',
-  styleUrls: ['./answer-dialog.component.scss']
+    selector: 'tock-answer-dialog',
+    templateUrl: './answer-dialog.component.html',
+    styleUrls: ['./answer-dialog.component.scss'],
+    standalone: false
 })
 export class AnswerDialogComponent implements OnInit {
   @Input() create: boolean;

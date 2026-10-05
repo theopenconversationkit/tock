@@ -1,18 +1,18 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
 <div class="d-flex align-items-center">
   <div>
@@ -22,20 +22,19 @@
       [(selected)]="pagination.size"
       (selectedChange)="paginationSize()"
     >
-      <nb-option
-        *ngFor="let size of sizes"
-        [value]="size"
-      >
+      @for (size of sizes; track size) {
+      <nb-option [value]="size">
         {{ size }}
       </nb-option>
+      }
     </nb-select>
   </div>
 
   <div class="mx-2">{{ paginationSummary }}</div>
 
   <div class="d-flex">
+    @if (showPrevious()) {
     <button
-      *ngIf="showPrevious()"
       nbButton
       [nbTooltip]="'shared.pagination.previous-page' | transloco"
       ghost
@@ -45,9 +44,10 @@
     >
       <nb-icon icon="chevron-left"></nb-icon>
     </button>
+    }
     <!-- Workaround because tooltip is not hiding if button is disabled programmatically. -->
+    @if (!showPrevious()) {
     <button
-      *ngIf="!showPrevious()"
       nbButton
       ghost
       shape="round"
@@ -56,9 +56,8 @@
     >
       <nb-icon icon="chevron-left"></nb-icon>
     </button>
-
+    } @if (showNext()) {
     <button
-      *ngIf="showNext()"
       nbButton
       [nbTooltip]="'shared.pagination.next-page' | transloco"
       ghost
@@ -68,9 +67,10 @@
     >
       <nb-icon icon="chevron-right"></nb-icon>
     </button>
+    }
     <!-- Workaround because tooltip is not hiding if button is disabled programmatically. -->
+    @if (!showNext()) {
     <button
-      *ngIf="!showNext()"
       nbButton
       ghost
       shape="round"
@@ -79,5 +79,6 @@
     >
       <nb-icon icon="chevron-right"></nb-icon>
     </button>
+    }
   </div>
 </div>

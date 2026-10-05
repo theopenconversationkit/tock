@@ -8,21 +8,19 @@
     </div>
   </div>
 
+  @if (hideable) {
   <button
-    *ngIf="hideable"
     nbButton
     size="tiny"
     class="reduce"
     (click)="swapDisplay()"
     [nbTooltip]="hidden ? ('shared.sticky-menu.expand_menu_tooltip' | transloco) : ('shared.sticky-menu.reduce_menu_tooltip' | transloco)"
   >
-    <i
-      *ngIf="!hidden"
-      class="bi bi-chevron-up"
-    ></i>
-    <i
-      *ngIf="hidden"
-      class="bi bi-chevron-down"
-    ></i>
+    @if (!hidden) {
+    <i class="bi bi-chevron-up"></i>
+    } @if (hidden) {
+    <i class="bi bi-chevron-down"></i>
+    }
   </button>
+  }
 </div>

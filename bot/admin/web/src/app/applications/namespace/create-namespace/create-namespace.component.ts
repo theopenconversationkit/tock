@@ -26,9 +26,10 @@ export interface CreateNamespaceData {
 }
 
 @Component({
-  selector: 'tock-create-namespace',
-  templateUrl: './create-namespace.component.html',
-  styleUrls: ['./create-namespace.component.scss']
+    selector: 'tock-create-namespace',
+    templateUrl: './create-namespace.component.html',
+    styleUrls: ['./create-namespace.component.scss'],
+    standalone: false
 })
 export class CreateNamespaceComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();

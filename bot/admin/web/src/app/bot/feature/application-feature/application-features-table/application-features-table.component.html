@@ -18,17 +18,12 @@
   </nb-card-header>
 
   <nb-card-body>
-    <div
-      class="text-muted font-italic"
-      *ngIf="!features?.length"
-    >
+    @if (!features?.length) {
+    <div class="text-muted font-italic">
       {{ 'bot.application-features-table.noRulesMessage' | transloco }}
     </div>
-
-    <table
-      *ngIf="features?.length"
-      class="features-table"
-    >
+    } @if (features?.length) {
+    <table class="features-table">
       <thead>
         <tr>
           <td style="width: 15%">{{ 'bot.application-features-table.categoryColumn' | transloco }}</td>
@@ -46,9 +41,9 @@
           <td style="width: 5%"></td>
         </tr>
       </thead>
-
       <tbody>
-        <tr *ngFor="let feature of features">
+        @for (feature of features; track feature) {
+        <tr>
           <!-- Category -->
           <td
             class="ellipsis"
@@ -56,7 +51,6 @@
           >
             {{ feature.category }}
           </td>
-
           <!-- Feature Name -->
           <td
             class="font-weight-bold ellipsis"
@@ -64,13 +58,10 @@
           >
             {{ feature.name }}
           </td>
-
           <!-- Configuration -->
           <td class="ellipsis">
-            <span
-              *ngIf="feature.configuration"
-              [nbTooltip]="'bot.application-features-table.configurationTooltip' | transloco"
-            >
+            @if (feature.configuration) {
+            <span [nbTooltip]="'bot.application-features-table.configurationTooltip' | transloco">
               <img
                 src="{{ feature.configuration.connectorType.iconUrl() }}"
                 class="connector"
@@ -78,14 +69,12 @@
               />
               {{ feature.configuration.connectorType.label() }} ({{ feature.configuration.applicationId }})
             </span>
-            <span
-              *ngIf="!feature.configuration"
-              [nbTooltip]="'bot.application-features-table.allConfigurationsTooltip' | transloco"
-            >
+            } @if (!feature.configuration) {
+            <span [nbTooltip]="'bot.application-features-table.allConfigurationsTooltip' | transloco">
               {{ 'bot.application-features-table.allConfigurations' | transloco }}
             </span>
+            }
           </td>
-
           <!-- Start Date -->
           <td>
             <input
@@ -105,7 +94,6 @@
               [max]="feature.endDate"
             ></nb-datepicker>
           </td>
-
           <!-- End Date -->
           <td>
             <input
@@ -125,7 +113,6 @@
               [min]="feature.startDate"
             ></nb-datepicker>
           </td>
-
           <!-- Graduation -->
           <td>
             <input
@@ -140,7 +127,6 @@
               [nbTooltip]="'bot.application-features-table.graduationTooltip' | transloco"
             />
           </td>
-
           <!-- Status Toggle -->
           <td class="text-center">
             <nb-toggle
@@ -154,7 +140,6 @@
               "
             ></nb-toggle>
           </td>
-
           <!-- Delete Button -->
           <td class="text-right">
             <button
@@ -169,7 +154,9 @@
             </button>
           </td>
         </tr>
+        }
       </tbody>
     </table>
+    }
   </nb-card-body>
 </nb-card>

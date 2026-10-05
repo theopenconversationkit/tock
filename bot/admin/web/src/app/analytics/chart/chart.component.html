@@ -1,15 +1,15 @@
+@if (mainChart || altChart) {
 <nb-flip-card
   [showToggleButton]="false"
   [flipped]="isFlipped"
-  *ngIf="mainChart || altChart"
   style="min-height: 60vh"
 >
   <nb-card-front>
     <nb-card>
       <nb-card-header style="padding-right: 0">
         {{ title }}
+        @if (!isFullScreen) {
         <button
-          *ngIf="!isFullScreen"
           nbButton
           ghost
           status="info"
@@ -20,6 +20,7 @@
         >
           <nb-icon icon="arrows-angle-expand"></nb-icon>
         </button>
+        }
         <button
           nbButton
           ghost
@@ -31,8 +32,8 @@
         >
           <nb-icon icon="download"></nb-icon>
         </button>
+        @if (type !== 'PieChart' && isMultiChart === true) {
         <button
-          *ngIf="type !== 'PieChart' && isMultiChart === true"
           nbButton
           ghost
           status="info"
@@ -43,8 +44,8 @@
         >
           <nb-icon icon="pie-chart"></nb-icon>
         </button>
+        } @if (type === 'PieChart' && isMultiChart === true) {
         <button
-          *ngIf="type === 'PieChart' && isMultiChart === true"
           nbButton
           ghost
           status="info"
@@ -55,16 +56,17 @@
         >
           <nb-icon icon="graph-up"></nb-icon>
         </button>
+        }
       </nb-card-header>
       <nb-card-body
         [nbSpinner]="isLoading"
         nbSpinnerStatus="primary"
       >
         <div style="text-align: right">
+          @if (displayMultipleSelectComponent()) {
           <nb-select
             multiple
             status="primary"
-            *ngIf="displayMultipleSelectComponent()"
             style="min-width: 15rem; max-width: 20rem"
             size="small"
             [(selected)]="seriesSelectionList"
@@ -73,36 +75,33 @@
             <nb-select-label>
               {{ 'analytics.chart.nbSelectedLabel' | transloco: { count: seriesSelectionList.length } }}
             </nb-select-label>
-            <nb-option
-              *ngFor="let c of data.connectorsType; index as i"
-              [value]="i"
-              >{{ c }}</nb-option
-            >
+            @for (c of data.connectorsType; track c; let i = $index) {
+            <nb-option [value]="i">{{ c }}</nb-option>
+            }
           </nb-select>
+          } @if (intentsList.length > 0) {
           <nb-select
             class="select-intent"
             status="primary"
             [placeholder]="'analytics.chart.intentPlaceholder' | transloco"
-            *ngIf="intentsList.length > 0"
             (selectedChange)="refresh()"
             [(ngModel)]="filter.intent"
           >
             <nb-option value="">{{ 'analytics.chart.allIntentsOption' | transloco }}</nb-option>
-            <nb-option
-              *ngFor="let intent of intentsList"
-              [value]="intent"
-              >{{ intent }}</nb-option
-            >
+            @for (intent of intentsList; track intent) {
+            <nb-option [value]="intent">{{ intent }}</nb-option>
+            }
           </nb-select>
+          }
         </div>
-
         <div style="display: flex">
+          @if (chartOptions) {
           <div
             echarts
             [options]="chartOptions"
-            *ngIf="chartOptions"
             [style.width]="'100%'"
           ></div>
+          }
         </div>
       </nb-card-body>
       <nb-card-body> </nb-card-body>
@@ -137,3 +136,4 @@
     </nb-card>
   </nb-card-back>
 </nb-flip-card>
+}

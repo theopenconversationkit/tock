@@ -30,9 +30,10 @@ import { Pagination } from '../../shared/components';
 import { getExportFileName } from '../../shared/utils';
 
 @Component({
-  selector: 'tock-test-intent-errors',
-  templateUrl: './test-intent-errors.component.html',
-  styleUrls: ['./test-intent-errors.component.scss']
+    selector: 'tock-test-intent-errors',
+    templateUrl: './test-intent-errors.component.html',
+    styleUrls: ['./test-intent-errors.component.scss'],
+    standalone: false
 })
 export class TestIntentErrorsComponent implements OnInit, OnDestroy {
   destroy = new Subject();

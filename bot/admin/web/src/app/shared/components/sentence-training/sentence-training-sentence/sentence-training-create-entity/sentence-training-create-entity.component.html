@@ -4,12 +4,10 @@
     <label>{{ 'shared.sentence-training-create-entity.select-existing-entity' | transloco }}</label
     ><br />
 
-    <div
-      *ngIf="entityTypes"
-      class="mb-3"
-    >
+    @if (entityTypes) {
+    <div class="mb-3">
+      @for (e of entityTypes; track e) {
       <span
-        *ngFor="let e of entityTypes"
         class="entity pointer"
         [nbTooltip]="
           'shared.sentence-training-create-entity.select-entity-tooltip' | transloco: { entityName: e.qualifiedName(state.user) }
@@ -20,7 +18,9 @@
       >
         {{ e.qualifiedName(state.user) }}
       </span>
+      }
     </div>
+    }
 
     <div class="d-flex align-items-center mb-1">
       <span
@@ -50,12 +50,11 @@
       />
     </div>
 
-    <div
-      *ngIf="error"
-      class="text-danger my-3"
-    >
+    @if (error) {
+    <div class="text-danger my-3">
       {{ error }}
     </div>
+    }
   </nb-card-body>
 
   <nb-card-footer class="card-footer-actions">

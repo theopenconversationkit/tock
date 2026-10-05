@@ -1,13 +1,12 @@
-<div *ngIf="configurations && configurations.length === 0">{{ 'common.messages.noBotConfiguration' | transloco }}&nbsp;</div>
+@if (configurations && configurations.length === 0) {
+<div>{{ 'common.messages.noBotConfiguration' | transloco }}&nbsp;</div>
+} @if (configurations && configurations.length !== 0) {
 <div
-  *ngIf="configurations && configurations.length !== 0"
   class="gap-1"
   [ngClass]="{ 'd-flex': displayConnectorChoice && currentBotName !== 'None' }"
 >
-  <span
-    class="select-configuration w-50 lineHeight-1"
-    *ngIf="botNames && (allowNoSelection || botNames.length > 1)"
-  >
+  @if (botNames && (allowNoSelection || botNames.length > 1)) {
+  <span class="select-configuration w-50 lineHeight-1">
     <nb-form-field [nbTooltip]="'shared.select-bot.selectConfigurationTooltip' | transloco">
       <nb-icon
         nbPrefix
@@ -22,21 +21,16 @@
         fullWidth
         [disabled]="disabled"
       >
-        <nb-option
-          *ngIf="allowNoSelection"
-          value="None"
-          >{{ noConfigurationLabel }}</nb-option
-        >
-        <nb-option
-          *ngFor="let n of botNames"
-          [value]="n"
-          >{{ n }}</nb-option
-        >
+        @if (allowNoSelection) {
+        <nb-option value="None">{{ noConfigurationLabel }}</nb-option>
+        } @for (n of botNames; track n) {
+        <nb-option [value]="n">{{ n }}</nb-option>
+        }
       </nb-select>
     </nb-form-field>
   </span>
+  } @if (displayConnectorChoice && currentBotName !== 'None') {
   <span
-    *ngIf="displayConnectorChoice && currentBotName !== 'None'"
     class="select-configuration lineHeight-1"
     [class.w-50]="botNames && (allowNoSelection || botNames.length > 1)"
   >
@@ -54,23 +48,21 @@
         fullWidth
         [disabled]="disabled"
       >
-        <nb-option
-          *ngIf="allowNoConfigurationSelection"
-          value=""
-          >{{ noConnectorLabel }}</nb-option
-        >
-        <nb-option
-          *ngFor="let c of currentConfigurations"
-          [value]="c"
-        >
+        @if (allowNoConfigurationSelection) {
+        <nb-option value="">{{ noConnectorLabel }}</nb-option>
+        } @for (c of currentConfigurations; track c) {
+        <nb-option [value]="c">
           <img
             src="{{ c.connectorType.iconUrl() }}"
             class="connector-icon"
           />
           {{ c.connectorType.label() }} ( {{ c.applicationId }})</nb-option
         >
+        }
       </nb-select>
     </nb-form-field>
   </span>
+  }
   <ng-content></ng-content>
 </div>
+}

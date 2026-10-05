@@ -1,23 +1,16 @@
-<tock-chat-ui-message-debug
-  *ngIf="showDebug && action?.ragDebug"
-  [action]="action"
-></tock-chat-ui-message-debug>
-
-<div
-  *ngIf="message && !message?.isDebug() && !isMessageEmpty()"
-  class="wrapper"
->
+@if (showDebug && action?.ragDebug) {
+<tock-chat-ui-message-debug [action]="action"></tock-chat-ui-message-debug>
+} @if (message && !message?.isDebug() && !isMessageEmpty()) {
+<div class="wrapper">
   <div class="avatar-wrapper">
     <div
       class="avatar"
       [style.background-image]="avatarStyle"
       [class.mt-1]="sender || date"
     ></div>
-
+    @if ( switchFormattingPos === 'afterAvatar' && reply && (message.isSentence() || message.isSentenceWithFootnotes()) &&
+    $any(message).text ) {
     <button
-      *ngIf="
-        switchFormattingPos === 'afterAvatar' && reply && (message.isSentence() || message.isSentenceWithFootnotes()) && $any(message).text
-      "
       nbButton
       size="small"
       ghost
@@ -25,63 +18,45 @@
       class="mt-1"
       (click)="switchFormatting()"
     >
-      <nb-icon
-        *ngIf="!formatting"
-        icon="body-text"
-      ></nb-icon>
-      <nb-icon
-        *ngIf="formatting"
-        icon="code-square"
-      ></nb-icon>
+      @if (!formatting) {
+      <nb-icon icon="body-text"></nb-icon>
+      } @if (formatting) {
+      <nb-icon icon="code-square"></nb-icon>
+      }
     </button>
-
+    }
     <ng-content></ng-content>
   </div>
-
   <div class="message mb-2">
     <div class="message-text">
       <div class="d-flex gap-1 justify-content-between align-items-end">
-        <div
-          class="sender font-size-small mb-1"
-          *ngIf="sender || date"
-        >
+        @if (sender || date) {
+        <div class="sender font-size-small mb-1">
           {{ sender }}
-
           <time>{{ date | date: 'y/MM/dd HH:mm:ss' }}</time>
-
-          <span
-            *ngIf="applicationId"
-            [nbTooltip]="'shared.chat-ui-message.configuration-tooltip' | transloco: { name: getApplicationConfigurationName(false) }"
-          >
+          @if (applicationId) {
+          <span [nbTooltip]="'shared.chat-ui-message.configuration-tooltip' | transloco: { name: getApplicationConfigurationName(false) }">
             | {{ getApplicationConfigurationName() }}</span
           >
+          }
         </div>
-
+        } @if ( sender && switchFormattingPos === 'afterSender' && reply && (message.isSentence() || message.isSentenceWithFootnotes()) &&
+        $any(message).text ) {
         <button
-          *ngIf="
-            sender &&
-            switchFormattingPos === 'afterSender' &&
-            reply &&
-            (message.isSentence() || message.isSentenceWithFootnotes()) &&
-            $any(message).text
-          "
           nbButton
           size="small"
           ghost
           [nbTooltip]="'shared.chat-ui-message.switch-formatting-tooltip' | transloco"
           (click)="switchFormatting()"
         >
-          <nb-icon
-            *ngIf="!formatting"
-            icon="body-text"
-          ></nb-icon>
-          <nb-icon
-            *ngIf="formatting"
-            icon="code-square"
-          ></nb-icon>
+          @if (!formatting) {
+          <nb-icon icon="body-text"></nb-icon>
+          } @if (formatting) {
+          <nb-icon icon="code-square"></nb-icon>
+          }
         </button>
+        }
       </div>
-
       <div
         class="text position-relative"
         (mouseenter)="showCopyButton = true"
@@ -91,8 +66,8 @@
           'reply-bg-negative': reply && replyBgNegative
         }"
       >
+        @if (canBeCopied()) {
         <button
-          *ngIf="canBeCopied()"
           nbButton
           status="primary"
           size="small"
@@ -103,40 +78,33 @@
         >
           <nb-icon icon="copy"></nb-icon>
         </button>
-
+        } @if (message.isSentence()) {
         <tock-chat-ui-message-sentence
-          *ngIf="message.isSentence()"
           [sentence]="$any(message)"
           [replay]="replay"
           [reply]="reply"
           [formatting]="formatting"
           (sendMessage)="replyMessage($event)"
         ></tock-chat-ui-message-sentence>
-
+        } @if (message.isSentenceWithFootnotes()) {
         <tock-chat-ui-message-sentence-footnotes
-          *ngIf="message.isSentenceWithFootnotes()"
           [sentence]="$any(message)"
           [reply]="reply"
           [formatting]="formatting"
         ></tock-chat-ui-message-sentence-footnotes>
-
+        } @if (message.isChoice()) {
         <tock-chat-ui-message-choice
-          *ngIf="message.isChoice()"
           [choice]="$any(message)"
           [replay]="true"
           [reply]="reply"
         ></tock-chat-ui-message-choice>
-
-        <tock-chat-ui-message-attachment
-          *ngIf="message.isAttachment()"
-          [attachment]="$any(message)"
-        ></tock-chat-ui-message-attachment>
-
-        <tock-chat-ui-message-location
-          *ngIf="message.isLocation()"
-          [location]="$any(message)"
-        ></tock-chat-ui-message-location>
+        } @if (message.isAttachment()) {
+        <tock-chat-ui-message-attachment [attachment]="$any(message)"></tock-chat-ui-message-attachment>
+        } @if (message.isLocation()) {
+        <tock-chat-ui-message-location [location]="$any(message)"></tock-chat-ui-message-location>
+        }
       </div>
     </div>
   </div>
 </div>
+}

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { enableProdMode, provideZoneChangeDetection } from '@angular/core';
 
 import { BotAdminAppModule } from './app/bot-admin-app.module';
 import { environment } from './environments/environment';
+import { platformBrowser } from '@angular/platform-browser';
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic()
-  .bootstrapModule(BotAdminAppModule)
+platformBrowser()
+  .bootstrapModule(BotAdminAppModule, { applicationProviders: [provideZoneChangeDetection()] })
   .catch((err) => console.log(err));

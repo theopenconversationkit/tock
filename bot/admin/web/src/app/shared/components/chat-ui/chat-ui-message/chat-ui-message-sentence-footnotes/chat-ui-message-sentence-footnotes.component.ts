@@ -22,9 +22,10 @@ import { NbDialogService } from '@nebular/theme';
 import { JsonViewerDialogComponent } from '../../../json-viewer-dialog/json-viewer-dialog.component';
 
 @Component({
-  selector: 'tock-chat-ui-message-sentence-footnotes',
-  templateUrl: './chat-ui-message-sentence-footnotes.component.html',
-  styleUrls: ['./chat-ui-message-sentence-footnotes.component.scss']
+    selector: 'tock-chat-ui-message-sentence-footnotes',
+    templateUrl: './chat-ui-message-sentence-footnotes.component.html',
+    styleUrls: ['./chat-ui-message-sentence-footnotes.component.scss'],
+    standalone: false
 })
 export class ChatUiMessageSentenceFootnotesComponent {
   @Input() sentence: SentenceWithFootnotes;

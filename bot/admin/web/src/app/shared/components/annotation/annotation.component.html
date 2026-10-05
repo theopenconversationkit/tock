@@ -22,30 +22,31 @@
     <nb-card-body>
       <div class="row">
         <div class="col-12 pb-3 mb-3 border-bottom">
+          @if (question) {
           <div
-            *ngIf="question"
             class="ellipsis font-size-small"
             [nbTooltip]="question"
           >
             <span class="text-muted font-weight-bold">{{ 'shared.annotation.questionPrefix' | transloco }}</span>
             <q class="ml-1">{{ question }}</q>
           </div>
+          } @if (condensedQuestion) {
           <div
-            *ngIf="condensedQuestion"
             class="ellipsis font-size-small"
             [nbTooltip]="condensedQuestion"
           >
             <span class="text-muted font-weight-bold">{{ 'shared.annotation.condensedQuestionPrefix' | transloco }}</span>
             <q class="ml-1">{{ condensedQuestion }}</q>
           </div>
+          } @if (answer) {
           <div
-            *ngIf="answer"
             class="ellipsis font-size-small"
             [nbTooltip]="answer"
           >
             <span class="text-muted font-weight-bold">{{ 'shared.annotation.answerPrefix' | transloco }}</span>
             <q class="ml-1">{{ answer }}</q>
           </div>
+          }
         </div>
 
         <div class="col-12 col-xl-6">
@@ -62,11 +63,9 @@
               value="2"
               class="d-flex mt-2"
             >
-              <nb-radio
-                *ngFor="let state of annotationStates"
-                [value]="state.value"
-                >{{ state.label }}</nb-radio
-              >
+              @for (state of annotationStates; track state) {
+              <nb-radio [value]="state.value">{{ state.label }}</nb-radio>
+              }
             </nb-radio-group>
           </tock-form-control>
         </div>
@@ -80,11 +79,9 @@
               [placeholder]="'shared.annotation.reasonPlaceholder' | transloco"
               fullWidth
             >
-              <nb-option
-                *ngFor="let reason of annotationReasons"
-                [value]="reason.value"
-                >{{ reason.label }}</nb-option
-              >
+              @for (reason of annotationReasons; track reason) {
+              <nb-option [value]="reason.value">{{ reason.label }}</nb-option>
+              }
             </nb-select>
           </tock-form-control>
         </div>
@@ -125,86 +122,82 @@
         </div>
       </div>
 
-      <ng-container *ngIf="actionReport.annotation?.events?.length">
-        <div class="d-flex gap-1 justify-content-between align-items-center">
-          <span
-            class="text-mitigated font-weight-bold pointer"
-            (click)="toggleEventsSortingDirection()"
-            [nbTooltip]="'shared.annotation.reverseOrderTooltip' | transloco"
+      @if (actionReport.annotation?.events?.length) {
+      <div class="d-flex gap-1 justify-content-between align-items-center">
+        <span
+          class="text-mitigated font-weight-bold pointer"
+          (click)="toggleEventsSortingDirection()"
+          [nbTooltip]="'shared.annotation.reverseOrderTooltip' | transloco"
+        >
+          {{ 'shared.annotation.changesAndCommentsTitle' | transloco }}
+          <nb-icon
+            class="align-middle"
+            [icon]="eventsSortingDirection === sortOrder.ASC ? 'chevron-down-outline' : 'chevron-up-outline'"
+            pack="nebular-essentials"
+          ></nb-icon>
+        </span>
+        <div>
+          <nb-toggle
+            [(ngModel)]="hideChangeEvents"
+            [ngModelOptions]="{ standalone: true }"
+            class="nb-toggle-small mt-2"
+            status="basic"
+            [nbTooltip]="
+              hideChangeEvents
+                ? ('shared.annotation.showChangeEventsTooltip' | transloco)
+                : ('shared.annotation.hideChangeEventsTooltip' | transloco)
+            "
           >
-            {{ 'shared.annotation.changesAndCommentsTitle' | transloco }}
-            <nb-icon
-              class="align-middle"
-              [icon]="eventsSortingDirection === sortOrder.ASC ? 'chevron-down-outline' : 'chevron-up-outline'"
-              pack="nebular-essentials"
-            ></nb-icon>
-          </span>
-
-          <div>
-            <nb-toggle
-              [(ngModel)]="hideChangeEvents"
-              [ngModelOptions]="{ standalone: true }"
-              class="nb-toggle-small mt-2"
-              status="basic"
-              [nbTooltip]="
-                hideChangeEvents
-                  ? ('shared.annotation.showChangeEventsTooltip' | transloco)
-                  : ('shared.annotation.hideChangeEventsTooltip' | transloco)
-              "
-            >
-              {{ 'shared.annotation.hideChangeEventsLabel' | transloco }}
-            </nb-toggle>
-          </div>
+            {{ 'shared.annotation.hideChangeEventsLabel' | transloco }}
+          </nb-toggle>
         </div>
-
-        <div class="events-wrapper">
-          <div
-            *ngIf="getFilteredEvents().length < 1"
-            class="text-center text-muted py-2"
-          >
-            {{ 'shared.annotation.noDataToDisplay' | transloco }}
-          </div>
-
-          <div *ngFor="let event of getFilteredEvents()">
-            <!-- COMMENTS -->
-            <tock-annotation-comment
-              *ngIf="event.type === annotationEventType.COMMENT"
-              [event]="event"
-              (commentChange)="putComment($event)"
-              (commentDelete)="deleteComment($event)"
-              class="my-1"
-            ></tock-annotation-comment>
-
-            <!-- OTHER EVENTS -->
-            <div
-              *ngIf="event.type !== annotationEventType.COMMENT"
-              class="event-info my-1"
-            >
-              <q>{{ event.user }}</q> {{ 'shared.annotation.modifiedLabel' | transloco }}
-              <span class="emphasize">{{ getEventTypeLabel(event.type) }}</span> {{ 'shared.annotation.fromLabel' | transloco }}
-              <q>
-                <div
-                  class="before-after d-inline-block ellipsis"
-                  [nbTooltip]="getBeforeAfterDisplayLabel(event.type, event.before)"
-                >
-                  {{ getBeforeAfterDisplayLabel(event.type, event.before) }}
-                </div></q
-              >
-              {{ 'shared.annotation.toLabel' | transloco }}
-              <q>
-                <div
-                  class="before-after d-inline-block ellipsis"
-                  [nbTooltip]="getBeforeAfterDisplayLabel(event.type, event.after)"
-                >
-                  {{ getBeforeAfterDisplayLabel(event.type, event.after) }}
-                </div></q
-              >
-              {{ 'shared.annotation.onLabel' | transloco }} {{ event.lastUpdateDate | date: 'y/MM/dd' }} at
-              {{ event.lastUpdateDate | date: 'HH:mm' }}
-            </div>
-          </div>
+      </div>
+      <div class="events-wrapper">
+        @if (getFilteredEvents().length < 1) {
+        <div class="text-center text-muted py-2">
+          {{ 'shared.annotation.noDataToDisplay' | transloco }}
         </div>
-      </ng-container>
+        } @for (event of getFilteredEvents(); track event) {
+        <div>
+          <!-- COMMENTS -->
+          @if (event.type === annotationEventType.COMMENT) {
+          <tock-annotation-comment
+            [event]="event"
+            (commentChange)="putComment($event)"
+            (commentDelete)="deleteComment($event)"
+            class="my-1"
+          ></tock-annotation-comment>
+          }
+          <!-- OTHER EVENTS -->
+          @if (event.type !== annotationEventType.COMMENT) {
+          <div class="event-info my-1">
+            <q>{{ event.user }}</q> {{ 'shared.annotation.modifiedLabel' | transloco }}
+            <span class="emphasize">{{ getEventTypeLabel(event.type) }}</span> {{ 'shared.annotation.fromLabel' | transloco }}
+            <q>
+              <div
+                class="before-after d-inline-block ellipsis"
+                [nbTooltip]="getBeforeAfterDisplayLabel(event.type, event.before)"
+              >
+                {{ getBeforeAfterDisplayLabel(event.type, event.before) }}
+              </div></q
+            >
+            {{ 'shared.annotation.toLabel' | transloco }}
+            <q>
+              <div
+                class="before-after d-inline-block ellipsis"
+                [nbTooltip]="getBeforeAfterDisplayLabel(event.type, event.after)"
+              >
+                {{ getBeforeAfterDisplayLabel(event.type, event.after) }}
+              </div></q
+            >
+            {{ 'shared.annotation.onLabel' | transloco }} {{ event.lastUpdateDate | date: 'y/MM/dd' }} at
+            {{ event.lastUpdateDate | date: 'HH:mm' }}
+          </div>
+          }
+        </div>
+        }
+      </div>
+      }
     </nb-card-body>
 
     <div
@@ -234,20 +227,27 @@
         size="small"
         (click)="cancel()"
       >
-        <ng-container *ngIf="form.dirty">{{ 'shared.annotation.cancelButton' | transloco }}</ng-container>
-        <ng-container *ngIf="!form.dirty">{{ 'shared.annotation.closeButton' | transloco }}</ng-container>
+        @if (form.dirty) {
+        {{ 'shared.annotation.cancelButton' | transloco }}
+        } @if (!form.dirty) {
+        {{ 'shared.annotation.closeButton' | transloco }}
+        }
       </button>
+      @if (form.dirty) {
       <button
         type="button"
         nbButton
         status="primary"
         size="small"
         (click)="submit()"
-        *ngIf="form.dirty"
       >
-        <ng-container *ngIf="!actionReport.annotation">{{ 'shared.annotation.submitButton' | transloco }}</ng-container>
-        <ng-container *ngIf="actionReport.annotation">{{ 'shared.annotation.updateButton' | transloco }}</ng-container>
+        @if (!actionReport.annotation) {
+        {{ 'shared.annotation.submitButton' | transloco }}
+        } @if (actionReport.annotation) {
+        {{ 'shared.annotation.updateButton' | transloco }}
+        }
       </button>
+      }
     </nb-card-footer>
   </nb-card>
 </form>

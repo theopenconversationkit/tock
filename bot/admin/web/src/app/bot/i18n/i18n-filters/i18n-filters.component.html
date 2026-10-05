@@ -18,8 +18,8 @@
             spellcheck="false"
             autocomplete="off"
           />
+          @if (!!getFormControl('search').value) {
           <button
-            *ngIf="!!getFormControl('search').value"
             nbButton
             nbSuffix
             ghost
@@ -29,6 +29,7 @@
           >
             <nb-icon icon="x-lg"></nb-icon>
           </button>
+          }
         </nb-form-field>
       </div>
 
@@ -86,12 +87,11 @@
               formControlName="category"
             >
               <nb-option [value]="I18nCategoryFilterAll">{{ 'common.actions.all' | transloco }}</nb-option>
-              <nb-option
-                *ngFor="let c of categories"
-                [value]="c"
-              >
+              @for (c of categories; track c) {
+              <nb-option [value]="c">
                 {{ c }}
               </nb-option>
+              }
             </nb-select>
           </nb-form-field>
         </div>
@@ -127,12 +127,11 @@
               fullWidth
               formControlName="usage"
             >
-              <nb-option
-                *ngFor="let notUsedFromValue of notUsedFromPossibleValues"
-                [value]="notUsedFromValue"
-              >
+              @for (notUsedFromValue of notUsedFromPossibleValues; track notUsedFromValue) {
+              <nb-option [value]="notUsedFromValue">
                 {{ notUsedFromLabel(notUsedFromValue) }}
               </nb-option>
+              }
             </nb-select>
           </nb-form-field>
         </div>
@@ -154,6 +153,7 @@
         </div>
 
         <div class="col-sm-3 col-6">
+          @if (state.currentApplication.supportedLocales.length !== 1) {
           <button
             nbButton
             fullWidth
@@ -161,11 +161,11 @@
             ghost
             [nbTooltip]="'bot.i18n-filters.translateAllTooltip' | transloco"
             (click)="translate()"
-            *ngIf="state.currentApplication.supportedLocales.length !== 1"
           >
             <nb-icon icon="globe2"></nb-icon>
             {{ 'bot.i18n-filters.translateAllButton' | transloco }}
           </button>
+          }
         </div>
 
         <div class="col-sm-3 col-6">

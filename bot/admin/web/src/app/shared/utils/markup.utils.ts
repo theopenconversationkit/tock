@@ -18,7 +18,7 @@ import { lexer, Marked } from 'marked';
 import type { Tokens, TokenizerExtension, RendererExtension } from 'marked';
 import katex from 'katex';
 
-import { VFile } from 'rehype-raw/lib';
+import type { VFile } from 'vfile';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';

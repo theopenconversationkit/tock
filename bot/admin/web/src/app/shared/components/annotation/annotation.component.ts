@@ -16,9 +16,10 @@ type AnnotationForm = FormType<Omit<Annotation, '_id' | 'user' | 'createdAt' | '
 type AnnotationFormGroupKeysType = AnnotationForm[G];
 
 @Component({
-  selector: 'tock-annotation',
-  templateUrl: './annotation.component.html',
-  styleUrl: './annotation.component.scss'
+    selector: 'tock-annotation',
+    templateUrl: './annotation.component.html',
+    styleUrl: './annotation.component.scss',
+    standalone: false
 })
 export class AnnotationComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

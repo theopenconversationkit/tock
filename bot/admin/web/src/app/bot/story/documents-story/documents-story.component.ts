@@ -17,9 +17,10 @@ interface DocumentsFilterForm {
 }
 
 @Component({
-  selector: 'tock-documents-story',
-  templateUrl: './documents-story.component.html',
-  styleUrls: ['./documents-story.component.scss']
+    selector: 'tock-documents-story',
+    templateUrl: './documents-story.component.html',
+    styleUrls: ['./documents-story.component.scss'],
+    standalone: false
 })
 export class DocumentsStoryComponent implements OnInit, OnDestroy {
   private destroy: Subject<boolean> = new Subject();

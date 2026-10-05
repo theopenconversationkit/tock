@@ -8,10 +8,8 @@
   </div>
 </div>
 
-<tock-sticky-menu
-  *ngIf="!loading"
-  [hideable]="true"
->
+@if (!loading) {
+<tock-sticky-menu [hideable]="true">
   <div class="vs-wrapper mb-1">
     <nb-card class="mb-0">
       <nb-card-body>
@@ -21,7 +19,6 @@
           </span>
           <span class="text-muted font-size-small ellipsis"> {{ currentRun.id }} </span>
         </div>
-
         <div class="d-flex flex-wrap column-gap-1 justify-content-between text-muted font-size-small mt-1">
           <span class="text-nowrap">{{ currentRun.startTime | date: 'y/MM/dd - HH:mm' }}</span>
           <i class="bi bi-chevron-bar-left"></i>
@@ -29,7 +26,6 @@
           <i class="bi bi-chevron-bar-right"></i>
           <span class="text-nowrap">{{ currentRun.endTime | date: 'y/MM/dd - HH:mm' }}</span>
         </div>
-
         <div class="d-flex flex-wrap gap-05 justify-content-between mt-2">
           <div
             class="flex-fill justify-content-center tag prompt pointer"
@@ -55,7 +51,6 @@
             {{ currentRun.settingsSnapshot?.indexSessionId }}
           </div>
         </div>
-
         <div class="font-size-small lineHeight-1 d-flex flex-wrap gap-05 row-gap-05 justify-content-between mt-1">
           <div class="text-nowrap">
             {{ 'quality.dataset-detail.completed_questions_label' | transloco: { count: currentRun.stats.completedQuestions } }}
@@ -108,13 +103,10 @@
           </div>
         </div>
       </nb-card-body>
-
-      <nb-card-footer
-        *ngIf="comparableRuns.length > 1"
-        class="p-0 background-basic-color-2 d-flex align-items-stretch"
-      >
+      @if (comparableRuns.length > 1) {
+      <nb-card-footer class="p-0 background-basic-color-2 d-flex align-items-stretch">
+        @if (canScrollLeft('current')) {
         <button
-          *ngIf="canScrollLeft('current')"
           class="scroll-arrow"
           nbButton
           size="tiny"
@@ -128,15 +120,15 @@
             pack="nebular-essentials"
           ></nb-icon>
         </button>
-
+        }
         <div
           #runsScrollA
           class="d-flex gap-05 px-2 py-1 prev-entries flex-grow-1"
           [class.scrolled-left]="canScrollLeft('current')"
           (scroll)="onRunsScroll('current')"
         >
+          @for (entry of comparableRuns; track entry; let i = $index) {
           <button
-            *ngFor="let entry of comparableRuns; let i = index"
             nbButton
             size="tiny"
             shape="round"
@@ -147,10 +139,10 @@
           >
             {{ i }}
           </button>
+          }
         </div>
-
+        @if (canScrollRight('current')) {
         <button
-          *ngIf="canScrollRight('current')"
           class="scroll-arrow"
           nbButton
           size="tiny"
@@ -164,11 +156,12 @@
             pack="nebular-essentials"
           ></nb-icon>
         </button>
+        }
       </nb-card-footer>
+      }
     </nb-card>
-
+    @if (comparisonRun) {
     <button
-      *ngIf="comparisonRun"
       nbButton
       shape="round"
       status="basic"
@@ -179,11 +172,8 @@
     >
       VS
     </button>
-
-    <nb-card
-      *ngIf="comparisonRun && !showComparison"
-      class="mb-0 vs-no-comparison"
-    >
+    } @if (comparisonRun && !showComparison) {
+    <nb-card class="mb-0 vs-no-comparison">
       <nb-card-body class="d-flex flex-column align-items-center justify-content-center gap-1">
         <span class="text-muted font-size-small">{{ 'quality.dataset-detail.comparison_disabled_message' | transloco }}</span>
         <button
@@ -197,11 +187,8 @@
         </button>
       </nb-card-body>
     </nb-card>
-
-    <nb-card
-      class="mb-0"
-      *ngIf="comparisonRun && showComparison"
-    >
+    } @if (comparisonRun && showComparison) {
+    <nb-card class="mb-0">
       <nb-card-body>
         <div class="d-flex gap-05 justify-content-between">
           <span class="text-uppercase monospace text-success text-nowrap">
@@ -209,7 +196,6 @@
           </span>
           <span class="text-muted font-size-small ellipsis"> {{ comparisonRun.id }} </span>
         </div>
-
         <div class="d-flex flex-wrap column-gap-1 justify-content-between text-muted font-size-small mt-1">
           <span class="text-nowrap">{{ comparisonRun.startTime | date: 'y/MM/dd - HH:mm' }}</span>
           <i class="bi bi-chevron-bar-left"></i>
@@ -217,7 +203,6 @@
           <i class="bi bi-chevron-bar-right"></i>
           <span class="text-nowrap">{{ comparisonRun.endTime | date: 'y/MM/dd - HH:mm' }}</span>
         </div>
-
         <div class="d-flex flex-wrap gap-05 justify-content-between mt-2">
           <div
             class="flex-fill justify-content-center tag prompt pointer"
@@ -240,7 +225,6 @@
             {{ comparisonRun.settingsSnapshot?.indexSessionId }}
           </div>
         </div>
-
         <div class="font-size-small lineHeight-1 d-flex flex-wrap gap-05 row-gap-05 justify-content-between mt-1">
           <div class="text-nowrap">
             {{ 'quality.dataset-detail.completed_questions_label' | transloco: { count: comparisonRun.stats.completedQuestions } }}
@@ -294,10 +278,9 @@
           </div>
         </div>
       </nb-card-body>
-
       <nb-card-footer class="p-0 background-basic-color-2 d-flex align-items-stretch">
+        @if (canScrollLeft('compared')) {
         <button
-          *ngIf="canScrollLeft('compared')"
           class="scroll-arrow"
           nbButton
           size="tiny"
@@ -311,15 +294,15 @@
             pack="nebular-essentials"
           ></nb-icon>
         </button>
-
+        }
         <div
           #runsScrollB
           class="d-flex gap-05 px-2 py-1 prev-entries flex-grow-1"
           [class.scrolled-left]="canScrollLeft('compared')"
           (scroll)="onRunsScroll('compared')"
         >
+          @for (entry of comparableRuns; track entry; let i = $index) {
           <button
-            *ngFor="let entry of comparableRuns; let i = index"
             nbButton
             size="tiny"
             shape="round"
@@ -330,10 +313,10 @@
           >
             {{ i }}
           </button>
+          }
         </div>
-
+        @if (canScrollRight('compared')) {
         <button
-          *ngIf="canScrollRight('compared')"
           class="scroll-arrow"
           nbButton
           size="tiny"
@@ -347,17 +330,15 @@
             pack="nebular-essentials"
           ></nb-icon>
         </button>
+        }
       </nb-card-footer>
     </nb-card>
+    }
   </div>
-
   <!-- ── Filter bar — only available when a comparison run is selected ── -->
-  <div
-    *ngIf="comparisonRun && showComparison"
-    class="d-flex align-items-center gap-1 flex-wrap mt-1"
-  >
+  @if (comparisonRun && showComparison) {
+  <div class="d-flex align-items-center gap-1 flex-wrap mt-1">
     <span class="text-muted font-size-small text-nowrap">{{ 'quality.dataset-detail.show_only_diffs_label' | transloco }}</span>
-
     <button
       nbButton
       size="tiny"
@@ -369,7 +350,6 @@
     >
       {{ 'quality.dataset-detail.all_button' | transloco }}
     </button>
-
     <button
       nbButton
       size="tiny"
@@ -381,7 +361,6 @@
     >
       <i class="bi bi-tag-fill mr-1"></i> {{ 'quality.dataset-detail.status_button' | transloco }}
     </button>
-
     <button
       nbButton
       size="tiny"
@@ -393,7 +372,6 @@
     >
       <i class="bi bi-file-earmark-fill mr-1"></i> {{ 'quality.dataset-detail.sources_button' | transloco }}
     </button>
-
     <button
       nbButton
       size="tiny"
@@ -405,7 +383,6 @@
     >
       <i class="bi bi-arrow-left-right mr-1"></i> {{ 'quality.dataset-detail.type_button' | transloco }}
     </button>
-
     <button
       nbButton
       size="tiny"
@@ -417,34 +394,27 @@
     >
       <i class="bi bi-pencil-fill mr-1"></i> {{ 'quality.dataset-detail.question_button' | transloco }}
     </button>
-
-    <span
-      *ngIf="anyFilterActive"
-      class="text-muted font-size-small text-nowrap ml-1"
-    >
-      {{ filteredQuestions.length }} / {{ dataset.questions.length }}
-    </span>
+    @if (anyFilterActive) {
+    <span class="text-muted font-size-small text-nowrap ml-1"> {{ filteredQuestions.length }} / {{ dataset.questions.length }} </span>
+    }
   </div>
+  }
 </tock-sticky-menu>
-
-<div
-  *ngIf="!loading"
-  class="mt-4"
->
+} @if (!loading) {
+<div class="mt-4">
+  @if (!loading && filteredQuestions.length === 0) {
   <tock-no-data-found
-    *ngIf="!loading && filteredQuestions.length === 0"
     [title]="'quality.dataset-detail.no_entry_found' | transloco"
     class="mt-3"
   ></tock-no-data-found>
-
-  <ng-container *ngFor="let question of filteredQuestions">
-    <tock-dataset-detail-entry
-      *ngIf="currentRunActions"
-      [currentRunActions]="currentRunActions"
-      [comparisonRunActions]="showComparison ? comparisonRunActions : null"
-      [question]="question"
-    ></tock-dataset-detail-entry>
-  </ng-container>
+  } @for (question of filteredQuestions; track question) { @if (currentRunActions) {
+  <tock-dataset-detail-entry
+    [currentRunActions]="currentRunActions"
+    [comparisonRunActions]="showComparison ? comparisonRunActions : null"
+    [question]="question"
+  ></tock-dataset-detail-entry>
+  } }
 </div>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

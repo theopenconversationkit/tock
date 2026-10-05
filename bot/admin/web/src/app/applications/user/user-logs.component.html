@@ -1,18 +1,17 @@
 <div class="d-flex align-items-end flex-wrap mt-3 mb-2">
   <h1 class="flex-grow-1">{{ 'applications.user-logs.title' | transloco }}</h1>
+  @if (dataSource && dataSource.length) {
   <tock-pagination
-    *ngIf="dataSource && dataSource.length"
     [pagination]="pagination"
     (onPaginationChange)="search()"
   ></tock-pagination>
+  }
 </div>
 
 <nb-card class="mb-1">
   <nb-card-body>
-    <table
-      *ngIf="dataSource && dataSource.length !== 0"
-      class="table table-sm"
-    >
+    @if (dataSource && dataSource.length !== 0) {
+    <table class="table table-sm">
       <thead>
         <tr>
           <th
@@ -54,7 +53,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of dataSource; index as i">
+        @for (row of dataSource; track row; let i = $index) {
+        <tr>
           <td class="text-nowrap">
             {{ row.date | amDateFormat: 'YYYY-MM-DD HH:mm' }}
           </td>
@@ -68,36 +68,39 @@
             {{ appName(row.applicationId) }}
           </td>
           <td>
+            @if (row.newData) {
             <button
               nbButton
               ghost
-              *ngIf="row.newData"
               (click)="displayData(row)"
             >
               <nb-icon icon="eye"></nb-icon>
             </button>
+            }
           </td>
           <td>
-            <div
-              class="error-icon"
-              *ngIf="row.error"
-            >
+            @if (row.error) {
+            <div class="error-icon">
               <nb-icon
                 icon="exclamation-circle"
                 status="danger"
               ></nb-icon>
             </div>
+            }
           </td>
         </tr>
+        }
       </tbody>
     </table>
+    }
   </nb-card-body>
 </nb-card>
 
 <div class="d-flex flex-row-reverse">
+  @if (dataSource && dataSource.length) {
   <tock-pagination
-    *ngIf="dataSource && dataSource.length"
     [pagination]="pagination"
     (onPaginationChange)="search()"
   ></tock-pagination>
+  }
 </div>

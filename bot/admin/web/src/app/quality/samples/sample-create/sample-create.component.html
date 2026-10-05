@@ -70,12 +70,11 @@
                 [placeholder]="'quality.sample-create.dialogues_placeholder' | transloco"
                 formControlName="requestedDialogCount"
               >
-                <nb-option
-                  *ngFor="let option of nbDialogOptions"
-                  [value]="option.value"
-                >
+                @for (option of nbDialogOptions; track option) {
+                <nb-option [value]="option.value">
                   {{ option.label }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </tock-form-control>

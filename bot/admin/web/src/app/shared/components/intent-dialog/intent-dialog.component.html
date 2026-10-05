@@ -3,13 +3,13 @@
   class="container"
 >
   <nb-card-header>
-    <span *ngIf="create">
+    @if (create) {
+    <span>
       {{ 'shared.intent-dialog.header.create' | transloco: { dialogType: this.dialogType } }}
     </span>
-
-    <span *ngIf="!create">{{
-      'shared.intent-dialog.header.update' | transloco: { dialogType: this.dialogType, nameOrLabel: name ? name : label }
-    }}</span>
+    } @if (!create) {
+    <span>{{ 'shared.intent-dialog.header.update' | transloco: { dialogType: this.dialogType, nameOrLabel: name ? name : label } }}</span>
+    }
   </nb-card-header>
   <nb-card-body>
     <form
@@ -59,12 +59,11 @@
           autocomplete="off"
         />
         <nb-autocomplete #auto>
-          <nb-option
-            *ngFor="let c of categories"
-            [value]="c"
-          >
+          @for (c of categories; track c) {
+          <nb-option [value]="c">
             {{ c }}
           </nb-option>
+          }
         </nb-autocomplete>
       </div>
 

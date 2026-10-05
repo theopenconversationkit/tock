@@ -15,9 +15,10 @@ import { getExportFileName } from '../../shared/utils';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-intents',
-  templateUrl: './intents.component.html',
-  styleUrls: ['./intents.component.scss']
+    selector: 'tock-intents',
+    templateUrl: './intents.component.html',
+    styleUrls: ['./intents.component.scss'],
+    standalone: false
 })
 export class IntentsComponent implements OnInit {
   UserRole = UserRole;

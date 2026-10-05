@@ -13,9 +13,9 @@
 </button>
 
 <ng-template #templateRef>
+  @if (!disabled) {
   <nb-card
     accent="info"
-    *ngIf="!disabled"
     class="calendar-panel"
   >
     <nb-card-body class="calendar-body">
@@ -90,4 +90,5 @@
       </button>
     </nb-card-footer>
   </nb-card>
+  }
 </ng-template>

@@ -11,9 +11,10 @@ import { ChoiceDialogComponent } from '../../shared/components';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-bot-synchronization',
-  templateUrl: './synchronization.component.html',
-  styleUrls: ['./synchronization.component.css']
+    selector: 'tock-bot-synchronization',
+    templateUrl: './synchronization.component.html',
+    styleUrls: ['./synchronization.component.css'],
+    standalone: false
 })
 export class SynchronizationComponent implements OnInit {
   sourceNamespace: UserNamespace;

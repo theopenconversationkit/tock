@@ -6,9 +6,10 @@ import { NbDialogService } from '@nebular/theme';
 import { IntentStoryDetailsComponent } from '../../../../shared/components';
 
 @Component({
-  selector: 'tock-stories-list',
-  templateUrl: './stories-list.component.html',
-  styleUrls: ['./stories-list.component.scss']
+    selector: 'tock-stories-list',
+    templateUrl: './stories-list.component.html',
+    styleUrls: ['./stories-list.component.scss'],
+    standalone: false
 })
 export class StoriesListComponent {
   private readonly destroy$: Subject<boolean> = new Subject();

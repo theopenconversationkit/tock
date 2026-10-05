@@ -72,11 +72,12 @@
         [required]="true"
       >
         <nb-tag-list (tagRemove)="onDimensionRemove($event)">
+          @for (dimension of dimensions.value; track dimension) {
           <nb-tag
-            *ngFor="let dimension of dimensions.value"
             removable
             [text]="dimension"
           ></nb-tag>
+          }
           <input
             nbTagInput
             #dimensionInput
@@ -93,13 +94,14 @@
             #dimensionsAutocomplete
             (selectedChange)="dimensionSelected($event)"
           >
+            @for (option of dimensionsAutocompleteValues | async; track option) {
             <nb-option
-              *ngFor="let option of dimensionsAutocompleteValues | async"
               [value]="option"
               class="text-capitalize"
             >
               {{ option }}
             </nb-option>
+            }
           </nb-autocomplete>
         </nb-tag-list>
       </tock-form-control>
@@ -111,58 +113,55 @@
         [hasMargin]="false"
         [showError]="isSubmitted"
       >
-        <div
-          *ngIf="!values.controls.length"
-          class="text-center text-warning font-italic mb-3"
-        >
+        @if (!values.controls.length) {
+        <div class="text-center text-warning font-italic mb-3">
           {{ 'metrics.indicators-edit.define_at_least_one_value' | transloco }}
         </div>
-
+        } @if (values.controls.length) {
         <div
           formArrayName="values"
           class="mt-2"
-          *ngIf="values.controls.length"
         >
-          <ng-container *ngFor="let valueDefinition of values.controls; let i = index">
-            <div
-              [formGroup]="$any(valueDefinition)"
-              class="row"
-            >
-              <div class="col-10 pr-0">
-                <tock-form-control
-                  name="valueLabel"
-                  [controls]="$any(valueDefinition).controls.label"
-                  [showError]="isSubmitted"
-                  [required]="true"
-                >
-                  <input
-                    #labelInput
-                    nbInput
-                    fullWidth
-                    type="text"
-                    fieldSize="small"
-                    formControlName="label"
-                    [placeholder]="'metrics.indicators-edit.value_label_placeholder' | transloco"
-                  />
-                </tock-form-control>
-              </div>
-
-              <div class="col-2 pr-0">
-                <button
-                  type="button"
-                  nbButton
-                  ghost
-                  shape="round"
-                  status="danger"
-                  [nbTooltip]="'metrics.indicators-edit.remove_value_tooltip' | transloco"
-                  (click)="removeValueDefinition(i)"
-                >
-                  <nb-icon icon="trash"></nb-icon>
-                </button>
-              </div>
+          @for (valueDefinition of values.controls; track valueDefinition; let i = $index) {
+          <div
+            [formGroup]="$any(valueDefinition)"
+            class="row"
+          >
+            <div class="col-10 pr-0">
+              <tock-form-control
+                name="valueLabel"
+                [controls]="$any(valueDefinition).controls.label"
+                [showError]="isSubmitted"
+                [required]="true"
+              >
+                <input
+                  #labelInput
+                  nbInput
+                  fullWidth
+                  type="text"
+                  fieldSize="small"
+                  formControlName="label"
+                  [placeholder]="'metrics.indicators-edit.value_label_placeholder' | transloco"
+                />
+              </tock-form-control>
             </div>
-          </ng-container>
+            <div class="col-2 pr-0">
+              <button
+                type="button"
+                nbButton
+                ghost
+                shape="round"
+                status="danger"
+                [nbTooltip]="'metrics.indicators-edit.remove_value_tooltip' | transloco"
+                (click)="removeValueDefinition(i)"
+              >
+                <nb-icon icon="trash"></nb-icon>
+              </button>
+            </div>
+          </div>
+          }
         </div>
+        }
       </tock-form-control>
 
       <button

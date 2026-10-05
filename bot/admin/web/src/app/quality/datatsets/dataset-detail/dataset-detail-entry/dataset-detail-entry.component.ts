@@ -14,9 +14,10 @@ import { EventType } from '../../../../core/model/configuration';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-dataset-detail-entry',
-  templateUrl: './dataset-detail-entry.component.html',
-  styleUrl: './dataset-detail-entry.component.scss'
+    selector: 'tock-dataset-detail-entry',
+    templateUrl: './dataset-detail-entry.component.html',
+    styleUrl: './dataset-detail-entry.component.scss',
+    standalone: false
 })
 export class DatasetDetailEntryComponent implements OnChanges {
   readonly DatasetRunActionDisplayState = DatasetRunActionDisplayState;

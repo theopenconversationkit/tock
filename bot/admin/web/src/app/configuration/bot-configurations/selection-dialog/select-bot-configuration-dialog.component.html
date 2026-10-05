@@ -1,13 +1,15 @@
 <nb-card>
   <nb-card-header>{{ title }}</nb-card-header>
   <nb-card-body>
-    <div *ngIf="!valid">
+    @if (!valid) {
+    <div>
       <nb-icon
         icon="alert-triangle"
         status="danger"
       ></nb-icon>
       {{ 'configuration.selection-dialog.errorMessage' | transloco }}
     </div>
+    }
     <nb-select
       [placeholder]="'configuration.selection-dialog.selectPlaceholder' | transloco"
       [(selected)]="selectedConfig"
@@ -15,37 +17,37 @@
       [status]="validationStatus()"
     >
       <nb-select-label>
-        <span
-          class="configuration-select-label"
-          *ngIf="selectedConfig"
-        >
+        @if (selectedConfig) {
+        <span class="configuration-select-label">
           <span class="configuration-name">{{ selectedConfig.name }}</span>
           <span class="configuration-connectors">
+            @for (connectorConfig of selectedConfig.configurations; track connectorConfig) {
             <img
-              *ngFor="let connectorConfig of selectedConfig.configurations"
               [src]="connectorConfig.connectorType.iconUrl()"
               [alt]="connectorConfig.connectorType.label()"
               class="connector-icon"
             />
+            }
           </span>
         </span>
+        }
       </nb-select-label>
-      <nb-option
-        *ngFor="let config of botApplicationConfigurations"
-        [value]="config"
-      >
+      @for (config of botApplicationConfigurations; track config) {
+      <nb-option [value]="config">
         <span class="configuration-select-label">
           <span class="configuration-name">{{ config.name }}</span>
           <span class="configuration-connectors">
+            @for (connectorConfig of config.configurations; track connectorConfig) {
             <img
-              *ngFor="let connectorConfig of config.configurations"
               [src]="connectorConfig.connectorType.iconUrl()"
               [alt]="connectorConfig.connectorType.label()"
               class="connector-icon"
             />
+            }
           </span>
         </span>
       </nb-option>
+      }
     </nb-select>
   </nb-card-body>
   <nb-card-footer class="button-footer">

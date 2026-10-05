@@ -31,9 +31,10 @@ interface GenAiSettingsForm {
 }
 
 @Component({
-  selector: 'tock-sentence-generation-settings',
-  templateUrl: './sentence-generation-settings.component.html',
-  styleUrls: ['./sentence-generation-settings.component.scss']
+    selector: 'tock-sentence-generation-settings',
+    templateUrl: './sentence-generation-settings.component.html',
+    styleUrls: ['./sentence-generation-settings.component.scss'],
+    standalone: false
 })
 export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();

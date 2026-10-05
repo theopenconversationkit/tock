@@ -53,9 +53,10 @@ export const unknownIntentName = 'unknown';
 export const ragStoryId = 'tock_rag_story';
 
 @Component({
-  selector: 'tock-metrics-board',
-  templateUrl: './metrics-board.component.html',
-  styleUrls: ['./metrics-board.component.scss']
+    selector: 'tock-metrics-board',
+    templateUrl: './metrics-board.component.html',
+    styleUrls: ['./metrics-board.component.scss'],
+    standalone: false
 })
 export class MetricsBoardComponent implements OnInit, OnDestroy {
   destroy = new Subject();

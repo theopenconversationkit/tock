@@ -19,16 +19,17 @@
         (click)="sortBy(SortingCriteria.name)"
       >
         {{ 'metrics.metrics-indicator-details.indicator_value_name_label' | transloco }}
+        @if (sortCriteria === SortingCriteria.name && sortDirection) {
         <nb-icon
-          *ngIf="sortCriteria === SortingCriteria.name && sortDirection"
           icon="chevron-down-outline"
           pack="nebular-essentials"
         ></nb-icon>
+        } @if (sortCriteria === SortingCriteria.name && !sortDirection) {
         <nb-icon
-          *ngIf="sortCriteria === SortingCriteria.name && !sortDirection"
           icon="chevron-up-outline"
           pack="nebular-essentials"
         ></nb-icon>
+        }
       </div>
 
       <div
@@ -36,26 +37,26 @@
         (click)="sortBy(SortingCriteria.count)"
       >
         {{ 'metrics.metrics-indicator-details.hits_label' | transloco }}
+        @if (sortCriteria === SortingCriteria.count && sortDirection) {
         <nb-icon
-          *ngIf="sortCriteria === SortingCriteria.count && sortDirection"
           icon="chevron-down-outline"
           pack="nebular-essentials"
         ></nb-icon>
+        } @if (sortCriteria === SortingCriteria.count && !sortDirection) {
         <nb-icon
-          *ngIf="sortCriteria === SortingCriteria.count && !sortDirection"
           icon="chevron-up-outline"
           pack="nebular-essentials"
         ></nb-icon>
+        }
       </div>
     </div>
 
-    <div
-      *ngFor="let metric of metrics"
-      class="stats-line d-flex justify-content-between gap-2 py-2"
-    >
+    @for (metric of metrics; track metric) {
+    <div class="stats-line d-flex justify-content-between gap-2 py-2">
       <div>{{ getIndicatorValueLabel(metric.row.indicatorValueName) }}</div>
       <div>{{ metric.count }}</div>
     </div>
+    }
 
     <div class="d-flex justify-content-between gap-2 py-2 font-weight-bold">
       <div>{{ 'metrics.metrics-indicator-details.total_label' | transloco }}</div>

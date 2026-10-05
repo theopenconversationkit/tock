@@ -19,9 +19,10 @@ interface SettingsForm {
 }
 
 @Component({
-  selector: 'tock-faq-management-settings',
-  templateUrl: './faq-management-settings.component.html',
-  styleUrls: ['./faq-management-settings.component.scss']
+    selector: 'tock-faq-management-settings',
+    templateUrl: './faq-management-settings.component.html',
+    styleUrls: ['./faq-management-settings.component.scss'],
+    standalone: false
 })
 export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
   @Output() onClose = new EventEmitter<boolean>();

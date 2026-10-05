@@ -19,9 +19,10 @@ import { TranslocoService } from '@jsverse/transloco';
 export type StoriesByCategory = { category: string; stories: StoryDefinitionConfigurationSummary[] };
 
 @Component({
-  selector: 'tock-search-story',
-  templateUrl: './search-story.component.html',
-  styleUrls: ['./search-story.component.scss']
+    selector: 'tock-search-story',
+    templateUrl: './search-story.component.html',
+    styleUrls: ['./search-story.component.scss'],
+    standalone: false
 })
 export class SearchStoryComponent implements OnInit, OnDestroy {
   destroy = new Subject();

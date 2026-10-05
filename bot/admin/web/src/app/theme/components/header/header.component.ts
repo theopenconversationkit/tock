@@ -31,9 +31,10 @@ import { DirtyStateService } from '../../../core/dirty-state.service';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-header',
-  styleUrls: ['./header.component.scss'],
-  templateUrl: './header.component.html'
+    selector: 'tock-header',
+    styleUrls: ['./header.component.scss'],
+    templateUrl: './header.component.html',
+    standalone: false
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private destroy: Subject<boolean> = new Subject<boolean>();

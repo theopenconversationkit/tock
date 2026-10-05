@@ -17,6 +17,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DataExportComponent } from './data-export.component';
+import { TestSharedModule } from '../../test-shared.module';
+import { StateService } from '../../../core-nlp/state.service';
+import { StateServiceMock } from '../../test-shared/state-service.mock';
 
 describe('DataExportComponent', () => {
   let component: DataExportComponent;
@@ -24,12 +27,16 @@ describe('DataExportComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DataExportComponent]
-    })
-    .compileComponents();
+      declarations: [DataExportComponent],
+      imports: [TestSharedModule],
+      providers: [{ provide: StateService, useClass: StateServiceMock }]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DataExportComponent);
     component = fixture.componentInstance;
+
+    component.data = [{ keyA: 'valueA' }] as any[];
+
     fixture.detectChanges();
   });
 

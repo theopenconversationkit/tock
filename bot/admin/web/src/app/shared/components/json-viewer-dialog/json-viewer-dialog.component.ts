@@ -18,9 +18,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 
 @Component({
-  selector: 'tock-json-viewer-dialog',
-  templateUrl: './json-viewer-dialog.component.html',
-  styleUrls: ['./json-viewer-dialog.component.scss']
+    selector: 'tock-json-viewer-dialog',
+    templateUrl: './json-viewer-dialog.component.html',
+    styleUrls: ['./json-viewer-dialog.component.scss'],
+    standalone: false
 })
 export class JsonViewerDialogComponent {
   @Input() title?: string = 'Object infos';

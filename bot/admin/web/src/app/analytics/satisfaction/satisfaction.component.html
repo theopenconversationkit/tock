@@ -1,19 +1,20 @@
-<ng-container *ngIf="!loading && configurations?.length === 0">
-  <div class="d-flex flex-wrap align-items-center">
-    <h1 class="flex-grow-1">{{ 'analytics.satisfaction.title' | transloco }}</h1>
-  </div>
-
-  <tock-no-data-found [title]="'analytics.satisfaction.noBotConfiguration' | transloco"></tock-no-data-found>
-</ng-container>
-
-<div *ngIf="configurations?.length">
-  <div *ngIf="isStatisfactionActivated">
+@if (!loading && configurations?.length === 0) {
+<div class="d-flex flex-wrap align-items-center">
+  <h1 class="flex-grow-1">{{ 'analytics.satisfaction.title' | transloco }}</h1>
+</div>
+<tock-no-data-found [title]="'analytics.satisfaction.noBotConfiguration' | transloco"></tock-no-data-found>
+} @if (configurations?.length) {
+<div>
+  @if (isStatisfactionActivated) {
+  <div>
     <tock-satisfaction-details></tock-satisfaction-details>
   </div>
-
-  <div *ngIf="!isStatisfactionActivated && !errorMsg">
+  } @if (!isStatisfactionActivated && !errorMsg) {
+  <div>
     <tock-activate-satisfaction (enableSatisfaction)="isStatisfactionActivated = $event"></tock-activate-satisfaction>
   </div>
-
-  <h2 *ngIf="errorMsg">{{ errorMsg }}</h2>
+  } @if (errorMsg) {
+  <h2>{{ errorMsg }}</h2>
+  }
 </div>
+}

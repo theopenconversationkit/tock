@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-end mb-4">
+  @if (!fullDisplay && answer.answers.length !== 0) {
   <button
-    *ngIf="!fullDisplay && answer.answers.length !== 0"
     nbButton
     ghost
     size="small"
@@ -9,8 +9,8 @@
     <nb-icon icon="globe2"></nb-icon>
     {{ 'bot.simple-answer.i18nButtonLabel' | transloco }}
   </button>
+  } @if (fullDisplay) {
   <button
-    *ngIf="fullDisplay"
     nbButton
     ghost
     size="small"
@@ -19,16 +19,16 @@
     <nb-icon icon="globe2"></nb-icon>
     {{ 'bot.simple-answer.answersListButtonLabel' | transloco }}
   </button>
+  }
 </div>
 
-<div *ngIf="!fullDisplay">
-  <div
-    *ngFor="let a of answer.answers"
-    class="grid mb-1"
-  >
+@if (!fullDisplay) {
+<div>
+  @for (a of answer.answers; track a) {
+  <div class="grid mb-1">
     <div class="d-flex flex-column align-self-center">
+      @if (canUpward(a)) {
       <button
-        *ngIf="canUpward(a)"
         nbButton
         ghost
         size="small"
@@ -39,8 +39,8 @@
       >
         <nb-icon icon="arrow-up"></nb-icon>
       </button>
+      } @if (canDownward(a)) {
       <button
-        *ngIf="canDownward(a)"
         nbButton
         size="small"
         ghost
@@ -51,6 +51,7 @@
       >
         <nb-icon icon="arrow-down"></nb-icon>
       </button>
+      }
     </div>
     <textarea
       nbInput
@@ -71,8 +72,8 @@
       >
         <nb-icon icon="image"></nb-icon>
       </button>
+      @if (answer.allowNoAnswer || answer.answers.length !== 1) {
       <button
-        *ngIf="answer.allowNoAnswer || answer.answers.length !== 1"
         nbButton
         ghost
         shape="round"
@@ -82,8 +83,10 @@
       >
         <nb-icon icon="trash"></nb-icon>
       </button>
+      }
     </div>
   </div>
+  }
   <div class="grid grid-add mt-4">
     <textarea
       nbInput
@@ -116,12 +119,14 @@
     </div>
   </div>
 </div>
-
-<div *ngIf="fullDisplay">
+} @if (fullDisplay) {
+<div>
+  @for (a of answer.answers; track a) {
   <tock-i18n-label
-    *ngFor="let a of answer.answers"
     [i18nLabel]="a.label"
     [deleteLabelAllowed]="answer.answers.length !== 1"
     (delete)="deleteAnswer(a, false)"
   ></tock-i18n-label>
+  }
 </div>
+}

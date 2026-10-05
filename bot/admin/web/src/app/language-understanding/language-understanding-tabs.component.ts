@@ -17,7 +17,8 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'tock-language-understanding-tabs',
-  template: '<nb-route-tabset></nb-route-tabset>'
+    selector: 'tock-language-understanding-tabs',
+    template: '<nb-route-tabset></nb-route-tabset>',
+    standalone: false
 })
 export class LanguageUnderstandingTabsComponent {}

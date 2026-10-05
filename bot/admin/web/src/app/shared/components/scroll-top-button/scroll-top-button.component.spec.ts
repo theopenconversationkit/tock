@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ScrollTopButtonComponent } from './scroll-top-button.component';
+import { TestSharedModule } from '../../test-shared.module';
 
 describe('ScrollTopButtonComponent', () => {
   let component: ScrollTopButtonComponent;
@@ -24,9 +25,8 @@ describe('ScrollTopButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ScrollTopButtonComponent ]
-    })
-    .compileComponents();
+      imports: [TestSharedModule]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ScrollTopButtonComponent);
     component = fixture.componentInstance;

@@ -19,6 +19,7 @@ import { NbDialogService } from '@nebular/theme';
 import { Debug } from '../../../../model/dialog-data';
 
 import { ChatUiMessageDebugComponent } from './chat-ui-message-debug.component';
+import { TestSharedModule } from '../../../../test-shared.module';
 
 const mockDebugMessage = {
   text: 'title1',
@@ -38,6 +39,7 @@ describe('ChatUiMessageDebugComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ChatUiMessageDebugComponent],
+      imports: [TestSharedModule],
       providers: [
         {
           provide: NbDialogService,
@@ -50,7 +52,8 @@ describe('ChatUiMessageDebugComponent', () => {
 
     fixture = TestBed.createComponent(ChatUiMessageDebugComponent);
     component = fixture.componentInstance;
-    component.message = mockDebugMessage as Debug;
+    // component.message = mockDebugMessage as Debug;
+    component.action = { ragDebug: undefined } as any;
     fixture.detectChanges();
   });
 

@@ -1,22 +1,27 @@
 <div class="d-flex flex-wrap mb-2">
   <h1 class="flex-grow-1">
-    <span *ngIf="applications.length !== 0">
+    @if (applications.length !== 0) {
+    <span>
       {{ 'applications.application.applicationTitle' | transloco }}
-      <span *ngIf="application?.name?.length !== 0">"{{ application.name }}"</span>
+      @if (application?.name?.length !== 0) {
+      <span>"{{ application.name }}"</span>
+      }
     </span>
+    }
   </h1>
 
   <section class="grid-actions gap-1">
+    @if (applications.length !== 0) {
     <button
       nbButton
       ghost
-      *ngIf="applications.length !== 0"
       (click)="cancel()"
       [nbTooltip]="'applications.application.cancelTooltip' | transloco"
     >
       <nb-icon icon="x-lg"></nb-icon>
       {{ 'applications.application.cancelButton' | transloco }}
     </button>
+    }
 
     <button
       nbButton
@@ -28,20 +33,20 @@
           : ('applications.application.updateApplicationTooltip' | transloco)
       "
     >
-      <ng-container *ngIf="newApplication">
-        <nb-icon icon="plus-lg"></nb-icon>
-        {{ 'applications.application.createButton' | transloco }}
-      </ng-container>
-      <ng-container *ngIf="!newApplication">
-        <nb-icon icon="floppy"></nb-icon>
-        {{ 'applications.application.updateButton' | transloco }}
-      </ng-container>
+      @if (newApplication) {
+      <nb-icon icon="plus-lg"></nb-icon>
+      {{ 'applications.application.createButton' | transloco }}
+      } @if (!newApplication) {
+      <nb-icon icon="floppy"></nb-icon>
+      {{ 'applications.application.updateButton' | transloco }}
+      }
     </button>
   </section>
 </div>
 
 <nb-card>
-  <nb-card-body *ngIf="application">
+  @if (application) {
+  <nb-card-body>
     <div class="row mb-4">
       <div class="col">
         <label
@@ -55,7 +60,6 @@
               : ('applications.application.applicationLabel' | transloco)
           }}
         </label>
-
         <input
           nbInput
           fullWidth
@@ -76,7 +80,6 @@
         />
       </div>
     </div>
-
     <div class="row mb-4">
       <div class="col">
         <label
@@ -90,7 +93,6 @@
               : ('applications.application.applicationName' | transloco)
           }}
         </label>
-
         <input
           nbInput
           fullWidth
@@ -111,7 +113,6 @@
         />
       </div>
     </div>
-
     <div class="row mb-4">
       <div class="col-6 col-lg-6">
         <label
@@ -120,7 +121,6 @@
         >
           {{ 'applications.application.unknownIntentThresholdLabel' | transloco }}
         </label>
-
         <input
           nbInput
           fullWidth
@@ -140,7 +140,6 @@
         >
           {{ 'applications.application.knownIntentThresholdLabel' | transloco }}
         </label>
-
         <input
           nbInput
           fullWidth
@@ -154,7 +153,6 @@
         />
       </div>
     </div>
-
     <div class="row mb-4">
       <div class="col-6 col d-flex gap-1 align-items-center flex-wrap">
         <nb-checkbox
@@ -164,37 +162,35 @@
         >
           {{ 'applications.application.normalizedTextModelsLabel' | transloco }}
         </nb-checkbox>
+        @if (!application.normalizeText) {
         <nb-checkbox
-          *ngIf="!application.normalizeText"
           class="separator"
           [(ngModel)]="application.mergeEngineTypes"
           [nbTooltip]="'applications.application.useEntityModelsTooltip' | transloco"
         >
           {{ 'applications.application.useEntityModelsLabel' | transloco }}
         </nb-checkbox>
+        } @if (!application.normalizeText && !application.mergeEngineTypes) {
         <nb-checkbox
           class="separator"
-          *ngIf="!application.normalizeText && !application.mergeEngineTypes"
           [(ngModel)]="application.useEntityModels"
           [nbTooltip]="'applications.application.entityDisambiguationOnlyTooltip' | transloco"
         >
           {{ 'applications.application.entityDisambiguationOnlyLabel' | transloco }}
         </nb-checkbox>
+        } @if (!application.normalizeText) {
         <nb-checkbox
-          *ngIf="!application.normalizeText"
           class="separator"
           [(ngModel)]="application.supportSubEntities"
           [nbTooltip]="'applications.application.allowSubentitiesTooltip' | transloco"
         >
           {{ 'applications.application.allowSubentitiesLabel' | transloco }}
         </nb-checkbox>
+        }
       </div>
     </div>
-
-    <div
-      *ngIf="state.locales"
-      class="row mb-4"
-    >
+    @if (state.locales) {
+    <div class="row mb-4">
       <div class="col-6 col-lg-3">
         <label
           for="locales"
@@ -203,13 +199,11 @@
           <abbr title="Required">*</abbr>
           {{ 'applications.application.localesLabel' | transloco }}
         </label>
-
         <nb-form-field>
           <nb-icon
             nbPrefix
             icon="globe2"
           ></nb-icon>
-
           <nb-select
             fullWidth
             (selectedChange)="addLocale()"
@@ -217,24 +211,18 @@
             [placeholder]="'applications.application.addNewLocalePlaceholder' | transloco"
             id="locales"
           >
-            <nb-option
-              *ngFor="let locale of state.locales"
-              [value]="locale.first"
-            >
+            @for (locale of state.locales; track locale) {
+            <nb-option [value]="locale.first">
               {{ locale.second }}
             </nb-option>
+            }
           </nb-select>
         </nb-form-field>
       </div>
-
-      <div
-        class="col-6 col-lg-9 d-flex flex-wrap align-items-center pt-4"
-        *ngIf="application.supportedLocales.length !== 0"
-      >
-        <span
-          class="tag"
-          *ngFor="let locale of application.supportedLocales"
-        >
+      @if (application.supportedLocales.length !== 0) {
+      <div class="col-6 col-lg-9 d-flex flex-wrap align-items-center pt-4">
+        @for (locale of application.supportedLocales; track locale) {
+        <span class="tag">
           {{ state.localeName(locale) }}
           <button
             nbButton
@@ -248,13 +236,12 @@
             <nb-icon icon="trash"></nb-icon>
           </button>
         </span>
+        }
       </div>
+      }
     </div>
-
-    <div
-      *ngIf="state.locales"
-      class="row mb-4"
-    >
+    } @if (state.locales) {
+    <div class="row mb-4">
       <div class="col-6 col-lg-3">
         <label
           for="engines"
@@ -263,7 +250,6 @@
           <abbr title="Required">*</abbr>
           {{ 'applications.application.nluEngineLabel' | transloco }}
         </label>
-
         <nb-radio-group
           id="engines"
           name="engines-group"
@@ -271,20 +257,16 @@
           [(ngModel)]="nlpEngineType"
           (valueChange)="changeNlpEngine($event)"
         >
-          <nb-radio
-            *ngFor="let engine of state.supportedNlpEngines"
-            [value]="engine.name"
-          >
+          @for (engine of state.supportedNlpEngines; track engine) {
+          <nb-radio [value]="engine.name">
             {{ engine.name }}
           </nb-radio>
+          }
         </nb-radio-group>
       </div>
     </div>
-
-    <div
-      *ngIf="!newApplication && state.locales"
-      class="row mb-4"
-    >
+    } @if (!newApplication && state.locales) {
+    <div class="row mb-4">
       <div class="col">
         <label class="label d-block">{{ 'applications.application.advancedOptionsLabel' | transloco }}</label>
         <tock-application-advanced-options
@@ -294,7 +276,9 @@
         </tock-application-advanced-options>
       </div>
     </div>
+    }
   </nb-card-body>
+  }
 </nb-card>
 
 <tock-scroll-top-button></tock-scroll-top-button>

@@ -30,9 +30,10 @@ import { SelectBotEvent } from '../../shared/components';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'tock-activity',
-  templateUrl: './activity.component.html',
-  styleUrls: ['./activity.component.css']
+    selector: 'tock-activity',
+    templateUrl: './activity.component.html',
+    styleUrls: ['./activity.component.css'],
+    standalone: false
 })
 export class ActivityComponent implements OnInit, OnDestroy {
   destroy$ = new Subject();

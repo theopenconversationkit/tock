@@ -25,9 +25,10 @@ import { TranslocoService } from '@jsverse/transloco';
 import moment from 'moment';
 
 @Component({
-  selector: 'tock-i18n-label',
-  templateUrl: './i18n-label.component.html',
-  styleUrls: ['./i18n-label.component.scss']
+    selector: 'tock-i18n-label',
+    templateUrl: './i18n-label.component.html',
+    styleUrls: ['./i18n-label.component.scss'],
+    standalone: false
 })
 export class I18nLabelComponent implements OnInit {
   @Input() i18nLabel: I18nLabel;

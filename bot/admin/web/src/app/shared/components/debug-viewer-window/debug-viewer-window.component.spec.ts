@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DebugViewerWindowComponent } from './debug-viewer-window.component';
+import { TestSharedModule } from '../../test-shared.module';
 
 describe('DebugViewerWindowComponent', () => {
   let component: DebugViewerWindowComponent;
@@ -24,9 +25,9 @@ describe('DebugViewerWindowComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DebugViewerWindowComponent ]
-    })
-    .compileComponents();
+      declarations: [DebugViewerWindowComponent],
+      imports: [TestSharedModule]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DebugViewerWindowComponent);
     component = fixture.componentInstance;

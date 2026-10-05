@@ -7,24 +7,23 @@
       class="tokens-container"
       #tokensContainer
     >
+      @for (token of tokens; track token) {
       <tock-token-view
-        *ngFor="let token of tokens"
         [token]="token"
         [readOnly]="readOnly"
         (deleteTokenEntity)="deleteTokenEntity($event)"
       ></tock-token-view>
+      }
     </div>
   </div>
 
-  <div
-    *ngIf="selection"
-    class="my-3"
-  >
+  @if (selection) {
+  <div class="my-3">
     <div class="text-muted font-size-small">
       {{ 'shared.sentence-training-sentence.assign-entity-to' | transloco }} <strong>"{{ getSelectionText() }}"</strong> :
     </div>
+    @for (entity of getAssignableEntities(); track entity) {
     <div
-      *ngFor="let entity of getAssignableEntities()"
       class="token-selector pointer"
       [style.background-color]="entity.entityColor"
       [style.color]="getContrastYIQ(entity.entityColor)"
@@ -33,7 +32,7 @@
     >
       {{ entity.qualifiedName(state.user) }}
     </div>
-
+    }
     <button
       nbButton
       ghost
@@ -44,4 +43,5 @@
       {{ 'shared.sentence-training-sentence.add-entity' | transloco }}
     </button>
   </div>
+  }
 </div>

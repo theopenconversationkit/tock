@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SentencesUnknownComponent } from './sentences-unknown.component';
+import { TestSharedModule } from '../../../shared/test-shared.module';
 
 describe('SentencesUnknownComponent', () => {
   let component: SentencesUnknownComponent;
@@ -24,9 +25,9 @@ describe('SentencesUnknownComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SentencesUnknownComponent ]
-    })
-    .compileComponents();
+      declarations: [SentencesUnknownComponent],
+      imports: [TestSharedModule]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SentencesUnknownComponent);
     component = fixture.componentInstance;

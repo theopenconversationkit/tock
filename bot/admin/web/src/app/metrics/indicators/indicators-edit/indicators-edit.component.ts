@@ -32,9 +32,10 @@ interface IndicatorEditForm {
 }
 
 @Component({
-  selector: 'tock-indicators-edit',
-  templateUrl: './indicators-edit.component.html',
-  styleUrls: ['./indicators-edit.component.scss']
+    selector: 'tock-indicators-edit',
+    templateUrl: './indicators-edit.component.html',
+    styleUrls: ['./indicators-edit.component.scss'],
+    standalone: false
 })
 export class IndicatorsEditComponent implements OnChanges {
   @Input() loading: boolean;

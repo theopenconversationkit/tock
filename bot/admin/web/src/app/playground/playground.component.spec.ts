@@ -17,6 +17,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PlaygroundComponent } from './playground.component';
+import { TestSharedModule } from '../shared/test-shared.module';
+import { BotConfigurationService } from '../core/bot-configuration.service';
+import { of } from 'rxjs';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { StateServiceMock } from '../shared/test-shared/state-service.mock';
+import { StateService } from '../core-nlp/state.service';
+import { getNbTestProviders } from '../shared/test-shared/nb-mocks';
+import { NbMenuService } from '@nebular/theme';
 
 describe('PlaygroundComponent', () => {
   let component: PlaygroundComponent;
@@ -24,9 +32,25 @@ describe('PlaygroundComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PlaygroundComponent]
-    })
-    .compileComponents();
+      declarations: [PlaygroundComponent],
+      imports: [TestSharedModule],
+      providers: [
+        ...getNbTestProviders(),
+        {
+          provide: BotConfigurationService,
+          useValue: {
+            configurations: of([]),
+            restConfigurations: of([]),
+            hasRestConfigurations: of(false),
+            supportedConnectors: of([]),
+            bots: of([])
+          }
+        },
+        { provide: StateService, useClass: StateServiceMock },
+        { provide: NbMenuService, useValue: { onItemClick: () => of({}), addItems: () => {}, navigateHome: () => {} } }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PlaygroundComponent);
     component = fixture.componentInstance;

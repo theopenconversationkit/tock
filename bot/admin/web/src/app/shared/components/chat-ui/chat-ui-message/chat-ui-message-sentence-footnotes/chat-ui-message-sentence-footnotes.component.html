@@ -1,54 +1,50 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
+@if (sentence.userInterface) {
 <img
-  *ngIf="sentence.userInterface"
   src="/assets/images/{{ sentence.userInterface }}.svg"
   class="userInterface"
   nbTooltip="{{ sentence.userInterface }}"
 />
-
+} @if (reply) {
 <tock-chat-ui-display-markup
   [sentence]="sentence"
   [formatting]="formatting"
-  *ngIf="reply"
 ></tock-chat-ui-display-markup>
-<span *ngIf="!reply">{{ sentence.text }}</span>
-
-<div
-  class="footnotes mt-3"
-  *ngIf="sentence.footnotes?.length"
->
+} @if (!reply) {
+<span>{{ sentence.text }}</span>
+} @if (sentence.footnotes?.length) {
+<div class="footnotes mt-3">
   <strong class="title mr-1">SOURCES : </strong>
-  <span *ngFor="let footNote of sentence.footnotes; let i = index; let last = last">
+  @for (footNote of sentence.footnotes; track footNote; let i = $index; let last = $last) {
+  <span>
     <span [class.d-block]="footNote.content">
+      @if (footNote.url?.trim().length) {
       <a
-        *ngIf="footNote.url?.trim().length"
         [href]="sanitizeUrl(footNote.url)"
         target="_blank"
       >
         {{ footNote.title }}
       </a>
-      <span
-        *ngIf="!footNote.url?.trim().length"
-        class="font-weight-bold"
-      >
+      } @if (!footNote.url?.trim().length) {
+      <span class="font-weight-bold">
         {{ footNote.title }}
       </span>
-
+      }
       <nb-icon
         icon="info-circle"
         class="font-size-xsmall align-center ml-2 pointer"
@@ -56,39 +52,36 @@
         (click)="displayFootnoteDetails(footNote)"
       ></nb-icon>
     </span>
-
+    @if (footNote.content) {
     <div
-      *ngIf="footNote.content"
       [class.truncate]="!footNote._showFullContent"
       #footnoteContentWrapper
     >
-      <span
-        *ngIf="footNote.content"
-        (click)="footNote._showFullContent = !footNote._showFullContent"
-      >
+      @if (footNote.content) {
+      <span (click)="footNote._showFullContent = !footNote._showFullContent">
+        @if (footNote._showFullContent) {
         <nb-icon
-          *ngIf="footNote._showFullContent"
           icon="chevron-down-outline"
           pack="nebular-essentials"
           class="align-bottom pointer"
           nbTooltip="Hide"
         ></nb-icon>
+        } @if (!footNote._showFullContent && isClamped(footnoteContentWrapper)) {
         <nb-icon
-          *ngIf="!footNote._showFullContent && isClamped(footnoteContentWrapper)"
           icon="chevron-right-outline"
           pack="nebular-essentials"
           class="align-bottom pointer ml-n2"
           nbTooltip="Show more"
         ></nb-icon>
+        }
       </span>
-
+      }
       {{ footNote.content }}
     </div>
-
-    <span
-      *ngIf="!footNote.content && !last"
-      class="mx-1"
-      >|</span
-    >
+    } @if (!footNote.content && !last) {
+    <span class="mx-1">|</span>
+    }
   </span>
+  }
 </div>
+}

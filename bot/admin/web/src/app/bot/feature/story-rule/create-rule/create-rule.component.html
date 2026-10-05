@@ -52,8 +52,8 @@
               #storyAutocomplete
               (selectedChange)="onStorySelectionChange(mainOrTarget.mainStoryId, $event)"
             >
+              @for (option of filteredStories$ | async; track option) {
               <nb-option
-                *ngFor="let option of filteredStories$ | async"
                 [value]="option.storyId"
                 class="align-items-center"
               >
@@ -63,13 +63,12 @@
                 ></nb-icon>
                 {{ option.name }}
               </nb-option>
+              }
             </nb-autocomplete>
           </tock-form-control>
         </div>
-        <div
-          class="w-50"
-          *ngIf="hasTarget()"
-        >
+        @if (hasTarget()) {
+        <div class="w-50">
           <tock-form-control
             [label]="'bot.create-rule.targetStoryLabel' | transloco: { type: type }"
             name="targetStoryId"
@@ -97,13 +96,12 @@
                 (blur)="storyInputBlur(mainOrTarget.targetStoryId, $event)"
               />
             </nb-form-field>
-
             <nb-autocomplete
               #targetAutocomplete
               (selectedChange)="onStorySelectionChange(mainOrTarget.targetStoryId, $event)"
             >
+              @for (option of filteredStories$ | async; track option) {
               <nb-option
-                *ngFor="let option of filteredStories$ | async"
                 [value]="option.storyId"
                 class="align-items-center"
               >
@@ -113,9 +111,11 @@
                 ></nb-icon>
                 {{ option.name }}
               </nb-option>
+              }
             </nb-autocomplete>
           </tock-form-control>
         </div>
+        }
       </div>
 
       <tock-form-control
@@ -134,8 +134,11 @@
         formControlName="enabled"
         [nbTooltip]="'bot.create-rule.statusTooltip' | transloco"
       >
-        <span *ngIf="enabled.value">{{ 'bot.create-rule.ruleEnabledLabel' | transloco }}</span>
-        <span *ngIf="!enabled.value">{{ 'bot.create-rule.ruleDisabledLabel' | transloco }}</span>
+        @if (enabled.value) {
+        <span>{{ 'bot.create-rule.ruleEnabledLabel' | transloco }}</span>
+        } @if (!enabled.value) {
+        <span>{{ 'bot.create-rule.ruleDisabledLabel' | transloco }}</span>
+        }
       </nb-toggle>
     </form>
   </nb-card-body>

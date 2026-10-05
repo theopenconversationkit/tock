@@ -17,9 +17,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'tock-info-button',
-  templateUrl: './info-button.component.html',
-  styleUrls: ['./info-button.component.css']
+    selector: 'tock-info-button',
+    templateUrl: './info-button.component.html',
+    styleUrls: ['./info-button.component.css'],
+    standalone: false
 })
 export class InfoButtonComponent implements OnInit {
   /**

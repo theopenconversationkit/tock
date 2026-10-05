@@ -29,9 +29,10 @@ DOMPurify.addHook('afterSanitizeAttributes', (node) => {
 });
 
 @Component({
-  selector: 'tock-chat-ui-display-markup',
-  templateUrl: './chat-ui-display-markup.component.html',
-  styleUrl: './chat-ui-display-markup.component.scss'
+    selector: 'tock-chat-ui-display-markup',
+    templateUrl: './chat-ui-display-markup.component.html',
+    styleUrl: './chat-ui-display-markup.component.scss',
+    standalone: false
 })
 export class ChatUiDisplayMarkupComponent implements OnChanges {
   @Input() sentence: Sentence | SentenceWithFootnotes;

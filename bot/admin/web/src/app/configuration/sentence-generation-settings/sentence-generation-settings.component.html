@@ -23,8 +23,8 @@
         <nb-icon icon="upload"></nb-icon>
       </button>
 
+      @if (settingsBackup && form.dirty) {
       <button
-        *ngIf="settingsBackup && form.dirty"
         nbButton
         ghost
         status="primary"
@@ -34,8 +34,8 @@
         <nb-icon icon="x-circle"></nb-icon>
         {{ 'common.actions.cancel' | transloco }}
       </button>
+      } @if (form.dirty) {
       <button
-        *ngIf="form.dirty"
         nbButton
         status="primary"
         [nbTooltip]="'configuration.sentence-generation-settings.saveTooltip' | transloco"
@@ -44,19 +44,15 @@
         <nb-icon icon="floppy"></nb-icon>
         {{ 'common.actions.save' | transloco }}
       </button>
+      }
     </section>
   </div>
 </tock-sticky-menu>
 
-<tock-no-data-found
-  *ngIf="configurations?.length === 0"
-  [title]="'configuration.sentence-generation-settings.noBotConfiguration' | transloco"
-></tock-no-data-found>
-
-<form
-  [formGroup]="form"
-  *ngIf="configurations?.length > 0"
->
+@if (configurations?.length === 0) {
+<tock-no-data-found [title]="'configuration.sentence-generation-settings.noBotConfiguration' | transloco"></tock-no-data-found>
+} @if (configurations?.length > 0) {
+<form [formGroup]="form">
   <nb-card class="mt-1">
     <nb-card-body
       [nbSpinner]="loading"
@@ -75,15 +71,15 @@
               formControlName="enabled"
               class="mt-1"
             >
-              <span *ngIf="enabled.value">{{ 'configuration.sentence-generation-settings.sentenceGenerationActivated' | transloco }}</span>
-              <span *ngIf="!enabled.value">{{
-                'configuration.sentence-generation-settings.sentenceGenerationDeactivated' | transloco
-              }}</span>
+              @if (enabled.value) {
+              <span>{{ 'configuration.sentence-generation-settings.sentenceGenerationActivated' | transloco }}</span>
+              } @if (!enabled.value) {
+              <span>{{ 'configuration.sentence-generation-settings.sentenceGenerationDeactivated' | transloco }}</span>
+              }
             </nb-toggle>
           </tock-form-control>
         </nb-card-body>
       </nb-card>
-
       <nb-card>
         <nb-card-header>{{ 'configuration.sentence-generation-settings.configurationTitle' | transloco }}</nb-card-header>
         <nb-card-body>
@@ -98,52 +94,43 @@
               name="llmProvider"
               class="d-flex"
             >
-              <nb-radio
-                *ngFor="let engine of engineConfigurations"
-                [value]="engine.key"
-              >
+              @for (engine of engineConfigurations; track engine) {
+              <nb-radio [value]="engine.key">
                 {{ engine.label }}
               </nb-radio>
+              }
             </nb-radio-group>
           </tock-form-control>
-
-          <div
-            *ngIf="currentLlmProvider"
-            class="mt-2 mb-2"
-          >
+          @if (currentLlmProvider) {
+          <div class="mt-2 mb-2">
             <div class="row mb-1">
-              <ng-container *ngFor="let param of currentLlmProvider.params">
-                <div
-                  class="col-6 px-3"
-                  [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
-                >
-                  <tock-ai-settings-engine-config-param-input
-                    parentGroup="llmSetting"
-                    [configurationParam]="param"
-                    [form]="form"
-                    [isSubmitted]="isSubmitted"
-                    [defaultPrompt]="defaultPrompt"
-                  ></tock-ai-settings-engine-config-param-input>
-                </div>
-              </ng-container>
-
-              <ng-container *ngFor="let param of sentenceGeneration_prompt">
-                <div
-                  class="col-12 px-3"
-                  *ngIf="shouldDisplayPromptParam('prompt', param)"
-                >
-                  <tock-ai-settings-engine-config-param-input
-                    parentGroup="prompt"
-                    [configurationParam]="param"
-                    [form]="form"
-                    [isSubmitted]="isSubmitted"
-                    [defaultPrompt]="$any(param.defaultValue)"
-                  ></tock-ai-settings-engine-config-param-input>
-                </div>
-              </ng-container>
+              @for (param of currentLlmProvider.params; track param) {
+              <div
+                class="col-6 px-3"
+                [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
+              >
+                <tock-ai-settings-engine-config-param-input
+                  parentGroup="llmSetting"
+                  [configurationParam]="param"
+                  [form]="form"
+                  [isSubmitted]="isSubmitted"
+                  [defaultPrompt]="defaultPrompt"
+                ></tock-ai-settings-engine-config-param-input>
+              </div>
+              } @for (param of sentenceGeneration_prompt; track param) { @if (shouldDisplayPromptParam('prompt', param)) {
+              <div class="col-12 px-3">
+                <tock-ai-settings-engine-config-param-input
+                  parentGroup="prompt"
+                  [configurationParam]="param"
+                  [form]="form"
+                  [isSubmitted]="isSubmitted"
+                  [defaultPrompt]="$any(param.defaultValue)"
+                ></tock-ai-settings-engine-config-param-input>
+              </div>
+              } }
             </div>
           </div>
-
+          }
           <tock-form-control
             [label]="'configuration.sentence-generation-settings.numberOfSentencesLabel' | transloco"
             name="nbSentences"
@@ -159,8 +146,8 @@
           </tock-form-control>
         </nb-card-body>
       </nb-card>
-
-      <nb-card *ngIf="settingsBackup">
+      @if (settingsBackup) {
+      <nb-card>
         <nb-card-header>{{ 'configuration.sentence-generation-settings.settingsDeletionTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <button
@@ -174,9 +161,11 @@
           </button>
         </nb-card-body>
       </nb-card>
+      }
     </nb-card-body>
   </nb-card>
 </form>
+}
 
 <ng-template #exportConfirmationModal>
   <nb-card>
@@ -195,7 +184,8 @@
 
     <nb-card-body>
       <div class="mb-2">{{ 'configuration.sentence-generation-settings.includeSensitiveDataLabel' | transloco }}</div>
-      <div *ngFor="let sensitiveParam of sensitiveParams">
+      @for (sensitiveParam of sensitiveParams; track sensitiveParam) {
+      <div>
         <nb-checkbox
           status="basic"
           [(ngModel)]="sensitiveParam.include"
@@ -203,6 +193,7 @@
           {{ sensitiveParam.label }} {{ sensitiveParam.param.label }}
         </nb-checkbox>
       </div>
+      }
     </nb-card-body>
 
     <nb-card-footer class="card-footer-actions">

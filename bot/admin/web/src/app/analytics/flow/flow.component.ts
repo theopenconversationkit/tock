@@ -31,19 +31,20 @@ type Graph = {
 type TransitionsMap = Map<string, NodeTransition>;
 
 @Component({
-  selector: 'tock-flow',
-  templateUrl: './flow.component.html',
-  styleUrls: ['./flow.component.scss'],
-  animations: [
-    trigger('inOutRightAnimation', [
-      transition(':enter', [style({ right: -500, opacity: 0 }), animate('0.3s ease-out', style({ right: 0, opacity: 1 }))]),
-      transition(':leave', [style({ right: 0, opacity: 1 }), animate('0.3s ease-in', style({ right: -500, opacity: 0 }))])
-    ]),
-    trigger('inOutHeightAnimation', [
-      transition(':enter', [style({ height: 0 }), animate('0.3s ease-out', style({ height: '*' }))]),
-      transition(':leave', [style({ height: '*' }), animate('0.3s ease-in', style({ height: 0 }))])
-    ])
-  ]
+    selector: 'tock-flow',
+    templateUrl: './flow.component.html',
+    styleUrls: ['./flow.component.scss'],
+    animations: [
+        trigger('inOutRightAnimation', [
+            transition(':enter', [style({ right: -500, opacity: 0 }), animate('0.3s ease-out', style({ right: 0, opacity: 1 }))]),
+            transition(':leave', [style({ right: 0, opacity: 1 }), animate('0.3s ease-in', style({ right: -500, opacity: 0 }))])
+        ]),
+        trigger('inOutHeightAnimation', [
+            transition(':enter', [style({ height: 0 }), animate('0.3s ease-out', style({ height: '*' }))]),
+            transition(':leave', [style({ height: '*' }), animate('0.3s ease-in', style({ height: 0 }))])
+        ])
+    ],
+    standalone: false
 })
 export class FlowComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

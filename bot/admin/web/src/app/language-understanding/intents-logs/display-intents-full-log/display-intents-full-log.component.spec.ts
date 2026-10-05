@@ -16,6 +16,10 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DisplayIntentFullLogComponent } from './display-intents-full-log.component';
+import { TestSharedModule } from '../../../shared/test-shared.module';
+import { getNbTestProviders } from '../../../shared/test-shared/nb-mocks';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NbDialogRef } from '@nebular/theme';
 
 describe('DisplayIntentFullLogComponent', () => {
   let component: DisplayIntentFullLogComponent;
@@ -23,7 +27,16 @@ describe('DisplayIntentFullLogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DisplayIntentFullLogComponent]
+      declarations: [DisplayIntentFullLogComponent],
+      imports: [TestSharedModule],
+      providers: [
+        ...getNbTestProviders(),
+        {
+          provide: NbDialogRef,
+          useValue: {}
+        }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     fixture = TestBed.createComponent(DisplayIntentFullLogComponent);

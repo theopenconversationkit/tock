@@ -17,6 +17,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SentenceNewComponent } from './sentence-new.component';
+import { TestSharedModule } from '../../../shared/test-shared.module';
+import { StateService } from '../../../core-nlp/state.service';
+import { StateServiceMock } from '../../../shared/test-shared/state-service.mock';
 
 describe('SentenceNewComponent', () => {
   let component: SentenceNewComponent;
@@ -24,9 +27,10 @@ describe('SentenceNewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SentenceNewComponent ]
-    })
-    .compileComponents();
+      declarations: [SentenceNewComponent],
+      imports: [TestSharedModule],
+      providers: [{ provide: StateService, useClass: StateServiceMock }]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SentenceNewComponent);
     component = fixture.componentInstance;

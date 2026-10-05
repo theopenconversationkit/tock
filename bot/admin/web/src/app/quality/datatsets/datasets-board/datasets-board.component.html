@@ -28,30 +28,23 @@
   </section>
 </div>
 
+@if (loading && !datasets?.length) {
 <nb-card
-  *ngIf="loading && !datasets?.length"
   [nbSpinner]="loading"
   class="shadow-sm mt-2"
 >
   <nb-card-body class="main-card-body p-4">&nbsp;</nb-card-body>
 </nb-card>
-
+} @if (configurations?.length === 0) {
+<tock-no-data-found [title]="'quality.datasets-board.no_bot_configuration_detected' | transloco"></tock-no-data-found>
+} @if (!datasets?.length && !loading) {
 <tock-no-data-found
-  *ngIf="configurations?.length === 0"
-  [title]="'quality.datasets-board.no_bot_configuration_detected' | transloco"
-></tock-no-data-found>
-
-<tock-no-data-found
-  *ngIf="!datasets?.length && !loading"
   [title]="'quality.datasets-board.no_dataset_found' | transloco"
   [message]="'quality.datasets-board.no_dataset_message' | transloco"
   class="mt-4"
 ></tock-no-data-found>
-
-<div
-  *ngIf="!loading && datasets?.length"
-  class="list-grid list-header text-muted"
->
+} @if (!loading && datasets?.length) {
+<div class="list-grid list-header text-muted">
   <div
     class="ellipsis sortable-col"
     [class.sort-active]="sortField === 'name'"
@@ -64,7 +57,6 @@
       [class.sort-icon--visible]="sortField === 'name'"
     ></nb-icon>
   </div>
-
   <div
     class="ellipsis pl-1 sortable-col"
     [class.sort-active]="sortField === 'questions'"
@@ -77,7 +69,6 @@
       [class.sort-icon--visible]="sortField === 'questions'"
     ></nb-icon>
   </div>
-
   <div
     class="ellipsis pl-1 sortable-col"
     [class.sort-active]="sortField === 'runs'"
@@ -90,7 +81,6 @@
       [class.sort-icon--visible]="sortField === 'runs'"
     ></nb-icon>
   </div>
-
   <div
     class="ellipsis sortable-col"
     [class.sort-active]="sortField === 'lastRun'"
@@ -103,17 +93,14 @@
       [class.sort-icon--visible]="sortField === 'lastRun'"
     ></nb-icon>
   </div>
-
   <div class="ellipsis">{{ 'quality.datasets-board.duration_column' | transloco }}</div>
   <div class="ellipsis"></div>
 </div>
-
-<div
-  *ngFor="let dataset of sortedDatasets; trackBy: trackById"
-  [nbSpinner]="loading"
->
+} @for (dataset of sortedDatasets; track trackById($index, dataset)) {
+<div [nbSpinner]="loading">
   <tock-datasets-board-entry [dataset]="dataset"></tock-datasets-board-entry>
 </div>
+}
 
 <ng-template #importModal>
   <nb-card [nbSpinner]="loading">

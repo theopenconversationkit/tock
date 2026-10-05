@@ -47,10 +47,8 @@
   </nb-card-body>
 </nb-card>
 
-<nb-card
-  *ngIf="!sentence"
-  class="mt-2"
->
+@if (!sentence) {
+<nb-card class="mt-2">
   <nb-card-body class="d-flex flex-column align-items-center justify-content-center text-center py-5">
     <nb-icon
       icon="clock"
@@ -61,10 +59,10 @@
     <p style="color: #8f9bb3">{{ 'lu.sentence-new.empty-state-message' | transloco }}</p>
   </nb-card-body>
 </nb-card>
-
+} @if (sentence) {
 <tock-sentence-training-entry
-  *ngIf="sentence"
   [standAlone]="true"
   [sentence]="sentence"
   (onClearSentence)="onClose()"
 ></tock-sentence-training-entry>
+}

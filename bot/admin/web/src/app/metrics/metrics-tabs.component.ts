@@ -18,8 +18,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'tock-metrics-tabs',
-  template: '<nb-route-tabset></nb-route-tabset>'
+    selector: 'tock-metrics-tabs',
+    template: '<nb-route-tabset></nb-route-tabset>',
+    standalone: false
 })
 export class MetricsTabsComponent implements OnInit {
   constructor(private router: Router) {}

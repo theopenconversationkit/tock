@@ -22,9 +22,10 @@ interface Tag {
 }
 
 @Component({
-  selector: 'tock-story-tag',
-  templateUrl: './story-tag.component.html',
-  styleUrls: ['./story-tag.component.scss']
+    selector: 'tock-story-tag',
+    templateUrl: './story-tag.component.html',
+    styleUrls: ['./story-tag.component.scss'],
+    standalone: false
 })
 export class StoryTagComponent implements OnInit {
   @Input()

@@ -23,9 +23,10 @@ import { Subject, takeUntil } from 'rxjs';
 import { getStoryIcon } from '../../../shared/utils';
 
 @Component({
-  selector: 'tock-story-runtime-settings',
-  templateUrl: './story-runtime-settings.component.html',
-  styleUrls: ['./story-runtime-settings.component.css']
+    selector: 'tock-story-runtime-settings',
+    templateUrl: './story-runtime-settings.component.html',
+    styleUrls: ['./story-runtime-settings.component.css'],
+    standalone: false
 })
 export class StoryRuntimeSettingsComponent implements OnInit, OnDestroy {
   destroy = new Subject();

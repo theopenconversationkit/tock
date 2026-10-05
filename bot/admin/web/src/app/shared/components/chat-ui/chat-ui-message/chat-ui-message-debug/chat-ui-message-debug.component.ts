@@ -21,9 +21,10 @@ import { DebugViewerDialogComponent } from '../../../debug-viewer-dialog/debug-v
 import { getContrastYIQ, getInterpolatedColor, RagAnswerStatus, RagAnswerStatusLabels, snakeCaseToDisplayLabel } from '../../../../utils';
 
 @Component({
-  selector: 'tock-chat-ui-message-debug',
-  templateUrl: './chat-ui-message-debug.component.html',
-  styleUrls: ['./chat-ui-message-debug.component.scss']
+    selector: 'tock-chat-ui-message-debug',
+    templateUrl: './chat-ui-message-debug.component.html',
+    styleUrls: ['./chat-ui-message-debug.component.scss'],
+    standalone: false
 })
 export class ChatUiMessageDebugComponent {
   @Input() action: ActionReport;

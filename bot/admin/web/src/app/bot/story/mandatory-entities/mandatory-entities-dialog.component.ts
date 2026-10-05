@@ -26,9 +26,10 @@ import { CreateEntityDialogComponent } from '../create-entity-dialog/create-enti
 import { IntentDialogComponent } from '../../../shared/components';
 
 @Component({
-  selector: 'tock-mandatory-entities-dialog',
-  templateUrl: './mandatory-entities-dialog.component.html',
-  styleUrls: ['./mandatory-entities-dialog.component.scss']
+    selector: 'tock-mandatory-entities-dialog',
+    templateUrl: './mandatory-entities-dialog.component.html',
+    styleUrls: ['./mandatory-entities-dialog.component.scss'],
+    standalone: false
 })
 export class MandatoryEntitiesDialogComponent implements OnInit {
   entities: MandatoryEntity[];

@@ -11,9 +11,10 @@ import { getExportFileName } from '../../shared/utils';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-applications',
-  templateUrl: 'applications.component.html',
-  styleUrls: ['applications.component.scss']
+    selector: 'tock-applications',
+    templateUrl: 'applications.component.html',
+    styleUrls: ['applications.component.scss'],
+    standalone: false
 })
 export class ApplicationsComponent implements OnInit {
   UserRole = UserRole;

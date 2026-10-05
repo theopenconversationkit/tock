@@ -20,10 +20,11 @@ import { JsonIteratorService } from './json-iterator.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'tock-json-iterator',
-  templateUrl: './json-iterator.component.html',
-  styleUrls: ['./json-iterator.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'tock-json-iterator',
+    templateUrl: './json-iterator.component.html',
+    styleUrls: ['./json-iterator.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class JsonIteratorComponent implements AfterViewInit, OnDestroy {
   destroy = new Subject();

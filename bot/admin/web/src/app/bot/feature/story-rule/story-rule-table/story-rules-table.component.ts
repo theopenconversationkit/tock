@@ -9,9 +9,10 @@ import { getStoryIcon } from '../../../../shared/utils';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-story-rules-table',
-  templateUrl: './story-rules-table.component.html',
-  styleUrls: ['./story-rules-table.component.scss']
+    selector: 'tock-story-rules-table',
+    templateUrl: './story-rules-table.component.html',
+    styleUrls: ['./story-rules-table.component.scss'],
+    standalone: false
 })
 export class StoryRulesTableComponent implements OnChanges, OnDestroy {
   destroy = new Subject();

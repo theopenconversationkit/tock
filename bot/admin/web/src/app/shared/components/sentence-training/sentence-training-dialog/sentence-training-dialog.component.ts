@@ -26,9 +26,10 @@ import { SentenceExtended } from '../sentence-training.component';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'tock-sentence-training-dialog',
-  templateUrl: './sentence-training-dialog.component.html',
-  styleUrls: ['./sentence-training-dialog.component.scss']
+    selector: 'tock-sentence-training-dialog',
+    templateUrl: './sentence-training-dialog.component.html',
+    styleUrls: ['./sentence-training-dialog.component.scss'],
+    standalone: false
 })
 export class SentenceTrainingDialogComponent implements OnChanges, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

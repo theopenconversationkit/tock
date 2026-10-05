@@ -26,9 +26,10 @@ import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'tock-new-bot',
-  templateUrl: './new-bot.component.html',
-  styleUrls: ['./new-bot.component.css']
+    selector: 'tock-new-bot',
+    templateUrl: './new-bot.component.html',
+    styleUrls: ['./new-bot.component.css'],
+    standalone: false
 })
 export class NewBotComponent implements OnInit, OnDestroy {
   destroy = new Subject();

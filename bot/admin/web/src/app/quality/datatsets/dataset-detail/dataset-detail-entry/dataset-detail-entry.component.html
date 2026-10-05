@@ -11,8 +11,8 @@
           >
             {{ question.question }}
           </div>
+          @if (question.groundTruth) {
           <div
-            *ngIf="question.groundTruth"
             class="font-size-small text-muted pointer"
             [class.ellipsis]="truncateTitle"
             [class.white-space-pre-line]="!truncateTitle"
@@ -21,47 +21,43 @@
             <span class="tag">{{ 'quality.dataset-detail-entry.ground_truth_tag' | transloco }}</span>
             {{ question.groundTruth }}
           </div>
+          }
         </div>
 
         <div class="d-flex gap-05">
+          @if (questionDiverges) {
           <span
-            *ngIf="questionDiverges"
             class="tag text-nowrap changed"
             [nbTooltip]="'quality.dataset-detail-entry.question_edited_tooltip' | transloco"
           >
             <i class="bi bi-pencil-fill"></i> {{ 'quality.dataset-detail-entry.question_edited_label' | transloco }}
           </span>
-
-          <ng-container *ngIf="sourceDiff">
-            <ng-container *ngIf="sourceDiff as sourcesDiff">
-              <span
-                *ngIf="sourcesDiff.added.length"
-                class="tag text-nowrap added"
-                [nbTooltip]="'quality.dataset-detail-entry.added_sources_tooltip' | transloco: { count: sourcesDiff.added.length }"
-              >
-                <i class="bi bi-file-earmark-fill"></i>
-                {{ 'quality.dataset-detail-entry.added_sources_label' | transloco: { count: sourcesDiff.added.length } }}
-              </span>
-              <span
-                *ngIf="sourcesDiff.modified.length"
-                class="tag text-nowrap changed"
-                [nbTooltip]="'quality.dataset-detail-entry.modified_sources_tooltip' | transloco: { count: sourcesDiff.modified.length }"
-              >
-                <i class="bi bi-file-earmark-fill"></i>
-                {{ 'quality.dataset-detail-entry.modified_sources_label' | transloco: { count: sourcesDiff.modified.length } }}
-              </span>
-              <span
-                *ngIf="sourcesDiff.removed.length"
-                class="tag text-nowrap removed"
-                [nbTooltip]="'quality.dataset-detail-entry.removed_sources_tooltip' | transloco: { count: sourcesDiff.removed.length }"
-              >
-                <i class="bi bi-file-earmark-fill"></i>
-                {{ 'quality.dataset-detail-entry.removed_sources_label' | transloco: { count: sourcesDiff.removed.length } }}
-              </span>
-            </ng-container>
-          </ng-container>
+          } @if (sourceDiff) { @if (sourceDiff; as sourcesDiff) { @if (sourcesDiff.added.length) {
           <span
-            *ngIf="actionTypeTransition"
+            class="tag text-nowrap added"
+            [nbTooltip]="'quality.dataset-detail-entry.added_sources_tooltip' | transloco: { count: sourcesDiff.added.length }"
+          >
+            <i class="bi bi-file-earmark-fill"></i>
+            {{ 'quality.dataset-detail-entry.added_sources_label' | transloco: { count: sourcesDiff.added.length } }}
+          </span>
+          } @if (sourcesDiff.modified.length) {
+          <span
+            class="tag text-nowrap changed"
+            [nbTooltip]="'quality.dataset-detail-entry.modified_sources_tooltip' | transloco: { count: sourcesDiff.modified.length }"
+          >
+            <i class="bi bi-file-earmark-fill"></i>
+            {{ 'quality.dataset-detail-entry.modified_sources_label' | transloco: { count: sourcesDiff.modified.length } }}
+          </span>
+          } @if (sourcesDiff.removed.length) {
+          <span
+            class="tag text-nowrap removed"
+            [nbTooltip]="'quality.dataset-detail-entry.removed_sources_tooltip' | transloco: { count: sourcesDiff.removed.length }"
+          >
+            <i class="bi bi-file-earmark-fill"></i>
+            {{ 'quality.dataset-detail-entry.removed_sources_label' | transloco: { count: sourcesDiff.removed.length } }}
+          </span>
+          } } } @if (actionTypeTransition) {
+          <span
             class="tag text-nowrap changed"
             [nbTooltip]="
               'quality.dataset-detail-entry.answer_type_changed_tooltip' | transloco: { actionTypeTransition: actionTypeTransition }
@@ -69,6 +65,7 @@
           >
             {{ actionTypeTransition }}
           </span>
+          }
         </div>
 
         <button
@@ -76,33 +73,33 @@
           ghost
           (click)="folded = !folded"
         >
+          @if (!folded) {
           <nb-icon
-            *ngIf="!folded"
             class="align-middle"
             icon="chevron-down-outline"
             pack="nebular-essentials"
           ></nb-icon>
+          } @if (folded) {
           <nb-icon
-            *ngIf="folded"
             class="align-middle"
             icon="chevron-left-outline"
             pack="nebular-essentials"
           ></nb-icon>
+          }
         </button>
       </div>
     </div>
 
+    @if (loading && !folded) {
     <div
-      *ngIf="loading && !folded"
       [nbSpinner]="loading"
       class="p-4"
     ></div>
-
+    } @if (!loading && !folded) {
     <div
       #hideableContainer
       class="py-3 hideable-container border-bottom"
       [class.collapsed]="isCollapsed"
-      *ngIf="!loading && !folded"
     >
       <div [class.comparison]="comparisonAction">
         <div class="px-3">
@@ -110,19 +107,16 @@
             <div class="text-uppercase monospace text-primary font-size-small">
               {{ 'quality.dataset-detail-entry.run_a_label' | transloco }}
             </div>
-            <div
-              *ngIf="currentActionDisplayState === DatasetRunActionDisplayState.SUCCESS"
-              class="tag text-muted font-size-small"
-            >
+            @if (currentActionDisplayState === DatasetRunActionDisplayState.SUCCESS) {
+            <div class="tag text-muted font-size-small">
               {{ getActionTypeLabel('A') }}
             </div>
-
+            } @if (currentAction?.action?.metadata?.isGenAiRagAnswer) {
             <tock-chat-ui-message-debug
-              *ngIf="currentAction?.action?.metadata?.isGenAiRagAnswer"
               [action]="currentAction.action"
               [condensed]="true"
             ></tock-chat-ui-message-debug>
-
+            }
             <button
               nbButton
               size="small"
@@ -131,44 +125,32 @@
               class="mt-1"
               (click)="switchFormatting()"
             >
-              <nb-icon
-                *ngIf="!formatting"
-                icon="body-text"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="formatting"
-                icon="code-square"
-              ></nb-icon>
+              @if (!formatting) {
+              <nb-icon icon="body-text"></nb-icon>
+              } @if (formatting) {
+              <nb-icon icon="code-square"></nb-icon>
+              }
             </button>
           </div>
         </div>
-
-        <div
-          *ngIf="comparisonAction"
-          class="separator"
-        ></div>
-
-        <div
-          *ngIf="comparisonAction"
-          class="px-3"
-        >
+        @if (comparisonAction) {
+        <div class="separator"></div>
+        } @if (comparisonAction) {
+        <div class="px-3">
           <div class="d-flex gap-05 justify-content-between align-items-center">
             <div class="text-uppercase monospace text-success font-size-small">
               {{ 'quality.dataset-detail-entry.run_b_label' | transloco }}
             </div>
-            <div
-              *ngIf="comparisonActionDisplayState === DatasetRunActionDisplayState.SUCCESS"
-              class="tag text-muted font-size-small"
-            >
+            @if (comparisonActionDisplayState === DatasetRunActionDisplayState.SUCCESS) {
+            <div class="tag text-muted font-size-small">
               {{ getActionTypeLabel('B') }}
             </div>
-
+            } @if (comparisonAction?.action?.metadata?.isGenAiRagAnswer) {
             <tock-chat-ui-message-debug
-              *ngIf="comparisonAction?.action?.metadata?.isGenAiRagAnswer"
               [action]="comparisonAction.action"
               [condensed]="true"
             ></tock-chat-ui-message-debug>
-
+            }
             <button
               nbButton
               size="small"
@@ -177,175 +159,141 @@
               class="mt-1"
               (click)="switchFormatting()"
             >
-              <nb-icon
-                *ngIf="!formatting"
-                icon="body-text"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="formatting"
-                icon="code-square"
-              ></nb-icon>
+              @if (!formatting) {
+              <nb-icon icon="body-text"></nb-icon>
+              } @if (formatting) {
+              <nb-icon icon="code-square"></nb-icon>
+              }
             </button>
           </div>
         </div>
+        }
       </div>
-
       <div [class.comparison]="comparisonAction">
         <div class="px-3">
-          <ng-container [ngSwitch]="currentActionDisplayState">
-            <div
-              *ngSwitchCase="null"
-              class="text-muted text-center"
-            >
-              {{ 'quality.dataset-detail-entry.question_not_in_dataset' | transloco }}
-            </div>
-            <div
-              *ngSwitchCase="DatasetRunActionDisplayState.FAILED"
-              class="text-danger text-center"
-            >
-              {{ currentAction?.error || ('quality.dataset-detail-entry.action_failed_message' | transloco) }}
-            </div>
-            <div
-              *ngSwitchCase="DatasetRunActionDisplayState.PURGED"
-              class="text-warning text-center"
-            >
-              {{ 'quality.dataset-detail-entry.dialogue_purged_message' | transloco }}
-            </div>
-
-            <ng-container *ngSwitchCase="DatasetRunActionDisplayState.SUCCESS">
-              <div
-                *ngIf="formatting"
-                class="chat-ui-message-content-styling"
-                [innerHTML]="currentActionAnswer"
-              ></div>
-              <div *ngIf="!formatting">{{ currentAction?.action?.message?.text }}</div>
-            </ng-container>
-          </ng-container>
+          @switch (currentActionDisplayState) { @case (null) {
+          <div class="text-muted text-center">
+            {{ 'quality.dataset-detail-entry.question_not_in_dataset' | transloco }}
+          </div>
+          } @case (DatasetRunActionDisplayState.FAILED) {
+          <div class="text-danger text-center">
+            {{ currentAction?.error || ('quality.dataset-detail-entry.action_failed_message' | transloco) }}
+          </div>
+          } @case (DatasetRunActionDisplayState.PURGED) {
+          <div class="text-warning text-center">
+            {{ 'quality.dataset-detail-entry.dialogue_purged_message' | transloco }}
+          </div>
+          } @case (DatasetRunActionDisplayState.SUCCESS) { @if (formatting) {
+          <div
+            class="chat-ui-message-content-styling"
+            [innerHTML]="currentActionAnswer"
+          ></div>
+          } @if (!formatting) {
+          <div>{{ currentAction?.action?.message?.text }}</div>
+          } } }
         </div>
-
-        <div
-          *ngIf="!loading && comparisonAction"
-          class="separator"
-        ></div>
-
-        <div
-          *ngIf="!loading && comparisonAction"
-          class="px-3"
-        >
-          <ng-container [ngSwitch]="comparisonActionDisplayState">
-            <div
-              *ngSwitchCase="DatasetRunActionDisplayState.FAILED"
-              class="text-danger text-center"
-            >
-              {{ comparisonAction?.error || ('quality.dataset-detail-entry.action_failed_message' | transloco) }}
-            </div>
-            <div
-              *ngSwitchCase="DatasetRunActionDisplayState.PURGED"
-              class="text-warning text-center"
-            >
-              {{ 'quality.dataset-detail-entry.dialogue_purged_message' | transloco }}
-            </div>
-            <ng-container *ngSwitchCase="DatasetRunActionDisplayState.SUCCESS">
-              <div
-                *ngIf="formatting"
-                class="chat-ui-message-content-styling"
-                [innerHTML]="comparisonActionAnswer"
-              ></div>
-              <div *ngIf="!formatting">{{ comparisonAction?.action?.message?.text }}</div>
-            </ng-container>
-          </ng-container>
+        @if (!loading && comparisonAction) {
+        <div class="separator"></div>
+        } @if (!loading && comparisonAction) {
+        <div class="px-3">
+          @switch (comparisonActionDisplayState) { @case (DatasetRunActionDisplayState.FAILED) {
+          <div class="text-danger text-center">
+            {{ comparisonAction?.error || ('quality.dataset-detail-entry.action_failed_message' | transloco) }}
+          </div>
+          } @case (DatasetRunActionDisplayState.PURGED) {
+          <div class="text-warning text-center">
+            {{ 'quality.dataset-detail-entry.dialogue_purged_message' | transloco }}
+          </div>
+          } @case (DatasetRunActionDisplayState.SUCCESS) { @if (formatting) {
+          <div
+            class="chat-ui-message-content-styling"
+            [innerHTML]="comparisonActionAnswer"
+          ></div>
+          } @if (!formatting) {
+          <div>{{ comparisonAction?.action?.message?.text }}</div>
+          } } }
         </div>
+        }
       </div>
-
-      <div
-        [class.comparison]="comparisonAction"
-        *ngIf="currentAction?.action?.message?.footnotes?.length || comparisonAction?.action?.message?.footnotes?.length"
-      >
+      @if (currentAction?.action?.message?.footnotes?.length || comparisonAction?.action?.message?.footnotes?.length) {
+      <div [class.comparison]="comparisonAction">
         <div class="px-3 border-top pt-3">
           <div class="d-flex flex-column gap-05">
-            <ng-container *ngIf="currentAction?.action?.message?.footnotes?.length">
-              <ng-container *ngFor="let source of currentFootnotesOrdered">
-                <div
-                  class="tag pointer"
-                  [class.added]="isSourceAdded(source)"
-                  [class.changed]="isSourceChanged(source)"
-                  [nbTooltip]="getSourceDiffTooltip(source)"
-                  (click)="showSourceDetail(source)"
-                >
-                  <i class="bi bi-file-earmark-fill"></i> {{ source.title }}
+            @if (currentAction?.action?.message?.footnotes?.length) { @for (source of currentFootnotesOrdered; track source) {
+            <div
+              class="tag pointer"
+              [class.added]="isSourceAdded(source)"
+              [class.changed]="isSourceChanged(source)"
+              [nbTooltip]="getSourceDiffTooltip(source)"
+              (click)="showSourceDetail(source)"
+            >
+              <i class="bi bi-file-earmark-fill"></i> {{ source.title }}
+            </div>
+            @if (source._detail) {
+            <div>
+              <div class="mt-1 mx-2 font-size-small">
+                <div>
+                  <strong>{{ 'quality.dataset-detail-entry.title_label' | transloco }}</strong>
+                  {{ source.title ?? ('quality.dataset-detail-entry.not_available' | transloco) }}
                 </div>
-                <div *ngIf="source._detail">
-                  <div class="mt-1 mx-2 font-size-small">
-                    <div>
-                      <strong>{{ 'quality.dataset-detail-entry.title_label' | transloco }}</strong>
-                      {{ source.title ?? ('quality.dataset-detail-entry.not_available' | transloco) }}
-                    </div>
-                    <div>
-                      <strong>{{ 'quality.dataset-detail-entry.url_label' | transloco }}</strong>
-                      {{ source.url ?? ('quality.dataset-detail-entry.not_available' | transloco) }}
-                    </div>
-                    <div>
-                      <strong>{{ 'quality.dataset-detail-entry.content_label' | transloco }}</strong
-                      ><br />
-                      {{ source.content }}
-                    </div>
-                  </div>
+                <div>
+                  <strong>{{ 'quality.dataset-detail-entry.url_label' | transloco }}</strong>
+                  {{ source.url ?? ('quality.dataset-detail-entry.not_available' | transloco) }}
                 </div>
-              </ng-container>
-            </ng-container>
+                <div>
+                  <strong>{{ 'quality.dataset-detail-entry.content_label' | transloco }}</strong
+                  ><br />
+                  {{ source.content }}
+                </div>
+              </div>
+            </div>
+            } } }
           </div>
         </div>
-
-        <div
-          *ngIf="currentAction?.action?.message?.footnotes?.length || comparisonAction?.action?.message?.footnotes?.length"
-          class="separator"
-        ></div>
-
-        <div
-          *ngIf="currentAction?.action?.message?.footnotes?.length || comparisonAction?.action?.message?.footnotes?.length"
-          class="px-3 border-top pt-3"
-        >
-          <div
-            *ngIf="!loading && comparisonAction"
-            class="d-flex flex-column gap-05"
-          >
-            <ng-container *ngIf="comparisonAction?.action?.message?.footnotes?.length">
-              <ng-container *ngFor="let source of comparisonFootnotesOrdered">
-                <div
-                  class="tag muted pointer"
-                  [class.removed]="isSourceRemoved(source)"
-                  [class.changed]="isSourceChanged(source)"
-                  [nbTooltip]="getSourceDiffTooltip(source)"
-                  (click)="showSourceDetail(source)"
-                >
-                  <i class="bi bi-file-earmark-fill"></i> {{ source.title }}
+        @if (currentAction?.action?.message?.footnotes?.length || comparisonAction?.action?.message?.footnotes?.length) {
+        <div class="separator"></div>
+        } @if (currentAction?.action?.message?.footnotes?.length || comparisonAction?.action?.message?.footnotes?.length) {
+        <div class="px-3 border-top pt-3">
+          @if (!loading && comparisonAction) {
+          <div class="d-flex flex-column gap-05">
+            @if (comparisonAction?.action?.message?.footnotes?.length) { @for (source of comparisonFootnotesOrdered; track source) {
+            <div
+              class="tag muted pointer"
+              [class.removed]="isSourceRemoved(source)"
+              [class.changed]="isSourceChanged(source)"
+              [nbTooltip]="getSourceDiffTooltip(source)"
+              (click)="showSourceDetail(source)"
+            >
+              <i class="bi bi-file-earmark-fill"></i> {{ source.title }}
+            </div>
+            @if (source._detail) {
+            <div>
+              <div class="mt-1 mx-2 font-size-small">
+                <div>
+                  <strong>{{ 'quality.dataset-detail-entry.title_label' | transloco }}</strong>
+                  {{ source.title ?? ('quality.dataset-detail-entry.not_available' | transloco) }}
                 </div>
-                <div *ngIf="source._detail">
-                  <div class="mt-1 mx-2 font-size-small">
-                    <div>
-                      <strong>{{ 'quality.dataset-detail-entry.title_label' | transloco }}</strong>
-                      {{ source.title ?? ('quality.dataset-detail-entry.not_available' | transloco) }}
-                    </div>
-                    <div>
-                      <strong>{{ 'quality.dataset-detail-entry.url_label' | transloco }}</strong>
-                      {{ source.url ?? ('quality.dataset-detail-entry.not_available' | transloco) }}
-                    </div>
-                    <div>
-                      <strong>{{ 'quality.dataset-detail-entry.content_label' | transloco }}</strong
-                      ><br />
-                      {{ source.content }}
-                    </div>
-                  </div>
+                <div>
+                  <strong>{{ 'quality.dataset-detail-entry.url_label' | transloco }}</strong>
+                  {{ source.url ?? ('quality.dataset-detail-entry.not_available' | transloco) }}
                 </div>
-              </ng-container>
-            </ng-container>
+                <div>
+                  <strong>{{ 'quality.dataset-detail-entry.content_label' | transloco }}</strong
+                  ><br />
+                  {{ source.content }}
+                </div>
+              </div>
+            </div>
+            } } }
           </div>
+          }
         </div>
+        }
       </div>
+      }
     </div>
-
+    } @if (!folded && showToggleButton) {
     <button
-      *ngIf="!folded && showToggleButton"
       nbButton
       ghost
       fullWidth
@@ -359,5 +307,6 @@
           : ('quality.dataset-detail-entry.show_less_button' | transloco)
       }}
     </button>
+    }
   </nb-card-body>
 </nb-card>

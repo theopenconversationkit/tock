@@ -17,8 +17,9 @@
 import { Component, Input } from '@angular/core';
 import { Location } from 'src/app/shared/model/dialog-data';
 @Component({
-  selector: 'tock-chat-ui-message-location',
-  template: `({{ location.location.lat }} - {{ location.location.lng }}`
+    selector: 'tock-chat-ui-message-location',
+    template: `({{ location.location.lat }} - {{ location.location.lng }}`,
+    standalone: false
 })
 export class ChatUiMessageLocationComponent {
   @Input()

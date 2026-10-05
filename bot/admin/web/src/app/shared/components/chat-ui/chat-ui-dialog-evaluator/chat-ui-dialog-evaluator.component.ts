@@ -11,10 +11,10 @@ import { ResponseIssueReason, ResponseIssueReasons } from '../../../model/respon
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-chat-ui-dialog-evaluator',
-
-  templateUrl: './chat-ui-dialog-evaluator.component.html',
-  styleUrl: './chat-ui-dialog-evaluator.component.scss'
+    selector: 'tock-chat-ui-dialog-evaluator',
+    templateUrl: './chat-ui-dialog-evaluator.component.html',
+    styleUrl: './chat-ui-dialog-evaluator.component.scss',
+    standalone: false
 })
 export class ChatUiDialogEvaluatorComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

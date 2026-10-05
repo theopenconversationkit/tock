@@ -26,9 +26,10 @@ import { StateService } from '../../../core-nlp/state.service';
 import { RestService } from '../../../core-nlp/rest/rest.service';
 
 @Component({
-  selector: 'tock-sentences-generation',
-  templateUrl: './sentences-generation.component.html',
-  styleUrls: ['./sentences-generation.component.scss']
+    selector: 'tock-sentences-generation',
+    templateUrl: './sentences-generation.component.html',
+    styleUrls: ['./sentences-generation.component.scss'],
+    standalone: false
 })
 export class SentencesGenerationComponent implements OnInit {
   @Input() sentences: string[] = [];

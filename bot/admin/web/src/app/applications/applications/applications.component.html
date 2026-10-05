@@ -1,23 +1,15 @@
 <div class="d-flex flex-wrap mb-2">
-  <div
-    class="flex-grow-1"
-    *ngIf="state.applications.length === 0"
-  >
+  @if (state.applications.length === 0) {
+  <div class="flex-grow-1">
     <h1 class="mb-0">{{ 'applications.applications.welcomeTitle' | transloco }}</h1>
     <strong>{{ 'applications.applications.createFirstApplication' | transloco }}</strong>
   </div>
-
-  <h1
-    class="flex-grow-1"
-    *ngIf="state.applications.length !== 0"
-  >
+  } @if (state.applications.length !== 0) {
+  <h1 class="flex-grow-1">
     {{ 'applications.applications.applicationsTitle' | transloco }}
   </h1>
-
-  <section
-    class="grid-actions"
-    *ngIf="isAdmin()"
-  >
+  } @if (isAdmin()) {
+  <section class="grid-actions">
     <button
       nbButton
       ghost
@@ -27,7 +19,6 @@
     >
       <nb-icon icon="upload"></nb-icon>
     </button>
-
     <button
       nbButton
       status="primary"
@@ -38,34 +29,34 @@
       {{ 'applications.applications.newApplicationButton' | transloco }}
     </button>
   </section>
+  }
 </div>
 
+@if (!state.applications.length) {
 <tock-no-data-found
-  *ngIf="!state.applications.length"
   [title]="'applications.applications.noApplicationDetected' | transloco"
   [message]="'applications.applications.useNewApplicationButton' | transloco"
 ></tock-no-data-found>
-
+} @for (app of state.applications; track app) {
 <nb-card
-  *ngFor="let app of state.applications"
   class="mb-2"
   [nbSpinner]="loading"
 >
   <nb-card-body>
     <div class="d-flex gap-1 align-items-center">
+      @if (app._id === state.currentApplication._id) {
       <nb-toggle
-        *ngIf="app._id === state.currentApplication._id"
         checked="true"
         class="mb-0 nb-toggle-reset-label-margin unClickable"
       ></nb-toggle>
+      } @if (app._id !== state.currentApplication._id) {
       <nb-toggle
-        *ngIf="app._id !== state.currentApplication._id"
         checked="false"
         (checkedChange)="selectApplication(app)"
         class="mb-0 nb-toggle-reset-label-margin"
         [nbTooltip]="'applications.applications.setAsCurrentApplicationTooltip' | transloco"
       ></nb-toggle>
-
+      }
       <div class="flex-grow-1">
         <span
           class="lead text-nowrap"
@@ -73,17 +64,17 @@
         >
           {{ app.label }}
         </span>
-
         <div class="text-muted">
-          <span *ngFor="let locale of app.supportedLocales; let last = last">
+          @for (locale of app.supportedLocales; track locale; let last = $last) {
+          <span>
             {{ state.localeName(locale) }}
-            <ng-container *ngIf="!last">|</ng-container>
+            @if (!last) { | }
           </span>
+          }
         </div>
       </div>
-
+      @if (isAdmin()) {
       <button
-        *ngIf="isAdmin()"
         nbButton
         ghost
         shape="round"
@@ -93,9 +84,8 @@
       >
         <nb-icon icon="pencil"></nb-icon>
       </button>
-
+      } @if (isAdmin()) {
       <button
-        *ngIf="isAdmin()"
         nbButton
         ghost
         shape="round"
@@ -104,8 +94,8 @@
       >
         <nb-icon icon="download"></nb-icon>
       </button>
+      } @if (isAdmin()) {
       <button
-        *ngIf="isAdmin()"
         nbButton
         ghost
         shape="round"
@@ -114,9 +104,8 @@
       >
         <nb-icon icon="download"></nb-icon>
       </button>
-
+      } @if (isAdmin()) {
       <button
-        *ngIf="isAdmin()"
         nbButton
         ghost
         shape="round"
@@ -126,8 +115,10 @@
       >
         <nb-icon icon="trash"></nb-icon>
       </button>
+      }
     </div>
   </nb-card-body>
 </nb-card>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

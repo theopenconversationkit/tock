@@ -17,6 +17,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { IntentsFiltersComponent } from './intents-filters.component';
+import { TestSharedModule } from '../../../shared/test-shared.module';
 
 describe('IntentsFiltersComponent', () => {
   let component: IntentsFiltersComponent;
@@ -24,9 +25,9 @@ describe('IntentsFiltersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ IntentsFiltersComponent ]
-    })
-    .compileComponents();
+      declarations: [IntentsFiltersComponent],
+      imports: [TestSharedModule]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(IntentsFiltersComponent);
     component = fixture.componentInstance;

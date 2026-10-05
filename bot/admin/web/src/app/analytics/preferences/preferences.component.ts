@@ -21,9 +21,10 @@ import { AnalyticsService } from '../analytics.service';
 import { UserAnalyticsPreferences } from './UserAnalyticsPreferences';
 
 @Component({
-  selector: 'tock-preferences',
-  templateUrl: './preferences.component.html',
-  styleUrls: ['./preferences.component.css']
+    selector: 'tock-preferences',
+    templateUrl: './preferences.component.html',
+    styleUrls: ['./preferences.component.css'],
+    standalone: false
 })
 export class PreferencesComponent {
   preferences: UserAnalyticsPreferences;

@@ -17,8 +17,8 @@
           type="text"
           formControlName="search"
         />
+        @if (!!search.value) {
         <button
-          *ngIf="!!search.value"
           nbButton
           nbSuffix
           [nbTooltip]="'common.actions.clear' | transloco"
@@ -28,6 +28,7 @@
         >
           <nb-icon icon="x-lg"></nb-icon>
         </button>
+        }
       </nb-form-field>
 
       <nb-form-field>
@@ -43,12 +44,11 @@
           optionsListClass="option-list--break-word"
           formControlName="categories"
         >
-          <nb-option
-            *ngFor="let tag of categories"
-            [value]="tag"
-          >
+          @for (tag of categories; track tag) {
+          <nb-option [value]="tag">
             <span class="initial-capitalize">{{ tag }}</span>
           </nb-option>
+          }
         </nb-select>
       </nb-form-field>
 

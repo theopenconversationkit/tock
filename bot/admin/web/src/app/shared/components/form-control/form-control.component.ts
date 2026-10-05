@@ -18,9 +18,10 @@ import { Component, Input } from '@angular/core';
 import { UntypedFormArray, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'tock-form-control',
-  templateUrl: './form-control.component.html',
-  styleUrls: ['./form-control.component.scss']
+    selector: 'tock-form-control',
+    templateUrl: './form-control.component.html',
+    styleUrls: ['./form-control.component.scss'],
+    standalone: false
 })
 export class FormControlComponent {
   @Input() controls!: UntypedFormControl | UntypedFormArray | UntypedFormGroup;

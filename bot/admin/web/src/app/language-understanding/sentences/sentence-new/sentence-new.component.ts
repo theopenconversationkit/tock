@@ -23,9 +23,10 @@ import { NbToastrService } from '@nebular/theme';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-sentence-new',
-  templateUrl: './sentence-new.component.html',
-  styleUrls: ['./sentence-new.component.scss']
+    selector: 'tock-sentence-new',
+    templateUrl: './sentence-new.component.html',
+    styleUrls: ['./sentence-new.component.scss'],
+    standalone: false
 })
 export class SentenceNewComponent implements OnInit, OnDestroy {
   destroy = new Subject();

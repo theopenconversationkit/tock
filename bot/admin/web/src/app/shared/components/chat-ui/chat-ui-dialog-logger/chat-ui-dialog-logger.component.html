@@ -1,18 +1,18 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
 <div class="dialog-summary shadow-sm py-1 pl-3 pr-1 d-flex align-items-center justify-content-between">
   <div class="d-flex gap-1 text-muted font-size-small">
@@ -83,167 +83,154 @@
 </div>
 
 <div class="pt-3 pl-3 pb-3">
-  <ng-container *ngFor="let action of dialog.actions; let first = first">
-    <div
-      *ngIf="$any(action).message.text || $any(action).message.messages?.length"
-      class="dialogs-messages-grid"
-      [class.mt-2]="!first && !action.isBot()"
-    >
-      <div class="flex-grow-1 align-self-center">
-        <tock-chat-ui-message
-          [action]="action"
-          [message]="action.message"
-          [date]="action.date"
-          [reply]="action.isBot()"
-          [replay]="true"
-          [sender]="getUserNameKey(action) | transloco"
-          [avatar]="getUserAvatar(action)"
-          [applicationId]="action.applicationId"
-          id="action-anchor-{{ action.id }}"
-          (click)="
-            (userMessageIsClickable && !action.isBot()) || (botMessageIsClickable && action.isBot()) ? messageClicked(action) : undefined
-          "
-          [class.pointer]="(userMessageIsClickable && !action.isBot()) || (botMessageIsClickable && action.isBot())"
-          [class.highlightedAction]="highlightedAction === action"
-        >
+  @for (action of dialog.actions; track action; let first = $first) { @if ($any(action).message.text ||
+  $any(action).message.messages?.length) {
+  <div
+    class="dialogs-messages-grid"
+    [class.mt-2]="!first && !action.isBot()"
+  >
+    <div class="flex-grow-1 align-self-center">
+      <tock-chat-ui-message
+        [action]="action"
+        [message]="action.message"
+        [date]="action.date"
+        [reply]="action.isBot()"
+        [replay]="true"
+        [sender]="getUserNameKey(action) | transloco"
+        [avatar]="getUserAvatar(action)"
+        [applicationId]="action.applicationId"
+        id="action-anchor-{{ action.id }}"
+        (click)="
+          (userMessageIsClickable && !action.isBot()) || (botMessageIsClickable && action.isBot()) ? messageClicked(action) : undefined
+        "
+        [class.pointer]="(userMessageIsClickable && !action.isBot()) || (botMessageIsClickable && action.isBot())"
+        [class.highlightedAction]="highlightedAction === action"
+      >
+        @if (action._nlpStats) {
+        <div class="d-flex align-items-center justify-content-between font-size-small mt-n2">
           <div
-            *ngIf="action._nlpStats"
-            class="d-flex align-items-center justify-content-between font-size-small mt-n2"
+            class="locale-display"
+            [nbTooltip]="state.localeName(action._nlpStats.locale)"
           >
-            <div
-              class="locale-display"
-              [nbTooltip]="state.localeName(action._nlpStats.locale)"
-            >
-              {{ normalizeLocaleCode(action._nlpStats.locale) }}
-            </div>
+            {{ normalizeLocaleCode(action._nlpStats.locale) }}
           </div>
-
-          <nb-icon
-            icon="hand-thumbs-up-fill"
-            class="text-success font-size-small mt-2"
-            [nbTooltip]="'shared.chat-ui-dialog-logger.feedback-positive' | transloco"
-            *ngIf="action.metadata?.feedback?.vote === feedbackVote.UP"
-          ></nb-icon>
-          <nb-icon
-            icon="hand-thumbs-down-fill"
-            class="text-danger font-size-small mt-2"
-            [nbTooltip]="'shared.chat-ui-dialog-logger.feedback-negative' | transloco"
-            *ngIf="action.metadata?.feedback?.vote === feedbackVote.DOWN"
-          ></nb-icon>
-        </tock-chat-ui-message>
-      </div>
-
-      <div
-        class="dialog-vertical-separator"
-        [class.horizontal-separation-start]="!action.isBot()"
-        [class.horizontal-separation-end]="action.isBotAnswerWithContent()"
-      ></div>
-
-      <div>
-        <div
-          class="pl-1"
-          *ngIf="!action.isBot()"
-        >
-          <button
-            nbButton
-            ghost
-            size="small"
-            [nbTooltip]="'shared.chat-ui-dialog-logger.replay-sentence' | transloco"
-            (click)="testDialogSentence(action)"
-          >
-            <nb-icon icon="terminal-plus"></nb-icon>
-          </button>
-
-          <button
-            *ngIf="action._nlpStats"
-            (click)="displayNlpStats(action)"
-            nbButton
-            ghost
-            size="small"
-            [nbTooltip]="'shared.chat-ui-dialog-logger.show-nlp-stats' | transloco"
-          >
-            <nb-icon icon="clipboard-data"></nb-icon>
-          </button>
         </div>
-
-        <div
-          class="pl-1"
-          *ngIf="action.isBotAnswerWithContent()"
-        >
-          <div class="button-horizontal-separator mb-1"></div>
-
-          <a
-            nbButton
-            ghost
-            size="small"
-            [nbTooltip]="'shared.chat-ui-dialog-logger.display-dialog-alone' | transloco"
-            href="analytics/dialogs/{{ state.currentApplication.namespace }}/{{ state.currentApplication._id }}/{{ dialog.id }}#{{
-              action.id
-            }}"
-          >
-            <nb-icon icon="link"></nb-icon>
-          </a>
-
-          <div *ngIf="containsAnnotation(action); else does_not_contain_a_report">
-            <button
-              nbButton
-              size="small"
-              status="warning"
-              ghost
-              [nbTooltip]="'shared.chat-ui-dialog-logger.display-annotation' | transloco"
-              (click)="openAnnotation(action)"
-            >
-              <nb-icon icon="exclamation-triangle-fill"></nb-icon>
-            </button>
-          </div>
-
-          <ng-template #does_not_contain_a_report>
-            <button
-              nbButton
-              size="small"
-              ghost
-              [nbTooltip]="'shared.chat-ui-dialog-logger.annotate-exchange' | transloco"
-              (click)="openAnnotation(action)"
-            >
-              <nb-icon icon="exclamation-triangle"></nb-icon>
-            </button>
-          </ng-template>
-
-          <button
-            *ngIf="isAdmin() && action.metadata?.isGenAiRagAnswer && $any(action).ragDebug?.question_answering_prompt"
-            nbButton
-            ghost
-            size="small"
-            nbTooltip="Open query in playground"
-            (click)="goToPlayground(action)"
-            class="mb-1"
-          >
-            <nb-icon icon="joystick"></nb-icon>
-          </button>
-
-          <button
-            *ngIf="action.metadata?.isGenAiRagAnswer"
-            nbButton
-            size="small"
-            ghost
-            [nbTooltip]="'shared.chat-ui-dialog-logger.create-faq' | transloco"
-            (click)="createFaq(action, dialog.actions)"
-          >
-            <nb-icon icon="chat-left-text"></nb-icon>
-          </button>
-
-          <button
-            *ngIf="action.metadata?.observabilityInfo?.traceUrl"
-            nbButton
-            ghost
-            size="small"
-            [nbTooltip]="'shared.chat-ui-dialog-logger.view-observability' | transloco"
-            (click)="openObservabilityTrace(action)"
-          >
-            <nb-icon icon="display"></nb-icon>
-          </button>
-        </div>
-      </div>
+        } @if (action.metadata?.feedback?.vote === feedbackVote.UP) {
+        <nb-icon
+          icon="hand-thumbs-up-fill"
+          class="text-success font-size-small mt-2"
+          [nbTooltip]="'shared.chat-ui-dialog-logger.feedback-positive' | transloco"
+        ></nb-icon>
+        } @if (action.metadata?.feedback?.vote === feedbackVote.DOWN) {
+        <nb-icon
+          icon="hand-thumbs-down-fill"
+          class="text-danger font-size-small mt-2"
+          [nbTooltip]="'shared.chat-ui-dialog-logger.feedback-negative' | transloco"
+        ></nb-icon>
+        }
+      </tock-chat-ui-message>
     </div>
-  </ng-container>
+    <div
+      class="dialog-vertical-separator"
+      [class.horizontal-separation-start]="!action.isBot()"
+      [class.horizontal-separation-end]="action.isBotAnswerWithContent()"
+    ></div>
+    <div>
+      @if (!action.isBot()) {
+      <div class="pl-1">
+        <button
+          nbButton
+          ghost
+          size="small"
+          [nbTooltip]="'shared.chat-ui-dialog-logger.replay-sentence' | transloco"
+          (click)="testDialogSentence(action)"
+        >
+          <nb-icon icon="terminal-plus"></nb-icon>
+        </button>
+        @if (action._nlpStats) {
+        <button
+          (click)="displayNlpStats(action)"
+          nbButton
+          ghost
+          size="small"
+          [nbTooltip]="'shared.chat-ui-dialog-logger.show-nlp-stats' | transloco"
+        >
+          <nb-icon icon="clipboard-data"></nb-icon>
+        </button>
+        }
+      </div>
+      } @if (action.isBotAnswerWithContent()) {
+      <div class="pl-1">
+        <div class="button-horizontal-separator mb-1"></div>
+        <a
+          nbButton
+          ghost
+          size="small"
+          [nbTooltip]="'shared.chat-ui-dialog-logger.display-dialog-alone' | transloco"
+          href="analytics/dialogs/{{ state.currentApplication.namespace }}/{{ state.currentApplication._id }}/{{ dialog.id }}#{{
+            action.id
+          }}"
+        >
+          <nb-icon icon="link"></nb-icon>
+        </a>
+        @if (containsAnnotation(action)) {
+        <div>
+          <button
+            nbButton
+            size="small"
+            status="warning"
+            ghost
+            [nbTooltip]="'shared.chat-ui-dialog-logger.display-annotation' | transloco"
+            (click)="openAnnotation(action)"
+          >
+            <nb-icon icon="exclamation-triangle-fill"></nb-icon>
+          </button>
+        </div>
+        } @else {
+        <button
+          nbButton
+          size="small"
+          ghost
+          [nbTooltip]="'shared.chat-ui-dialog-logger.annotate-exchange' | transloco"
+          (click)="openAnnotation(action)"
+        >
+          <nb-icon icon="exclamation-triangle"></nb-icon>
+        </button>
+        } @if (isAdmin() && action.metadata?.isGenAiRagAnswer && $any(action).ragDebug?.question_answering_prompt) {
+        <button
+          nbButton
+          ghost
+          size="small"
+          nbTooltip="Open query in playground"
+          (click)="goToPlayground(action)"
+          class="mb-1"
+        >
+          <nb-icon icon="joystick"></nb-icon>
+        </button>
+        } @if (action.metadata?.isGenAiRagAnswer) {
+        <button
+          nbButton
+          size="small"
+          ghost
+          [nbTooltip]="'shared.chat-ui-dialog-logger.create-faq' | transloco"
+          (click)="createFaq(action, dialog.actions)"
+        >
+          <nb-icon icon="chat-left-text"></nb-icon>
+        </button>
+        } @if (action.metadata?.observabilityInfo?.traceUrl) {
+        <button
+          nbButton
+          ghost
+          size="small"
+          [nbTooltip]="'shared.chat-ui-dialog-logger.view-observability' | transloco"
+          (click)="openObservabilityTrace(action)"
+        >
+          <nb-icon icon="display"></nb-icon>
+        </button>
+        }
+      </div>
+      }
+    </div>
+  </div>
+  } }
 </div>

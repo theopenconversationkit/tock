@@ -15,15 +15,14 @@
       *nbTreeGridCellDef="let row"
     >
       <div class="step-wrapper">
+        @if (row.data.children.length) {
         <nb-tree-grid-row-toggle
           [expanded]="row.expanded"
-          *ngIf="row.data.children.length"
           class="toggler"
         >
         </nb-tree-grid-row-toggle>
-
+        } @if (indicators) {
         <tock-step
-          *ngIf="indicators"
           class="step"
           [step]="row.data"
           (delete)="deleteStep($event)"
@@ -38,15 +37,14 @@
           [readonly]="readonly"
           [indicators]="indicators"
         ></tock-step>
+        }
       </div>
     </td>
   </ng-container>
 </table>
 
-<div
-  *ngIf="!readonly"
-  class="d-flex flex-wrap gap-1 mt-4"
->
+@if (!readonly) {
+<div class="d-flex flex-wrap gap-1 mt-4">
   <button
     nbButton
     ghost
@@ -66,3 +64,4 @@
     {{ 'bot.story-action-steps.addActionButton' | transloco }}
   </button>
 </div>
+}

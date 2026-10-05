@@ -1,28 +1,26 @@
 <nb-card status="info">
   <nb-card-header>{{ 'bot.create-entity-dialog.title' | transloco }}</nb-card-header>
   <nb-card-body class="content">
-    <p
-      *ngIf="error"
-      class="error"
-    >
+    @if (error) {
+    <p class="error">
       {{ error }}
     </p>
+    }
 
     <p>
       <label>{{ 'bot.create-entity-dialog.selectExistingEntityLabel' | transloco }}</label
       ><br />
 
-      <ng-container *ngIf="entityTypes">
-        <span
-          *ngFor="let e of entityTypes"
-          [nbTooltip]="'bot.create-entity-dialog.selectEntityTooltip' | transloco: { entityName: e.qualifiedName(state.user) }"
-          (click)="onSelect(e)"
-          class="tag"
-          [style.background-color]="e === entityType ? '' : e.qualifiedEntityColor(state.user)"
-        >
-          {{ e.qualifiedName(state.user) }}
-        </span>
-      </ng-container>
+      @if (entityTypes) { @for (e of entityTypes; track e) {
+      <span
+        [nbTooltip]="'bot.create-entity-dialog.selectEntityTooltip' | transloco: { entityName: e.qualifiedName(state.user) }"
+        (click)="onSelect(e)"
+        class="tag"
+        [style.background-color]="e === entityType ? '' : e.qualifiedEntityColor(state.user)"
+      >
+        {{ e.qualifiedName(state.user) }}
+      </span>
+      } }
     </p>
 
     <div class="form-group">

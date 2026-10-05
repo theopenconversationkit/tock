@@ -1,10 +1,9 @@
 <div class="d-flex flex-wrap mb-2">
   <h1 class="flex-grow-1">{{ 'configuration.bot-configurations.title' | transloco }}</h1>
 
-  <section
-    class="grid-actions"
-    *ngIf="configurations"
-  >
+  @if (configurations) {
+  <section class="grid-actions">
+    @if (!newApplicationConfiguration && state.currentApplication) {
     <button
       nbButton
       ghost
@@ -15,18 +14,14 @@
           : ('configuration.bot-configurations.displayTestConfigurationsTooltip' | transloco)
       "
       (click)="displayTestConfigurations = !displayTestConfigurations"
-      *ngIf="!newApplicationConfiguration && state.currentApplication"
     >
-      <nb-icon
-        *ngIf="!displayTestConfigurations"
-        icon="eye"
-      ></nb-icon>
-      <nb-icon
-        *ngIf="displayTestConfigurations"
-        icon="eye-slash"
-      ></nb-icon>
+      @if (!displayTestConfigurations) {
+      <nb-icon icon="eye"></nb-icon>
+      } @if (displayTestConfigurations) {
+      <nb-icon icon="eye-slash"></nb-icon>
+      }
     </button>
-
+    }
     <button
       nbButton
       ghost
@@ -36,53 +31,47 @@
     >
       <nb-icon icon="arrow-clockwise"></nb-icon>
     </button>
-
+    @if (!newApplicationConfiguration && state.currentApplication) {
     <button
       nbButton
       status="primary"
       [nbTooltip]="'configuration.bot-configurations.newConfigurationTooltip' | transloco"
       (click)="prepareCreate()"
-      *ngIf="!newApplicationConfiguration && state.currentApplication"
     >
       <nb-icon icon="plus-lg"></nb-icon>
       {{ 'configuration.bot-configurations.newConfigurationButton' | transloco }}
     </button>
+    }
   </section>
+  }
 </div>
 
+@if (!configurations.length && !newApplicationConfiguration) {
 <tock-no-data-found
-  *ngIf="!configurations.length && !newApplicationConfiguration"
   [title]="'common.messages.noBotConfiguration' | transloco"
   [message]="'configuration.bot-configurations.noBotConfigurationMessage' | transloco"
 ></tock-no-data-found>
-
+} @if (newApplicationConfiguration) {
 <tock-bot-configuration
-  *ngIf="newApplicationConfiguration"
   [configuration]="newApplicationConfiguration"
   (onRemove)="cancelCreate()"
   (onValidate)="create()"
 ></tock-bot-configuration>
-
-<nb-accordion
-  class="mb-3"
-  *ngFor="let botconfig of configurations"
->
+} @for (botconfig of configurations; track botconfig) {
+<nb-accordion class="mb-3">
   <nb-accordion-item>
     <nb-accordion-item-header>
       <span class="lead text-nowrap">
         {{ botconfig.name }}
       </span>
-
-      <ng-container *ngFor="let conf of botconfig.configurations">
-        <img
-          *ngIf="isFirstLevelConfiguration(botconfig, conf)"
-          src="{{ conf.connectorType.iconUrl() }}"
-          class="connector-icon ml-1"
-          [nbTooltip]="conf.connectorType.label()"
-        />
-      </ng-container>
+      @for (conf of botconfig.configurations; track conf) { @if (isFirstLevelConfiguration(botconfig, conf)) {
+      <img
+        src="{{ conf.connectorType.iconUrl() }}"
+        class="connector-icon ml-1"
+        [nbTooltip]="conf.connectorType.label()"
+      />
+      } }
     </nb-accordion-item-header>
-
     <nb-accordion-item-body>
       <div class="row">
         <div class="col">
@@ -140,19 +129,22 @@
           </tock-form-control>
         </div>
       </div>
-
       <h5 class="mt-3">{{ 'configuration.bot-configurations.connectorsTitle' | transloco }}</h5>
-      <div *ngFor="let conf of botconfig.configurations">
+      @for (conf of botconfig.configurations; track conf) {
+      <div>
+        @if (displayTestConfigurations || isFirstLevelConfiguration(botconfig, conf)) {
         <tock-bot-configuration
-          *ngIf="displayTestConfigurations || isFirstLevelConfiguration(botconfig, conf)"
           [configuration]="conf"
           (onRemove)="remove(conf)"
           (onValidate)="update(conf)"
         >
         </tock-bot-configuration>
+        }
       </div>
+      }
     </nb-accordion-item-body>
   </nb-accordion-item>
 </nb-accordion>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

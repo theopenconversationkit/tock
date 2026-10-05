@@ -1,22 +1,19 @@
+@if (isRoot && !isPrimitive(data)) {
 <button
   nbButton
   size="tiny"
   class="float-right ml-2"
   [nbTooltip]="'shared.json-iterator.expand_recursively_tooltip' | transloco"
-  *ngIf="isRoot && !isPrimitive(data)"
   (click)="expandAll()"
 >
   <nb-icon icon="arrows-expand"></nb-icon>
 </button>
-
-<div *ngIf="isRoot && isPrimitive(data)">
+} @if (isRoot && isPrimitive(data)) {
+<div>
   {{ data }}
 </div>
-
-<div
-  *ngIf="parentKey"
-  class="parent-title d-flex"
->
+} @if (parentKey) {
+<div class="parent-title d-flex">
   <button
     type="button"
     class="node-toggle"
@@ -25,43 +22,32 @@
     (click)="switchDeployed()"
   >
     <span class="caret-holder">
+      @if (!isDeployed && isExpandable()) {
       <nb-icon
         icon="caret-right-fill"
         class="align-middle"
-        *ngIf="!isDeployed && isExpandable()"
       ></nb-icon>
+      } @if (isDeployed && isExpandable()) {
       <nb-icon
         icon="caret-down-fill"
         class="align-middle"
-        *ngIf="isDeployed && isExpandable()"
       ></nb-icon>
+      }
     </span>
     <strong>{{ parentKey }} :</strong>
   </button>
-
   <div
     class="node-value grow-1"
     [class.ellipsis]="!(isDeployed && isPrimitive(data))"
   >
-    <span
-      class="text-primary pl-2"
-      *ngIf="isPrimitive(data) && !isDeployed"
-      >"{{ data }}"</span
-    >
-    <pre
-      class="pre-format text-primary pl-2"
-      *ngIf="isPrimitive(data) && isDeployed"
-    >
-"{{ data }}"</pre
-    >
-
-    <span
-      class="text-muted pl-2"
-      *ngIf="!isPrimitive(data)"
-      >{{ data | json }}</span
-    >
+    @if (isPrimitive(data) && !isDeployed) {
+    <span class="text-primary pl-2">"{{ data }}"</span>
+    } @if (isPrimitive(data) && isDeployed) {
+    <pre class="pre-format text-primary pl-2">            "{{ data }}"</pre>
+    } @if (!isPrimitive(data)) {
+    <span class="text-muted pl-2">{{ data | json }}</span>
+    }
   </div>
-
   <button
     type="button"
     class="copy-btn"
@@ -71,17 +57,17 @@
     <nb-icon [icon]="copied ? 'check' : 'copy'"></nb-icon>
   </button>
 </div>
-
+} @if (!isPrimitive(data) && (isRoot || isDeployed)) {
 <div
-  *ngIf="!isPrimitive(data) && (isRoot || isDeployed)"
   class="entry-block"
   [class.isRoot]="isRoot"
 >
-  <ng-container *ngFor="let list of data | keyvalue: customSort">
-    <tock-json-iterator
-      [data]="list.value"
-      [parentKey]="list.key"
-      [isRoot]="false"
-    ></tock-json-iterator>
-  </ng-container>
+  @for (list of data | keyvalue: customSort; track list) {
+  <tock-json-iterator
+    [data]="list.value"
+    [parentKey]="list.key"
+    [isRoot]="false"
+  ></tock-json-iterator>
+  }
 </div>
+}

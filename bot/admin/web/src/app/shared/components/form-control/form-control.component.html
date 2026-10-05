@@ -4,8 +4,8 @@
   data-testid="form-control"
 >
   <div class="d-flex align-items-center justify-content-between">
+    @if (label) {
     <label
-      *ngIf="label"
       class="mb-0"
       [ngClass]="{
         'font-weight-bold': boldLabel,
@@ -17,27 +17,26 @@
       [for]="name"
       data-testid="label"
     >
-      <abbr
-        *ngIf="required"
-        [title]="'shared.form-control.required' | transloco"
-      >
-        *
-      </abbr>
+      @if (required) {
+      <abbr [title]="'shared.form-control.required' | transloco"> * </abbr>
+      }
       {{ label }}
     </label>
+    } @if (information) {
     <nb-icon
-      *ngIf="information"
       class="control-info"
       size="small"
       status="info"
       [nbTooltip]="information"
       icon="info-circle"
     ></nb-icon>
+    }
   </div>
   <ng-content></ng-content>
+  @if (showError) {
   <tock-error-helper
-    *ngIf="showError"
     class="mt-1"
     [field]="controls"
   ></tock-error-helper>
+  }
 </div>

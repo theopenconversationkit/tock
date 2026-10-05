@@ -15,9 +15,10 @@ interface I18nFiltersForm {
 }
 
 @Component({
-  selector: 'tock-i18n-filters',
-  templateUrl: './i18n-filters.component.html',
-  styleUrls: ['./i18n-filters.component.scss']
+    selector: 'tock-i18n-filters',
+    templateUrl: './i18n-filters.component.html',
+    styleUrls: ['./i18n-filters.component.scss'],
+    standalone: false
 })
 export class I18nFiltersComponent implements OnInit {
   private readonly destroy$: Subject<boolean> = new Subject();

@@ -19,6 +19,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Sentence } from '../../../model/dialog-data';
 
 import { ChatUiMessageComponent } from './chat-ui-message.component';
+import { TestSharedModule } from '../../../test-shared.module';
+import { BotConfigurationService } from '../../../../core/bot-configuration.service';
+import { of } from 'rxjs';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 const message = new Sentence(0, [], 'test');
 
@@ -29,14 +33,26 @@ describe('ChatUiMessageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ChatUiMessageComponent],
+      imports: [TestSharedModule],
       providers: [
         {
           provide: DomSanitizer,
           useValue: {
             bypassSecurityTrustStyle: (str) => str
           }
+        },
+        {
+          provide: BotConfigurationService,
+          useValue: {
+            configurations: of([]),
+            restConfigurations: of([]),
+            hasRestConfigurations: of(false),
+            supportedConnectors: of([]),
+            bots: of([])
+          }
         }
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   });
 

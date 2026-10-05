@@ -30,9 +30,10 @@ import { Subject, takeUntil } from 'rxjs';
 import { getExportFileName } from '../../shared/utils';
 
 @Component({
-  selector: 'tock-test-entity-errors',
-  templateUrl: './test-entity-errors.component.html',
-  styleUrls: ['./test-entity-errors.component.scss']
+    selector: 'tock-test-entity-errors',
+    templateUrl: './test-entity-errors.component.html',
+    styleUrls: ['./test-entity-errors.component.scss'],
+    standalone: false
 })
 export class TestEntityErrorsComponent implements OnInit, OnDestroy {
   destroy = new Subject();

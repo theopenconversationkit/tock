@@ -26,9 +26,10 @@ export interface Pagination {
 }
 
 @Component({
-  selector: 'tock-pagination',
-  templateUrl: './pagination.component.html',
-  styleUrls: ['./pagination.component.scss']
+    selector: 'tock-pagination',
+    templateUrl: './pagination.component.html',
+    styleUrls: ['./pagination.component.scss'],
+    standalone: false
 })
 export class PaginationComponent implements OnInit, OnChanges, OnDestroy {
   private destroy$ = new Subject<void>();

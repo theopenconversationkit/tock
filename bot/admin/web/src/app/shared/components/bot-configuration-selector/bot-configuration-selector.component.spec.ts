@@ -17,6 +17,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BotConfigurationSelectorComponent } from './bot-configuration-selector.component';
+import { TestSharedModule } from '../../test-shared.module';
+import { BotConfigurationService } from '../../../core/bot-configuration.service';
+import { of } from 'rxjs';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('BotConfigurationSelectorComponent', () => {
   let component: BotConfigurationSelectorComponent;
@@ -24,9 +28,22 @@ describe('BotConfigurationSelectorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BotConfigurationSelectorComponent]
-    })
-    .compileComponents();
+      declarations: [BotConfigurationSelectorComponent],
+      imports: [TestSharedModule],
+      providers: [
+        {
+          provide: BotConfigurationService,
+          useValue: {
+            configurations: of([]),
+            restConfigurations: of([]),
+            hasRestConfigurations: of(false),
+            supportedConnectors: of([]),
+            bots: of([])
+          }
+        }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(BotConfigurationSelectorComponent);
     component = fixture.componentInstance;

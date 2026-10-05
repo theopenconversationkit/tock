@@ -24,35 +24,33 @@ import { AuthService } from '../../../core-nlp/auth/auth.service';
   styleUrls: ['./one-column.layout.scss'],
   template: `
     <nb-layout>
-      <nb-layout-header
-        fixed
-        *ngIf="auth.isLoggedIn()"
-      >
+      @if (auth.isLoggedIn()) {
+      <nb-layout-header fixed>
         <tock-header></tock-header>
       </nb-layout-header>
-
+      } @if (auth.isLoggedIn()) {
       <nb-sidebar
         class="menu-sidebar"
         tag="menu-sidebar"
         responsive
         [compactedBreakpoints]="['xs', 'sm']"
-        *ngIf="auth.isLoggedIn()"
       >
         <ng-content select="nb-menu"></ng-content>
       </nb-sidebar>
+      }
 
       <nb-layout-column>
         <ng-content select="router-outlet"></ng-content>
       </nb-layout-column>
 
-      <nb-layout-footer
-        fixed
-        *ngIf="auth.isLoggedIn()"
-      >
+      @if (auth.isLoggedIn()) {
+      <nb-layout-footer fixed>
         <tock-footer></tock-footer>
       </nb-layout-footer>
+      }
     </nb-layout>
-  `
+  `,
+  standalone: false
 })
 export class OneColumnLayoutComponent implements OnDestroy {
   private alive = true;

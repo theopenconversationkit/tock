@@ -11,11 +11,10 @@
     (ngModelChange)="selectedTagChange.emit($event)"
   >
     <nb-option [value]="">{{ 'bot.story-tag.noActionLabel' | transloco }}</nb-option>
-    <nb-option
-      *ngFor="let tag of tags"
-      [value]="tag.value"
-    >
+    @for (tag of tags; track tag) {
+    <nb-option [value]="tag.value">
       {{ tag.label }}
     </nb-option>
+    }
   </nb-select>
 </tock-form-control>

@@ -24,9 +24,10 @@ interface PlaygroundForm {
 }
 
 @Component({
-  selector: 'tock-playground',
-  templateUrl: './playground.component.html',
-  styleUrl: './playground.component.scss'
+    selector: 'tock-playground',
+    templateUrl: './playground.component.html',
+    styleUrl: './playground.component.scss',
+    standalone: false
 })
 export class PlaygroundComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();

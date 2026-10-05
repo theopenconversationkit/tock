@@ -1,38 +1,35 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
 <tock-dialogs-list-filters
   (onFilter)="onFilterDialogs($event)"
   [initialFilters]="filters"
 ></tock-dialogs-list-filters>
 
-<nb-card
-  *ngIf="loading && !data?.length"
-  [nbSpinner]="loading"
->
+@if (loading && !data?.length) {
+<nb-card [nbSpinner]="loading">
   <nb-card-body>&nbsp;</nb-card-body>
 </nb-card>
+}
 
 <div [nbSpinner]="loading">
-  <tock-no-data-found
-    *ngIf="!loading && pagination.total === 0"
-    [title]="'analytics.dialogs-list.no-dialogs-found' | transloco"
-  ></tock-no-data-found>
-
-  <tock-sticky-menu *ngIf="!loading && data?.length">
+  @if (!loading && pagination.total === 0) {
+  <tock-no-data-found [title]="'analytics.dialogs-list.no-dialogs-found' | transloco"></tock-no-data-found>
+  } @if (!loading && data?.length) {
+  <tock-sticky-menu>
     <div class="d-flex align-items-center justify-content-between">
       <div class="d-flex gap-1 align-items-center">
         <span
@@ -41,18 +38,19 @@
           data-testid="sort"
         >
           {{ 'analytics.dialogs-list.sort-by-creation-date' | transloco }}
+          @if (filters.dialogSort === sortOrder.ASC) {
           <nb-icon
-            *ngIf="filters.dialogSort === sortOrder.ASC"
             class="align-middle"
             icon="chevron-down-outline"
             pack="nebular-essentials"
           ></nb-icon>
+          } @if (filters.dialogSort === sortOrder.DESC) {
           <nb-icon
-            *ngIf="filters.dialogSort === sortOrder.DESC"
             class="align-middle"
             icon="chevron-up-outline"
             pack="nebular-essentials"
           ></nb-icon>
+          }
         </span>
         <div class="sticky-menu-scrolled-info">
           <button
@@ -72,16 +70,16 @@
       ></tock-pagination>
     </div>
   </tock-sticky-menu>
-
+  } @if (data?.length) {
   <div
-    *ngIf="data?.length"
     class="mt-2"
     infinite-scroll
     [infiniteScrollDistance]="2"
     [infiniteScrollThrottle]="300"
     (scrolled)="onScroll()"
   >
-    <div *ngFor="let dialog of data">
+    @for (dialog of data; track dialog) {
+    <div>
       <nb-card
         id="dialog-wrapper-{{ dialog.id }}"
         status="basic"
@@ -93,5 +91,7 @@
         </nb-card-body>
       </nb-card>
     </div>
+    }
   </div>
+  }
 </div>

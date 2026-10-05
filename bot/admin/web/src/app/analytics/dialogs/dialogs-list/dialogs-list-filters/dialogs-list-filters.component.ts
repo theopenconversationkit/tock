@@ -63,9 +63,10 @@ interface DialogListFiltersForm {
 export type DialogListFilters = ExtractFormControlTyping<DialogListFiltersForm>;
 
 @Component({
-  selector: 'tock-dialogs-list-filters',
-  templateUrl: './dialogs-list-filters.component.html',
-  styleUrl: './dialogs-list-filters.component.scss'
+    selector: 'tock-dialogs-list-filters',
+    templateUrl: './dialogs-list-filters.component.html',
+    styleUrl: './dialogs-list-filters.component.scss',
+    standalone: false
 })
 export class DialogsListFiltersComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

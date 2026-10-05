@@ -22,8 +22,8 @@
       <nb-icon icon="upload"></nb-icon>
     </button>
 
+    @if (settingsBackup && form.dirty) {
     <button
-      *ngIf="settingsBackup && form.dirty"
       nbButton
       ghost
       status="primary"
@@ -33,8 +33,8 @@
       <nb-icon icon="x-circle"></nb-icon>
       {{ 'common.actions.cancel' | transloco }}
     </button>
+    } @if (form.dirty) {
     <button
-      *ngIf="form.dirty"
       nbButton
       status="primary"
       [nbTooltip]="'configuration.vector-db-settings.saveTooltip' | transloco"
@@ -43,6 +43,7 @@
       <nb-icon icon="floppy"></nb-icon>
       {{ 'common.actions.save' | transloco }}
     </button>
+    }
   </section>
 </div>
 
@@ -53,15 +54,10 @@
   >.
 </small>
 
-<tock-no-data-found
-  *ngIf="configurations?.length === 0"
-  [title]="'configuration.vector-db-settings.noBotConfiguration' | transloco"
-></tock-no-data-found>
-
-<form
-  [formGroup]="form"
-  *ngIf="configurations?.length > 0"
->
+@if (configurations?.length === 0) {
+<tock-no-data-found [title]="'configuration.vector-db-settings.noBotConfiguration' | transloco"></tock-no-data-found>
+} @if (configurations?.length > 0) {
+<form [formGroup]="form">
   <nb-card class="mt-2">
     <nb-card-body
       [nbSpinner]="loading"
@@ -80,13 +76,15 @@
               formControlName="enabled"
               class="mt-1"
             >
-              <span *ngIf="enabled.value">{{ 'configuration.vector-db-settings.vectorDbActivated' | transloco }}</span>
-              <span *ngIf="!enabled.value">{{ 'configuration.vector-db-settings.vectorDbDeactivated' | transloco }}</span>
+              @if (enabled.value) {
+              <span>{{ 'configuration.vector-db-settings.vectorDbActivated' | transloco }}</span>
+              } @if (!enabled.value) {
+              <span>{{ 'configuration.vector-db-settings.vectorDbDeactivated' | transloco }}</span>
+              }
             </nb-toggle>
           </tock-form-control>
         </nb-card-body>
       </nb-card>
-
       <nb-card>
         <nb-card-header>
           {{ 'configuration.vector-db-settings.vectorDbProviderTitle' | transloco }} <i>{{ state.currentApplication.name }}</i>
@@ -103,39 +101,36 @@
               name="vectorDbProvider"
               class="d-flex"
             >
-              <nb-radio
-                *ngFor="let provider of providersConfigurations"
-                [value]="provider.key"
-              >
+              @for (provider of providersConfigurations; track provider) {
+              <nb-radio [value]="provider.key">
                 {{ provider.label }}
               </nb-radio>
+              }
             </nb-radio-group>
           </tock-form-control>
-
-          <div
-            *ngIf="currentVectorDbProvider"
-            class="mt-2 mb-2"
-          >
+          @if (currentVectorDbProvider) {
+          <div class="mt-2 mb-2">
             <div class="row mb-1">
-              <ng-container *ngFor="let param of currentVectorDbProvider.params">
-                <div
-                  class="col-6 px-3"
-                  [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
-                >
-                  <tock-ai-settings-engine-config-param-input
-                    parentGroup="setting"
-                    [configurationParam]="param"
-                    [form]="form"
-                    [isSubmitted]="isSubmitted"
-                  ></tock-ai-settings-engine-config-param-input>
-                </div>
-              </ng-container>
+              @for (param of currentVectorDbProvider.params; track param) {
+              <div
+                class="col-6 px-3"
+                [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
+              >
+                <tock-ai-settings-engine-config-param-input
+                  parentGroup="setting"
+                  [configurationParam]="param"
+                  [form]="form"
+                  [isSubmitted]="isSubmitted"
+                ></tock-ai-settings-engine-config-param-input>
+              </div>
+              }
             </div>
           </div>
+          }
         </nb-card-body>
       </nb-card>
-
-      <nb-card *ngIf="settingsBackup">
+      @if (settingsBackup) {
+      <nb-card>
         <nb-card-header>{{ 'configuration.vector-db-settings.settingsDeletionTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <button
@@ -149,9 +144,11 @@
           </button>
         </nb-card-body>
       </nb-card>
+      }
     </nb-card-body>
   </nb-card>
 </form>
+}
 
 <ng-template #exportConfirmationModal>
   <nb-card>
@@ -170,7 +167,8 @@
 
     <nb-card-body>
       <div class="mb-2">{{ 'configuration.vector-db-settings.includeSensitiveDataLabel' | transloco }}</div>
-      <div *ngFor="let sensitiveParam of sensitiveParams">
+      @for (sensitiveParam of sensitiveParams; track sensitiveParam) {
+      <div>
         <nb-checkbox
           status="basic"
           [(ngModel)]="sensitiveParam.include"
@@ -179,6 +177,7 @@
           {{ sensitiveParam.param.label }}
         </nb-checkbox>
       </div>
+      }
     </nb-card-body>
 
     <nb-card-footer class="card-footer-actions">

@@ -19,9 +19,10 @@ export interface IndicatorEdition {
 }
 
 @Component({
-  selector: 'tock-indicators',
-  templateUrl: './indicators.component.html',
-  styleUrls: ['./indicators.component.scss']
+    selector: 'tock-indicators',
+    templateUrl: './indicators.component.html',
+    styleUrls: ['./indicators.component.scss'],
+    standalone: false
 })
 export class IndicatorsComponent implements OnInit, OnDestroy {
   destroy = new Subject();

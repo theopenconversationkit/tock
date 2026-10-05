@@ -40,9 +40,9 @@
   </nb-card>
 
   <div class="space graph-list">
+    @if (userPreferences.graphs.behavior.messagesByStory) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByStory"
       [nbSpinner]="messagesByStoryLoading"
     >
       <nb-card-body>
@@ -55,9 +55,9 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
+    } @if (userPreferences.graphs.behavior.messagesByIntent) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByIntent"
       [nbSpinner]="messagesByIntentLoading"
     >
       <nb-card-body>
@@ -70,9 +70,9 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
+    } @if (userPreferences.graphs.behavior.messagesByDayOfWeek) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByDayOfWeek"
       [nbSpinner]="messagesByDayOfWeekLoading"
     >
       <nb-card-body>
@@ -85,9 +85,9 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
+    } @if (userPreferences.graphs.behavior.messagesByHourOfDay) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByHourOfDay"
       [nbSpinner]="messagesByDayOfWeekLoading"
     >
       <nb-card-body>
@@ -100,10 +100,9 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-
+    } @if (userPreferences.graphs.behavior.messagesByActionType) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByActionType"
       [nbSpinner]="messagesByActionTypeLoading"
     >
       <nb-card-body>
@@ -118,10 +117,9 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-
+    } @if (userPreferences.graphs.behavior.messagesByStoryCategory) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByStoryCategory"
       [nbSpinner]="messagesByStoryCategoryLoading"
     >
       <nb-card-body>
@@ -134,10 +132,9 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-
+    } @if (userPreferences.graphs.behavior.messagesByStoryType) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByStoryType"
       [nbSpinner]="messagesByStoryTypeLoading"
     >
       <nb-card-body>
@@ -150,9 +147,9 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
+    } @if (userPreferences.graphs.behavior.messagesByLocale) {
     <nb-card
       class="space graph"
-      *ngIf="userPreferences.graphs.behavior.messagesByLocale"
       [nbSpinner]="messagesByStoryLocaleLoading"
     >
       <nb-card-body>
@@ -165,6 +162,7 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
+    }
   </div>
 </div>
 

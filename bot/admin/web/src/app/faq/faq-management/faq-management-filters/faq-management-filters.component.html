@@ -32,12 +32,11 @@
           optionsListClass="option-list--break-word"
           formControlName="tags"
         >
-          <nb-option
-            *ngFor="let tag of tagsCache"
-            [value]="tag"
-          >
+          @for (tag of tagsCache; track tag) {
+          <nb-option [value]="tag">
             <span class="initial-capitalize">{{ tag }}</span>
           </nb-option>
+          }
         </nb-select>
       </nb-form-field>
 
@@ -50,8 +49,8 @@
         {{ 'faq.faq-management-filters.activeLabel' | transloco }}
       </nb-checkbox>
 
+      @if (isFiltered) {
       <button
-        *ngIf="isFiltered"
         nbButton
         [nbTooltip]="'faq.faq-management-filters.clearAllFiltersTooltip' | transloco"
         ghost
@@ -61,6 +60,7 @@
       >
         <nb-icon icon="x-lg"></nb-icon>
       </button>
+      }
     </form>
   </nb-card-body>
 </nb-card>

@@ -11,9 +11,10 @@ import { TestDialogService } from '../../../shared/components/test-dialog/test-d
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-faq-management-list',
-  templateUrl: './faq-management-list.component.html',
-  styleUrls: ['./faq-management-list.component.scss']
+    selector: 'tock-faq-management-list',
+    templateUrl: './faq-management-list.component.html',
+    styleUrls: ['./faq-management-list.component.scss'],
+    standalone: false
 })
 export class FaqManagementListComponent {
   @Input() faqs!: FaqDefinitionExtended[];

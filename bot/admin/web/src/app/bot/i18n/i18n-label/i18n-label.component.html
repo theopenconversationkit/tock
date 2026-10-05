@@ -1,4 +1,5 @@
-<div *ngIf="i18nLabel?.i18n.length">
+@if (i18nLabel?.i18n.length) {
+<div>
   <nb-card>
     <nb-card-header>
       <div class="d-flex justify-content-between align-items-start">
@@ -9,26 +10,24 @@
           >
             {{ !i18nLabel.defaultLocalizedLabel().label.length ? i18nLabel._id : i18nLabel.defaultLocalizedLabel().label }}
           </span>
-
           <div class="font-size-small lineHeight-1 mt-1">
             <div>{{ i18nLabel.category }}</div>
-
-            <span
-              *ngIf="i18nLabel.defaultLocalizedLabel().label !== i18nLabel.defaultLabel"
-              [nbTooltip]="'bot.i18n-label.originalLabelTooltip' | transloco"
-            >
+            @if (i18nLabel.defaultLocalizedLabel().label !== i18nLabel.defaultLabel) {
+            <span [nbTooltip]="'bot.i18n-label.originalLabelTooltip' | transloco">
               {{ i18nLabel.defaultLabel }}
             </span>
-
+            }
             <span class="text-muted">
-              <span *ngIf="i18nLabel.statCount"> {{ 'bot.i18n-label.usedTimesLabel' | transloco: { count: i18nLabel.statCount } }}, </span>
-              <span *ngIf="i18nLabel.lastUpdate">
+              @if (i18nLabel.statCount) {
+              <span> {{ 'bot.i18n-label.usedTimesLabel' | transloco: { count: i18nLabel.statCount } }}, </span>
+              } @if (i18nLabel.lastUpdate) {
+              <span>
                 {{ 'bot.i18n-label.lastUsedLabel' | transloco: { timeAgo: (i18nLabel.lastUpdate | amTimeAgo) } }}
               </span>
+              }
             </span>
           </div>
         </div>
-
         <button
           nbButton
           ghost
@@ -42,13 +41,11 @@
         </button>
       </div>
     </nb-card-header>
-
     <nb-card-body>
-      <div *ngFor="let l of i18nLabel.i18n; let isLast = last; let index = index">
-        <div
-          *ngIf="isLocalizedVisible(l) && isLocalizedNotHidden(l)"
-          class="mb-3"
-        >
+      @for (l of i18nLabel.i18n; track l; let isLast = $last; let index = $index) {
+      <div>
+        @if (isLocalizedVisible(l) && isLocalizedNotHidden(l)) {
+        <div class="mb-3">
           <div class="d-flex">
             <div class="d-flex gap-1 label-block-actions">
               <!-- Locale -->
@@ -59,32 +56,33 @@
               >
                 {{ l.locale }}
               </div>
-
               <!-- Interface type -->
               <div>
+                @if (l.interfaceType === 0) {
                 <nb-icon
-                  *ngIf="l.interfaceType === 0"
                   icon="chat-right-text-fill"
                   [nbTooltip]="'bot.i18n-label.textChannelTooltip' | transloco"
                 ></nb-icon>
+                } @if (l.interfaceType === 1) {
                 <nb-icon
-                  *ngIf="l.interfaceType === 1"
                   icon="telephone-fill"
                   [nbTooltip]="'bot.i18n-label.voiceChannelTooltip' | transloco"
                 ></nb-icon>
+                }
               </div>
-
               <!-- Connector -->
-              <div *ngIf="l.connectorId">
+              @if (l.connectorId) {
+              <div>
+                @if (l.connectorId) {
                 <img
-                  *ngIf="l.connectorId"
                   src="{{ l.iconUrl() }}"
                   class="icons"
                   [nbTooltip]="l.connectorId"
                 />
+                }
               </div>
+              }
             </div>
-
             <!-- Label -->
             <div class="flex-grow-1">
               <textarea
@@ -105,7 +103,6 @@
                 "
               ></textarea>
             </div>
-
             <div class="d-flex align-items-center label-block-actions">
               <!-- Add alternative -->
               <button
@@ -122,7 +119,6 @@
               >
                 <nb-icon icon="plus-lg"></nb-icon>
               </button>
-
               <!-- Delete label -->
               <button
                 (click)="removeLocalizedLabel(l)"
@@ -133,7 +129,6 @@
               >
                 <nb-icon icon="trash"></nb-icon>
               </button>
-
               <!-- Validate label -->
               <nb-checkbox
                 class="ml-2"
@@ -149,36 +144,30 @@
               ></nb-checkbox>
             </div>
           </div>
-
           <!-- Alternatives -->
-          <div
-            class="d-flex"
-            *ngFor="let a of l.alternatives; let index = index"
-          >
+          @for (a of l.alternatives; track a; let index = $index) {
+          <div class="d-flex">
             <div class="d-flex gap-1 label-block-actions text-muted">
               <div class="text-uppercase">{{ l.locale }}</div>
-
               <div>
-                <nb-icon
-                  *ngIf="l.interfaceType === 0"
-                  icon="chat-right-text-fill"
-                ></nb-icon>
-                <nb-icon
-                  *ngIf="l.interfaceType === 1"
-                  icon="telephone-fill"
-                ></nb-icon>
+                @if (l.interfaceType === 0) {
+                <nb-icon icon="chat-right-text-fill"></nb-icon>
+                } @if (l.interfaceType === 1) {
+                <nb-icon icon="telephone-fill"></nb-icon>
+                }
               </div>
-
-              <div *ngIf="l.connectorId">
+              @if (l.connectorId) {
+              <div>
+                @if (l.connectorId) {
                 <img
-                  *ngIf="l.connectorId"
                   src="{{ l.iconUrl() }}"
                   class="icons icon-muted"
                   [nbTooltip]="l.connectorId"
                 />
+                }
               </div>
+              }
             </div>
-
             <div class="flex-grow-1">
               <textarea
                 class="label-textarea"
@@ -189,7 +178,6 @@
                 rows="1"
               ></textarea>
             </div>
-
             <div class="label-block-actions">
               <!-- Remove alternative -->
               <button
@@ -203,42 +191,37 @@
               </button>
             </div>
           </div>
-
+          }
           <!-- Add specific label for connector -->
-          <div
-            *ngIf="isLast || i18nLabel.i18n[index + 1].interfaceType !== l.interfaceType || i18nLabel.i18n[index + 1].locale !== l.locale"
-          >
+          @if (isLast || i18nLabel.i18n[index + 1].interfaceType !== l.interfaceType || i18nLabel.i18n[index + 1].locale !== l.locale) {
+          <div>
             <div class="d-flex flex-wrap justify-content-between">
-              <ng-container *ngFor="let connector of connectorTypes">
-                <ng-container
-                  *ngIf="
-                    isSupportedLocale(l) &&
-                    !i18nLabel.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)
-                  "
-                >
-                  <button
-                    nbButton
-                    ghost
-                    shape="round"
-                    [nbTooltip]="'bot.i18n-label.addSpecificLabelTooltip' | transloco: { connectorId: connector.connectorType.id }"
-                    (click)="addLocalizedLabelForConnector(l, connector.connectorType.id)"
-                  >
-                    <img
-                      src="{{ connector.connectorType.iconUrl() }}"
-                      class="icons"
-                    />
-                  </button>
-                </ng-container>
-              </ng-container>
+              @for (connector of connectorTypes; track connector) { @if ( isSupportedLocale(l) &&
+              !i18nLabel.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id) ) {
+              <button
+                nbButton
+                ghost
+                shape="round"
+                [nbTooltip]="'bot.i18n-label.addSpecificLabelTooltip' | transloco: { connectorId: connector.connectorType.id }"
+                (click)="addLocalizedLabelForConnector(l, connector.connectorType.id)"
+              >
+                <img
+                  src="{{ connector.connectorType.iconUrl() }}"
+                  class="icons"
+                />
+              </button>
+              } }
             </div>
-
-            <hr
-              *ngIf="!isLast"
-              class="divider"
-            />
+            @if (!isLast) {
+            <hr class="divider" />
+            }
           </div>
+          }
         </div>
+        }
       </div>
+      }
     </nb-card-body>
   </nb-card>
 </div>
+}

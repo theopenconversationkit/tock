@@ -1,7 +1,5 @@
-<nb-card
-  class="min-width-90vw"
-  *ngIf="!loading && !intent"
->
+@if (!loading && !intent) {
+<nb-card class="min-width-90vw">
   <nb-card-body class="p-0 pb-2">
     <tock-no-data-found
       [title]="'shared.intent-story-details.not-found.title' | transloco"
@@ -9,11 +7,8 @@
     ></tock-no-data-found>
   </nb-card-body>
 </nb-card>
-
-<nb-card
-  class="min-width-90vw"
-  *ngIf="intent"
->
+} @if (intent) {
+<nb-card class="min-width-90vw">
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
     <div>{{ 'shared.intent-story-details.header.title' | transloco: { intentLabel: this.intent.label || this.intent.name } }}</div>
     <button
@@ -27,81 +22,74 @@
       <nb-icon icon="x-lg"></nb-icon>
     </button>
   </nb-card-header>
-
   <nb-card-body
     class="p-0 pb-2"
     [nbSpinner]="loading"
   >
-    <div *ngIf="story">
+    @if (story) {
+    <div>
       <ul class="list-group list-group-flush">
-        <li
-          class="list-group-item text-warning"
-          *ngIf="!story.storyId"
-        >
+        @if (!story.storyId) {
+        <li class="list-group-item text-warning">
           {{ 'shared.intent-story-details.warnings.no-story' | transloco }}
         </li>
-
-        <li
-          class="list-group-item"
-          *ngIf="story.storyId"
-        >
+        } @if (story.storyId) {
+        <li class="list-group-item">
           <div class="row">
             <div class="col">
               <div class="font-weight-bold">{{ 'shared.intent-story-details.labels.story-name' | transloco }} :</div>
               {{ story.name }}
             </div>
-
             <div class="col">
               <div class="font-weight-bold">{{ 'shared.intent-story-details.labels.type' | transloco }} :</div>
-
+              @if (story.isBuiltIn()) {
               <nb-icon
-                *ngIf="story.isBuiltIn()"
                 [nbTooltip]="'common.storyTypes.builtIn' | transloco"
                 class="align-middle"
                 icon="box"
               ></nb-icon>
+              } @if (story.isSimpleNonFaqAnswer()) {
               <nb-icon
-                *ngIf="story.isSimpleNonFaqAnswer()"
                 [nbTooltip]="'common.storyTypes.message' | transloco"
                 icon="chat-left"
                 class="align-middle"
               ></nb-icon>
+              } @if (story.isSimpleFaqAnswer()) {
               <nb-icon
-                *ngIf="story.isSimpleFaqAnswer()"
                 class="align-middle"
                 [nbTooltip]="'common.storyTypes.messageFaq' | transloco"
                 icon="chat-left-text"
               ></nb-icon>
+              } @if (story.isScriptAnswer()) {
               <nb-icon
-                *ngIf="story.isScriptAnswer()"
                 [nbTooltip]="'common.storyTypes.script' | transloco"
                 class="align-middle"
                 icon="code"
               ></nb-icon>
-
-              <span *ngIf="story.isBuiltIn()"> {{ 'shared.intent-story-details.story-types.built-in' | transloco }}</span>
-              <span *ngIf="story.isSimpleNonFaqAnswer()"> {{ 'shared.intent-story-details.story-types.simple' | transloco }}</span>
-              <span *ngIf="story.isSimpleFaqAnswer()"> {{ 'shared.intent-story-details.story-types.simple-faq' | transloco }}</span>
-              <span *ngIf="story.isScriptAnswer()"> {{ 'shared.intent-story-details.story-types.scripted' | transloco }}</span>
+              } @if (story.isBuiltIn()) {
+              <span> {{ 'shared.intent-story-details.story-types.built-in' | transloco }}</span>
+              } @if (story.isSimpleNonFaqAnswer()) {
+              <span> {{ 'shared.intent-story-details.story-types.simple' | transloco }}</span>
+              } @if (story.isSimpleFaqAnswer()) {
+              <span> {{ 'shared.intent-story-details.story-types.simple-faq' | transloco }}</span>
+              } @if (story.isScriptAnswer()) {
+              <span> {{ 'shared.intent-story-details.story-types.scripted' | transloco }}</span>
+              }
             </div>
-
             <div class="col">
               <div class="font-weight-bold">{{ 'shared.intent-story-details.labels.category' | transloco }} :</div>
               {{ story.category }}
             </div>
           </div>
         </li>
-
+        }
         <li class="list-group-item">
-          <label
-            class="font-weight-bold"
-            *ngIf="story.storyId"
-          >
-            {{ 'shared.intent-story-details.labels.default-sentence' | transloco }} :
-          </label>
-
+          @if (story.storyId) {
+          <label class="font-weight-bold"> {{ 'shared.intent-story-details.labels.default-sentence' | transloco }} : </label>
+          }
           <div>
-            <span *ngIf="story.storyId">
+            @if (story.storyId) {
+            <span>
               <span class="text-mitigated-light">&laquo;</span>{{ story.userSentence }}<span class="text-mitigated-light">&raquo;</span>
               <span
                 [nbTooltip]="'shared.intent-story-details.tooltips.locale' | transloco"
@@ -109,7 +97,6 @@
               >
                 [{{ story.userSentenceLocale }}]
               </span>
-
               <button
                 nbButton
                 ghost
@@ -121,38 +108,31 @@
                 <nb-icon icon="terminal-plus"></nb-icon>
               </button>
             </span>
-
-            <div
-              class="mt-1"
-              *ngIf="sentences?.length"
-            >
+            } @if (sentences?.length) {
+            <div class="mt-1">
               <button
                 nbButton
                 size="tiny"
                 (click)="sentencesReveal = !sentencesReveal"
                 class="mt-2"
               >
+                @if (!sentencesReveal) {
                 <nb-icon
-                  *ngIf="!sentencesReveal"
                   class="align-middle"
                   icon="chevron-right"
                 ></nb-icon>
+                } @if (sentencesReveal) {
                 <nb-icon
-                  *ngIf="sentencesReveal"
                   class="align-middle"
                   icon="chevron-down"
                 ></nb-icon>
+                }
                 {{ 'shared.intent-story-details.buttons.show-all-sentences' | transloco }}
               </button>
-
-              <ul
-                *ngIf="sentencesReveal"
-                class="list-group list-group-flush mt-2"
-              >
-                <li
-                  *ngFor="let sentence of sentences"
-                  class="list-group-item"
-                >
+              @if (sentencesReveal) {
+              <ul class="list-group list-group-flush mt-2">
+                @for (sentence of sentences; track sentence) {
+                <li class="list-group-item">
                   <small>
                     <span class="text-mitigated-light">&laquo;</span>{{ $any(sentence).text
                     }}<span class="text-mitigated-light">&raquo;</span>
@@ -167,7 +147,6 @@
                       class="ml-2"
                       >({{ $any(sentence).classification?.usageCount }})</span
                     >
-
                     <button
                       nbButton
                       ghost
@@ -180,38 +159,39 @@
                     </button>
                   </small>
                 </li>
+                }
               </ul>
+              }
             </div>
+            }
           </div>
         </li>
-
-        <li
-          class="list-group-item"
-          *ngIf="story.storyId"
-        >
+        @if (story.storyId) {
+        <li class="list-group-item">
           <label class="font-weight-bold">{{ 'shared.intent-story-details.labels.default-answers' | transloco }} :</label>
-
-          <ng-container *ngIf="story.isSimpleAnswer()">
-            <div *ngFor="let answer of story.answers">
-              <div *ngFor="let subanswer of $any(answer).answers">
-                <span class="text-mitigated-light">&laquo;</span>{{ subanswer.label.defaultLocalizedLabel().label
-                }}<span class="text-mitigated-light">&raquo;</span>
-              </div>
+          @if (story.isSimpleAnswer()) { @for (answer of story.answers; track answer) {
+          <div>
+            @for (subanswer of $any(answer).answers; track subanswer) {
+            <div>
+              <span class="text-mitigated-light">&laquo;</span>{{ subanswer.label.defaultLocalizedLabel().label
+              }}<span class="text-mitigated-light">&raquo;</span>
             </div>
-          </ng-container>
-
-          <ng-container *ngIf="story.isBuiltIn()">
-            <div *ngFor="let answer of story.answers">
-              {{ answer.simpleTextView(true) }}
-            </div>
-          </ng-container>
-          <ng-container *ngIf="story.isScriptAnswer()">
-            <div *ngFor="let answer of story.answers">
-              {{ answer.simpleTextView(true) }}
-            </div>
-          </ng-container>
+            }
+          </div>
+          } } @if (story.isBuiltIn()) { @for (answer of story.answers; track answer) {
+          <div>
+            {{ answer.simpleTextView(true) }}
+          </div>
+          } } @if (story.isScriptAnswer()) { @for (answer of story.answers; track answer) {
+          <div>
+            {{ answer.simpleTextView(true) }}
+          </div>
+          } }
         </li>
+        }
       </ul>
     </div>
+    }
   </nb-card-body>
 </nb-card>
+}

@@ -1,59 +1,53 @@
-<div
-  *ngIf="stories?.length"
-  class="table-list table-list-header"
->
+@if (stories?.length) {
+<div class="table-list table-list-header">
   <div class="table-list-entry">{{ 'bot.stories-list.storyHeader' | transloco }}</div>
   <div class="table-list-entry bordered text-center">{{ 'bot.stories-list.mainIntentHeader' | transloco }}</div>
   <div class="table-list-entry bordered text-center">{{ 'bot.stories-list.infosHeader' | transloco }}</div>
   <div class="table-list-entry bordered text-center">{{ 'bot.stories-list.lastEditedHeader' | transloco }}</div>
   <div class="table-list-entry text-center">{{ 'bot.stories-list.actionsHeader' | transloco }}</div>
 </div>
-
-<div
-  class="table-list"
-  *ngFor="let story of stories"
->
+} @for (story of stories; track story) {
+<div class="table-list">
   <div class="table-list-entry">
     <div
       class="font-weight-bold ellipsis"
       [nbTooltip]="story.name"
     >
+      @if (story.isBuiltIn()) {
       <nb-icon
-        *ngIf="story.isBuiltIn()"
         class="align-middle mr-2"
         [nbTooltip]="'common.storyTypes.builtIn' | transloco"
         icon="box"
       ></nb-icon>
+      } @if (story.isSimpleNonFaqAnswer()) {
       <nb-icon
-        *ngIf="story.isSimpleNonFaqAnswer()"
         class="align-middle mr-2"
         [nbTooltip]="'common.storyTypes.message' | transloco"
         icon="chat-left"
       ></nb-icon>
+      } @if (story.isSimpleFaqAnswer()) {
       <nb-icon
-        *ngIf="story.isSimpleFaqAnswer()"
         class="align-middle mr-2"
         [nbTooltip]="'common.storyTypes.messageFaq' | transloco"
         icon="chat-left-text"
       ></nb-icon>
+      } @if (story.isScriptAnswer()) {
       <nb-icon
-        *ngIf="story.isScriptAnswer()"
         class="align-middle mr-2"
         [nbTooltip]="'common.storyTypes.script' | transloco"
         icon="code"
       ></nb-icon>
+      }
       {{ story.name }}
     </div>
     <span class="text-muted">{{ story.description }}</span>
   </div>
-
   <div
     class="table-list-entry bordered text-center ellipsis"
     [nbTooltip]="story.intent.getIntentLabel(state)"
   >
     {{ story.intent.getIntentLabel(state) }}
   </div>
-
   <div class="table-list-entry bordered text-center">
     <button
       nbButton
@@ -65,11 +59,9 @@
       <nb-icon icon="book"></nb-icon>
     </button>
   </div>
-
   <div class="table-list-entry bordered text-center">
     {{ story.lastEdited | date: dateFormat }}
   </div>
-
   <div class="table-list-entry text-center">
     <div class="d-flex justify-content-center">
       <button
@@ -104,3 +96,4 @@
     </div>
   </div>
 </div>
+}

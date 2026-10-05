@@ -23,9 +23,10 @@ import { take } from 'rxjs';
 import { copyToClipboard } from '../../../utils';
 
 @Component({
-  selector: 'tock-chat-ui-message',
-  templateUrl: './chat-ui-message.component.html',
-  styleUrls: ['./chat-ui-message.component.scss']
+    selector: 'tock-chat-ui-message',
+    templateUrl: './chat-ui-message.component.html',
+    styleUrls: ['./chat-ui-message.component.scss'],
+    standalone: false
 })
 export class ChatUiMessageComponent implements OnInit {
   @Input() action?: ActionReport;

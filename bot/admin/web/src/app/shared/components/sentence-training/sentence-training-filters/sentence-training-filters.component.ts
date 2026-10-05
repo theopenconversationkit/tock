@@ -30,9 +30,10 @@ interface SentenceTrainingFilterForm {
 }
 
 @Component({
-  selector: 'tock-sentence-training-filters',
-  templateUrl: './sentence-training-filters.component.html',
-  styleUrls: ['./sentence-training-filters.component.scss']
+    selector: 'tock-sentence-training-filters',
+    templateUrl: './sentence-training-filters.component.html',
+    styleUrls: ['./sentence-training-filters.component.scss'],
+    standalone: false
 })
 export class SentenceTrainingFiltersComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

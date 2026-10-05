@@ -19,16 +19,17 @@
         (click)="sortBy(SortingCriteria.name)"
       >
         {{ 'metrics.stories-hits.story_name_label' | transloco }}
+        @if (sortCriteria === SortingCriteria.name && sortDirection) {
         <nb-icon
-          *ngIf="sortCriteria === SortingCriteria.name && sortDirection"
           icon="chevron-down-outline"
           pack="nebular-essentials"
         ></nb-icon>
+        } @if (sortCriteria === SortingCriteria.name && !sortDirection) {
         <nb-icon
-          *ngIf="sortCriteria === SortingCriteria.name && !sortDirection"
           icon="chevron-up-outline"
           pack="nebular-essentials"
         ></nb-icon>
+        }
       </div>
 
       <div
@@ -36,21 +37,22 @@
         (click)="sortBy(SortingCriteria.count)"
       >
         {{ 'metrics.stories-hits.hits_label' | transloco }}
+        @if (sortCriteria === SortingCriteria.count && sortDirection) {
         <nb-icon
-          *ngIf="sortCriteria === SortingCriteria.count && sortDirection"
           icon="chevron-down-outline"
           pack="nebular-essentials"
         ></nb-icon>
+        } @if (sortCriteria === SortingCriteria.count && !sortDirection) {
         <nb-icon
-          *ngIf="sortCriteria === SortingCriteria.count && !sortDirection"
           icon="chevron-up-outline"
           pack="nebular-essentials"
         ></nb-icon>
+        }
       </div>
     </div>
 
+    @for (metric of processedStoriesMetrics; track metric) {
     <div
-      *ngFor="let metric of processedStoriesMetrics"
       class="stats-line d-flex justify-content-between gap-2 py-2"
       [ngClass]="{
         'text-success': metric.ragStory,
@@ -62,6 +64,7 @@
       <div>{{ metric.name }}</div>
       <div>{{ metric.count }}</div>
     </div>
+    }
 
     <div class="d-flex justify-content-between gap-2 py-2 font-weight-bold">
       <div>{{ 'metrics.stories-hits.total_label' | transloco }}</div>

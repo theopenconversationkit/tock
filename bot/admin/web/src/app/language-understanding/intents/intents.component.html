@@ -1,34 +1,29 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
 <h1>{{ 'lu.intents.title' | transloco }}</h1>
 
 <tock-intents-filters (onFilter)="filterIntents($event)"></tock-intents-filters>
 
-<div
-  *ngIf="filteredIntents && !filteredIntents.length"
-  class="text-center font-italic"
->
+@if (filteredIntents && !filteredIntents.length) {
+<div class="text-center font-italic">
   {{ 'lu.intents.no-intent-found' | transloco }}
 </div>
-
-<nb-card
-  class="mb-2"
-  *ngIf="filteredIntents?.length"
->
+} @if (filteredIntents?.length) {
+<nb-card class="mb-2">
   <nb-card-body>
     <tock-intents-list
       [intents]="filteredIntents"
@@ -43,20 +38,16 @@
     ></tock-intents-list>
   </nb-card-body>
 </nb-card>
-
-<nb-accordion
-  class="no-shadow mb-4"
-  *ngIf="!filteredIntents"
->
+} @if (!filteredIntents) {
+<nb-accordion class="no-shadow mb-4">
+  @for (category of intentsCategories; track category) {
   <nb-accordion-item
-    *ngFor="let category of intentsCategories"
     [expanded]="isCategoryExpanded(category)"
     (collapsedChange)="collapsedChange(category)"
   >
     <nb-accordion-item-header class="h6 text-capitalize">
       {{ category.category }}
     </nb-accordion-item-header>
-
     <nb-accordion-item-body class="accordion-item-body">
       <div class="compensate-accordion-item-padding">
         <tock-intents-list
@@ -73,4 +64,6 @@
       </div>
     </nb-accordion-item-body>
   </nb-accordion-item>
+  }
 </nb-accordion>
+}

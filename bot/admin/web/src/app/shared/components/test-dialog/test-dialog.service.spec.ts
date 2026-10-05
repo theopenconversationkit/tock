@@ -17,12 +17,13 @@
 import { TestBed } from '@angular/core/testing';
 
 import { TestDialogService } from './test-dialog.service';
+import { getNbTestProviders } from '../../test-shared/nb-mocks';
 
 describe('TestDialogService', () => {
   let service: TestDialogService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({ providers: [...getNbTestProviders()] });
     service = TestBed.inject(TestDialogService);
   });
 

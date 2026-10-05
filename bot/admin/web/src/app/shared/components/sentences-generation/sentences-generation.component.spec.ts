@@ -17,6 +17,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SentencesGenerationComponent } from './sentences-generation.component';
+import { TestSharedModule } from '../../test-shared.module';
+import { getNbDialogRefMock, getNbTestProviders } from '../../test-shared/nb-mocks';
+import { NbDialogRef } from '@nebular/theme';
+import { StateService } from '../../../core-nlp/state.service';
+import { StateServiceMock } from '../../test-shared/state-service.mock';
 
 describe('SentencesGenerationComponent', () => {
   let component: SentencesGenerationComponent;
@@ -24,7 +29,12 @@ describe('SentencesGenerationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SentencesGenerationComponent]
+      declarations: [SentencesGenerationComponent],
+      imports: [TestSharedModule],
+      providers: [
+        { provide: NbDialogRef, useValue: getNbDialogRefMock() },
+        { provide: StateService, useClass: StateServiceMock }
+      ]
     }).compileComponents();
   });
 

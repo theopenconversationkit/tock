@@ -1,18 +1,18 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
 <nb-card class="mb-2">
   <nb-card-body>
@@ -34,8 +34,8 @@
               spellcheck="false"
               autocomplete="off"
             />
+            @if (!!getFormControl('text').value) {
             <button
-              *ngIf="!!getFormControl('text').value"
               nbButton
               nbSuffix
               ghost
@@ -45,9 +45,8 @@
             >
               <nb-icon icon="x-lg"></nb-icon>
             </button>
-
+            } @if (!!getFormControl('exactMatch').value) {
             <button
-              *ngIf="!!getFormControl('exactMatch').value"
               nbButton
               nbSuffix
               ghost
@@ -57,8 +56,8 @@
             >
               <nb-icon icon="braces"></nb-icon>
             </button>
+            } @if (!getFormControl('exactMatch').value) {
             <button
-              *ngIf="!getFormControl('exactMatch').value"
               nbButton
               nbSuffix
               ghost
@@ -68,34 +67,34 @@
             >
               <nb-icon icon="braces-asterisk"></nb-icon>
             </button>
+            }
           </nb-form-field>
         </div>
 
         <div class="ml-3">
+          @if (!advanced) {
           <nb-icon
-            *ngIf="!advanced"
             (click)="swapAdvanced()"
             class="pointer"
             [nbTooltip]="'analytics.dialogs-list-filters.tooltips.display-advanced-search' | transloco"
             icon="chevron-down-outline"
             pack="nebular-essentials"
           ></nb-icon>
+          } @if (advanced) {
           <nb-icon
-            *ngIf="advanced"
             (click)="swapAdvanced()"
             class="pointer"
             [nbTooltip]="'analytics.dialogs-list-filters.tooltips.hide-advanced-search' | transloco"
             icon="chevron-up-outline"
             pack="nebular-essentials"
           ></nb-icon>
+          }
         </div>
       </div>
     </form>
 
-    <div
-      class="mt-2"
-      *ngIf="advanced"
-    >
+    @if (advanced) {
+    <div class="mt-2">
       <form [formGroup]="form">
         <div class="row">
           <div class="col-6 col-lg-3">
@@ -113,8 +112,8 @@
                 [nbDatepicker]="from_date"
                 formControlName="dialogActivityFrom"
               />
+              @if (!!getFormControl('dialogActivityFrom').value) {
               <button
-                *ngIf="!!getFormControl('dialogActivityFrom').value"
                 nbButton
                 nbSuffix
                 ghost
@@ -124,8 +123,8 @@
               >
                 <nb-icon icon="x"></nb-icon>
               </button>
+              }
             </nb-form-field>
-
             <nb-date-timepicker
               #from_date
               [step]="10"
@@ -134,7 +133,6 @@
               [showCurrentTimeButton]="false"
             ></nb-date-timepicker>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
@@ -150,8 +148,8 @@
                 [nbDatepicker]="to_date"
                 formControlName="dialogActivityTo"
               />
+              @if (!!getFormControl('dialogActivityTo').value) {
               <button
-                *ngIf="!!getFormControl('dialogActivityTo').value"
                 nbButton
                 nbSuffix
                 ghost
@@ -161,8 +159,8 @@
               >
                 <nb-icon icon="x"></nb-icon>
               </button>
+              }
             </nb-form-field>
-
             <nb-date-timepicker
               #to_date
               [step]="10"
@@ -171,7 +169,6 @@
               [showCurrentTimeButton]="false"
             ></nb-date-timepicker>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
@@ -186,16 +183,14 @@
                 formControlName="configuration"
               >
                 <nb-option [value]="null">{{ 'common.actions.all' | transloco }}</nb-option>
-                <nb-option
-                  *ngFor="let config of configurationNameList"
-                  [value]="config.applicationId"
-                >
+                @for (config of configurationNameList; track config) {
+                <nb-option [value]="config.applicationId">
                   {{ config.label }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
@@ -210,20 +205,18 @@
                 formControlName="connectorType"
               >
                 <nb-option [value]="null">{{ 'common.actions.all' | transloco }}</nb-option>
-                <nb-option
-                  *ngFor="let c of connectorTypes"
-                  [value]="c"
-                >
+                @for (c of connectorTypes; track c) {
+                <nb-option [value]="c">
                   <img
                     src="{{ getConnectorTypeIconById(c.id) }}"
                     class="select-icon align-self-center mr-2"
                   />
                   {{ c.id }}</nb-option
                 >
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
@@ -238,17 +231,15 @@
                 formControlName="intentName"
               >
                 <nb-option [value]="null">{{ 'common.actions.all' | transloco }}</nb-option>
-                <nb-option
-                  *ngFor="let intent of state.currentApplication.intents"
-                  [value]="intent.name"
-                >
+                @for (intent of state.currentApplication.intents; track intent) {
+                <nb-option [value]="intent.name">
                   {{ intent.label || intent.name }}
                 </nb-option>
+                }
                 <nb-option value="unknown">{{ 'common.actions.unknown' | transloco }}</nb-option>
               </nb-select>
             </nb-form-field>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
@@ -264,16 +255,14 @@
                 formControlName="intentsToHide"
               >
                 <nb-option>{{ 'common.actions.clear-selection' | transloco }}</nb-option>
-                <nb-option
-                  *ngFor="let intent of state.currentApplication.intents"
-                  [value]="intent.name"
-                >
+                @for (intent of state.currentApplication.intents; track intent) {
+                <nb-option [value]="intent.name">
                   {{ intent.label || intent.name }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
           <div class="col-6 col-lg-3">
             <nb-form-field>
               <nb-icon
@@ -291,8 +280,8 @@
                 spellcheck="false"
                 autocomplete="off"
               />
+              @if (!!getFormControl('dialogId').value) {
               <button
-                *ngIf="!!getFormControl('dialogId').value"
                 nbButton
                 nbSuffix
                 ghost
@@ -302,9 +291,9 @@
               >
                 <nb-icon icon="x-lg"></nb-icon>
               </button>
+              }
             </nb-form-field>
           </div>
-
           <!-- RAG Answer Status filter -->
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
@@ -312,7 +301,6 @@
                 nbPrefix
                 icon="flag"
               ></nb-icon>
-
               <nb-select
                 fullWidth
                 size="small"
@@ -321,40 +309,39 @@
                 formControlName="ragAnswerStatus"
               >
                 <nb-option>{{ 'common.actions.clear-filter' | transloco }}</nb-option>
-                <nb-option
-                  *ngFor="let item of ragAnswerStatusLabels | sortByOrder: ragAnswerStatusDisplayOrder"
-                  [value]="item.key"
-                >
+                @for (item of ragAnswerStatusLabels | sortByOrder: ragAnswerStatusDisplayOrder; track item) {
+                <nb-option [value]="item.key">
                   <nb-icon
                     [icon]="ragAnswerStatusIcons[item.key]"
                     class="select-icon align-self-center mr-2 font-size-small"
                   ></nb-icon>
                   {{ item.value }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
           <!-- Feedback filters -->
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
+              @if (!getFormControl('feedback').value) {
               <nb-icon
                 nbPrefix
                 icon="hand-thumbs-up"
-                *ngIf="!getFormControl('feedback').value"
               ></nb-icon>
+              } @if (getFormControl('feedback').value === 'UP') {
               <nb-icon
                 nbPrefix
                 icon="hand-thumbs-up"
-                *ngIf="getFormControl('feedback').value === 'UP'"
                 class="text-success"
               ></nb-icon>
+              } @if (getFormControl('feedback').value === 'DOWN') {
               <nb-icon
                 nbPrefix
                 icon="hand-thumbs-down"
-                *ngIf="getFormControl('feedback').value === 'DOWN'"
                 class="text-danger"
               ></nb-icon>
+              }
               <nb-select
                 fullWidth
                 size="small"
@@ -363,20 +350,18 @@
                 formControlName="feedback"
               >
                 <nb-option>{{ 'common.actions.clear-filter' | transloco }}</nb-option>
-                <nb-option
-                  *ngFor="let vote of feedbackVotes"
-                  [value]="vote.value"
-                >
+                @for (vote of feedbackVotes; track vote) {
+                <nb-option [value]="vote.value">
                   <nb-icon
                     icon="hand-thumbs-{{ vote.value.toLowerCase() }}"
                     class="select-icon align-self-center mr-2 font-size-small"
                   ></nb-icon>
                   {{ vote.labelKey | transloco }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
           <div class="col-6 col-lg-3 pt-1">
             <nb-checkbox
               [nbTooltip]="'analytics.dialogs-list-filters.tooltips.display-studio-test-dialogs' | transloco"
@@ -385,7 +370,6 @@
               >{{ 'common.actions.display-tests' | transloco }}
             </nb-checkbox>
           </div>
-
           <div class="col-6 col-lg-3 pt-1">
             <nb-checkbox
               [nbTooltip]="'analytics.dialogs-list-filters.tooltips.display-only-rag-dialogs' | transloco"
@@ -394,9 +378,7 @@
               >{{ 'analytics.dialogs-list-filters.with-rag-responses' | transloco }}
             </nb-checkbox>
           </div>
-
           <!-- Annotations filters -->
-
           <div class="col-6 col-lg-3 pt-1 ellipsis">
             <nb-checkbox
               [nbTooltip]="'analytics.dialogs-list-filters.tooltips.display-only-annotated-dialogs' | transloco"
@@ -405,11 +387,8 @@
               >{{ 'analytics.dialogs-list-filters.with-annotation' | transloco }}
             </nb-checkbox>
           </div>
-
-          <div
-            class="col-6 col-lg-3"
-            *ngIf="getFormControl('withAnnotations').value"
-          >
+          @if (getFormControl('withAnnotations').value) {
+          <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
                 nbPrefix
@@ -424,20 +403,16 @@
                 formControlName="annotationStates"
               >
                 <nb-option>{{ 'common.actions.clear-selection' | transloco }}</nb-option>
-                <nb-option
-                  *ngFor="let state of annotationStates"
-                  [value]="state.value"
-                >
+                @for (state of annotationStates; track state) {
+                <nb-option [value]="state.value">
                   {{ state.label }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
-          <div
-            class="col-6 col-lg-3"
-            *ngIf="getFormControl('withAnnotations').value"
-          >
+          } @if (getFormControl('withAnnotations').value) {
+          <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
                 nbPrefix
@@ -452,20 +427,16 @@
                 formControlName="annotationReasons"
               >
                 <nb-option>{{ 'common.actions.clear-selection' | transloco }}</nb-option>
-                <nb-option
-                  *ngFor="let reason of annotationReasons"
-                  [value]="reason.value"
-                >
+                @for (reason of annotationReasons; track reason) {
+                <nb-option [value]="reason.value">
                   {{ reason.label }}
                 </nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
-
-          <div
-            class="col-6 col-lg-3"
-            *ngIf="getFormControl('withAnnotations').value"
-          >
+          } @if (getFormControl('withAnnotations').value) {
+          <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
                 nbPrefix
@@ -480,8 +451,8 @@
                 [nbDatepicker]="from_date_annotation"
                 formControlName="annotationCreationDateFrom"
               />
+              @if (!!getFormControl('annotationCreationDateFrom').value) {
               <button
-                *ngIf="!!getFormControl('annotationCreationDateFrom').value"
                 nbButton
                 nbSuffix
                 ghost
@@ -491,6 +462,7 @@
               >
                 <nb-icon icon="x"></nb-icon>
               </button>
+              }
             </nb-form-field>
             <nb-date-timepicker
               #from_date_annotation
@@ -500,11 +472,8 @@
               [showCurrentTimeButton]="false"
             ></nb-date-timepicker>
           </div>
-
-          <div
-            class="col-6 col-lg-3"
-            *ngIf="getFormControl('withAnnotations').value"
-          >
+          } @if (getFormControl('withAnnotations').value) {
+          <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
               <nb-icon
                 nbPrefix
@@ -519,8 +488,8 @@
                 [nbDatepicker]="to_date_annotation"
                 formControlName="annotationCreationDateTo"
               />
+              @if (!!getFormControl('annotationCreationDateTo').value) {
               <button
-                *ngIf="!!getFormControl('annotationCreationDateTo').value"
                 nbButton
                 nbSuffix
                 ghost
@@ -530,6 +499,7 @@
               >
                 <nb-icon icon="x"></nb-icon>
               </button>
+              }
             </nb-form-field>
             <nb-date-timepicker
               #to_date_annotation
@@ -539,26 +509,24 @@
               [showCurrentTimeButton]="false"
             ></nb-date-timepicker>
           </div>
-
-          <div
-            class="col-12 col-xl-6 d-flex gap-1 align-items-center"
-            *ngIf="getFormControl('withAnnotations').value"
-          >
+          } @if (getFormControl('withAnnotations').value) {
+          <div class="col-12 col-xl-6 d-flex gap-1 align-items-center">
             {{ 'analytics.dialogs-list-filters.sort-order-of-annotations' | transloco }}:
             <nb-radio-group
               formControlName="annotationSort"
               class="d-flex"
             >
-              <nb-radio
-                *ngFor="let order of sortOrders"
-                [value]="order.value"
-              >
+              @for (order of sortOrders; track order) {
+              <nb-radio [value]="order.value">
                 {{ order.labelKey | transloco }}
               </nb-radio>
+              }
             </nb-radio-group>
           </div>
+          }
         </div>
       </form>
     </div>
+    }
   </nb-card-body>
 </nb-card>

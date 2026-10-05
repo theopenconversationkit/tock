@@ -1,7 +1,5 @@
-<nb-card
-  *ngIf="configuration"
-  [nbSpinner]="uploading"
->
+@if (configuration) {
+<nb-card [nbSpinner]="uploading">
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
     {{ 'applications.application-upload.uploadDumpTitle' | transloco }}
     <button
@@ -15,19 +13,21 @@
     </button>
   </nb-card-header>
   <nb-card-body>
-    <div *ngIf="!report">
+    @if (!report) {
+    <div>
       <p>
         <nb-radio-group
           [(ngModel)]="type"
           name="upload-type-group"
         >
+          @if (state.hasRole(UserRole.technicalAdmin)) {
           <nb-radio
-            *ngIf="state.hasRole(UserRole.technicalAdmin)"
             value="application"
             class="dump-type"
           >
             {{ 'applications.application-upload.applicationDumpLabel' | transloco }}
           </nb-radio>
+          }
           <nb-radio
             value="sentences"
             class="dump-type"
@@ -37,13 +37,15 @@
         </nb-radio-group>
       </p>
       <ul class="mention">
-        <li *ngIf="state.hasRole(UserRole.technicalAdmin)">
+        @if (state.hasRole(UserRole.technicalAdmin)) {
+        <li>
           {{ 'applications.application-upload.applicationDumpDescription' | transloco }}
         </li>
+        }
         <li>{{ 'applications.application-upload.sentencesDumpDescription' | transloco }}</li>
       </ul>
-
-      <p *ngIf="!applicationName">
+      @if (!applicationName) {
+      <p>
         <label>{{ 'applications.application-upload.targetApplicationNameLabel' | transloco }}</label>
         <input
           nbInput
@@ -51,9 +53,9 @@
           [(ngModel)]="configuration.newApplicationName"
           [placeholder]="'applications.application-upload.targetApplicationNamePlaceholder' | transloco"
         />
-
         <span class="mention">{{ 'applications.application-upload.emptyApplicationNameMention' | transloco }}</span>
       </p>
+      }
       <p>
         <label
           for="file"
@@ -69,115 +71,125 @@
         />
       </p>
     </div>
-    <div *ngIf="report">
-      <div *ngIf="!report.success">
+    } @if (report) {
+    <div>
+      @if (!report.success) {
+      <div>
         <h4>{{ 'applications.application-upload.errorTitle' | transloco }}</h4>
         <ul>
-          <li *ngFor="let e of report.errorMessages">
+          @for (e of report.errorMessages; track e) {
+          <li>
             {{ e }}
           </li>
+          }
         </ul>
       </div>
-      <div *ngIf="report.success">
-        <h4 *ngIf="!report.modified">{{ 'applications.application-upload.noNewDataTitle' | transloco }}</h4>
-        <div *ngIf="report.modified">
+      } @if (report.success) {
+      <div>
+        @if (!report.modified) {
+        <h4>{{ 'applications.application-upload.noNewDataTitle' | transloco }}</h4>
+        } @if (report.modified) {
+        <div>
           <h4>{{ 'applications.application-upload.successfulImportTitle' | transloco }}</h4>
-
-          <div
-            class="font-weight-bold"
-            *ngIf="report.applicationsImported.length"
-          >
+          @if (report.applicationsImported.length) {
+          <div class="font-weight-bold">
             {{ 'applications.application-upload.applicationsImportedTitle' | transloco }}
-            <div *ngFor="let app of report.applicationsImported">
+            @for (app of report.applicationsImported; track app) {
+            <div>
               {{ app }}
             </div>
+            }
             <hr />
           </div>
-
-          <div
-            class="font-weight-bold"
-            *ngIf="report.entitiesImported.length"
-          >
+          } @if (report.entitiesImported.length) {
+          <div class="font-weight-bold">
             {{ 'applications.application-upload.entitiesImportedTitle' | transloco }}
-            <div *ngFor="let entity of report.entitiesImported">
+            @for (entity of report.entitiesImported; track entity) {
+            <div>
               {{ entity }}
             </div>
+            }
             <hr />
           </div>
-
-          <div
-            class="font-weight-bold"
-            *ngIf="report.intentsImported.length"
-          >
+          } @if (report.intentsImported.length) {
+          <div class="font-weight-bold">
             {{ 'applications.application-upload.intentsImportedTitle' | transloco }}
-            <div *ngFor="let intent of report.intentsImported">
+            @for (intent of report.intentsImported; track intent) {
+            <div>
               {{ intent }}
             </div>
+            }
             <hr />
           </div>
-
-          <div
-            class="font-weight-bold"
-            *ngIf="report.sentencesImported"
-          >
+          } @if (report.sentencesImported) {
+          <div class="font-weight-bold">
             {{ 'applications.application-upload.sentencesImportedTitle' | transloco }}
-            <div *ngIf="report.sentencesImported">
+            @if (report.sentencesImported) {
+            <div>
               {{ report.sentencesImported }}
             </div>
+            }
             <hr />
           </div>
-
-          <div
-            class="font-weight-bold"
-            *ngIf="report.faqsImported"
-          >
+          } @if (report.faqsImported) {
+          <div class="font-weight-bold">
             {{ 'applications.application-upload.faqsImportedTitle' | transloco }}
-            <div *ngIf="report.faqsImported">
+            @if (report.faqsImported) {
+            <div>
               {{ report.faqsImported }}
             </div>
+            }
             <hr />
           </div>
-
-          <div *ngIf="report.errorMessages.length">
+          } @if (report.errorMessages.length) {
+          <div>
             <h5>{{ 'applications.application-upload.errorsTitle' | transloco }}</h5>
             <ul>
-              <li *ngFor="let e of report.errorMessages">
+              @for (e of report.errorMessages; track e) {
+              <li>
                 {{ e }}
               </li>
+              }
             </ul>
           </div>
+          }
         </div>
+        }
       </div>
+      }
     </div>
+    }
   </nb-card-body>
   <nb-card-footer>
+    @if (!report) {
     <button
       nbButton
       outline
       status="primary"
       (click)="cancel()"
-      *ngIf="!report"
     >
       {{ 'applications.application-upload.cancelButton' | transloco }}
     </button>
+    } @if (!report) {
     <button
       nbButton
       status="primary"
       (click)="upload()"
-      *ngIf="!report"
       [disabled]="!uploader.getNotUploadedItems().length"
       style="margin: 10px"
     >
       {{ 'applications.application-upload.uploadButton' | transloco }}
     </button>
+    } @if (report) {
     <button
       nbButton
       outline
       status="primary"
       (click)="cancel()"
-      *ngIf="report"
     >
       {{ 'applications.application-upload.closeButton' | transloco }}
     </button>
+    }
   </nb-card-footer>
 </nb-card>
+}

@@ -15,10 +15,8 @@
   <nb-card-body>
     <div class="d-flex flex-column gap-3">
       <div class="d-flex flex-column gap-1">
-        <div
-          *ngFor="let e of entities; let i = index"
-          class="grid"
-        >
+        @for (e of entities; track e; let i = $index) {
+        <div class="grid">
           <tock-form-control
             [label]="'bot.mandatory-entities.answerLabel' | transloco"
             name="answer_{{ i }}"
@@ -38,8 +36,8 @@
             [required]="true"
             [hasMargin]="false"
           >
+            @if (e.entity) {
             <span
-              *ngIf="e.entity"
               id="entity_{{ i }}"
               class="pointer entity"
               [style.background-color]="e.entity.entityColor"
@@ -47,7 +45,8 @@
             >
               {{ e.entity.qualifiedName(stateService.user) }}
             </span>
-            <div *ngIf="!e.entity">
+            } @if (!e.entity) {
+            <div>
               <button
                 nbButton
                 id="entity_{{ i }}"
@@ -58,6 +57,7 @@
                 {{ 'common.actions.select' | transloco }}
               </button>
             </div>
+            }
           </tock-form-control>
           <tock-form-control
             [label]="'bot.mandatory-entities.intentLabel' | transloco"
@@ -92,6 +92,7 @@
             <nb-icon icon="trash"></nb-icon>
           </button>
         </div>
+        }
       </div>
 
       <div class="grid">
@@ -113,8 +114,8 @@
           [required]="true"
           [hasMargin]="false"
         >
+          @if (newEntity.entity) {
           <span
-            *ngIf="newEntity.entity"
             id="entity"
             class="pointer entity"
             [style.background-color]="newEntity.entity.entityColor"
@@ -122,7 +123,8 @@
           >
             {{ newEntity.entity.qualifiedName(stateService.user) }}
           </span>
-          <div *ngIf="!newEntity.entity">
+          } @if (!newEntity.entity) {
+          <div>
             <button
               id="entity"
               nbButton
@@ -133,6 +135,7 @@
               {{ 'common.actions.select' | transloco }}
             </button>
           </div>
+          }
         </tock-form-control>
         <tock-form-control
           [label]="'bot.mandatory-entities.intentLabel' | transloco"
@@ -194,15 +197,13 @@
   #intentAuto
   [activeFirst]="true"
 >
-  <nb-option-group
-    *ngFor="let category of currentIntentCategories"
-    [title]="category.category"
-  >
-    <nb-option
-      *ngFor="let intent of category.intents"
-      [value]="intent.name"
-    >
+  @for (category of currentIntentCategories; track category) {
+  <nb-option-group [title]="category.category">
+    @for (intent of category.intents; track intent) {
+    <nb-option [value]="intent.name">
       {{ intent.intentLabel() }}
     </nb-option>
+    }
   </nb-option-group>
+  }
 </nb-autocomplete>

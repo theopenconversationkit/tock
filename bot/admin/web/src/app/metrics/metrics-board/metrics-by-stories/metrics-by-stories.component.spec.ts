@@ -69,6 +69,7 @@ describe('MetricsByStoriesComponent', () => {
       start: new Date('2023-01-17'),
       end: new Date('2023-04-17')
     };
+    component.stories = [];
 
     fixture.detectChanges();
   });

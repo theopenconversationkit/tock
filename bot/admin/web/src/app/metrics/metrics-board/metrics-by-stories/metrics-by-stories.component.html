@@ -13,31 +13,21 @@
   </nb-card-header>
 
   <nb-card-body>
-    <div
-      *ngIf="!storiesCharts?.length"
-      class="text-muted font-italic text-center p-3"
-    >
+    @if (!storiesCharts?.length) {
+    <div class="text-muted font-italic text-center p-3">
       {{ 'metrics.metrics-by-stories.no_metrics_recorded' | transloco }}
     </div>
-
-    <div
-      class="d-flex justify-content-end mb-4"
-      *ngIf="pagination"
-    >
+    } @if (pagination) {
+    <div class="d-flex justify-content-end mb-4">
       <tock-pagination
         [pagination]="pagination"
         (onPaginationChange)="paginationChange()"
       ></tock-pagination>
     </div>
-
-    <div
-      class="d-flex flex-wrap justify-content-around gap-1"
-      *ngIf="storiesCharts?.length"
-    >
-      <div
-        class="text-center mb-4"
-        *ngFor="let chart of storiesCharts"
-      >
+    } @if (storiesCharts?.length) {
+    <div class="d-flex flex-wrap justify-content-around gap-1">
+      @for (chart of storiesCharts; track chart) {
+      <div class="text-center mb-4">
         <span class="initial-capitalize"
           ><strong>{{ chart.name }}</strong></span
         >
@@ -47,16 +37,15 @@
           class="chart"
         ></div>
       </div>
+      }
     </div>
-
-    <div
-      class="d-flex justify-content-end mt-4"
-      *ngIf="pagination && pagination.size > 6"
-    >
+    } @if (pagination && pagination.size > 6) {
+    <div class="d-flex justify-content-end mt-4">
       <tock-pagination
         [pagination]="pagination"
         (onPaginationChange)="paginationChange()"
       ></tock-pagination>
     </div>
+    }
   </nb-card-body>
 </nb-card>

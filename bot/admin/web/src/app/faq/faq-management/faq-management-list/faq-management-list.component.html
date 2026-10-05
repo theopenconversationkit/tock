@@ -1,7 +1,5 @@
-<nb-card
-  *ngFor="let faq of faqs"
-  [ngClass]="{ 'mb-2': true, selected: selectedFaq?.id === faq.id }"
->
+@for (faq of faqs; track faq) {
+<nb-card [ngClass]="{ 'mb-2': true, selected: selectedFaq?.id === faq.id }">
   <nb-card-body class="grid-columns">
     <div>
       <div
@@ -9,23 +7,26 @@
         data-testid="title"
       >
         {{ faq.title }}
+        @if (state.intentIdExistsInOtherApplication(faq.intentId)) {
         <span
-          *ngIf="state.intentIdExistsInOtherApplication(faq.intentId)"
           class="align-middle text-primary"
           [nbTooltip]="'faq.faq-management-list.sharedIntentTooltip' | transloco"
         >
           <nb-icon icon="share"></nb-icon>
         </span>
+        }
       </div>
-
       <div class="row">
         <div class="col-md-6">
           <div class="truncate text-muted">
             <div class="text-nowrap">
-              <small *ngIf="faq.utterances.length === 1">{{ 'faq.faq-management-list.questionLabel' | transloco }}</small>
-              <small *ngIf="faq.utterances.length > 1">
+              @if (faq.utterances.length === 1) {
+              <small>{{ 'faq.faq-management-list.questionLabel' | transloco }}</small>
+              } @if (faq.utterances.length > 1) {
+              <small>
                 {{ 'faq.faq-management-list.firstQuestionLabel' | transloco: { count: faq.utterances.length } }}
               </small>
+              }
               <button
                 nbButton
                 ghost
@@ -35,7 +36,6 @@
               >
                 <nb-icon icon="copy"></nb-icon>
               </button>
-
               <button
                 nbButton
                 ghost
@@ -46,38 +46,36 @@
                 <nb-icon icon="terminal-plus"></nb-icon>
               </button>
             </div>
-
             {{ faq.utterances[0] }}
           </div>
         </div>
-
         <div class="col-md-6">
           <div class="truncate text-muted answer-col">
             <small class="d-block">{{ 'faq.faq-management-list.answerLabel' | transloco }}</small>
+            @if (!isCurrentLocaleAnswerLabelProvided(faq)) {
             <nb-icon
-              *ngIf="!isCurrentLocaleAnswerLabelProvided(faq)"
               icon="exclamation-triangle"
               class="mr-1 text-danger align-text-middle"
               [nbTooltip]="'faq.faq-management-list.answerNotProvidedTooltip' | transloco"
             ></nb-icon>
+            }
             {{ getCurrentLocaleAnswerLabel(faq) }}
           </div>
         </div>
       </div>
     </div>
-
     <div>
       <nb-tag-list>
+        @for (tag of faq.tags; track tag) {
         <nb-tag
-          *ngFor="let tag of faq.tags"
           appearance="filled"
           status="basic"
           size="tiny"
           [text]="tag"
         ></nb-tag>
+        }
       </nb-tag-list>
     </div>
-
     <div class="d-flex flex-wrap align-items-center justify-content-end">
       <nb-toggle
         class="mx-2"
@@ -88,7 +86,6 @@
         (mousedown)="toggleEnabled(faq)"
         data-testid="toggle"
       ></nb-toggle>
-
       <div class="d-flex flex-wrap align-items-center justify-content-between">
         <button
           nbButton
@@ -139,3 +136,4 @@
     </div>
   </nb-card-body>
 </nb-card>
+}

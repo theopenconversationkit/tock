@@ -19,9 +19,10 @@ import { NbDialogRef } from '@nebular/theme';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 
 @Component({
-  selector: 'tock-display-user-data',
-  templateUrl: './display-user-data.component.html',
-  styleUrls: ['./display-user-data.component.scss']
+    selector: 'tock-display-user-data',
+    templateUrl: './display-user-data.component.html',
+    styleUrls: ['./display-user-data.component.scss'],
+    standalone: false
 })
 export class DisplayUserDataComponent {
   public editorOptions: JsonEditorOptions;

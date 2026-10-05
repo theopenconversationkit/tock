@@ -92,17 +92,15 @@
         #intentAuto
         [activeFirst]="true"
       >
-        <nb-option-group
-          *ngFor="let category of intentCategories"
-          [title]="category.category"
-        >
-          <nb-option
-            *ngFor="let intent of category.intents"
-            [value]="intent.name"
-          >
+        @for (category of intentCategories; track category) {
+        <nb-option-group [title]="category.category">
+          @for (intent of category.intents; track intent) {
+          <nb-option [value]="intent.name">
             {{ intent.intentLabel() }}
           </nb-option>
+          }
         </nb-option-group>
+        }
       </nb-autocomplete>
       <tock-story-tag [(selectedTag)]="tag"></tock-story-tag>
       <tock-form-control
@@ -126,12 +124,11 @@
         #catAuto
         [activeFirst]="true"
       >
-        <nb-option
-          *ngFor="let category of categories"
-          [value]="category"
-        >
+        @for (category of categories; track category) {
+        <nb-option [value]="category">
           {{ category }}
         </nb-option>
+        }
       </nb-autocomplete>
       <tock-form-control
         [label]="'bot.story-dialog.descriptionLabel' | transloco"

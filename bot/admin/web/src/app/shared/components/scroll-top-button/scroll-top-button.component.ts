@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
-import { Component, HostListener, Inject, Input, OnInit } from '@angular/core';
+
+import { Component, HostListener, Inject, Input, OnInit, DOCUMENT } from '@angular/core';
 import { scrollToPageTop } from '../../utils';
 
 @Component({
-  selector: 'tock-scroll-top-button',
-  templateUrl: './scroll-top-button.component.html',
-  styleUrls: ['./scroll-top-button.component.scss']
+    selector: 'tock-scroll-top-button',
+    templateUrl: './scroll-top-button.component.html',
+    styleUrls: ['./scroll-top-button.component.scss'],
+    standalone: false
 })
 export class ScrollTopButtonComponent {
   @Input() offset = 100;

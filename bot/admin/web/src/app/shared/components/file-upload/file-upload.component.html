@@ -18,13 +18,13 @@
     [class.dragHover]="isFilesContainerHover && !disabled"
     data-testid="input-file-zone"
   >
+    @if (files.length) {
     <div
-      *ngIf="files.length"
       class="files"
       data-testid="files"
     >
+      @for (file of files; track file) {
       <div
-        *ngFor="let file of files"
         class="file"
         [class.error]="wrongType(file) || wrongFormat(file)"
         (click)="preventDefault($event)"
@@ -52,7 +52,9 @@
           </button>
         </div>
       </div>
+      }
     </div>
+    }
     <div class="d-flex flex-column align-items-center gap-1">
       <nb-icon
         class="upload-icon"
@@ -71,10 +73,11 @@
     </div>
   </label>
 </div>
+@if (fileTypeAccepted) {
 <small
-  *ngIf="fileTypeAccepted"
   class="text-mitigated"
   data-testid="file-type-accepted"
 >
   {{ 'shared.file-upload.file_types_accepted' | transloco: { count: fileTypeAccepted.length, fileTypes: fileTypes } }}
 </small>
+}

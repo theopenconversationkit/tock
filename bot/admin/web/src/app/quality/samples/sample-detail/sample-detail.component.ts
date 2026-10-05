@@ -1,11 +1,11 @@
-import { Component, Inject, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, TemplateRef, ViewChild, DOCUMENT } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EvaluationStatus, EvaluationSampleDefinition, EvaluationSampleStatus, EvaluationSampleDataDefinition } from '../models';
 import { ActionReport, DialogReport } from '../../../shared/model/dialog-data';
 import { Pagination } from '../../../shared/components';
 import { Subject, take, takeUntil } from 'rxjs';
 import { StateService } from '../../../core-nlp/state.service';
-import { DatePipe, DOCUMENT } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { scrollToPageTop } from '../../../shared/utils';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { getEvaluationBaseUrl, getEvaluationRate, getSampleCoverage } from '../utils';
@@ -15,9 +15,10 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-sample-detail',
-  templateUrl: './sample-detail.component.html',
-  styleUrl: './sample-detail.component.scss'
+    selector: 'tock-sample-detail',
+    templateUrl: './sample-detail.component.html',
+    styleUrl: './sample-detail.component.scss',
+    standalone: false
 })
 export class SampleDetailComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();

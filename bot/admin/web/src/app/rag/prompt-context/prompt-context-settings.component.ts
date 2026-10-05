@@ -26,9 +26,10 @@ interface PromptContext {
 }
 
 @Component({
-  selector: 'tock-prompt-context-settings',
-  templateUrl: './prompt-context-settings.component.html',
-  styleUrls: ['./prompt-context-settings.component.scss']
+    selector: 'tock-prompt-context-settings',
+    templateUrl: './prompt-context-settings.component.html',
+    styleUrls: ['./prompt-context-settings.component.scss'],
+    standalone: false
 })
 export class PromptContextSettingsComponent implements OnInit, CanComponentDeactivate, DirtyStateGuard, OnDestroy {
   destroy$: Subject<unknown> = new Subject();

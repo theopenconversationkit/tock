@@ -14,9 +14,10 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-samples-board',
-  templateUrl: './samples-board.component.html',
-  styleUrl: './samples-board.component.scss'
+    selector: 'tock-samples-board',
+    templateUrl: './samples-board.component.html',
+    styleUrl: './samples-board.component.scss',
+    standalone: false
 })
 export class SamplesBoardComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();

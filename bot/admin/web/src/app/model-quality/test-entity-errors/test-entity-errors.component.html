@@ -1,18 +1,18 @@
 <!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 
 <div class="d-flex flex-wrap align-items-center">
   <h1 class="flex-grow-1">Test entity errors</h1>
@@ -47,17 +47,15 @@
           (selectedChange)="search()"
         >
           <nb-option value="">All intents</nb-option>
-          <nb-option-group
-            *ngFor="let category of state.currentIntentsCategories | async"
-            [title]="category.category"
-          >
-            <nb-option
-              *ngFor="let intent of category.intents"
-              [value]="intent.qualifiedName()"
-            >
+          @for (category of state.currentIntentsCategories | async; track category) {
+          <nb-option-group [title]="category.category">
+            @for (intent of category.intents; track intent) {
+            <nb-option [value]="intent.qualifiedName()">
               {{ intent.intentLabel() }}
             </nb-option>
+            }
           </nb-option-group>
+          }
           <nb-option value="unknown">Unknown</nb-option>
         </nb-select>
       </nb-form-field>
@@ -65,25 +63,19 @@
   </nb-card-body>
 </nb-card>
 
-<div
-  class="d-flex justify-content-end mb-1"
-  *ngIf="!loading && pagination.total > 0"
->
+@if (!loading && pagination.total > 0) {
+<div class="d-flex justify-content-end mb-1">
   <tock-pagination
     [pagination]="pagination"
     (onPaginationChange)="refresh()"
   ></tock-pagination>
 </div>
-
-<tock-no-data-found
-  *ngIf="!loading && !dataSource.length"
-  title="No records found"
-></tock-no-data-found>
-
+} @if (!loading && !dataSource.length) {
+<tock-no-data-found title="No records found"></tock-no-data-found>
+} @if (dataSource.length) {
 <nb-card
   class="mb-1"
   [nbSpinner]="loading"
-  *ngIf="dataSource.length"
 >
   <nb-card-body>
     <table class="table">
@@ -142,9 +134,9 @@
           </th>
         </tr>
       </thead>
-
       <tbody>
-        <tr *ngFor="let row of dataSource; index as i">
+        @for (row of dataSource; track row; let i = $index) {
+        <tr>
           <td>
             <tock-sentence-training-sentence
               [sentence]="row.originalSentence"
@@ -152,14 +144,12 @@
               fontsize="small"
             ></tock-sentence-training-sentence>
           </td>
-
           <td
             class="ellipsis td-max-width"
             [nbTooltip]="intentName(row)"
           >
             {{ intentName(row) }}
           </td>
-
           <td>
             <tock-sentence-training-sentence
               [sentence]="row.sentence"
@@ -167,23 +157,18 @@
               fontsize="small"
             ></tock-sentence-training-sentence>
           </td>
-
           <td class="text-center">
             {{ row.count }}
           </td>
-
           <td class="text-center">
             {{ row.count / row.total | percent: '1.0-2' }}
           </td>
-
           <td class="text-center">
             {{ row.averageErrorProbability | percent: '1.0-2' }}
           </td>
-
           <td class="text-center">
             {{ row.firstDetectionDate | date: 'y/MM/dd' }}
           </td>
-
           <td class="d-flex">
             <button
               nbButton
@@ -194,7 +179,6 @@
             >
               <nb-icon icon="check-circle"></nb-icon>
             </button>
-
             <button
               nbButton
               ghost
@@ -204,7 +188,6 @@
             >
               <nb-icon icon="pencil"></nb-icon>
             </button>
-
             <button
               nbButton
               ghost
@@ -216,19 +199,18 @@
             </button>
           </td>
         </tr>
+        }
       </tbody>
     </table>
   </nb-card-body>
 </nb-card>
-
-<div
-  class="d-flex justify-content-end"
-  *ngIf="!loading && pagination.total > 0"
->
+} @if (!loading && pagination.total > 0) {
+<div class="d-flex justify-content-end">
   <tock-pagination
     [pagination]="pagination"
     (onPaginationChange)="refresh()"
   ></tock-pagination>
 </div>
+}
 
 <tock-scroll-top-button></tock-scroll-top-button>

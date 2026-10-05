@@ -17,6 +17,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChatUiMessageSentenceFootnotesComponent } from './chat-ui-message-sentence-footnotes.component';
+import { TestSharedModule } from '../../../../test-shared.module';
+import { ResilientDatePipe } from '../../../../pipes/resilient-date.pipe';
 
 describe('ChatUiMessageSentenceFootnotesComponent', () => {
   let component: ChatUiMessageSentenceFootnotesComponent;
@@ -24,12 +26,16 @@ describe('ChatUiMessageSentenceFootnotesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ChatUiMessageSentenceFootnotesComponent ]
-    })
-    .compileComponents();
+      declarations: [ChatUiMessageSentenceFootnotesComponent],
+      imports: [TestSharedModule],
+      providers: [{ provide: ResilientDatePipe, useValue: { transform: (v) => v } }]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ChatUiMessageSentenceFootnotesComponent);
     component = fixture.componentInstance;
+
+    component.sentence = { userInterface: undefined } as any;
+
     fixture.detectChanges();
   });
 

@@ -252,7 +252,8 @@ export function getPropertyByNameSpace(namespace: string, obj: Object): any {
 export function roundMinutesToNextTen(date: Date): Date {
   const newDate = new Date(date);
   const minutes = newDate.getMinutes();
-  const roundedMinutes = Math.ceil(minutes / 10) * 10;
+  const hasSubMinute = newDate.getSeconds() > 0 || newDate.getMilliseconds() > 0;
+  const roundedMinutes = Math.ceil((minutes + (hasSubMinute ? 1 : 0)) / 10) * 10;
   newDate.setMinutes(roundedMinutes, 0, 0);
   return newDate;
 }

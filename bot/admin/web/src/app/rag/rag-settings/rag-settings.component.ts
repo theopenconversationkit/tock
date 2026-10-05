@@ -59,9 +59,10 @@ interface RagSettingsForm {
 }
 
 @Component({
-  selector: 'tock-rag-settings',
-  templateUrl: './rag-settings.component.html',
-  styleUrls: ['./rag-settings.component.scss']
+    selector: 'tock-rag-settings',
+    templateUrl: './rag-settings.component.html',
+    styleUrls: ['./rag-settings.component.scss'],
+    standalone: false
 })
 export class RagSettingsComponent implements OnInit, CanComponentDeactivate, DirtyStateGuard, OnDestroy {
   destroy$: Subject<unknown> = new Subject();

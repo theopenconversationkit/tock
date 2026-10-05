@@ -23,9 +23,10 @@ interface ObservabilitySettingsForm {
 }
 
 @Component({
-  selector: 'tock-observability-settings',
-  templateUrl: './observability-settings.component.html',
-  styleUrls: ['./observability-settings.component.scss']
+    selector: 'tock-observability-settings',
+    templateUrl: './observability-settings.component.html',
+    styleUrls: ['./observability-settings.component.scss'],
+    standalone: false
 })
 export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();

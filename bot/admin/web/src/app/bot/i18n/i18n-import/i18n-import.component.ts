@@ -6,9 +6,10 @@ import { RestService } from '../../../core-nlp/rest/rest.service';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-i18n-import-action',
-  templateUrl: './i18n-import.component.html',
-  styleUrls: ['./i18n-import.component.scss']
+    selector: 'tock-i18n-import-action',
+    templateUrl: './i18n-import.component.html',
+    styleUrls: ['./i18n-import.component.scss'],
+    standalone: false
 })
 export class I18nImportComponent {
   fileFormatErrorMessage: string;

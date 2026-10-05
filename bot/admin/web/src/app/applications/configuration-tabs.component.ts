@@ -21,9 +21,10 @@ import { UserRole } from '../model/auth';
 import { ApplicationsResolver } from './applications.resolver';
 
 @Component({
-  selector: 'tock-configuration-tabs',
-  templateUrl: './configuration-tabs.component.html',
-  styleUrls: ['./configuration-tabs.component.css', './tabs.component.scss']
+    selector: 'tock-configuration-tabs',
+    templateUrl: './configuration-tabs.component.html',
+    styleUrls: ['./configuration-tabs.component.css', './tabs.component.scss'],
+    standalone: false
 })
 export class ConfigurationTabsComponent implements OnInit {
   constructor(private router: Router) {}

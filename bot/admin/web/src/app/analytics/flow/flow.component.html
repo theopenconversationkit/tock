@@ -24,19 +24,19 @@
           </div>
           <div class="col-9">
             <div class="flex-grow-1 d-flex justify-content-between">
-              <ng-container *ngFor="let range of timeRanges">
-                <button
-                  nbButton
-                  size="small"
-                  ghost
-                  [status]="getTimeRangeBttnStatus(range)"
-                  [nbTooltip]="'analytics.flow.displayFlowTooltip' | transloco: { range: range.tooltipLabel }"
-                  (click)="setTimeRange(range)"
-                  class="px-2"
-                >
-                  {{ range.label }}
-                </button>
-              </ng-container>
+              @for (range of timeRanges; track range) {
+              <button
+                nbButton
+                size="small"
+                ghost
+                [status]="getTimeRangeBttnStatus(range)"
+                [nbTooltip]="'analytics.flow.displayFlowTooltip' | transloco: { range: range.tooltipLabel }"
+                (click)="setTimeRange(range)"
+                class="px-2"
+              >
+                {{ range.label }}
+              </button>
+              }
             </div>
           </div>
         </div>
@@ -60,11 +60,9 @@
                 [(ngModel)]="layout"
                 (ngModelChange)="unselect()"
               >
-                <nb-option
-                  *ngFor="let lyout of layouts"
-                  [value]="lyout"
-                  >{{ lyout.name }}</nb-option
-                >
+                @for (lyout of layouts; track lyout) {
+                <nb-option [value]="lyout">{{ lyout.name }}</nb-option>
+                }
               </nb-select>
             </nb-form-field>
           </div>
@@ -95,34 +93,35 @@
       </div>
 
       <div class="ml-3">
+        @if (!advanced) {
         <nb-icon
-          *ngIf="!advanced"
           icon="chevron-down-outline"
           pack="nebular-essentials"
           (click)="swapAdvanced()"
           class="pointer"
           [nbTooltip]="'analytics.flow.displayAdvancedOptionsTooltip' | transloco"
         ></nb-icon>
+        } @if (advanced) {
         <nb-icon
-          *ngIf="advanced"
           icon="chevron-up-outline"
           pack="nebular-essentials"
           (click)="swapAdvanced()"
           class="pointer"
           [nbTooltip]="'analytics.flow.hideAdvancedOptionsTooltip' | transloco"
         ></nb-icon>
+        }
       </div>
     </div>
 
     <!-- ADVANCED -->
+    @if (advanced) {
     <div
       class="mt-2"
-      *ngIf="advanced"
       [@inOutHeightAnimation]
     >
       <div class="row mt-1">
+        @if (statsMode) {
         <div
-          *ngIf="statsMode"
           class="col-6 mb-3 pt-1 d-flex align-items-center"
           [nbTooltip]="'analytics.flow.minNodeTrafficTooltip' | transloco"
         >
@@ -136,9 +135,8 @@
             class="w-100"
           />
         </div>
-
+        } @if (statsMode) {
         <div
-          *ngIf="statsMode"
           class="col-6 mb-3 pt-1 d-flex align-items-center"
           [nbTooltip]="'analytics.flow.minTransitionPercentageTooltip' | transloco"
         >
@@ -152,7 +150,7 @@
             class="w-100"
           />
         </div>
-
+        }
         <div class="col-3 mb-2">
           <nb-select
             fullWidth
@@ -162,19 +160,21 @@
             [(ngModel)]="selectedTypeFilter"
             (selectedChange)="update()"
           >
+            @for (typeFilter of typeFilters; track typeFilter) {
             <nb-option
-              *ngFor="let typeFilter of typeFilters"
               [value]="typeFilter"
               [disabled]="typeFilterCounters.get(typeFilter) < 1"
             >
               <span [nbTooltip]="typeFilter.description">
                 {{ typeFilter.name }}
-                <span *ngIf="typeFilterCounters.get(typeFilter) > 0"> ({{ typeFilterCounters.get(typeFilter) }})</span>
+                @if (typeFilterCounters.get(typeFilter) > 0) {
+                <span> ({{ typeFilterCounters.get(typeFilter) }})</span>
+                }
               </span>
             </nb-option>
+            }
           </nb-select>
         </div>
-
         <div class="col-6 mb-2">
           <tock-select-bot
             [allowNoConfigurationSelection]="false"
@@ -185,7 +185,6 @@
           >
           </tock-select-bot>
         </div>
-
         <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="showAllConfigurations"
@@ -194,15 +193,14 @@
             >{{ 'analytics.flow.displayAllConfigurationsLabel' | transloco }}</nb-checkbox
           >
         </div>
-
         <div class="col-3 mb-2">
           <nb-form-field>
             <nb-icon
               nbPrefix
               icon="chat-left"
             ></nb-icon>
+            @if (!statsMode) {
             <nb-select
-              *ngIf="!statsMode"
               size="small"
               fullWidth
               [placeholder]="'analytics.flow.storyFocusPlaceholder' | transloco"
@@ -210,56 +208,59 @@
               [(selected)]="selectedStory"
               (selectedChange)="update()"
             >
-              <nb-select-label *ngIf="selectedStory">
+              @if (selectedStory) {
+              <nb-select-label>
+                @if (selectedStory.isBuiltIn()) {
                 <nb-icon
-                  *ngIf="selectedStory.isBuiltIn()"
                   icon="box"
                   class="align-middle mr-1"
                 ></nb-icon>
+                } @if (selectedStory.isSimpleAnswer()) {
                 <nb-icon
-                  *ngIf="selectedStory.isSimpleAnswer()"
                   icon="chat-left"
                   class="align-middle mr-1"
                 ></nb-icon>
+                } @if (selectedStory.isScriptAnswer()) {
                 <nb-icon
-                  *ngIf="selectedStory.isScriptAnswer()"
                   icon="code"
                   class="align-middle mr-1"
                 ></nb-icon>
+                }
                 {{ selectedStory.storyName }}
               </nb-select-label>
-
+              }
               <nb-option [value]="undefined">{{ 'analytics.flow.allStoriesOption' | transloco }}</nb-option>
-
+              @for (entry of storiesById | keyvalue; track entry) {
               <nb-option
-                *ngFor="let entry of storiesById | keyvalue"
                 [value]="entry.value"
                 [disabled]="!selectedTypeFilter.filter(entry.value)"
                 class="align-items-center"
               >
+                @if (entry.value.isBuiltIn()) {
                 <nb-icon
-                  *ngIf="entry.value.isBuiltIn()"
                   [nbTooltip]="'analytics.flow.builtInTooltip' | transloco"
                   icon="box"
                   class="mr-1"
                 ></nb-icon>
+                } @if (entry.value.isSimpleAnswer()) {
                 <nb-icon
-                  *ngIf="entry.value.isSimpleAnswer()"
                   [nbTooltip]="'analytics.flow.messageTooltip' | transloco"
                   icon="chat-left"
                   class="mr-1"
                 ></nb-icon>
+                } @if (entry.value.isScriptAnswer()) {
                 <nb-icon
-                  *ngIf="entry.value.isScriptAnswer()"
                   [nbTooltip]="'analytics.flow.scriptTooltip' | transloco"
                   icon="code"
                   class="mr-1"
                 ></nb-icon>
+                }
                 {{ entry.value.name }}
               </nb-option>
+              }
             </nb-select>
+            } @if (statsMode) {
             <nb-select
-              *ngIf="statsMode"
               size="small"
               fullWidth
               [placeholder]="'analytics.flow.storyFocusPlaceholder' | transloco"
@@ -267,72 +268,73 @@
               [(ngModel)]="selectedStory"
               (selectedChange)="update()"
             >
-              <nb-select-label *ngIf="selectedStory">
+              @if (selectedStory) {
+              <nb-select-label>
+                @if (selectedStory.isBuiltIn()) {
                 <nb-icon
-                  *ngIf="selectedStory.isBuiltIn()"
                   icon="box"
                   class="align-middle mr-1"
                 ></nb-icon>
+                } @if (selectedStory.isSimpleAnswer()) {
                 <nb-icon
-                  *ngIf="selectedStory.isSimpleAnswer()"
                   icon="chat-left"
                   class="align-middle mr-1"
                 ></nb-icon>
+                } @if (selectedStory.isScriptAnswer()) {
                 <nb-icon
-                  *ngIf="selectedStory.isScriptAnswer()"
                   icon="code"
                   class="align-middle mr-1"
                 ></nb-icon>
+                } @if (selectedStory.storyType === undefined) {
                 <nb-icon
-                  *ngIf="selectedStory.storyType === undefined"
                   icon="question-circle"
                   class="align-middle mr-1"
                 ></nb-icon>
+                }
                 <span class="story-label">{{ selectedStory.storyName }}</span>
               </nb-select-label>
-
+              }
               <nb-option [value]="undefined">{{ 'analytics.flow.allStoriesOption' | transloco }}</nb-option>
-
+              @for (entry of nodesById | keyvalue; track entry) {
               <nb-option
-                *ngFor="let entry of nodesById | keyvalue"
                 [value]="entry.value"
                 [disabled]="!selectedTypeFilter.filter(entry.value)"
                 class="align-items-center"
               >
+                @if (entry.value.isBuiltIn()) {
                 <nb-icon
-                  *ngIf="entry.value.isBuiltIn()"
                   [nbTooltip]="'analytics.flow.builtInTooltip' | transloco"
                   icon="box"
                   class="mr-1"
                 ></nb-icon>
+                } @if (entry.value.isSimpleAnswer()) {
                 <nb-icon
-                  *ngIf="entry.value.isSimpleAnswer()"
                   [nbTooltip]="'analytics.flow.messageTooltip' | transloco"
                   icon="chat-left"
                   class="mr-1"
                 ></nb-icon>
+                } @if (entry.value.isScriptAnswer()) {
                 <nb-icon
-                  *ngIf="entry.value.isScriptAnswer()"
                   [nbTooltip]="'analytics.flow.scriptTooltip' | transloco"
                   icon="code"
                   class="mr-1"
                 ></nb-icon>
+                } @if (entry.value.storyType === undefined) {
                 <nb-icon
-                  *ngIf="entry.value.storyType === undefined"
                   [nbTooltip]="'analytics.flow.unknownTypeTooltip' | transloco"
                   icon="question-circle"
                   class="mr-1"
                 ></nb-icon>
+                }
                 {{ entry.value.storyName }}
               </nb-option>
+              }
             </nb-select>
+            }
           </nb-form-field>
         </div>
-
-        <div
-          class="col-3 mb-2"
-          *ngIf="selectedStory"
-        >
+        @if (selectedStory) {
+        <div class="col-3 mb-2">
           <nb-select
             size="small"
             fullWidth
@@ -346,11 +348,8 @@
             <nb-option [value]="1">{{ 'analytics.flow.directionIncomingOption' | transloco }}</nb-option>
           </nb-select>
         </div>
-
-        <div
-          class="col-3 mb-2 pt-1"
-          *ngIf="statsMode"
-        >
+        } @if (statsMode) {
+        <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="entity"
             (change)="update()"
@@ -358,11 +357,8 @@
             >{{ 'analytics.flow.entityLabel' | transloco }}</nb-checkbox
           >
         </div>
-
-        <div
-          class="col-3 mb-2 pt-1"
-          *ngIf="statsMode"
-        >
+        } @if (statsMode) {
+        <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="step"
             (change)="update()"
@@ -370,11 +366,8 @@
             >{{ 'analytics.flow.stepLabel' | transloco }}</nb-checkbox
           >
         </div>
-
-        <div
-          class="col-3 mb-2 pt-1"
-          *ngIf="statsMode"
-        >
+        } @if (statsMode) {
+        <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="intent"
             (change)="update()"
@@ -382,11 +375,8 @@
             >{{ 'analytics.flow.intentLabel' | transloco }}</nb-checkbox
           >
         </div>
-
-        <div
-          class="col-3 mb-2 pt-1"
-          *ngIf="!statsMode"
-        >
+        } @if (!statsMode) {
+        <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="displayDisabled"
             (change)="update()"
@@ -394,11 +384,8 @@
             >{{ 'analytics.flow.displayDisabledLabel' | transloco }}</nb-checkbox
           >
         </div>
-
-        <div
-          class="col-3 mb-2 pt-1"
-          *ngIf="statsMode"
-        >
+        } @if (statsMode) {
+        <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="displayTests"
             (change)="reload()"
@@ -406,11 +393,8 @@
             >{{ 'analytics.flow.displayTestsLabel' | transloco }}</nb-checkbox
           >
         </div>
-
-        <div
-          class="col-3 mb-2 pt-1"
-          *ngIf="statsMode"
-        >
+        } @if (statsMode) {
+        <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="mergeOldStories"
             (change)="update()"
@@ -418,11 +402,8 @@
             >{{ 'analytics.flow.mergeOldStoriesLabel' | transloco }}</nb-checkbox
           >
         </div>
-
-        <div
-          class="col-3 mb-2 pt-1"
-          *ngIf="statsMode"
-        >
+        } @if (statsMode) {
+        <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="recursive"
             (change)="update()"
@@ -430,7 +411,7 @@
             >{{ 'analytics.flow.displayRecursiveTransitionsLabel' | transloco }}</nb-checkbox
           >
         </div>
-
+        }
         <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="displayNodeType"
@@ -439,11 +420,8 @@
             >{{ 'analytics.flow.displayNodeTypeLabel' | transloco }}</nb-checkbox
           >
         </div>
-
-        <div
-          class="col-3 mb-2 pt-1"
-          *ngIf="statsMode"
-        >
+        @if (statsMode) {
+        <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="displayNodeCount"
             (change)="updateCount()"
@@ -451,11 +429,8 @@
             >{{ 'analytics.flow.displayNodeCountLabel' | transloco }}</nb-checkbox
           >
         </div>
-
-        <div
-          class="col-3 mb-2 pt-1"
-          *ngIf="!statsMode"
-        >
+        } @if (!statsMode) {
+        <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="intent"
             (change)="updateCount()"
@@ -463,7 +438,7 @@
             >{{ 'analytics.flow.displayMainIntentsLabel' | transloco }}</nb-checkbox
           >
         </div>
-
+        }
         <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="displayDebug"
@@ -471,29 +446,29 @@
             >{{ 'analytics.flow.displayDebugStatsLabel' | transloco }}</nb-checkbox
           >
         </div>
-
-        <div
-          class="col-6 mb-2 pt-1"
-          *ngIf="displayDebug"
-        >
-          <span *ngIf="nodesById || storiesById">
-            {{ 'analytics.flow.totalStoriesLabel' | transloco: { count: statsMode ? nodesById.size : storiesById.size } }} |
-          </span>
-          <span *ngIf="nodesById || storiesById">
-            {{ 'analytics.flow.filteredStoriesLabel' | transloco: { count: allNodes.length } }} |
-          </span>
-          <span *ngIf="allTransitionsSize">
+        @if (displayDebug) {
+        <div class="col-6 mb-2 pt-1">
+          @if (nodesById || storiesById) {
+          <span> {{ 'analytics.flow.totalStoriesLabel' | transloco: { count: statsMode ? nodesById.size : storiesById.size } }} | </span>
+          } @if (nodesById || storiesById) {
+          <span> {{ 'analytics.flow.filteredStoriesLabel' | transloco: { count: allNodes.length } }} | </span>
+          } @if (allTransitionsSize) {
+          <span>
             {{ 'analytics.flow.filteredTransitionsLabel' | transloco: { count: allTransitionsSize } }}
           </span>
+          }
         </div>
+        }
       </div>
     </div>
+    }
   </nb-card-body>
 </nb-card>
 
 <nb-card>
   <nb-card-body class="p-0 position-relative">
-    <div *ngIf="forceData && layout?.name === 'Force-based'">
+    @if (forceData && layout?.name === 'Force-based') {
+    <div>
       <div
         echarts
         [options]="forceData"
@@ -502,8 +477,8 @@
         (click)="unselect()"
       ></div>
     </div>
-
-    <div *ngIf="circularData && layout?.name === 'Circular'">
+    } @if (circularData && layout?.name === 'Circular') {
+    <div>
       <div
         echarts
         [options]="circularData"
@@ -512,24 +487,22 @@
         (click)="unselect()"
       ></div>
     </div>
-
-    <div *ngIf="sankeyData && layout?.name === 'Sankey'">
-      <div
-        class="text-center text-warning p-5"
-        *ngIf="!statsMode"
-      >
+    } @if (sankeyData && layout?.name === 'Sankey') {
+    <div>
+      @if (!statsMode) {
+      <div class="text-center text-warning p-5">
         {{ 'analytics.flow.sankeyWarning' | transloco }}
       </div>
+      } @if (statsMode) {
       <div
         echarts
         [options]="sankeyData"
         class="canvas"
-        *ngIf="statsMode"
       ></div>
+      }
     </div>
-
+    } @if (selectedNode) {
     <div
-      *ngIf="selectedNode"
       [@inOutRightAnimation]
       class="right-panel scrollable"
     >
@@ -540,5 +513,6 @@
         (closeStory)="unselect()"
       ></tock-story>
     </div>
+    }
   </nb-card-body>
 </nb-card>

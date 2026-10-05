@@ -92,26 +92,24 @@
       </div>
     </nb-card>
     <!-- <nb-card class="stats">
-      <div class="space space-component3">
-        <span class="text text-hint caption">New users</span>
-        <h5 class="heading1 text-basic">1234</h5>
-        <span class="text text-hint caption">
-          <nb-icon  icon="dash-lg" status="basic"></nb-icon>
-          100% vs prev. 28 days</span>
-      </div>
-      <div class="space icon-space">
-        <button nbButton status="basic" shape="round">
-          <nb-icon icon="dash-lg"></nb-icon>
-        </button>
-      </div>
-    </nb-card> -->
+    <div class="space space-component3">
+      <span class="text text-hint caption">New users</span>
+      <h5 class="heading1 text-basic">1234</h5>
+      <span class="text text-hint caption">
+        <nb-icon  icon="dash-lg" status="basic"></nb-icon>
+      100% vs prev. 28 days</span>
+    </div>
+    <div class="space icon-space">
+      <button nbButton status="basic" shape="round">
+        <nb-icon icon="dash-lg"></nb-icon>
+      </button>
+    </div>
+  </nb-card> -->
   </div>
 
   <div class="space graph-list">
-    <nb-card
-      class="space graph"
-      *ngIf="userPreferences.graphs.activity.messagesAll"
-    >
+    @if (userPreferences.graphs.activity.messagesAll) {
+    <nb-card class="space graph">
       <nb-card-body>
         <tock-chart
           [data]="messagesByTypeData"
@@ -121,10 +119,8 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-    <nb-card
-      class="space graph"
-      *ngIf="userPreferences.graphs.activity.users"
-    >
+    } @if (userPreferences.graphs.activity.users) {
+    <nb-card class="space graph">
       <nb-card-body>
         <tock-chart
           [data]="activeUsersData"
@@ -134,10 +130,8 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-    <nb-card
-      class="space graph"
-      *ngIf="userPreferences.graphs.activity.messagesByDays"
-    >
+    } @if (userPreferences.graphs.activity.messagesByDays) {
+    <nb-card class="space graph">
       <nb-card-body>
         <tock-chart
           [data]="messagesByDaysData"
@@ -149,10 +143,8 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-    <nb-card
-      class="space graph"
-      *ngIf="userPreferences.graphs.activity.messagesByStory"
-    >
+    } @if (userPreferences.graphs.activity.messagesByStory) {
+    <nb-card class="space graph">
       <nb-card-body>
         <tock-chart
           [data]="messagesByStoryData"
@@ -162,10 +154,8 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-    <nb-card
-      class="space graph"
-      *ngIf="userPreferences.graphs.activity.messagesByIntent"
-    >
+    } @if (userPreferences.graphs.activity.messagesByIntent) {
+    <nb-card class="space graph">
       <nb-card-body>
         <tock-chart
           [data]="messagesByIntentData"
@@ -175,11 +165,8 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-
-    <nb-card
-      class="space graph"
-      *ngIf="userPreferences.graphs.activity.messagesByConfiguration"
-    >
+    } @if (userPreferences.graphs.activity.messagesByConfiguration) {
+    <nb-card class="space graph">
       <nb-card-body>
         <tock-chart
           [data]="messagesByConfigurationData"
@@ -189,11 +176,8 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
-
-    <nb-card
-      class="space graph"
-      *ngIf="userPreferences.graphs.activity.messagesByConnector"
-    >
+    } @if (userPreferences.graphs.activity.messagesByConnector) {
+    <nb-card class="space graph">
       <nb-card-body>
         <tock-chart
           [data]="messagesByConnectorData"
@@ -203,6 +187,7 @@
         ></tock-chart>
       </nb-card-body>
     </nb-card>
+    }
   </div>
 </div>
 

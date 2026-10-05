@@ -32,10 +32,10 @@ import { UserRole } from '../../../../model/auth';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-  selector: 'tock-chat-ui-dialog-logger',
-
-  templateUrl: './chat-ui-dialog-logger.component.html',
-  styleUrl: './chat-ui-dialog-logger.component.scss'
+    selector: 'tock-chat-ui-dialog-logger',
+    templateUrl: './chat-ui-dialog-logger.component.html',
+    styleUrl: './chat-ui-dialog-logger.component.scss',
+    standalone: false
 })
 export class ChatUiDialogLoggerComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
