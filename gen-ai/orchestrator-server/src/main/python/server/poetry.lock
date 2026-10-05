@@ -2012,6 +2012,27 @@ together = ["langchain-together"]
 xai = ["langchain-xai"]
 
 [[package]]
+name = "langchain-aws"
+version = "1.4.0"
+description = "An integration package connecting AWS and LangChain"
+optional = false
+python-versions = ">=3.10"
+files = [
+    {file = "langchain_aws-1.4.0-py3-none-any.whl", hash = "sha256:68e07276cd85bb45dc4415e417e04fbe1c76c3cf029ddd6d96e2fa981dd29cc1"},
+    {file = "langchain_aws-1.4.0.tar.gz", hash = "sha256:370dcba824d68af96372a1c979c94f8d7062d268615b5395d80d1562a05fca37"},
+]
+
+[package.dependencies]
+boto3 = ">=1.42.42"
+langchain-core = ">=1.2.15"
+numpy = ">=1.0.0,<3"
+pydantic = ">=2.10.6,<3"
+
+[package.extras]
+anthropic = ["anthropic[bedrock]", "langchain-anthropic"]
+tools = ["beautifulsoup4 (>=4.13.4)", "bedrock-agentcore (>=1.2.0)", "playwright (>=1.53.0)"]
+
+[[package]]
 name = "langchain-azure-ai"
 version = "1.2.5"
 description = "An integration package to support Microsoft Foundry (formerly Azure AI) capabilities in LangChain/LangGraph ecosystem."
@@ -2114,18 +2135,18 @@ tenacity = ">=8.1.0,<8.4.0 || >8.4.0,<10.0.0"
 
 [[package]]
 name = "langchain-core"
-version = "1.4.0"
+version = "1.4.9"
 description = "Building applications with LLMs through composability"
 optional = false
 python-versions = "<4.0.0,>=3.10.0"
 files = [
-    {file = "langchain_core-1.4.0-py3-none-any.whl", hash = "sha256:23cbbdb46e38ddd1dd5247e6167e96013eae74bea4c5949c550809970a9e565c"},
-    {file = "langchain_core-1.4.0.tar.gz", hash = "sha256:1dc341eed802ed9c117c0df3923c991e5e9e226571e5725c194eeb5bd93d1a7f"},
+    {file = "langchain_core-1.4.9-py3-none-any.whl", hash = "sha256:28e3909e2a10cc81504952d795ac0a9e014c0018121ef89d48dd396fa09ec624"},
+    {file = "langchain_core-1.4.9.tar.gz", hash = "sha256:f8078901145bed0466755277500a5a22822a7b628808c4c0a28d4fc88895fcf2"},
 ]
 
 [package.dependencies]
 jsonpatch = ">=1.33.0,<2.0.0"
-langchain-protocol = ">=0.0.14"
+langchain-protocol = ">=0.0.17"
 langsmith = ">=0.3.45,<1.0.0"
 packaging = ">=23.2.0"
 pydantic = ">=2.7.4,<3.0.0"
@@ -3945,13 +3966,13 @@ typing-extensions = ">=4.14.1"
 
 [[package]]
 name = "pydantic-settings"
-version = "2.14.1"
+version = "2.14.2"
 description = "Settings management using Pydantic"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "pydantic_settings-2.14.1-py3-none-any.whl", hash = "sha256:6e3c7edfd8277687cdc598f56e5cff0e9bfff0910a3749deaa8d4401c3a2b9de"},
-    {file = "pydantic_settings-2.14.1.tar.gz", hash = "sha256:e874d3bec7e787b0c9958277956ed9b4dd5de6a80e162188fdaff7c5e26fd5fa"},
+    {file = "pydantic_settings-2.14.2-py3-none-any.whl", hash = "sha256:a20c97b37910b6550d5ea50fbcc2d4187defe58cd57070b73863d069419c9440"},
+    {file = "pydantic_settings-2.14.2.tar.gz", hash = "sha256:c19dd64b19097f1de80184f0cc7b0272a13ae6e170cbf240a3e27e381ed14a5f"},
 ]
 
 [package.dependencies]
@@ -5759,4 +5780,4 @@ cffi = ["cffi (>=1.17,<2.0)", "cffi (>=2.0.0b)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7535adf33a313cf3958af136178511862489d2d8474c9ab23878fbf92f35e97b"
+content-hash = "4d577820c8429a78ca7897045337b9d4f1e890577feb87d45e96b6b07879cbdc"
