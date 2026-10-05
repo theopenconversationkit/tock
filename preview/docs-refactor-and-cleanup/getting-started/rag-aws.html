@@ -4618,7 +4618,7 @@
 
 
 <h1 id="running-rag-on-aws">Running RAG on AWS</h1>
-<p>This guide walks you through setting up a TOCK bot's <a href="../user/studio/gen-ai/features/gen-ai-feature-rag.md">RAG</a>
+<p>This guide walks you through setting up a TOCK bot's <a href="../gen-ai/rag.html">RAG</a>
 (Retrieval-Augmented Generation) feature entirely on AWS, from a fresh account to a working bot answering
 questions from your own documents. It uses:</p>
 <ul>
@@ -4823,7 +4823,7 @@ has the same AWS credentials available, e.g. <code>export AWS_PROFILE=bedrock-ra
 <span class="w">  </span><span class="nt">"temperature"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.7"</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Then write your system prompt (see the <a href="../user/studio/gen-ai/rag-chain/rag-prompt-system.md">RAG prompt guides</a>
+<p>Then write your system prompt (see the <a href="../gen-ai/rag-prompt.html">RAG prompt guides</a>
 for examples).</p>
 <h3 id="73-rag-settings-embedding-engine">7.3) RAG Settings - Embedding Engine</h3>
 <p>Select <strong>AwsBedrock</strong> again, matching the model used for ingestion, and paste the <strong>indexing session ID</strong> from
@@ -4898,9 +4898,9 @@ should get an answer generated from the retrieved document chunks. If not, see t
 </table>
 <h2 id="reference">Reference</h2>
 <ul>
-<li><a href="../user/studio/gen-ai/features/gen-ai-feature-rag.md">RAG feature overview</a></li>
-<li><a href="../user/studio/gen-ai/providers/gen-ai-provider-vector-store.md">Vector store providers</a></li>
-<li><a href="../user/studio/gen-ai/providers/gen-ai-provider-llm-and-embedding.md">LLM/embedding providers</a></li>
+<li><a href="../gen-ai/rag.html">RAG feature overview</a></li>
+<li><a href="../gen-ai/providers/vector-store.html">Vector store providers</a></li>
+<li><a href="../gen-ai/providers/llm-embedding.html">LLM/embedding providers</a></li>
 <li><a href="https://github.com/theopenconversationkit/tock-docker"><code>tock-docker</code></a> - Docker images and Compose stacks</li>
 <li><a href="https://github.com/theopenconversationkit/tock/blob/master/gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools/README.md"><code>tock-llm-indexing-tools</code> README</a></li>
 </ul>
@@ -5195,7 +5195,7 @@ should get an answer generated from the retrieved document chunks. If not, see t
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 29, 2026 15:17:31 UTC">September 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 5, 2026 14:46:07 UTC">October 5, 2026</span>
   </span>
 
     
