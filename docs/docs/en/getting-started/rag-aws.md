@@ -4,7 +4,7 @@ title: RAG on AWS
 
 # Running RAG on AWS
 
-This guide walks you through setting up a TOCK bot's [RAG](../user/studio/gen-ai/features/gen-ai-feature-rag.md)
+This guide walks you through setting up a TOCK bot's [RAG](../gen-ai/rag.md)
 (Retrieval-Augmented Generation) feature entirely on AWS, from a fresh account to a working bot answering
 questions from your own documents. It uses:
 
@@ -247,7 +247,7 @@ Select **AwsBedrock** as the provider and fill in:
 }
 ```
 
-Then write your system prompt (see the [RAG prompt guides](../user/studio/gen-ai/rag-chain/rag-prompt-system.md)
+Then write your system prompt (see the [RAG prompt guides](../gen-ai/rag-prompt.md)
 for examples).
 
 ### 7.3) RAG Settings - Embedding Engine
@@ -308,8 +308,8 @@ should get an answer generated from the retrieved document chunks. If not, see t
 
 ## Reference
 
-- [RAG feature overview](../user/studio/gen-ai/features/gen-ai-feature-rag.md)
-- [Vector store providers](../user/studio/gen-ai/providers/gen-ai-provider-vector-store.md)
-- [LLM/embedding providers](../user/studio/gen-ai/providers/gen-ai-provider-llm-and-embedding.md)
+- [RAG feature overview](../gen-ai/rag.md)
+- [Vector store providers](../gen-ai/providers/vector-store.md)
+- [LLM/embedding providers](../gen-ai/providers/llm-embedding.md)
 - [`tock-docker`](https://github.com/theopenconversationkit/tock-docker) - Docker images and Compose stacks
 - [`tock-llm-indexing-tools` README](https://github.com/theopenconversationkit/tock/blob/master/gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools/README.md)

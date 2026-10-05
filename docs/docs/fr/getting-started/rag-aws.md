@@ -4,7 +4,7 @@ title: RAG sur AWS
 
 # Faire fonctionner le RAG sur AWS
 
-Ce guide vous accompagne dans la mise en place de la [génération à enrichissement contextuel (RAG)](../user/studio/gen-ai/features/gen-ai-feature-rag.md)
+Ce guide vous accompagne dans la mise en place de la [génération à enrichissement contextuel (RAG)](../gen-ai/rag.md)
 pour un bot TOCK entièrement sur AWS, depuis un compte tout neuf. Le résultat attendu est un bot
 capable de répondre à des questions à partir de vos propres documents. Pour ce faire, on utilisera :
 
@@ -84,7 +84,7 @@ Attachez cette policy à l'identité qui exécutera le conteneur de l'orchestrat
   `..._allow_default_profile` ci-dessous.
 
 !!! note
-    Si vous comptez utiliser les [guardrails Bedrock](#8-optionnel--configurer-des-guardrails), ajoutez également
+    Si vous comptez utiliser les [guardrails Bedrock](#8-optionnel-configurer-des-guardrails), ajoutez également
     l'ARN du guardrail à la liste `Resource` ci-dessus une fois celui-ci créé.
 
 ## 4) Créer un domaine Amazon OpenSearch Service
@@ -260,7 +260,7 @@ Sélectionnez **AwsBedrock** comme fournisseur et renseignez :
 ```
 
 Rédigez ensuite votre prompt système (voir les
-[guides de prompt RAG](https://github.com/theopenconversationkit/tock/blob/master/docs/docs/en/user/studio/gen-ai/rag-chain/rag-prompt-system.md)
+[guides de prompt RAG](../gen-ai/rag-prompt.md)
 pour des exemples).
 
 ### 7.3) RAG Settings - Embedding Engine
@@ -324,8 +324,8 @@ consultez le tableau de dépannage ci-dessous.
 
 ## Références
 
-- [Présentation de la fonctionnalité RAG](../user/studio/gen-ai/features/gen-ai-feature-rag.md)
-- [Fournisseurs de vector store](../user/studio/gen-ai/providers/gen-ai-provider-vector-store.md)
-- [Fournisseurs de LLM/embedding](../user/studio/gen-ai/providers/gen-ai-provider-llm-and-embedding.md)
+- [Présentation de la fonctionnalité RAG](../gen-ai/rag.md)
+- [Fournisseurs de vector store](../gen-ai/providers/vector-store.md)
+- [Fournisseurs de LLM/embedding](../gen-ai/providers/llm-embedding.md)
 - [`tock-docker`](https://github.com/theopenconversationkit/tock-docker) - images Docker et stacks Compose
 - [README de `tock-llm-indexing-tools`](https://github.com/theopenconversationkit/tock/blob/master/gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools/README.md)
