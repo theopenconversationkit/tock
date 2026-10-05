@@ -56,9 +56,9 @@
 
       <div class="font-size-small text-muted unselectable d-flex justify-content-end align-items-center mt-auto pr-3">
         <div>
-          <time>{{ sentence.creationDate | date: 'd MMMM yyyy' }}</time>
+          <time>{{ sentence.creationDate | date: 'd MMMM yyyy':undefined:dateLocale }}</time>
           <span class="text-uppercase mx-1" [nbTooltip]="'shared.sentence-training-entry.sentence-status' | transloco">
-            {{ sentence.statusDisplayed() }}
+            {{ sentence.statusDisplayed() | transloco }}
           </span>
           <span [nbTooltip]="'shared.sentence-training-entry.sentence-configuration' | transloco">{{ sentence.configuration }}</span>
           <span *ngIf="sentence.qualifier" [nbTooltip]="'shared.sentence-training-entry.qualifier' | transloco">{{ sentence.qualifier }}</span>

@@ -401,15 +401,16 @@ export class Sentence extends EntityContainer {
   statusDisplayed(): string {
     switch (this.status) {
       case SentenceStatus.deleted:
-        return 'Deleted';
+
+        return 'shared.sentence-training-entry.status.deleted';
       case SentenceStatus.inbox:
-        return 'Inbox';
+        return 'shared.sentence-training-entry.status.inbox';
       case SentenceStatus.model:
-        return 'Included in model';
+        return 'shared.sentence-training-entry.status.model';
       case SentenceStatus.validated:
-        return 'Validated';
+        return 'shared.sentence-training-entry.status.validated';
     }
-    return 'unknown';
+    return 'shared.sentence-training-entry.status.unknown';
   }
 
   clone(): Sentence {

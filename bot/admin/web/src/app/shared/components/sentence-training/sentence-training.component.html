@@ -31,7 +31,7 @@
               [checked]="selection?.selected?.length === sentences?.length"
               [indeterminate]="selection?.selected?.length && selection.selected.length < sentences?.length"
               (checkedChange)="handleToggleSelectAll($event)"
-            ><span class="grid-columns-header-label">Select all</span>
+            ><span class="grid-columns-header-label">{{ 'shared.sentence-training.select-all' | transloco }}</span>
             </nb-checkbox>
             <div
               *ngIf="selection.selected.length"

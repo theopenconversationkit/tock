@@ -260,6 +260,7 @@
         "ragexcluded-tooltip": "Set all selected sentences as ragexcluded"
       },
       "sort-by-creation-date": "Sort by creation date",
+      "select-all": "Select all",
       "action-titles": {
         "delete": "Delete",
         "unknown": "Unknown",
@@ -355,6 +356,13 @@
       "copy-sentence": "Copy sentence",
       "test-sentence": "Test this sentence in a dialog",
       "sentence-status": "Sentence status",
+      "status": {
+        "deleted": "Deleted",
+        "inbox": "Inbox",
+        "model": "Included in model",
+        "validated": "Validated",
+        "unknown": "Unknown"
+      },
       "sentence-configuration": "Sentence configuration",
       "qualifier": "Qualifier",
       "intent-association": "Intent association",
