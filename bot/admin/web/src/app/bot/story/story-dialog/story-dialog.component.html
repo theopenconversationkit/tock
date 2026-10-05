@@ -1,28 +1,16 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card class="m-0">
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1 flex-wrap">
-    {{ create ? 'Create new story' : 'Update story ' + (name ? name : label) }}
+    {{
+      create
+        ? ('bot.story-dialog.createNewStoryTitle' | transloco)
+        : ('bot.story-dialog.updateStoryTitle' | transloco: { name: name || label })
+    }}
     <button
       type="button"
       nbButton
       ghost
       shape="round"
-      nbTooltip="Close"
+      [nbTooltip]="'common.actions.close' | transloco"
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>
@@ -31,21 +19,21 @@
   <nb-card-body>
     <form #intentForm="ngForm">
       <tock-form-control
-        label="User phrase sample"
+        [label]="'bot.story-dialog.userPhraseSampleLabel' | transloco"
         name="userSentence"
-        information="User phrase provided as sample for the user"
+        [information]="'bot.story-dialog.userPhraseSampleInformation' | transloco"
       >
         <input
           nbInput
           fullWidth
           name="userSentence"
           id="userSentence"
-          placeholder="Enter a user Phrase Sample"
+          [placeholder]="'bot.story-dialog.userPhraseSamplePlaceholder' | transloco"
           [(ngModel)]="userSentence"
         />
       </tock-form-control>
       <tock-form-control
-        label="Label"
+        [label]="'bot.story-dialog.labelLabel' | transloco"
         name="label"
       >
         <input
@@ -54,16 +42,16 @@
           fullWidth
           name="label"
           id="label"
-          placeholder="Enter a story Label"
+          [placeholder]="'bot.story-dialog.labelPlaceholder' | transloco"
           [(ngModel)]="label"
           (keyup)="copyToName()"
           (keyup.enter)="save()"
         />
       </tock-form-control>
       <tock-form-control
-        label="Story id"
+        [label]="'bot.story-dialog.storyIdLabel' | transloco"
         name="name"
-        information="Story technical id"
+        [information]="'bot.story-dialog.storyIdInformation' | transloco"
         [required]="true"
       >
         <input
@@ -71,7 +59,7 @@
           required
           name="name"
           fullWidth
-          placeholder="Story Id"
+          [placeholder]="'bot.story-dialog.storyIdPlaceholder' | transloco"
           [disabled]="!create"
           [(ngModel)]="name"
           (keyup)="format()"
@@ -79,9 +67,9 @@
         />
       </tock-form-control>
       <tock-form-control
-        label="Intent"
+        [label]="'bot.story-dialog.intentLabel' | transloco"
         name="intent"
-        information="The intent that triggers the story"
+        [information]="'bot.story-dialog.intentInformation' | transloco"
         [required]="true"
       >
         <input
@@ -89,7 +77,7 @@
           fullWidth
           id="intent"
           name="intent"
-          placeholder="Choose an intent"
+          [placeholder]="'bot.story-dialog.chooseIntentPlaceholder' | transloco"
           required
           autocomplete="off"
           [nbAutocomplete]="intentAuto"
@@ -118,7 +106,7 @@
       </nb-autocomplete>
       <tock-story-tag [(selectedTag)]="tag"></tock-story-tag>
       <tock-form-control
-        label="Category"
+        [label]="'bot.story-dialog.categoryLabel' | transloco"
         name="category"
       >
         <input
@@ -126,7 +114,7 @@
           fullWidth
           id="category"
           name="category"
-          placeholder="Choose category"
+          [placeholder]="'bot.story-dialog.chooseCategoryPlaceholder' | transloco"
           autocomplete="off"
           [nbAutocomplete]="catAuto"
           [(ngModel)]="category"
@@ -146,7 +134,7 @@
         </nb-option>
       </nb-autocomplete>
       <tock-form-control
-        label="Description"
+        [label]="'bot.story-dialog.descriptionLabel' | transloco"
         name="description"
       >
         <textarea
@@ -155,7 +143,7 @@
           rows="5"
           name="description"
           id="description"
-          placeholder="Enter a description"
+          [placeholder]="'bot.story-dialog.descriptionPlaceholder' | transloco"
           [(ngModel)]="description"
         ></textarea>
       </tock-form-control>
@@ -169,7 +157,7 @@
       type="button"
       (click)="cancel()"
     >
-      Cancel
+      {{ 'common.actions.cancel' | transloco }}
     </button>
     <button
       type="submit"
@@ -179,7 +167,7 @@
       [disabled]="!intentForm.form.valid"
       (click)="save()"
     >
-      Save
+      {{ 'common.actions.save' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>

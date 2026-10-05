@@ -12,6 +12,7 @@ import { getEvaluationBaseUrl, getEvaluationRate, getSampleCoverage } from '../u
 import { generateSampleReport } from '../generate-sample-report';
 import { RestService } from '../../../core-nlp/rest/rest.service';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'tock-sample-detail',
@@ -52,7 +53,8 @@ export class SampleDetailComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private nbDialogService: NbDialogService,
     private datePipe: DatePipe,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    private translocoService: TranslocoService
   ) {}
 
   // ─── Lifecycle ───────────────────────────────────────────────────────────────
@@ -88,7 +90,7 @@ export class SampleDetailComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           if (!res._id) {
-            this.showError('Sample not found');
+            this.showError(this.translocoService.translate('quality.sample-detail.sample_not_found'));
             return;
           }
           this.sample = res;
@@ -249,7 +251,8 @@ export class SampleDetailComponent implements OnInit, OnDestroy {
       this.stateService.currentApplication.name,
       this.datePipe,
       this.sample,
-      data
+      data,
+      this.translocoService
     );
   }
 
@@ -259,8 +262,11 @@ export class SampleDetailComponent implements OnInit, OnDestroy {
     return getEvaluationBaseUrl(this.stateService.currentApplication.name);
   }
 
-  private showError(message: string = 'An error occured'): void {
-    this.toastrService.danger(message, 'Error', { duration: 5000, status: 'danger' });
+  private showError(message: string = this.translocoService.translate('quality.sample-detail.an_error_occurred')): void {
+    this.toastrService.danger(message, this.translocoService.translate('quality.sample-detail.error_title'), {
+      duration: 5000,
+      status: 'danger'
+    });
   }
 
   private updatePagination(result: any): void {
@@ -349,8 +355,11 @@ export class SampleDetailComponent implements OnInit, OnDestroy {
 
     if (this.isSampleCompleted()) {
       scrollToPageTop(this.document);
-      const message = 'All responses in the sample have been evaluated. You can validate the sample.';
-      this.toastrService.success(message, 'All responses evaluated', { duration: 5000, status: 'success' });
+      const message = this.translocoService.translate('quality.sample-detail.all_responses_evaluated_message');
+      this.toastrService.success(message, this.translocoService.translate('quality.sample-detail.all_responses_evaluated_title'), {
+        duration: 5000,
+        status: 'success'
+      });
     } else {
       setTimeout(() => this.scrollToNextUnCompleteDialog(), 300);
     }

@@ -20,7 +20,7 @@ from gen_ai_orchestrator.models.errors.errors_models import (
     ErrorCode,
     ErrorMessages,
 )
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
 )
 
@@ -69,4 +69,4 @@ def test_check_vector_store_provider_setting():
     data = {'setting': response.json(), 'index_name': 'my_index'}
     response = client.post(f"{urls_prefix}/{provider_id}/setting/status", json=data)
     assert response.status_code == 200
-    assert response.json()['valid'] == False
+    assert not response.json()['valid']

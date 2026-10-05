@@ -21,12 +21,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class ContextContent(
     val forwarded: Boolean?,
     @JsonProperty("frequently_forwarded") val frequentlyForwarded: Boolean?,
-    val from: String,
-    val id: String,
+    val from: String?,
+    val id: String?,
     @JsonProperty("referred_product") val referredProduct: ReferredProduct?,
 )
 
 data class ReferredProduct(
-    @JsonProperty("catalog_id") val catalogId: String,
-    @JsonProperty("product_retailer_id") val productRetailerId: String,
+    @JsonProperty("catalog_id") val catalogId: String?,
+    @JsonProperty("product_retailer_id") val productRetailerId: String?,
 )

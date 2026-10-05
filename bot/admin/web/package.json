@@ -9,7 +9,9 @@
     "test": "ng test",
     "lint": "ng lint",
     "mavenbuild": "ng build --configuration production",
-    "prepare": "node scripts/hooks/install-hooks.js || true"
+    "prepare": "node scripts/hooks/install-hooks.js || true",
+    "i18n:extract": "transloco-keys-manager extract",
+    "i18n:find-missing": "transloco-keys-manager find"
   },
   "private": true,
   "overrides": {
@@ -29,6 +31,9 @@
     "@angular/platform-browser": "^17.3.12",
     "@angular/platform-browser-dynamic": "^17.3.12",
     "@angular/router": "^17.3.12",
+    "@jsverse/transloco": "^8.3.0",
+    "@jsverse/transloco-messageformat": "^8.3.0",
+    "@nebular/moment": "^13.0.0",
     "@nebular/theme": "13.0.0",
     "ang-jsoneditor": "^3.1.1",
     "bootstrap": "^4.4.1",
@@ -78,6 +83,7 @@
     "@angular/cli": "^17.3.8",
     "@angular/compiler-cli": "^17.3.12",
     "@angular/language-service": "^17.3.12",
+    "@jsverse/transloco-keys-manager": "^8.1.0",
     "@types/echarts": "^4.9.22",
     "@types/file-saver-es": "^2.0.1",
     "@types/jasmine": "~4.3.0",

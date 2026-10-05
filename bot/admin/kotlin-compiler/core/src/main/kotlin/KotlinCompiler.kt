@@ -241,6 +241,7 @@ internal object KotlinCompiler {
     }
 
     @Synchronized
+    @Suppress("DEPRECATION_ERROR")
     fun analyzeFileForJvm(
         files: List<KtFile>,
         project: Project,

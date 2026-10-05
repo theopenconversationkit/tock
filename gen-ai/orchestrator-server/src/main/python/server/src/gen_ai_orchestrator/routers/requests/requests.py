@@ -16,7 +16,6 @@
 
 from typing import Optional
 
-from pyasn1.type.univ import Boolean
 from pydantic import BaseModel, Field
 
 from gen_ai_orchestrator.models.document_compressor.document_compressor_types import (
@@ -174,12 +173,11 @@ class RAGRequest(BaseRequest):
     """The RAG request model"""
 
     dialog: Optional[DialogDetails] = Field(description='The user dialog details.')
-    question_condensing_llm_setting: Optional[LLMSetting] = Field(
-        description="LLM setting, used to condense the user's question.", default=None
+    question_condensing_llm_setting: LLMSetting = Field(
+        description="LLM setting, used to condense the user's question."
     )
-    question_condensing_prompt: Optional[PromptTemplate] = Field(
-        description='Prompt template, used to create a prompt with inputs for jinja and fstring format',
-        default=None,
+    question_condensing_prompt: PromptTemplate = Field(
+        description='Prompt template, used to create a prompt with inputs for jinja and fstring format'
     )
     question_answering_llm_setting: LLMSetting = Field(
         description='LLM setting, used to perform a QA Prompt.'

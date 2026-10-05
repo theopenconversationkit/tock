@@ -47,6 +47,7 @@ import { AnalyticsService } from '../analytics/analytics.service';
 import { MetricsByStoriesComponent } from './metrics-board/metrics-by-stories/metrics-by-stories.component';
 import { StoriesHitsComponent } from './metrics-board/stories-hits/stories-hits.component';
 import { MetricsIndicatorDetailsComponent } from './metrics-board/metrics-indicator-details/metrics-indicator-details.component';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import { MetricsIndicatorDetailsComponent } from './metrics-board/metrics-indica
   imports: [
     ReactiveFormsModule,
     CommonModule,
+    TranslocoModule,
     FormsModule,
     BotSharedModule,
     NbRouteTabsetModule,
@@ -85,6 +87,11 @@ import { MetricsIndicatorDetailsComponent } from './metrics-board/metrics-indica
       echarts: () => import('echarts')
     })
   ],
-  providers: [AnalyticsService]
+  providers: [
+    AnalyticsService,
+    provideTranslocoScope({
+      scope: 'metrics'
+    })
+  ]
 })
 export class MetricsModule {}

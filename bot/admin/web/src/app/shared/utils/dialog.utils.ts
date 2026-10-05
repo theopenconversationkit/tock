@@ -15,13 +15,13 @@
  */
 
 export const dialogMessageUserIdentities = {
-  client: { qualifier: 'Human', avatar: 'assets/images/scenario-client.svg' },
-  bot: { qualifier: 'Bot', avatar: 'assets/images/scenario-bot.svg' }
+  client: { qualifierKey: 'common.dialogUser.human', avatar: 'assets/images/scenario-client.svg' },
+  bot: { qualifierKey: 'common.dialogUser.bot', avatar: 'assets/images/scenario-bot.svg' }
 };
 
-export function getDialogMessageUserQualifier(isBot: boolean): string {
-  if (isBot) return dialogMessageUserIdentities.bot.qualifier;
-  return dialogMessageUserIdentities.client.qualifier;
+export function getDialogMessageUserQualifierKey(isBot: boolean): string {
+  if (isBot) return dialogMessageUserIdentities.bot.qualifierKey;
+  return dialogMessageUserIdentities.client.qualifierKey;
 }
 
 export function getDialogMessageUserAvatar(isBot: boolean): string {

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
+import { Subject, takeUntil } from 'rxjs';
 
 export interface Pagination {
   size: number;
@@ -28,11 +30,16 @@ export interface Pagination {
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.scss']
 })
-export class PaginationComponent implements OnInit {
+export class PaginationComponent implements OnInit, OnChanges, OnDestroy {
+  private destroy$ = new Subject<void>();
   @Input() pagination!: Pagination;
   @Input() sizes: number[] = [10, 25, 50, 100];
 
   @Output() onPaginationChange = new EventEmitter<Pagination>();
+
+  paginationSummary: string = '';
+
+  constructor(private transloco: TranslocoService) {}
 
   ngOnInit() {
     if (!this.sizes.includes(this.pagination.size)) {
@@ -40,6 +47,26 @@ export class PaginationComponent implements OnInit {
         return a - b;
       });
     }
+
+    this.transloco
+      .selectTranslation()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.updateSummary());
+  }
+
+  ngOnChanges(): void {
+    if (this.paginationSummary) {
+      // avoid call before ngOnInit
+      this.updateSummary();
+    }
+  }
+
+  updateSummary(): void {
+    this.paginationSummary = this.transloco.translate('shared.pagination.summary', {
+      start: this.pagination.start + 1,
+      end: this.pagination.end,
+      total: this.pagination.total
+    });
   }
 
   paginationPrevious(): void {
@@ -58,15 +85,16 @@ export class PaginationComponent implements OnInit {
     this.onPaginationChange.emit();
   }
 
-  paginationString(): string {
-    return `${this.pagination.start + 1} - ${this.pagination.end} of ${this.pagination.total}`;
-  }
-
   showPrevious(): boolean {
     return this.pagination.start > 0;
   }
 
   showNext(): boolean {
     return this.pagination.total > this.pagination.end;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

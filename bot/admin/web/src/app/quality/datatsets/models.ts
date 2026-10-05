@@ -26,6 +26,16 @@ export interface DatasetRunStats {
   totalQuestions: number;
   completedQuestions: number;
   failedQuestions: number;
+  nonRagAnswers: number;
+  ragAnswerStatusCounts: {
+    found_in_context: number;
+    human_escalation: number;
+    injection_attempt: number;
+    not_found_in_context: number;
+    out_of_scope: number;
+    small_talk: number;
+    technical_error: number;
+  };
 }
 
 export interface DatasetRun {

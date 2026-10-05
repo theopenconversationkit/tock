@@ -31,6 +31,18 @@ data class CountResult(
 )
 
 /**
+ * The count result by date.
+ * @param applicationId the id of the bot configuration
+ * @param date the day of the user actions, formatted as YYYY-MM-DD.
+ * @param total the number of user actions aggregated for the given [applicationId] and [date].
+ */
+data class CountByDateResult(
+    val applicationId: String,
+    val date: String,
+    val total: Long,
+)
+
+/**
  * Set of calculated statistics
  *
  * @param allUserActions : All user actions, including GenAI RAG interactions.
@@ -42,6 +54,7 @@ data class CountResult(
  */
 data class DialogStatsQueryResult(
     val allUserActions: List<CountResult> = emptyList(),
+    val allUserActionsByDate: List<CountByDateResult> = emptyList(),
     val allUserActionsExceptRag: List<CountResult> = emptyList(),
     val allUserRagActions: List<CountResult> = emptyList(),
     val knownIntentUserActions: List<CountResult> = emptyList(),

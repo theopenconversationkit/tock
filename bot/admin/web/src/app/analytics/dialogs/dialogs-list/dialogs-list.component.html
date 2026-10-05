@@ -29,7 +29,7 @@
 <div [nbSpinner]="loading">
   <tock-no-data-found
     *ngIf="!loading && pagination.total === 0"
-    title="No dialogs found"
+    [title]="'analytics.dialogs-list.no-dialogs-found' | transloco"
   ></tock-no-data-found>
 
   <tock-sticky-menu *ngIf="!loading && data?.length">
@@ -40,7 +40,7 @@
           (click)="toggleDialogSortOrder()"
           data-testid="sort"
         >
-          Sort dialogs by creation date
+          {{ 'analytics.dialogs-list.sort-by-creation-date' | transloco }}
           <nb-icon
             *ngIf="filters.dialogSort === sortOrder.ASC"
             class="align-middle"
@@ -59,7 +59,7 @@
             nbButton
             ghost
             shape="round"
-            nbTooltip="Refresh dialogs"
+            [nbTooltip]="'common.actions.refresh-dialogs' | transloco"
             (click)="refresh()"
           >
             <nb-icon icon="arrow-clockwise"></nb-icon>

@@ -45,6 +45,7 @@ import ai.tock.bot.connector.messenger.model.send.SenderAction.typing_off
 import ai.tock.bot.connector.messenger.model.send.SenderAction.typing_on
 import ai.tock.bot.connector.messenger.model.send.UrlPayload
 import ai.tock.bot.connector.messenger.model.webhook.CallbackRequest
+import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
@@ -618,16 +619,17 @@ class MessengerConnector internal constructor(
         }
     }
 
-    override fun notify(
+    override suspend fun notify(
         controller: ConnectorController,
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStepDef?,
         parameters: Map<String, String>,
+        transientContext: DialogContext,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit,
     ) {
-        controller.handle(
+        controller.handleUserEvent(
             SendChoice(
                 recipientId,
                 connectorId,
@@ -638,6 +640,7 @@ class MessengerConnector internal constructor(
             ),
             ConnectorData(
                 MessengerConnectorCallback(connectorId, notificationType, errorListener),
+                transientContext = transientContext,
             ),
         )
     }

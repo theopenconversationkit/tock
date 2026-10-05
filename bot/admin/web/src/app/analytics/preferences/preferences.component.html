@@ -1,22 +1,6 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card>
-  <nb-card-header
-    >User preferences for analytics
+  <nb-card-header>
+    {{ 'analytics.preferences.title' | transloco }}
     <button
       nbButton
       size="large"
@@ -26,7 +10,7 @@
       style="float: right"
     >
       <nb-icon
-        nbTooltip="Save"
+        [nbTooltip]="'analytics.preferences.saveTooltip' | transloco"
         icon="floppy"
       ></nb-icon>
     </button>
@@ -37,17 +21,17 @@
         status="info"
         style="margin-bottom: 0; width: 50%"
       >
-        <nb-card-header>Activity graphs available</nb-card-header>
+        <nb-card-header>{{ 'analytics.preferences.activityGraphsTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <nb-toggle
             status="basic"
             [(ngModel)]="preferences.graphs.activity.messagesAll"
             style="width: 100%"
           >
-            All messages
+            {{ 'analytics.preferences.allMessagesLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users"
+              [nbTooltip]="'analytics.preferences.allMessagesTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -55,10 +39,10 @@
             [(ngModel)]="preferences.graphs.activity.users"
             style="width: 100%"
           >
-            Users
+            {{ 'analytics.preferences.usersLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of users"
+              [nbTooltip]="'analytics.preferences.usersTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -66,10 +50,10 @@
             [(ngModel)]="preferences.graphs.activity.messagesByDays"
             style="width: 100%"
           >
-            Messages by days in calendar
+            {{ 'analytics.preferences.messagesByDaysLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users by days"
+              [nbTooltip]="'analytics.preferences.messagesByDaysTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -77,10 +61,10 @@
             [(ngModel)]="preferences.graphs.activity.messagesByStory"
             style="width: 100%"
           >
-            Messages by story
+            {{ 'analytics.preferences.messagesByStoryLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users by story (does not include sub-intents of the story)"
+              [nbTooltip]="'analytics.preferences.messagesByStoryTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -88,10 +72,10 @@
             [(ngModel)]="preferences.graphs.activity.messagesByIntent"
             style="width: 100%"
           >
-            Messages by intent
+            {{ 'analytics.preferences.messagesByIntentLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users by intent"
+              [nbTooltip]="'analytics.preferences.messagesByIntentTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -99,10 +83,10 @@
             [(ngModel)]="preferences.graphs.activity.messagesByConfiguration"
             style="width: 100%"
           >
-            Messages by configuration
+            {{ 'analytics.preferences.messagesByConfigurationLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users by intent by configuration"
+              [nbTooltip]="'analytics.preferences.messagesByConfigurationTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -110,10 +94,10 @@
             [(ngModel)]="preferences.graphs.activity.messagesByConnector"
             style="width: 100%"
           >
-            Messages by connector type
+            {{ 'analytics.preferences.messagesByConnectorLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users by the type of connectors"
+              [nbTooltip]="'analytics.preferences.messagesByConnectorTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
         </nb-card-body>
@@ -122,17 +106,17 @@
         status="info"
         style="margin-bottom: 0; width: 50%"
       >
-        <nb-card-header>Behavior graphs available</nb-card-header>
+        <nb-card-header>{{ 'analytics.preferences.behaviorGraphsTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <nb-toggle
             status="basic"
             [(ngModel)]="preferences.graphs.behavior.messagesByStory"
             style="width: 100%"
           >
-            Messages by Story
+            {{ 'analytics.preferences.messagesByStoryLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users by story (does not include sub-intents of the story)"
+              [nbTooltip]="'analytics.preferences.messagesByStoryTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -140,10 +124,10 @@
             [(ngModel)]="preferences.graphs.behavior.messagesByIntent"
             style="width: 100%"
           >
-            Messages by intent
+            {{ 'analytics.preferences.messagesByIntentLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users by intent"
+              [nbTooltip]="'analytics.preferences.messagesByIntentTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -151,10 +135,10 @@
             [(ngModel)]="preferences.graphs.behavior.messagesByDayOfWeek"
             style="width: 100%"
           >
-            Messages by day of week
+            {{ 'analytics.preferences.messagesByDayOfWeekLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the messages by days of the week"
+              [nbTooltip]="'analytics.preferences.messagesByDayOfWeekTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -162,10 +146,10 @@
             [(ngModel)]="preferences.graphs.behavior.messagesByHourOfDay"
             style="width: 100%"
           >
-            Messages by hour of day
+            {{ 'analytics.preferences.messagesByHourOfDayLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the messages of the users by hour of the day"
+              [nbTooltip]="'analytics.preferences.messagesByHourOfDayTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -173,10 +157,10 @@
             [(ngModel)]="preferences.graphs.behavior.messagesByActionType"
             style="width: 100%"
           >
-            Messages by action type
+            {{ 'analytics.preferences.messagesByActionTypeLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users by action type"
+              [nbTooltip]="'analytics.preferences.messagesByActionTypeTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -184,10 +168,10 @@
             [(ngModel)]="preferences.graphs.behavior.messagesByStoryCategory"
             style="width: 100%"
           >
-            Messages by story category
+            {{ 'analytics.preferences.messagesByStoryCategoryLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users by category"
+              [nbTooltip]="'analytics.preferences.messagesByStoryCategoryTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -195,10 +179,10 @@
             [(ngModel)]="preferences.graphs.behavior.messagesByStoryType"
             style="width: 100%"
           >
-            Messages by story type
+            {{ 'analytics.preferences.messagesByStoryTypeLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users by story type"
+              [nbTooltip]="'analytics.preferences.messagesByStoryTypeTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -206,10 +190,10 @@
             [(ngModel)]="preferences.graphs.behavior.messagesByLocale"
             style="width: 100%"
           >
-            Messages by locale
+            {{ 'analytics.preferences.messagesByLocaleLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Displays the number of messages of the users by locale"
+              [nbTooltip]="'analytics.preferences.messagesByLocaleTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
         </nb-card-body>
@@ -219,19 +203,20 @@
       status="info"
       style="margin-bottom: 0"
     >
-      <nb-card-header>Chart options</nb-card-header>
+      <nb-card-header>{{ 'analytics.preferences.chartOptionsTitle' | transloco }}</nb-card-header>
       <nb-card-body>
         <div>
-          <label style="font-weight: bold">Line Chart</label><br />
+          <label style="font-weight: bold">{{ 'analytics.preferences.lineChartLabel' | transloco }}</label
+          ><br />
           <nb-toggle
             status="success"
             [(ngModel)]="preferences.lineConfig.curvedLines"
             style="width: 50%"
           >
-            Curved Lines
+            {{ 'analytics.preferences.curvedLinesLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="The angles of the line will be smoothed instead of straight lines without curve."
+              [nbTooltip]="'analytics.preferences.curvedLinesTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -239,10 +224,10 @@
             [(ngModel)]="preferences.lineConfig.stacked"
             style="width: 50%"
           >
-            Stacked Area
+            {{ 'analytics.preferences.stackedAreaLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Stacks elements for all series at each domain value."
+              [nbTooltip]="'analytics.preferences.stackedAreaTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
           <nb-toggle
@@ -250,10 +235,10 @@
             [(ngModel)]="preferences.lineConfig.focusTarget"
             style="width: 50%"
           >
-            Data point focus
+            {{ 'analytics.preferences.dataPointFocusLabel' | transloco }}
             <nb-icon
               icon="info-circle"
-              nbTooltip="Focus on a single data point instead of grouping all data points along the major axis."
+              [nbTooltip]="'analytics.preferences.dataPointFocusTooltip' | transloco"
             ></nb-icon>
           </nb-toggle>
         </div>

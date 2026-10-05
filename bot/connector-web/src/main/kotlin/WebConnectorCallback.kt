@@ -36,6 +36,7 @@ private val mergeStreamResponse: Boolean =
 
 internal class WebConnectorCallback(
     applicationId: String,
+    errorListener: ((Throwable) -> Unit)?,
     val locale: Locale,
     private val context: RoutingContext?,
     private val actions: MutableList<Action> = CopyOnWriteArrayList(),
@@ -44,7 +45,7 @@ internal class WebConnectorCallback(
     private val eventId: String,
     private val messageProcessor: WebMessageProcessor,
     internal val streamedResponse: Boolean,
-) : ConnectorCallbackBase(applicationId, webConnectorType) {
+) : ConnectorCallbackBase(applicationId, webConnectorType, errorListener) {
     fun addAction(action: Action) {
         actions.add(action)
     }

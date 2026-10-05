@@ -127,6 +127,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
             }
 
             router.post(logoutPath).handler {
+                it.response().removeCookies(sessionCookieName)
                 it.userContext().clear()
                 it.success()
             }

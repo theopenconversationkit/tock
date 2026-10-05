@@ -19,9 +19,6 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Optional, Type, TypeVar
 
-import boto3
-from botocore.exceptions import ClientError
-
 from gen_ai_orchestrator.models.security.ai_provider_secret import (
     AIProviderSecret,
 )
@@ -44,7 +41,6 @@ class SecretManagerClient(ABC):
         """
 
         return parse_secret_data(self.get_secret(secret_name), Credentials)
-
 
     def get_ai_provider_secret(self, secret_name: str) -> Optional[AIProviderSecret]:
         """
@@ -83,5 +79,5 @@ def parse_secret_data(secret_data, obj_type: Type[T]) -> Optional[T]:
         secret_dict = json.loads(secret_data)
         return obj_type(**secret_dict)
     except Exception as e:
-        logger.error(f'Error parsing secret data: {str(e)}')
+        logger.error(f"Error parsing secret data: {str(e)}")
         return None

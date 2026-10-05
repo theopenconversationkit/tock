@@ -1,22 +1,6 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="d-flex flex-wrap">
   <h1 class="flex-grow-1">
-    Sentences logs
+    {{ 'lu.intents-logs.title' | transloco }}
     <span
       *ngIf="pagination.total"
       class="font-weight-normal"
@@ -29,7 +13,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Refresh sentences"
+      [nbTooltip]="'lu.intents-logs.refresh-sentences-tooltip' | transloco"
       (click)="loadData()"
       class="ml-2"
     >
@@ -40,7 +24,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Download a minimal csv dump of the logs"
+      [nbTooltip]="'lu.intents-logs.download-csv-dump-tooltip' | transloco"
       (click)="downloadDump()"
       *ngIf="pagination.total"
     >
@@ -72,7 +56,7 @@
               nbInput
               fullWidth
               fieldSize="medium"
-              placeholder="Search logs"
+              [placeholder]="'lu.intents-logs.search-logs-placeholder' | transloco"
               type="text"
               formControlName="searchString"
             />
@@ -80,7 +64,7 @@
               nbButton
               nbSuffix
               ghost
-              nbTooltip="Clear"
+              [nbTooltip]="'common.actions.clear' | transloco"
               type="button"
               (click)="resetSearch()"
               *ngIf="searchString.value?.trim().length"
@@ -92,13 +76,15 @@
           <nb-toggle
             formControlName="onlyCurrentLocale"
             class="mb-n2"
-            >Only current locale</nb-toggle
           >
+            {{ 'lu.intents-logs.only-current-locale' | transloco }}
+          </nb-toggle>
           <nb-toggle
             formControlName="displayTests"
             class="mb-n2"
-            >Display tests</nb-toggle
           >
+            {{ 'common.actions.display-tests' | transloco }}
+          </nb-toggle>
         </form>
       </nb-card-body>
     </nb-card>
@@ -115,7 +101,7 @@
 
     <tock-no-data-found
       *ngIf="!loading && !logs?.length"
-      title="No logs found"
+      [title]="'lu.intents-logs.no-logs-found' | transloco"
     ></tock-no-data-found>
 
     <div
@@ -130,7 +116,7 @@
           <h4 *ngIf="d.error">
             {{ d.textRequest() }}
             <nb-icon
-              nbTooltip="error"
+              [nbTooltip]="'lu.intents-logs.error-tooltip' | transloco"
               class="text-danger"
               icon="exclamation-triangle"
             ></nb-icon>
@@ -147,12 +133,12 @@
             {{ state.intentLabelByName(d.intent) }}
             <span
               *ngIf="d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()"
-              nbTooltip="intent probability"
+              [nbTooltip]="'lu.intents-logs.intent-probability-tooltip' | transloco"
             >
               <span class="intentProbability">({{ d.sentence.classification.intentProbability | percent: '1.0-2' }})</span>
             </span>
             {{ state.intentLabelByName(d.intent) ? '-' : '' }} {{ d.date | amTimeAgo }}
-            <span *ngIf="d.durationInMS !== 0">in {{ d.durationInMS }} ms</span>
+            <span *ngIf="d.durationInMS !== 0">{{ 'lu.intents-logs.in' | transloco }} {{ d.durationInMS }} ms</span>
           </div>
 
           <div class="d-flex">
@@ -160,7 +146,7 @@
               nbButton
               ghost
               (click)="displayFullLog(d)"
-              nbTooltip="View Full Log"
+              [nbTooltip]="'lu.intents-logs.view-full-log-tooltip' | transloco"
             >
               <nb-icon icon="eye"></nb-icon>
             </button>
@@ -168,7 +154,7 @@
             <button
               nbButton
               ghost
-              nbTooltip="Create a faq based on this sentence"
+              [nbTooltip]="'lu.intents-logs.create-faq-tooltip' | transloco"
               *ngIf="isRootSentence(d.sentence) && config.answerToSentenceUrl"
               (click)="redirectToFaqManagement(d.sentence)"
             >
@@ -178,8 +164,8 @@
             <button
               nbButton
               ghost
-              nbTooltip="Copy sentence"
               (click)="copySentence(d.sentence)"
+              [nbTooltip]="'lu.intents-logs.copy-sentence-tooltip' | transloco"
             >
               <nb-icon icon="copy"></nb-icon>
             </button>
@@ -187,8 +173,8 @@
             <button
               nbButton
               ghost
-              nbTooltip="Show dialog"
               (click)="showDetails(d.sentence)"
+              [nbTooltip]="'lu.intents-logs.show-dialog-tooltip' | transloco"
             >
               <nb-icon icon="chat-dots"></nb-icon>
             </button>

@@ -20,13 +20,11 @@ data class AzureOpenAILLMSetting<T>(
     override val apiKey: T,
     override val temperature: String,
     override val reasoningEffort: String? = null,
-    @Deprecated("use PromptTemplate#prompt")
-    override val prompt: String? = null,
     val apiBase: String,
     val deploymentName: String,
     val apiVersion: String,
     val model: String? = null,
-) : LLMSettingBase<T>(LLMProvider.AzureOpenAIService, apiKey, temperature, reasoningEffort, prompt) {
+) : LLMSettingBase<T>(LLMProvider.AzureOpenAIService, apiKey, temperature, reasoningEffort) {
     override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
         return this.copy(temperature = temperature)
     }

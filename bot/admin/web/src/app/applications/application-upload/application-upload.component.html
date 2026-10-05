@@ -1,30 +1,14 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card
   *ngIf="configuration"
   [nbSpinner]="uploading"
 >
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-    Upload a Dump
+    {{ 'applications.application-upload.uploadDumpTitle' | transloco }}
     <button
       nbButton
       ghost
       shape="round"
-      nbTooltip="Close"
+      [nbTooltip]="'applications.application-upload.closeTooltip' | transloco"
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>
@@ -42,39 +26,39 @@
             value="application"
             class="dump-type"
           >
-            Application Dump
+            {{ 'applications.application-upload.applicationDumpLabel' | transloco }}
           </nb-radio>
           <nb-radio
             value="sentences"
             class="dump-type"
           >
-            Sentences Dump
+            {{ 'applications.application-upload.sentencesDumpLabel' | transloco }}
           </nb-radio>
         </nb-radio-group>
       </p>
       <ul class="mention">
         <li *ngIf="state.hasRole(UserRole.technicalAdmin)">
-          The "Application Dump" format is an internal format, useful to copy application data across environments.
+          {{ 'applications.application-upload.applicationDumpDescription' | transloco }}
         </li>
-        <li>The "Sentences Dump" format is an agnostic format, used to share data with other systems.</li>
+        <li>{{ 'applications.application-upload.sentencesDumpDescription' | transloco }}</li>
       </ul>
 
       <p *ngIf="!applicationName">
-        <label>Target Application Name</label>
+        <label>{{ 'applications.application-upload.targetApplicationNameLabel' | transloco }}</label>
         <input
           nbInput
           fullWidth
           [(ngModel)]="configuration.newApplicationName"
-          placeholder="Target Application Name"
+          [placeholder]="'applications.application-upload.targetApplicationNamePlaceholder' | transloco"
         />
 
-        <span class="mention">(If empty, application name in dump will be used)</span>
+        <span class="mention">{{ 'applications.application-upload.emptyApplicationNameMention' | transloco }}</span>
       </p>
       <p>
         <label
           for="file"
           class="file-label"
-          >Please select a dump file:</label
+          >{{ 'applications.application-upload.selectDumpFileLabel' | transloco }}</label
         >
         <input
           nbInput
@@ -87,7 +71,7 @@
     </div>
     <div *ngIf="report">
       <div *ngIf="!report.success">
-        <h4>Error occurs during import</h4>
+        <h4>{{ 'applications.application-upload.errorTitle' | transloco }}</h4>
         <ul>
           <li *ngFor="let e of report.errorMessages">
             {{ e }}
@@ -95,15 +79,15 @@
         </ul>
       </div>
       <div *ngIf="report.success">
-        <h4 *ngIf="!report.modified">No new data found, so no data imported.</h4>
+        <h4 *ngIf="!report.modified">{{ 'applications.application-upload.noNewDataTitle' | transloco }}</h4>
         <div *ngIf="report.modified">
-          <h4>Successful Import Report:</h4>
+          <h4>{{ 'applications.application-upload.successfulImportTitle' | transloco }}</h4>
 
           <div
             class="font-weight-bold"
             *ngIf="report.applicationsImported.length"
           >
-            Applications imported :
+            {{ 'applications.application-upload.applicationsImportedTitle' | transloco }}
             <div *ngFor="let app of report.applicationsImported">
               {{ app }}
             </div>
@@ -114,7 +98,7 @@
             class="font-weight-bold"
             *ngIf="report.entitiesImported.length"
           >
-            Entities imported :
+            {{ 'applications.application-upload.entitiesImportedTitle' | transloco }}
             <div *ngFor="let entity of report.entitiesImported">
               {{ entity }}
             </div>
@@ -125,7 +109,7 @@
             class="font-weight-bold"
             *ngIf="report.intentsImported.length"
           >
-            Intents imported :
+            {{ 'applications.application-upload.intentsImportedTitle' | transloco }}
             <div *ngFor="let intent of report.intentsImported">
               {{ intent }}
             </div>
@@ -136,7 +120,7 @@
             class="font-weight-bold"
             *ngIf="report.sentencesImported"
           >
-            Number of sentences imported :
+            {{ 'applications.application-upload.sentencesImportedTitle' | transloco }}
             <div *ngIf="report.sentencesImported">
               {{ report.sentencesImported }}
             </div>
@@ -147,7 +131,7 @@
             class="font-weight-bold"
             *ngIf="report.faqsImported"
           >
-            Number of FAQs imported :
+            {{ 'applications.application-upload.faqsImportedTitle' | transloco }}
             <div *ngIf="report.faqsImported">
               {{ report.faqsImported }}
             </div>
@@ -155,7 +139,7 @@
           </div>
 
           <div *ngIf="report.errorMessages.length">
-            <h5>Errors:</h5>
+            <h5>{{ 'applications.application-upload.errorsTitle' | transloco }}</h5>
             <ul>
               <li *ngFor="let e of report.errorMessages">
                 {{ e }}
@@ -174,7 +158,7 @@
       (click)="cancel()"
       *ngIf="!report"
     >
-      Cancel
+      {{ 'applications.application-upload.cancelButton' | transloco }}
     </button>
     <button
       nbButton
@@ -184,7 +168,7 @@
       [disabled]="!uploader.getNotUploadedItems().length"
       style="margin: 10px"
     >
-      Upload
+      {{ 'applications.application-upload.uploadButton' | transloco }}
     </button>
     <button
       nbButton
@@ -193,7 +177,7 @@
       (click)="cancel()"
       *ngIf="report"
     >
-      Close
+      {{ 'applications.application-upload.closeButton' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>

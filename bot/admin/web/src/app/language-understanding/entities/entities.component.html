@@ -1,23 +1,7 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<h1>Entities</h1>
+<h1>{{ 'lu.entities.title' | transloco }}</h1>
 
 <nb-card>
-  <nb-card-header>Entity types</nb-card-header>
+  <nb-card-header>{{ 'lu.entities.entity-types' | transloco }}</nb-card-header>
   <nb-card-body>
     <div
       class="tag"
@@ -35,7 +19,7 @@
         nbButton
         size="tiny"
         shape="round"
-        nbTooltip="Edit entity"
+        [nbTooltip]="'lu.entities.edit-entity-tooltip' | transloco"
         class="ml-1"
       >
         <nb-icon icon="pencil"></nb-icon>
@@ -47,7 +31,7 @@
         size="tiny"
         shape="round"
         status="danger"
-        nbTooltip="delete entity type"
+        [nbTooltip]="'lu.entities.delete-entity-type-tooltip' | transloco"
         (click)="deleteEntityType(e)"
       >
         <nb-icon icon="trash"></nb-icon>
@@ -59,13 +43,13 @@
       *ngIf="!!selectedEntityType"
     >
       <nb-card-header class="d-flex justify-content-between">
-        Configuration for {{ selectedEntityType.name }}
+        {{ 'lu.entities.configuration-for' | transloco }} {{ selectedEntityType.name }}
         <button
           nbButton
           shape="round"
           ghost
           (click)="unSelectEntityType()"
-          nbTooltip="Unselect entity"
+          [nbTooltip]="'lu.entities.unselect-entity-tooltip' | transloco"
         >
           <nb-icon icon="x-lg"></nb-icon>
         </button>
@@ -75,38 +59,41 @@
         <nb-checkbox
           [checked]="selectedEntityType.obfuscated"
           (checkedChange)="selectedEntityType.obfuscated = !selectedEntityType.obfuscated; updateEntityType()"
-          nbTooltip="If selected all values are obfuscated in Tock Studio"
-          >Obfuscate value in Tock Studio</nb-checkbox
+          [nbTooltip]="'lu.entities.obfuscate-tooltip' | transloco"
         >
+          {{ 'lu.entities.obfuscate-label' | transloco }}
+        </nb-checkbox>
+
         <div
           class="mt-3"
           *ngIf="!!selectedDictionary"
         >
-          <b class="lead">Predefined values</b>
+          <b class="lead">{{ 'lu.entities.predefined-values' | transloco }}</b>
 
           <div class="mt-3">
             <div class="d-flex flex-wrap gap-1 align-items-center">
               <nb-checkbox
                 [checked]="selectedDictionary.onlyValues"
                 (checkedChange)="selectedDictionary.onlyValues = !selectedDictionary.onlyValues; updateDictionary()"
-                nbTooltip="If selected, no model is used: only exact values are recognized/evaluated"
-                >No Model</nb-checkbox
+                [nbTooltip]="'lu.entities.no-model-tooltip' | transloco"
               >
+                {{ 'lu.entities.no-model-label' | transloco }}
+              </nb-checkbox>
 
               <div
                 class="d-flex gap-1 align-items-center"
                 *ngIf="!selectedDictionary.onlyValues"
               >
-                <small>Model Limit</small>
+                <small>{{ 'lu.entities.model-limit-label' | transloco }}</small>
                 <input
                   nbInput
                   type="number"
-                  placeholder="Model Limit"
+                  [placeholder]="'lu.entities.model-limit-placeholder' | transloco"
                   [(ngModel)]="selectedDictionary.minDistance"
                   min="0"
                   max="1"
                   fieldSize="tiny"
-                  nbTooltip="Number between 0 and 1 - only probability above this value are evaluated"
+                  [nbTooltip]="'lu.entities.model-limit-tooltip' | transloco"
                   (change)="updateDictionary()"
                 />
               </div>
@@ -114,29 +101,30 @@
               <nb-checkbox
                 [checked]="selectedDictionary.textSearch"
                 (checkedChange)="selectedDictionary.textSearch = !selectedDictionary.textSearch; updateDictionary()"
-                nbTooltip="If selected, all the values that contains the searched text are returned"
-                >Full Text</nb-checkbox
+                [nbTooltip]="'lu.entities.full-text-tooltip' | transloco"
               >
+                {{ 'lu.entities.full-text-label' | transloco }}
+              </nb-checkbox>
 
               <div class="d-flex gap-1 align-items-center">
                 <button
                   nbButton
                   size="small"
                   (click)="downloadDictionary()"
-                  nbTooltip="Download Dictionary"
+                  [nbTooltip]="'lu.entities.download-dictionary-tooltip' | transloco"
                 >
                   <nb-icon icon="download"></nb-icon>
-                  Download Dictionary
+                  {{ 'lu.entities.download-dictionary' | transloco }}
                 </button>
                 <button
                   *ngIf="showUploadDictionaryButton"
                   nbButton
                   size="small"
                   (click)="showUploadDictionaryButton = false"
-                  nbTooltip="Upload Dictionary"
+                  [nbTooltip]="'lu.entities.upload-dictionary-tooltip' | transloco"
                 >
                   <nb-icon icon="upload"></nb-icon>
-                  Upload Dictionary
+                  {{ 'lu.entities.upload-dictionary' | transloco }}
                 </button>
                 <input
                   #file
@@ -155,9 +143,9 @@
             *ngIf="selectedDictionary.values.length !== 0"
           >
             <thead>
-              <th width="20%">Predefined Value</th>
-              <th width="50%">Allowed labels</th>
-              <th width="30%">Actions</th>
+              <th width="20%">{{ 'lu.entities.table.predefined-value' | transloco }}</th>
+              <th width="50%">{{ 'lu.entities.table.allowed-labels' | transloco }}</th>
+              <th width="30%">{{ 'lu.entities.table.actions' | transloco }}</th>
             </thead>
             <tbody>
               <tr *ngFor="let predefinedValue of selectedDictionary.values">
@@ -176,7 +164,6 @@
                     *ngFor="let label of predefinedValue.labels.get(state.currentLocale)"
                   >
                     {{ label }}
-
                     <button
                       nbButton
                       size="tiny"
@@ -185,7 +172,7 @@
                       ghost
                       (click)="deleteLabel(predefinedValue, label)"
                       class="ml-1"
-                      nbTooltip="Delete label"
+                      [nbTooltip]="'lu.entities.delete-label-tooltip' | transloco"
                     >
                       <nb-icon icon="x-circle"></nb-icon>
                     </button>
@@ -196,7 +183,7 @@
                     <input
                       nbInput
                       fieldSize="small"
-                      placeholder="Add label"
+                      [placeholder]="'lu.entities.add-label-placeholder' | transloco"
                       #addLabelInput
                       (keyup.enter)="createLabel(predefinedValue, addLabelInput.value)"
                     />
@@ -205,7 +192,7 @@
                       ghost
                       nbSuffix
                       size="small"
-                      nbTooltip="Add Label"
+                      [nbTooltip]="'lu.entities.add-label-tooltip' | transloco"
                       (click)="createLabel(predefinedValue, addLabelInput.value)"
                       [disabled]="!addLabelInput.value?.trim().length"
                     >
@@ -218,7 +205,7 @@
                     ghost
                     (click)="deletePredefinedValue(predefinedValue.value)"
                     status="danger"
-                    nbTooltip="Delete predefined value"
+                    [nbTooltip]="'lu.entities.delete-predefined-value-tooltip' | transloco"
                   >
                     <nb-icon icon="trash"></nb-icon>
                   </button>
@@ -228,18 +215,16 @@
           </table>
 
           <div class="d-flex gap-1 align-items-center w-100 mt-4">
-            <span class="text-nowrap">Add new predefined value</span>
-
+            <span class="text-nowrap">{{ 'lu.entities.add-new-predefined-value' | transloco }}</span>
             <nb-form-field class="w-100">
               <input
                 nbInput
                 fullWidth
-                placeholder="New predefined value"
+                [placeholder]="'lu.entities.new-predefined-value-placeholder' | transloco"
                 #predefValueAdd
                 (keyup.enter)="createPredefinedValue(predefValueAdd.value); predefValueAdd.value = ''"
                 fieldSize="small"
               />
-
               <button
                 nbButton
                 ghost
@@ -264,15 +249,14 @@
 <p></p>
 
 <nb-card class="entities">
-  <nb-card-header>Entity roles</nb-card-header>
+  <nb-card-header>{{ 'lu.entities.entity-roles' | transloco }}</nb-card-header>
   <nb-card-body>
     <div
       *ngIf="!(state.entities | async)?.length"
       class="text-muted font-italic"
     >
-      No entity role defined
+      {{ 'lu.entities.no-entity-role-defined' | transloco }}
     </div>
-
     <div
       class="mb-3"
       *ngFor="let e of state.entities | async"

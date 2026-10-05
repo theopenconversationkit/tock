@@ -31,6 +31,7 @@ const settings = {
   namespace: 'app',
   botId: 'new_assistant',
   enabled: true,
+  explainabilityEnabled: false,
   engine: 'azureOpenAi',
   embeddingEngine: 'text-embedding-ada-002',
   temperature: '0.15',

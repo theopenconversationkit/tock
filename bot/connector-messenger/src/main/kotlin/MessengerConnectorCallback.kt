@@ -25,5 +25,8 @@ import ai.tock.bot.engine.action.ActionNotificationType
 internal class MessengerConnectorCallback(
     applicationId: String,
     val notificationType: ActionNotificationType? = null,
-    val errorListener: (Throwable) -> Unit = {},
-) : ConnectorCallbackBase(applicationId, messengerConnectorType)
+    errorListener: (Throwable) -> Unit = {},
+) : ConnectorCallbackBase(applicationId, messengerConnectorType, errorListener) {
+    public override val errorListener: ((Throwable) -> Unit)?
+        get() = super.errorListener
+}

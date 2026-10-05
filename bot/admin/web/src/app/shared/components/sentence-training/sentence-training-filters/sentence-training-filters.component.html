@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card class="mb-0">
   <nb-card-body>
     <form [formGroup]="form">
@@ -27,10 +11,10 @@
             nbInput
             fullWidth
             fieldSize="medium"
-            placeholder="Search a sentence"
+            [placeholder]="'shared.sentence-training-filters.search-placeholder' | transloco"
             type="text"
             formControlName="search"
-            nbTooltip="Full text search. Regexp supported (PCRE format)"
+            [nbTooltip]="'shared.sentence-training-filters.search-tooltip' | transloco"
             spellcheck="false"
             autocomplete="off"
           />
@@ -39,7 +23,7 @@
             nbButton
             nbSuffix
             ghost
-            nbTooltip="Clear"
+            [nbTooltip]="'shared.sentence-training-filters.clear' | transloco"
             type="button"
             (click)="resetControl(getFormControl('search'))"
           >
@@ -55,7 +39,7 @@
             *ngIf="!advanced"
             (click)="swapAdvanced()"
             class="pointer"
-            nbTooltip="Display advanced search options"
+            [nbTooltip]="'shared.sentence-training-filters.display-advanced-search' | transloco"
             icon="chevron-down-outline"
             pack="nebular-essentials"
           ></nb-icon>
@@ -63,7 +47,7 @@
             *ngIf="advanced"
             (click)="swapAdvanced()"
             class="pointer"
-            nbTooltip="Hide advanced search options"
+            [nbTooltip]="'shared.sentence-training-filters.hide-advanced-search' | transloco"
             icon="chevron-up-outline"
             pack="nebular-essentials"
           ></nb-icon>
@@ -78,7 +62,7 @@
       <form [formGroup]="form">
         <div class="row">
           <div class="col d-flex align-items-center">
-            <small class="text-muted text-nowrap mb-0 mr-2">Status :</small>
+            <small class="text-muted text-nowrap mb-0 mr-2">{{ 'shared.sentence-training-filters.status' | transloco }} :</small>
             <nb-radio-group
               class="d-flex"
               formControlName="status"
@@ -86,23 +70,23 @@
             >
               <nb-radio
                 class="text-nowrap"
-                value=""
-                >All</nb-radio
+                [value]=""
+                >{{ 'shared.sentence-training-filters.status-all' | transloco }}</nb-radio
               >
               <nb-radio
                 class="text-nowrap"
                 [value]="sentenceStatus.inbox"
-                >Inbox</nb-radio
+                >{{ 'shared.sentence-training-filters.status-inbox' | transloco }}</nb-radio
               >
               <nb-radio
                 class="text-nowrap"
                 [value]="sentenceStatus.validated"
-                >Validated</nb-radio
+                >{{ 'shared.sentence-training-filters.status-validated' | transloco }}</nb-radio
               >
               <nb-radio
                 class="text-nowrap"
                 [value]="sentenceStatus.model"
-                >Included in model</nb-radio
+                >{{ 'shared.sentence-training-filters.status-included-in-model' | transloco }}</nb-radio
               >
             </nb-radio-group>
           </div>
@@ -111,8 +95,9 @@
             <nb-checkbox
               class="text-nowrap"
               formControlName="onlyToReview"
-              >Sentences to review</nb-checkbox
             >
+              {{ 'shared.sentence-training-filters.sentences-to-review' | transloco }}
+            </nb-checkbox>
           </div>
         </div>
 
@@ -127,9 +112,9 @@
                 #intentInput
                 nbInput
                 fieldSize="small"
-                placeholder="Intent"
+                [placeholder]="'shared.sentence-training-filters.intent-placeholder' | transloco"
                 fullWidth
-                nbTooltip="Filter by intent"
+                [nbTooltip]="'shared.sentence-training-filters.intent-tooltip' | transloco"
                 spellcheck="false"
                 autocomplete="off"
                 [nbAutocomplete]="intentsAutocomplete"
@@ -142,7 +127,7 @@
                 nbButton
                 ghost
                 size="small"
-                nbTooltip="Clear"
+                [nbTooltip]="'shared.sentence-training-filters.clear' | transloco"
                 nbSuffix
                 *ngIf="getFormControl('intent').value"
                 (click)="resetControl(getFormControl('intent'), intentInput)"
@@ -150,7 +135,6 @@
                 <nb-icon icon="x-lg"></nb-icon>
               </button>
             </nb-form-field>
-
             <nb-autocomplete
               size="tiny"
               #intentsAutocomplete
@@ -168,7 +152,6 @@
                   {{ intent.label || intent.name }}
                 </nb-option>
               </nb-option-group>
-
               <nb-option
                 class="autocompleteSeparator mt-2 pt-2"
                 [value]="unknownIntent"
@@ -187,12 +170,12 @@
               <nb-select
                 *ngIf="entityTypes"
                 size="small"
-                placeholder="Entity type"
+                [placeholder]="'shared.sentence-training-filters.entity-type-placeholder' | transloco"
                 fullWidth
-                nbTooltip="Filter by entity type"
+                [nbTooltip]="'shared.sentence-training-filters.entity-type-tooltip' | transloco"
                 formControlName="entityType"
               >
-                <nb-option [value]="null">All</nb-option>
+                <nb-option [value]="null">{{ 'shared.sentence-training-filters.all' | transloco }}</nb-option>
                 <nb-option
                   *ngFor="let e of entityTypes"
                   [value]="e.name"
@@ -208,22 +191,23 @@
               *ngIf="entityRolesToIncludeList"
               multiple
               size="small"
-              placeholder="Entity roles to include"
+              [placeholder]="'shared.sentence-training-filters.entity-roles-to-include-placeholder' | transloco"
               fullWidth
-              nbTooltip="Filter by entity roles to include"
+              [nbTooltip]="'shared.sentence-training-filters.entity-roles-to-include-tooltip' | transloco"
               formControlName="entityRolesToInclude"
             >
               <nb-option
                 [disabled]="!getFormControl('entityRolesToInclude').value?.length"
                 [value]="null"
-                ><span class="d-flex align-items-center">
+              >
+                <span class="d-flex align-items-center">
                   <nb-icon
                     icon="x"
                     class="mr-1"
                   ></nb-icon>
-                  Clear selection</span
-                ></nb-option
-              >
+                  {{ 'shared.sentence-training-filters.clear-selection' | transloco }}
+                </span>
+              </nb-option>
               <nb-option
                 *ngFor="let r of entityRolesToIncludeList"
                 [value]="r"
@@ -238,22 +222,23 @@
               *ngIf="entityRolesToExcludeList"
               multiple
               size="small"
-              placeholder="Entity roles to exclude"
+              [placeholder]="'shared.sentence-training-filters.entity-roles-to-exclude-placeholder' | transloco"
               fullWidth
-              nbTooltip="Filter by entity roles to exclude"
+              [nbTooltip]="'shared.sentence-training-filters.entity-roles-to-exclude-tooltip' | transloco"
               formControlName="entityRolesToExclude"
             >
               <nb-option
                 [disabled]="!getFormControl('entityRolesToExclude').value?.length"
                 [value]="null"
-                ><span class="d-flex align-items-center">
+              >
+                <span class="d-flex align-items-center">
                   <nb-icon
                     icon="x"
                     class="mr-1"
                   ></nb-icon>
-                  Clear selection</span
-                ></nb-option
-              >
+                  {{ 'shared.sentence-training-filters.clear-selection' | transloco }}
+                </span>
+              </nb-option>
               <nb-option
                 *ngFor="let r of entityRolesToExcludeList"
                 [value]="r"
@@ -264,7 +249,7 @@
           </div>
 
           <div class="col-3 mb-2">
-            <nb-form-field nbTooltip="Filter sentences modified after the given date">
+            <nb-form-field [nbTooltip]="'shared.sentence-training-filters.modified-after-tooltip' | transloco">
               <nb-icon
                 nbPrefix
                 icon="calendar-plus"
@@ -273,7 +258,7 @@
                 nbInput
                 fieldSize="small"
                 fullWidth
-                placeholder="Modified after"
+                [placeholder]="'shared.sentence-training-filters.modified-after-placeholder' | transloco"
                 [nbDatepicker]="modifiedAfterPicker"
                 formControlName="modifiedAfter"
               />
@@ -281,7 +266,7 @@
                 nbButton
                 ghost
                 size="small"
-                nbTooltip="Clear"
+                [nbTooltip]="'shared.sentence-training-filters.clear' | transloco"
                 nbSuffix
                 *ngIf="getFormControl('modifiedAfter').value"
                 (click)="resetControl(getFormControl('modifiedAfter'))"
@@ -293,7 +278,7 @@
           </div>
 
           <div class="col-3 mb-2">
-            <nb-form-field nbTooltip="Filter sentences modified before the given date">
+            <nb-form-field [nbTooltip]="'shared.sentence-training-filters.modified-before-tooltip' | transloco">
               <nb-icon
                 nbPrefix
                 icon="calendar-minus"
@@ -302,7 +287,7 @@
                 nbInput
                 fieldSize="small"
                 fullWidth
-                placeholder="Modified before"
+                [placeholder]="'shared.sentence-training-filters.modified-before-placeholder' | transloco"
                 [nbDatepicker]="modifiedBeforePicker"
                 formControlName="modifiedBefore"
               />
@@ -310,7 +295,7 @@
                 nbButton
                 ghost
                 size="small"
-                nbTooltip="Clear"
+                [nbTooltip]="'shared.sentence-training-filters.clear' | transloco"
                 nbSuffix
                 *ngIf="getFormControl('modifiedBefore').value"
                 (click)="resetControl(getFormControl('modifiedBefore'))"
@@ -332,12 +317,12 @@
               ></nb-icon>
               <nb-select
                 size="small"
-                placeholder="Validated by"
+                [placeholder]="'shared.sentence-training-filters.validated-by-placeholder' | transloco"
                 fullWidth
                 formControlName="user"
-                nbTooltip="Filter sentences validated by the given user"
+                [nbTooltip]="'shared.sentence-training-filters.validated-by-tooltip' | transloco"
               >
-                <nb-option [value]="null">Anyone</nb-option>
+                <nb-option [value]="null">{{ 'shared.sentence-training-filters.anyone' | transloco }}</nb-option>
                 <nb-option
                   *ngFor="let u of users"
                   [value]="u"
@@ -359,12 +344,12 @@
               ></nb-icon>
               <nb-select
                 size="small"
-                placeholder="Not validated by"
+                [placeholder]="'shared.sentence-training-filters.not-validated-by-placeholder' | transloco"
                 fullWidth
                 formControlName="allButUser"
-                nbTooltip="Filter sentences not validated by the given user"
+                [nbTooltip]="'shared.sentence-training-filters.not-validated-by-tooltip' | transloco"
               >
-                <nb-option [value]="null">Nobody</nb-option>
+                <nb-option [value]="null">{{ 'shared.sentence-training-filters.nobody' | transloco }}</nb-option>
                 <nb-option
                   *ngFor="let u of users"
                   [value]="u"
@@ -386,12 +371,12 @@
               ></nb-icon>
               <nb-select
                 size="small"
-                placeholder="Configuration"
+                [placeholder]="'shared.sentence-training-filters.configuration-placeholder' | transloco"
                 fullWidth
                 formControlName="configuration"
-                nbTooltip="Filter sentences by configuration"
+                [nbTooltip]="'shared.sentence-training-filters.configuration-tooltip' | transloco"
               >
-                <nb-option [value]="null">All configurations</nb-option>
+                <nb-option [value]="null">{{ 'shared.sentence-training-filters.all-configurations' | transloco }}</nb-option>
                 <nb-option
                   *ngFor="let u of configurations"
                   [value]="u"
@@ -407,7 +392,9 @@
             style="min-width: 25em"
           >
             <div class="flex-fill d-flex align-items-center">
-              <small class="text-muted text-nowrap mb-0 mr-3">Detection probability : </small>
+              <small class="text-muted text-nowrap mb-0 mr-3"
+                >{{ 'shared.sentence-training-filters.detection-probability' | transloco }} :
+              </small>
               <div class="intent-proba-slider">
                 <ngx-slider
                   [options]="intentProbaSliderOptions"
@@ -424,7 +411,7 @@
           *ngIf="state.hasRole(userRoles.admin)"
           class="pointer font-weight-bold d-flex align-items-center"
           (click)="swapAdvancedTools()"
-          nbTooltip="Display intent and entity management tools"
+          [nbTooltip]="'shared.sentence-training-filters.advanced-tools-tooltip' | transloco"
         >
           <nb-icon
             *ngIf="!advancedTools"
@@ -436,12 +423,12 @@
             icon="chevron-up-outline"
             pack="nebular-essentials"
           ></nb-icon>
-          Advanced tools
+          {{ 'shared.sentence-training-filters.advanced-tools' | transloco }}
         </div>
 
         <div *ngIf="advancedTools">
           <div class="my-2 tools-columns">
-            Change the intent of selected sentences
+            {{ 'shared.sentence-training-filters.change-intent-title' | transloco }}
             <div class="flex-grow-1 d-flex gap-1 align-items-center justify-content-between">
               <nb-form-field class="flex-grow-1">
                 <nb-icon
@@ -451,9 +438,9 @@
                 <input
                   nbInput
                   fieldSize="small"
-                  placeholder="Select intent"
+                  [placeholder]="'shared.sentence-training-filters.select-intent-placeholder' | transloco"
                   fullWidth
-                  nbTooltip="Select the intent to assign to selected sentences"
+                  [nbTooltip]="'shared.sentence-training-filters.select-intent-tooltip' | transloco"
                   spellcheck="false"
                   autocomplete="off"
                   [(ngModel)]="changeIntent"
@@ -469,11 +456,11 @@
               nbButton
               size="small"
               status="warning"
-              nbTooltip="Apply intent change"
+              [nbTooltip]="'shared.sentence-training-filters.change-intent-button' | transloco"
               [disabled]="!isIntentSelected()"
               (click)="applyChangeIntent()"
             >
-              Change intent
+              {{ 'shared.sentence-training-filters.change-intent' | transloco }}
             </button>
           </div>
           <nb-autocomplete
@@ -492,31 +479,26 @@
                 {{ intent.label || intent.name }}
               </nb-option>
             </nb-option-group>
-
             <nb-option
               class="autocompleteSeparator mt-2 pt-2"
               [value]="unknownIntent"
             >
               {{ unknownIntent.label }}
             </nb-option>
-            <!-- <nb-option [value]="ragExcludedIntent">
-              {{ ragExcludedIntent.label }}
-            </nb-option> -->
           </nb-autocomplete>
 
           <div class="my-2 tools-columns">
-            Change the entity of selected sentences
+            {{ 'shared.sentence-training-filters.change-entity-title' | transloco }}
             <div class="flex-grow-1 d-flex gap-1 align-items-center justify-content-between">
               <nb-form-field class="w-50">
                 <nb-icon
                   nbPrefix
                   icon="paperclip"
                 ></nb-icon>
-
                 <nb-select
                   size="small"
-                  placeholder="Select old entity"
-                  nbTooltip="Select the entity to replace"
+                  [placeholder]="'shared.sentence-training-filters.select-old-entity-placeholder' | transloco"
+                  [nbTooltip]="'shared.sentence-training-filters.select-old-entity-tooltip' | transloco"
                   [(ngModel)]="swapEntitiesOrigin"
                 >
                   <nb-option
@@ -534,8 +516,8 @@
                 ></nb-icon>
                 <nb-select
                   size="small"
-                  placeholder="Select new entity"
-                  nbTooltip="Select the new entity to assign"
+                  [placeholder]="'shared.sentence-training-filters.select-new-entity-placeholder' | transloco"
+                  [nbTooltip]="'shared.sentence-training-filters.select-new-entity-tooltip' | transloco"
                   [(ngModel)]="swapEntitiesTarget"
                 >
                   <nb-option
@@ -551,46 +533,45 @@
               nbButton
               size="small"
               status="warning"
-              nbTooltip="Apply entity swap"
+              [nbTooltip]="'shared.sentence-training-filters.change-entity-button' | transloco"
               [disabled]="!swapEntitiesOrigin || !swapEntitiesTarget"
               (click)="applyChangeEntity()"
             >
-              Change entity
+              {{ 'shared.sentence-training-filters.change-entity' | transloco }}
             </button>
           </div>
 
           <div class="my-2 tools-columns">
-            Translate selected sentences
-
+            {{ 'shared.sentence-training-filters.translate-title' | transloco }}
             <nb-form-field>
               <nb-icon
                 nbPrefix
                 icon="globe2"
               ></nb-icon>
               <nb-select
-                placeholder="Target Language"
+                [placeholder]="'shared.sentence-training-filters.target-language-placeholder' | transloco"
                 fullWidth
                 size="small"
-                nbTooltip="Select the language in which to translate the sentences"
+                [nbTooltip]="'shared.sentence-training-filters.target-language-tooltip' | transloco"
                 [(ngModel)]="translateTargetLocale"
               >
                 <nb-option
                   *ngFor="let l of state.otherThanCurrentLocales()"
                   [value]="l"
-                  >{{ state.localeName(l) }}
+                >
+                  {{ state.localeName(l) }}
                 </nb-option>
               </nb-select>
             </nb-form-field>
-
             <button
               nbButton
               size="small"
               status="warning"
-              nbTooltip="Translate sentences"
+              [nbTooltip]="'shared.sentence-training-filters.translate-button' | transloco"
               [disabled]="!translateTargetLocale"
               (click)="translateSentences()"
             >
-              Translate
+              {{ 'shared.sentence-training-filters.translate' | transloco }}
             </button>
           </div>
         </div>

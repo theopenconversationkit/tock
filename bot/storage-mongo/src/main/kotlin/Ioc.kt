@@ -17,6 +17,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfigurationDAO
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
@@ -64,6 +65,7 @@ val botMongoModule =
                 )
             }
         bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
+        bind<BotBusinessRulesConfigurationDAO>() with provider { BotBusinessRulesConfigurationMongoDAO }
         bind<BotRAGConfigurationDAO>() with provider { BotRAGConfigurationMongoDAO }
         bind<BotObservabilityConfigurationDAO>() with provider { BotObservabilityConfigurationMongoDAO }
         bind<BotDocumentCompressorConfigurationDAO>() with provider { BotDocumentCompressorConfigurationMongoDAO }

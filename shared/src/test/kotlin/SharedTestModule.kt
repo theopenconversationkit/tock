@@ -47,6 +47,20 @@ import java.util.concurrent.atomic.AtomicInteger
 private val logger = KotlinLogging.logger {}
 
 /**
+ * Overrides flapdoodle's OS/platform detection with a known-supported Ubuntu release.
+ * This is a workaround for OS versions not yet supported by flapdoodle's embedded MongoDB
+ * (e.g. Ubuntu 26.04 before flapdoodle adds it to its UbuntuVersion enum).
+ * The system property "de.flapdoodle.os.override" is read by flapdoodle's Platform.detect()
+ * before any file-based OS detection, making the embedded MongoDB start reliably.
+ * See https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo/issues/571
+ */
+private fun applyFlapdoodleOsOverride() {
+    val arch = if (System.getProperty("os.arch", "").matches(Regex("aarch64"))) "ARM_64" else "X86_64"
+    System.setProperty("de.flapdoodle.os.override", "Linux|$arch|Ubuntu|Ubuntu_24_04")
+    logger.info { "Overriding flapdoodle OS detection: Linux|$arch|Ubuntu|Ubuntu_24_04 (current OS not yet supported)" }
+}
+
+/**
  * Mocked vertx.
  */
 val mockedVertx: Vertx by lazy { mockk<Vertx>(relaxed = true) }
@@ -82,8 +96,17 @@ val sharedTestModule =
                         TockKMongoConfiguration.configure()
                         KFlapdoodle.mongoClient
                     } catch (t: Throwable) {
-                        logger.trace("error during KMongo configuration", t)
-                        mockk<MongoClient>(relaxed = true)
+                        logger.trace("error during KMongo configuration, retrying with OS override", t)
+                        try {
+                            // Workaround for OS versions not yet supported by flapdoodle (e.g. Ubuntu 26.04):
+                            // override platform detection to a known-supported Ubuntu release so that
+                            // flapdoodle can still resolve and download a MongoDB binary package.
+                            applyFlapdoodleOsOverride()
+                            KFlapdoodle.mongoClient
+                        } catch (t2: Throwable) {
+                            logger.trace("error during KMongo configuration with OS override", t2)
+                            mockk<MongoClient>(relaxed = true)
+                        }
                     }
                 }
         } catch (t: Throwable) {
@@ -97,8 +120,14 @@ val sharedTestModule =
                         TockKMongoConfiguration.configure(true)
                         KFlapdoodleReactiveStreams.mongoClient
                     } catch (t: Throwable) {
-                        logger.trace("error during KMongo configuration", t)
-                        mockk<com.mongodb.reactivestreams.client.MongoClient>(relaxed = true)
+                        logger.trace("error during KMongo configuration, retrying with OS override", t)
+                        try {
+                            applyFlapdoodleOsOverride()
+                            KFlapdoodleReactiveStreams.mongoClient
+                        } catch (t2: Throwable) {
+                            logger.trace("error during KMongo configuration with OS override", t2)
+                            mockk<com.mongodb.reactivestreams.client.MongoClient>(relaxed = true)
+                        }
                     }
                 }
         } catch (t: Throwable) {

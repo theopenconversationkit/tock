@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <form [formGroup]="form">
   <nb-card
     class="mb-0"
@@ -21,13 +5,13 @@
   >
     <nb-card-header>
       <div class="d-flex justify-content-between align-items-start">
-        <h4>FAQ Parameters</h4>
+        <h4>{{ 'faq.faq-management-settings.title' | transloco }}</h4>
         <button
           type="button"
           nbButton
           ghost
           shape="round"
-          nbTooltip="Close"
+          [nbTooltip]="'faq.faq-management-settings.close_tooltip' | transloco"
           (click)="close()"
           data-testid="close-button"
         >
@@ -37,21 +21,23 @@
     </nb-card-header>
 
     <nb-card-body>
-      <p>Parameters are shared by all FAQ of this bot</p>
+      <p>{{ 'faq.faq-management-settings.description' | transloco }}</p>
 
       <div class="mb-2">
-        <nb-checkbox formControlName="satisfactionEnabled"> Ask for satisfaction after answering on FAQ question </nb-checkbox>
+        <nb-checkbox formControlName="satisfactionEnabled">{{
+          'faq.faq-management-settings.satisfaction_checkbox_label' | transloco
+        }}</nb-checkbox>
       </div>
 
       <tock-form-control
-        label="Select story"
+        [label]="'faq.faq-management-settings.story_label' | transloco"
         name="story"
         [controls]="satisfactionStoryId"
         [showError]="isSubmitted"
         [required]="satisfactionEnabled.value"
       >
         <nb-select
-          placeholder="Select story"
+          [placeholder]="'faq.faq-management-settings.story_placeholder' | transloco"
           formControlName="satisfactionStoryId"
           [fullWidth]="true"
           [optionsListClass]="'option-list--break-word'"
@@ -77,7 +63,7 @@
           (click)="close()"
           data-testid="cancel-button"
         >
-          Cancel
+          {{ 'faq.faq-management-settings.cancel_button' | transloco }}
         </button>
         <button
           type="button"
@@ -87,7 +73,7 @@
           [disabled]="!canSave"
           (click)="save()"
         >
-          Save
+          {{ 'faq.faq-management-settings.save_button' | transloco }}
         </button>
       </div>
     </nb-card-footer>

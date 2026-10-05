@@ -36,14 +36,19 @@ import io.vertx.core.http.HttpClientAgent
 import io.vertx.core.http.HttpClientBuilder
 import io.vertx.core.http.HttpClientOptions
 import io.vertx.core.http.HttpServer
+import io.vertx.core.http.HttpServerBuilder
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.http.PoolOptions
 import io.vertx.core.http.WebSocketClient
 import io.vertx.core.http.WebSocketClientOptions
+import io.vertx.core.net.ClientSSLOptions
 import io.vertx.core.net.NetClient
 import io.vertx.core.net.NetClientOptions
 import io.vertx.core.net.NetServer
 import io.vertx.core.net.NetServerOptions
+import io.vertx.core.net.ServerSSLOptions
+import io.vertx.core.net.TcpClientConfig
+import io.vertx.core.net.TcpServerConfig
 import io.vertx.core.shareddata.SharedData
 import io.vertx.core.spi.VerticleFactory
 import java.util.concurrent.Callable
@@ -136,9 +141,19 @@ class VertxMock : Vertx {
 
     override fun createNetServer(): NetServer = mockk()
 
+    override fun createNetServer(
+        tcpServerConfig: TcpServerConfig,
+        serverSSLOptions: ServerSSLOptions?,
+    ): NetServer = mockk()
+
     override fun createNetClient(options: NetClientOptions?): NetClient = mockk()
 
     override fun createNetClient(): NetClient = mockk()
+
+    override fun createNetClient(
+        tcpClientConfig: TcpClientConfig,
+        clientSSLOptions: ClientSSLOptions?,
+    ): NetClient = mockk()
 
     override fun setPeriodic(
         initialDelay: Long,
@@ -166,6 +181,8 @@ class VertxMock : Vertx {
     override fun createWebSocketClient(): WebSocketClient = mockk()
 
     override fun httpClientBuilder(): HttpClientBuilder = mockk()
+
+    override fun httpServerBuilder(): HttpServerBuilder = mockk()
 
     override fun timer(delay: Long): Timer = mockk()
 

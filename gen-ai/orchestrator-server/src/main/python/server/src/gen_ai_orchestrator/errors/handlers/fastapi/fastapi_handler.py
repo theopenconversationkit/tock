@@ -73,8 +73,8 @@ def create_error_info_not_found(
     return ErrorInfo(
         provider=provider,
         error='NotFoundError',
-        cause=f'Accepted values are : {accepted_values}',
-        request=f'[{http_request.method}] {http_request.url}',
+        cause=f"Accepted values are : {accepted_values}",
+        request=f"[{http_request.method}] {http_request.url}",
     )
 
 
@@ -98,7 +98,7 @@ def create_error_info_bad_request(
         provider=provider,
         error='BadRequestError',
         cause=cause,
-        request=f'[{http_request.method}] {http_request.url}',
+        request=f"[{http_request.method}] {http_request.url}",
     )
 
 

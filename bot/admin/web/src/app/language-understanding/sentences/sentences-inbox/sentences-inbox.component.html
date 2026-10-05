@@ -15,14 +15,14 @@
   -->
 
 <div class="d-flex flex-wrap">
-  <h1 class="flex-grow-1">Inbox sentences</h1>
+  <h1 class="flex-grow-1">{{ 'lu.sentences-inbox.title' | transloco }}</h1>
 
   <section class="d-flex flex-wrap align-items-center">
     <button
       nbButton
       ghost
       shape="round"
-      nbTooltip="Refresh sentences"
+      [nbTooltip]="'lu.sentences-inbox.refresh-tooltip' | transloco"
       (click)="refresh()"
       class="ml-2"
     >

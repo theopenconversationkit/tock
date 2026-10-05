@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { TestService } from '../test.service';
 import { StateService } from '../../core-nlp/state.service';
@@ -31,6 +15,7 @@ import { ChatUiComponent, SelectBotEvent } from '../../shared/components';
 import { NlpService } from '../../core-nlp/nlp.service';
 import { NlpStatsDisplayComponent } from './nlp-stats-display/nlp-stats-display.component';
 import { getDialogMessageUserAvatar } from '../../shared/utils';
+import { TranslocoService } from '@jsverse/transloco';
 
 export class SentenceFilter {
   constructor(
@@ -133,7 +118,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     private shared: BotSharedService,
     private toastrService: NbToastrService,
     private nbDialogService: NbDialogService,
-    private nlp: NlpService
+    private nlp: NlpService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit() {
@@ -196,7 +182,11 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   submit(): void {
     if (!this.currentConfigurationId) {
-      this.toastrService.show(`Please select a Bot first`, 'Error', { duration: 3000 });
+      this.toastrService.show(
+        this.transloco.translate('test.bot-dialog.selectBotFirstError'),
+        this.transloco.translate('test.bot-dialog.errorTitle'),
+        { duration: 3000 }
+      );
       return;
     }
     let m = this.userMessage;

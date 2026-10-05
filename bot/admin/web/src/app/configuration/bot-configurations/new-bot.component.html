@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card>
   <nb-card-body style="padding: 2rem 5.5rem">
     <nb-stepper
@@ -22,7 +6,7 @@
     >
       <nb-step
         [stepControl]="languageForm"
-        label="Choose your language"
+        [label]="'configuration.new-bot.chooseLanguageStepLabel' | transloco"
       >
         <form
           #languageForm="ngForm"
@@ -31,7 +15,7 @@
         >
           <div class="input-group group-margin-top">
             <nb-select
-              placeholder="Language"
+              [placeholder]="'configuration.new-bot.languagePlaceholder' | transloco"
               formControlName="firstCtrl"
               required
               class="list"
@@ -49,7 +33,7 @@
               nbStepperNext
               [status]="firstFormGroup.invalid ? 'basic' : 'primary'"
             >
-              next
+              {{ 'configuration.new-bot.nextButton' | transloco }}
             </button>
           </div>
         </form>
@@ -57,7 +41,7 @@
 
       <nb-step
         [stepControl]="channelForm"
-        label="Select a first Channel"
+        [label]="'configuration.new-bot.selectChannelStepLabel' | transloco"
       >
         <form
           #channelForm="ngForm"
@@ -66,7 +50,7 @@
           <div class="input-group group-margin-top">
             <nb-select
               required
-              placeholder="Channel"
+              [placeholder]="'configuration.new-bot.channelPlaceholder' | transloco"
               [formControl]="channel"
               class="list"
             >
@@ -102,7 +86,7 @@
               class="btn-margin"
               status="primary"
             >
-              prev
+              {{ 'configuration.new-bot.prevButton' | transloco }}
             </button>
             <button
               nbButton
@@ -110,7 +94,7 @@
               class="btn-margin"
               [status]="channel.invalid ? 'basic' : 'primary'"
             >
-              next
+              {{ 'configuration.new-bot.nextButton' | transloco }}
             </button>
           </div>
         </form>
@@ -118,7 +102,7 @@
 
       <nb-step
         [stepControl]="somethingForm"
-        label="Create your Assistant"
+        [label]="'configuration.new-bot.createAssistantStepLabel' | transloco"
       >
         <form
           #somethingForm="ngForm"
@@ -126,7 +110,7 @@
         >
           <div class="input-group group-margin-top">
             <p class="create">
-              After clicking on the "Create" button, you would have to enter a few first user phrases for your Assistant.
+              {{ 'configuration.new-bot.createAssistantDescription' | transloco }}
             </p>
           </div>
           <div class="submit-btn">
@@ -136,16 +120,15 @@
               class="btn-margin"
               (click)="stepper.reset()"
             >
-              Reset
+              {{ 'configuration.new-bot.resetButton' | transloco }}
             </button>
             <button
               nbButton
               status="primary"
               class="btn-margin"
               (click)="validate()"
-              color="primary"
             >
-              Create
+              {{ 'configuration.new-bot.createButton' | transloco }}
             </button>
           </div>
         </form>

@@ -18,12 +18,12 @@
   *ngIf="intents.length"
   class="table-list table-list-header"
 >
-  <div class="table-list-entry">Intent</div>
-  <div class="table-list-entry bordered text-center">Entities</div>
-  <div class="table-list-entry bordered text-center">Shared Intents</div>
-  <div class="table-list-entry bordered text-center">Mandatory States</div>
-  <div class="table-list-entry bordered text-center">Story</div>
-  <div class="table-list-entry text-center">Actions</div>
+  <div class="table-list-entry">{{ 'lu.intents-list.header.intent' | transloco }}</div>
+  <div class="table-list-entry bordered text-center">{{ 'lu.intents-list.header.entities' | transloco }}</div>
+  <div class="table-list-entry bordered text-center">{{ 'lu.intents-list.header.shared-intents' | transloco }}</div>
+  <div class="table-list-entry bordered text-center">{{ 'lu.intents-list.header.mandatory-states' | transloco }}</div>
+  <div class="table-list-entry bordered text-center">{{ 'lu.intents-list.header.story' | transloco }}</div>
+  <div class="table-list-entry text-center">{{ 'lu.intents-list.header.actions' | transloco }}</div>
 </div>
 <div
   class="table-list"
@@ -37,7 +37,7 @@
       <span
         class="ml-2 align-middle"
         *ngIf="state.intentExistsInOtherApplication(intent.name)"
-        nbTooltip="This intent is shared between at least one other application. All changes to the intent will also affect the other applications that use this intent."
+        nbTooltip="{{ 'lu.intents-list.tooltip.shared-intent-warning' | transloco }}"
       >
         <nb-icon icon="share"></nb-icon>
       </span>
@@ -65,7 +65,7 @@
         size="tiny"
         shape="round"
         (click)="removeEntity(intent, e)"
-        nbTooltip="Delete entity"
+        nbTooltip="{{ 'lu.intents-list.tooltip.delete-entity' | transloco }}"
         [style.color]="getContrastYIQ(e.entityColor)"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -92,7 +92,7 @@
           size="tiny"
           shape="round"
           (click)="removeSharedIntent(intent, intentId)"
-          nbTooltip="Remove shared intent"
+          nbTooltip="{{ 'lu.intents-list.tooltip.delete-shared-intent' | transloco }}"
         >
           <nb-icon icon="x-lg"></nb-icon>
         </button>
@@ -105,7 +105,7 @@
       ghost
       shape="round"
       size="small"
-      nbTooltip="Add shared intent"
+      nbTooltip="{{ 'lu.intents-list.tooltip.add-shared-intent' | transloco }}"
       (click)="displayAddSharedIntentDialog(intent)"
     >
       <nb-icon icon="plus-circle"></nb-icon>
@@ -131,7 +131,7 @@
           size="tiny"
           shape="round"
           (click)="removeState(intent, s)"
-          nbTooltip="Delete State"
+          nbTooltip="{{ 'lu.intents-list.tooltip.delete-state' | transloco }}"
         >
           <nb-icon icon="x-lg"></nb-icon>
         </button>
@@ -144,7 +144,7 @@
       ghost
       shape="round"
       size="small"
-      nbTooltip="Add state"
+      nbTooltip="{{ 'lu.intents-list.tooltip.add-state' | transloco }}"
       (click)="addState(intent)"
     >
       <nb-icon icon="plus-circle"></nb-icon>
@@ -157,7 +157,7 @@
       ghost
       shape="round"
       (click)="displayIntentStoryDetails(intent)"
-      nbTooltip="Show intent story details"
+      nbTooltip="{{ 'lu.intents-list.tooltip.show-story-details' | transloco }}"
     >
       <nb-icon icon="book"></nb-icon>
     </button>
@@ -173,7 +173,7 @@
         ghost
         shape="round"
         status="info"
-        nbTooltip="Edit the intent"
+        nbTooltip="{{ 'lu.intents-list.tooltip.edit-intent' | transloco }}"
         (click)="updateIntent(intent)"
       >
         <nb-icon icon="pencil"></nb-icon>
@@ -183,7 +183,7 @@
         nbButton
         ghost
         shape="round"
-        nbTooltip="Download a sentences dump"
+        nbTooltip="{{ 'lu.intents-list.tooltip.download-sentences-dump' | transloco }}"
         (click)="downloadSentencesDump(intent)"
       >
         <nb-icon icon="download"></nb-icon>
@@ -193,7 +193,7 @@
         ghost
         shape="round"
         status="danger"
-        nbTooltip="Delete the intent"
+        nbTooltip="{{ 'lu.intents-list.tooltip.delete-intent' | transloco }}"
         (click)="deleteIntent(intent)"
       >
         <nb-icon icon="trash"></nb-icon>

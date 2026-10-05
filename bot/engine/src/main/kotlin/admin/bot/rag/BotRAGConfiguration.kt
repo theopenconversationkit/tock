@@ -16,10 +16,10 @@
 
 package ai.tock.bot.admin.bot.rag
 
-import ai.tock.genai.orchestratorclient.requests.Formatter
 import ai.tock.genai.orchestratorclient.requests.PromptTemplate
 import ai.tock.genai.orchestratorcore.models.em.EMSetting
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
+import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchType
 import org.litote.kmongo.Id
 
 data class BotRAGConfiguration(
@@ -27,29 +27,16 @@ data class BotRAGConfiguration(
     val namespace: String,
     val botId: String,
     val enabled: Boolean,
-    val questionCondensingLlmSetting: LLMSetting? = null,
-    val questionCondensingPrompt: PromptTemplate? = null,
-    val questionAnsweringLlmSetting: LLMSetting? = null,
-    val questionAnsweringPrompt: PromptTemplate? = null,
-    @Deprecated("use BotRAGConfiguration#questionAnsweringLlmSetting")
-    val llmSetting: LLMSetting? = null,
+    val questionCondensingLlmSetting: LLMSetting,
+    val questionCondensingPrompt: PromptTemplate,
+    val questionAnsweringLlmSetting: LLMSetting,
+    val questionAnsweringPrompt: PromptTemplate,
     val emSetting: EMSetting,
     val indexSessionId: String? = null,
     val documentsRequired: Boolean = true,
     val debugEnabled: Boolean = false,
+    val explainabilityEnabled: Boolean = true,
     val maxDocumentsRetrieved: Int = 4,
     val maxMessagesFromHistory: Int = 5,
-) {
-    @Deprecated("use BotRAGConfiguration#questionAnsweringLlmSetting")
-    fun initQuestionAnsweringPrompt(): PromptTemplate {
-        // Temporary stopgap until the next version of Tock,
-        // which will remove the prompt at LLMSetting level and use the promptTemplate
-        return PromptTemplate(
-            formatter = Formatter.F_STRING.id,
-            template = getQuestionAnsweringLLMSetting().prompt!!,
-        )
-    }
-
-    @Deprecated("use BotRAGConfiguration#questionAnsweringLlmSetting")
-    fun getQuestionAnsweringLLMSetting(): LLMSetting = (questionAnsweringLlmSetting ?: llmSetting)!!
-}
+    val documentSearchType: DocumentSearchType = DocumentSearchType.HYBRID_SEARCH,
+)

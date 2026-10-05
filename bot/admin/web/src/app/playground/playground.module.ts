@@ -31,6 +31,7 @@ import {
   NbRadioModule,
   NbTooltipModule
 } from '@nebular/theme';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @NgModule({
   declarations: [PlaygroundComponent],
@@ -48,7 +49,13 @@ import {
     NbInputModule,
     NbFormFieldModule,
     NbContextMenuModule,
-    PlaygroundRoutingModule
+    PlaygroundRoutingModule,
+    TranslocoModule
+  ],
+  providers: [
+    provideTranslocoScope({
+      scope: 'playground'
+    })
   ]
 })
 export class PlaygroundModule {}

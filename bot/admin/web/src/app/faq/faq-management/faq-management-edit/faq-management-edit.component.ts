@@ -1,24 +1,8 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { NbDialogService, NbPopoverDirective, NbTabComponent, NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 import { Observable, Subject, forkJoin, of } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import DOMPurify from 'dompurify';
 import { sanitizeURLSync } from 'url-sanitizer';
 import { StateService } from '../../../core-nlp/state.service';
@@ -44,6 +28,7 @@ import { ExtractFormControlTyping, GenericObject } from '../../../shared/utils/t
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 import { Footnote } from '../../../shared/model/dialog-data';
 import { Router } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
 
 export enum FaqTabs {
   INFO = 'info',
@@ -87,7 +72,7 @@ interface FaqEditForm {
   templateUrl: './faq-management-edit.component.html',
   styleUrls: ['./faq-management-edit.component.scss']
 })
-export class FaqManagementEditComponent implements OnChanges {
+export class FaqManagementEditComponent implements OnChanges, OnInit {
   destroy$: Subject<unknown> = new Subject();
 
   faqTabs: typeof FaqTabs = FaqTabs;
@@ -133,6 +118,10 @@ export class FaqManagementEditComponent implements OnChanges {
   @ViewChild('utterancesListWrapper') utterancesListWrapper: ElementRef;
   @ViewChild(NbPopoverDirective) answerCombinationSelectorPopoverRef: NbPopoverDirective;
 
+  @ViewChild('infoTab') infoTab!: NbTabComponent;
+  @ViewChild('questionTab') questionTab!: NbTabComponent;
+  @ViewChild('answerTab') answerTab!: NbTabComponent;
+
   constructor(
     private nbDialogService: NbDialogService,
     private nlp: NlpService,
@@ -140,8 +129,21 @@ export class FaqManagementEditComponent implements OnChanges {
     public botSharedService: BotSharedService,
     private botService: BotService,
     private botConfiguration: BotConfigurationService,
-    private router: Router
+    private router: Router,
+    private transloco: TranslocoService
   ) {}
+
+  ngOnInit(): void {
+    this.transloco
+      .selectTranslateObject('faq-management-edit', {}, 'faq')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((translatedRanges) => {
+        this.answerExportFormatsRadios = [
+          { label: translatedRanges.plainTextLabel, value: MarkupFormats.PLAINTEXT },
+          { label: translatedRanges.markdownLabel, value: MarkupFormats.MARKDOWN }
+        ];
+      });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!this.connectorTypes.length || !this.supportedConnectors) {
@@ -237,7 +239,13 @@ export class FaqManagementEditComponent implements OnChanges {
   }
 
   setCurrentTab(tab: NbTabComponent): void {
-    this.currentTab = tab.tabTitle as FaqTabs;
+    if (tab === this.infoTab) {
+      this.currentTab = FaqTabs.INFO;
+    } else if (tab === this.questionTab) {
+      this.currentTab = FaqTabs.QUESTION;
+    } else if (tab === this.answerTab) {
+      this.currentTab = FaqTabs.ANSWER;
+    }
   }
 
   form = new FormGroup<FaqEditForm>({
@@ -878,20 +886,24 @@ export class FaqManagementEditComponent implements OnChanges {
   }
 
   close(): Observable<any> {
-    const action = 'yes';
+    const action = this.transloco.translate('common.actions.yes');
     if (this.form.dirty) {
       const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
-          title: `Cancel ${this.faq?.id ? 'edit' : 'create'} faq`,
-          subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
+          title: this.transloco.translate('faq.faq-management-edit.cancelEditTitle', {
+            action: this.faq?.id
+              ? this.transloco.translate('faq.faq-management-edit.cancelEditTitleActionEdit')
+              : this.transloco.translate('faq.faq-management-edit.cancelEditTitleActionCreate')
+          }),
+          subtitle: this.transloco.translate('faq.faq-management-edit.cancelEditSubtitle'),
           actions: [
-            { actionName: 'no', buttonStatus: 'basic', ghost: true },
-            { actionName: action, buttonStatus: 'danger' }
+            { actionName: this.transloco.translate('common.actions.no'), buttonStatus: 'basic', ghost: true },
+            { actionName: this.transloco.translate('common.actions.yes'), buttonStatus: 'danger' }
           ]
         }
       });
       dialogRef.onClose.subscribe((result) => {
-        if (result === action) {
+        if (result.toLowerCase() === action.toLowerCase()) {
           this.onClose.emit(true);
         }
       });
@@ -933,12 +945,12 @@ export class FaqManagementEditComponent implements OnChanges {
         let existsInOtherApp = this.state.intentExistsInOtherApplication(faqData.intentName);
 
         if (existsInOtherApp) {
-          const shareAction = 'Share the intent';
-          const createNewAction = 'Create a new intent';
+          const shareAction = this.transloco.translate('faq.faq-management-edit.shareIntentAction');
+          const createNewAction = this.transloco.translate('faq.faq-management-edit.createNewIntentAction');
           const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
             context: {
-              title: `This intent is already used in another application`,
-              subtitle: 'Do you want to share the intent between the two applications or create a new one ?',
+              title: this.transloco.translate('faq.faq-management-edit.intentAlreadyUsedTitle'),
+              subtitle: this.transloco.translate('faq.faq-management-edit.intentAlreadyUsedSubtitle'),
               actions: [{ actionName: shareAction }, { actionName: createNewAction }]
             }
           });

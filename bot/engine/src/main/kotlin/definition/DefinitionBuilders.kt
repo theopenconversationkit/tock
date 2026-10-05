@@ -16,15 +16,11 @@
 
 package ai.tock.bot.definition
 
-import ai.tock.bot.connector.NotifyBotStateModifier
 import ai.tock.bot.definition.BotDefinition.Companion.findStoryDefinition
 import ai.tock.bot.definition.BotDefinitionBase.Companion.defaultKeywordStory
 import ai.tock.bot.definition.BotDefinitionBase.Companion.defaultUnknownStory
 import ai.tock.bot.engine.BotBus
-import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.action.ActionNotificationType
-import ai.tock.bot.engine.user.PlayerId
 import ai.tock.translator.UserInterfaceType
 
 /**
@@ -542,43 +538,3 @@ inline fun <reified T> storyWithSteps(
         unsupportedUserInterface,
         handler,
     )
-
-/**
- * Sends a notification to a connector.
- * A [Bus] is created and the corresponding story is called.
- *
- * @param applicationId the configuration connector id
- * @param namespace the configuration namespace
- * @param botId the configuration botId
- * @param applicationId the configuration connector id
- * @param recipientId the recipient identifier
- * @param intent the notification intent
- * @param step the optional step target
- * @param parameters the optional parameters
- * @param stateModifier allow the notification to bypass current user state
- * @param notificationType the notification type if any
- * @param errorListener called when a message has not been delivered
- */
-fun notify(
-    applicationId: String,
-    namespace: String,
-    botId: String,
-    recipientId: PlayerId,
-    intent: IntentAware,
-    step: StoryStepDef? = null,
-    parameters: Parameters = Parameters.EMPTY,
-    stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
-    notificationType: ActionNotificationType? = null,
-    errorListener: (Throwable) -> Unit = {},
-) = BotRepository.notify(
-    applicationId = applicationId,
-    recipientId = recipientId,
-    intent = intent,
-    step = step,
-    parameters = parameters.toMap(),
-    stateModifier = stateModifier,
-    notificationType = notificationType,
-    namespace = namespace,
-    botId = botId,
-    errorListener = errorListener,
-)

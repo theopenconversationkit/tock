@@ -7,6 +7,11 @@ import { DialogService } from '../../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../../shared/components';
 import { DatasetCreateComponent } from '../../dataset-create/dataset-create.component';
 import { StateService } from '../../../../core-nlp/state.service';
+import { SampleCreateFromRunComponent } from '../../sample-create-from-run/sample-create-from-run.component';
+import { TestDialogService } from '../../../../shared/components/test-dialog/test-dialog.service';
+import { copyToClipboard } from '../../../../shared/utils';
+import { NbToastrService } from '@nebular/theme';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'tock-datasets-board-entry',
@@ -50,14 +55,20 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
   }
   private _dataset: Dataset;
 
-  constructor(private datasetsService: DatasetsService, private dialogService: DialogService, private stateService: StateService) {}
+  constructor(
+    private datasetsService: DatasetsService,
+    private dialogService: DialogService,
+    private stateService: StateService,
+    private toastrService: NbToastrService,
+    private testDialogService: TestDialogService,
+    private transloco: TranslocoService
+  ) {}
 
   getLatestRun(): DatasetRun | null {
     return this.datasetsService.getLatestRun(this.dataset);
   }
 
   // ── Action availability helpers ───────────────────────────────────────────
-
   get latestRunState(): DatasetRunState | null {
     return this.getLatestRun()?.state ?? null;
   }
@@ -119,6 +130,30 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
       });
   }
 
+  confirmCancelRun(run: DatasetRun | null): void {
+    if (!run) return;
+
+    const action = this.transloco.translate('quality.dataset-board-entry.cancel_dataset_run_dialog_confirm');
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: this.transloco.translate('quality.dataset-board-entry.cancel_dataset_run_dialog_title'),
+        subtitle: this.transloco.translate('quality.dataset-board-entry.cancel_dataset_run_dialog_message'),
+        modalStatus: 'warning',
+        actions: [
+          {
+            actionName: this.transloco.translate('common.actions.cancel'),
+            buttonStatus: 'basic',
+            ghost: true
+          },
+          { actionName: action, buttonStatus: 'warning' }
+        ]
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result.toLowerCase() === action.toLowerCase()) this.cancelRun(run);
+    });
+  }
+
   cancelRun(run: DatasetRun): void {
     this.datasetsService
       .cancelRun(this.dataset.id, run.id)
@@ -129,20 +164,20 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
   }
 
   confirmDeleteDataset(): void {
-    const action = 'permanently delete';
+    const action = this.transloco.translate('common.actions.permanently-delete');
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: 'Delete a dataset',
-        subtitle: `Are you sure you want to delete the "${this.dataset.name}" dataset and all its execution history?`,
+        title: this.transloco.translate('quality.dataset-board-entry.delete_dataset_dialog_title'),
+        subtitle: this.transloco.translate('quality.dataset-board-entry.delete_dataset_dialog_message', { datasetName: this.dataset.name }),
         modalStatus: 'danger',
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
           { actionName: action, buttonStatus: 'danger' }
         ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === action) this.deleteDataset();
+      if (result.toLowerCase() === action.toLowerCase()) this.deleteDataset();
     });
   }
 
@@ -158,6 +193,43 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
   editDataset(): void {
     this.dialogService.openDialog(DatasetCreateComponent, {
       context: { dataset: this.dataset }
+    });
+  }
+
+  confirmDeleteRun(run: DatasetRun): void {
+    const action = this.transloco.translate('common.actions.permanently-delete');
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: this.transloco.translate('quality.dataset-board-entry.delete_dataset_run_dialog_title'),
+        subtitle: this.transloco.translate('quality.dataset-board-entry.delete_dataset_run_dialog_message', {
+          datasetName: this.dataset.name
+        }),
+        modalStatus: 'danger',
+        actions: [
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ]
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result.toLowerCase() === action.toLowerCase()) {
+        this.deleteRun(run);
+      }
+    });
+  }
+
+  deleteRun(run: DatasetRun): void {
+    this.datasetsService
+      .deleteRun(this.dataset.id, run.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        error: (err) => console.error('Failed to delete run', err)
+      });
+  }
+
+  createSample(run: DatasetRun) {
+    this.dialogService.openDialog(SampleCreateFromRunComponent, {
+      context: { dataset: this.dataset, run }
     });
   }
 
@@ -184,6 +256,25 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
   switchRunsDetail(): void {
     this.displayRunsDetail = !this.displayRunsDetail;
     if (this.displayRunsDetail) this.displayQuestionsDetail = false;
+  }
+
+  testSentence(question: string) {
+    this.testDialogService.testSentenceDialog({
+      sentenceText: question
+    });
+  }
+
+  copyString(str: string) {
+    copyToClipboard(str);
+    this.toastrService.success(
+      this.transloco.translate('common.messages.stringCopiedToClipboard'),
+      this.transloco.translate('common.messages.clipboard')
+    );
+  }
+
+  getPercentageNotFound(run: DatasetRun): number {
+    const { totalQuestions, ragAnswerStatusCounts } = run.stats;
+    return totalQuestions > 0 ? (ragAnswerStatusCounts.not_found_in_context / totalQuestions) * 100 : 0;
   }
 
   ngOnDestroy(): void {

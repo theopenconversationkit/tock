@@ -5,7 +5,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Close"
+      [nbTooltip]="'common.actions.close' | transloco"
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>

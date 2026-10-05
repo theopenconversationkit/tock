@@ -42,11 +42,11 @@ from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting im
 from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
     PGVectorStoreSetting,
 )
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
+    VectorStoreProvider,
+)
 from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
     VectorStoreSetting,
-)
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
 )
 from gen_ai_orchestrator.routers.requests.requests import (
     VectorStoreProviderSettingStatusRequest,

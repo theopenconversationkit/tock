@@ -11,6 +11,7 @@ import { MarkdownDiffService } from '../../services/markdown-diff.service';
 import { markedParserForDiff } from '../../../../shared/utils/markup.utils';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EventType } from '../../../../core/model/configuration';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'tock-dataset-detail-entry',
@@ -50,10 +51,19 @@ export class DatasetDetailEntryComponent implements OnChanges {
   currentFootnotesOrdered: SourceInfos[] = [];
   comparisonFootnotesOrdered: SourceInfos[] = [];
 
+  /**
+   * True when both runs are RAG answers and the question text that was actually
+   * sent to the engine differs between the two runs (i.e. the dataset question
+   * was edited between run A and run B).
+   * Null when the comparison is impossible (missing ragDebug data, non-RAG, …).
+   */
+  questionDiverges: boolean | null = null;
+
   @ViewChild('hideableContainer') hideableContainer!: ElementRef;
 
   private readonly diffService = inject(MarkdownDiffService);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly transloco = inject(TranslocoService);
 
   ngOnChanges(_changes: SimpleChanges): void {
     this.loading = true;
@@ -75,6 +85,7 @@ export class DatasetDetailEntryComponent implements OnChanges {
     this.comparisonFootnotesOrdered = comparisonOrdered;
 
     this.actionTypeTransition = this._computeActionTypeTransition();
+    this.questionDiverges = this._computeQuestionDiverges();
 
     this._generateAnswerDiff();
   }
@@ -114,13 +125,19 @@ export class DatasetDetailEntryComponent implements OnChanges {
 
   getSourceDiffTooltip(source: SourceInfos): string {
     const key = this._getSourceKey(source);
-    if (this.sourceDiff?.added.some((s) => this._getSourceKey(s) === key)) return 'This source was added in the latest run.';
-    if (this.sourceDiff?.modified.some((s) => this._getSourceKey(s) === key)) return 'This source was modified in the latest run.';
-    if (this.sourceDiff?.removed.some((s) => this._getSourceKey(s) === key)) return 'This source was removed in the latest run.';
-    return 'This source is unchanged.';
+    if (this.sourceDiff?.added.some((s) => this._getSourceKey(s) === key)) {
+      return this.transloco.translate('quality.dataset-detail-entry.source_added_tooltip');
+    }
+    if (this.sourceDiff?.modified.some((s) => this._getSourceKey(s) === key)) {
+      return this.transloco.translate('quality.dataset-detail-entry.source_modified_tooltip');
+    }
+    if (this.sourceDiff?.removed.some((s) => this._getSourceKey(s) === key)) {
+      return this.transloco.translate('quality.dataset-detail-entry.source_removed_tooltip');
+    }
+    return this.transloco.translate('quality.dataset-detail-entry.source_unchanged_tooltip');
   }
 
-  showSourceDetail(source): void {
+  showSourceDetail(source: SourceInfos): void {
     source._detail = !source._detail;
   }
 
@@ -128,12 +145,34 @@ export class DatasetDetailEntryComponent implements OnChanges {
 
   getActionTypeLabel(side: 'A' | 'B'): string {
     const action = side === 'A' ? this.currentAction : this.comparisonAction;
-    if (!action?.action) return '-';
-    if (action.action.metadata?.isGenAiRagAnswer) return 'RAG';
+    if (!action?.action) return this.transloco.translate('quality.dataset-detail-entry.dash_label');
+    if (action.action.metadata?.isGenAiRagAnswer) return this.transloco.translate('quality.dataset-detail-entry.rag_label');
     return this._eventTypeLabel(EventType[action.action.message.eventType as string]);
   }
 
   // ── Private ───────────────────────────────────────────────────────────────
+
+  /**
+   * Returns true when both runs are RAG answers and the question texts stored in
+   * ragDebug.user_question differ — meaning the dataset question was modified
+   * between the two runs, which may explain response divergences.
+   * Returns null when the comparison cannot be performed (non-RAG, missing data).
+   */
+  private _computeQuestionDiverges(): boolean | null {
+    const qA = this.currentAction?.action?.ragDebug?.user_question;
+    const qB = this.comparisonAction?.action?.ragDebug?.user_question;
+
+    if (
+      !this.currentAction?.action?.metadata?.isGenAiRagAnswer ||
+      !this.comparisonAction?.action?.metadata?.isGenAiRagAnswer ||
+      qA == null ||
+      qB == null
+    ) {
+      return null;
+    }
+
+    return qA.trim() !== qB.trim();
+  }
 
   private async _generateAnswerDiff(): Promise<void> {
     try {
@@ -241,12 +280,13 @@ export class DatasetDetailEntryComponent implements OnChanges {
 
     if (labelA === labelB || labelA === '-' || labelB === '-') return null;
 
-    return `${labelA} < ${labelB}`; // ex: "INTENT > RAG" ou "RAG > INTENT"
+    return `${labelA} < ${labelB}`;
   }
 
   private _computeDisplayState(action: DatasetRunAction | null): DatasetRunActionDisplayState | null {
     if (!action) return null;
     if (action.state === DatasetRunActionState.FAILED) return DatasetRunActionDisplayState.FAILED;
+
     if (action.state === DatasetRunActionState.COMPLETED && !action.action) return DatasetRunActionDisplayState.PURGED;
     return DatasetRunActionDisplayState.SUCCESS;
   }
@@ -313,15 +353,15 @@ export class DatasetDetailEntryComponent implements OnChanges {
     switch (eventType) {
       case EventType.sentence:
       case EventType.sentenceWithFootnotes:
-        return 'INTENT';
+        return this.transloco.translate('quality.dataset-detail-entry.intent_label');
       case EventType.attachment:
-        return 'ATTACHMENT';
+        return this.transloco.translate('quality.dataset-detail-entry.attachment_label');
       case EventType.choice:
-        return 'CHOICE';
+        return this.transloco.translate('quality.dataset-detail-entry.choice_label');
       case EventType.location:
-        return 'LOCATION';
+        return this.transloco.translate('quality.dataset-detail-entry.location_label');
       default:
-        return '-';
+        return this.transloco.translate('quality.dataset-detail-entry.dash_label');
     }
   }
 }

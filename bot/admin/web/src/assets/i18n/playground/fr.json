@@ -1,0 +1,22 @@
+{
+  "playground": {
+    "title": "Bac à sable Gen AI",
+    "importRagSettingsTooltip": "Importer le dump des paramètres Rag",
+    "noBotConfiguration": "Aucune configuration de bot détectée",
+    "llmSettingsTitle": "Paramètres du LLM",
+    "promptPlaceholder": "Saisissez votre prompt ici...",
+    "promptShortcutsTooltip": "Étendre/réduire la zone de saisie",
+    "sendQueryTooltip": "Envoyer la requête",
+    "clearHistoryTooltip": "Effacer l'historique",
+    "goBackInHistoryTooltip": "Revenir en arrière dans l'historique",
+    "moveForwardInHistoryTooltip": "Avancer dans l'historique",
+    "viewObservabilityDetailsTooltip": "Voir les détails d'observabilité",
+    "importModalTitle": "Importer le dump des paramètres Rag",
+    "importFileLabel": "Fichier de dump des paramètres Rag",
+    "cancelButton": "Annuler",
+    "importButton": "Importer",
+    "loadCurrentBotPrompt": "Charger le prompt actuel du bot",
+    "loadDefaultPrompt": "Charger le prompt par défaut",
+    "clearPrompt": "Effacer le prompt"
+  }
+}

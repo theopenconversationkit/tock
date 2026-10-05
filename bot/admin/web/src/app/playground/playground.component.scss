@@ -25,3 +25,15 @@
 #prompt-textarea {
   min-height: 10em;
 }
+
+.response-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  color: var(--text-hint-color);
+
+  nb-icon {
+    font-size: 0.75rem;
+  }
+}

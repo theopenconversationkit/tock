@@ -32,6 +32,8 @@ import io.vertx.core.Promise
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.kotlin.coroutines.CoroutineRouterSupport
+import io.vertx.kotlin.coroutines.coroutineRouter
 import mu.KLogger
 import mu.KotlinLogging
 import java.time.Instant
@@ -48,7 +50,7 @@ internal class BotVerticle(
 ) : WebVerticle() {
     inner class ServiceInstaller(
         val serviceId: String,
-        private val installer: (Router) -> Any?,
+        private val installer: CoroutineRouterSupport.(Router) -> Any?,
         private val routes: MutableList<Route> = CopyOnWriteArrayList(),
         @Volatile
         var installed: Boolean = false,
@@ -60,7 +62,9 @@ internal class BotVerticle(
                 try {
                     logger.debug("install $serviceId")
                     val registeredRoutes = router.routes
-                    installer.invoke(router)
+                    coroutineRouter {
+                        installer.invoke(this, router)
+                    }
                     routes.addAll(router.routes.subtract(registeredRoutes))
                 } catch (e: Exception) {
                     logger.error(e)
@@ -87,7 +91,7 @@ internal class BotVerticle(
 
     fun registerServices(
         serviceIdentifier: String,
-        installer: (Router) -> Any?,
+        installer: CoroutineRouterSupport.(Router) -> Any?,
     ): ServiceInstaller {
         return ServiceInstaller(serviceIdentifier, installer).also {
             if (!handlers.containsKey(serviceIdentifier)) {

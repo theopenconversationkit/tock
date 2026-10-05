@@ -52,6 +52,7 @@ import { SentenceGenerationSettingsComponent } from './sentence-generation-setti
 import { ObservabilitySettingsComponent } from './observability-settings/observability-settings.component';
 import { VectorDbSettingsComponent } from './vector-db-settings/vector-db-settings.component';
 import { CompressorSettingsComponent } from './compressor-settings/compressor-settings.component';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @Injectable()
 export class BotApplicationConfig implements ApplicationConfig {
@@ -100,13 +101,17 @@ export class BotApplicationConfig implements ApplicationConfig {
     NbRadioModule,
     NbCheckboxModule,
     NbAlertModule,
-    NbToggleModule
+    NbToggleModule,
+    TranslocoModule
   ],
   providers: [
     {
       provide: ApplicationConfig,
       useClass: BotApplicationConfig
-    }
+    },
+    provideTranslocoScope({
+      scope: 'configuration'
+    })
   ]
 })
 export class BotConfigurationModule {}

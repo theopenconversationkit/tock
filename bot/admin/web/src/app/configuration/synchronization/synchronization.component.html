@@ -1,28 +1,12 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<h1>Synchronize BOTS contents (configuration)</h1>
+<h1>{{ 'configuration.synchronization.title' | transloco }}</h1>
 
 <nb-card>
   <nb-card-body>
     <table>
       <thead>
         <tr>
-          <td colspan="2">FROM</td>
-          <td colspan="2">TO</td>
+          <td colspan="2">{{ 'configuration.synchronization.fromLabel' | transloco }}</td>
+          <td colspan="2">{{ 'configuration.synchronization.toLabel' | transloco }}</td>
         </tr>
       </thead>
       <tbody>
@@ -36,7 +20,7 @@
 
               <nb-select
                 class="sync-select"
-                placeholder="Source Namespace"
+                [placeholder]="'configuration.synchronization.sourceNamespacePlaceholder' | transloco"
                 [(selected)]="this.sourceNamespace"
                 (selectedChange)="selectSourceNamespace(this.sourceNamespace)"
               >
@@ -62,7 +46,7 @@
               ></nb-icon>
               <nb-select
                 class="sync-select"
-                placeholder="Target Namespace"
+                [placeholder]="'configuration.synchronization.targetNamespacePlaceholder' | transloco"
                 [(selected)]="this.targetNamespace"
                 (selectedChange)="selectTargetNamespace(this.targetNamespace)"
               >
@@ -84,7 +68,7 @@
               ></nb-icon>
               <nb-select
                 class="sync-select"
-                placeholder="Source Application"
+                [placeholder]="'configuration.synchronization.sourceApplicationPlaceholder' | transloco"
                 [(selected)]="this.sourceApplication"
               >
                 <nb-option
@@ -103,7 +87,7 @@
               ></nb-icon>
               <nb-select
                 class="sync-select"
-                placeholder="Target Application"
+                [placeholder]="'configuration.synchronization.targetApplicationPlaceholder' | transloco"
                 [(selected)]="this.targetApplication"
               >
                 <nb-option
@@ -120,8 +104,8 @@
     <nb-toggle
       status="primary"
       [(ngModel)]="this.shouldSynchronizeInboxMessages"
-      nbTooltip="Copy inbox messages"
-      >Copy inbox messages
+      [nbTooltip]="'configuration.synchronization.copyInboxMessagesTooltip' | transloco"
+      >{{ 'configuration.synchronization.copyInboxMessagesLabel' | transloco }}
     </nb-toggle>
     <div>
       <button
@@ -129,7 +113,7 @@
         status="primary"
         (click)="copyConfiguration()"
       >
-        Copy
+        {{ 'configuration.synchronization.copyButton' | transloco }}
       </button>
     </div>
   </nb-card-body>

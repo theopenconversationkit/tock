@@ -1,28 +1,12 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card>
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1 flex-wrap">
-    Create new {{ type }} feature
+    {{ 'bot.create-feature.title' | transloco: { type: type } }}
     <button
       type="button"
       nbButton
       ghost
       shape="round"
-      nbTooltip="Close"
+      [nbTooltip]="'common.actions.close' | transloco"
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>
@@ -34,7 +18,7 @@
       <div class="d-flex gap-1">
         <div class="w-50">
           <tock-form-control
-            label="Name"
+            [label]="'bot.create-feature.nameLabel' | transloco"
             name="name"
             [controls]="name"
             [showError]="isSubmitted"
@@ -46,13 +30,13 @@
               id="name"
               fullWidth
               type="text"
-              placeholder="Enter a name"
+              [placeholder]="'bot.create-feature.namePlaceholder' | transloco"
             />
           </tock-form-control>
         </div>
         <div class="w-50">
           <tock-form-control
-            label="Category"
+            [label]="'bot.create-feature.categoryLabel' | transloco"
             name="category"
             [controls]="category"
             [showError]="isSubmitted"
@@ -69,7 +53,7 @@
                 id="category"
                 fullWidth
                 type="text"
-                placeholder="Enter a category"
+                [placeholder]="'bot.create-feature.categoryPlaceholder' | transloco"
               />
             </nb-form-field>
           </tock-form-control>
@@ -79,7 +63,7 @@
       <div class="d-flex gap-1">
         <div class="w-50">
           <tock-form-control
-            label="Start date"
+            [label]="'bot.create-feature.startDateLabel' | transloco"
             name="startDate"
             [controls]="startDate"
             [showError]="isSubmitted"
@@ -96,7 +80,7 @@
                 fullWidth
                 type="text"
                 autocomplete="off"
-                placeholder="Enter a start date"
+                [placeholder]="'bot.create-feature.startDatePlaceholder' | transloco"
                 [nbDatepicker]="startDatePicker"
               />
             </nb-form-field>
@@ -109,7 +93,7 @@
         </div>
         <div class="w-50">
           <tock-form-control
-            label="End date"
+            [label]="'bot.create-feature.endDateLabel' | transloco"
             name="endDate"
             [controls]="endDate"
             [showError]="isSubmitted"
@@ -126,7 +110,7 @@
                 fullWidth
                 type="text"
                 autocomplete="off"
-                placeholder="Enter an end date"
+                [placeholder]="'bot.create-feature.endDatePlaceholder' | transloco"
                 [nbDatepicker]="endDatePicker"
               />
             </nb-form-field>
@@ -140,13 +124,13 @@
       </div>
 
       <tock-form-control
-        label="Configuration"
+        [label]="'bot.create-feature.configurationLabel' | transloco"
         name="configuration"
       >
         <tock-select-bot
           [(configurationId)]="botApplicationConfigurationId"
           [allowNoSelection]="true"
-          noConfigurationLabel="All Configurations"
+          [noConfigurationLabel]="'bot.create-feature.allConfigurationsLabel' | transloco"
           size="medium"
         ></tock-select-bot>
       </tock-form-control>
@@ -155,15 +139,15 @@
         <div class="w-50">
           <nb-toggle
             formControlName="enabled"
-            nbTooltip="Status"
+            [nbTooltip]="'bot.create-feature.statusTooltip' | transloco"
           >
-            <span *ngIf="enabled.value">Feature enabled</span>
-            <span *ngIf="!enabled.value">Feature disabled</span>
+            <span *ngIf="enabled.value">{{ 'bot.create-feature.featureEnabledLabel' | transloco }}</span>
+            <span *ngIf="!enabled.value">{{ 'bot.create-feature.featureDisabledLabel' | transloco }}</span>
           </nb-toggle>
         </div>
         <div class="w-50">
           <tock-form-control
-            label="Graduation"
+            [label]="'bot.create-feature.graduationLabel' | transloco"
             name="graduation"
             [controls]="graduation"
             [showError]="isSubmitted"
@@ -176,7 +160,7 @@
               type="number"
               min="0"
               max="100"
-              placeholder="% of activation"
+              [placeholder]="'bot.create-feature.graduationPlaceholder' | transloco"
             />
           </tock-form-control>
         </div>
@@ -193,7 +177,7 @@
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>
-      Cancel
+      {{ 'common.actions.cancel' | transloco }}
     </button>
     <button
       type="button"
@@ -203,7 +187,7 @@
       (click)="save()"
     >
       <nb-icon icon="plus"></nb-icon>
-      Create feature
+      {{ 'bot.create-feature.createFeatureButton' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>

@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div *ngIf="i18nLabel?.i18n.length">
   <nb-card>
     <nb-card-header>
@@ -21,8 +5,9 @@
         <div>
           <span
             class="label-title"
-            nbTooltip="ns: {{ i18nLabel.namespace }}, key: {{ i18nLabel._id }}"
-            >{{ !i18nLabel.defaultLocalizedLabel().label.length ? i18nLabel._id : i18nLabel.defaultLocalizedLabel().label }}
+            [nbTooltip]="'bot.i18n-label.tooltipNamespaceAndKey' | transloco: { namespace: i18nLabel.namespace, key: i18nLabel._id }"
+          >
+            {{ !i18nLabel.defaultLocalizedLabel().label.length ? i18nLabel._id : i18nLabel.defaultLocalizedLabel().label }}
           </span>
 
           <div class="font-size-small lineHeight-1 mt-1">
@@ -30,14 +15,16 @@
 
             <span
               *ngIf="i18nLabel.defaultLocalizedLabel().label !== i18nLabel.defaultLabel"
-              nbTooltip="Original Label"
+              [nbTooltip]="'bot.i18n-label.originalLabelTooltip' | transloco"
             >
               {{ i18nLabel.defaultLabel }}
             </span>
 
             <span class="text-muted">
-              <span *ngIf="i18nLabel.statCount">used {{ i18nLabel.statCount }} times, </span>
-              <span *ngIf="i18nLabel.lastUpdate">last used {{ i18nLabel.lastUpdate | amTimeAgo }}</span>
+              <span *ngIf="i18nLabel.statCount"> {{ 'bot.i18n-label.usedTimesLabel' | transloco: { count: i18nLabel.statCount } }}, </span>
+              <span *ngIf="i18nLabel.lastUpdate">
+                {{ 'bot.i18n-label.lastUsedLabel' | transloco: { timeAgo: (i18nLabel.lastUpdate | amTimeAgo) } }}
+              </span>
             </span>
           </div>
         </div>
@@ -47,7 +34,7 @@
           ghost
           shape="round"
           status="danger"
-          nbTooltip="Delete Label (including alternative, type, connector and localized configs)"
+          [nbTooltip]="'bot.i18n-label.deleteLabelTooltip' | transloco"
           [disabled]="!deleteLabelAllowed"
           (click)="deleteLabel()"
         >
@@ -78,12 +65,12 @@
                 <nb-icon
                   *ngIf="l.interfaceType === 0"
                   icon="chat-right-text-fill"
-                  nbTooltip="Answer in Text Channels"
+                  [nbTooltip]="'bot.i18n-label.textChannelTooltip' | transloco"
                 ></nb-icon>
                 <nb-icon
                   *ngIf="l.interfaceType === 1"
                   icon="telephone-fill"
-                  nbTooltip="Answer in Voice Channels"
+                  [nbTooltip]="'bot.i18n-label.voiceChannelTooltip' | transloco"
                 ></nb-icon>
               </div>
 
@@ -110,9 +97,11 @@
                 [nbTooltip]="
                   isSupportedLocale(l)
                     ? l.stats && l.stats.length !== 0
-                      ? 'used ' + l.mergedStats().count + ' times, last used ' + (l.mergedStats().lastUpdate | amTimeAgo)
-                      : 'No stats'
-                    : 'Delete-only since locale is not supported by current application'
+                      ? ('bot.i18n-label.usedTimesLabel' | transloco: { count: l.mergedStats().count }) +
+                        ', ' +
+                        ('bot.i18n-label.lastUsedLabel' | transloco: { timeAgo: (l.mergedStats().lastUpdate | amTimeAgo) })
+                      : ('bot.i18n-label.noStatsTooltip' | transloco)
+                    : ('bot.i18n-label.deleteOnlyTooltip' | transloco)
                 "
               ></textarea>
             </div>
@@ -123,7 +112,9 @@
                 nbButton
                 ghost
                 [nbTooltip]="
-                  isSupportedLocale(l) ? 'Add an alternative' : 'Delete-only since locale is not supported by current application'
+                  isSupportedLocale(l)
+                    ? ('bot.i18n-label.addAlternativeTooltip' | transloco)
+                    : ('bot.i18n-label.deleteOnlyTooltip' | transloco)
                 "
                 status="info"
                 (click)="addNewAlternative(l)"
@@ -136,7 +127,7 @@
               <button
                 (click)="removeLocalizedLabel(l)"
                 nbButton
-                nbTooltip="Delete Localized Label"
+                [nbTooltip]="'bot.i18n-label.deleteLocalizedLabelTooltip' | transloco"
                 status="danger"
                 ghost
               >
@@ -144,7 +135,6 @@
               </button>
 
               <!-- Validate label -->
-
               <nb-checkbox
                 class="ml-2"
                 [(ngModel)]="l.validated"
@@ -152,8 +142,8 @@
                 status="info"
                 [nbTooltip]="
                   isSupportedLocale(l)
-                    ? 'Validate label (for exports/imports)'
-                    : 'Delete-only since locale is not supported by current application'
+                    ? ('bot.i18n-label.validateLabelTooltip' | transloco)
+                    : ('bot.i18n-label.deleteOnlyTooltip' | transloco)
                 "
                 [disabled]="!isSupportedLocale(l)"
               ></nb-checkbox>
@@ -205,7 +195,7 @@
               <button
                 nbButton
                 ghost
-                nbTooltip="Remove alternative"
+                [nbTooltip]="'bot.i18n-label.removeAlternativeTooltip' | transloco"
                 status="danger"
                 (click)="removeAlternative(l, index)"
               >
@@ -230,7 +220,7 @@
                     nbButton
                     ghost
                     shape="round"
-                    nbTooltip="Add specific label for connector {{ connector.connectorType.id }}"
+                    [nbTooltip]="'bot.i18n-label.addSpecificLabelTooltip' | transloco: { connectorId: connector.connectorType.id }"
                     (click)="addLocalizedLabelForConnector(l, connector.connectorType.id)"
                   >
                     <img

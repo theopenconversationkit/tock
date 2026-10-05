@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card
   [ngClass]="{ selected: sentence._showDialog }"
   class="my-2"
@@ -39,22 +23,22 @@
             nbButton
             ghost
             shape="round"
-            nbTooltip="Copy sentence"
+            [nbTooltip]="'shared.sentence-training-entry.copy-sentence' | transloco"
             (click)="copySentence()"
           >
             <nb-icon icon="copy"></nb-icon>
-            <span class="btn-text">Copy</span>
+            <span class="btn-text">{{ 'shared.sentence-training-entry.copy' | transloco }}</span>
           </button>
 
           <button
             nbButton
             ghost
             shape="round"
-            nbTooltip="Test this sentence in a dialog"
+            [nbTooltip]="'shared.sentence-training-entry.test-sentence' | transloco"
             (click)="testDialogSentence()"
           >
             <nb-icon icon="terminal-plus"></nb-icon>
-            <span class="btn-text">Test</span>
+            <span class="btn-text">{{ 'shared.sentence-training-entry.test' | transloco }}</span>
           </button>
         </div>
       </div>
@@ -65,7 +49,7 @@
         *ngIf="sentence.forReview && sentence.reviewComment"
       >
         <nb-card-body class="text-muted review">
-          <strong class="d-block">Review comment :</strong>
+          <strong class="d-block">{{ 'shared.sentence-training-entry.review-comment' | transloco }} :</strong>
           {{ sentence.reviewComment }}
         </nb-card-body>
       </nb-card>
@@ -73,11 +57,11 @@
       <div class="font-size-small text-muted unselectable d-flex justify-content-end align-items-center mt-auto pr-3">
         <div>
           <time>{{ sentence.creationDate | date: 'd MMMM yyyy' }}</time>
-          <span class="text-uppercase mx-1" nbTooltip="Sentence status">
+          <span class="text-uppercase mx-1" [nbTooltip]="'shared.sentence-training-entry.sentence-status' | transloco">
             {{ sentence.statusDisplayed() }}
           </span>
-          <span nbTooltip="Sentence configuration">{{ sentence.configuration }}</span>
-          <span *ngIf="sentence.qualifier" nbTooltip="Qualifier">{{ sentence.qualifier }}</span>
+          <span [nbTooltip]="'shared.sentence-training-entry.sentence-configuration' | transloco">{{ sentence.configuration }}</span>
+          <span *ngIf="sentence.qualifier" [nbTooltip]="'shared.sentence-training-entry.qualifier' | transloco">{{ sentence.qualifier }}</span>
         </div>
       </div>
     </div>
@@ -87,7 +71,7 @@
 
       <div class="config-section d-flex flex-column gap-1">
         <div class="d-flex">
-          <nb-form-field class="mb-0 flex-grow-1" nbTooltip="Intent association">
+          <nb-form-field class="mb-0 flex-grow-1" [nbTooltip]="'shared.sentence-training-entry.intent-association' | transloco">
             <nb-icon nbPrefix icon="compass"></nb-icon>
             <input
               #sentenceIntentInput
@@ -108,7 +92,7 @@
               icon="book"
               *ngIf="isIntentStorySearchable()"
               (click)="displayIntentStoryDetails()"
-              nbTooltip="Show intent story details"
+              [nbTooltip]="'shared.sentence-training-entry.show-intent-story-details' | transloco"
               class="pointer mr-3"
             ></nb-icon>
           </nb-form-field>
@@ -122,9 +106,9 @@
           </nb-autocomplete>
         </div>
 
-        <nb-form-field nbTooltip="Set sentence language" class="w-100">
+        <nb-form-field [nbTooltip]="'shared.sentence-training-entry.set-sentence-language' | transloco" class="w-100">
           <nb-icon nbPrefix icon="globe2"></nb-icon>
-          <nb-select [(ngModel)]="sentence.language" placeholder="Sentence language" fullWidth>
+          <nb-select [(ngModel)]="sentence.language" [placeholder]="'shared.sentence-training-entry.sentence-language' | transloco" fullWidth>
             <nb-option *ngFor="let l of state.currentApplication.supportedLocales" [value]="l">
               {{ state.localeName(l) }}
             </nb-option>
@@ -135,7 +119,7 @@
       <div class="actions-grid">
         <button
           nbButton
-          nbTooltip="Validate"
+          [nbTooltip]="'shared.sentence-training-entry.validate' | transloco"
           status="success"
           [ngClass]="{ 'action-button-active': isActionButtonSuggested(Action.VALIDATE) || isActionButtonHighlighted(Action.VALIDATE) }"
           [ghost]="!isActionButtonHighlighted(Action.VALIDATE)"
@@ -149,7 +133,7 @@
 
         <button
           nbButton
-          nbTooltip="Ask for review"
+          [nbTooltip]="'shared.sentence-training-entry.ask-for-review' | transloco"
           status="info"
           [ghost]="!isActionButtonHighlighted('review')"
           shape="round"
@@ -162,7 +146,7 @@
         <button
           *ngIf="sentenceTrainingMode !== SentenceTrainingMode.UNKNOWN"
           nbButton
-          nbTooltip="Set as unknown"
+          [nbTooltip]="'shared.sentence-training-entry.set-as-unknown' | transloco"
           status="warning"
           [ngClass]="{ 'action-button-active': isActionButtonSuggested(Action.UNKNOWN) || isActionButtonHighlighted(Action.UNKNOWN) }"
           [ghost]="!isActionButtonHighlighted(Action.UNKNOWN)"
@@ -177,7 +161,7 @@
         <button
           *ngIf="sentenceTrainingMode !== SentenceTrainingMode.RAGEXCLUDED"
           nbButton
-          nbTooltip="Exclude from Rag handling"
+          [nbTooltip]="'shared.sentence-training-entry.exclude-from-rag' | transloco"
           status="warning"
           [ngClass]="{ 'action-button-active': isActionButtonSuggested(Action.RAGEXCLUDED) || isActionButtonHighlighted(Action.RAGEXCLUDED) }"
           [ghost]="!isActionButtonHighlighted(Action.RAGEXCLUDED)"
@@ -191,7 +175,7 @@
 
         <button
           nbButton
-          nbTooltip="Delete"
+          [nbTooltip]="'shared.sentence-training-entry.delete' | transloco"
           status="danger"
           ghost
           shape="round"
@@ -203,7 +187,7 @@
 
         <button
           nbButton
-          nbTooltip="Create new Intent"
+          [nbTooltip]="'shared.sentence-training-entry.create-new-intent' | transloco"
           ghost
           shape="round"
           size="large"
@@ -215,7 +199,7 @@
         <button
           *ngIf="state.hasRole(UserRole.botUser)"
           nbButton
-          nbTooltip="Create new FAQ based on this sentence"
+          [nbTooltip]="'shared.sentence-training-entry.create-faq' | transloco"
           ghost
           shape="round"
           size="large"
@@ -227,7 +211,7 @@
         <button
           *ngIf="!standAlone"
           nbButton
-          nbTooltip="Show dialog"
+          [nbTooltip]="'shared.sentence-training-entry.show-dialog' | transloco"
           ghost
           shape="round"
           size="large"

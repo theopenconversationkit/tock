@@ -44,6 +44,8 @@ private const val DEFAULT_DATASET_RUN_WORKER_POLL_INTERVAL_MS = 2000L
 private const val DEFAULT_DATASET_RUN_WORKER_MAX_RETRIES = 0
 private const val RAG_DEBUG_MESSAGE_TEXT = "RAG"
 private const val RAG_TECHNICAL_ERROR_STATUS = "technical_error"
+private const val MISSING_QUESTION_RESULT_ERROR =
+    "Dataset question result was missing before execution; the question was not sent to the bot."
 private val MIN_TIMER_DELAY: Duration = Duration.ofMillis(1)
 
 fun interface DatasetQuestionExecutor {
@@ -108,13 +110,34 @@ class DatasetRunProcessor(
                 .associateBy { it.questionId }
                 .toMutableMap()
 
+        dataset.questions
+            .filterNot { questionResultsById.containsKey(it.id) }
+            .forEach { question ->
+                logger.error { "Missing dataset question result for run ${run._id} and question ${question.id}." }
+                questionResultsById[question.id] =
+                    datasetRunDAO.saveQuestionResult(
+                        DatasetRunQuestionResult(
+                            namespace = run.namespace,
+                            botId = run.botId,
+                            datasetId = run.datasetId,
+                            runId = run._id,
+                            questionId = question.id,
+                            state = DatasetRunQuestionResultState.FAILED,
+                            startedAt = now(),
+                            endedAt = now(),
+                            userIdModifier = "dataset_${run._id}_${question.id}",
+                            error = MISSING_QUESTION_RESULT_ERROR,
+                        ),
+                    )
+            }
+
         dataset.questions.forEach { question ->
             val refreshedRun = datasetRunDAO.getRunById(run._id) ?: return
             if (refreshedRun.state == DatasetRunState.CANCELLED) {
                 return
             }
 
-            val questionResult = questionResultsById[question.id] ?: return@forEach
+            val questionResult = questionResultsById.getValue(question.id)
             if (questionResult.state.isTerminal()) {
                 return@forEach
             }

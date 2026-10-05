@@ -1,0 +1,22 @@
+{
+  "playground": {
+    "title": "Gen AI playground",
+    "importRagSettingsTooltip": "Import Rag settings dump",
+    "noBotConfiguration": "No bot configuration detected",
+    "llmSettingsTitle": "LLM settings",
+    "promptPlaceholder": "Enter your prompt here...",
+    "promptShortcutsTooltip": "Expand/reduce the input area",
+    "sendQueryTooltip": "Send query",
+    "clearHistoryTooltip": "Clear history",
+    "goBackInHistoryTooltip": "Go back in query history",
+    "moveForwardInHistoryTooltip": "Move forward in query history",
+    "viewObservabilityDetailsTooltip": "View observability details",
+    "importModalTitle": "Import Rag settings dump",
+    "importFileLabel": "Rag settings dump file",
+    "cancelButton": "Cancel",
+    "importButton": "Import",
+    "loadCurrentBotPrompt": "Load current bot prompt",
+    "loadDefaultPrompt": "Load default prompt",
+    "clearPrompt": "Clear prompt"
+  }
+}

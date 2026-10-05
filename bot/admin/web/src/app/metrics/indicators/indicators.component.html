@@ -1,21 +1,5 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="d-flex flex-wrap">
-  <h1 class="flex-grow-1">Indicators</h1>
+  <h1 class="flex-grow-1">{{ 'metrics.indicators.title' | transloco }}</h1>
 
   <section>
     <button
@@ -25,7 +9,7 @@
       *ngIf="configurations?.length"
     >
       <nb-icon icon="plus-lg"></nb-icon>
-      NEW INDICATOR
+      {{ 'metrics.indicators.new_indicator_button' | transloco }}
     </button>
   </section>
 </div>
@@ -36,7 +20,7 @@
 >
   <tock-no-data-found
     *ngIf="configurations?.length === 0"
-    title="No bot configuration detected"
+    [title]="'metrics.indicators.no_bot_configuration_detected' | transloco"
   ></tock-no-data-found>
 
   <div
@@ -55,8 +39,8 @@
 
     <tock-no-data-found
       *ngIf="!filteredIndicators?.length && !loading.list"
-      title="No Indicator found"
-      message="You may create a new one using above button &#34;NEW INDICATOR&#34;."
+      [title]="'metrics.indicators.no_indicator_found' | transloco"
+      [message]="'metrics.indicators.no_indicator_found_message' | transloco"
     ></tock-no-data-found>
 
     <nb-card
@@ -97,7 +81,7 @@
                 ghost
                 shape="round"
                 status="info"
-                nbTooltip="Edit"
+                [nbTooltip]="'metrics.indicators.edit_tooltip' | transloco"
                 class="mb-2"
                 (click)="addOrEditIndicator(indicator)"
               >
@@ -108,7 +92,7 @@
                 ghost
                 shape="round"
                 status="danger"
-                nbTooltip="Delete"
+                [nbTooltip]="'metrics.indicators.delete_tooltip' | transloco"
                 class="mb-2"
                 (click)="confirmDeleteIndicator(indicator)"
               >

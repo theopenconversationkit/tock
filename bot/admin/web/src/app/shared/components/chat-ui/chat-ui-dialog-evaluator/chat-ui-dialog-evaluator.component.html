@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="dialog-summary shadow-sm py-1 pl-3 pr-1 d-flex align-items-center justify-content-between">
   <div class="d-flex gap-1 text-muted font-size-small">
     <div
@@ -29,7 +13,7 @@
 
     <div
       class="d-flex align-items-center"
-      nbTooltip="Number of user inputs"
+      [nbTooltip]="'shared.chat-ui-dialog-evaluator.user_inputs_tooltip' | transloco"
     >
       <nb-icon
         icon="person"
@@ -39,7 +23,7 @@
     </div>
     <div
       class="d-flex align-items-center"
-      nbTooltip="Number of bot responses"
+      [nbTooltip]="'shared.chat-ui-dialog-evaluator.bot_responses_tooltip' | transloco"
     >
       <nb-icon
         icon="robot"
@@ -49,7 +33,7 @@
     </div>
     <div
       class="d-flex align-items-center"
-      nbTooltip="Number of Rag answers"
+      [nbTooltip]="'shared.chat-ui-dialog-evaluator.rag_answers_tooltip' | transloco"
     >
       <nb-icon
         icon="lightbulb"
@@ -64,7 +48,7 @@
       nbButton
       ghost
       size="small"
-      nbTooltip="Open dialog"
+      [nbTooltip]="'shared.chat-ui-dialog-evaluator.open_dialog_tooltip' | transloco"
       href="analytics/dialogs/{{ state.currentApplication.namespace }}/{{ state.currentApplication._id }}/{{ dialog.id }}"
       target="_blank"
     >
@@ -72,12 +56,17 @@
     </a>
 
     <div
-      nbTooltip="{{ nbEvaluatedBotAnswers() }} evaluated bot responses out of {{ nbAssessableBotAnswers() }}. {{
-        !isVisible ? '\nClick to expand.' : ''
-      }}"
+      [nbTooltip]="
+        !isVisible
+          ? ('shared.chat-ui-dialog-evaluator.evaluation_summary_with_expand'
+            | transloco: { evaluated: nbEvaluatedBotAnswers(), total: nbAssessableBotAnswers() })
+          : ('shared.chat-ui-dialog-evaluator.evaluation_summary'
+            | transloco: { evaluated: nbEvaluatedBotAnswers(), total: nbAssessableBotAnswers() })
+      "
       class="m-n1 py-1 px-2 d-flex align-items-center pointer"
       [ngClass]="{
-        'bg-primary': isDialogEvaluated(),
+        'bg-warning': isDialogEvaluated() && nbNegativelyEvaluatedBotAnswers() > 0,
+        'bg-success': isDialogEvaluated() && nbNegativelyEvaluatedBotAnswers() === 0,
         'text-white': isDialogEvaluated(),
         'background-basic-color-3': !isDialogEvaluated()
       }"
@@ -111,7 +100,7 @@
           [date]="action.date"
           [reply]="action.isBot()"
           [replay]="true"
-          [sender]="getUserName(action)"
+          [sender]="getUserNameKey(action) | transloco"
           [avatar]="getUserAvatar(action)"
           [applicationId]="action.applicationId"
           [showDebug]="false"
@@ -153,7 +142,7 @@
               ghost
               shape="round"
               status="success"
-              nbTooltip="Evaluate positively"
+              [nbTooltip]="'shared.chat-ui-dialog-evaluator.evaluate_positively_tooltip' | transloco"
               (click)="evaluateActionOk(action)"
               class="mb-1"
             >
@@ -162,7 +151,9 @@
 
             <div
               *ngIf="action._evaluation?.status === evaluationDirection.UP"
-              nbTooltip="Response evaluated positively by «{{ action._evaluation.evaluator?.id }}»"
+              [nbTooltip]="
+                'shared.chat-ui-dialog-evaluator.evaluated_positively_by' | transloco: { evaluator: action._evaluation.evaluator?.id }
+              "
               nbTooltipStatus="success"
               class="bg-success text-white text-center p-2 rounded-circle"
             >
@@ -172,7 +163,7 @@
               ></nb-icon>
             </div>
 
-            <div nbTooltip="Evaluate negatively">
+            <div [nbTooltip]="'shared.chat-ui-dialog-evaluator.evaluate_negatively_tooltip' | transloco">
               <button
                 nbButton
                 size="small"
@@ -190,9 +181,10 @@
             </div>
 
             <div
-              nbTooltip="Response evaluated negatively by «{{ action._evaluation.evaluator?.id }}». Reason: «{{
-                getActionEvaluationReason(action)
-              }}» "
+              [nbTooltip]="
+                'shared.chat-ui-dialog-evaluator.evaluated_negatively_by_with_reason'
+                  | transloco: { evaluator: action._evaluation.evaluator?.id, reason: getActionEvaluationReason(action) }
+              "
               nbTooltipStatus="warning"
               *ngIf="action._evaluation?.status === evaluationDirection.DOWN"
               class="bg-warning text-white text-center p-2 rounded-circle"

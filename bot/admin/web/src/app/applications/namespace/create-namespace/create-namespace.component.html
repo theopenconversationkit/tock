@@ -1,27 +1,11 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card>
   <nb-card-header class="d-flex justify-content-between align-items-center gap-1">
-    Create a new namespace
+    {{ 'applications.create-namespace.createNewNamespaceTitle' | transloco }}
     <button
       nbButton
       ghost
       shape="round"
-      nbTooltip="Cancel"
+      [nbTooltip]="'applications.create-namespace.closeTooltip' | transloco"
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>
@@ -35,7 +19,7 @@
     >
       <div class="form-section">
         <tock-form-control
-          label="Namespace Label"
+          [label]="'applications.create-namespace.namespaceLabelLabel' | transloco"
           name="label"
           [controls]="label"
           [required]="true"
@@ -48,14 +32,14 @@
             fullWidth
             id="label"
             type="text"
-            placeholder="Enter namespace label"
+            [placeholder]="'applications.create-namespace.namespaceLabelPlaceholder' | transloco"
           />
         </tock-form-control>
       </div>
 
       <div class="form-section mt-3">
         <tock-form-control
-          label="Namespace Technical Name"
+          [label]="'applications.create-namespace.namespaceNameLabel' | transloco"
           name="name"
           [controls]="name"
           [required]="true"
@@ -67,11 +51,11 @@
             fullWidth
             id="name"
             type="text"
-            placeholder="Enter namespace name"
+            [placeholder]="'applications.create-namespace.namespaceNamePlaceholder' | transloco"
           />
         </tock-form-control>
 
-        <div class="text-muted font-size-small">Used internally in URLs and backend config. It cannot be changed after creation.</div>
+        <div class="text-muted font-size-small">{{ 'applications.create-namespace.namespaceNameHelp' | transloco }}</div>
       </div>
     </form>
   </nb-card-body>
@@ -83,7 +67,7 @@
       size="small"
       (click)="cancel()"
     >
-      Cancel
+      {{ 'applications.create-namespace.cancelButton' | transloco }}
     </button>
 
     <button
@@ -93,7 +77,7 @@
       (click)="save()"
       [disabled]="!canSave"
     >
-      Save
+      {{ 'applications.create-namespace.saveButton' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>

@@ -37,5 +37,5 @@ class OllamaLLMSetting(BaseLLMSetting):
     base_url: str = Field(
         description='Your ollama endpoint base URL',
         examples=['http://localhost:11434'],
-        default='http://localhost:11434'
+        default='http://localhost:11434',
     )

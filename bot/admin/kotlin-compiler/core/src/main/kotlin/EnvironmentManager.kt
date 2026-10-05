@@ -41,7 +41,6 @@ import com.intellij.psi.impl.compiled.ClsCustomNavigationPolicy
 import com.intellij.psi.meta.MetaDataContributor
 import com.intellij.util.ThrowableRunnable
 import mu.KotlinLogging
-import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
@@ -67,6 +66,7 @@ internal object EnvironmentManager {
         environment = createEnvironment(libraries)
     }
 
+    @OptIn(org.jetbrains.kotlin.K1Deprecation::class)
     private fun createEnvironment(libraries: List<Path>): KotlinCoreEnvironment {
         val arguments = K2JVMCompilerArguments()
         val configuration = CompilerConfiguration()
@@ -76,7 +76,7 @@ internal object EnvironmentManager {
         configuration.put(JVMConfigurationKeys.DISABLE_PARAM_ASSERTIONS, arguments.noParamAssertions)
         configuration.put(JVMConfigurationKeys.DISABLE_CALL_ASSERTIONS, arguments.noCallAssertions)
         configuration.put(
-            CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
+            CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY,
             object : MessageCollector {
                 private var error: Boolean = false
 

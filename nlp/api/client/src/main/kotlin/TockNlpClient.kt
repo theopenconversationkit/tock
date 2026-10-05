@@ -83,7 +83,9 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
                         .writeTimeout(timeout, TimeUnit.MILLISECONDS)
                         .addInterceptor(
                             // adapt log level to use specific log interceptors
-                            HttpLoggingInterceptor().setLevel(
+                            HttpLoggingInterceptor { msg ->
+                                logger.debug(msg)
+                            }.setLevel(
                                 HttpLoggingInterceptor.Level.valueOf(
                                     retrofitLogLevel(
                                         retrofitDefaultLogLevel,

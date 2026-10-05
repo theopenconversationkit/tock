@@ -16,7 +16,7 @@
 
 import { Component, Input } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
-import { Debug } from '../../../../model/dialog-data';
+import { ActionReport } from '../../../../model/dialog-data';
 import { DebugViewerDialogComponent } from '../../../debug-viewer-dialog/debug-viewer-dialog.component';
 import { getContrastYIQ, getInterpolatedColor, RagAnswerStatus, RagAnswerStatusLabels, snakeCaseToDisplayLabel } from '../../../../utils';
 
@@ -26,21 +26,23 @@ import { getContrastYIQ, getInterpolatedColor, RagAnswerStatus, RagAnswerStatusL
   styleUrls: ['./chat-ui-message-debug.component.scss']
 })
 export class ChatUiMessageDebugComponent {
-  @Input() message: Debug;
+  @Input() action: ActionReport;
+  @Input() condensed: boolean = false;
+
   constructor(private nbDialogService: NbDialogService) {}
 
   showDebug() {
     this.nbDialogService.open(DebugViewerDialogComponent, {
       context: {
-        debug: this.message.data
+        debug: this.action.ragDebug
       }
     });
   }
 
   getStatusClassName(): string {
-    const status = this.message.data.answer?.status;
+    const status = this.action.ragDebug?.answer?.status;
     if (!status) {
-      return '';
+      return 'status-error';
     }
 
     switch (status.toLowerCase()) {
@@ -58,15 +60,15 @@ export class ChatUiMessageDebugComponent {
   }
 
   getStatusLabel(): string {
-    const status = this.message.data.answer?.status;
+    const status = this.action.ragDebug?.answer?.status;
     if (status) {
       return RagAnswerStatusLabels[status.toLowerCase()] || snakeCaseToDisplayLabel(status);
     }
-    return '';
+    return 'Error';
   }
 
   getConfidenceBgColor(): { bg: string; fg: string } {
-    const score = this.message.data.answer?.confidence_score;
+    const score = this.action.ragDebug?.answer?.confidence_score;
     if (score != null) {
       const bg = getInterpolatedColor(score);
       const fg = getContrastYIQ(bg, '#3a3a3a');

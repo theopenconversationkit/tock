@@ -52,6 +52,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FaqService } from './services/faq.service';
 import { BotAnalyticsModule } from '../analytics/analytics.module';
 import { FaqTabsComponent } from './faq-tabs.component';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @NgModule({
   imports: [
@@ -82,7 +83,8 @@ import { FaqTabsComponent } from './faq-tabs.component';
     NbRouteTabsetModule,
     NbToggleModule,
     NbRadioModule,
-    NbPopoverModule
+    NbPopoverModule,
+    TranslocoModule
   ],
   declarations: [
     FaqManagementComponent,
@@ -93,6 +95,11 @@ import { FaqTabsComponent } from './faq-tabs.component';
     FaqTabsComponent
   ],
   exports: [],
-  providers: [FaqService]
+  providers: [
+    FaqService,
+    provideTranslocoScope({
+      scope: 'faq'
+    })
+  ]
 })
 export class FaqModule {}

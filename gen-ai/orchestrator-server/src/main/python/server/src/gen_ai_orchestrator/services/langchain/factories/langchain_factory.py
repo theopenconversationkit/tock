@@ -96,14 +96,17 @@ from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
 from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import (
     OpenSearchVectorStoreSetting,
 )
+from gen_ai_orchestrator.models.vector_stores.pgvector.database_pool_registry import (
+    db_pool_registry,
+)
 from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
     PGVectorStoreSetting,
 )
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
+    VectorStoreProvider,
+)
 from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
     VectorStoreSetting,
-)
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
 )
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback_handlers_factory import (
     LangChainCallbackHandlerFactory,
@@ -261,16 +264,20 @@ def get_vector_store_factory(
     def create_pgvector_factory(
         vs_setting: Optional[PGVectorStoreSetting],
     ) -> PGVectorFactory:
-        vector_store_credentials = fetch_default_vector_store_credentials()
+        resolved_setting = vs_setting or PGVectorStoreSetting(
+            host=application_settings.vector_store_host,
+            port=application_settings.vector_store_port,
+            username=vector_store_credentials.username,
+            password=RawSecretKey(secret=vector_store_credentials.password),
+            database=application_settings.vector_store_database,
+        )
+
+        # Résolution du pool : crée si nouveau setting, réutilise sinon
+        pool = db_pool_registry.get_or_create(resolved_setting)
+
         return PGVectorFactory(
-            setting=vs_setting
-            or PGVectorStoreSetting(
-                host=application_settings.vector_store_host,
-                port=application_settings.vector_store_port,
-                username=vector_store_credentials.username,
-                password=RawSecretKey(secret=vector_store_credentials.password),
-                database=application_settings.vector_store_database,
-            ),
+            setting=resolved_setting,
+            pool=pool,
             index_name=index_name,
             embedding_function=embedding_function,
         )
@@ -387,11 +394,9 @@ def get_compressor_factory(
     """
     logger.info('Get Document Compressor Factory for the given setting')
     if isinstance(setting, BloomzCompressorSetting):
-        logger.debug(
-            'Document Compressor Factory - BloomzCompressorFactory'
-        )
+        logger.debug('Document Compressor Factory - BloomzCompressorFactory')
         return BloomzCompressorFactory(
-            setting=setting, is_fault_tolerant = is_fault_tolerant
+            setting=setting, is_fault_tolerant=is_fault_tolerant
         )
     else:
         raise GenAIUnknownDocumentCompressorProviderSettingException()

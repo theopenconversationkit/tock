@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.dialog
 
+import ai.tock.bot.definition.DialogContextKey
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -43,8 +44,8 @@ class DialogStateTest {
     fun `setContextValue removes an existing value if value parameter is null`() {
         val state = DialogState()
         state.setContextValue("test", "a")
-        assertEquals(state.context["test"], "a")
+        assertEquals(state.context[DialogContextKey("test")], "a")
         state.setContextValue("test", null)
-        assertTrue(state.context.isEmpty())
+        assertTrue(state.context.asMap().isEmpty())
     }
 }

@@ -1,28 +1,12 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card [nbSpinner]="loading">
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-    Sentences generation
+    {{ 'shared.sentences-generation.title' | transloco }}
     <button
       type="button"
       nbButton
       shape="round"
       ghost
-      nbTooltip="Close"
+      [nbTooltip]="'shared.sentences-generation.close_tooltip' | transloco"
       (click)="dialogRef.close('cancel')"
     >
       <nb-icon icon="x-lg"></nb-icon>
@@ -31,11 +15,17 @@
 
   <nb-card-body>
     <section *ngIf="llmNotEnabled">
-      <div class="text-warning font-weight-bold">Sentences generation is not enabled.</div>
+      <div class="text-warning font-weight-bold">
+        {{ 'shared.sentences-generation.not_enabled' | transloco }}
+      </div>
 
-      <div *ngIf="!state.hasRole(UserRole.admin)">Contact an administrator to enable this feature</div>
+      <div *ngIf="!state.hasRole(UserRole.admin)">
+        {{ 'shared.sentences-generation.contact_admin' | transloco }}
+      </div>
 
-      <div *ngIf="state.hasRole(UserRole.admin)">You can configure this feature by following the link below</div>
+      <div *ngIf="state.hasRole(UserRole.admin)">
+        {{ 'shared.sentences-generation.configure_feature' | transloco }}
+      </div>
 
       <button
         *ngIf="state.hasRole(UserRole.admin)"
@@ -44,7 +34,7 @@
         class="mt-3"
         (click)="jumpToLlmSettings()"
       >
-        Sentences generation settings
+        {{ 'shared.sentences-generation.settings_button' | transloco }}
       </button>
     </section>
 
@@ -55,8 +45,9 @@
         closable
         (click)="informNoResult = false"
         class="pointer"
-        >The query returned no results. Try restarting the request or selecting other example sentences.</nb-alert
       >
+        {{ 'shared.sentences-generation.no_results_warning' | transloco }}
+      </nb-alert>
 
       <tock-sentences-generation-options
         *ngIf="initialized && !generatedSentences.length"
@@ -88,7 +79,7 @@
       [disabled]="!options.sentencesExample?.length"
       (click)="generate()"
     >
-      Generate
+      {{ 'shared.sentences-generation.generate_button' | transloco }}
     </button>
 
     <button
@@ -100,7 +91,7 @@
       [disabled]="!generatedSentencesSelection?.length"
       (click)="validateSelection()"
     >
-      Validate selection
+      {{ 'shared.sentences-generation.validate_selection_button' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>

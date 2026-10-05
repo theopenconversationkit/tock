@@ -45,6 +45,14 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                 "namespace1",
                 "botId1",
                 false,
+                questionCondensingLlmSetting =
+                    OpenAILLMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        model = "modelName1",
+                        temperature = "1F",
+                        baseUrl = "https://api.openai.com/v1",
+                    ),
+                questionCondensingPrompt = PromptTemplate(template = "prompt template"),
                 questionAnsweringLlmSetting =
                     OpenAILLMSetting(
                         apiKey = RawSecretKey("apiKey1"),
@@ -75,6 +83,14 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                 "namespace1",
                 "botId1",
                 false,
+                questionCondensingLlmSetting =
+                    OpenAILLMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        model = "modelName1",
+                        temperature = "1F",
+                        baseUrl = "https://api.openai.com/v1",
+                    ),
+                questionCondensingPrompt = PromptTemplate(template = "prompt template"),
                 questionAnsweringLlmSetting =
                     OpenAILLMSetting(
                         apiKey = RawSecretKey("apiKey1"),
@@ -97,6 +113,14 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                 "namespace1",
                 "botId2",
                 false,
+                questionCondensingLlmSetting =
+                    OpenAILLMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        model = "modelName1",
+                        temperature = "1F",
+                        baseUrl = "https://api.openai.com/v1",
+                    ),
+                questionCondensingPrompt = PromptTemplate(template = "prompt template"),
                 questionAnsweringLlmSetting =
                     OpenAILLMSetting(
                         apiKey = RawSecretKey("apiKey1"),
@@ -133,6 +157,14 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                 "namespace1",
                 "botId1",
                 false,
+                questionCondensingLlmSetting =
+                    OpenAILLMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        model = "modelName1",
+                        temperature = "1F",
+                        baseUrl = "https://api.openai.com/v1",
+                    ),
+                questionCondensingPrompt = PromptTemplate(template = "prompt template"),
                 questionAnsweringLlmSetting =
                     OpenAILLMSetting(
                         apiKey = RawSecretKey("apiKey1"),

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { NbDialogService } from '@nebular/theme';
 import { UserRole } from '../../../model/auth';

@@ -19,7 +19,6 @@ import logging
 from langchain_community.llms.ollama import OllamaEndpointNotFoundError
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
-    GenAIAuthenticationException,
     GenAIConnectionErrorException,
 )
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
@@ -54,7 +53,9 @@ def ollama_exception_handler(provider: str):
     return decorator
 
 
-def create_error_info_ollama(exc: OllamaEndpointNotFoundError, provider: str) -> ErrorInfo:
+def create_error_info_ollama(
+    exc: OllamaEndpointNotFoundError, provider: str
+) -> ErrorInfo:
     """
     Create ErrorInfo for an Ollama error
 
@@ -64,6 +65,4 @@ def create_error_info_ollama(exc: OllamaEndpointNotFoundError, provider: str) ->
     Returns:
         The ErrorInfo with the Ollama error parameters
     """
-    return ErrorInfo(
-        provider=provider, error=exc.__class__.__name__, cause=str(exc)
-    )
+    return ErrorInfo(provider=provider, error=exc.__class__.__name__, cause=str(exc))

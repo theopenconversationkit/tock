@@ -18,6 +18,8 @@ import { StoryDefinitionConfiguration } from '../../bot/model/story';
 import { GenericObject } from './typescript.utils';
 
 export function getStoryIcon(story: StoryDefinitionConfiguration): string {
+  if (!story) return;
+
   if (story.isBuiltIn()) {
     return 'cube';
   }

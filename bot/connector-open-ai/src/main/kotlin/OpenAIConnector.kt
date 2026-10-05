@@ -23,6 +23,7 @@ import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.media.MediaMessage
+import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
@@ -77,7 +78,7 @@ class OpenAIConnector internal constructor(
     }
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path) { router ->
+        controller.coRegisterServices(path) { router ->
             logger.debug("deploy Open API connector services for root path $path ")
 
             val corsHandler =
@@ -122,7 +123,7 @@ class OpenAIConnector internal constructor(
                     .end(writeJson(defaultModel))
             }
 
-            router.post("$path/chat/completions").handler { context ->
+            router.post("$path/chat/completions").coHandler { context ->
                 val body = context.body()?.asString()
                 if (body == null) {
                     logger.warn { "null body for chat completion" }
@@ -134,7 +135,7 @@ class OpenAIConnector internal constructor(
         }
     }
 
-    private fun handleRequest(
+    private suspend fun handleRequest(
         controller: ConnectorController,
         context: RoutingContext,
         body: String,
@@ -159,7 +160,7 @@ class OpenAIConnector internal constructor(
                 context.request().getHeader("Accept-Language")
                     ?.let { Locale.forLanguageTag(it) } ?: defaultLocale
             val event = request.toEvent(connectorId, chatId)
-            handleEvent(connectorId, locale, event, controller, context, emptyMap())
+            handleEvent(connectorId, locale, event, controller, context, emptyMap(), DialogContext.EMPTY)
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
             context.fail(t)
@@ -168,13 +169,14 @@ class OpenAIConnector internal constructor(
         }
     }
 
-    private fun handleEvent(
+    private suspend fun handleEvent(
         applicationId: String,
         locale: Locale,
         event: Event,
         controller: ConnectorController,
         context: RoutingContext?,
         headersMetadata: Map<String, String>,
+        transientDialogContext: DialogContext,
     ) {
         val callback =
             OpenAIConnectorCallback(
@@ -184,21 +186,23 @@ class OpenAIConnector internal constructor(
                 eventId = event.id.toString(),
                 streamedResponse = (event as? Action)?.metadata?.streamedResponse == true,
             )
-        controller.handle(
+        controller.handleUserEvent(
             event,
             ConnectorData(
                 callback = callback,
                 metadata = headersMetadata,
+                transientContext = transientDialogContext,
             ),
         )
     }
 
-    override fun notify(
+    override suspend fun notify(
         controller: ConnectorController,
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStepDef?,
         parameters: Map<String, String>,
+        transientContext: DialogContext,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit,
     ) {
@@ -220,6 +224,7 @@ class OpenAIConnector internal constructor(
             controller = controller,
             context = null,
             headersMetadata = emptyMap(),
+            transientDialogContext = transientContext,
         )
     }
 

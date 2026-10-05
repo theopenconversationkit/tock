@@ -1,22 +1,6 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <tock-sticky-menu [offset]="50">
   <div class="d-flex flex-wrap">
-    <h1 class="flex-grow-1">Documents compressor settings</h1>
+    <h1 class="flex-grow-1">{{ 'configuration.compressor-settings.title' | transloco }}</h1>
 
     <section class="grid-actions">
       <button
@@ -24,7 +8,7 @@
         nbButton
         ghost
         shape="round"
-        nbTooltip="Export compressor settings dump"
+        [nbTooltip]="'configuration.compressor-settings.exportTooltip' | transloco"
         (click)="exportSettings()"
       >
         <nb-icon icon="download"></nb-icon>
@@ -33,7 +17,7 @@
         nbButton
         ghost
         shape="round"
-        nbTooltip="Import compressor settings dump"
+        [nbTooltip]="'configuration.compressor-settings.importTooltip' | transloco"
         (click)="importSettings()"
       >
         <nb-icon icon="upload"></nb-icon>
@@ -44,21 +28,21 @@
         nbButton
         ghost
         status="primary"
-        nbTooltip="Cancel modifications"
+        [nbTooltip]="'configuration.compressor-settings.cancelTooltip' | transloco"
         (click)="cancel()"
       >
         <nb-icon icon="x-circle"></nb-icon>
-        CANCEL
+        {{ 'common.actions.cancel' | transloco }}
       </button>
       <button
         *ngIf="form.dirty"
         nbButton
         status="primary"
-        nbTooltip="Save settings"
+        [nbTooltip]="'configuration.compressor-settings.saveTooltip' | transloco"
         (click)="submit()"
       >
         <nb-icon icon="floppy"></nb-icon>
-        SAVE
+        {{ 'common.actions.save' | transloco }}
       </button>
     </section>
   </div>
@@ -66,7 +50,7 @@
 
 <tock-no-data-found
   *ngIf="configurations?.length === 0"
-  title="No bot configuration detected"
+  [title]="'configuration.compressor-settings.noBotConfiguration' | transloco"
 ></tock-no-data-found>
 
 <form
@@ -79,7 +63,7 @@
       class="pb-0"
     >
       <nb-card class="mt-2">
-        <nb-card-header>Compressor activation</nb-card-header>
+        <nb-card-header>{{ 'configuration.compressor-settings.compressorActivationTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <tock-form-control
             name="enabled"
@@ -91,15 +75,15 @@
               formControlName="enabled"
               class="mt-1"
             >
-              <span *ngIf="enabled.value">Compressor activated</span>
-              <span *ngIf="!enabled.value">Compressor deactivated</span>
+              <span *ngIf="enabled.value">{{ 'configuration.compressor-settings.compressorActivated' | transloco }}</span>
+              <span *ngIf="!enabled.value">{{ 'configuration.compressor-settings.compressorDeactivated' | transloco }}</span>
             </nb-toggle>
           </tock-form-control>
         </nb-card-body>
       </nb-card>
 
       <nb-card>
-        <nb-card-header>Compressor provider</nb-card-header>
+        <nb-card-header>{{ 'configuration.compressor-settings.compressorProviderTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <tock-form-control
             name="compressorProvider"
@@ -145,16 +129,16 @@
       </nb-card>
 
       <nb-card *ngIf="settingsBackup">
-        <nb-card-header>Settings deletion</nb-card-header>
+        <nb-card-header>{{ 'configuration.compressor-settings.settingsDeletionTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <button
             nbButton
             status="danger"
-            nbTooltip="Delete settings"
+            [nbTooltip]="'configuration.compressor-settings.deleteSettingsTooltip' | transloco"
             (click)="confirmSettingsDeletion()"
           >
             <nb-icon icon="trash"></nb-icon>
-            DELETE SETTINGS
+            {{ 'configuration.compressor-settings.deleteSettingsButton' | transloco }}
           </button>
         </nb-card-body>
       </nb-card>
@@ -165,12 +149,12 @@
 <ng-template #exportConfirmationModal>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Confirmation of sensitive data export
+      {{ 'configuration.compressor-settings.exportConfirmationTitle' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'common.actions.cancel' | transloco"
         (click)="closeExportConfirmationModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -178,7 +162,7 @@
     </nb-card-header>
 
     <nb-card-body>
-      <div class="mb-2">Include the following sensitive data:</div>
+      <div class="mb-2">{{ 'configuration.compressor-settings.includeSensitiveDataLabel' | transloco }}</div>
       <div *ngFor="let sensitiveParam of sensitiveParams">
         <nb-checkbox
           status="basic"
@@ -197,7 +181,7 @@
         size="small"
         (click)="closeExportConfirmationModal()"
       >
-        Cancel
+        {{ 'common.actions.cancel' | transloco }}
       </button>
       <button
         type="button"
@@ -206,7 +190,7 @@
         size="small"
         (click)="confirmExportSettings()"
       >
-        Export
+        {{ 'configuration.compressor-settings.exportButton' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>
@@ -215,12 +199,12 @@
 <ng-template #importModal>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Import compressor settings dump
+      {{ 'configuration.compressor-settings.importModalTitle' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'common.actions.cancel' | transloco"
         (click)="closeImportModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -233,7 +217,7 @@
         (submit)="submitImportSettings()"
       >
         <tock-form-control
-          label="Compressor settings dump file"
+          [label]="'configuration.compressor-settings.importFileLabel' | transloco"
           name="importFile"
           [required]="true"
           [controls]="fileSource"
@@ -258,7 +242,7 @@
         size="small"
         (click)="closeImportModal()"
       >
-        Cancel
+        {{ 'common.actions.cancel' | transloco }}
       </button>
       <button
         type="button"
@@ -267,7 +251,7 @@
         size="small"
         (click)="submitImportSettings()"
       >
-        Import
+        {{ 'configuration.compressor-settings.importButton' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>

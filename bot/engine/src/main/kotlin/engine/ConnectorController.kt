@@ -22,6 +22,7 @@ import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryStepDef
@@ -30,6 +31,7 @@ import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import io.vertx.ext.web.Router
+import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 
 /**
  * Controller to connect [Connector] and [BotDefinition].
@@ -53,7 +55,7 @@ interface ConnectorController {
     val botConfiguration: BotApplicationConfiguration
 
     /**
-     * Sends a notification to the connector.
+     * Sends a notification (_push messages_) through the connector.
      * A [BotBus] is created and the corresponding story is called.
      *
      * @param recipientId the recipient identifier
@@ -63,19 +65,20 @@ interface ConnectorController {
      * @param notificationType notification type if any
      * @param errorListener called when a message has not been delivered
      */
-    fun notify(
+    suspend fun notify(
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStepDef? = null,
         parameters: Map<String, String> = emptyMap(),
+        transientContext: DialogContext = DialogContext.EMPTY,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit = {},
     ) {
-        connector.notify(this, recipientId, intent, step, parameters, notificationType, errorListener)
+        connector.notify(this, recipientId, intent, step, parameters, transientContext = transientContext, notificationType = notificationType, errorListener = errorListener)
     }
 
     /**
-     * Handles an event sent by the connector. the primary goal of this controller.
+     * Handles an event sent by the connector (the primary goal of this controller)
      *
      * This method may return before the event is actually processed.
      *
@@ -84,8 +87,19 @@ interface ConnectorController {
      */
     fun handle(
         event: Event,
-        data: ConnectorData = ConnectorData(ConnectorCallbackBase(event.applicationId, connector.connectorType)),
+        data: ConnectorData = ConnectorData(ConnectorCallbackBase(event.connectorId, connector.connectorType)),
     )
+
+    /**
+     * Handles an event received by the connector (the primary goal of this controller)
+     *
+     * @param event the event to handle
+     * @param data the optional additional data from the connector
+     */
+    suspend fun handleUserEvent(
+        event: Event,
+        data: ConnectorData = ConnectorData(ConnectorCallbackBase(event.connectorId, connector.connectorType)),
+    ) = handle(event, data)
 
     /**
      * Return a probability of the support by the bot of this action
@@ -95,7 +109,7 @@ interface ConnectorController {
      */
     fun support(
         action: Action,
-        data: ConnectorData = ConnectorData(ConnectorCallbackBase(action.applicationId, connector.connectorType)),
+        data: ConnectorData = ConnectorData(ConnectorCallbackBase(action.connectorId, connector.connectorType)),
     ): Double
 
     /**
@@ -104,6 +118,14 @@ interface ConnectorController {
     fun registerServices(
         serviceIdentifier: String,
         installer: (Router) -> Unit,
+    )
+
+    /**
+     * Register services at startup.
+     */
+    fun coRegisterServices(
+        serviceIdentifier: String,
+        installer: CoroutineRouterSupport.(Router) -> Unit,
     )
 
     /**

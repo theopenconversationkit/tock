@@ -31,6 +31,8 @@ data class DatasetRunStatsDTO(
     val totalQuestions: Int,
     val completedQuestions: Int,
     val failedQuestions: Int,
+    val ragAnswerStatusCounts: Map<String, Int> = emptyMap(),
+    val nonRagAnswers: Int = 0,
 )
 
 data class DatasetRunDTO(

@@ -1,28 +1,12 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="d-flex flex-wrap">
-  <h1 class="flex-grow-1">Documents</h1>
+  <h1 class="flex-grow-1">{{ 'bot.documents-story.title' | transloco }}</h1>
 
   <section class="d-flex flex-wrap align-items-center">
     <button
       nbButton
       ghost
       shape="round"
-      nbTooltip="Refresh answers"
+      [nbTooltip]="'bot.documents-story.refreshTooltip' | transloco"
       (click)="refresh()"
       class="ml-2"
     >
@@ -33,8 +17,8 @@
 
 <tock-no-data-found
   *ngIf="!loading && !fileList?.length"
-  title="No document found"
-  message="You may create a new one using above button &#34;NEW Story&#34; and add a media message to the story answer."
+  [title]="'bot.documents-story.noDocumentFoundTitle' | transloco"
+  [message]="'bot.documents-story.noDocumentFoundMessage' | transloco"
 ></tock-no-data-found>
 
 <nb-card
@@ -55,7 +39,7 @@
           nbInput
           fullWidth
           fieldSize="medium"
-          placeholder="Search documents"
+          [placeholder]="'bot.documents-story.searchDocumentsPlaceholder' | transloco"
           type="text"
           formControlName="searchString"
         />
@@ -63,7 +47,7 @@
           nbButton
           nbSuffix
           ghost
-          nbTooltip="Clear"
+          [nbTooltip]="'common.actions.clear' | transloco"
           type="button"
           (click)="resetSearch()"
           *ngIf="searchString.value?.trim().length"
@@ -80,12 +64,12 @@
           ></nb-icon>
 
           <nb-select
-            placeholder="File types"
+            [placeholder]="'bot.documents-story.fileTypesPlaceholder' | transloco"
             fullWidth
             optionsListClass="option-list--break-word"
             formControlName="fileType"
           >
-            <nb-option [value]="null">All</nb-option>
+            <nb-option [value]="null">{{ 'bot.documents-story.allLabel' | transloco }}</nb-option>
             <nb-option
               *ngFor="let type of fileTypes"
               [value]="type.type"
@@ -103,12 +87,12 @@
             icon="file"
           ></nb-icon>
           <nb-select
-            placeholder="File extensions"
+            [placeholder]="'bot.documents-story.fileExtensionsPlaceholder' | transloco"
             fullWidth
             optionsListClass="option-list--break-word"
             formControlName="fileSuffix"
           >
-            <nb-option [value]="null">All</nb-option>
+            <nb-option [value]="null">{{ 'bot.documents-story.allLabel' | transloco }}</nb-option>
             <nb-option
               *ngFor="let suffix of getFilesSuffixes()"
               [value]="suffix"
@@ -126,7 +110,7 @@
   *ngIf="!loading && fileList?.length && !filteredFileList?.length"
   class="p-4 text-center font-style-italic text-muted"
 >
-  No documents match your search criteria
+  {{ 'bot.documents-story.noDocumentsMatchCriteria' | transloco }}
 </div>
 
 <nb-card
@@ -136,23 +120,26 @@
 >
   <nb-card-body class="py-0">
     <div class="table-list table-list-header">
-      <div class="table-list-entry">Story</div>
-      <div class="table-list-entry bordered text-center">Category</div>
-      <div class="table-list-entry bordered text-center">File</div>
-      <div class="table-list-entry bordered text-center">File title</div>
-      <div class="table-list-entry bordered text-center">File type</div>
-      <div class="table-list-entry text-center">Actions</div>
+      <div class="table-list-entry">{{ 'bot.documents-story.storyHeader' | transloco }}</div>
+      <div class="table-list-entry bordered text-center">{{ 'bot.documents-story.categoryHeader' | transloco }}</div>
+      <div class="table-list-entry bordered text-center">{{ 'bot.documents-story.fileHeader' | transloco }}</div>
+      <div class="table-list-entry bordered text-center">{{ 'bot.documents-story.fileTitleHeader' | transloco }}</div>
+      <div class="table-list-entry bordered text-center">{{ 'bot.documents-story.fileTypeHeader' | transloco }}</div>
+      <div class="table-list-entry text-center">{{ 'bot.documents-story.actionsHeader' | transloco }}</div>
     </div>
 
     <div
       class="table-list"
       *ngFor="let file of filteredFileList"
     >
-      <div class="table-list-entry">
+      <div
+        class="table-list-entry"
+        *ngIf="file"
+      >
         <div class="font-weight-bold">
           <nb-icon
             class="align-middle"
-            nbTooltip="{{ getStoryType(getStoryWithThisMediaFile(file)) }} Story"
+            [nbTooltip]="getStoryType(getStoryWithThisMediaFile(file)) + 'Story'"
             [icon]="getStoryIcon(getStoryWithThisMediaFile(file))"
           ></nb-icon>
           {{ getStoryWithThisMediaFile(file)?.name }}
@@ -199,7 +186,9 @@
       </div>
 
       <div class="table-list-entry bordered text-center">
-        <ng-container *ngIf="file.externalUrl"> Link </ng-container>
+        <ng-container *ngIf="file.externalUrl">
+          {{ 'bot.documents-story.linkLabel' | transloco }}
+        </ng-container>
 
         <ng-container *ngIf="!file.externalUrl">
           <container-element [ngSwitch]="file.suffix">
@@ -230,10 +219,10 @@
           </container-element>
 
           <ng-container [ngSwitch]="file.type">
-            <span *ngSwitchCase="attachmentType.image">Image</span>
-            <span *ngSwitchCase="attachmentType.audio">Audio file</span>
-            <span *ngSwitchCase="attachmentType.video">Video file</span>
-            <span *ngSwitchDefault>Other</span>
+            <span *ngSwitchCase="attachmentType.image">{{ 'bot.documents-story.imageLabel' | transloco }}</span>
+            <span *ngSwitchCase="attachmentType.audio">{{ 'bot.documents-story.audioFileLabel' | transloco }}</span>
+            <span *ngSwitchCase="attachmentType.video">{{ 'bot.documents-story.videoFileLabel' | transloco }}</span>
+            <span *ngSwitchDefault>{{ 'bot.documents-story.otherLabel' | transloco }}</span>
           </ng-container>
           ({{ file.suffix }})
         </ng-container>
@@ -245,7 +234,7 @@
           ghost
           shape="round"
           status="info"
-          nbTooltip="Edit"
+          [nbTooltip]="'common.actions.edit' | transloco"
           (click)="displayMediaMessage(file)"
         >
           <nb-icon icon="pencil"></nb-icon>

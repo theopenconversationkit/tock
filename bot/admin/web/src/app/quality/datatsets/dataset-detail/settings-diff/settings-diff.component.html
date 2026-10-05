@@ -1,13 +1,13 @@
 <nb-card class="min-width-90vw min-height-90vh">
   <nb-card-header class="p-0">
     <div class="d-flex justify-content-between align-items-start gap-1 px-4 py-3">
-      Settings comparison
+      {{ 'quality.settings-diff.title' | transloco }}
 
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Close"
+        [nbTooltip]="'quality.settings-diff.close_tooltip' | transloco"
         (click)="dialogRef.close('cancel')"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -22,7 +22,7 @@
           [status]="currentTab === currentTabs.AnsweringPrompt ? 'primary' : 'basic'"
           (click)="switchCurrentTab(currentTabs.AnsweringPrompt)"
         >
-          Answering Prompt
+          {{ 'quality.settings-diff.answering_prompt_tab' | transloco }}
         </button>
         <button
           nbButton
@@ -30,7 +30,7 @@
           [status]="currentTab === currentTabs.CondensingPrompt ? 'primary' : 'basic'"
           (click)="switchCurrentTab(currentTabs.CondensingPrompt)"
         >
-          Condensing Prompt
+          {{ 'quality.settings-diff.condensing_prompt_tab' | transloco }}
         </button>
 
         <button
@@ -39,7 +39,7 @@
           [status]="currentTab === currentTabs.RagSettings ? 'primary' : 'basic'"
           (click)="switchCurrentTab(currentTabs.RagSettings)"
         >
-          Rag Settings
+          {{ 'quality.settings-diff.rag_settings_tab' | transloco }}
         </button>
       </div>
     </div>
@@ -48,7 +48,8 @@
   <nb-card-body>
     <div [ngClass]="comparisonRun ? 'comparison' : ''">
       <div>
-        <h4 class="text-uppercase monospace text-primary">Run A</h4>
+        <h4 class="text-uppercase monospace text-primary">{{ 'quality.settings-diff.run_a_label' | transloco }}</h4>
+
         <div
           *ngIf="currentTab !== currentTabs.RagSettings && htmlRunA"
           class="chat-ui-message-content-styling"
@@ -69,7 +70,8 @@
       ></div>
 
       <div *ngIf="comparisonRun">
-        <h4 class="text-uppercase monospace text-success">Run B</h4>
+        <h4 class="text-uppercase monospace text-success">{{ 'quality.settings-diff.run_b_label' | transloco }}</h4>
+
         <div
           *ngIf="currentTab !== currentTabs.RagSettings && htmlRunB"
           class="chat-ui-message-content-styling"

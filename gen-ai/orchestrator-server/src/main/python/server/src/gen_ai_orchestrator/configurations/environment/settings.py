@@ -26,7 +26,7 @@ from path import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
 )
 from gen_ai_orchestrator.utils.secret_manager.secret_manager_provider import (
@@ -63,9 +63,9 @@ class _Settings(BaseSettings):
     em_provider_timeout: int = 4
     compressor_provider_timeout: int = 7
 
-    vector_store_provider: Optional[
-        VectorStoreProvider
-    ] = VectorStoreProvider.OPEN_SEARCH
+    vector_store_provider: Optional[VectorStoreProvider] = (
+        VectorStoreProvider.OPEN_SEARCH
+    )
     vector_store_host: Optional[str] = 'localhost'
     vector_store_port: Optional[str] = '9200'
     vector_store_user: Optional[str] = 'admin'
@@ -78,6 +78,12 @@ class _Settings(BaseSettings):
     """Maximum number of documents to be retrieved from the Vector Store"""
     vector_store_test_max_docs_retrieved: int = 4
     vector_store_test_query: str = 'Any definition'
+
+    db_pool_size: int = 10
+    db_max_overflow: int = 5
+    db_pool_timeout: int = 30
+    db_pool_recycle: int = 3600
+    """Any connection lasting longer than 3600 seconds will be closed and reestablished."""
 
     """Observability Setting"""
     observability_provider_max_retries: int = 0

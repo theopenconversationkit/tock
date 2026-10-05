@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BotService } from '../../bot-service';
 import { StateService } from '../../../core-nlp/state.service';
@@ -25,7 +9,7 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { AttachmentType } from '../../../core/model/configuration';
 import { FormControl, FormGroup } from '@angular/forms';
 import { getStoryIcon } from '../../../shared/utils';
-
+import { TranslocoService } from '@jsverse/transloco';
 interface DocumentsFilterForm {
   searchString: FormControl<string>;
   fileType: FormControl<AttachmentType | 'link'>;
@@ -79,9 +63,38 @@ export class DocumentsStoryComponent implements OnInit, OnDestroy {
 
   getStoryIcon = getStoryIcon;
 
-  constructor(public state: StateService, private bot: BotService, public rest: RestService, private dialog: DialogService) {}
+  constructor(
+    public state: StateService,
+    private bot: BotService,
+    public rest: RestService,
+    private dialog: DialogService,
+    private transloco: TranslocoService
+  ) {}
 
   ngOnInit(): void {
+    this.fileTypes = [
+      {
+        label: this.transloco.translate('common.fileTypes.image'),
+        type: AttachmentType.image
+      },
+      {
+        label: this.transloco.translate('common.fileTypes.audio'),
+        type: AttachmentType.audio
+      },
+      {
+        label: this.transloco.translate('common.fileTypes.video'),
+        type: AttachmentType.video
+      },
+      {
+        label: this.transloco.translate('common.fileTypes.file'),
+        type: AttachmentType.file
+      },
+      {
+        label: this.transloco.translate('common.fileTypes.link'),
+        type: 'link'
+      }
+    ];
+
     this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe(() => {
       this.refresh();
     });
@@ -244,6 +257,8 @@ export class DocumentsStoryComponent implements OnInit, OnDestroy {
   }
 
   getStoryType(story: StoryDefinitionConfiguration): string {
+    if (!story) return;
+
     if (story.isBuiltIn()) {
       return 'Built-in';
     }

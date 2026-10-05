@@ -78,6 +78,7 @@ import { I18nImportComponent } from './i18n/i18n-import/i18n-import.component';
 import { I18nLabelComponent } from './i18n/i18n-label/i18n-label.component';
 import { DocumentsStoryComponent } from './story/documents-story/documents-story.component';
 import { CreateEntityDialogComponent } from './story/create-entity-dialog/create-entity-dialog.component';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @NgModule({
   imports: [
@@ -112,7 +113,8 @@ import { CreateEntityDialogComponent } from './story/create-entity-dialog/create
     NbAlertModule,
     NbToggleModule,
     NbTreeGridModule,
-    NbDatepickerModule
+    NbDatepickerModule,
+    TranslocoModule
   ],
   declarations: [
     BotTabsComponent,
@@ -151,7 +153,12 @@ import { CreateEntityDialogComponent } from './story/create-entity-dialog/create
     I18nFiltersComponent,
     CreateEntityDialogComponent
   ],
-  exports: [StoryComponent]
+  exports: [StoryComponent],
+  providers: [
+    provideTranslocoScope({
+      scope: 'bot'
+    })
+  ]
 })
 export class BotModule {
   constructor() {}

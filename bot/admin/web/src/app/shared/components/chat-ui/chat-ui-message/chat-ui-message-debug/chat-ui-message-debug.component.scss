@@ -47,6 +47,10 @@
         color: white;
       }
       &.status-danger {
+        background-color: var(--color-warning-700);
+        color: white;
+      }
+      &.status-error {
         background-color: var(--color-danger-500);
         color: white;
       }

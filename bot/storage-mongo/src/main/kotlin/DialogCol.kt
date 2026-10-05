@@ -19,6 +19,8 @@ package ai.tock.bot.mongo
 import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.admin.dialog.DialogReport
+import ai.tock.bot.definition.DialogContextKey
+import ai.tock.bot.definition.DialogContextMap
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
@@ -37,6 +39,7 @@ import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Story
+import ai.tock.bot.engine.message.DebugMessage
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserLocation
@@ -58,6 +61,8 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
 import java.time.Instant.now
+import kotlin.reflect.KClass
+import kotlin.reflect.safeCast
 
 /**
  *
@@ -130,18 +135,22 @@ internal data class DialogCol(
                 .map { it.toAction(_id) }
                 .toList()
                 .run {
+                    val connectorMessageColIds =
+                        mapNotNull {
+                            (it as? SendSentenceNotYetLoaded)?.let {
+                                ConnectorMessageColId(
+                                    it.toActionId(),
+                                    it.dialogId,
+                                )
+                            }
+                        }
                     val customMessagesMap =
-                        runBlocking {
-                            UserTimelineMongoDAO.loadConnectorMessages(
-                                mapNotNull {
-                                    (it as? SendSentenceNotYetLoaded)?.let {
-                                        ConnectorMessageColId(
-                                            it.toActionId(),
-                                            it.dialogId,
-                                        )
-                                    }
-                                },
-                            )
+                        if (connectorMessageColIds.isEmpty()) {
+                            emptyMap()
+                        } else {
+                            runBlocking {
+                                UserTimelineMongoDAO.loadConnectorMessages(connectorMessageColIds)
+                            }
                         }
 
                     map { a ->
@@ -164,10 +173,11 @@ internal data class DialogCol(
                             a.applicationId,
                             a.metadata,
                             a.annotation,
+                            (a as? SendSentenceWithFootnotes)?.ragDebug,
                         )
                     }
                 }
-                .toList()
+                .withLegacyRagDebug()
         return DialogReport(
             actions,
             stories
@@ -181,6 +191,20 @@ internal data class DialogCol(
         )
     }
 
+    private fun List<ActionReport>.withLegacyRagDebug(): List<ActionReport> =
+        mapIndexed { index, action ->
+            if (action.ragDebug != null || !action.metadata.isGenAiRagAnswer) {
+                action
+            } else {
+                val previousMessage = getOrNull(index - 1)?.message as? DebugMessage
+                if (previousMessage?.text == "RAG") {
+                    action.copy(ragDebug = previousMessage.data)
+                } else {
+                    action
+                }
+            }
+        }
+
     data class DialogStateMongoWrapper(
         var currentIntent: Intent?,
         @JsonDeserialize(contentAs = EntityStateValueWrapper::class)
@@ -193,7 +217,7 @@ internal data class DialogCol(
         constructor(state: DialogState) : this(
             state.currentIntent,
             state.entityValues.mapValues { EntityStateValueWrapper(it.value) },
-            state.context.map { e -> e.key to AnyValueWrapper(e.value) }.toMap(),
+            state.context.asMap().map { e -> e.key.id to AnyValueWrapper(e.key.type, e.value) }.toMap(),
             state.userLocation,
             state.nextActionState,
         )
@@ -202,11 +226,28 @@ internal data class DialogCol(
             return DialogState(
                 currentIntent,
                 entityValues.mapValues { it.value.toEntityStateValue(actionsMap) }.toMutableMap(),
-                context.filter { it.value != null && it.value!!.value != null }.mapValues { it.value!!.value!! }
-                    .toMutableMap(),
+                convertContext(),
                 userLocation,
                 nextActionState,
             )
+        }
+
+        private fun convertContext(): DialogContextMap =
+            DialogContextMap().apply {
+                context.forEach { (keyId, wrapper) ->
+                    val value = wrapper?.value
+                    if (value != null) {
+                        trySet(keyId, wrapper.klass, value)
+                    }
+                }
+            }
+
+        private fun <T : Any> DialogContextMap.trySet(
+            keyId: String,
+            klass: KClass<T>,
+            value: Any,
+        ) {
+            klass.safeCast(value)?.let { set(DialogContextKey(keyId, klass), it) }
         }
     }
 
@@ -357,11 +398,13 @@ internal data class DialogCol(
     data class SendSentenceWithFootnotesMongoWrapper(
         val text: String,
         val footnotes: MutableList<Footnote>,
+        val ragDebug: Any? = null,
     ) : ActionMongoWrapper() {
         constructor(sentence: SendSentenceWithFootnotes) :
             this(
                 sentence.text.toString(),
                 sentence.footnotes,
+                transformData(sentence.ragDebug),
             ) {
             assignFrom(sentence)
         }
@@ -378,6 +421,7 @@ internal data class DialogCol(
                 state,
                 botMetadata,
                 annotation,
+                transformData(ragDebug),
             )
         }
     }

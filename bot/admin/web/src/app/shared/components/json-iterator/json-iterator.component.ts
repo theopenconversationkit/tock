@@ -40,6 +40,9 @@ export class JsonIteratorComponent implements AfterViewInit, OnDestroy {
 
   isPrimitive = isPrimitive;
 
+  copied: boolean = false;
+  private copiedTimer: ReturnType<typeof setTimeout>;
+
   constructor(private jsonIteratorService: JsonIteratorService, private elementRef: ElementRef, private cdr: ChangeDetectorRef) {
     this.jsonIteratorService.communication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
       if (evt.type === 'expand' && !this.isDeployed) {
@@ -98,7 +101,23 @@ export class JsonIteratorComponent implements AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  copyValue(): void {
+    const value = this.isPrimitive(this.data) ? String(this.data) : JSON.stringify(this.data, null, 2);
+
+    navigator.clipboard.writeText(value).then(() => {
+      this.copied = true;
+      this.cdr.detectChanges();
+
+      clearTimeout(this.copiedTimer);
+      this.copiedTimer = setTimeout(() => {
+        this.copied = false;
+        this.cdr.detectChanges();
+      }, 1500);
+    });
+  }
+
   ngOnDestroy(): void {
+    clearTimeout(this.copiedTimer);
     this.resizeObserver.disconnect();
     this.destroy.next(true);
     this.destroy.complete();

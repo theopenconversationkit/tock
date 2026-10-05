@@ -19,17 +19,17 @@ package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Referral(
-    @JsonProperty("source_url") val sourceUrl: String,
-    @JsonProperty("source_type") val sourceType: String,
-    @JsonProperty("source_id") val sourceId: String,
+    @JsonProperty("source_url") val sourceUrl: String?,
+    @JsonProperty("source_type") val sourceType: String?,
+    @JsonProperty("source_id") val sourceId: String?,
     val ref: String = "",
-    val headline: String,
-    val body: String,
-    @JsonProperty("media_type") val mediaType: MediaType,
+    val headline: String?,
+    val body: String?,
+    @JsonProperty("media_type") val mediaType: MediaType?,
     @JsonProperty("image_url") val imageUrl: String?,
     @JsonProperty("video_url") val videoUrl: String?,
     @JsonProperty("thumbnail_url") val thumbnailUrl: String?,
-    @JsonProperty("ctwa_clid") val ctwaClid: String,
+    @JsonProperty("ctwa_clid") val ctwaClid: String?,
 )
 
 enum class MediaType {

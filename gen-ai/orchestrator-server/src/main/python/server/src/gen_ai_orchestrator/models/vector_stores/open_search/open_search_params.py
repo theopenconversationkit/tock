@@ -21,11 +21,11 @@ from pydantic import Field
 from gen_ai_orchestrator.models.vector_stores.open_search.open_search_term_params import (
     OpenSearchTermParams,
 )
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
+    VectorStoreProvider,
+)
 from gen_ai_orchestrator.models.vector_stores.vector_store_search_params import (
     BaseVectorStoreSearchParams,
-)
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
 )
 
 
@@ -42,7 +42,7 @@ class OpenSearchParams(BaseVectorStoreSearchParams):
         description='The OpenSearch boolean query filter. Logical "and" operator is applied. For more information, '
         'see : https://opensearch.org/docs/latest/query-dsl/compound/bool/',
         examples=[[{'term': {'key_1': 'value_1'}}, {'term': {'key_2': 'value_2'}}]],
-        default=None
+        default=None,
     )
 
     def to_dict(self):
@@ -52,4 +52,3 @@ class OpenSearchParams(BaseVectorStoreSearchParams):
             result['filter'] = [{'term': term_param.term} for term_param in self.filter]
 
         return result
-

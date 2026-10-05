@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { NbToastrService } from '@nebular/theme';
@@ -33,6 +17,7 @@ import { Pagination } from '../../shared/components';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { I18nLabel } from '../../bot/model/i18n';
 import { Footnote } from '../../shared/model/dialog-data';
+import { TranslocoService } from '@jsverse/transloco';
 
 export type FaqDefinitionExtended = Partial<FaqDefinition> & { _initQuestion?: string; _initAnswer?: RagAnswerToFaqAnswerInfos };
 
@@ -79,7 +64,8 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private dialogService: DialogService,
     private toastrService: NbToastrService,
-    private location: Location
+    private location: Location,
+    private transloco: TranslocoService
   ) {
     this.initQuestion = (this.location.getState() as any)?.question;
     this.initAnswer = (this.location.getState() as any)?.answer;
@@ -294,10 +280,14 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
 
           this.stateService.resetConfiguration();
 
-          this.toastrService.success(`Faq successfully deleted`, 'Success', {
-            duration: 5000,
-            status: 'success'
-          });
+          this.toastrService.success(
+            this.transloco.translate('faq.faq-management.faqDeletedSuccess'),
+            this.transloco.translate('common.messages.success'),
+            {
+              duration: 5000,
+              status: 'success'
+            }
+          );
 
           this.loading.delete = false;
           this.closeSidePanel();
@@ -314,20 +304,20 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
   }
 
   disableAllFaqs() {
-    const action = 'disable all';
+    const action = this.transloco.translate('faq.faq-management.disableAllFaqsAction');
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: 'Disable all FAQs',
-        subtitle: 'Are you sure you want to disable all FAQs for this bot ?',
+        title: this.transloco.translate('faq.faq-management.disableAllFaqsTitle'),
+        subtitle: this.transloco.translate('faq.faq-management.disableAllFaqsSubtitle'),
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
-          { actionName: 'Disable all', buttonStatus: 'danger' }
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
+          { actionName: this.transloco.translate('faq.faq-management.disableAllFaqsAction'), buttonStatus: 'danger' }
         ]
       }
     });
 
     dialogRef.onClose.pipe(take(1)).subscribe((result) => {
-      if (result === action) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         this.loading.edit = true;
         this.rest
           .post<unknown, number>(
@@ -341,17 +331,23 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
               this.closeSidePanel();
 
               if (disabledCount > 0) {
-                this.toastrService.success(`${
-                  disabledCount === 1 ? '1 FAQ successfully disabled' : `${disabledCount} FAQs successfully disabled`
-                }`, 'Success', {
-                  duration: 5000,
-                  status: 'success'
-                });
+                this.toastrService.success(
+                  this.transloco.translate('faq.faq-management.faqsDisabledSuccess', { count: disabledCount }),
+                  this.transloco.translate('common.messages.success'),
+                  {
+                    duration: 5000,
+                    status: 'success'
+                  }
+                );
               } else {
-                this.toastrService.info(`All FAQs are already disabled`, 'Info', {
-                  duration: 5000,
-                  status: 'info'
-                });
+                this.toastrService.info(
+                  this.transloco.translate('faq.faq-management.allFaqsAlreadyDisabled'),
+                  this.transloco.translate('common.messages.info'),
+                  {
+                    duration: 5000,
+                    status: 'info'
+                  }
+                );
               }
 
               this.loading.edit = false;
@@ -379,11 +375,16 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
 
           this.stateService.resetConfiguration();
 
-          this.toastrService.success(`Faq successfully ${toastLabel}`, 'Success', {
-            duration: 5000,
-            status: 'success'
-          });
+          this.toastrService.success(
+            this.transloco.translate('faq.faq-management.faqSavedSuccess', { action: toastLabel }),
+            this.transloco.translate('common.messages.success'),
+            {
+              duration: 5000,
+              status: 'success'
+            }
+          );
           this.loading.edit = false;
+          this.search();
         },
         error: () => {
           this.loading.edit = false;

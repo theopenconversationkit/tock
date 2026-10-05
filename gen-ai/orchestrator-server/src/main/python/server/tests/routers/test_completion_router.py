@@ -82,6 +82,7 @@ def test_generate_sentences_template_error():
     error = response.json()
     assert error['code'] == ErrorCode.GEN_AI_PROMPT_TEMPLATE_ERROR.value
 
+
 def test_generate():
     response = client.post(
         '/completion/',
@@ -101,9 +102,12 @@ def test_generate():
                 'template': '',
                 'inputs': {},
             },
-            'observability_setting': None
+            'observability_setting': None,
         },
     )
 
     assert response.status_code == 200
-    assert response.json() == {'answer': 'Hi! Im a fake LLM', 'observability_info': None}
+    assert response.json() == {
+        'answer': 'Hi! Im a fake LLM',
+        'observability_info': None,
+    }

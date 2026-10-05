@@ -171,6 +171,7 @@ export enum EventType {
   choice,
   attachment,
   location,
+  // debug eventType is deprecated but should be retained for backward compatibility.
   debug,
   sentenceWithFootnotes
 }

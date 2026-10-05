@@ -30,7 +30,7 @@ from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler
     opensearch_exception_handler,
 )
 from gen_ai_orchestrator.models.rag.rag_models import Source
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
 )
 from gen_ai_orchestrator.routers.requests.requests import QARequest

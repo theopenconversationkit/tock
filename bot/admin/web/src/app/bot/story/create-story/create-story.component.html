@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<h1>New story</h1>
+<h1>{{ 'bot.create-story.title' | transloco }}</h1>
 
 <nb-card class="sentence mt-2">
   <nb-card-body>
@@ -38,7 +38,7 @@
               class="phrase"
               [(ngModel)]="story.userSentence"
               [disabled]="loading"
-              placeholder="Enter a User Phrase"
+              [placeholder]="'bot.create-story.userSentencePlaceholder' | transloco"
               #newSentence
               (keyup.enter)="onSentence(newSentence.value)"
             />
@@ -50,7 +50,7 @@
             [disabled]="!(story && story.userSentence.length !== 0) || loading"
             (click)="onSentence()"
           >
-            Add
+            {{ 'common.actions.add' | transloco }}
           </button>
         </nb-card-body>
       </nb-card>
@@ -77,7 +77,7 @@
       size="small"
     >
       <nb-icon icon="x-lg"></nb-icon>
-      Cancel
+      {{ 'common.actions.cancel' | transloco }}
     </button>
     <button
       (click)="onReply()"
@@ -86,7 +86,7 @@
       status="primary"
     >
       <nb-icon icon="plus"></nb-icon>
-      Create Story
+      {{ 'bot.create-story.createStoryButton' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>
@@ -95,7 +95,7 @@
   *ngIf="displayStory"
   class="current-analysis text-center mb-4"
 >
-  (or qualify)
+  {{ 'bot.create-story.orQualifyLabel' | transloco }}
 </div>
 
 <tock-sentence-training-entry

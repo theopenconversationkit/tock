@@ -1,22 +1,7 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NbToastrService } from '@nebular/theme';
 import { Observable, Subject, take, takeUntil } from 'rxjs';
+import { TranslocoService } from '@jsverse/transloco';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
@@ -32,6 +17,7 @@ export interface IndicatorEdition {
   existing: boolean;
   indicator: IndicatorDefinition;
 }
+
 @Component({
   selector: 'tock-indicators',
   templateUrl: './indicators.component.html',
@@ -69,7 +55,8 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
     private stateService: StateService,
     private rest: RestService,
     private toastrService: NbToastrService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit() {
@@ -207,13 +194,13 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
     if (!indicatorEdition.existing) {
       type = 'post';
       url = `/bot/${this.stateService.currentApplication.name}/indicators`;
-      toastLabel = 'created';
+      toastLabel = this.transloco.translate('metrics.indicators.created');
       indicatorEdition.indicator.name = this.getUnicIndicatorName(indicatorEdition.indicator);
       method = this.rest.post(url, indicatorEdition.indicator);
     } else {
       type = 'put';
       url = `/bot/${this.stateService.currentApplication.name}/indicators/${indicatorEdition.indicator.name}`;
-      toastLabel = 'updated';
+      toastLabel = this.transloco.translate('metrics.indicators.updated');
       method = this.rest.put(url, indicatorEdition.indicator);
     }
 
@@ -228,10 +215,14 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
         this.updateIndicatorsList();
         this.updateDimensionsCache();
 
-        this.toastrService.success(`Indicator successfully ${toastLabel}`, 'Success', {
-          duration: 5000,
-          status: 'success'
-        });
+        this.toastrService.success(
+          this.transloco.translate('metrics.indicators.indicator_success_message', { action: toastLabel }),
+          this.transloco.translate('metrics.indicators.success_title'),
+          {
+            duration: 5000,
+            status: 'success'
+          }
+        );
         this.isSidePanelOpen.edit = false;
         this.loading.edit = false;
       },
@@ -242,19 +233,19 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
   }
 
   confirmDeleteIndicator(indicator: IndicatorDefinition): void {
-    const action = 'delete';
+    const action = this.transloco.translate('common.actions.delete');
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: 'Delete an indicator',
-        subtitle: `Are you sure you want to delete the indicator "${indicator.label}" ?`,
+        title: this.transloco.translate('metrics.indicators.delete_indicator_dialog_title'),
+        subtitle: this.transloco.translate('metrics.indicators.delete_indicator_dialog_message', { indicatorLabel: indicator.label }),
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
           { actionName: action, buttonStatus: 'danger' }
         ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === action) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         this.deleteIndicator(indicator);
       }
     });
@@ -272,10 +263,14 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
           this.indicators = this.indicators.filter((f) => f.name != indicatorName);
           this.updateIndicatorsList();
 
-          this.toastrService.success(`Faq successfully deleted`, 'Success', {
-            duration: 5000,
-            status: 'success'
-          });
+          this.toastrService.success(
+            this.transloco.translate('metrics.indicators.indicator_deleted_message'),
+            this.transloco.translate('metrics.indicators.success_title'),
+            {
+              duration: 5000,
+              status: 'success'
+            }
+          );
 
           this.closeSidePanel();
           this.loading.delete = false;

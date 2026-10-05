@@ -29,7 +29,7 @@
           nbInput
           fullWidth
           fieldSize="medium"
-          placeholder="Search an intent"
+          placeholder="{{ 'lu.intents-filters.placeholder' | transloco }}"
           type="text"
           formControlName="search"
         />
@@ -38,7 +38,7 @@
           type="button"
           nbButton
           nbSuffix
-          nbTooltip="Clear"
+          nbTooltip="{{ 'common.actions.clear-filter' | transloco }}"
           ghost
           (click)="clearSearch()"
           data-testid="clear-button"

@@ -4,13 +4,16 @@ import { DialogService } from '../../../core-nlp/dialog.service';
 import { BotApplicationConfiguration } from '../../../core/model/configuration';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 import { DatasetCreateComponent } from '../dataset-create/dataset-create.component';
-
 import { Dataset } from '../models';
 import { DatasetsService } from '../services/datasets.service';
 import { NbDialogRef, NbDialogService, NbToastrService } from '@nebular/theme';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { FileValidators } from '../../../shared/validators';
 import { readFileAsText } from '../../../shared/utils';
+import { TranslocoService } from '@jsverse/transloco';
+
+export type DatasetSortField = 'name' | 'questions' | 'runs' | 'lastRun';
+export type SortDirection = 'asc' | 'desc';
 
 @Component({
   selector: 'tock-datasets-board',
@@ -24,6 +27,9 @@ export class DatasetsBoardComponent implements OnInit, OnDestroy {
   configurations: BotApplicationConfiguration[];
   datasets: Dataset[];
 
+  sortField: DatasetSortField = 'lastRun';
+  sortDirection: SortDirection = 'desc';
+
   @ViewChild('importModal') importModal: TemplateRef<any>;
 
   constructor(
@@ -31,7 +37,8 @@ export class DatasetsBoardComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private datasetsService: DatasetsService,
     private nbDialogService: NbDialogService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
@@ -52,6 +59,43 @@ export class DatasetsBoardComponent implements OnInit, OnDestroy {
       .getDatasets()
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => (this.loading = false));
+  }
+
+  get sortedDatasets(): Dataset[] {
+    if (!this.datasets?.length) return [];
+
+    return [...this.datasets].sort((a, b) => {
+      let cmp = 0;
+
+      switch (this.sortField) {
+        case 'name':
+          cmp = a.name.localeCompare(b.name);
+          break;
+        case 'questions':
+          cmp = a.questions.length - b.questions.length;
+          break;
+        case 'runs':
+          cmp = a.runs.length - b.runs.length;
+          break;
+        case 'lastRun': {
+          const aTime = a.runs.length ? Math.max(...a.runs.map((r) => new Date(r.startTime).getTime())) : 0;
+          const bTime = b.runs.length ? Math.max(...b.runs.map((r) => new Date(r.startTime).getTime())) : 0;
+          cmp = aTime - bTime;
+          break;
+        }
+      }
+
+      return this.sortDirection === 'asc' ? cmp : -cmp;
+    });
+  }
+
+  setSort(field: DatasetSortField): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = field === 'name' ? 'asc' : 'desc';
+    }
   }
 
   trackById(_index: number, dataset: Dataset): string {
@@ -112,8 +156,8 @@ export class DatasetsBoardComponent implements OnInit, OnDestroy {
             )
           ) {
             this.toastrService.show(
-              `The file must contain a 'name', 'description', and an array of 'questions' with 'question' and 'groundTruth' fields.`,
-              'Invalid dataset format',
+              this.transloco.translate('quality.datasets-board.invalid_dataset_format_message'),
+              this.transloco.translate('quality.datasets-board.invalid_dataset_format_title'),
               {
                 duration: 8000,
                 status: 'danger'
@@ -137,23 +181,37 @@ export class DatasetsBoardComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe({
               next: (createdDataset) => {
-                this.toastrService.show(`Dataset "${createdDataset.name}" imported successfully!`, 'Success', {
-                  duration: 4000,
-                  status: 'success'
-                });
+                this.toastrService.show(
+                  this.transloco.translate('quality.datasets-board.dataset_imported_success_message', { name: createdDataset.name }),
+                  this.transloco.translate('quality.datasets-board.success_title'),
+                  {
+                    duration: 4000,
+                    status: 'success'
+                  }
+                );
                 this.closeImportModal();
                 this.loading = false;
               },
               error: (err) => {
-                this.toastrService.show(`Failed to import dataset: ${err.message || 'Unknown error'}`, 'Error', {
-                  duration: 6000,
-                  status: 'danger'
-                });
+                this.toastrService.show(
+                  this.transloco.translate('quality.datasets-board.dataset_import_failed_message', {
+                    error: err.message || this.transloco.translate('quality.datasets-board.unknown_error')
+                  }),
+                  this.transloco.translate('quality.datasets-board.error_title'),
+                  {
+                    duration: 6000,
+                    status: 'danger'
+                  }
+                );
                 this.loading = false;
               }
             });
         } catch (e) {
-          this.toastrService.show('The file is not a valid JSON.', 'Invalid JSON', { duration: 6000, status: 'danger' });
+          this.toastrService.show(
+            this.transloco.translate('quality.datasets-board.invalid_json_message'),
+            this.transloco.translate('quality.datasets-board.invalid_json_title'),
+            { duration: 6000, status: 'danger' }
+          );
           this.loading = false;
         }
       });

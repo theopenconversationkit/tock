@@ -1,24 +1,8 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div
   class="d-flex flex-wrap mb-2"
   [nbSpinner]="loading.edit || loading.delete"
 >
-  <h1 class="flex-grow-1">FAQs stories</h1>
+  <h1 class="flex-grow-1">{{ 'faq.faq-management.title' | transloco }}</h1>
 
   <section class="grid-actions">
     <button
@@ -26,7 +10,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Export all faqs"
+      [nbTooltip]="'faq.faq-management.exportAllFaqsTooltip' | transloco"
       (click)="openExport()"
     >
       <nb-icon icon="download"></nb-icon>
@@ -36,7 +20,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="FAQ Parameters"
+      [nbTooltip]="'faq.faq-management.faqParametersTooltip' | transloco"
       [disabled]="!configurations?.length"
       (click)="openSettings()"
     >
@@ -48,7 +32,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Disable all currently active FAQs"
+      [nbTooltip]="'faq.faq-management.disableAllFaqsTooltip' | transloco"
       (click)="disableAllFaqs()"
     >
       <nb-icon icon="toggle-off"></nb-icon>
@@ -61,7 +45,7 @@
       (click)="addOrEditFaq()"
     >
       <nb-icon icon="plus-lg"></nb-icon>
-      NEW FAQ STORY
+      {{ 'faq.faq-management.newFaqButton' | transloco }}
     </button>
   </section>
 </div>
@@ -73,7 +57,7 @@
 >
   <tock-no-data-found
     *ngIf="configurations?.length === 0"
-    title="No bot configuration detected"
+    [title]="'faq.faq-management.noBotConfiguration' | transloco"
   ></tock-no-data-found>
 
   <div
@@ -105,8 +89,8 @@
     >
       <tock-no-data-found
         *ngIf="!loading.list && !faqs?.length"
-        title="No Faq found"
-        message="You may create a new one using above button &#34;NEW FAQ&#34;."
+        [title]="'faq.faq-management.noFaqFoundTitle' | transloco"
+        [message]="'faq.faq-management.noFaqFoundMessage' | transloco"
       ></tock-no-data-found>
 
       <tock-faq-management-list

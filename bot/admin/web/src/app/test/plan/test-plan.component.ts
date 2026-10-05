@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, Inject, OnInit } from '@angular/core';
 import { TestDialogReport, TestPlan, XRayPlanExecutionConfiguration } from '../model/test';
 import { TestService } from '../test.service';
@@ -23,8 +7,9 @@ import { ActionReport, DialogReport } from '../../shared/model/dialog-data';
 import { BotSharedService } from '../../shared/bot-shared.service';
 import { NbToastrService } from '@nebular/theme';
 import { APP_BASE_HREF } from '@angular/common';
-import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../shared/utils';
+import { getDialogMessageUserAvatar, getDialogMessageUserQualifierKey } from '../../shared/utils';
 import { SelectBotEvent } from '../../shared/components';
+import { TranslocoService } from '@jsverse/transloco';
 import { take } from 'rxjs';
 
 @Component({
@@ -55,7 +40,8 @@ export class TestPlanComponent implements OnInit {
     private toastrService: NbToastrService,
     public botConfiguration: BotConfigurationService,
     private shared: BotSharedService,
-    @Inject(APP_BASE_HREF) public baseHref: string
+    @Inject(APP_BASE_HREF) public baseHref: string,
+    private transloco: TranslocoService
   ) {}
 
   // loop to check test plan executions status
@@ -99,7 +85,11 @@ export class TestPlanComponent implements OnInit {
 
   executeXRay() {
     if (this.xray.testPlanKey.trim().length === 0) {
-      this.toastrService.show(`Please specify a plan key`, 'Error', { duration: 2000 });
+      this.toastrService.show(
+        this.transloco.translate('test.test-plan.specifyPlanKeyError'),
+        this.transloco.translate('test.test-plan.executionError'),
+        { duration: 2000 }
+      );
     } else {
       this.executeXray = true;
       this.botConfiguration.restConfigurations.subscribe((c) => {
@@ -111,15 +101,28 @@ export class TestPlanComponent implements OnInit {
             this.executeXray = false;
             this.reload();
             if (r.total === 0) {
-              this.toastrService.show(`No tests executed for Plan ${this.xray.testPlanKey}`, 'Execution', { duration: 2000 });
+              this.toastrService.show(
+                this.transloco.translate('test.test-plan.noTestsExecuted', { planKey: this.xray.testPlanKey }),
+                this.transloco.translate('test.test-plan.executionTitle'),
+                { duration: 2000 }
+              );
             } else if (r.total === r.success) {
-              this.toastrService.show(`${r.total} tests for Plan ${this.xray.testPlanKey} executed with success`, 'Execution', {
-                duration: 2000
-              });
+              this.toastrService.show(
+                this.transloco.translate('test.test-plan.testsExecutedWithSuccess', {
+                  total: r.total,
+                  planKey: this.xray.testPlanKey
+                }),
+                this.transloco.translate('test.test-plan.executionTitle'),
+                { duration: 2000 }
+              );
             } else {
               this.toastrService.show(
-                `Plan ${this.xray.testPlanKey} executed with ${r.success} successful tests / ${r.total}`,
-                'Execution',
+                this.transloco.translate('test.test-plan.testsExecutedWithErrors', {
+                  planKey: this.xray.testPlanKey,
+                  success: r.success,
+                  total: r.total
+                }),
+                this.transloco.translate('test.test-plan.executionTitle'),
                 { duration: 2000 }
               );
             }
@@ -137,7 +140,11 @@ export class TestPlanComponent implements OnInit {
 
   createTestPlan() {
     if (!this.testPlanName || this.testPlanName.trim().length === 0) {
-      this.toastrService.show(`Please enter a valid name`, 'Error', { duration: 5000 });
+      this.toastrService.show(
+        this.transloco.translate('test.test-plan.enterValidNameError'),
+        this.transloco.translate('test.test-plan.executionError'),
+        { duration: 5000 }
+      );
       return;
     }
     const conf = this.botConfiguration.restConfigurations.value.find((c) => c._id === this.testBotConfigurationId);
@@ -157,7 +164,11 @@ export class TestPlanComponent implements OnInit {
       .subscribe((_) => {
         this.resetCreateTestPlan();
         this.reload();
-        this.toastrService.show(`New test plan saved`, 'New Test Plan', { duration: 2000 });
+        this.toastrService.show(
+          this.transloco.translate('test.test-plan.newTestPlanSaved'),
+          this.transloco.translate('test.test-plan.newTestPlanTitle'),
+          { duration: 2000 }
+        );
       });
   }
 
@@ -168,7 +179,11 @@ export class TestPlanComponent implements OnInit {
   deleteTestPlan(plan: TestPlan) {
     this.test.removeTestPlan(plan._id).subscribe((_) => {
       this.reload();
-      this.toastrService.show(`Plan ${plan.name} deleted`, 'Delete', { duration: 2000 });
+      this.toastrService.show(
+        this.transloco.translate('test.test-plan.planDeleted', { planName: plan.name }),
+        this.transloco.translate('test.test-plan.deleteTitle'),
+        { duration: 2000 }
+      );
     });
   }
 
@@ -176,9 +191,13 @@ export class TestPlanComponent implements OnInit {
     this.executePlan = true;
     this.testExecutionStatus = 'PENDING';
     this.runningTestPlan = plan;
-    const ref = this.toastrService.show(`Plan ${plan.name} is running.`, 'Execution', {
-      duration: 20000
-    });
+    const ref = this.toastrService.show(
+      this.transloco.translate('test.test-plan.planIsRunning', { planName: plan.name }),
+      this.transloco.translate('test.test-plan.executionTitle'),
+      {
+        duration: 20000
+      }
+    );
     this.test.runTestPlan(plan._id).subscribe((execution) => {
       ref.close();
       this.testExecutionId = execution;
@@ -191,7 +210,11 @@ export class TestPlanComponent implements OnInit {
   removeDialog(plan: TestPlan, dialog: TestDialogReport) {
     this.test.removeDialogFromTestPlan(plan._id, dialog.id).subscribe((_) => {
       plan.dialogs = plan.dialogs.filter((d) => d.id !== dialog.id);
-      this.toastrService.show(`Dialog removed`, 'Removal', { duration: 2000 });
+      this.toastrService.show(
+        this.transloco.translate('test.test-plan.dialogRemoved'),
+        this.transloco.translate('test.test-plan.removalTitle'),
+        { duration: 2000 }
+      );
     });
   }
 
@@ -233,8 +256,8 @@ export class TestPlanComponent implements OnInit {
     plan.displayExecutions = false;
   }
 
-  getUserName(action: ActionReport): string {
-    return getDialogMessageUserQualifier(action.isBot());
+  getUserNameKey(action: ActionReport): string {
+    return getDialogMessageUserQualifierKey(action.isBot());
   }
 
   getUserAvatar(action: ActionReport): string {

@@ -19,7 +19,7 @@
   <nb-card-body>
     <nb-select
       class="intent"
-      placeholder="Add shared intent"
+      [placeholder]="'lu.add-shared-intent.placeholder' | transloco"
       [(selected)]="selectedIntent"
     >
       <nb-option-group
@@ -35,13 +35,14 @@
       </nb-option-group>
     </nb-select>
   </nb-card-body>
+
   <nb-card-footer class="footer">
     <button
       nbButton
       size="small"
       (click)="dialogRef.close('cancel')"
     >
-      Cancel
+      {{ 'common.actions.cancel' | transloco }}
     </button>
     <button
       nbButton
@@ -51,7 +52,7 @@
       (click)="save()"
       [disabled]="!selectedIntent"
     >
-      Add
+      {{ 'common.actions.add' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>

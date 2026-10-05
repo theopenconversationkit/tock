@@ -26,22 +26,22 @@
 
   <div
     class="tag topic"
-    *ngIf="message.data.answer?.topic && message.data.answer?.topic !== 'unknown'"
+    *ngIf="!condensed && action.ragDebug?.answer?.topic && action.ragDebug?.answer?.topic !== 'unknown'"
     (click)="showDebug()"
     nbTooltip="Show details"
   >
-    Topic | <strong class="ml-1">{{ message.data.answer?.topic }}</strong>
+    Topic | <strong class="ml-1">{{ action.ragDebug?.answer?.topic }}</strong>
   </div>
 
   <div
     class="tag suggested-topics"
-    *ngIf="message.data.answer?.suggested_topics?.length"
+    *ngIf="!condensed && action.ragDebug?.answer?.suggested_topics?.length"
     (click)="showDebug()"
     nbTooltip="Show details"
   >
     Suggested topics |
     <strong class="ml-1">
-      <span *ngFor="let suggestion of message.data.answer.suggested_topics">
+      <span *ngFor="let suggestion of action.ragDebug?.answer?.suggested_topics">
         {{ suggestion }}
       </span>
     </strong>
@@ -49,20 +49,20 @@
 
   <div
     class="tag"
-    *ngIf="message.data.answer?.redirection_intent"
+    *ngIf="!condensed && action.ragDebug?.answer?.redirection_intent"
     (click)="showDebug()"
     nbTooltip="Show details"
   >
-    Redirection intent | <strong class="ml-1">{{ message.data.answer?.redirection_intent }}</strong>
+    Redirection intent | <strong class="ml-1">{{ action.ragDebug?.answer?.redirection_intent }}</strong>
   </div>
 
   <div
     class="tag"
-    *ngIf="message.data.answer?.confidence_score"
+    *ngIf="!condensed && action.ragDebug?.answer?.confidence_score"
     [ngStyle]="{ 'background-color': getConfidenceBgColor().bg, color: getConfidenceBgColor().fg }"
     (click)="showDebug()"
     nbTooltip="Show details"
   >
-    Confidence | <strong class="ml-1">{{ message.data.answer?.confidence_score }}</strong>
+    Confidence | <strong class="ml-1">{{ action.ragDebug?.answer?.confidence_score }}</strong>
   </div>
 </div>

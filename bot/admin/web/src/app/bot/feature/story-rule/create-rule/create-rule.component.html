@@ -1,23 +1,7 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card [nbSpinner]="loading">
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1 flex-wrap">
     <div>
-      Create new <span class="text-lowercase">{{ type }}</span> rule
+      {{ 'bot.create-rule.title' | transloco: { type: type | lowercase } }}
     </div>
 
     <button
@@ -25,7 +9,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Close"
+      [nbTooltip]="'common.actions.close' | transloco"
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>
@@ -37,7 +21,7 @@
       <div class="d-flex gap-1">
         <div [ngClass]="{ 'w-50': hasTarget(), 'w-100': !hasTarget() }">
           <tock-form-control
-            label="Story"
+            [label]="'bot.create-rule.storyLabel' | transloco"
             name="mainStoryId"
             [controls]="mainStoryId"
             [showError]="isSubmitted"
@@ -53,7 +37,7 @@
                 id="mainStoryId"
                 fullWidth
                 type="text"
-                placeholder="Story"
+                [placeholder]="'bot.create-rule.storyPlaceholder' | transloco"
                 [value]="getCurrentStoryLabel(mainOrTarget.mainStoryId)"
                 autocomplete="off"
                 [nbAutocomplete]="storyAutocomplete"
@@ -87,7 +71,7 @@
           *ngIf="hasTarget()"
         >
           <tock-form-control
-            label="{{ type }} story"
+            [label]="'bot.create-rule.targetStoryLabel' | transloco: { type: type }"
             name="targetStoryId"
             [controls]="targetStoryId"
             [showError]="isSubmitted"
@@ -103,7 +87,7 @@
                 id="targetStoryId"
                 fullWidth
                 type="text"
-                placeholder="{{ type }} story"
+                [placeholder]="'bot.create-rule.targetStoryPlaceholder' | transloco: { type: type }"
                 [value]="getCurrentStoryLabel(mainOrTarget.targetStoryId)"
                 autocomplete="off"
                 [nbAutocomplete]="targetAutocomplete"
@@ -135,23 +119,23 @@
       </div>
 
       <tock-form-control
-        label="Configuration"
+        [label]="'bot.create-rule.configurationLabel' | transloco"
         name="configuration"
       >
         <tock-select-bot
           [(configurationId)]="botApplicationConfigurationId"
           [allowNoSelection]="true"
-          noConfigurationLabel="All Configurations"
+          [noConfigurationLabel]="'bot.create-rule.allConfigurationsLabel' | transloco"
           size="medium"
         ></tock-select-bot>
       </tock-form-control>
 
       <nb-toggle
         formControlName="enabled"
-        nbTooltip="Status"
+        [nbTooltip]="'bot.create-rule.statusTooltip' | transloco"
       >
-        <span *ngIf="enabled.value">Rule enabled</span>
-        <span *ngIf="!enabled.value">Rule disabled</span>
+        <span *ngIf="enabled.value">{{ 'bot.create-rule.ruleEnabledLabel' | transloco }}</span>
+        <span *ngIf="!enabled.value">{{ 'bot.create-rule.ruleDisabledLabel' | transloco }}</span>
       </nb-toggle>
     </form>
   </nb-card-body>
@@ -165,7 +149,7 @@
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>
-      Cancel
+      {{ 'common.actions.cancel' | transloco }}
     </button>
     <button
       type="button"
@@ -175,7 +159,7 @@
       (click)="save()"
     >
       <nb-icon icon="plus"></nb-icon>
-      Create rule
+      {{ 'bot.create-rule.createRuleButton' | transloco }}
     </button>
   </nb-card-footer>
 </nb-card>

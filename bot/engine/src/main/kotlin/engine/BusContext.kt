@@ -18,6 +18,9 @@ package ai.tock.bot.engine
 
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.definition.DialogContext
+import ai.tock.bot.definition.DialogContextMap
+import ai.tock.bot.definition.MutableDialogContext
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
 import ai.tock.bot.engine.action.ActionPriority.normal
@@ -31,7 +34,7 @@ import mu.KotlinLogging
 internal data class BusContext(
     var currentDelay: Long = 0,
     val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
-    val contextMap: MutableMap<String, Any> = mutableMapOf(),
+    val contextMap: MutableDialogContext = DialogContextMap(),
     var priority: ActionPriority = normal,
     var notificationType: ActionNotificationType? = null,
     var visibility: ActionVisibility = ActionVisibility.UNKNOWN,
@@ -39,6 +42,10 @@ internal data class BusContext(
     companion object {
         val logger: KLogger = KotlinLogging.logger {}
     }
+
+    constructor(transientContext: DialogContext) : this(
+        contextMap = DialogContextMap(transientContext),
+    )
 
     fun clear() {
         connectorMessages.clear()

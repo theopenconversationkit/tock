@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Subject, take } from 'rxjs';
 import { RuleType, StoryDefinitionConfiguration, StoryFeature } from '../../../model/story';
@@ -22,6 +6,7 @@ import { CreateRuleComponent } from '../create-rule/create-rule.component';
 import { ChoiceDialogComponent } from '../../../../shared/components';
 import { BotService } from '../../../bot-service';
 import { getStoryIcon } from '../../../../shared/utils';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'tock-story-rules-table',
@@ -45,7 +30,12 @@ export class StoryRulesTableComponent implements OnChanges, OnDestroy {
 
   @Output() onRefresh = new EventEmitter<boolean>();
 
-  constructor(private nbDialogService: NbDialogService, private botService: BotService, private toastrService: NbToastrService) {}
+  constructor(
+    private nbDialogService: NbDialogService,
+    private botService: BotService,
+    private toastrService: NbToastrService,
+    private transloco: TranslocoService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.features?.currentValue) {
@@ -73,18 +63,33 @@ export class StoryRulesTableComponent implements OnChanges, OnDestroy {
   toggle(feature: StoryFeature, newState: boolean): void {
     feature.enabled = newState;
     this.botService.saveStory(feature.story).subscribe(() => {
-      this.toastrService.show(`${this.type} rule ${newState ? 'activated' : 'deactivated'}`, 'Rule update', { duration: 3000 });
+      const status = newState
+        ? this.transloco.translate('bot.story-rule-table.activated')
+        : this.transloco.translate('bot.story-rule-table.deactivated');
+      this.toastrService.show(
+        this.transloco.translate('bot.story-rule-table.ruleToggledMessage', {
+          ruleType: this.type,
+          status: status
+        }),
+        this.transloco.translate('bot.story-rule-table.ruleUpdateTitle'),
+        { duration: 3000 }
+      );
     });
   }
 
   askDeleteFeature(feature: StoryFeature): void {
-    const confirmAction = 'Delete';
-    const cancelAction = 'Cancel';
+    const confirmAction = this.transloco.translate('common.actions.delete');
+    const cancelAction = this.transloco.translate('common.actions.cancel');
 
     const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
-        title: `Delete ${this.type} rule`,
-        subtitle: `Are you sure you want to delete the ${this.type} rule applied to the story "${feature.story.name}"`,
+        title: this.transloco.translate('bot.story-rule-table.deleteRuleTitle', {
+          ruleType: this.type
+        }),
+        subtitle: this.transloco.translate('bot.story-rule-table.deleteRuleSubtitle', {
+          ruleType: this.type,
+          storyName: feature.story.name
+        }),
         modalStatus: 'danger',
         actions: [
           { actionName: cancelAction, buttonStatus: 'basic' },
@@ -106,7 +111,14 @@ export class StoryRulesTableComponent implements OnChanges, OnDestroy {
 
     this.botService.saveStory(story).subscribe(() => {
       this.onRefresh.emit(true);
-      this.toastrService.show(`${this.type} rule deleted`, 'Rule deletion', { duration: 3000 });
+      this.toastrService.show(
+        this.transloco.translate('bot.story-rule-table.ruleToggledMessage', {
+          ruleType: this.type,
+          status: this.transloco.translate('bot.story-rule-table.deleted')
+        }),
+        this.transloco.translate('bot.story-rule-table.ruleDeletionTitle'),
+        { duration: 3000 }
+      );
     });
   }
 

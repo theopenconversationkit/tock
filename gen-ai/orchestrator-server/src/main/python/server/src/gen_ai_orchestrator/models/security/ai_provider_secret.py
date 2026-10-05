@@ -21,7 +21,5 @@ class AIProviderSecret(BaseModel):
     """The AI provider secret"""
 
     secret: str = Field(
-        description='The AI provider secret.',
-        examples=['nt-123!-efg1'],
-        min_length=1
+        description='The AI provider secret.', examples=['nt-123!-efg1'], min_length=1
     )

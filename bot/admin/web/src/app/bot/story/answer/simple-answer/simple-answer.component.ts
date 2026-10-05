@@ -23,6 +23,7 @@ import { CreateI18nLabelRequest } from '../../../model/i18n';
 import { MediaDialogComponent } from './../../media/media-dialog.component';
 import { AnswerController } from './../../controller';
 import { DialogService } from '../../../../core-nlp/dialog.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'tock-simple-answer',
@@ -39,7 +40,7 @@ export class SimpleAnswerComponent implements OnInit {
   newAnswer: string;
   newMedia: Media;
 
-  constructor(public state: StateService, private bot: BotService, private dialog: DialogService) {}
+  constructor(public state: StateService, private bot: BotService, private dialog: DialogService, private transloco: TranslocoService) {}
 
   ngOnInit(): void {
     const _this = this;
@@ -58,10 +59,14 @@ export class SimpleAnswerComponent implements OnInit {
     answer.label.namespace = this.state.currentApplication.namespace;
 
     this.bot.saveI18nLabel(answer.label).subscribe((_) =>
-      this.dialog.notify(`Story label has been updated successfully.`, 'Label Updated', {
-        duration: 3000,
-        status: 'success'
-      })
+      this.dialog.notify(
+        this.transloco.translate('bot.simple-answer.updateLabelSuccessMessage'),
+        this.transloco.translate('bot.simple-answer.updateLabelSuccessTitle'),
+        {
+          duration: 3000,
+          status: 'success'
+        }
+      )
     );
   }
 

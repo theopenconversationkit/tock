@@ -90,7 +90,9 @@ async def get_document_compressor_provider_by_id(
     # Request validation
     validate_document_compressor_provider(http_request, provider_id)
 
-    return DocumentCompressorProviderResponse(provider=DocumentCompressorProvider(provider_id))
+    return DocumentCompressorProviderResponse(
+        provider=DocumentCompressorProvider(provider_id)
+    )
 
 
 @document_compressor_providers_router.get('/{provider_id}/setting/example')
@@ -119,13 +121,15 @@ async def get_document_compressor_provider_setting_by_id(
             max_documents=3,
             min_score=0.91002147,
             endpoint='http://localhost:8082',
-            label='LABEL_1'
+            label='LABEL_1',
         )
 
 
 @document_compressor_providers_router.post('/{provider_id}/setting/status')
 async def check_document_compressor_provider_setting(
-    http_request: Request, provider_id: str, request: DocumentCompressorProviderSettingStatusRequest
+    http_request: Request,
+    provider_id: str,
+    request: DocumentCompressorProviderSettingStatusRequest,
 ) -> ProviderSettingStatusResponse:
     """
     Check the validity of a given Document Compressor Provider Setting
@@ -157,7 +161,9 @@ async def check_document_compressor_provider_setting(
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
 
-def validate_query(http_request: Request, provider_id: str, setting: DocumentCompressorSetting):
+def validate_query(
+    http_request: Request, provider_id: str, setting: DocumentCompressorSetting
+):
     """
     Check the consistency of the Provider ID with the request body
     Args:
@@ -191,6 +197,8 @@ def validate_document_compressor_provider(http_request: Request, provider_id: st
     if not DocumentCompressorProvider.has_value(provider_id):
         raise GenAIUnknownDocumentCompressorProviderException(
             create_error_info_not_found(
-                http_request, provider_id, [provider.value for provider in DocumentCompressorProvider]
+                http_request,
+                provider_id,
+                [provider.value for provider in DocumentCompressorProvider],
             )
         )

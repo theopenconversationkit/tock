@@ -68,4 +68,3 @@ def test_parse_to_ai_provider_secret():
     json_str = '{"secret": "my_ai_secret"}'
     ai_provider_secret = parse_secret_data(json_str, AIProviderSecret)
     assert ai_provider_secret.secret == 'my_ai_secret'
-

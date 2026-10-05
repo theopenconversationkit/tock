@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """RAG Router Module"""
+
 import logging
 
 from fastapi import APIRouter, Request
@@ -26,7 +27,6 @@ from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions im
 from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_bad_request,
 )
-from gen_ai_orchestrator.models.rag.rag_models import LLMAnswer
 from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
     DocumentSearchParams,
     VectorStoreSetting,

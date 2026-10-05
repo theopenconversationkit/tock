@@ -12,10 +12,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-""""
+""" "
 Document Compressor Exception Module
 List of all Document Compressor exceptions managed by Gen AI Orchestrator
 """
+
 from typing import Optional
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
@@ -34,7 +35,9 @@ class GenAIUnknownDocumentCompressorProviderException(GenAIOrchestratorException
         super().__init__(ErrorCode.DOCUMENT_COMPRESSOR_UNKNOWN_PROVIDER, info)
 
 
-class GenAIUnknownDocumentCompressorProviderSettingException(GenAIOrchestratorException):
+class GenAIUnknownDocumentCompressorProviderSettingException(
+    GenAIOrchestratorException
+):
     """Unknown Document Compressor Provider Setting"""
 
     def __init__(self, info: Optional[ErrorInfo] = None):

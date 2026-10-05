@@ -16,7 +16,7 @@
 
 <div class="d-flex flex-wrap align-items-center">
   <h1 class="flex-grow-1">
-    Dialogs
+    {{ 'analytics.dialogs.title' | transloco }}
     <span
       *ngIf="count"
       class="font-weight-normal"
@@ -29,7 +29,7 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Refresh dialogs"
+      [nbTooltip]="'common.actions.refresh-dialogs' | transloco"
       (click)="refresh()"
     >
       <nb-icon icon="arrow-clockwise"></nb-icon>

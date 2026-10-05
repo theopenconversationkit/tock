@@ -36,6 +36,9 @@ from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 from gen_ai_orchestrator.models.vector_stores.vector_store_setting import (
     BaseVectorStoreSetting,
 )
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.full_text_search_retriever import (
+    FullTextSearchRetriever,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +62,9 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
         pass
 
     @abstractmethod
-    def get_vector_store_retriever(self, search_kwargs: dict, async_mode: Optional[bool] = True) -> VectorStoreRetriever:
+    def get_vector_store_retriever(
+        self, search_kwargs: dict, async_mode: Optional[bool] = True
+    ) -> VectorStoreRetriever:
         """
         Fabric the Vector Store and return it as retriever
         Args:
@@ -67,6 +72,12 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
             async_mode: enable/disable the async_mode for vector DB client (if supported). Default to True.
         :return: A VectorStoreRetriever.
         """
+        pass
+
+    @abstractmethod
+    def get_text_store_retriever(
+        self, search_kwargs: dict, async_mode: bool = True
+    ) -> FullTextSearchRetriever:
         pass
 
     @opensearch_exception_handler
@@ -82,19 +93,27 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
         """
         logger.info('Invoke vector store provider to check setting')
         documents: List[Document] = await self.get_vector_store().asimilarity_search(
-            query=application_settings.vector_store_test_query, k=application_settings.vector_store_test_max_docs_retrieved
+            query=application_settings.vector_store_test_query,
+            k=application_settings.vector_store_test_max_docs_retrieved,
         )
         logger.debug('Invocation successful')
-        logger.debug('[index: %s], [query: %s], [document count: %s]', self.index_name, application_settings.vector_store_test_query, len(documents))
-        if len(documents) > 0 :
+        logger.debug(
+            '[index: %s], [query: %s], [document count: %s]',
+            self.index_name,
+            application_settings.vector_store_test_query,
+            len(documents),
+        )
+        if len(documents) > 0:
             return True
         else:
             logger.warning('No documents retrieved from the Vector Store')
-            raise GenAIVectorStoreNoDocumentRetrievedException(ErrorInfo(
-                provider=self.setting.provider.value,
-                error='No documents retrieved',
-                cause='Index not found or data not ingested'
-            ))
+            raise GenAIVectorStoreNoDocumentRetrievedException(
+                ErrorInfo(
+                    provider=self.setting.provider.value,
+                    error='No documents retrieved',
+                    cause='Index not found or data not ingested',
+                )
+            )
 
     @abstractmethod
     async def check_vector_store_connection(self) -> bool:

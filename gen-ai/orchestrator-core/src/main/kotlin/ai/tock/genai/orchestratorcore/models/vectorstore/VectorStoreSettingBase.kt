@@ -52,7 +52,10 @@ abstract class VectorStoreSettingBase<T>(
     /**
      * Get search params (filter) params
      */
-    abstract fun getDocumentSearchParams(kNeighborsDocuments: Int): DocumentSearchParamsBase
+    abstract fun getDocumentSearchParams(
+        kNeighborsDocuments: Int,
+        documentSearchType: DocumentSearchType,
+    ): DocumentSearchParamsBase
 }
 
 typealias VectorStoreSettingDTO = VectorStoreSettingBase<String>
@@ -64,3 +67,9 @@ fun VectorStoreSetting.toDTO(): VectorStoreSettingDTO = VectorStoreSettingMapper
 abstract class DocumentSearchParamsBase(
     val provider: VectorStoreProvider,
 )
+
+enum class DocumentSearchType {
+    SIMILARITY_SEARCH,
+    FULL_TEXT_SEARCH,
+    HYBRID_SEARCH,
+}

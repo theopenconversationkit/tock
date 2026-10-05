@@ -23,6 +23,7 @@ import io.mockk.slot
 import io.mockk.verify
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
+import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import org.junit.jupiter.api.Test
 
 /**
@@ -33,7 +34,7 @@ class TockConnectorControllerTest {
     fun `test registerService install healthcheck`() {
         val botVerticle: BotVerticle = mockk()
         val serviceInstaller: BotVerticle.ServiceInstaller = mockk()
-        val capturedInstaller = slot<(Router) -> Unit>()
+        val capturedInstaller = slot<CoroutineRouterSupport.(Router) -> Unit>()
         every { botVerticle.registerServices(any(), capture(capturedInstaller)) } returns serviceInstaller
 
         val installer: (Router) -> Unit = mockk()
@@ -51,7 +52,7 @@ class TockConnectorControllerTest {
         every { router.get(any()) } returns route
         every { route.handler(any()) } returns route
 
-        capturedInstaller.invoke(router)
+        capturedInstaller.invoke(mockk(), router)
 
         verify { router.get("/path/healthcheck") }
         verify { installer.invoke(router) }

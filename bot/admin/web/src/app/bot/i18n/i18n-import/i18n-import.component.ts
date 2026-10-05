@@ -1,24 +1,9 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { FileValidators } from '../../../shared/validators';
 import { NbDialogRef, NbToastrService } from '@nebular/theme';
 import { RestService } from '../../../core-nlp/rest/rest.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'tock-i18n-import-action',
@@ -34,7 +19,12 @@ export class I18nImportComponent {
 
   @Output() onUploadComplete = new EventEmitter();
 
-  constructor(public dialogRef: NbDialogRef<I18nImportComponent>, private rest: RestService, private toastrService: NbToastrService) {}
+  constructor(
+    public dialogRef: NbDialogRef<I18nImportComponent>,
+    private rest: RestService,
+    private toastrService: NbToastrService,
+    private transloco: TranslocoService
+  ) {}
 
   form: FormGroup = new FormGroup({
     file: new FormControl<File[]>([], [Validators.required, FileValidators.mimeTypeSupported(['application/json', 'text/csv'])])
@@ -67,34 +57,33 @@ export class I18nImportComponent {
       }
 
       const formData = new FormData();
-
       formData.append('file', file);
 
       this.rest.postFormData(url, formData, null, true).subscribe({
         next: (nbLabelsImported: number) => {
           if (nbLabelsImported > 0) {
-            this.toastrService.success(nbLabelsImported + ' labels have been created or updated.', 'Labels Imported', {
-              duration: 5000
-            });
-
+            this.toastrService.success(
+              this.transloco.translate('bot.i18n-import.successMessage', { count: nbLabelsImported }),
+              this.transloco.translate('bot.i18n-import.successTitle'),
+              { duration: 5000 }
+            );
             this.onUploadComplete.emit();
           } else {
-            this.toastrService.danger('No label created or updated: file might be empty or no label is validated.', 'No Label Imported', {
-              duration: 5000
-            });
+            this.toastrService.danger(
+              this.transloco.translate('bot.i18n-import.noLabelImportedMessage'),
+              this.transloco.translate('bot.i18n-import.noLabelImportedTitle'),
+              { duration: 5000 }
+            );
           }
           this.uploading = false;
           this.dialogRef.close();
         },
         error: (error) => {
           this.toastrService.danger(
-            'The imported file has caused an error. Be sure to provide a valid dump file of answers labels.',
-            'An error occured',
-            {
-              duration: 5000
-            }
+            this.transloco.translate('bot.i18n-import.errorMessage'),
+            this.transloco.translate('bot.i18n-import.errorTitle'),
+            { duration: 5000 }
           );
-
           this.uploading = false;
         }
       });

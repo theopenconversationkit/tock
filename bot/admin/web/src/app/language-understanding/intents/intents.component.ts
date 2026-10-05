@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { saveAs } from 'file-saver-es';
 import { Component, OnInit } from '@angular/core';
 import { AddStateDialogComponent } from './add-state/add-state-dialog.component';
@@ -25,9 +9,10 @@ import { EntityDefinition, Intent, IntentsCategory } from '../../model/nlp';
 import { NlpService } from '../../core-nlp/nlp.service';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
-import { IntentDialogComponent } from '../intent-dialog/intent-dialog.component';
-import { ChoiceDialogComponent } from '../../shared/components';
+
+import { ChoiceDialogComponent, IntentDialogComponent } from '../../shared/components';
 import { getExportFileName } from '../../shared/utils';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'tock-intents',
@@ -44,7 +29,8 @@ export class IntentsComponent implements OnInit {
     public state: StateService,
     private nlp: NlpService,
     private dialog: DialogService,
-    private applicationService: ApplicationService
+    private applicationService: ApplicationService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit() {
@@ -112,26 +98,29 @@ export class IntentsComponent implements OnInit {
   }
 
   deleteIntent(intent: Intent): void {
-    const action = 'remove';
+    const action = this.transloco.translate('common.actions.delete');
     const dialogRef = this.dialog.openDialog(ChoiceDialogComponent, {
       context: {
-        title: `Remove the Intent ${intent.name}`,
-        subtitle: 'Are you sure?',
+        title: this.transloco.translate('lu.intents.dialog.remove-intent.title', { name: intent.name }),
+        subtitle: this.transloco.translate('lu.intents.dialog.remove-intent.subtitle'),
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
           { actionName: action, buttonStatus: 'danger' }
         ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === action) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         this.nlp.removeIntent(this.state.currentApplication, intent).subscribe(
           (_) => {
             this.state.removeIntent(intent);
-            this.dialog.notify(`Intent ${intent.name} removed`, 'Remove Intent');
+            this.dialog.notify(
+              this.transloco.translate('lu.intents.dialog.remove-intent.success', { name: intent.name }),
+              this.transloco.translate('lu.intents.dialog.remove-intent.success-title')
+            );
             this.updateFilteredIntents();
           },
-          (_) => this.dialog.notify(`Delete Intent ${intent.name} failed`)
+          (_) => this.dialog.notify(this.transloco.translate('lu.intents.dialog.remove-intent.failure', { name: intent.name }))
         );
       }
     });
@@ -141,10 +130,16 @@ export class IntentsComponent implements OnInit {
     this.nlp.removeState(this.state.currentApplication, event.intent, event.state).subscribe(
       (_) => {
         event.intent.mandatoryStates.splice(event.intent.mandatoryStates.indexOf(event.state), 1);
-        this.dialog.notify(`State ${event.state} removed from Intent ${event.intent.name}`, 'Remove State');
+        this.dialog.notify(
+          this.transloco.translate('lu.intents.dialog.remove-state.success', {
+            state: event.state,
+            intentName: event.intent.name
+          }),
+          this.transloco.translate('lu.intents.dialog.remove-state.success-title')
+        );
       },
       (_) => {
-        this.dialog.notify(`Remove State failed`);
+        this.dialog.notify(this.transloco.translate('lu.intents.dialog.remove-state.failure'));
       }
     );
   }
@@ -152,7 +147,7 @@ export class IntentsComponent implements OnInit {
   addState(intent: Intent): void {
     const dialogRef = this.dialog.openDialog(AddStateDialogComponent, {
       context: {
-        title: `Add a state for intent \"${intent.name}\"`
+        title: this.transloco.translate('lu.intents.dialog.add-state.title', { intentName: intent.name })
       }
     });
     dialogRef.onClose.subscribe((result) => {
@@ -160,11 +155,17 @@ export class IntentsComponent implements OnInit {
         intent.mandatoryStates.push(result.name);
         this.nlp.saveIntent(intent).subscribe(
           (response) => {
-            this.dialog.notify(`State ${response.name} added for Intent ${intent.name}`, 'Add State');
+            this.dialog.notify(
+              this.transloco.translate('lu.intents.dialog.add-state.success', {
+                state: response.name,
+                intentName: intent.name
+              }),
+              this.transloco.translate('lu.intents.dialog.add-state.success-title')
+            );
           },
           (_) => {
             intent.mandatoryStates.splice(intent.mandatoryStates.length - 1, 1);
-            this.dialog.notify(`Add State failed`);
+            this.dialog.notify(this.transloco.translate('lu.intents.dialog.add-state.failure'));
           }
         );
       }
@@ -173,25 +174,28 @@ export class IntentsComponent implements OnInit {
 
   removeEntity(event: { intent: Intent; entity: EntityDefinition }): void {
     const entityName = event.entity.qualifiedName(this.state.user);
-    const action = 'remove';
+    const action = this.transloco.translate('common.actions.delete');
     const dialogRef = this.dialog.openDialog(ChoiceDialogComponent, {
       context: {
-        title: `Remove the Entity ${entityName}`,
-        subtitle: 'Are you sure?',
+        title: this.transloco.translate('lu.intents.dialog.remove-entity.title', { entityName }),
+        subtitle: this.transloco.translate('lu.intents.dialog.remove-entity.subtitle'),
         actions: [
-          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
           { actionName: action, buttonStatus: 'danger' }
         ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === action) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         this.nlp.removeEntity(this.state.currentApplication, event.intent, event.entity).subscribe((deleted) => {
           this.state.currentApplication.intentById(event.intent._id).removeEntity(event.entity);
           if (deleted) {
             this.state.removeEntityTypeByName(event.entity.entityTypeName);
           }
-          this.dialog.notify(`Entity ${entityName} removed from intent`, 'Remove Entity');
+          this.dialog.notify(
+            this.transloco.translate('lu.intents.dialog.remove-entity.success', { entityName }),
+            this.transloco.translate('lu.intents.dialog.remove-entity.success-title')
+          );
         });
       }
     });
@@ -202,10 +206,13 @@ export class IntentsComponent implements OnInit {
     this.nlp.removeSharedIntent(this.state.currentApplication, event.intent, event.intentId).subscribe(
       (_) => {
         event.intent.sharedIntents.splice(event.intent.sharedIntents.indexOf(event.intentId), 1);
-        this.dialog.notify(`Shared Intent removed from Intent ${event.intent.name}`, 'Remove Intent');
+        this.dialog.notify(
+          this.transloco.translate('lu.intents.dialog.remove-shared-intent.success', { intentName: event.intent.name }),
+          this.transloco.translate('lu.intents.dialog.remove-shared-intent.success-title')
+        );
       },
       (_) => {
-        this.dialog.notify(`Remove Shared Intent failed`);
+        this.dialog.notify(this.transloco.translate('lu.intents.dialog.remove-shared-intent.failure'));
       }
     );
   }
@@ -214,7 +221,7 @@ export class IntentsComponent implements OnInit {
     this.selectedIntent = intent;
     const dialogRef = this.dialog.openDialog(AddSharedIntentDialogComponent, {
       context: {
-        title: `Add a shared intent to the intent \"${intent.name}\"`
+        title: this.transloco.translate('lu.intents.dialog.add-shared-intent.title', { intentName: intent.name })
       }
     });
 
@@ -233,11 +240,14 @@ export class IntentsComponent implements OnInit {
       intent.sharedIntents.push(intentId);
       this.nlp.saveIntent(intent).subscribe(
         (_) => {
-          this.dialog.notify(`Shared intent added for Intent ${intent.name}`, 'Add Shared Intent');
+          this.dialog.notify(
+            this.transloco.translate('lu.intents.dialog.add-shared-intent.success', { intentName: intent.name }),
+            this.transloco.translate('lu.intents.dialog.add-shared-intent.success-title')
+          );
         },
         (_) => {
-          intent.mandatoryStates.splice(intent.mandatoryStates.length - 1, 1);
-          this.dialog.notify(`Add Shared Intent failed`);
+          intent.sharedIntents.splice(intent.sharedIntents.length - 1, 1);
+          this.dialog.notify(this.transloco.translate('lu.intents.dialog.add-shared-intent.failure'));
         }
       );
     }
@@ -260,7 +270,10 @@ export class IntentsComponent implements OnInit {
           intent.name
         );
         saveAs(blob, exportFileName);
-        this.dialog.notify(`Dump provided`, 'Dump');
+        this.dialog.notify(
+          this.transloco.translate('lu.intents.dialog.download-sentences-dump.success'),
+          this.transloco.translate('lu.intents.dialog.download-sentences-dump.success-title')
+        );
       });
   }
 

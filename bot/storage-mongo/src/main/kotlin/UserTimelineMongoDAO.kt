@@ -20,6 +20,7 @@ import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.annotation.BotAnnotationEvent
 import ai.tock.bot.admin.annotation.BotAnnotationEventType
 import ai.tock.bot.admin.annotation.BotAnnotationState
+import ai.tock.bot.admin.dialog.CountByDateResult
 import ai.tock.bot.admin.dialog.CountResult
 import ai.tock.bot.admin.dialog.DialogRating
 import ai.tock.bot.admin.dialog.DialogReport
@@ -92,6 +93,7 @@ import com.mongodb.client.model.Filters.lte
 import com.mongodb.client.model.IndexOptions
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import org.bson.Document
 import org.bson.conversions.Bson
 import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.and
@@ -123,6 +125,7 @@ import org.litote.kmongo.lte
 import org.litote.kmongo.match
 import org.litote.kmongo.not
 import org.litote.kmongo.orderBy
+import org.litote.kmongo.project
 import org.litote.kmongo.pull
 import org.litote.kmongo.push
 import org.litote.kmongo.regex
@@ -1156,25 +1159,28 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     /**
-     * Counts user actions within dialogs for a given namespace and set of applications.
+     * Builds the MongoDB filters used to count user actions.
      *
-     * @param namespace the namespace
-     * @param applicationIds the set of application configuration.
-     * @param fromDate optional start date (inclusive).
-     * @param toDate optional end date (inclusive).
-     * @param intentType the type of intents to count.
-     * @param includeGenAIRag whether to include GenAI RAG user actions in the count.
+     * This method centralizes all common filtering logic:
+     * - filters only user actions
+     * - applies optional date range filtering
+     * - excludes GenAI RAG stories when requested
+     * - filters by intent type (KNOWN / UNKNOWN / all)
      *
-     * @return Counts grouped by applicationId
+     * @param fromDate optional start date (inclusive)
+     * @param toDate optional end date (inclusive)
+     * @param intentType filter on intent classification
+     * @param includeGenAIRag whether GenAI RAG actions should be included
+     *
+     * @return list of MongoDB Bson filters to apply in aggregation pipelines
      */
-    fun countUserActions(
-        namespace: String,
-        applicationIds: Set<String>,
-        fromDate: ZonedDateTime? = null,
-        toDate: ZonedDateTime? = null,
+
+    private fun buildUserActionFilters(
+        fromDate: ZonedDateTime?,
+        toDate: ZonedDateTime?,
         intentType: IntentTypeEnum,
         includeGenAIRag: Boolean,
-    ): List<CountResult> {
+    ): List<Bson> {
         val filters =
             mutableListOf<Bson>(
                 eq("stories.actions.playerId.type", "user"),
@@ -1197,7 +1203,86 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             else -> {}
         }
 
-        return runBlocking { buildAndExecuteCountPipeline(namespace, applicationIds, filters) }
+        return filters
+    }
+
+    /**
+     * Counts user actions grouped by applicationId and day.
+     *
+     * Each action is aggregated per application and per calendar day
+     * (based on action timestamp truncated to day precision in Europe/Paris timezone).
+     *
+     * @param namespace the namespace
+     * @param applicationIds the set of application configurations to include
+     * @param fromDate optional start date (inclusive)
+     * @param toDate optional end date (inclusive)
+     * @param intentType filter on intent classification (KNOWN / UNKNOWN / all)
+     * @param includeGenAIRag whether to include GenAI RAG user actions
+     *
+     * @return counts grouped by applicationId and date (yyyy-MM-dd)
+     */
+    fun countUserActionsByDate(
+        namespace: String,
+        applicationIds: Set<String>,
+        fromDate: ZonedDateTime? = null,
+        toDate: ZonedDateTime? = null,
+        intentType: IntentTypeEnum,
+        includeGenAIRag: Boolean,
+    ): List<CountByDateResult> {
+        val filters =
+            buildUserActionFilters(
+                fromDate = fromDate,
+                toDate = toDate,
+                intentType = intentType,
+                includeGenAIRag = includeGenAIRag,
+            )
+
+        return runBlocking {
+            buildAndExecuteCountByDatePipeline(
+                namespace,
+                applicationIds,
+                filters,
+            )
+        }
+    }
+
+    /**
+     * Counts user actions within dialogs for a given namespace and set of applications.
+     *
+     * Aggregation is performed per applicationId without date grouping.
+     *
+     * @param namespace the namespace
+     * @param applicationIds the set of application configurations
+     * @param fromDate optional start date (inclusive)
+     * @param toDate optional end date (inclusive)
+     * @param intentType filter on intent classification (KNOWN / UNKNOWN / all)
+     * @param includeGenAIRag whether to include GenAI RAG user actions in the count
+     *
+     * @return counts grouped by applicationId
+     */
+    fun countUserActions(
+        namespace: String,
+        applicationIds: Set<String>,
+        fromDate: ZonedDateTime? = null,
+        toDate: ZonedDateTime? = null,
+        intentType: IntentTypeEnum,
+        includeGenAIRag: Boolean,
+    ): List<CountResult> {
+        val filters =
+            buildUserActionFilters(
+                fromDate = fromDate,
+                toDate = toDate,
+                intentType = intentType,
+                includeGenAIRag = includeGenAIRag,
+            )
+
+        return runBlocking {
+            buildAndExecuteCountPipeline(
+                namespace,
+                applicationIds,
+                filters,
+            )
+        }
     }
 
     /**
@@ -1256,6 +1341,61 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 result.find { it.applicationId == appId } ?: CountResult(appId, 0)
             }
         return resultByAppId
+    }
+
+    private fun buildCountByDatePipeline(
+        namespace: String,
+        applicationIds: Set<String>,
+        filters: List<Bson>,
+    ): List<Bson> =
+        listOf(
+            match(
+                and(
+                    DialogCol::namespace eq namespace,
+                    DialogCol::applicationIds `in` applicationIds,
+                ),
+            ),
+            unwind("\$stories"),
+            unwind("\$stories.actions"),
+            match(and(filters)),
+            group(
+                Document(
+                    "applicationId",
+                    "\$stories.actions.applicationId",
+                ).append(
+                    "date",
+                    Document(
+                        "\$dateTrunc",
+                        Document("date", "\$stories.actions.date")
+                            .append("unit", "day")
+                            .append("timezone", "Europe/Paris"),
+                    ),
+                ),
+                sum("total", 1L),
+            ),
+            project(
+                Document()
+                    .append("applicationId", "\$_id.applicationId")
+                    .append(
+                        "date",
+                        Document(
+                            "\$dateToString",
+                            Document("format", "%Y-%m-%d")
+                                .append("date", "\$_id.date")
+                                .append("timezone", "Europe/Paris"),
+                        ),
+                    )
+                    .append("total", "\$total"),
+            ),
+        )
+
+    private suspend fun buildAndExecuteCountByDatePipeline(
+        namespace: String,
+        applicationIds: Set<String>,
+        filters: List<Bson>,
+    ): List<CountByDateResult> {
+        val pipeline = buildCountByDatePipeline(namespace, applicationIds, filters)
+        return dialogCol.aggregate<CountByDateResult>(pipeline).toList()
     }
 
     private fun applyDateFilters(
@@ -1336,9 +1476,9 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 nlpModel = query.applicationName,
             ).map { it.applicationId }.toSet()
 
-        // Get all user actions, including GenAI RAG interactions.
-        val allUserActions =
-            countUserActions(
+        // Get all user actions, including GenAI RAG interactions (by applicationId and date).
+        val allUserActionsByDate =
+            countUserActionsByDate(
                 namespace = query.namespace,
                 applicationIds = applicationIds,
                 fromDate = query.from,
@@ -1346,6 +1486,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 intentType = IntentTypeEnum.ALL,
                 includeGenAIRag = true,
             )
+
+        val allUserActions = allUserActionsByDate.toCountResults()
 
         // Get all user actions, excluding GenAI RAG interactions.
         val allUserActionsExceptRag =
@@ -1420,6 +1562,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
         return DialogStatsQueryResult(
             allUserActions = allUserActions,
+            allUserActionsByDate = allUserActionsByDate,
             allUserActionsExceptRag = allUserActionsExceptRag,
             allUserRagActions = allUserRagActions,
             knownIntentUserActions = allUserActionsOnlyKnownIntent,
@@ -1429,4 +1572,13 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             allFeedbackDown = allFeedbackDown,
         )
     }
+
+    fun List<CountByDateResult>.toCountResults(): List<CountResult> =
+        groupBy { it.applicationId }
+            .map { (applicationId, results) ->
+                CountResult(
+                    applicationId = applicationId,
+                    total = results.sumOf { it.total },
+                )
+            }
 }

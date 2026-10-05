@@ -1,20 +1,4 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<h1>Stories flow</h1>
+<h1>{{ 'analytics.flow.title' | transloco }}</h1>
 
 <nb-card class="mb-0">
   <nb-card-body [nbSpinner]="loading">
@@ -31,7 +15,7 @@
                 #dateRangeInput
                 nbInput
                 fieldSize="small"
-                placeholder="Pick date range"
+                [placeholder]="'analytics.flow.dateRangePlaceholder' | transloco"
                 [nbDatepicker]="dateRangePicker"
                 [(ngModel)]="range"
                 readonly
@@ -46,7 +30,7 @@
                   size="small"
                   ghost
                   [status]="getTimeRangeBttnStatus(range)"
-                  nbTooltip="Display flow for {{ range.tooltipLabel }}"
+                  [nbTooltip]="'analytics.flow.displayFlowTooltip' | transloco: { range: range.tooltipLabel }"
                   (click)="setTimeRange(range)"
                   class="px-2"
                 >
@@ -64,14 +48,14 @@
 
         <div class="row mt-2">
           <div class="col-3">
-            <nb-form-field nbTooltip="Select a display layout">
+            <nb-form-field [nbTooltip]="'analytics.flow.displayLayoutTooltip' | transloco">
               <nb-icon
                 nbPrefix
                 icon="activity"
               ></nb-icon>
               <nb-select
                 size="small"
-                placeholder="Display layout"
+                [placeholder]="'analytics.flow.displayLayoutPlaceholder' | transloco"
                 fullWidth
                 [(ngModel)]="layout"
                 (ngModelChange)="unselect()"
@@ -86,7 +70,7 @@
           </div>
 
           <div class="col-9 d-flex align-items-center pt-0">
-            <small class="text-muted text-nowrap my-0 mr-2">Mode :</small>
+            <small class="text-muted text-nowrap my-0 mr-2">{{ 'analytics.flow.modeLabel' | transloco }}</small>
             <nb-radio-group
               class="d-flex"
               name="mode"
@@ -96,14 +80,14 @@
               <nb-radio
                 class="text-nowrap smallHeight"
                 [value]="true"
-                nbTooltip="Show users flow (dynamic mode)"
-                >Users flow</nb-radio
+                [nbTooltip]="'analytics.flow.usersFlowTooltip' | transloco"
+                >{{ 'analytics.flow.usersFlowLabel' | transloco }}</nb-radio
               >
               <nb-radio
                 class="text-nowrap smallHeight"
                 [value]="false"
-                nbTooltip="Show available stories (static mode)"
-                >Static mode</nb-radio
+                [nbTooltip]="'analytics.flow.staticModeTooltip' | transloco"
+                >{{ 'analytics.flow.staticModeLabel' | transloco }}</nb-radio
               >
             </nb-radio-group>
           </div>
@@ -117,7 +101,7 @@
           pack="nebular-essentials"
           (click)="swapAdvanced()"
           class="pointer"
-          nbTooltip="Display advanced options"
+          [nbTooltip]="'analytics.flow.displayAdvancedOptionsTooltip' | transloco"
         ></nb-icon>
         <nb-icon
           *ngIf="advanced"
@@ -125,7 +109,7 @@
           pack="nebular-essentials"
           (click)="swapAdvanced()"
           class="pointer"
-          nbTooltip="Hide advanced options"
+          [nbTooltip]="'analytics.flow.hideAdvancedOptionsTooltip' | transloco"
         ></nb-icon>
       </div>
     </div>
@@ -140,9 +124,9 @@
         <div
           *ngIf="statsMode"
           class="col-6 mb-3 pt-1 d-flex align-items-center"
-          nbTooltip="Filter by Minimum Traffic through Node"
+          [nbTooltip]="'analytics.flow.minNodeTrafficTooltip' | transloco"
         >
-          <small class="text-muted text-nowrap mb-0 mr-2">Min. Node Traffic:</small>
+          <small class="text-muted text-nowrap mb-0 mr-2">{{ 'analytics.flow.minNodeTrafficLabel' | transloco }}</small>
           <input
             type="range"
             min="0"
@@ -156,9 +140,9 @@
         <div
           *ngIf="statsMode"
           class="col-6 mb-3 pt-1 d-flex align-items-center"
-          nbTooltip="Filter by Minimum Percentage of Transitions"
+          [nbTooltip]="'analytics.flow.minTransitionPercentageTooltip' | transloco"
         >
-          <small class="text-muted text-nowrap mb-0 mr-2">Min. Transition %:</small>
+          <small class="text-muted text-nowrap mb-0 mr-2">{{ 'analytics.flow.minTransitionPercentageLabel' | transloco }}</small>
           <input
             type="range"
             min="0"
@@ -173,8 +157,8 @@
           <nb-select
             fullWidth
             size="small"
-            placeholder="Story type filter"
-            nbTooltip="Filter by Story Type"
+            [placeholder]="'analytics.flow.storyTypeFilterPlaceholder' | transloco"
+            [nbTooltip]="'analytics.flow.storyTypeFilterTooltip' | transloco"
             [(ngModel)]="selectedTypeFilter"
             (selectedChange)="update()"
           >
@@ -183,10 +167,10 @@
               [value]="typeFilter"
               [disabled]="typeFilterCounters.get(typeFilter) < 1"
             >
-              <span nbTooltip="{{ typeFilter.description }}">
+              <span [nbTooltip]="typeFilter.description">
                 {{ typeFilter.name }}
-                <span *ngIf="typeFilterCounters.get(typeFilter) > 0"> ({{ typeFilterCounters.get(typeFilter) }})</span></span
-              >
+                <span *ngIf="typeFilterCounters.get(typeFilter) > 0"> ({{ typeFilterCounters.get(typeFilter) }})</span>
+              </span>
             </nb-option>
           </nb-select>
         </div>
@@ -194,8 +178,8 @@
         <div class="col-6 mb-2">
           <tock-select-bot
             [allowNoConfigurationSelection]="false"
-            noConnectorLabel="All Connectors"
-            noConfigurationLabel="All Configurations"
+            [noConnectorLabel]="'analytics.flow.allConnectorsLabel' | transloco"
+            [noConfigurationLabel]="'analytics.flow.allConfigurationsLabel' | transloco"
             (selectionChange)="selectedConfigurationChanged($event)"
             [disabled]="showAllConfigurations"
           >
@@ -206,8 +190,8 @@
           <nb-checkbox
             [(ngModel)]="showAllConfigurations"
             (change)="changeShowAllConfigurations()"
-            nbTooltip="Display all configurations at once (possible performance impact)"
-            >Display all configurations</nb-checkbox
+            [nbTooltip]="'analytics.flow.displayAllConfigurationsTooltip' | transloco"
+            >{{ 'analytics.flow.displayAllConfigurationsLabel' | transloco }}</nb-checkbox
           >
         </div>
 
@@ -221,8 +205,8 @@
               *ngIf="!statsMode"
               size="small"
               fullWidth
-              placeholder="Story Focus"
-              nbTooltip="Focus on a particular story"
+              [placeholder]="'analytics.flow.storyFocusPlaceholder' | transloco"
+              [nbTooltip]="'analytics.flow.storyFocusTooltip' | transloco"
               [(selected)]="selectedStory"
               (selectedChange)="update()"
             >
@@ -245,7 +229,7 @@
                 {{ selectedStory.storyName }}
               </nb-select-label>
 
-              <nb-option [value]="undefined">All</nb-option>
+              <nb-option [value]="undefined">{{ 'analytics.flow.allStoriesOption' | transloco }}</nb-option>
 
               <nb-option
                 *ngFor="let entry of storiesById | keyvalue"
@@ -255,19 +239,19 @@
               >
                 <nb-icon
                   *ngIf="entry.value.isBuiltIn()"
-                  nbTooltip="BuiltIn"
+                  [nbTooltip]="'analytics.flow.builtInTooltip' | transloco"
                   icon="box"
                   class="mr-1"
                 ></nb-icon>
                 <nb-icon
                   *ngIf="entry.value.isSimpleAnswer()"
-                  nbTooltip="Message"
+                  [nbTooltip]="'analytics.flow.messageTooltip' | transloco"
                   icon="chat-left"
                   class="mr-1"
                 ></nb-icon>
                 <nb-icon
                   *ngIf="entry.value.isScriptAnswer()"
-                  nbTooltip="Script"
+                  [nbTooltip]="'analytics.flow.scriptTooltip' | transloco"
                   icon="code"
                   class="mr-1"
                 ></nb-icon>
@@ -278,8 +262,8 @@
               *ngIf="statsMode"
               size="small"
               fullWidth
-              placeholder="Story Focus"
-              nbTooltip="Focus on a particular story"
+              [placeholder]="'analytics.flow.storyFocusPlaceholder' | transloco"
+              [nbTooltip]="'analytics.flow.storyFocusTooltip' | transloco"
               [(ngModel)]="selectedStory"
               (selectedChange)="update()"
             >
@@ -307,7 +291,7 @@
                 <span class="story-label">{{ selectedStory.storyName }}</span>
               </nb-select-label>
 
-              <nb-option [value]="undefined">All</nb-option>
+              <nb-option [value]="undefined">{{ 'analytics.flow.allStoriesOption' | transloco }}</nb-option>
 
               <nb-option
                 *ngFor="let entry of nodesById | keyvalue"
@@ -317,25 +301,25 @@
               >
                 <nb-icon
                   *ngIf="entry.value.isBuiltIn()"
-                  nbTooltip="BuiltIn"
+                  [nbTooltip]="'analytics.flow.builtInTooltip' | transloco"
                   icon="box"
                   class="mr-1"
                 ></nb-icon>
                 <nb-icon
                   *ngIf="entry.value.isSimpleAnswer()"
-                  nbTooltip="Message"
+                  [nbTooltip]="'analytics.flow.messageTooltip' | transloco"
                   icon="chat-left"
                   class="mr-1"
                 ></nb-icon>
                 <nb-icon
                   *ngIf="entry.value.isScriptAnswer()"
-                  nbTooltip="Script"
+                  [nbTooltip]="'analytics.flow.scriptTooltip' | transloco"
                   icon="code"
                   class="mr-1"
                 ></nb-icon>
                 <nb-icon
                   *ngIf="entry.value.storyType === undefined"
-                  nbTooltip="Unknown Type"
+                  [nbTooltip]="'analytics.flow.unknownTypeTooltip' | transloco"
                   icon="question-circle"
                   class="mr-1"
                 ></nb-icon>
@@ -352,14 +336,14 @@
           <nb-select
             size="small"
             fullWidth
-            placeholder="Direction : Both"
-            nbTooltip="Choose direction"
+            [placeholder]="'analytics.flow.directionPlaceholder' | transloco"
+            [nbTooltip]="'analytics.flow.directionTooltip' | transloco"
             [(ngModel)]="direction"
             (selectedChange)="update()"
           >
-            <nb-option [value]="undefined">Direction : Both</nb-option>
-            <nb-option [value]="-1">Direction : Outcoming</nb-option>
-            <nb-option [value]="1">Direction : Incoming</nb-option>
+            <nb-option [value]="undefined">{{ 'analytics.flow.directionBothOption' | transloco }}</nb-option>
+            <nb-option [value]="-1">{{ 'analytics.flow.directionOutcomingOption' | transloco }}</nb-option>
+            <nb-option [value]="1">{{ 'analytics.flow.directionIncomingOption' | transloco }}</nb-option>
           </nb-select>
         </div>
 
@@ -370,8 +354,8 @@
           <nb-checkbox
             [(ngModel)]="entity"
             (change)="update()"
-            nbTooltip="View more Nodes by Entity values"
-            >Entity</nb-checkbox
+            [nbTooltip]="'analytics.flow.entityTooltip' | transloco"
+            >{{ 'analytics.flow.entityLabel' | transloco }}</nb-checkbox
           >
         </div>
 
@@ -382,8 +366,8 @@
           <nb-checkbox
             [(ngModel)]="step"
             (change)="update()"
-            nbTooltip="View more Nodes by Step"
-            >Step</nb-checkbox
+            [nbTooltip]="'analytics.flow.stepTooltip' | transloco"
+            >{{ 'analytics.flow.stepLabel' | transloco }}</nb-checkbox
           >
         </div>
 
@@ -394,8 +378,8 @@
           <nb-checkbox
             [(ngModel)]="intent"
             (change)="update()"
-            nbTooltip="View more Nodes by Intent"
-            >Intent</nb-checkbox
+            [nbTooltip]="'analytics.flow.intentTooltip' | transloco"
+            >{{ 'analytics.flow.intentLabel' | transloco }}</nb-checkbox
           >
         </div>
 
@@ -406,8 +390,8 @@
           <nb-checkbox
             [(ngModel)]="displayDisabled"
             (change)="update()"
-            nbTooltip="Include Stories Disabled by Rules"
-            >Show disabled stories</nb-checkbox
+            [nbTooltip]="'analytics.flow.displayDisabledTooltip' | transloco"
+            >{{ 'analytics.flow.displayDisabledLabel' | transloco }}</nb-checkbox
           >
         </div>
 
@@ -418,8 +402,8 @@
           <nb-checkbox
             [(ngModel)]="displayTests"
             (change)="reload()"
-            nbTooltip="Include Test Flow"
-            >Display tests</nb-checkbox
+            [nbTooltip]="'analytics.flow.displayTestsTooltip' | transloco"
+            >{{ 'analytics.flow.displayTestsLabel' | transloco }}</nb-checkbox
           >
         </div>
 
@@ -430,8 +414,8 @@
           <nb-checkbox
             [(ngModel)]="mergeOldStories"
             (change)="update()"
-            nbTooltip="Merge Old Stats to Latest Stories when possible"
-            >Merge to latest stories</nb-checkbox
+            [nbTooltip]="'analytics.flow.mergeOldStoriesTooltip' | transloco"
+            >{{ 'analytics.flow.mergeOldStoriesLabel' | transloco }}</nb-checkbox
           >
         </div>
 
@@ -442,8 +426,8 @@
           <nb-checkbox
             [(ngModel)]="recursive"
             (change)="update()"
-            nbTooltip="Display Recursive Transitions from each Node to itself"
-            >Display recursive transitions</nb-checkbox
+            [nbTooltip]="'analytics.flow.displayRecursiveTransitionsTooltip' | transloco"
+            >{{ 'analytics.flow.displayRecursiveTransitionsLabel' | transloco }}</nb-checkbox
           >
         </div>
 
@@ -451,8 +435,8 @@
           <nb-checkbox
             [(ngModel)]="displayNodeType"
             (change)="updateCount()"
-            nbTooltip="Display Story Type icon on each Node"
-            >Display story type</nb-checkbox
+            [nbTooltip]="'analytics.flow.displayNodeTypeTooltip' | transloco"
+            >{{ 'analytics.flow.displayNodeTypeLabel' | transloco }}</nb-checkbox
           >
         </div>
 
@@ -463,8 +447,8 @@
           <nb-checkbox
             [(ngModel)]="displayNodeCount"
             (change)="updateCount()"
-            nbTooltip="Display Story trafic on each Node"
-            >Display stories traffic</nb-checkbox
+            [nbTooltip]="'analytics.flow.displayNodeCountTooltip' | transloco"
+            >{{ 'analytics.flow.displayNodeCountLabel' | transloco }}</nb-checkbox
           >
         </div>
 
@@ -475,16 +459,16 @@
           <nb-checkbox
             [(ngModel)]="intent"
             (change)="updateCount()"
-            nbTooltip="Display Story Main Intent on each Node"
-            >Display main intents</nb-checkbox
+            [nbTooltip]="'analytics.flow.displayMainIntentsTooltip' | transloco"
+            >{{ 'analytics.flow.displayMainIntentsLabel' | transloco }}</nb-checkbox
           >
         </div>
 
         <div class="col-3 mb-2 pt-1">
           <nb-checkbox
             [(ngModel)]="displayDebug"
-            nbTooltip="Display Debug stats"
-            >Display debug stats</nb-checkbox
+            [nbTooltip]="'analytics.flow.displayDebugStatsTooltip' | transloco"
+            >{{ 'analytics.flow.displayDebugStatsLabel' | transloco }}</nb-checkbox
           >
         </div>
 
@@ -492,9 +476,15 @@
           class="col-6 mb-2 pt-1"
           *ngIf="displayDebug"
         >
-          <span *ngIf="nodesById || storiesById"> Total Stories: {{ statsMode ? nodesById.size : storiesById.size }} | </span>
-          <span *ngIf="nodesById || storiesById"> Filtered Stories: {{ allNodes.length }} | </span>
-          <span *ngIf="allTransitionsSize"> Filtered Transitions: {{ allTransitionsSize }} </span>
+          <span *ngIf="nodesById || storiesById">
+            {{ 'analytics.flow.totalStoriesLabel' | transloco: { count: statsMode ? nodesById.size : storiesById.size } }} |
+          </span>
+          <span *ngIf="nodesById || storiesById">
+            {{ 'analytics.flow.filteredStoriesLabel' | transloco: { count: allNodes.length } }} |
+          </span>
+          <span *ngIf="allTransitionsSize">
+            {{ 'analytics.flow.filteredTransitionsLabel' | transloco: { count: allTransitionsSize } }}
+          </span>
         </div>
       </div>
     </div>
@@ -528,7 +518,7 @@
         class="text-center text-warning p-5"
         *ngIf="!statsMode"
       >
-        Sankey layout is not suitable for static mode
+        {{ 'analytics.flow.sankeyWarning' | transloco }}
       </div>
       <div
         echarts

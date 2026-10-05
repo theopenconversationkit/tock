@@ -39,7 +39,6 @@ import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.auth.spi.CASAuthProviderFactory
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
@@ -61,6 +60,9 @@ import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.ext.web.handler.ErrorHandler
 import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
+import io.vertx.kotlin.coroutines.CoroutineVerticle
+import io.vertx.kotlin.coroutines.awaitBlocking
+import io.vertx.kotlin.coroutines.coAwait
 import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -76,7 +78,7 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
 /**
  * Base class for web Tock [io.vertx.core.Verticle]s. Provides utility methods.
  */
-abstract class WebVerticle : AbstractVerticle() {
+abstract class WebVerticle : CoroutineVerticle() {
     companion object {
         fun unauthorized(): Nothing = throw UnauthorizedException()
 
@@ -211,49 +213,35 @@ abstract class WebVerticle : AbstractVerticle() {
         return result
     }
 
-    override fun start(promise: Promise<Void>) {
-        // Handle server started event by emitting an eventbus message to address 'server.started'
-        promise.future()
-            .onComplete { ar ->
-                vertx.eventBus().publish(ServerStatus.SERVER_STARTED, ar.succeeded())
+    override suspend fun start() {
+        awaitBlocking {
+            try {
+                router.route().handler(bodyHandler())
+                addDevCorsHandler()
+                cachedAuthProvider?.also { pvd -> addAuth(pvd) }
+
+                healthcheckPath?.let { path -> router.get(path).handler(healthcheck()) }
+                livenesscheckPath?.let { path -> router.get(path).handler(livenesscheck()) }
+                readinesscheckPath?.let { path -> router.get(path).handler(readinesscheck()) }
+
+                configure()
+            } catch (t: JsonProcessingException) {
+                logger.error(t)
+                throw BadRequestException(t.message ?: "")
+            } catch (t: Throwable) {
+                logger.error(t)
+                throw t
             }
-
-        vertx.blocking<Unit>(
-            { p: Promise<Unit> ->
-                try {
-                    router.route().handler(bodyHandler())
-                    addDevCorsHandler()
-                    cachedAuthProvider?.also { pvd -> addAuth(pvd) }
-
-                    healthcheckPath?.let { path -> router.get(path).handler(healthcheck()) }
-                    livenesscheckPath?.let { path -> router.get(path).handler(livenesscheck()) }
-                    readinesscheckPath?.let { path -> router.get(path).handler(readinesscheck()) }
-
-                    configure()
-                    p.complete()
-                } catch (t: JsonProcessingException) {
-                    logger.error(t)
-                    p.fail(BadRequestException(t.message ?: ""))
-                } catch (t: Throwable) {
-                    logger.error(t)
-                    p.fail(t)
-                } finally {
-                    p.tryFail("call not completed")
-                }
-            },
-            { ar ->
-                if (ar.succeeded()) {
-                    startServer(promise)
-                } else {
-                    promise.fail(ar.cause())
-                }
-            },
-        )
+        }
+        Future.future(this::startServer).coAwait()
+        // Handle server started event by emitting an eventbus message to address 'server.started'
+        vertx.eventBus().publish(ServerStatus.SERVER_STARTED, true)
     }
 
-    override fun stop() {
+    override suspend fun stop() {
         server.close()
             .onComplete { ar -> logger.info { "$verticleName stopped result : ${ar.succeeded()}" } }
+            .coAwait()
     }
 
     fun addAuth(
@@ -330,27 +318,27 @@ abstract class WebVerticle : AbstractVerticle() {
             }
     }
 
-    private fun verticleProperty(propertyName: String) = "${verticleName.lowercase()}_$propertyName"
+    protected open fun verticlePropertyName(propertyName: String) = "${verticleName.lowercase()}_$propertyName"
 
     protected fun verticleIntProperty(
         propertyName: String,
         defaultValue: Int,
-    ): Int = intProperty(verticleProperty(propertyName), defaultValue)
+    ): Int = intProperty(verticlePropertyName(propertyName), defaultValue)
 
     protected fun verticleLongProperty(
         propertyName: String,
         defaultValue: Long,
-    ): Long = longProperty(verticleProperty(propertyName), defaultValue)
+    ): Long = longProperty(verticlePropertyName(propertyName), defaultValue)
 
     protected fun verticleBooleanProperty(
         propertyName: String,
         defaultValue: Boolean,
-    ): Boolean = booleanProperty(verticleProperty(propertyName), defaultValue)
+    ): Boolean = booleanProperty(verticlePropertyName(propertyName), defaultValue)
 
     protected fun verticleProperty(
         propertyName: String,
         defaultValue: String,
-    ): String = property(verticleProperty(propertyName), defaultValue)
+    ): String = property(verticlePropertyName(propertyName), defaultValue)
 
     protected fun register(
         method: HttpMethod,

@@ -28,7 +28,7 @@ export class ChoiceDialogComponent implements OnInit {
   @Input() subtitle: string;
   @Input() list?: string[];
   @Input() cancellable: boolean = true;
-  @Input() actions: { actionName: string; buttonStatus?: string; ghost?: boolean }[];
+  @Input() actions: { actionName: string; buttonStatus?: string; ghost?: boolean; returnValue?: any }[];
 
   constructor(public dialogRef: NbDialogRef<ChoiceDialogComponent>) {}
 
@@ -37,5 +37,14 @@ export class ChoiceDialogComponent implements OnInit {
       if (!actionDef.buttonStatus) actionDef.buttonStatus = 'primary';
       if (actionDef.ghost == null) actionDef.ghost = false;
     });
+  }
+
+  handleCloseAction(actionDef) {
+    if (typeof actionDef.returnValue != 'undefined') {
+      this.dialogRef.close(actionDef.returnValue);
+      return;
+    }
+
+    this.dialogRef.close(actionDef.actionName.toLowerCase());
   }
 }

@@ -36,6 +36,7 @@ open class SendSentenceWithFootnotes(
     state: EventState = EventState(),
     metadata: ActionMetadata = ActionMetadata(),
     override var annotation: BotAnnotation? = null,
+    val ragDebug: Any? = null,
 ) :
     Action(playerId, recipientId, applicationId, id, date, state, metadata) {
     @Deprecated(
@@ -66,6 +67,7 @@ open class SendSentenceWithFootnotes(
         metadata: ActionMetadata = ActionMetadata(),
         annotation: BotAnnotation? = null,
         _deprecatedConstructor: Nothing? = null,
+        ragDebug: Any? = null,
     ) : this(playerId, applicationId, recipientId, text, footnotes, id, date, state, metadata, annotation)
 
     override fun toMessage(): Message = SentenceWithFootnotes(text.toString(), footnotes.toList())

@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.verticle
 
+import ai.tock.bot.admin.model.Valid
 import ai.tock.bot.admin.model.evaluation.ChangeStatusRequest
 import ai.tock.bot.admin.model.evaluation.CreateEvaluationSampleRequest
 import ai.tock.bot.admin.model.evaluation.EvaluateRequest
@@ -60,6 +61,7 @@ class EvaluationVerticle : AbstractNamespaceRetriever() {
                         val botId = context.pathParam("botId")
                         val namespace = context.organization
                         val createdBy = context.userLogin
+                        Valid(request)
                         EvaluationService.createEvaluationSample(namespace, botId, request, createdBy)
                     }
                 context.response().statusCode = 201

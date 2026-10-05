@@ -19,7 +19,7 @@
     <parent>
         <artifactId>tock-bot</artifactId>
         <groupId>ai.tock</groupId>
-        <version>26.3.2-SNAPSHOT</version>
+        <version>26.3.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -56,6 +56,10 @@
         <dependency>
             <groupId>org.litote.kmongo</groupId>
             <artifactId>kmongo-async</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-lang-kotlin-coroutines</artifactId>
         </dependency>
 
         <dependency>

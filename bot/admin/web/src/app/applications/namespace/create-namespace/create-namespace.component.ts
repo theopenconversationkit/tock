@@ -57,7 +57,7 @@ export class CreateNamespaceComponent implements OnInit, OnDestroy {
   }
 
   public noWhitespaceValidator(control: FormControl) {
-    return (control.value || '').trim().length ? null : { custom: 'Only whitespace characters are not allowed' };
+    return (control.value || '').trim().length ? null : { custom: 'Whitespace characters are not allowed' };
   }
 
   private buildTechnicalName(value: string): string {

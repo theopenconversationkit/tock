@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<h1>Intents</h1>
+<h1>{{ 'lu.intents.title' | transloco }}</h1>
 
 <tock-intents-filters (onFilter)="filterIntents($event)"></tock-intents-filters>
 
@@ -22,7 +22,7 @@
   *ngIf="filteredIntents && !filteredIntents.length"
   class="text-center font-italic"
 >
-  No intent found
+  {{ 'lu.intents.no-intent-found' | transloco }}
 </div>
 
 <nb-card

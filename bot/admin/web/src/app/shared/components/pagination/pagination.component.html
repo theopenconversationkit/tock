@@ -18,7 +18,7 @@
   <div>
     <nb-select
       size="small"
-      nbTooltip="Items per page"
+      [nbTooltip]="'shared.pagination.items-per-page' | transloco"
       [(selected)]="pagination.size"
       (selectedChange)="paginationSize()"
     >
@@ -31,13 +31,13 @@
     </nb-select>
   </div>
 
-  <div class="mx-2">{{ paginationString() }}</div>
+  <div class="mx-2">{{ paginationSummary }}</div>
 
   <div class="d-flex">
     <button
       *ngIf="showPrevious()"
       nbButton
-      nbTooltip="Previous page"
+      [nbTooltip]="'shared.pagination.previous-page' | transloco"
       ghost
       shape="round"
       (click)="paginationPrevious()"
@@ -60,7 +60,7 @@
     <button
       *ngIf="showNext()"
       nbButton
-      nbTooltip="Next page"
+      [nbTooltip]="'shared.pagination.next-page' | transloco"
       ghost
       shape="round"
       (click)="paginationNext()"

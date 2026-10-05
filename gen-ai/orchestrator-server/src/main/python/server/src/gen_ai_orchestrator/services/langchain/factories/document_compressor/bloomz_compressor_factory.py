@@ -40,13 +40,12 @@ class BloomzCompressorFactory(DocumentCompressorFactory):
             label=self.setting.label,
             timeout=application_settings.compressor_provider_timeout,
             fill_to_max_documents=self.setting.fill_to_max_documents,
-            is_fault_tolerant=self.is_fault_tolerant
+            is_fault_tolerant=self.is_fault_tolerant,
         )
 
     def check_document_compressor_setting(self) -> bool:
         self.get_compressor().compress_documents(
-            documents=[Document(page_content='Hello, world!')],
-            query='Hi!'
+            documents=[Document(page_content='Hello, world!')], query='Hi!'
         )
 
         return True

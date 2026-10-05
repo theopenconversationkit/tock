@@ -63,6 +63,7 @@ import { AnalyticsRoutingModule } from './analytics-routing.module';
 import { DialogsListComponent } from './dialogs/dialogs-list/dialogs-list.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DialogsListFiltersComponent } from './dialogs/dialogs-list/dialogs-list-filters/dialogs-list-filters.component';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @NgModule({
   schemas: [NO_ERRORS_SCHEMA],
@@ -101,7 +102,8 @@ import { DialogsListFiltersComponent } from './dialogs/dialogs-list/dialogs-list
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
     }),
-    NbPopoverModule
+    NbPopoverModule,
+    TranslocoModule
   ],
   declarations: [
     AnalyticsTabsComponent,
@@ -121,6 +123,11 @@ import { DialogsListFiltersComponent } from './dialogs/dialogs-list/dialogs-list
     DialogComponent
   ],
   exports: [],
-  providers: [AnalyticsService]
+  providers: [
+    AnalyticsService,
+    provideTranslocoScope({
+      scope: 'analytics'
+    })
+  ]
 })
 export class BotAnalyticsModule {}

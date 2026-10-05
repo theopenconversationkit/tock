@@ -1,31 +1,15 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card
   *ngIf="(botConfiguration.restConfigurations | async).length === 0"
   class="plans"
 >
-  No bot configuration detected
+  {{ 'test.test-plan.noBotConfiguration' | transloco }}
 </nb-card>
 
 <nb-card
   *ngIf="xray"
   class="plans"
 >
-  <nb-card-header>Execute XRay plan</nb-card-header>
+  <nb-card-header>{{ 'test.test-plan.executeXRayPlanTitle' | transloco }}</nb-card-header>
   <nb-card-body>
     <tock-select-bot
       [configurationId]="xrayBotConfigurationId"
@@ -38,17 +22,17 @@
       nbInput
       status="primary"
       class="input-text"
-      placeholder="JIRA Test Plan"
+      [placeholder]="'test.test-plan.jiraTestPlanPlaceholder' | transloco"
       [(ngModel)]="xray.testPlanKey"
       (keyup.enter)="executeXRay()"
     />
 
     <button
-      nbbutton
+      nbButton
       (click)="executeXRay()"
       color="primary"
     >
-      Create
+      {{ 'test.test-plan.createButton' | transloco }}
     </button>
     <div *ngIf="executeXray">
       <br />
@@ -65,8 +49,8 @@
   *ngIf="(botConfiguration.restConfigurations | async).length !== 0"
   class="plans"
 >
-  <nb-card-header style="display: flex"
-    >Test Plans
+  <nb-card-header style="display: flex">
+    {{ 'test.test-plan.testPlansTitle' | transloco }}
     <nb-actions
       size="small"
       style="cursor: pointer"
@@ -75,7 +59,7 @@
         class="control-item"
         (click)="prepareCreateTestPlan()"
         *ngIf="!testPlanCreation"
-        nbTooltip="Create a new Test Plan"
+        [nbTooltip]="'test.test-plan.createTestPlanTooltip' | transloco"
       >
         <nb-icon icon="plus-square"></nb-icon>
       </nb-action>
@@ -88,7 +72,7 @@
     >
       <input
         nbInput
-        placeholder="Test Plan name"
+        [placeholder]="'test.test-plan.testPlanNamePlaceholder' | transloco"
         status="primary"
         class="input-new-plan"
         [(ngModel)]="testPlanName"
@@ -106,7 +90,7 @@
         <nb-action
           class="control-item"
           (click)="createTestPlan()"
-          nbTooltip="Create"
+          [nbTooltip]="'test.test-plan.createTooltip' | transloco"
           class="create"
         >
           <nb-icon
@@ -117,7 +101,7 @@
         <nb-action
           class="control-item"
           (click)="resetCreateTestPlan()"
-          nbTooltip="Cancel"
+          [nbTooltip]="'test.test-plan.cancelTooltip' | transloco"
         >
           <nb-icon
             icon="x-circle"
@@ -141,7 +125,7 @@
               ghost
               (click)="exec(p)"
               style="color: #73a1ff"
-              nbTooltip="Launch"
+              [nbTooltip]="'test.test-plan.launchTooltip' | transloco"
             >
               <nb-icon icon="box-arrow-up-right"></nb-icon>
             </button>
@@ -160,7 +144,7 @@
               <nb-action
                 class="control-item"
                 (click)="deleteTestPlan(p)"
-                nbTooltip="Delete"
+                [nbTooltip]="'test.test-plan.deleteTooltip' | transloco"
               >
                 <nb-icon
                   icon="trash"
@@ -170,7 +154,7 @@
             </nb-actions>
           </div>
           <div style="font-size: 14px; font-weight: 300; margin-top: 10px">
-            {{ p.dialogs.length }} Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
+            {{ 'test.test-plan.conversationsLabel' | transloco: { count: p.dialogs.length } }}
             <span *ngIf="p.dialogs.length !== 0">
               -
               <button
@@ -179,7 +163,7 @@
                 (click)="showDialogs(p)"
               >
                 <nb-icon icon="eye"></nb-icon>
-                Display Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
+                {{ 'test.test-plan.displayConversationsButton' | transloco: { count: p.dialogs.length } }}
               </button>
               <button
                 *ngIf="p.displayDialog"
@@ -187,16 +171,16 @@
                 (click)="hideDialogs(p)"
               >
                 <nb-icon icon="eye-slash"></nb-icon>
-                Hide Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
+                {{ 'test.test-plan.hideConversationsButton' | transloco: { count: p.dialogs.length } }}
               </button>
             </span>
-            <span *ngIf="p.dialogs.length === 0"> - you can add dialogs via the Analytics menu. </span>
+            <span *ngIf="p.dialogs.length === 0">{{ 'test.test-plan.noDialogsLabel' | transloco }}</span>
           </div>
         </nb-card-header>
         <nb-card-body>
           <ol *ngIf="p.displayDialog">
             <li *ngFor="let d of p.dialogs">
-              <span *ngIf="d.actions.length === 0"> (no content) </span>
+              <span *ngIf="d.actions.length === 0">{{ 'test.test-plan.noContentLabel' | transloco }}</span>
               <span *ngIf="d.actions.length !== 0">
                 <tock-chat-ui-message
                   [message]="d.actions[0].messages[0]"
@@ -211,7 +195,7 @@
                 (click)="d.displayActions = true"
               >
                 <nb-icon icon="eye"></nb-icon>
-                Display all sentences
+                {{ 'test.test-plan.displayAllSentencesButton' | transloco }}
               </button>
               <button
                 *ngIf="d.displayActions"
@@ -219,7 +203,7 @@
                 (click)="d.displayActions = false"
               >
                 <nb-icon icon="eye-slash"></nb-icon>
-                Hide all sentences
+                {{ 'test.test-plan.hideAllSentencesButton' | transloco }}
               </button>
               <button
                 nbButton
@@ -227,7 +211,7 @@
                 color="warn"
               >
                 <nb-icon icon="trash"></nb-icon>
-                Remove dialog
+                {{ 'test.test-plan.removeDialogButton' | transloco }}
               </button>
               <tock-chat-ui *ngIf="d.displayActions">
                 <ng-container *ngFor="let action of d.toDialogReport().actions">
@@ -236,7 +220,7 @@
                     [date]="action.date"
                     [reply]="action.isBot()"
                     [replay]="true"
-                    [sender]="getUserName(action)"
+                    [sender]="getUserNameKey(action) | transloco"
                     [avatar]="getUserAvatar(action)"
                   ></tock-chat-ui-message>
                 </ng-container>
@@ -247,8 +231,8 @@
           <nb-accordion *ngIf="p.testPlanExecutions && p.testPlanExecutions.length > 0">
             <nb-accordion-item>
               <nb-accordion-item-header>
-                {{ p.testPlanExecutions.length }} Executions
-                <span class="last-execution-status">&nbsp;- last execution status :</span>
+                {{ 'test.test-plan.executionsTitle' | transloco: { count: p.testPlanExecutions.length } }}
+                <span class="last-execution-status">{{ 'test.test-plan.lastExecutionStatusLabel' | transloco }}</span>
                 <span *ngIf="p.testPlanExecutions[0].nbErrors === 0">
                   <nb-icon
                     icon="check-circle"
@@ -272,7 +256,7 @@
                       (click)="e.displayExecution = true"
                     >
                       <nb-icon icon="eye"></nb-icon>
-                      Display details
+                      {{ 'test.test-plan.displayDetailsButton' | transloco }}
                     </button>
                     <button
                       *ngIf="e.displayExecution"
@@ -280,22 +264,22 @@
                       (click)="e.displayExecution = false"
                     >
                       <nb-icon icon="eye-slash"></nb-icon>
-                      Hide details
+                      {{ 'test.test-plan.hideDetailsButton' | transloco }}
                     </button>
                     <span *ngIf="e.nbErrors === 0">
                       <nb-icon
                         icon="check-circle"
                         status="success"
                       ></nb-icon>
-                      {{ e.dialogs.length }} conversation{{ e.dialogs.length < 2 ? '' : 's' }}
+                      {{ 'test.test-plan.executionSuccessLabel' | transloco: { count: e.dialogs.length } }}
                     </span>
                     <span *ngIf="e.nbErrors !== 0">
                       <nb-icon
                         icon="x-circle"
                         status="danger"
                       ></nb-icon>
-                      {{ e.nbErrors }} error{{ e.nbErrors ? '' : 's' }} / {{ e.dialogs.length }} conversation{{
-                        e.dialogs.length < 2 ? '' : 's'
+                      {{
+                        'test.test-plan.executionErrorLabel' | transloco: { errorCount: e.nbErrors, conversationCount: e.dialogs.length }
                       }}
                     </span>
                     <ol *ngIf="e.displayExecution">
@@ -305,17 +289,17 @@
                             icon="check-circle"
                             status="success"
                           ></nb-icon>
-                          Success</span
-                        >
+                          {{ 'test.test-plan.successLabel' | transloco }}
+                        </span>
 
                         <span *ngIf="details.error">
                           <nb-icon
                             icon="x-circle"
                             status="danger"
                           ></nb-icon>
-                          Error
+                          {{ 'test.test-plan.errorLabel' | transloco }}
                           <span *ngIf="details.dialogReport">
-                            <h4>Expected dialog:</h4>
+                            <h4>{{ 'test.test-plan.expectedDialogLabel' | transloco }}</h4>
 
                             <tock-chat-ui>
                               <ng-container *ngFor="let action of details.dialogReport.actions">
@@ -324,14 +308,14 @@
                                   [date]="action.date"
                                   [reply]="action.isBot()"
                                   [replay]="true"
-                                  [sender]="getUserName(action)"
+                                  [sender]="getUserNameKey(action) | transloco"
                                   [avatar]="getUserAvatar(action)"
                                 ></tock-chat-ui-message>
                               </ng-container>
                             </tock-chat-ui>
 
                             <span *ngIf="details.returnedMessage">
-                              <h4>But last answer was:</h4>
+                              <h4>{{ 'test.test-plan.butLastAnswerWasLabel' | transloco }}</h4>
 
                               <tock-chat-ui-message
                                 [message]="details.returnedMessage"

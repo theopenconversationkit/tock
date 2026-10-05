@@ -31,15 +31,15 @@ data class Status(
 
 data class Conversation(
     @JsonProperty("expiration_timestamp") val expirationTimestamp: String?,
-    @JsonProperty("origin") val origin: Origin,
+    @JsonProperty("origin") val origin: Origin?,
     @JsonProperty("id") val id: String,
 )
 
 data class Origin(
-    @JsonProperty("type")val type: String,
+    @JsonProperty("type") val type: String?,
 )
 
 data class Pricing(
-    @JsonProperty("pricing_model") val pricingModel: String,
-    @JsonProperty("category") val category: String,
+    @JsonProperty("pricing_model") val pricingModel: String?,
+    @JsonProperty("category") val category: String?,
 )

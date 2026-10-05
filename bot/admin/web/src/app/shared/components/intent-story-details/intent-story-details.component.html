@@ -1,27 +1,11 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card
   class="min-width-90vw"
   *ngIf="!loading && !intent"
 >
   <nb-card-body class="p-0 pb-2">
     <tock-no-data-found
-      title="Intent not found"
-      message="There is no intention of the name '{{ this.intentName || this.intentId }}'. Perhaps it has been deleted."
+      [title]="'shared.intent-story-details.not-found.title' | transloco"
+      [message]="'shared.intent-story-details.not-found.message' | transloco: { intentName: this.intentName || this.intentId }"
     ></tock-no-data-found>
   </nb-card-body>
 </nb-card>
@@ -31,12 +15,13 @@
   *ngIf="intent"
 >
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-    <div>Intent &laquo;{{ this.intent.label || this.intent.name }}&raquo; story details</div>
+    <div>{{ 'shared.intent-story-details.header.title' | transloco: { intentLabel: this.intent.label || this.intent.name } }}</div>
     <button
       nbButton
       ghost
       shape="round"
       nbTooltip="Cancel"
+      [nbTooltip]="'common.actions.close' | transloco"
       (click)="cancel()"
     >
       <nb-icon icon="x-lg"></nb-icon>
@@ -53,7 +38,7 @@
           class="list-group-item text-warning"
           *ngIf="!story.storyId"
         >
-          There is currently no story associated with this intent
+          {{ 'shared.intent-story-details.warnings.no-story' | transloco }}
         </li>
 
         <li
@@ -62,46 +47,46 @@
         >
           <div class="row">
             <div class="col">
-              <div class="font-weight-bold">Story name :</div>
+              <div class="font-weight-bold">{{ 'shared.intent-story-details.labels.story-name' | transloco }} :</div>
               {{ story.name }}
             </div>
 
             <div class="col">
-              <div class="font-weight-bold">Type :</div>
+              <div class="font-weight-bold">{{ 'shared.intent-story-details.labels.type' | transloco }} :</div>
 
               <nb-icon
                 *ngIf="story.isBuiltIn()"
-                nbTooltip="Built-in Story"
+                [nbTooltip]="'common.storyTypes.builtIn' | transloco"
                 class="align-middle"
                 icon="box"
               ></nb-icon>
               <nb-icon
                 *ngIf="story.isSimpleNonFaqAnswer()"
-                nbTooltip="Message Story"
+                [nbTooltip]="'common.storyTypes.message' | transloco"
                 icon="chat-left"
                 class="align-middle"
               ></nb-icon>
               <nb-icon
                 *ngIf="story.isSimpleFaqAnswer()"
                 class="align-middle"
-                nbTooltip="Message Faq Story"
+                [nbTooltip]="'common.storyTypes.messageFaq' | transloco"
                 icon="chat-left-text"
               ></nb-icon>
               <nb-icon
                 *ngIf="story.isScriptAnswer()"
-                nbTooltip="Script Story"
+                [nbTooltip]="'common.storyTypes.script' | transloco"
                 class="align-middle"
                 icon="code"
               ></nb-icon>
 
-              <span *ngIf="story.isBuiltIn()"> BuiltIn</span>
-              <span *ngIf="story.isSimpleNonFaqAnswer()"> Simple</span>
-              <span *ngIf="story.isSimpleFaqAnswer()"> Simple (Faq)</span>
-              <span *ngIf="story.isScriptAnswer()"> Scripted</span>
+              <span *ngIf="story.isBuiltIn()"> {{ 'shared.intent-story-details.story-types.built-in' | transloco }}</span>
+              <span *ngIf="story.isSimpleNonFaqAnswer()"> {{ 'shared.intent-story-details.story-types.simple' | transloco }}</span>
+              <span *ngIf="story.isSimpleFaqAnswer()"> {{ 'shared.intent-story-details.story-types.simple-faq' | transloco }}</span>
+              <span *ngIf="story.isScriptAnswer()"> {{ 'shared.intent-story-details.story-types.scripted' | transloco }}</span>
             </div>
 
             <div class="col">
-              <div class="font-weight-bold">Category :</div>
+              <div class="font-weight-bold">{{ 'shared.intent-story-details.labels.category' | transloco }} :</div>
               {{ story.category }}
             </div>
           </div>
@@ -112,14 +97,14 @@
             class="font-weight-bold"
             *ngIf="story.storyId"
           >
-            Default sentence :
+            {{ 'shared.intent-story-details.labels.default-sentence' | transloco }} :
           </label>
 
           <div>
             <span *ngIf="story.storyId">
               <span class="text-mitigated-light">&laquo;</span>{{ story.userSentence }}<span class="text-mitigated-light">&raquo;</span>
               <span
-                nbTooltip="Locale"
+                [nbTooltip]="'shared.intent-story-details.tooltips.locale' | transloco"
                 class="ml-2"
               >
                 [{{ story.userSentenceLocale }}]
@@ -130,7 +115,7 @@
                 ghost
                 size="tiny"
                 class="ml-2"
-                nbTooltip="Test this sentence in a dialog"
+                [nbTooltip]="'shared.intent-story-details.tooltips.test-sentence' | transloco"
                 (click)="testDialogSentence(story.userSentence, story.userSentenceLocale)"
               >
                 <nb-icon icon="terminal-plus"></nb-icon>
@@ -157,7 +142,7 @@
                   class="align-middle"
                   icon="chevron-down"
                 ></nb-icon>
-                Show all intent sentences
+                {{ 'shared.intent-story-details.buttons.show-all-sentences' | transloco }}
               </button>
 
               <ul
@@ -172,13 +157,13 @@
                     <span class="text-mitigated-light">&laquo;</span>{{ $any(sentence).text
                     }}<span class="text-mitigated-light">&raquo;</span>
                     <span
-                      nbTooltip="Locale"
+                      [nbTooltip]="'shared.intent-story-details.tooltips.locale' | transloco"
                       class="ml-2"
                     >
                       [{{ $any(sentence).language }}]
                     </span>
                     <span
-                      nbTooltip="Usage count"
+                      [nbTooltip]="'shared.intent-story-details.tooltips.usage-count' | transloco"
                       class="ml-2"
                       >({{ $any(sentence).classification?.usageCount }})</span
                     >
@@ -188,7 +173,7 @@
                       ghost
                       size="tiny"
                       class="ml-2"
-                      nbTooltip="Test this sentence in a dialog"
+                      [nbTooltip]="'shared.intent-story-details.tooltips.test-sentence' | transloco"
                       (click)="testDialogSentence($any(sentence).text, $any(sentence).language)"
                     >
                       <nb-icon icon="terminal-plus"></nb-icon>
@@ -204,7 +189,7 @@
           class="list-group-item"
           *ngIf="story.storyId"
         >
-          <label class="font-weight-bold"> Default answer(s) : </label>
+          <label class="font-weight-bold">{{ 'shared.intent-story-details.labels.default-answers' | transloco }} :</label>
 
           <ng-container *ngIf="story.isSimpleAnswer()">
             <div *ngFor="let answer of story.answers">

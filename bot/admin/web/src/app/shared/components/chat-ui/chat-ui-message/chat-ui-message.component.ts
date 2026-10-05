@@ -16,7 +16,7 @@
 
 import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
-import { BotMessage } from '../../../model/dialog-data';
+import { ActionReport, BotMessage } from '../../../model/dialog-data';
 import { BotApplicationConfiguration } from '../../../../core/model/configuration';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
 import { take } from 'rxjs';
@@ -28,6 +28,7 @@ import { copyToClipboard } from '../../../utils';
   styleUrls: ['./chat-ui-message.component.scss']
 })
 export class ChatUiMessageComponent implements OnInit {
+  @Input() action?: ActionReport;
   @Input() message: BotMessage;
   @Input() replay: boolean = false;
   @Input() sender?: string;

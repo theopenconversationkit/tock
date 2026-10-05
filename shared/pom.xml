@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-root</artifactId>
-        <version>26.3.2-SNAPSHOT</version>
+        <version>26.3.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-shared</artifactId>
@@ -187,6 +187,11 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-lang-kotlin-coroutines</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

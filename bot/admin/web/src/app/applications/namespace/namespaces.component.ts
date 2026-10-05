@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
@@ -25,6 +9,7 @@ import { ApplicationConfig } from '../application.config';
 import { CreateNamespaceComponent, CreateNamespaceData } from './create-namespace/create-namespace.component';
 import { Subject, take, takeUntil } from 'rxjs';
 import { ChoiceDialogComponent } from '../../shared/components';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'tock-namespaces',
@@ -51,7 +36,8 @@ export class NamespacesComponent implements OnInit, OnDestroy {
     private applicationService: ApplicationService,
     private authService: AuthService,
     private applicationConfig: ApplicationConfig,
-    private nbDialogService: NbDialogService
+    private nbDialogService: NbDialogService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit() {
@@ -96,7 +82,9 @@ export class NamespacesComponent implements OnInit, OnDestroy {
                 error: (error) => {
                   this.applicationService.resetConfiguration();
                   this.loading = false;
-                  this.toastrService.show(error, 'Namespace created but label update failed', { status: 'warning' });
+                  this.toastrService.show(error, this.transloco.translate('applications.namespace.namespaceCreatedLabelFailed'), {
+                    status: 'warning'
+                  });
                 }
               });
           } else {
@@ -106,7 +94,7 @@ export class NamespacesComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           this.loading = false;
-          this.toastrService.show(error, 'Error', { status: 'danger' });
+          this.toastrService.show(error, this.transloco.translate('common.messages.error'), { status: 'danger' });
         }
       });
       this.closeEdition();
@@ -146,7 +134,11 @@ export class NamespacesComponent implements OnInit, OnDestroy {
 
   addUserNamespace(): void {
     if (!this.newLogin || this.newLogin.trim().length === 0) {
-      this.toastrService.show('Please enter a non empty login');
+      this.toastrService.show(
+        this.transloco.translate('applications.namespace.enterNonEmptyLogin'),
+        this.transloco.translate('common.messages.error'),
+        { status: 'warning' }
+      );
     } else {
       this.applicationService
         .saveNamespace(new UserNamespace(this.managedNamespace, this.newLogin, this.newOwner, false))
@@ -194,31 +186,32 @@ export class NamespacesComponent implements OnInit, OnDestroy {
         this.nbDialogService.open(ChoiceDialogComponent, {
           closeOnEsc: true,
           context: {
-            title: `Namespace cannot be deleted`,
-            subtitle: `This namespace contains ${apps.length} application${
-              apps.length > 1 ? 's' : ''
-            }. Only an empty namespace can be deleted.`,
+            title: this.transloco.translate('applications.namespace.namespaceCannotBeDeletedTitle'),
+            subtitle: this.transloco.translate('applications.namespace.namespaceCannotBeDeletedSubtitle', {
+              count: apps.length,
+              plural: apps.length > 1 ? 's' : ''
+            }),
             modalStatus: 'warning',
-            actions: [{ actionName: 'close', buttonStatus: 'basic', ghost: true }]
+            actions: [{ actionName: this.transloco.translate('common.actions.close'), buttonStatus: 'basic', ghost: true }]
           }
         });
       } else {
-        const action = 'delete';
+        const action = this.transloco.translate('applications.namespace.deleteAction');
         this.nbDialogService
           .open(ChoiceDialogComponent, {
             closeOnEsc: true,
             context: {
-              title: `Delete namespace "${namespace.displayLabel()}" ?`,
-              subtitle: `Are you sure you want to delete this namespace?`,
+              title: this.transloco.translate('applications.namespace.deleteNamespaceTitle', { name: namespace.displayLabel() }),
+              subtitle: this.transloco.translate('applications.namespace.deleteNamespaceSubtitle'),
               modalStatus: 'danger',
               actions: [
-                { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+                { actionName: this.transloco.translate('common.actions.cancel'), buttonStatus: 'basic', ghost: true },
                 { actionName: action, buttonStatus: 'danger' }
               ]
             }
           })
           .onClose.subscribe((result) => {
-            if (result === action) {
+            if (result.toLowerCase() === action.toLowerCase()) {
               this.loading = true;
               this.applicationService.deleteNamespace(namespace).subscribe((res) => {
                 if (namespace.current) {

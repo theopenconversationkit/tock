@@ -1,26 +1,10 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <button
   outline
   nbButton
   [status]="disabledOrModified() ? 'disabled' : 'basic'"
   size="small"
   [disabled]="disabledOrModified()"
-  title="From {{ range.start }} to {{ range.end }}"
+  [title]="'shared.date-range.title' | transloco: { start: range.start, end: range.end }"
   [nbPopover]="templateRef"
   nbPopoverPlacement="bottom"
   nbPopoverTrigger="click"
@@ -42,7 +26,7 @@
           [status]="getStatus(1)"
           (click)="setRangeInDays(1)"
         >
-          Yesterday
+          {{ 'shared.date-range.shortcuts.yesterday' | transloco }}
         </button>
         <button
           nbButton
@@ -50,7 +34,7 @@
           [status]="getStatus(0)"
           (click)="setRangeInDays(0)"
         >
-          Today
+          {{ 'shared.date-range.shortcuts.today' | transloco }}
         </button>
         <button
           nbButton
@@ -58,7 +42,7 @@
           [status]="getStatus(7)"
           (click)="setRangeInDays(7)"
         >
-          Last 7 days
+          {{ 'shared.date-range.shortcuts.last7Days' | transloco }}
         </button>
         <button
           nbButton
@@ -66,7 +50,7 @@
           [status]="getStatus(14)"
           (click)="setRangeInDays(14)"
         >
-          Last 14 days
+          {{ 'shared.date-range.shortcuts.last14Days' | transloco }}
         </button>
         <button
           nbButton
@@ -74,7 +58,7 @@
           [status]="getStatus(30)"
           (click)="setRangeInDays(30)"
         >
-          Last 30 days
+          {{ 'shared.date-range.shortcuts.last30Days' | transloco }}
         </button>
         <button
           nbButton
@@ -82,7 +66,7 @@
           [status]="getStatus(90)"
           (click)="setRangeInDays(90)"
         >
-          Last 90 days
+          {{ 'shared.date-range.shortcuts.last90Days' | transloco }}
         </button>
         <button
           nbButton
@@ -90,7 +74,7 @@
           [status]="getStatus(180)"
           (click)="setRangeInDays(180)"
         >
-          Last 180 days
+          {{ 'shared.date-range.shortcuts.last180Days' | transloco }}
         </button>
       </div>
       <nb-calendar-range [(range)]="range"></nb-calendar-range>
@@ -102,7 +86,7 @@
         status="primary"
         (click)="update()"
       >
-        Update
+        {{ 'shared.date-range.update' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>

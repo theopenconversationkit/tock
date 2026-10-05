@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -42,6 +26,7 @@ import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { SentenceTrainingCreateEntityComponent } from './sentence-training-create-entity/sentence-training-create-entity.component';
 import { NlpService } from '../../../../core-nlp/nlp.service';
 import { SentenceTrainingService } from '../sentence-training.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 interface ClassifiedEntityWithIndexes {
   entity: ClassifiedEntity;
@@ -83,7 +68,8 @@ export class SentenceTrainingSentenceComponent implements OnInit, OnDestroy {
     private self: ElementRef,
     private nbDialogService: NbDialogService,
     private nlp: NlpService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private transloco: TranslocoService
   ) {
     this.sentenceTrainingService.communication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
       if (evt.type === 'documentClick') {
@@ -329,7 +315,10 @@ export class SentenceTrainingSentenceComponent implements OnInit, OnDestroy {
                 this.addEntityToEntityType(intentOrEntityType, entity, parentEntity, selectionCopy);
               }
             } else {
-              this.toastrService.danger(`Error when creating Entity Type ${name}`, 'Error');
+              this.toastrService.danger(
+                this.transloco.translate('shared.sentence-training-sentence.errors.creating-entity-type', { name }),
+                this.transloco.translate('shared.sentence-training-sentence.errors.error-title')
+              );
             }
           });
         }
@@ -347,7 +336,10 @@ export class SentenceTrainingSentenceComponent implements OnInit, OnDestroy {
 
     this.nlp.saveIntent(intent).subscribe((_) => {
       this.assignEntity(entity, selection);
-      this.toastrService.success(`Entity Type ${entity.qualifiedRole} added to this sentence intent`, 'Entity added');
+      this.toastrService.success(
+        this.transloco.translate('shared.sentence-training-sentence.success.entity-added-message', { qualifiedRole: entity.qualifiedRole }),
+        this.transloco.translate('shared.sentence-training-sentence.success.entity-added-title')
+      );
     });
   }
 
@@ -367,7 +359,10 @@ export class SentenceTrainingSentenceComponent implements OnInit, OnDestroy {
       entityWithSubEntities.root.containsEntityType(entity.entityTypeName) ||
       this.containsEntityType(this.state.findEntityTypeByName(entity.entityTypeName), entityWithSubEntities.root.type)
     ) {
-      this.toastrService.warning('adding recursive sub entity is not allowed', 'Operation not allowed');
+      this.toastrService.warning(
+        this.transloco.translate('shared.sentence-training-sentence.errors.recursive-sub-entity-not-allowed'),
+        this.transloco.translate('shared.sentence-training-sentence.errors.operation-not-allowed-title')
+      );
       return;
     }
 
@@ -375,7 +370,10 @@ export class SentenceTrainingSentenceComponent implements OnInit, OnDestroy {
 
     this.nlp.updateEntityType(entityType).subscribe((_) => {
       this.assignEntity(entity, selection);
-      this.toastrService.success(`Entity Type ${entity.qualifiedRole} added to this sentence intent`, 'Entity added');
+      this.toastrService.success(
+        this.transloco.translate('shared.sentence-training-sentence.success.entity-added-message', { qualifiedRole: entity.qualifiedRole }),
+        this.transloco.translate('shared.sentence-training-sentence.success.entity-added-title')
+      );
     });
   }
 

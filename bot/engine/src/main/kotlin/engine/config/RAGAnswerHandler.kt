@@ -71,12 +71,6 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // Call RAG Api - Gen AI Orchestrator
             val (answer, footnotes, debug, redirectStory, observabilityInfo) = rag(this)
 
-            // Add debug data if available and if debugging is enabled
-            if (debug != null) {
-                logger.info { "Send RAG debug data." }
-                sendDebugData("RAG", debug)
-            }
-
             val modifiedObservabilityInfo = observabilityInfo?.let { updateObservabilityInfo(this, it) }
 
             // Footnotes building
@@ -110,6 +104,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                 isGenAiRagAnswer = true,
                                 observabilityInfo = modifiedObservabilityInfo,
                             ),
+                        ragDebug = debug,
                     ),
             )
 
@@ -178,21 +173,19 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // Gen AI Orchestrator environment variable vector settings
             val ragConfiguration = botDefinition.ragConfiguration!!
             val vectorStoreConfiguration = botDefinition.vectorStoreConfiguration
+            val businessRulesConfiguration = botDefinition.businessRulesConfiguration
             val vectorStoreSetting = vectorStoreConfiguration?.takeIf { it.enabled }?.setting
 
             val (documentSearchParams, indexName) =
                 VectorStoreUtils.getVectorStoreElements(
-                    ragConfiguration.namespace,
-                    ragConfiguration.botId,
+                    namespace = ragConfiguration.namespace,
+                    botId = ragConfiguration.botId,
                     // The indexSessionId is mandatory to enable RAG Story
-                    ragConfiguration.indexSessionId!!,
-                    ragConfiguration.maxDocumentsRetrieved,
-                    vectorStoreSetting,
+                    indexSessionId = ragConfiguration.indexSessionId!!,
+                    kNeighborsDocuments = ragConfiguration.maxDocumentsRetrieved,
+                    documentSearchType = ragConfiguration.documentSearchType,
+                    vectorStoreSetting = vectorStoreSetting,
                 )
-
-            val questionAnsweringPrompt =
-                ragConfiguration.questionAnsweringPrompt
-                    ?: ragConfiguration.initQuestionAnsweringPrompt()
 
             var debug: Any? = null
             try {
@@ -211,14 +204,24 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                             ),
                                     ),
                                 questionCondensingLlmSetting = ragConfiguration.questionCondensingLlmSetting,
-                                questionCondensingPrompt = ragConfiguration.questionCondensingPrompt,
-                                questionAnsweringLlmSetting = ragConfiguration.getQuestionAnsweringLLMSetting(),
+                                questionCondensingPrompt =
+                                    ragConfiguration.questionCondensingPrompt.copy(
+                                        inputs =
+                                            mapOf(
+                                                "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty().map { it.terms },
+                                            ),
+                                    ),
+                                questionAnsweringLlmSetting = ragConfiguration.questionAnsweringLlmSetting,
                                 questionAnsweringPrompt =
-                                    questionAnsweringPrompt.copy(
+                                    ragConfiguration.questionAnsweringPrompt.copy(
                                         inputs =
                                             mapOf(
                                                 "question" to action.toString(),
                                                 "locale" to userPreferences.locale.displayLanguage,
+                                                "covered_topics" to businessRulesConfiguration?.coveredTopics.orEmpty(),
+                                                "excluded_topics" to businessRulesConfiguration?.excludedTopics.orEmpty(),
+                                                "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty().map { it.terms },
+                                                "explainability" to ragConfiguration.explainabilityEnabled,
                                             ),
                                     ),
                                 embeddingQuestionEmSetting = ragConfiguration.emSetting,

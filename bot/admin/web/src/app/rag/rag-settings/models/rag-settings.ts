@@ -23,6 +23,7 @@ export interface RagSettings {
   enabled: boolean;
 
   debugEnabled: boolean;
+  explainabilityEnabled: boolean;
 
   questionCondensingLlmSetting: llmSetting;
   questionCondensingPrompt: PromptDefinition;
@@ -36,5 +37,6 @@ export interface RagSettings {
   indexSessionId: string;
   indexName: string;
 
+  documentSearchType: string;
   maxDocumentsRetrieved: number;
 }

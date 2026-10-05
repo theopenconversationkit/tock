@@ -48,6 +48,7 @@ completion_router = APIRouter(
     tags=['Prompt completion'],
 )
 
+
 @completion_router.post('/')
 async def completion(request: CompletionRequest) -> PlaygroundResponse:
     """
@@ -68,7 +69,9 @@ async def completion(request: CompletionRequest) -> PlaygroundResponse:
 
 
 @completion_router.post('/sentences')
-async def completion_sentences(request: CompletionRequest) -> SentenceGenerationResponse:
+async def completion_sentences(
+    request: CompletionRequest,
+) -> SentenceGenerationResponse:
     """
     Sentence Generation API
 
@@ -84,4 +87,3 @@ async def completion_sentences(request: CompletionRequest) -> SentenceGeneration
 
     logger.info('Generate sentences from %s', request.prompt.inputs)
     return await generate_sentences(request)
-

@@ -31,6 +31,7 @@ import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import ai.tock.bot.connector.whatsapp.cloud.spi.TemplateGenerationContext
 import ai.tock.bot.connector.whatsapp.cloud.spi.TemplateManagementContext
 import ai.tock.bot.connector.whatsapp.cloud.spi.WhatsappTemplateProvider
+import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
@@ -255,16 +256,17 @@ class WhatsAppConnectorCloudConnector internal constructor(
         }
     }
 
-    override fun notify(
+    override suspend fun notify(
         controller: ConnectorController,
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStepDef?,
         parameters: Map<String, String>,
+        transientContext: DialogContext,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit,
     ) {
-        controller.handle(
+        controller.handleUserEvent(
             SendChoice(
                 recipientId,
                 connectorId,
@@ -275,6 +277,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
             ),
             ConnectorData(
                 WhatsAppConnectorCloudCallback(connectorId),
+                transientContext = transientContext,
             ),
         )
     }

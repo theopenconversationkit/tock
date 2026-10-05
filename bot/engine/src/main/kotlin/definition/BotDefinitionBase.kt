@@ -16,6 +16,7 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfiguration
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfiguration
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
@@ -65,6 +66,7 @@ open class BotDefinitionBase(
     override var vectorStoreConfiguration: BotVectorStoreConfiguration? = null,
     override var observabilityConfiguration: BotObservabilityConfiguration? = null,
     override var documentCompressorConfiguration: BotDocumentCompressorConfiguration? = null,
+    override var businessRulesConfiguration: BotBusinessRulesConfiguration? = null,
 ) : BotDefinition {
     companion object {
         private val logger = KotlinLogging.logger {}

@@ -29,7 +29,7 @@
 
     <div
       class="d-flex align-items-center"
-      nbTooltip="Number of user inputs"
+      [nbTooltip]="'shared.chat-ui-dialog-logger.nb-user-inputs' | transloco"
     >
       <nb-icon
         icon="person"
@@ -39,7 +39,7 @@
     </div>
     <div
       class="d-flex align-items-center"
-      nbTooltip="Number of bot responses"
+      [nbTooltip]="'shared.chat-ui-dialog-logger.nb-bot-responses' | transloco"
     >
       <nb-icon
         icon="robot"
@@ -49,7 +49,7 @@
     </div>
     <div
       class="d-flex align-items-center"
-      nbTooltip="Number of Rag answers"
+      [nbTooltip]="'shared.chat-ui-dialog-logger.nb-rag-answers' | transloco"
     >
       <nb-icon
         icon="lightbulb"
@@ -60,7 +60,7 @@
 
     <div
       class="d-flex align-items-center"
-      nbTooltip="Number of annotations"
+      [nbTooltip]="'shared.chat-ui-dialog-logger.nb-annotations' | transloco"
       [class]="nbAnnotations() > 0 ? 'text-warning' : ''"
     >
       <nb-icon
@@ -75,7 +75,7 @@
     nbButton
     ghost
     size="small"
-    nbTooltip="Replay the whole dialog"
+    [nbTooltip]="'shared.chat-ui-dialog-logger.replay-dialog' | transloco"
     (click)="replayDialog()"
   >
     <nb-icon icon="terminal-fill"></nb-icon>
@@ -91,11 +91,12 @@
     >
       <div class="flex-grow-1 align-self-center">
         <tock-chat-ui-message
+          [action]="action"
           [message]="action.message"
           [date]="action.date"
           [reply]="action.isBot()"
           [replay]="true"
-          [sender]="getUserName(action)"
+          [sender]="getUserNameKey(action) | transloco"
           [avatar]="getUserAvatar(action)"
           [applicationId]="action.applicationId"
           id="action-anchor-{{ action.id }}"
@@ -120,13 +121,13 @@
           <nb-icon
             icon="hand-thumbs-up-fill"
             class="text-success font-size-small mt-2"
-            nbTooltip="This message received positive feedback."
+            [nbTooltip]="'shared.chat-ui-dialog-logger.feedback-positive' | transloco"
             *ngIf="action.metadata?.feedback?.vote === feedbackVote.UP"
           ></nb-icon>
           <nb-icon
             icon="hand-thumbs-down-fill"
             class="text-danger font-size-small mt-2"
-            nbTooltip="This message received negative feedback."
+            [nbTooltip]="'shared.chat-ui-dialog-logger.feedback-negative' | transloco"
             *ngIf="action.metadata?.feedback?.vote === feedbackVote.DOWN"
           ></nb-icon>
         </tock-chat-ui-message>
@@ -147,7 +148,7 @@
             nbButton
             ghost
             size="small"
-            nbTooltip="Replay this sentence"
+            [nbTooltip]="'shared.chat-ui-dialog-logger.replay-sentence' | transloco"
             (click)="testDialogSentence(action)"
           >
             <nb-icon icon="terminal-plus"></nb-icon>
@@ -159,40 +160,9 @@
             nbButton
             ghost
             size="small"
-            nbTooltip="Show Nlp Stats"
+            [nbTooltip]="'shared.chat-ui-dialog-logger.show-nlp-stats' | transloco"
           >
             <nb-icon icon="clipboard-data"></nb-icon>
-          </button>
-        </div>
-
-        <div
-          class="pl-1"
-          *ngIf="action.message?.isDebug()"
-        >
-          <div class="button-horizontal-separator mb-1"></div>
-
-          <button
-            nbButton
-            ghost
-            size="small"
-            nbTooltip="Show debug infos"
-            (click)="showDebug(action)"
-            class="mb-1"
-            *ngIf="$any(action).message?.data?.errorDetail"
-          >
-            <nb-icon icon="bug"></nb-icon>
-          </button>
-
-          <button
-            nbButton
-            ghost
-            size="small"
-            nbTooltip="Open query in playground"
-            (click)="goToPlayground(action)"
-            class="mb-1"
-            *ngIf="$any(action).message?.data?.question_answering_prompt && isAdmin()"
-          >
-            <nb-icon icon="joystick"></nb-icon>
           </button>
         </div>
 
@@ -206,7 +176,7 @@
             nbButton
             ghost
             size="small"
-            nbTooltip="Display this dialog alone"
+            [nbTooltip]="'shared.chat-ui-dialog-logger.display-dialog-alone' | transloco"
             href="analytics/dialogs/{{ state.currentApplication.namespace }}/{{ state.currentApplication._id }}/{{ dialog.id }}#{{
               action.id
             }}"
@@ -220,7 +190,7 @@
               size="small"
               status="warning"
               ghost
-              nbTooltip="Display annotation"
+              [nbTooltip]="'shared.chat-ui-dialog-logger.display-annotation' | transloco"
               (click)="openAnnotation(action)"
             >
               <nb-icon icon="exclamation-triangle-fill"></nb-icon>
@@ -232,7 +202,7 @@
               nbButton
               size="small"
               ghost
-              nbTooltip="Annotate this exchange"
+              [nbTooltip]="'shared.chat-ui-dialog-logger.annotate-exchange' | transloco"
               (click)="openAnnotation(action)"
             >
               <nb-icon icon="exclamation-triangle"></nb-icon>
@@ -240,11 +210,23 @@
           </ng-template>
 
           <button
+            *ngIf="isAdmin() && action.metadata?.isGenAiRagAnswer && $any(action).ragDebug?.question_answering_prompt"
+            nbButton
+            ghost
+            size="small"
+            nbTooltip="Open query in playground"
+            (click)="goToPlayground(action)"
+            class="mb-1"
+          >
+            <nb-icon icon="joystick"></nb-icon>
+          </button>
+
+          <button
             *ngIf="action.metadata?.isGenAiRagAnswer"
             nbButton
             size="small"
             ghost
-            nbTooltip="Create a FAQ with this question/answer pair"
+            [nbTooltip]="'shared.chat-ui-dialog-logger.create-faq' | transloco"
             (click)="createFaq(action, dialog.actions)"
           >
             <nb-icon icon="chat-left-text"></nb-icon>
@@ -255,7 +237,7 @@
             nbButton
             ghost
             size="small"
-            nbTooltip="View observability details"
+            [nbTooltip]="'shared.chat-ui-dialog-logger.view-observability' | transloco"
             (click)="openObservabilityTrace(action)"
           >
             <nb-icon icon="display"></nb-icon>

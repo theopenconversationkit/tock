@@ -38,6 +38,7 @@ import { OneColumnLayoutComponent } from './layouts';
 import { DEFAULT_THEME } from './styles/theme.default';
 import { DARK_THEME } from './styles/theme.dark';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 const NB_MODULES = [
   NbLayoutModule,
@@ -53,7 +54,8 @@ const NB_MODULES = [
   NbFormFieldModule,
   NbIconModule,
   NbToggleModule,
-  NbTooltipModule
+  NbTooltipModule,
+  TranslocoModule
 ];
 
 const COMPONENTS = [HeaderComponent, FooterComponent, OneColumnLayoutComponent];

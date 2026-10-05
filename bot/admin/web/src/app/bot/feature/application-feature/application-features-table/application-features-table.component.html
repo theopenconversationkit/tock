@@ -1,23 +1,7 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card class="mb-3">
   <nb-card-header class="d-flex justify-content-between align-items-center">
     <div>
-      <span class="d-inline-block initial-capitalize">{{ type }}</span> features
+      <span class="d-inline-block initial-capitalize">{{ 'bot.application-features-table.title' | transloco: { type: type } }}</span>
       <span class="font-weight-normal">({{ features.length }})</span>
     </div>
 
@@ -25,11 +9,11 @@
       nbButton
       status="primary"
       size="small"
-      nbTooltip="Add a new Feature"
+      [nbTooltip]="'bot.application-features-table.newFeatureTooltip' | transloco"
       (click)="newFeature()"
     >
       <nb-icon icon="plus-lg"></nb-icon>
-      New {{ type }} feature
+      {{ 'bot.application-features-table.newFeatureButton' | transloco: { type: type } }}
     </button>
   </nb-card-header>
 
@@ -38,7 +22,7 @@
       class="text-muted font-italic"
       *ngIf="!features?.length"
     >
-      No rules set to enable/disable Features.
+      {{ 'bot.application-features-table.noRulesMessage' | transloco }}
     </div>
 
     <table
@@ -47,17 +31,17 @@
     >
       <thead>
         <tr>
-          <td style="width: 15%">Category</td>
-          <td style="width: 30%">Feature</td>
-          <td style="width: 20%">Configuration</td>
-          <td style="width: 10%">Start date</td>
-          <td style="width: 10%">End date</td>
-          <td style="width: 10%">Graduation</td>
+          <td style="width: 15%">{{ 'bot.application-features-table.categoryColumn' | transloco }}</td>
+          <td style="width: 30%">{{ 'bot.application-features-table.featureColumn' | transloco }}</td>
+          <td style="width: 20%">{{ 'bot.application-features-table.configurationColumn' | transloco }}</td>
+          <td style="width: 10%">{{ 'bot.application-features-table.startDateColumn' | transloco }}</td>
+          <td style="width: 10%">{{ 'bot.application-features-table.endDateColumn' | transloco }}</td>
+          <td style="width: 10%">{{ 'bot.application-features-table.graduationColumn' | transloco }}</td>
           <td
             class="text-center"
             style="width: 10%"
           >
-            Status
+            {{ 'bot.application-features-table.statusColumn' | transloco }}
           </td>
           <td style="width: 5%"></td>
         </tr>
@@ -65,6 +49,7 @@
 
       <tbody>
         <tr *ngFor="let feature of features">
+          <!-- Category -->
           <td
             class="ellipsis"
             [nbTooltip]="feature.category"
@@ -72,6 +57,7 @@
             {{ feature.category }}
           </td>
 
+          <!-- Feature Name -->
           <td
             class="font-weight-bold ellipsis"
             [nbTooltip]="feature.name"
@@ -79,37 +65,39 @@
             {{ feature.name }}
           </td>
 
+          <!-- Configuration -->
           <td class="ellipsis">
             <span
               *ngIf="feature.configuration"
-              [nbTooltip]="'Apply to Configuration: ' + feature.configuration.applicationId"
+              [nbTooltip]="'bot.application-features-table.configurationTooltip' | transloco"
             >
               <img
                 src="{{ feature.configuration.connectorType.iconUrl() }}"
                 class="connector"
                 [nbTooltip]="feature.configuration.connectorType.label()"
               />
-              {{ feature.configuration.connectorType.label() }} ( {{ feature.configuration.applicationId }})
+              {{ feature.configuration.connectorType.label() }} ({{ feature.configuration.applicationId }})
             </span>
             <span
               *ngIf="!feature.configuration"
-              nbTooltip="Apply to All Configurations"
+              [nbTooltip]="'bot.application-features-table.allConfigurationsTooltip' | transloco"
             >
-              All Configurations
+              {{ 'bot.application-features-table.allConfigurations' | transloco }}
             </span>
           </td>
 
+          <!-- Start Date -->
           <td>
             <input
               nbInput
               fieldSize="small"
               class="date-field"
-              placeholder="start date"
+              [placeholder]="'bot.application-features-table.startDatePlaceholder' | transloco"
               (keyup.enter)="changeStartDate(feature, $event)"
               [(ngModel)]="feature.startDate"
               [nbDatepicker]="startDate"
               (ngModelChange)="changeStartDate(feature, $event)"
-              [nbTooltip]="feature.startDate ? 'From: ' + feature.startDate : 'No start date set'"
+              [nbTooltip]="'bot.application-features-table.startDateTooltip' | transloco"
             />
             <nb-datepicker
               #startDate
@@ -118,17 +106,18 @@
             ></nb-datepicker>
           </td>
 
+          <!-- End Date -->
           <td>
             <input
               nbInput
               fieldSize="small"
               class="date-field"
-              placeholder="end date"
+              [placeholder]="'bot.application-features-table.endDatePlaceholder' | transloco"
               (keyup.enter)="changeEndDate(feature, $event)"
               [(ngModel)]="feature.endDate"
               [nbDatepicker]="endDate"
               (ngModelChange)="changeEndDate(feature, $event)"
-              [nbTooltip]="feature.endDate ? 'Until: ' + feature.endDate : 'No end date set'"
+              [nbTooltip]="'bot.application-features-table.endDateTooltip' | transloco"
             />
             <nb-datepicker
               #endDate
@@ -137,36 +126,43 @@
             ></nb-datepicker>
           </td>
 
+          <!-- Graduation -->
           <td>
             <input
               nbInput
               type="number"
               fieldSize="small"
-              placeholder="%"
+              [placeholder]="'bot.application-features-table.graduationPlaceholder' | transloco"
               min="0"
               max="100"
               (blur)="changeGraduation(feature, $event)"
               [(ngModel)]="feature.graduation"
-              [nbTooltip]="feature.graduation ? 'Enabled at : ' + feature.graduation + '%' : 'Fully (en/dis)abled'"
+              [nbTooltip]="'bot.application-features-table.graduationTooltip' | transloco"
             />
           </td>
 
+          <!-- Status Toggle -->
           <td class="text-center">
             <nb-toggle
               class="nb-toggle-reset-label-margin mt-1"
               [checked]="feature.enabled"
               (checkedChange)="toggle(feature, $event)"
-              [nbTooltip]="feature.enabled ? 'Disable Feature & Reset Dates' : 'Enable Feature'"
+              [nbTooltip]="
+                feature.enabled
+                  ? ('bot.application-features-table.toggleDisableTooltip' | transloco)
+                  : ('bot.application-features-table.toggleEnableTooltip' | transloco)
+              "
             ></nb-toggle>
           </td>
 
+          <!-- Delete Button -->
           <td class="text-right">
             <button
               nbButton
               status="danger"
               size="small"
               shape="round"
-              nbTooltip="Delete rule"
+              [nbTooltip]="'bot.application-features-table.deleteRuleTooltip' | transloco"
               (click)="askDeleteFeature(feature)"
             >
               <nb-icon icon="trash"></nb-icon>

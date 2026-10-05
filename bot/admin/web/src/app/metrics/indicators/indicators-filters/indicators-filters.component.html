@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <form
   [formGroup]="form"
   class="grid"
@@ -23,12 +7,11 @@
       nbPrefix
       icon="search"
     ></nb-icon>
-
     <input
       nbInput
       fullWidth
       fieldSize="medium"
-      placeholder="Search"
+      [placeholder]="'metrics.indicators-filters.search_placeholder' | transloco"
       type="text"
       formControlName="search"
     />
@@ -36,7 +19,7 @@
 
   <nb-select
     multiple
-    placeholder="Filter by dimensions"
+    [placeholder]="'metrics.indicators-filters.filter_by_dimensions_placeholder' | transloco"
     fullWidth
     optionsListClass="option-list--break-word"
     formControlName="dimensions"
@@ -52,7 +35,7 @@
   <button
     *ngIf="isFiltered"
     nbButton
-    nbTooltip="Clear all filters"
+    [nbTooltip]="'metrics.indicators-filters.clear_all_filters_tooltip' | transloco"
     ghost
     shape="round"
     (click)="clearFilters()"

@@ -1,21 +1,10 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+<tock-chat-ui-message-debug
+  *ngIf="showDebug && action?.ragDebug"
+  [action]="action"
+></tock-chat-ui-message-debug>
 
 <div
-  *ngIf="!message.isDebug() && !isMessageEmpty()"
+  *ngIf="message && !message?.isDebug() && !isMessageEmpty()"
   class="wrapper"
 >
   <div class="avatar-wrapper">
@@ -32,7 +21,7 @@
       nbButton
       size="small"
       ghost
-      nbTooltip="Switch message formatting"
+      [nbTooltip]="'shared.chat-ui-message.switch-formatting-tooltip' | transloco"
       class="mt-1"
       (click)="switchFormatting()"
     >
@@ -62,7 +51,7 @@
 
           <span
             *ngIf="applicationId"
-            nbTooltip="Configuration : {{ getApplicationConfigurationName(false) }}"
+            [nbTooltip]="'shared.chat-ui-message.configuration-tooltip' | transloco: { name: getApplicationConfigurationName(false) }"
           >
             | {{ getApplicationConfigurationName() }}</span
           >
@@ -79,7 +68,7 @@
           nbButton
           size="small"
           ghost
-          nbTooltip="Switch message formatting"
+          [nbTooltip]="'shared.chat-ui-message.switch-formatting-tooltip' | transloco"
           (click)="switchFormatting()"
         >
           <nb-icon
@@ -107,7 +96,7 @@
           nbButton
           status="primary"
           size="small"
-          nbTooltip="Copy message content"
+          [nbTooltip]="'shared.chat-ui-message.copy-message-tooltip' | transloco"
           class="copy-button"
           [class.d-none]="!showCopyButton"
           (click)="copyToClipboard()"
@@ -151,8 +140,3 @@
     </div>
   </div>
 </div>
-
-<tock-chat-ui-message-debug
-  *ngIf="showDebug && message.isDebug()"
-  [message]="$any(message)"
-></tock-chat-ui-message-debug>

@@ -1,25 +1,10 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { StateService } from '../../../core-nlp/state.service';
 import { I18nCategoryFilterAll, I18nFilters, I18nLocaleFilters } from '../models';
 import { I18nLabelStateQuery } from '../../model/i18n';
+import { TranslocoService } from '@jsverse/transloco';
 
 interface I18nFiltersForm {
   search: FormControl<string>;
@@ -51,7 +36,7 @@ export class I18nFiltersComponent implements OnInit {
   @Output() onImport = new EventEmitter();
   @Output() onExport = new EventEmitter();
 
-  constructor(public state: StateService) {}
+  constructor(public state: StateService, private transloco: TranslocoService) {}
 
   ngOnInit(): void {
     this.form.valueChanges.pipe(debounceTime(250), takeUntil(this.destroy$)).subscribe(() => this.submitFiltersChange());
@@ -92,16 +77,16 @@ export class I18nFiltersComponent implements OnInit {
   notUsedFromLabel(possibleNumber: number): string {
     switch (possibleNumber) {
       case 1:
-        return 'Not used since yesterday';
+        return this.transloco.translate('bot.i18n-filters.notUsedSinceYesterday');
       case 7:
-        return 'Not used since last week';
+        return this.transloco.translate('bot.i18n-filters.notUsedSinceLastWeek');
       case 30:
-        return 'Not used since last month';
+        return this.transloco.translate('bot.i18n-filters.notUsedSinceLastMonth');
       case 365:
-        return 'Not used since last year';
+        return this.transloco.translate('bot.i18n-filters.notUsedSinceLastYear');
       case -1:
       default:
-        return 'All';
+        return this.transloco.translate('common.actions.all');
     }
   }
 

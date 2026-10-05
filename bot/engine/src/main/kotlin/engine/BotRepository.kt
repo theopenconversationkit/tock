@@ -36,12 +36,14 @@ import ai.tock.bot.definition.BotAnswerInterceptor
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.BotProvider
 import ai.tock.bot.definition.BotProviderId
+import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandlerListener
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.action.ActionNotificationType
+import ai.tock.bot.engine.config.BotBusinessRulesConfigurationMonitor
 import ai.tock.bot.engine.config.BotDocumentCompressorConfigurationMonitor
 import ai.tock.bot.engine.config.BotObservabilityConfigurationMonitor
 import ai.tock.bot.engine.config.BotRAGConfigurationMonitor
@@ -67,6 +69,7 @@ import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -99,6 +102,7 @@ object BotRepository {
     internal val nlpClient: NlpClient get() = injector.provide()
     private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()
+    private val userTimelineDAO: UserTimelineDAO get() = injector.provide()
     internal val botAnswerInterceptors: MutableList<BotAnswerInterceptor> = CopyOnWriteArrayList()
     private val connectorServices: MutableSet<ConnectorService> =
         CopyOnWriteArraySet(ServiceLoader.load(ConnectorService::class.java).toList())
@@ -192,7 +196,7 @@ object BotRepository {
      * @param errorListener called when a message has not been delivered
      */
     @Deprecated(
-        "use ai.tock.bot.definition.notify",
+        "use ai.tock.bot.definition.notify or pushNotification",
         replaceWith = ReplaceWith("notify", "ai.tock.bot.definition.notify"),
     )
     fun notify(
@@ -207,6 +211,24 @@ object BotRepository {
         botId: String? = null,
         errorListener: (Throwable) -> Unit = {},
     ) {
+        runBlocking {
+            notifyAsync(namespace, botId, applicationId, recipientId, intent, step, parameters, transientContext = DialogContext.EMPTY, stateModifier, notificationType, errorListener)
+        }
+    }
+
+    internal suspend fun notifyAsync(
+        namespace: String?,
+        botId: String?,
+        applicationId: String,
+        recipientId: PlayerId,
+        intent: IntentAware,
+        step: StoryStepDef?,
+        parameters: Map<String, String>,
+        transientContext: DialogContext,
+        stateModifier: NotifyBotStateModifier,
+        notificationType: ActionNotificationType?,
+        errorListener: (Throwable) -> Unit,
+    ) {
         val key =
             if (namespace == null || botId == null) {
                 logger.warn { "notify without specifying namespace or botId will be removed in next release" }
@@ -216,38 +238,38 @@ object BotRepository {
             }
         val conf = key?.let { getConfigurationByApplicationId(it) } ?: error("unknown application $applicationId")
         connectorControllerMap.getValue(conf)
-            .notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType, errorListener)
+            .notifyAndCheckState(recipientId, intent, step, parameters, transientContext, stateModifier, notificationType, errorListener)
     }
 
-    private fun ConnectorController.notifyAndCheckState(
+    private suspend fun ConnectorController.notifyAndCheckState(
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStepDef?,
         parameters: Map<String, String>,
+        transientContext: DialogContext,
         stateModifier: NotifyBotStateModifier,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit = {},
     ) {
-        runBlocking {
-            val userTimelineDAO: UserTimelineDAO = injector.provide()
-            val userTimeline = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
-            val userState = userTimeline.userState
-            val currentState = userState.botDisabled
+        val userTimeline = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
+        val userState = userTimeline.userState
+        val currentState = userState.botDisabled
 
-            if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION ||
-                stateModifier == NotifyBotStateModifier.REACTIVATE
-            ) {
-                userState.botDisabled = false
-                userTimelineDAO.save(userTimeline, botDefinition)
-            }
+        if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION ||
+            stateModifier == NotifyBotStateModifier.REACTIVATE
+        ) {
+            userState.botDisabled = false
+            userTimelineDAO.save(userTimeline, botDefinition)
+        }
 
-            notify(recipientId, intent, step, parameters, notificationType, errorListener)
-
+        try {
+            notify(recipientId, intent, step, parameters, transientContext, notificationType, errorListener)
+        } finally {
             if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
                 val userTimelineAfterNotification =
                     userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
                 userTimelineAfterNotification.userState.botDisabled = currentState
-                userTimelineDAO.save(userTimeline, botDefinition)
+                userTimelineDAO.save(userTimelineAfterNotification, botDefinition)
             }
         }
     }
@@ -365,7 +387,7 @@ object BotRepository {
      * @param startupLock if not null, wait do listen until the lock is released
      */
     fun installBots(
-        routerHandlers: List<(Router) -> Any?>,
+        routerHandlers: List<CoroutineRouterSupport.(Router) -> Any?>,
         createApplicationIfNotExists: Boolean = true,
         startupLock: Lock? = null,
     ) {
@@ -596,6 +618,7 @@ object BotRepository {
                 BotObservabilityConfigurationMonitor.monitor(bot)
                 BotVectorStoreConfigurationMonitor.monitor(bot)
                 BotDocumentCompressorConfigurationMonitor.monitor(bot)
+                BotBusinessRulesConfigurationMonitor.monitor(bot)
                 // register connector controller map
                 connectorControllerMap[this] = controller
                 applicationIdBotApplicationConfigurationMap[toKey()] = this
@@ -618,6 +641,7 @@ object BotRepository {
                 BotObservabilityConfigurationMonitor.unmonitor(controller.bot)
                 BotVectorStoreConfigurationMonitor.unmonitor(controller.bot)
                 BotDocumentCompressorConfigurationMonitor.unmonitor(controller.bot)
+                BotBusinessRulesConfigurationMonitor.unmonitor(controller.bot)
                 TockConnectorController.unregister(controller)
             }
         }

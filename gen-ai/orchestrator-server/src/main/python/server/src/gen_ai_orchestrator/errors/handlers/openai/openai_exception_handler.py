@@ -101,7 +101,7 @@ def create_error_info_openai(exc: OpenAIError, provider: str) -> ErrorInfo:
             provider=provider,
             error=exc.__class__.__name__,
             cause=exc.message,
-            request=f'[{exc.request.method}] {exc.request.url}',
+            request=f"[{exc.request.method}] {exc.request.url}",
         )
     else:
         return ErrorInfo(

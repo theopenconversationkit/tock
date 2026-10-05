@@ -18,11 +18,11 @@ from typing import Literal, Optional
 
 from pydantic import Field
 
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
+    VectorStoreProvider,
+)
 from gen_ai_orchestrator.models.vector_stores.vector_store_search_params import (
     BaseVectorStoreSearchParams,
-)
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
 )
 
 

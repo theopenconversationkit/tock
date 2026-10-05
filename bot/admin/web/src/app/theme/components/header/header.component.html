@@ -35,7 +35,7 @@
         ghost
         size="medium"
         (click)="switchTheme()"
-        [nbTooltip]="isDarkTheme() ? 'Use light mode' : 'Use dark mode'"
+        [nbTooltip]="isDarkTheme() ? ('header.theme-switch-light' | transloco) : ('header.theme-switch-dark' | transloco)"
       >
         <nb-icon
           *ngIf="isDarkTheme()"
@@ -56,7 +56,7 @@
       <nb-select
         (selectedChange)="changeApplication($event)"
         [ngModel]="currentApplicationName"
-        nbTooltip="Select current application"
+        [nbTooltip]="'header.select-application' | transloco"
         class="mb-0"
       >
         <nb-option
@@ -75,7 +75,7 @@
       <nb-select
         (selectedChange)="changeNamespace($event)"
         [selected]="currentNamespaceName"
-        nbTooltip="Select current namespace"
+        [nbTooltip]="'header.select-namespace' | transloco"
         class="mb-0"
       >
         <nb-option
@@ -94,7 +94,7 @@
       <nb-select
         (selectedChange)="changeLocale($event)"
         [ngModel]="state.currentLocale"
-        nbTooltip="Select current locale"
+        [nbTooltip]="'header.select-locale' | transloco"
         class="mb-0"
       >
         <nb-option
@@ -110,7 +110,7 @@
       ghost
       size="medium"
       (click)="goToDialogs()"
-      nbTooltip="Go to dialogs monitioring"
+      [nbTooltip]="'header.go-to-dialogs' | transloco"
     >
       <nb-icon icon="wechat"></nb-icon>
     </button>
@@ -120,10 +120,21 @@
       ghost
       size="medium"
       (click)="openDialogTest()"
-      nbTooltip="Open a test dialog"
+      [nbTooltip]="'header.open-test-dialog' | transloco"
     >
       <nb-icon icon="terminal-plus"></nb-icon>
     </button>
+
+    <div class="border-left pl-3">
+      <nb-select
+        [selected]="transloco.getActiveLang()"
+        (selectedChange)="setLang($event)"
+        [nbTooltip]="'header.interface-language' | transloco"
+      >
+        <nb-option value="en">EN</nb-option>
+        <nb-option value="fr">FR</nb-option>
+      </nb-select>
+    </div>
 
     <div
       *ngIf="auth.isLoggedIn() && !auth.isSSO()"
@@ -134,7 +145,7 @@
         ghost
         size="medium"
         (click)="auth.logout()"
-        nbTooltip="Logout"
+        [nbTooltip]="'header.logout' | transloco"
       >
         <nb-icon icon="box-arrow-right"></nb-icon>
       </button>

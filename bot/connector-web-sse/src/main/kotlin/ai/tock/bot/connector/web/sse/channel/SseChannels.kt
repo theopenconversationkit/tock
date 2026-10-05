@@ -16,7 +16,6 @@
 package ai.tock.bot.connector.web.sse.channel
 
 import ai.tock.bot.connector.web.WebConnectorResponseContract
-import io.vertx.core.CompositeFuture
 import io.vertx.core.Future
 import mu.KotlinLogging
 import java.util.UUID
@@ -41,7 +40,7 @@ internal class SseChannels(private val channelDAO: ChannelDAO) {
         recipientId: String,
         response: WebConnectorResponseContract,
     ): Future<Boolean> =
-        Future.all<CompositeFuture>(
+        Future.all(
             (channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
                 logger.debug { "call onAction for $channel" }
                 channel.onAction(response)

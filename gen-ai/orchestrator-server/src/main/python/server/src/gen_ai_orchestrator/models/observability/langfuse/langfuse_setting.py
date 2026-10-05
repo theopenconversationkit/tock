@@ -37,15 +37,18 @@ class LangfuseObservabilitySetting(BaseObservabilitySetting):
     """
 
     provider: Literal[ObservabilityProvider.LANGFUSE] = Field(
-        description='The Observability Provider.', examples=[ObservabilityProvider.LANGFUSE]
+        description='The Observability Provider.',
+        examples=[ObservabilityProvider.LANGFUSE],
     )
     url: AnyUrl = Field(
-        description='The Langfuse server url', examples=['https://cloud.langfuse.com'], default='http://localhost:3000'
+        description='The Langfuse server url',
+        examples=['https://cloud.langfuse.com'],
+        default='http://localhost:3000',
     )
     public_url: Optional[AnyUrl] = Field(
         default=None,
         description='Optional public URL for Langfuse server',
-        examples=['https://public.langfuse.com']
+        examples=['https://public.langfuse.com'],
     )
     secret_key: SecretKey = Field(
         description='Stores the secret key used to authenticate requests to the Observability Provider API.',

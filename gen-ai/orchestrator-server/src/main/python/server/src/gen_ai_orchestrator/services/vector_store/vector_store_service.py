@@ -32,9 +32,10 @@ logger = logging.getLogger(__name__)
 
 
 async def check_vector_store_setting(
-        vector_store_setting: Optional[VectorStoreSetting],
-        em_setting: Optional[EMSetting],
-        index_name: Optional[str]) -> bool:
+    vector_store_setting: Optional[VectorStoreSetting],
+    em_setting: Optional[EMSetting],
+    index_name: Optional[str],
+) -> bool:
     """
     Run a check for a given Vector Store setting.
 
@@ -47,18 +48,19 @@ async def check_vector_store_setting(
          True for a valid Vector Store setting. Raise exception otherwise.
     """
 
-    logger.info('Get the Callback handler Factory, then check the Vector Store setting.')
+    logger.info(
+        'Get the Callback handler Factory, then check the Vector Store setting.'
+    )
 
     if em_setting is None or index_name is None:
         return await get_vector_store_factory(
             setting=vector_store_setting,
             index_name='fake_index_name',
-            embedding_function=FakeEmbeddings(size=1536)
+            embedding_function=FakeEmbeddings(size=1536),
         ).check_vector_store_connection()
     else:
         return await get_vector_store_factory(
             setting=vector_store_setting,
             index_name=index_name,
-            embedding_function=get_em_factory(em_setting).get_embedding_model()
+            embedding_function=get_em_factory(em_setting).get_embedding_model(),
         ).check_vector_store_setting()
-

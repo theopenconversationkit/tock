@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import { Component, Input, OnInit } from '@angular/core';
-import { ActionReport, Debug, DialogReport, Sentence } from '../../model/dialog-data';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ActionReport, DialogReport, Sentence } from '../../model/dialog-data';
 import { NbDialogRef, NbToastrService } from '@nebular/theme';
 import { Annotation, AnnotationEvent, AnnotationEventType, AnnotationEventTypes, AnnotationState, AnnotationStates } from './annotations';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -25,6 +9,8 @@ import { StateService } from '../../../core-nlp/state.service';
 import { deepCopy } from '../../utils';
 import { SortOrder } from '../../model/misc';
 import { ResponseIssueReason, ResponseIssueReasons } from '../../model/response-issue';
+import { Subject, takeUntil } from 'rxjs';
+import { TranslocoService } from '@jsverse/transloco';
 
 type AnnotationForm = FormType<Omit<Annotation, '_id' | 'user' | 'createdAt' | 'lastUpdateDate' | 'expiresAt'> & { comment: string }>;
 type AnnotationFormGroupKeysType = AnnotationForm[G];
@@ -34,7 +20,8 @@ type AnnotationFormGroupKeysType = AnnotationForm[G];
   templateUrl: './annotation.component.html',
   styleUrl: './annotation.component.scss'
 })
-export class AnnotationComponent implements OnInit {
+export class AnnotationComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   loading: boolean = true;
 
   annotationStates = AnnotationStates;
@@ -59,10 +46,40 @@ export class AnnotationComponent implements OnInit {
     private dialogRef: NbDialogRef<AnnotationComponent>,
     private rest: RestService,
     private stateService: StateService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
+    this.transloco
+      .selectTranslateObject('shared.annotation.states', {}, '')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((translatedRanges) => {
+        this.annotationStates = [
+          { label: translatedRanges.opened, value: AnnotationState.ANOMALY },
+          { label: translatedRanges.reviewNeeded, value: AnnotationState.REVIEW_NEEDED },
+          { label: translatedRanges.resolved, value: AnnotationState.RESOLVED },
+          { label: translatedRanges.wontFix, value: AnnotationState.WONT_FIX }
+        ];
+      });
+
+    this.transloco
+      .selectTranslateObject('common.responseIssueReasons', {}, '')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((translatedRanges) => {
+        this.annotationReasons = [
+          { label: translatedRanges.questionNotOrMisunderstood, value: ResponseIssueReason.QUESTION_MISUNDERSTOOD },
+          { label: translatedRanges.inaccurateAnswer, value: ResponseIssueReason.INACCURATE_ANSWER },
+          { label: translatedRanges.incompleteAnswer, value: ResponseIssueReason.INCOMPLETE_ANSWER },
+          { label: translatedRanges.incompleteSourcesOrDocuments, value: ResponseIssueReason.INCOMPLETE_SOURCES },
+          { label: translatedRanges.obsoleteSourcesOrDocuments, value: ResponseIssueReason.OBSOLETE_SOURCES },
+          { label: translatedRanges.businessLexiconProblem, value: ResponseIssueReason.BUSINESS_LEXICON_PROBLEM },
+          { label: translatedRanges.wrongAnswerFormat, value: ResponseIssueReason.WRONG_ANSWER_FORMAT },
+          { label: translatedRanges.hallucination, value: ResponseIssueReason.HALLUCINATION },
+          { label: translatedRanges.other, value: ResponseIssueReason.OTHER }
+        ];
+      });
+
     this.setExchangeInfos();
 
     if (this.actionReport.annotation) {
@@ -74,36 +91,37 @@ export class AnnotationComponent implements OnInit {
 
   setExchangeInfos() {
     this.answer = (this.actionReport.message as unknown as Sentence).text;
+    if (this.actionReport.ragDebug) {
+      // The response is of the Rag type, and Rag debugging is enabled on this bot; we have ragDebug
 
-    const actionsStack = this.dialogReport.actions;
-    let actionIndex = actionsStack.findIndex((act) => act === this.actionReport);
+      if (this.actionReport.ragDebug.condensed_question) {
+        this.condensedQuestion = this.actionReport.ragDebug.condensed_question;
+      }
+      if (this.actionReport.ragDebug.user_question) {
+        this.question = this.actionReport.ragDebug.user_question;
+      }
+    } else {
+      // The response isn't a Rag response, or Rag debugging isn't enabled on this bot; we need to find the question in the previous message.
 
-    if (actionIndex > 0) {
-      actionIndex--;
-      let questionAction = actionsStack[actionIndex];
+      const actionsStack = this.dialogReport.actions;
+      let actionIndex = actionsStack.findIndex((act) => act === this.actionReport);
 
-      let question;
-      let condensedQuestion;
+      if (actionIndex > 0) {
+        actionIndex--;
+        let questionAction = actionsStack[actionIndex];
+        let question;
 
-      while (!question && questionAction) {
-        if (questionAction.message.isDebug()) {
-          const actionDebug = questionAction.message as unknown as Debug;
-          if (actionDebug.data.condensed_question) {
-            condensedQuestion = actionDebug.data.condensed_question;
+        while (!question && questionAction) {
+          if (questionAction.message.isDebug()) {
+            actionIndex--;
+            questionAction = actionsStack[actionIndex];
+          } else if (!questionAction.isBot()) {
+            const questionSentence = questionAction.message as unknown as Sentence;
+            question = questionSentence.text;
           }
-          actionIndex--;
-          questionAction = actionsStack[actionIndex];
-        } else if (!questionAction.isBot()) {
-          const questionSentence = questionAction.message as unknown as Sentence;
-          question = questionSentence.text;
         }
-      }
 
-      if (condensedQuestion) {
-        this.condensedQuestion = condensedQuestion;
-      }
-      if (question) {
-        this.question = question;
+        if (question) this.question = question;
       }
     }
   }
@@ -224,10 +242,14 @@ export class AnnotationComponent implements OnInit {
         this.postComment();
       },
       error: (error) => {
-        this.toastrService.danger('An error occured', 'Error', {
-          duration: 5000,
-          status: 'danger'
-        });
+        this.toastrService.danger(
+          this.transloco.translate('common.messages.an-error-occured'),
+          this.transloco.translate('common.messages.error'),
+          {
+            duration: 5000,
+            status: 'danger'
+          }
+        );
         this.loading = false;
       }
     });
@@ -255,10 +277,14 @@ export class AnnotationComponent implements OnInit {
           this.loading = false;
         },
         error: (error) => {
-          this.toastrService.danger('An error occured', 'Error', {
-            duration: 5000,
-            status: 'danger'
-          });
+          this.toastrService.danger(
+            this.transloco.translate('common.messages.an-error-occured'),
+            this.transloco.translate('common.messages.error'),
+            {
+              duration: 5000,
+              status: 'danger'
+            }
+          );
           this.loading = false;
         }
       });
@@ -294,10 +320,14 @@ export class AnnotationComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        this.toastrService.danger('An error occured', 'Error', {
-          duration: 5000,
-          status: 'danger'
-        });
+        this.toastrService.danger(
+          this.transloco.translate('common.messages.an-error-occured'),
+          this.transloco.translate('common.messages.error'),
+          {
+            duration: 5000,
+            status: 'danger'
+          }
+        );
         this.loading = false;
       }
     });
@@ -305,5 +335,10 @@ export class AnnotationComponent implements OnInit {
 
   cancel(): void {
     this.dialogRef.close();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

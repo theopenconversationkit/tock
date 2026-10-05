@@ -46,7 +46,7 @@ object RAGValidationService {
             val questionCondensingLlmErrors =
                 llmProviderService.checkSetting(
                     LLMProviderSettingStatusRequest(
-                        ragConfig.questionCondensingLlmSetting!!,
+                        ragConfig.questionCondensingLlmSetting,
                         observabilitySetting,
                     ),
                 ).getErrors("LLM setting check failed (for question condensing)")
@@ -54,7 +54,7 @@ object RAGValidationService {
             val questionAnsweringLlmErrors =
                 llmProviderService.checkSetting(
                     LLMProviderSettingStatusRequest(
-                        ragConfig.questionAnsweringLlmSetting!!,
+                        ragConfig.questionAnsweringLlmSetting,
                         observabilitySetting,
                     ),
                 ).getErrors("LLM setting check failed (for question answering)")
@@ -77,9 +77,10 @@ object RAGValidationService {
                         VectorStoreUtils.getVectorStoreElements(
                             ragConfig.namespace,
                             ragConfig.botId,
-                            ragConfig.indexSessionId!!,
-                            ragConfig.maxDocumentsRetrieved,
-                            vectorStoreSetting,
+                            indexSessionId = ragConfig.indexSessionId!!,
+                            kNeighborsDocuments = ragConfig.maxDocumentsRetrieved,
+                            documentSearchType = ragConfig.documentSearchType,
+                            vectorStoreSetting = vectorStoreSetting,
                         )
 
                     vectorStoreProviderService.checkSetting(

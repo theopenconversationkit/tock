@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card
   class="mb-0 main-card"
   [class.maincard]="!expanded"
@@ -22,7 +6,7 @@
   <nb-card-header>
     <div class="d-flex justify-content-between align-items-center">
       <div class="ellipsis initial-capitalize">
-        {{ faq?.id ? faq.title : 'New faq' }}
+        {{ faq?.id ? faq.title : ('faq.faq-management-edit.newFaqTitle' | transloco) }}
       </div>
 
       <div class="d-flex">
@@ -31,7 +15,9 @@
           nbButton
           ghost
           shape="round"
-          [nbTooltip]="expanded ? 'Reduce' : 'Expand'"
+          [nbTooltip]="
+            expanded ? ('faq.faq-management-edit.reduceTooltip' | transloco) : ('faq.faq-management-edit.expandTooltip' | transloco)
+          "
           (click)="expandSidePanel()"
         >
           <nb-icon
@@ -48,7 +34,7 @@
           nbButton
           ghost
           shape="round"
-          nbTooltip="Close"
+          [nbTooltip]="'faq.faq-management-edit.closeTooltip' | transloco"
           (click)="close()"
         >
           <nb-icon icon="x-lg"></nb-icon>
@@ -64,7 +50,8 @@
         (changeTab)="setCurrentTab($event)"
       >
         <nb-tab
-          tabTitle="info"
+          #infoTab
+          [tabTitle]="'faq.faq-management-edit.infoTabTitle' | transloco"
           badgePosition="top right"
           badgeStatus="danger"
           [badgeDot]="isSubmitted && !!(title.invalid || description.invalid || intentNameExistInApp)"
@@ -73,7 +60,8 @@
         >
         </nb-tab>
         <nb-tab
-          tabTitle="question"
+          #questionTab
+          [tabTitle]="'faq.faq-management-edit.questionTabTitle' | transloco"
           badgePosition="top right"
           badgeStatus="danger"
           [badgeDot]="isSubmitted && !!utterances.invalid"
@@ -82,7 +70,8 @@
         >
         </nb-tab>
         <nb-tab
-          tabTitle="answer"
+          #answerTab
+          [tabTitle]="'faq.faq-management-edit.answerTabTitle' | transloco"
           badgePosition="top right"
           badgeStatus="danger"
           [badgeDot]="isSubmitted && !!(answers.invalid || footnotes.invalid)"
@@ -94,7 +83,7 @@
 
       <div *ngIf="currentTab === faqTabs.INFO">
         <tock-form-control
-          label="Name"
+          [label]="'faq.faq-management-edit.nameLabel' | transloco"
           name="name"
           [controls]="title"
           [showError]="isSubmitted"
@@ -108,19 +97,19 @@
             id="name"
             fullWidth
             type="text"
-            placeholder="Enter faq title"
+            [placeholder]="'faq.faq-management-edit.namePlaceholder' | transloco"
             (keyup)="resetAlerts()"
           />
           <div
             class="text-danger"
             *ngIf="intentNameExistInApp"
           >
-            <small> This title corresponds to an existing intent in this application </small>
+            <small>{{ 'faq.faq-management-edit.intentNameExistsWarning' | transloco }}</small>
           </div>
         </tock-form-control>
 
         <tock-form-control
-          label="Description"
+          [label]="'faq.faq-management-edit.descriptionLabel' | transloco"
           name="description"
           [controls]="description"
           [showError]="isSubmitted"
@@ -133,15 +122,18 @@
             id="description"
             type="text"
             rows="8"
-            placeholder="Enter description"
+            [placeholder]="'faq.faq-management-edit.descriptionPlaceholder' | transloco"
           ></textarea>
           <small [ngClass]="getControlLengthIndicatorClass('description')">
-            {{ form.controls.description.value.length }} characters out of {{ controlsMaxLength.description }} max
+            {{
+              'faq.faq-management-edit.descriptionLengthIndicator'
+                | transloco: { count: form.controls.description.value.length, max: controlsMaxLength.description }
+            }}
           </small>
         </tock-form-control>
 
         <tock-form-control
-          label="Tags"
+          [label]="'faq.faq-management-edit.tagsLabel' | transloco"
           name="tags"
           [controls]="tags"
           [showError]="isSubmitted"
@@ -159,7 +151,7 @@
               fullWidth
               id="tags"
               type="text"
-              placeholder="Type tag and press enter"
+              [placeholder]="'faq.faq-management-edit.tagsPlaceholder' | transloco"
               autocomplete="off"
               (tagAdd)="onTagAdd($event)"
               (keyup)="updateTagsAutocompleteValues($event)"
@@ -183,7 +175,7 @@
 
       <div *ngIf="currentTab === faqTabs.QUESTION">
         <tock-form-control
-          label="Question"
+          [label]="'faq.faq-management-edit.questionLabel' | transloco"
           name="question"
           [controls]="utterances"
           [showError]="isSubmitted"
@@ -199,7 +191,7 @@
                 fullWidth
                 id="question"
                 type="text"
-                placeholder="Type a new wording and press the Enter key"
+                [placeholder]="'faq.faq-management-edit.questionPlaceholder' | transloco"
                 [disabled]="lookingForSameUterranceInOtherInent"
                 (keyup)="resetAlerts()"
                 (keyup.enter)="addUtterance()"
@@ -209,7 +201,7 @@
                 nbButton
                 nbSuffix
                 ghost
-                nbTooltip="Add"
+                [nbTooltip]="'faq.faq-management-edit.addTooltip' | transloco"
                 [disabled]="!addUtteranceInput.value || lookingForSameUterranceInOtherInent"
                 (click)="addUtterance()"
               >
@@ -220,7 +212,7 @@
             <button
               nbButton
               type="button"
-              nbTooltip="Generate sentences"
+              [nbTooltip]="'faq.faq-management-edit.generateSentencesTooltip' | transloco"
               ghost
               shape="round"
               status="primary"
@@ -239,12 +231,12 @@
           (close)="onCloseInboxSentencesWarning()"
         >
           <div class="font-size-small">
-            Only “validated” and “in model” sentences are listed here. To see the “inbox” sentences associated with this faq,
+            {{ 'faq.faq-management-edit.inboxSentencesWarning' | transloco }}
             <a
               href="javascript:void(0)"
               (click)="sendToInbox()"
             >
-              click here.
+              {{ 'faq.faq-management-edit.inboxSentencesWarningClickHere' | transloco }}
             </a>
           </div>
         </nb-alert>
@@ -264,7 +256,7 @@
             <span>×</span>
           </button>
           <span data-testid="alert-message">
-            Addition cancelled. This Sentence is already associated with the intent :
+            {{ 'faq.faq-management-edit.existingUtteranceWarning' | transloco }}
             <strong>"{{ existingUterranceInOtherintent }}" </strong>
           </span>
         </nb-alert>
@@ -303,7 +295,7 @@
                 *ngIf="utterance !== editedUtterance"
                 type="button"
                 nbButton
-                nbTooltip="Edit"
+                [nbTooltip]="'faq.faq-management-edit.editTooltip' | transloco"
                 ghost
                 shape="round"
                 size="small"
@@ -315,7 +307,7 @@
                 *ngIf="utterance === editedUtterance"
                 type="button"
                 nbButton
-                nbTooltip="Validate changes"
+                [nbTooltip]="'faq.faq-management-edit.validateChangesTooltip' | transloco"
                 shape="round"
                 size="small"
                 status="success"
@@ -328,7 +320,7 @@
                 *ngIf="utterance !== editedUtterance"
                 type="button"
                 nbButton
-                nbTooltip="Delete"
+                [nbTooltip]="'faq.faq-management-edit.deleteTooltip' | transloco"
                 ghost
                 shape="round"
                 size="small"
@@ -342,7 +334,7 @@
                 *ngIf="utterance === editedUtterance"
                 type="button"
                 nbButton
-                nbTooltip="Cancel changes"
+                [nbTooltip]="'faq.faq-management-edit.cancelChangesTooltip' | transloco"
                 ghost
                 shape="round"
                 size="small"
@@ -357,12 +349,12 @@
 
       <div *ngIf="currentTab === faqTabs.ANSWER">
         <tock-form-control
-          label="Locale"
+          [label]="'faq.faq-management-edit.localeLabel' | transloco"
           class="mb-3"
           [required]="true"
           [controls]="getSelectedAnswerI18nControl()"
           [showError]="true"
-          information="Allows you to define the faq response according to the locale and/or connector/interfaceType used by the final user."
+          [information]="'faq.faq-management-edit.localeInformation' | transloco"
         >
           <div class="d-flex align-items-center justify-content-between">
             <div class="flex-grow-1">
@@ -370,7 +362,7 @@
                 [(ngModel)]="selectedAnswerI18nValue"
                 [ngModelOptions]="{ standalone: true }"
                 [compareWith]="compareSelectedAnswerByOptions"
-                placeholder="Select a locale"
+                [placeholder]="'faq.faq-management-edit.localePlaceholder' | transloco"
                 size="small"
                 fullWidth
               >
@@ -413,7 +405,7 @@
                         *ngIf="getAnswerI18nLocalizedLabel(i18nValue)?.validated"
                         icon="check"
                         class="ml-2 text-success align-text-top"
-                        nbTooltip="Validated"
+                        [nbTooltip]="'faq.faq-management-edit.validatedTooltip' | transloco"
                       >
                       </nb-icon>
                     </span>
@@ -430,7 +422,7 @@
                       *ngIf="!getAnswerLabelTrimedLength(i18nValue)"
                       icon="exclamation-triangle"
                       class="ml-3 text-danger"
-                      nbTooltip="Label not provided"
+                      [nbTooltip]="'faq.faq-management-edit.labelNotProvidedTooltip' | transloco"
                     >
                     </nb-icon>
                   </nb-option>
@@ -439,7 +431,7 @@
             </div>
 
             <div
-              nbTooltip="Add a locale / connector combination"
+              [nbTooltip]="'faq.faq-management-edit.addLocaleCombinationTooltip' | transloco"
               *ngIf="hasUnassignedAnswerCombinations()"
             >
               <button
@@ -461,7 +453,7 @@
             *ngIf="isSubmitted && answers.invalid"
             class="text-danger mt-1"
           >
-            Some answers are missing
+            {{ 'faq.faq-management-edit.someAnswersMissingError' | transloco }}
           </div>
         </tock-form-control>
 
@@ -471,7 +463,7 @@
             (click)="stopPropagation($event)"
           >
             <div *ngIf="!answerCombinationSelector.locale">
-              <div class="font-weight-bold mb-2">Select a locale :</div>
+              <div class="font-weight-bold mb-2">{{ 'faq.faq-management-edit.selectLocaleLabel' | transloco }}</div>
 
               <button
                 nbButton
@@ -487,7 +479,7 @@
             </div>
 
             <div *ngIf="answerCombinationSelector.locale && !answerCombinationSelector.connector">
-              <div class="font-weight-bold mb-2">Select a connector :</div>
+              <div class="font-weight-bold mb-2">{{ 'faq.faq-management-edit.selectConnectorLabel' | transloco }}</div>
               <button
                 nbButton
                 status="control"
@@ -506,7 +498,7 @@
             </div>
 
             <div *ngIf="answerCombinationSelector.locale && answerCombinationSelector.connector && !answerCombinationSelector.interface">
-              <div class="font-weight-bold mb-2">Select an interface :</div>
+              <div class="font-weight-bold mb-2">{{ 'faq.faq-management-edit.selectInterfaceLabel' | transloco }}</div>
               <button
                 nbButton
                 status="control"
@@ -538,9 +530,9 @@
 
         <tock-form-control
           *ngIf="selectedAnswerI18nValue && doesSelectedAnswerSupportsRichText()"
-          label="Answer format"
+          [label]="'faq.faq-management-edit.answerFormatLabel' | transloco"
           name="answerExportFormat"
-          information="Markdown format in which the response is formulated."
+          [information]="'faq.faq-management-edit.answerFormatInformation' | transloco"
           [controls]="getSelectedAnswerI18nControl().controls.answerExportFormat"
           [showError]="isSubmitted"
           [hasMargin]="false"
@@ -561,9 +553,9 @@
 
         <tock-form-control
           *ngIf="selectedAnswerI18nValue"
-          label="Answer content"
+          [label]="'faq.faq-management-edit.answerContentLabel' | transloco"
           name="answer"
-          information="Response content for the locale/connector combination selected above"
+          [information]="'faq.faq-management-edit.answerContentInformation' | transloco"
           [controls]="getSelectedAnswerI18nControl().controls.label"
           [showError]="isSubmitted"
           [required]="true"
@@ -572,16 +564,14 @@
             [editionFormat]="getSelectedAnswerI18nControl().controls.answerExportFormat.value"
             [formControl]="getSelectedAnswerI18nControl().controls.label"
             [locale]="getSelectedAnswerI18nControl().controls.locale.value"
-            placeholder="Enter faq answer content..."
+            [placeholder]="'faq.faq-management-edit.answerContentPlaceholder' | transloco"
           ></tock-wysiwyg-editor>
         </tock-form-control>
 
-        <!-- footNotes -->
-
         <tock-form-control
-          label="Footnotes"
+          [label]="'faq.faq-management-edit.footnotesLabel' | transloco"
           name="footnotes"
-          information="Optional footnotes for the answer"
+          [information]="'faq.faq-management-edit.footnotesInformation' | transloco"
           [controls]="footnotes"
           [showError]="isSubmitted"
         >
@@ -596,18 +586,19 @@
                   <label
                     class="min-width-5 font-weight-bold"
                     [ngClass]="{ 'text-danger': isSubmitted && !footnote.value.title.length }"
-                    ><abbr
+                  >
+                    <abbr
                       title="Required"
                       class="text-danger text-decoration-none"
                     >
                       *
                     </abbr>
-                    Title</label
-                  >
+                    {{ 'faq.faq-management-edit.footnoteTitleLabel' | transloco }}
+                  </label>
                   <input
                     formControlName="title"
                     id="name"
-                    placeholder="Footnote title"
+                    [placeholder]="'faq.faq-management-edit.footnoteTitlePlaceholder' | transloco"
                     nbInput
                     fullWidth
                     fieldSize="tiny"
@@ -617,11 +608,11 @@
                 </div>
 
                 <div class="d-flex gap-1 text-right text-muted mb-1">
-                  <label class="min-width-5">Url</label>
+                  <label class="min-width-5">{{ 'faq.faq-management-edit.footnoteUrlLabel' | transloco }}</label>
                   <input
                     formControlName="url"
                     id="url"
-                    placeholder="Footnote url"
+                    [placeholder]="'faq.faq-management-edit.footnoteUrlPlaceholder' | transloco"
                     nbInput
                     fullWidth
                     fieldSize="tiny"
@@ -630,11 +621,11 @@
                 </div>
 
                 <div class="d-flex gap-1 text-right text-muted">
-                  <label class="min-width-5">Content</label>
+                  <label class="min-width-5">{{ 'faq.faq-management-edit.footnoteContentLabel' | transloco }}</label>
                   <textarea
                     formControlName="content"
                     id="content"
-                    placeholder="Footnote content"
+                    [placeholder]="'faq.faq-management-edit.footnoteContentPlaceholder' | transloco"
                     nbInput
                     fullWidth
                     fieldSize="tiny"
@@ -648,7 +639,7 @@
                   nbButton
                   size="tiny"
                   status="basic"
-                  nbTooltip="Reduce footnote index"
+                  [nbTooltip]="'faq.faq-management-edit.reduceFootnoteIndexTooltip' | transloco"
                   (click)="changeFootnoteIndex(-1, i)"
                   class="mb-1"
                 >
@@ -663,7 +654,7 @@
                   nbButton
                   size="tiny"
                   status="basic"
-                  nbTooltip="Increase footnote index"
+                  [nbTooltip]="'faq.faq-management-edit.increaseFootnoteIndexTooltip' | transloco"
                   (click)="changeFootnoteIndex(1, i)"
                   class="mb-1"
                 >
@@ -677,7 +668,7 @@
                   nbButton
                   size="tiny"
                   status="danger"
-                  nbTooltip="Delete footnote"
+                  [nbTooltip]="'faq.faq-management-edit.deleteFootnoteTooltip' | transloco"
                   (click)="removeFootnote(i)"
                 >
                   <nb-icon icon="trash"></nb-icon>
@@ -692,7 +683,7 @@
             (click)="addFootnote()"
           >
             <nb-icon icon="plus"></nb-icon>
-            Add a footnote
+            {{ 'faq.faq-management-edit.addFootnoteButton' | transloco }}
           </button>
         </tock-form-control>
       </div>
@@ -705,7 +696,10 @@
       class="mt-n2 mb-1"
     >
       <small [ngClass]="getAnswerLengthIndicatorClass()">
-        {{ getSelectedAnswerI18nControl().controls.label.value.length }} characters out of {{ controlsMaxLength.answer }} max
+        {{
+          'faq.faq-management-edit.answerLengthIndicator'
+            | transloco: { count: getSelectedAnswerI18nControl().controls.label.value.length, max: controlsMaxLength.answer }
+        }}
       </small>
     </div>
 
@@ -718,7 +712,7 @@
         size="small"
         (click)="close()"
       >
-        Cancel
+        {{ 'faq.faq-management-edit.cancelButton' | transloco }}
       </button>
       <button
         type="button"
@@ -728,7 +722,7 @@
         [disabled]="!canSave"
         (click)="checkIntentNameAndSave()"
       >
-        Save
+        {{ 'faq.faq-management-edit.saveButton' | transloco }}
       </button>
     </div>
   </nb-card-footer>

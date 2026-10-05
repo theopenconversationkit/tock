@@ -1,22 +1,7 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
 <div class="d-flex flex-wrap mb-2">
   <h1 class="flex-grow-1">
-    <span *ngIf="applications.length !== 0"
-      >Application
+    <span *ngIf="applications.length !== 0">
+      {{ 'applications.application.applicationTitle' | transloco }}
       <span *ngIf="application?.name?.length !== 0">"{{ application.name }}"</span>
     </span>
   </h1>
@@ -27,25 +12,29 @@
       ghost
       *ngIf="applications.length !== 0"
       (click)="cancel()"
-      nbTooltip="Cancel"
+      [nbTooltip]="'applications.application.cancelTooltip' | transloco"
     >
       <nb-icon icon="x-lg"></nb-icon>
-      CANCEL
+      {{ 'applications.application.cancelButton' | transloco }}
     </button>
 
     <button
       nbButton
       status="primary"
       (click)="saveApplication()"
-      [nbTooltip]="newApplication ? 'Create New Application' : 'Update Application'"
+      [nbTooltip]="
+        newApplication
+          ? ('applications.application.createNewApplicationTooltip' | transloco)
+          : ('applications.application.updateApplicationTooltip' | transloco)
+      "
     >
       <ng-container *ngIf="newApplication">
         <nb-icon icon="plus-lg"></nb-icon>
-        CREATE
+        {{ 'applications.application.createButton' | transloco }}
       </ng-container>
       <ng-container *ngIf="!newApplication">
         <nb-icon icon="floppy"></nb-icon>
-        UPDATE
+        {{ 'applications.application.updateButton' | transloco }}
       </ng-container>
     </button>
   </section>
@@ -60,8 +49,11 @@
           class="label required"
         >
           <abbr title="Required">*</abbr>
-          <span *ngIf="newApplication">New </span>
-          Application Label
+          {{
+            newApplication
+              ? ('applications.application.newApplicationLabel' | transloco)
+              : ('applications.application.applicationLabel' | transloco)
+          }}
         </label>
 
         <input
@@ -69,11 +61,15 @@
           fullWidth
           id="appLabel"
           type="text"
-          placeholder="New Application Label"
+          [placeholder]="
+            newApplication
+              ? ('applications.application.newApplicationLabel' | transloco)
+              : ('applications.application.applicationLabel' | transloco)
+          "
           [(ngModel)]="application.label"
           (keyup)="format()"
           (keyup.enter)="saveApplication()"
-          nbTooltip="Displayed label"
+          [nbTooltip]="'applications.application.displayedLabelTooltip' | transloco"
           #appLabel
           required
           autocomplete="off"
@@ -88,8 +84,11 @@
           class="label required"
         >
           <abbr title="Required">*</abbr>
-          <span *ngIf="newApplication">New </span>
-          Application Name
+          {{
+            newApplication
+              ? ('applications.application.newApplicationName' | transloco)
+              : ('applications.application.applicationName' | transloco)
+          }}
         </label>
 
         <input
@@ -97,11 +96,15 @@
           fullWidth
           id="appName"
           type="text"
-          placeholder="New Application Name"
+          [placeholder]="
+            newApplication
+              ? ('applications.application.newApplicationName' | transloco)
+              : ('applications.application.applicationName' | transloco)
+          "
           [(ngModel)]="application.name"
           (keyup)="format()"
           (keyup.enter)="saveApplication()"
-          nbTooltip="Technical name (without special chars)"
+          [nbTooltip]="'applications.application.technicalNameTooltip' | transloco"
           #appName
           required
           autocomplete="off"
@@ -115,7 +118,7 @@
           for="treshold"
           class="label d-block"
         >
-          Unknown intent threshold
+          {{ 'applications.application.unknownIntentThresholdLabel' | transloco }}
         </label>
 
         <input
@@ -123,11 +126,11 @@
           fullWidth
           type="number"
           id="treshold"
-          placeholder="Unknown intent threshold"
+          [placeholder]="'applications.application.unknownIntentThresholdPlaceholder' | transloco"
           [(ngModel)]="application.unknownIntentThreshold"
           min="0"
           max="1"
-          nbTooltip="Number between 0 and 1 - if the probability of the intent is below the threshold, unknown intent is returned"
+          [nbTooltip]="'applications.application.unknownIntentThresholdTooltip' | transloco"
         />
       </div>
       <div class="col-6 col-lg-6">
@@ -135,7 +138,7 @@
           for="knownIntentThreshold"
           class="label d-block"
         >
-          Known intent threshold
+          {{ 'applications.application.knownIntentThresholdLabel' | transloco }}
         </label>
 
         <input
@@ -143,45 +146,47 @@
           fullWidth
           type="number"
           id="knownIntentThreshold"
-          placeholder="Known intent threshold"
+          [placeholder]="'applications.application.knownIntentThresholdPlaceholder' | transloco"
           [(ngModel)]="application.knownIntentThreshold"
           min="0"
           max="1"
-          nbTooltip="Number between 0 and 1 - if the probability of the intent is below the threshold, the intent is returned as other intent"
+          [nbTooltip]="'applications.application.knownIntentThresholdTooltip' | transloco"
         />
       </div>
     </div>
+
     <div class="row mb-4">
       <div class="col-6 col d-flex gap-1 align-items-center flex-wrap">
         <nb-checkbox
           class="separator"
           [(ngModel)]="application.normalizeText"
-          nbTooltip="If selected, this option uses normalized text models - for intent only models"
+          [nbTooltip]="'applications.application.normalizedTextModelsTooltip' | transloco"
         >
-          Normalized text models
+          {{ 'applications.application.normalizedTextModelsLabel' | transloco }}
         </nb-checkbox>
         <nb-checkbox
           *ngIf="!application.normalizeText"
           class="separator"
           [(ngModel)]="application.mergeEngineTypes"
-          nbTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER"
+          [nbTooltip]="'applications.application.useEntityModelsTooltip' | transloco"
         >
-          Use entity models
+          {{ 'applications.application.useEntityModelsLabel' | transloco }}
         </nb-checkbox>
         <nb-checkbox
           class="separator"
           *ngIf="!application.normalizeText && !application.mergeEngineTypes"
           [(ngModel)]="application.useEntityModels"
-          nbTooltip="If selected, built-in entity models results are provided only for info and potential entity disambiguation"
+          [nbTooltip]="'applications.application.entityDisambiguationOnlyTooltip' | transloco"
         >
-          Entity disambiguation only
+          {{ 'applications.application.entityDisambiguationOnlyLabel' | transloco }}
         </nb-checkbox>
         <nb-checkbox
           *ngIf="!application.normalizeText"
           class="separator"
           [(ngModel)]="application.supportSubEntities"
-          nbTooltip="If selected, you can use subentities in your nlp models"
-          >Allow subentities
+          [nbTooltip]="'applications.application.allowSubentitiesTooltip' | transloco"
+        >
+          {{ 'applications.application.allowSubentitiesLabel' | transloco }}
         </nb-checkbox>
       </div>
     </div>
@@ -196,7 +201,7 @@
           class="label required d-block"
         >
           <abbr title="Required">*</abbr>
-          Locales
+          {{ 'applications.application.localesLabel' | transloco }}
         </label>
 
         <nb-form-field>
@@ -209,13 +214,14 @@
             fullWidth
             (selectedChange)="addLocale()"
             [(ngModel)]="newLocale"
-            placeholder="Add new locale"
+            [placeholder]="'applications.application.addNewLocalePlaceholder' | transloco"
             id="locales"
           >
             <nb-option
               *ngFor="let locale of state.locales"
               [value]="locale.first"
-              >{{ locale.second }}
+            >
+              {{ locale.second }}
             </nb-option>
           </nb-select>
         </nb-form-field>
@@ -236,7 +242,7 @@
             size="tiny"
             status="danger"
             class="ml-1"
-            nbTooltip="Delete locale"
+            [nbTooltip]="'applications.application.deleteLocaleTooltip' | transloco"
             (click)="removeLocale(locale)"
           >
             <nb-icon icon="trash"></nb-icon>
@@ -251,11 +257,11 @@
     >
       <div class="col-6 col-lg-3">
         <label
-          for="locales"
+          for="engines"
           class="label required d-block"
         >
           <abbr title="Required">*</abbr>
-          NLU engine
+          {{ 'applications.application.nluEngineLabel' | transloco }}
         </label>
 
         <nb-radio-group
@@ -280,7 +286,7 @@
       class="row mb-4"
     >
       <div class="col">
-        <label class="label d-block"> Advanced options </label>
+        <label class="label d-block">{{ 'applications.application.advancedOptionsLabel' | transloco }}</label>
         <tock-application-advanced-options
           [application]="application"
           [nlpEngineTypeChange]="nlpEngineTypeChange"

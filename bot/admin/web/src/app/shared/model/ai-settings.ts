@@ -100,6 +100,7 @@ export const AzureOpenAiApiVersionsList: string[] = [
 ];
 
 export const OpenAIModelsList: string[] = [
+  'gpt-5',
   'gpt-4o',
   'gpt-4o-mini',
 

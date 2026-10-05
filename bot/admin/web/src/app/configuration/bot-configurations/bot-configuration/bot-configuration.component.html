@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card *ngIf="configuration">
   <nb-card-body
     *ngIf="loading"
@@ -39,20 +23,20 @@
       *ngIf="!configuration._id"
       class="mb-3"
     >
-      New configuration
+      {{ 'configuration.bot-configuration.newConfigurationTitle' | transloco }}
     </h5>
 
     <div class="row">
       <div class="col-4">
         <tock-form-control
-          label="Configuration name"
+          [label]="'configuration.bot-configuration.configurationNameLabel' | transloco"
           name="configurationName"
         >
           <input
             nbInput
             fullWidth
             type="text"
-            placeholder="Configuration name"
+            [placeholder]="'configuration.bot-configuration.configurationNamePlaceholder' | transloco"
             [(ngModel)]="configuration.name"
           />
         </tock-form-control>
@@ -60,7 +44,7 @@
 
       <div class="col-4">
         <tock-form-control
-          label="Connector type"
+          [label]="'configuration.bot-configuration.connectorTypeLabel' | transloco"
           name="connectorType"
           *ngIf="configuration._id"
         >
@@ -76,7 +60,7 @@
               nbInput
               fullWidth
               type="text"
-              placeholder="Connector type"
+              [placeholder]="'configuration.bot-configuration.connectorTypePlaceholder' | transloco"
               [ngModel]="configuration.connectorType.label()"
               [disabled]="true"
               class="connector"
@@ -85,7 +69,7 @@
         </tock-form-control>
 
         <tock-form-control
-          label="Connector type"
+          [label]="'configuration.bot-configuration.connectorTypeLabel' | transloco"
           name="connectorType"
           *ngIf="!configuration._id"
         >
@@ -119,13 +103,13 @@
 
       <div class="col-4">
         <tock-form-control
-          label="Target connector type"
+          [label]="'configuration.bot-configuration.targetConnectorTypeLabel' | transloco"
           name="targetConnectorType"
           *ngIf="!configuration._id && configuration.connectorType.isRest()"
         >
           <nb-select
             fullWidth
-            placeholder="Target connector type"
+            [placeholder]="'configuration.bot-configuration.targetConnectorTypePlaceholder' | transloco"
             [(ngModel)]="configuration.ownerConnectorType"
             (selectedChange)="changeConnectorType()"
           >
@@ -152,7 +136,7 @@
         </tock-form-control>
 
         <tock-form-control
-          label="Target connector type"
+          [label]="'configuration.bot-configuration.targetConnectorTypeLabel' | transloco"
           name="targetConnectorType"
           *ngIf="configuration._id && configuration.connectorType.isRest() && configuration.ownerConnectorType"
         >
@@ -166,7 +150,7 @@
             <input
               nbInput
               type="text"
-              placeholder="Target connector type"
+              [placeholder]="'configuration.bot-configuration.targetConnectorTypePlaceholder' | transloco"
               [ngModel]="configuration.ownerConnectorType?.label()"
               [disabled]="true"
             />
@@ -178,13 +162,13 @@
     <div class="row">
       <div class="col-4">
         <tock-form-control
-          label="Connector identifier"
+          [label]="'configuration.bot-configuration.connectorIdentifierLabel' | transloco"
           name="connectorIdentifier"
         >
           <input
             nbInput
             type="text"
-            placeholder="Connector identifier"
+            [placeholder]="'configuration.bot-configuration.connectorIdentifierPlaceholder' | transloco"
             [(ngModel)]="configuration.applicationId"
           />
         </tock-form-control>
@@ -192,14 +176,14 @@
 
       <div class="col-4">
         <tock-form-control
-          label="Relative REST path"
+          [label]="'configuration.bot-configuration.relativeRestPathLabel' | transloco"
           name="relativeRestPath"
         >
           <input
             nbInput
             type="text"
-            placeholder="Relative REST path"
-            nbTooltip="e.g. /messenger"
+            [placeholder]="'configuration.bot-configuration.relativeRestPathPlaceholder' | transloco"
+            [nbTooltip]="'configuration.bot-configuration.relativeRestPathTooltip' | transloco"
             [(ngModel)]="configuration.path"
             (change)="changePath()"
           />
@@ -208,7 +192,7 @@
 
       <div class="col-4">
         <tock-form-control
-          label="Connector url"
+          [label]="'configuration.bot-configuration.connectorUrlLabel' | transloco"
           name="connectorUrl"
           *ngIf="botSharedService.configuration && botSharedService.configuration.botApiSupport"
         >
@@ -224,10 +208,12 @@
       "
     >
       <nb-accordion-item [expanded]="!configuration._id">
-        <nb-accordion-item-header>Connector Custom Configuration</nb-accordion-item-header>
+        <nb-accordion-item-header>
+          {{ 'configuration.bot-configuration.connectorCustomConfigurationTitle' | transloco }}
+        </nb-accordion-item-header>
         <nb-accordion-item-body>
           <tock-form-control
-            label="Application base url"
+            [label]="'configuration.bot-configuration.applicationBaseUrlLabel' | transloco"
             name="applicationBaseUrl"
             *ngIf="!botSharedService.configuration || !botSharedService.configuration.botApiSupport"
           >
@@ -235,8 +221,8 @@
               nbInput
               fullWidth
               type="text"
-              placeholder="Application base url"
-              nbTooltip="optional"
+              [placeholder]="'configuration.bot-configuration.applicationBaseUrlPlaceholder' | transloco"
+              [nbTooltip]="'configuration.bot-configuration.applicationBaseUrlTooltip' | transloco"
               [(ngModel)]="configuration.baseUrl"
             />
           </tock-form-control>
@@ -282,7 +268,11 @@
         *ngIf="!configuration._id"
         icon="x-lg"
       ></nb-icon>
-      {{ configuration._id ? 'Delete' : 'Cancel' }}
+      {{
+        configuration._id
+          ? ('configuration.bot-configuration.deleteButton' | transloco)
+          : ('configuration.bot-configuration.cancelButton' | transloco)
+      }}
     </button>
     <button
       nbButton
@@ -292,7 +282,11 @@
       style="margin-left: 20px"
     >
       <nb-icon icon="floppy"></nb-icon>
-      {{ configuration._id ? 'Update' : 'Create' }}
+      {{
+        configuration._id
+          ? ('configuration.bot-configuration.updateButton' | transloco)
+          : ('configuration.bot-configuration.createButton' | transloco)
+      }}
     </button>
   </nb-card-footer>
 </nb-card>

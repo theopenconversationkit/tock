@@ -34,10 +34,10 @@ data class Metadata(
 )
 
 data class Contact(
-    @JsonProperty("profile") val profile: Profile,
+    @JsonProperty("profile") val profile: Profile?,
     @JsonProperty("wa_id") val waId: String,
 )
 
 data class Profile(
-    @JsonProperty("name") val name: String,
+    @JsonProperty("name") val name: String?,
 )

@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { saveAs } from 'file-saver-es';
@@ -29,6 +13,8 @@ import { copyToClipboard, getExportFileName, scrollToPageTop } from '../../share
 import { Pagination } from '../../shared/components';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
+import moment from 'moment';
 
 interface IntentsLogsFilterForm {
   searchString: FormControl<string>;
@@ -64,10 +50,15 @@ export class IntentsLogsComponent implements OnInit, OnDestroy {
     public config: CoreConfig,
     private toastrService: NbToastrService,
     private router: Router,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit(): void {
+    this.transloco.langChanges$.subscribe((lang) => {
+      moment.locale(lang);
+    });
+
     this.state.configurationChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.closeDetails();
       this.loadData();
@@ -185,7 +176,10 @@ export class IntentsLogsComponent implements OnInit, OnDestroy {
 
   copySentence(sentence): void {
     copyToClipboard(sentence.getText());
-    this.toastrService.success(`Sentence copied to clipboard`, 'Clipboard');
+    this.toastrService.success(
+      this.transloco.translate('lu.intents-logs.messages.sentence-copied'),
+      this.transloco.translate('lu.intents-logs.messages.clipboard')
+    );
   }
 
   showDetails(sentence: Sentence): void {
@@ -211,7 +205,11 @@ export class IntentsLogsComponent implements OnInit, OnDestroy {
           this.state.currentLocale
         );
         saveAs(blob, exportFileName);
-        this.toastrService.show(`Export provided`, 'Dump', { duration: 2000 });
+        this.toastrService.show(
+          this.transloco.translate('lu.intents-logs.messages.export-provided'),
+          this.transloco.translate('lu.intents-logs.messages.dump'),
+          { duration: 2000 }
+        );
       });
     }, 1);
   }

@@ -29,6 +29,7 @@ import ai.tock.translator.I18nLabel
 import io.vertx.core.buffer.Buffer
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import org.litote.kmongo.toId
 import java.util.UUID
 
@@ -137,7 +138,7 @@ object UploadedFilesService {
             }
         }
 
-    internal fun configure(): (Router) -> Unit {
+    internal fun configure(): CoroutineRouterSupport.(Router) -> Unit {
         return { router ->
             router.get("$basePath*").blocking { context ->
                 val id = context.request().uri().substring(basePath.length).lowercase()

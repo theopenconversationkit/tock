@@ -50,6 +50,7 @@ import { CreateNamespaceComponent } from './namespace/create-namespace/create-na
 import { ApplicationsRoutingModule } from './applications-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BotSharedModule } from '../shared/bot-shared.module';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 
 @Injectable()
 export class NlpApplicationConfig implements ApplicationConfig {
@@ -85,7 +86,8 @@ export class NlpApplicationConfig implements ApplicationConfig {
     NgJsonEditorModule,
     NbDialogModule.forRoot(),
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TranslocoModule
   ],
   declarations: [
     ApplicationsComponent,
@@ -103,7 +105,10 @@ export class NlpApplicationConfig implements ApplicationConfig {
       provide: ApplicationConfig,
       useClass: NlpApplicationConfig
     },
-    ApplicationsResolver
+    ApplicationsResolver,
+    provideTranslocoScope({
+      scope: 'applications'
+    })
   ]
 })
 export class ApplicationsModule {}

@@ -16,17 +16,17 @@
 
 from typing import Literal
 
-from pydantic import AnyUrl, Field
+from pydantic import Field
 
 from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
 from gen_ai_orchestrator.models.security.security_types import SecretKey
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
+    VectorStoreProvider,
+)
 from gen_ai_orchestrator.models.vector_stores.vector_store_setting import (
     BaseVectorStoreSetting,
-)
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
 )
 
 
@@ -39,15 +39,15 @@ class OpenSearchVectorStoreSetting(BaseVectorStoreSetting):
     provider: Literal[VectorStoreProvider.OPEN_SEARCH] = Field(
         description='The Vector Store Provider.',
         examples=[VectorStoreProvider.OPEN_SEARCH],
-        default=VectorStoreProvider.OPEN_SEARCH
+        default=VectorStoreProvider.OPEN_SEARCH,
     )
     host: str = Field(
-        description='The hostname of OpenSearch server', examples=['localhost'],
-        default='localhost'
+        description='The hostname of OpenSearch server',
+        examples=['localhost'],
+        default='localhost',
     )
     port: int = Field(
-        description='The OpenSearch server port', examples=['9200'],
-        default='9200'
+        description='The OpenSearch server port', examples=['9200'], default='9200'
     )
     username: str = Field(
         description='The vector store connection username.',
@@ -57,4 +57,3 @@ class OpenSearchVectorStoreSetting(BaseVectorStoreSetting):
         description='The vector store connection password.',
         examples=[RawSecretKey(secret='*************')],
     )
-

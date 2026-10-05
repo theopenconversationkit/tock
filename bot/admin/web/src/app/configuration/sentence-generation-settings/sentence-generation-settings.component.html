@@ -1,22 +1,6 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <tock-sticky-menu [offset]="50">
   <div class="d-flex flex-wrap">
-    <h1 class="flex-grow-1">Sentence generation settings</h1>
+    <h1 class="flex-grow-1">{{ 'configuration.sentence-generation-settings.title' | transloco }}</h1>
 
     <section class="grid-actions">
       <button
@@ -24,7 +8,7 @@
         nbButton
         ghost
         shape="round"
-        nbTooltip="Export sentence generation settings dump"
+        [nbTooltip]="'configuration.sentence-generation-settings.exportTooltip' | transloco"
         (click)="exportSettings()"
       >
         <nb-icon icon="download"></nb-icon>
@@ -33,7 +17,7 @@
         nbButton
         ghost
         shape="round"
-        nbTooltip="Import sentence generation settings dump"
+        [nbTooltip]="'configuration.sentence-generation-settings.importTooltip' | transloco"
         (click)="importSettings()"
       >
         <nb-icon icon="upload"></nb-icon>
@@ -44,21 +28,21 @@
         nbButton
         ghost
         status="primary"
-        nbTooltip="Cancel modifications"
+        [nbTooltip]="'configuration.sentence-generation-settings.cancelTooltip' | transloco"
         (click)="cancel()"
       >
         <nb-icon icon="x-circle"></nb-icon>
-        CANCEL
+        {{ 'common.actions.cancel' | transloco }}
       </button>
       <button
         *ngIf="form.dirty"
         nbButton
         status="primary"
-        nbTooltip="Save settings"
+        [nbTooltip]="'configuration.sentence-generation-settings.saveTooltip' | transloco"
         (click)="submit()"
       >
         <nb-icon icon="floppy"></nb-icon>
-        SAVE
+        {{ 'common.actions.save' | transloco }}
       </button>
     </section>
   </div>
@@ -66,7 +50,7 @@
 
 <tock-no-data-found
   *ngIf="configurations?.length === 0"
-  title="No bot configuration detected"
+  [title]="'configuration.sentence-generation-settings.noBotConfiguration' | transloco"
 ></tock-no-data-found>
 
 <form
@@ -79,7 +63,7 @@
       class="pb-0"
     >
       <nb-card class="mt-2">
-        <nb-card-header>Sentence generation activation</nb-card-header>
+        <nb-card-header>{{ 'configuration.sentence-generation-settings.sentenceGenerationActivationTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <tock-form-control
             name="enabled"
@@ -91,15 +75,17 @@
               formControlName="enabled"
               class="mt-1"
             >
-              <span *ngIf="enabled.value">Sentence generation activated</span>
-              <span *ngIf="!enabled.value">Sentence generation deactivated</span>
+              <span *ngIf="enabled.value">{{ 'configuration.sentence-generation-settings.sentenceGenerationActivated' | transloco }}</span>
+              <span *ngIf="!enabled.value">{{
+                'configuration.sentence-generation-settings.sentenceGenerationDeactivated' | transloco
+              }}</span>
             </nb-toggle>
           </tock-form-control>
         </nb-card-body>
       </nb-card>
 
       <nb-card>
-        <nb-card-header>Configuration</nb-card-header>
+        <nb-card-header>{{ 'configuration.sentence-generation-settings.configurationTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <tock-form-control
             name="llmProvider"
@@ -159,7 +145,7 @@
           </div>
 
           <tock-form-control
-            label="Number of sentences to generate"
+            [label]="'configuration.sentence-generation-settings.numberOfSentencesLabel' | transloco"
             name="nbSentences"
             [controls]="nbSentences"
             [showError]="isSubmitted"
@@ -175,16 +161,16 @@
       </nb-card>
 
       <nb-card *ngIf="settingsBackup">
-        <nb-card-header>Settings deletion</nb-card-header>
+        <nb-card-header>{{ 'configuration.sentence-generation-settings.settingsDeletionTitle' | transloco }}</nb-card-header>
         <nb-card-body>
           <button
             nbButton
             status="danger"
-            nbTooltip="Delete settings"
+            [nbTooltip]="'configuration.sentence-generation-settings.deleteSettingsTooltip' | transloco"
             (click)="confirmSettingsDeletion()"
           >
             <nb-icon icon="trash"></nb-icon>
-            DELETE SETTINGS
+            {{ 'configuration.sentence-generation-settings.deleteSettingsButton' | transloco }}
           </button>
         </nb-card-body>
       </nb-card>
@@ -195,12 +181,12 @@
 <ng-template #exportConfirmationModal>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Confirmation of sensitive data export
+      {{ 'configuration.sentence-generation-settings.exportConfirmationTitle' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'common.actions.cancel' | transloco"
         (click)="closeExportConfirmationModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -208,14 +194,13 @@
     </nb-card-header>
 
     <nb-card-body>
-      <div class="mb-2">Include the following sensitive data:</div>
+      <div class="mb-2">{{ 'configuration.sentence-generation-settings.includeSensitiveDataLabel' | transloco }}</div>
       <div *ngFor="let sensitiveParam of sensitiveParams">
         <nb-checkbox
           status="basic"
           [(ngModel)]="sensitiveParam.include"
         >
-          {{ sensitiveParam.label }}
-          {{ sensitiveParam.param.label }}
+          {{ sensitiveParam.label }} {{ sensitiveParam.param.label }}
         </nb-checkbox>
       </div>
     </nb-card-body>
@@ -227,7 +212,7 @@
         size="small"
         (click)="closeExportConfirmationModal()"
       >
-        Cancel
+        {{ 'common.actions.cancel' | transloco }}
       </button>
       <button
         type="button"
@@ -236,7 +221,7 @@
         size="small"
         (click)="confirmExportSettings()"
       >
-        Export
+        {{ 'configuration.sentence-generation-settings.exportButton' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>
@@ -245,12 +230,12 @@
 <ng-template #importModal>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Import sentence generation settings dump
+      {{ 'configuration.sentence-generation-settings.importModalTitle' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'common.actions.cancel' | transloco"
         (click)="closeImportModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -263,7 +248,7 @@
         (submit)="submitImportSettings()"
       >
         <tock-form-control
-          label="Sentence generation settings dump file"
+          [label]="'configuration.sentence-generation-settings.importFileLabel' | transloco"
           name="importFile"
           [required]="true"
           [controls]="fileSource"
@@ -288,7 +273,7 @@
         size="small"
         (click)="closeImportModal()"
       >
-        Cancel
+        {{ 'common.actions.cancel' | transloco }}
       </button>
       <button
         type="button"
@@ -297,7 +282,7 @@
         size="small"
         (click)="submitImportSettings()"
       >
-        Import
+        {{ 'configuration.sentence-generation-settings.importButton' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>

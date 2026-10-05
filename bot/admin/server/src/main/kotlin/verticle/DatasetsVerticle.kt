@@ -27,6 +27,7 @@ import ai.tock.bot.admin.service.DatasetService
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.exception.rest.NotFoundException
+import ai.tock.shared.exception.rest.UnprocessableEntityException
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.vertx.WebVerticle
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -168,6 +169,19 @@ class DatasetsVerticle {
                 }
             }
 
+            blockingDeleteEmptyResponse(PATH_RUN, authorizedRoles) { context ->
+                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                    tryExecuteDataset(context) {
+                        DatasetService.deleteRun(
+                            namespace = app.namespace,
+                            botId = app.name,
+                            datasetId = context.pathParam(PATH_PARAM_DATASET_ID),
+                            runId = context.pathParam(PATH_PARAM_RUN_ID),
+                        )
+                    }
+                }
+            }
+
             blockingDeleteEmptyResponse(PATH_DATASET, authorizedRoles) { context ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     tryExecuteDataset(context) {
@@ -205,6 +219,7 @@ private fun <T> tryExecuteDataset(
                 is DatasetError.RunStateConflict -> 409
                 is DatasetError.RunNotFinished -> 409
                 is NotFoundException -> 404
+                is UnprocessableEntityException -> 422
                 else -> 500
             }
 

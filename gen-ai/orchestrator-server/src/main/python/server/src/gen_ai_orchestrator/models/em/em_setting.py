@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """Model for creating BaseEMSetting."""
+
 from typing import Optional
 
 from pydantic import BaseModel, Field

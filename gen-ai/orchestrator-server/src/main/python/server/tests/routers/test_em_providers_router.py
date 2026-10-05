@@ -66,4 +66,4 @@ def test_check_em_provider_setting():
     data = {'setting': response.json()}
     response = client.post(f"{urls_prefix}/{provider_id}/setting/status", json=data)
     assert response.status_code == 200
-    assert response.json()['valid'] == False
+    assert not response.json()['valid']

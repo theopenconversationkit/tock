@@ -37,8 +37,6 @@ abstract class LLMSettingBase<T>(
     open val apiKey: T? = null,
     open val temperature: String,
     open val reasoningEffort: String? = null,
-    @Deprecated("use PromptTemplate#prompt")
-    open val prompt: String? = null,
 ) {
     abstract fun copyWithTemperature(temperature: String): LLMSettingBase<T>
 }

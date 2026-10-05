@@ -1,28 +1,12 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <div class="d-flex flex-wrap align-items-center">
-  <h1 class="flex-grow-1">Gen AI playground</h1>
+  <h1 class="flex-grow-1">{{ 'playground.playground.title' | transloco }}</h1>
 
   <section class="grid-actions">
     <button
       nbButton
       ghost
       shape="round"
-      nbTooltip="Import Rag settings dump"
+      [nbTooltip]="'playground.playground.importRagSettingsTooltip' | transloco"
       (click)="importSettings()"
     >
       <nb-icon icon="upload"></nb-icon>
@@ -32,7 +16,7 @@
 
 <tock-no-data-found
   *ngIf="configurations?.length === 0"
-  title="No bot configuration detected"
+  [title]="'playground.playground.noBotConfiguration' | transloco"
 ></tock-no-data-found>
 
 <form
@@ -50,7 +34,7 @@
           class="settings-card"
         >
           <nb-accordion-item-header>
-            LLM settings
+            {{ 'playground.playground.llmSettingsTitle' | transloco }}
 
             <ng-container *ngIf="getCurrentProviderLabel()">
               (
@@ -119,7 +103,7 @@
           nbInput
           fullWidth
           fieldSize="medium"
-          placeholder="Enter your prompt here..."
+          [placeholder]="'playground.playground.promptPlaceholder' | transloco"
           formControlName="prompt"
           (keydown.enter)="preventDefault($event)"
           (keyup.enter)="submit($event)"
@@ -147,7 +131,7 @@
           nbSuffix
           nbButton
           ghost
-          nbTooltip="Expand/reduce the input area"
+          [nbTooltip]="'playground.playground.promptShortcutsTooltip' | transloco"
           [style.margin]="getPromptShortcutsMargin()"
           (click)="expandTextareaPrompt()"
         >
@@ -163,7 +147,7 @@
           nbButton
           size="medium"
           status="primary"
-          nbTooltip="Send query"
+          [nbTooltip]="'playground.playground.sendQueryTooltip' | transloco"
           (click)="submit()"
           [disabled]="testQueryInProgress || !form.valid || !prompt.value?.length"
         >
@@ -172,7 +156,7 @@
 
         <button
           *ngIf="messages.length !== 0"
-          nbTooltip="Clear history"
+          [nbTooltip]="'playground.playground.clearHistoryTooltip' | transloco"
           nbButton
           status="warning"
           size="medium"
@@ -191,7 +175,7 @@
             nbButton
             ghost
             size="medium"
-            nbTooltip="Go back in query history"
+            [nbTooltip]="'playground.playground.goBackInHistoryTooltip' | transloco"
             class="index-change-button"
             (click)="messageHistoryMove(false)"
             [disabled]="messagesHistoryCursor < 1"
@@ -207,7 +191,7 @@
             nbButton
             ghost
             size="medium"
-            nbTooltip="Move forward in query history"
+            [nbTooltip]="'playground.playground.moveForwardInHistoryTooltip' | transloco"
             class="index-change-button"
             (click)="messageHistoryMove(true)"
             [disabled]="messagesHistory.length < 2 || messagesHistoryCursor === messagesHistory.length - 1"
@@ -231,27 +215,37 @@
           [mayScroll]="false"
           [queryInProgress]="testQueryInProgress"
         >
-          <tock-chat-ui-message
-            *ngFor="let message of messages"
-            [message]="message.message.message"
-            [reply]="message.message.bot"
-            [avatar]="getUserAvatar(message.message.bot)"
-            switchFormattingPos="afterAvatar"
-          >
-            <ng-container *ngIf="message.observabilityInfo">
-              <br />
-              <button
-                nbButton
-                ghost
-                size="small"
-                nbTooltip="View observability details"
-                class="mb-2"
-                (click)="openObservabilityTrace(message)"
-              >
-                <nb-icon icon="display"></nb-icon>
-              </button>
+          <ng-container *ngFor="let message of messages">
+            <ng-container *ngIf="message.responseTime !== undefined">
+              <span class="response-timer ml-2 pl-1">
+                <nb-icon icon="clock"></nb-icon>
+                {{ message.responseTime / 1000 | number: '1.2-2' }}s
+              </span>
             </ng-container>
-          </tock-chat-ui-message>
+
+            <tock-chat-ui-message
+              [message]="message.message.message"
+              [reply]="message.message.bot"
+              [avatar]="getUserAvatar(message.message.bot)"
+              switchFormattingPos="afterAvatar"
+              [showDebug]="true"
+              [action]="message.debug"
+            >
+              <ng-container *ngIf="message.observabilityInfo">
+                <br />
+                <button
+                  nbButton
+                  ghost
+                  size="small"
+                  [nbTooltip]="'playground.playground.viewObservabilityDetailsTooltip' | transloco"
+                  class="mb-2"
+                  (click)="openObservabilityTrace(message)"
+                >
+                  <nb-icon icon="display"></nb-icon>
+                </button>
+              </ng-container>
+            </tock-chat-ui-message>
+          </ng-container>
         </tock-chat-ui>
       </div>
     </nb-card-footer>
@@ -263,12 +257,12 @@
 <ng-template #importModal>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Import Rag settings dump
+      {{ 'playground.playground.importModalTitle' | transloco }}
       <button
         nbButton
         ghost
         shape="round"
-        nbTooltip="Cancel"
+        [nbTooltip]="'common.actions.cancel' | transloco"
         (click)="closeImportModal()"
       >
         <nb-icon icon="x-lg"></nb-icon>
@@ -281,7 +275,7 @@
         (submit)="submitImportSettings()"
       >
         <tock-form-control
-          label="Rag settings dump file"
+          [label]="'playground.playground.importFileLabel' | transloco"
           name="importFile"
           [required]="true"
           [controls]="fileSource"
@@ -306,7 +300,7 @@
         size="small"
         (click)="closeImportModal()"
       >
-        Cancel
+        {{ 'common.actions.cancel' | transloco }}
       </button>
       <button
         type="button"
@@ -315,7 +309,7 @@
         size="small"
         (click)="submitImportSettings()"
       >
-        Import
+        {{ 'common.actions.import' | transloco }}
       </button>
     </nb-card-footer>
   </nb-card>

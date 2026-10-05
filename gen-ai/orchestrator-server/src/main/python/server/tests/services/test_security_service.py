@@ -40,13 +40,14 @@ from gen_ai_orchestrator.utils.gcp.gcp_secret_manager_client import (
 
 
 class TestSecurityService(unittest.TestCase):
-
     def test_fetch_unknown_secret_key_value(self):
         # Test data
         my_secret_api_key = '123abc!'
 
         # Call the function to fetch aws secret key
-        value = fetch_secret_key_value({'type': 'UnknownSecretKey', 'secret': my_secret_api_key})
+        value = fetch_secret_key_value(
+            {'type': 'UnknownSecretKey', 'secret': my_secret_api_key}
+        )
 
         # Check test results
         self.assertIsNone(value)
@@ -62,8 +63,12 @@ class TestSecurityService(unittest.TestCase):
         self.assertEqual(value, my_secret_api_key)
 
     @patch('boto3.client')
-    @patch('gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_ai_provider_secret')
-    def test_fetch_aws_secret_key_value(self, mock_get_ai_provider_secret, mock_boto3_client):
+    @patch(
+        'gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_ai_provider_secret'
+    )
+    def test_fetch_aws_secret_key_value(
+        self, mock_get_ai_provider_secret, mock_boto3_client
+    ):
         # Test data
         aws_secret_name = 'my_secret_key'
         my_secret_api_key = AIProviderSecret(secret='my_secret_key_value')
@@ -81,8 +86,12 @@ class TestSecurityService(unittest.TestCase):
         self.assertEqual(value, my_secret_api_key.secret)
 
     @patch('boto3.client')
-    @patch('gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_ai_provider_secret')
-    def test_fetch_bad_aws_secret_key_value(self, mock_get_ai_provider_secret, mock_boto3_client):
+    @patch(
+        'gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_ai_provider_secret'
+    )
+    def test_fetch_bad_aws_secret_key_value(
+        self, mock_get_ai_provider_secret, mock_boto3_client
+    ):
         # Test data
         aws_secret_name = 'my_secret_key'
         my_secret_api_key = None
@@ -108,7 +117,8 @@ class TestSecurityService(unittest.TestCase):
 
         # Configure the mocks to return specific values
         mock_gcp_secret_manager_client.return_value.access_secret_version.return_value.payload.data = bytes(
-            secret_value, 'utf8')
+            secret_value, 'utf8'
+        )
 
         # Call the function to fetch aws secret key
         value = fetch_secret_key_value(GcpSecretKey(secret_name=gcp_secret_name))
@@ -116,7 +126,8 @@ class TestSecurityService(unittest.TestCase):
         # Check test results
         mock_gcp_secret_manager_client.assert_called_once_with()
         mock_gcp_secret_manager_client.return_value.access_secret_version.assert_called_once_with(
-            name=f'projects/{application_settings.gcp_project_id}/secrets/{gcp_secret_name}/versions/latest')
+            name=f"projects/{application_settings.gcp_project_id}/secrets/{gcp_secret_name}/versions/latest"
+        )
         self.assertEqual(gcp_secret.secret, value)
 
     @patch('google.cloud.secretmanager.SecretManagerServiceClient')
@@ -128,7 +139,8 @@ class TestSecurityService(unittest.TestCase):
 
         # Configure the mocks to return specific values
         mock_gcp_secret_manager_client.return_value.access_secret_version.return_value.payload.data = bytes(
-            secret_value, 'utf8')
+            secret_value, 'utf8'
+        )
 
         # Call the function to fetch aws secret key
         value = fetch_secret_key_value(GcpSecretKey(secret_name=gcp_secret_name))
@@ -136,7 +148,8 @@ class TestSecurityService(unittest.TestCase):
         # Check test results
         mock_gcp_secret_manager_client.assert_called_once_with()
         mock_gcp_secret_manager_client.return_value.access_secret_version.assert_called_once_with(
-            name=f'projects/{application_settings.gcp_project_id}/secrets/{gcp_secret_name}/versions/latest')
+            name=f"projects/{application_settings.gcp_project_id}/secrets/{gcp_secret_name}/versions/latest"
+        )
         self.assertIsNone(value)
 
     @patch('google.cloud.secretmanager.SecretManagerServiceClient')
@@ -148,7 +161,8 @@ class TestSecurityService(unittest.TestCase):
 
         # Configure the mocks to return specific values
         mock_gcp_secret_manager_client.return_value.access_secret_version.return_value.payload.data = bytes(
-            secret_value, 'utf8')
+            secret_value, 'utf8'
+        )
 
         # Call the function to fetch aws secret key
         value = GCPSecretManagerClient().get_credentials(gcp_secret_name)
@@ -156,5 +170,6 @@ class TestSecurityService(unittest.TestCase):
         # Check test results
         mock_gcp_secret_manager_client.assert_called_once_with()
         mock_gcp_secret_manager_client.return_value.access_secret_version.assert_called_once_with(
-            name=f'projects/{application_settings.gcp_project_id}/secrets/{gcp_secret_name}/versions/latest')
+            name=f"projects/{application_settings.gcp_project_id}/secrets/{gcp_secret_name}/versions/latest"
+        )
         self.assertEqual(gcp_secret, value)

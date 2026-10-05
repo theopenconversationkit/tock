@@ -14,7 +14,7 @@
     size="tiny"
     class="reduce"
     (click)="swapDisplay()"
-    [nbTooltip]="hidden ? 'Expand this menu' : 'Reduce this menu'"
+    [nbTooltip]="hidden ? ('shared.sticky-menu.expand_menu_tooltip' | transloco) : ('shared.sticky-menu.reduce_menu_tooltip' | transloco)"
   >
     <i
       *ngIf="!hidden"

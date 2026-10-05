@@ -25,6 +25,7 @@ export * from './chat-ui/chat-ui-message/chat-ui-message-sentence/chat-ui-messag
 export * from './chat-ui/chat-ui-message/chat-ui-message-sentence-element/chat-ui-message-sentence-element.component';
 export * from './chat-ui/chat-ui-message/chat-ui-message-sentence-footnotes/chat-ui-message-sentence-footnotes.component';
 export * from './chat-ui/chat-ui-message/chat-ui-display-markup/chat-ui-display-markup.component';
+export * from './chat-ui/chat-ui-message/chat-ui-message-debug/chat-ui-message-debug.component';
 
 export * from './choice-dialog/choice-dialog.component';
 export * from './error-helper/error-helper.component';
@@ -63,3 +64,4 @@ export * from './annotation/annotation-comment.component';
 export * from './chat-ui/chat-ui-dialog-logger/chat-ui-dialog-logger.component';
 export * from './chat-ui/chat-ui-dialog-evaluator/chat-ui-dialog-evaluator.component';
 export * from './json-viewer-dialog/json-viewer-dialog.component';
+export * from './intent-dialog/intent-dialog.component';

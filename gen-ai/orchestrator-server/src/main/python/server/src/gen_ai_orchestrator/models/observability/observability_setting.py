@@ -25,4 +25,3 @@ class BaseObservabilitySetting(BaseModel):
     """A base class for Langfuse Observability Setting."""
 
     provider: ObservabilityProvider = Field(description='The Observability Provider.')
-

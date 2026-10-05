@@ -29,6 +29,7 @@ export interface EvaluationSampleDefinition {
   statusChangedBy: string | null;
   requestedDialogCount: number;
   dialogsCount: number;
+  createdFromRun?: string | null;
   totalDialogCount: number | null;
   botActionCount: number;
   status: EvaluationSampleStatus;
