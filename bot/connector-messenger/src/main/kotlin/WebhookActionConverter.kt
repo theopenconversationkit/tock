@@ -60,9 +60,9 @@ internal object WebhookActionConverter {
     fun toEvent(
         message: Webhook,
         applicationId: String,
-    ): Event? {
-        return when (message) {
-            is MessageWebhook ->
+    ): Event? =
+        when (message) {
+            is MessageWebhook -> {
                 with(message.message) {
                     if (quickReply != null) {
                         if (quickReply!!.hasEmailPayloadFromMessenger()) {
@@ -85,8 +85,11 @@ internal object WebhookActionConverter {
                             val first = a.first()
                             when (first.type) {
                                 AttachmentType.location -> readLocation(message, first, applicationId)
+
                                 AttachmentType.image -> readAttachment(message, first, applicationId, image)
+
                                 AttachmentType.audio -> readAttachment(message, first, applicationId, audio)
+
                                 // ignore for now
                                 else -> readSentence(message, applicationId)
                             }
@@ -95,6 +98,8 @@ internal object WebhookActionConverter {
                         }
                     }
                 }
+            }
+
             is PostbackWebhook -> {
                 message.postback.payload?.let { payload ->
                     SendChoice.decodeChoice(
@@ -106,30 +111,37 @@ internal object WebhookActionConverter {
                     )
                 }
             }
-            is OptinWebhook ->
+
+            is OptinWebhook -> {
                 SubscribingEvent(
                     message.playerId(PlayerType.user),
                     message.recipientId(PlayerType.bot),
                     message.optin.ref,
                     applicationId,
                 )
+            }
+
             is AccountLinkingWebhook -> {
                 when (message.accountLinking.status) {
-                    AccountLinkingStatus.linked ->
+                    AccountLinkingStatus.linked -> {
                         LoginEvent(
                             message.playerId(PlayerType.user),
                             message.recipientId(PlayerType.bot),
                             message.accountLinking.authorizationCode!!,
                             applicationId,
                         )
-                    AccountLinkingStatus.unlinked ->
+                    }
+
+                    AccountLinkingStatus.unlinked -> {
                         LogoutEvent(
                             message.playerId(PlayerType.user),
                             message.recipientId(PlayerType.bot),
                             applicationId,
                         )
+                    }
                 }
             }
+
             is AppRolesWebhook -> {
                 GetAppRolesEvent(
                     message.recipientId(PlayerType.bot),
@@ -137,20 +149,27 @@ internal object WebhookActionConverter {
                     message
                         .appRoles
                         .mapValues {
-                            it.value.mapNotNull {
-                                when (it) {
-                                    "primary_receiver" -> AppRole.primaryReceiver
-                                    "secondary_receiver" -> AppRole.secondaryReceiver
-                                    else -> {
-                                        logger.warn { "unknown role $it" }
-                                        null
+                            it.value
+                                .mapNotNull {
+                                    when (it) {
+                                        "primary_receiver" -> {
+                                            AppRole.primaryReceiver
+                                        }
+
+                                        "secondary_receiver" -> {
+                                            AppRole.secondaryReceiver
+                                        }
+
+                                        else -> {
+                                            logger.warn { "unknown role $it" }
+                                            null
+                                        }
                                     }
-                                }
-                            }
-                                .toSet()
+                                }.toSet()
                         },
                 )
             }
+
             is RequestThreadControlWebhook -> {
                 RequestThreadControlEvent(
                     message.playerId(PlayerType.user),
@@ -160,6 +179,7 @@ internal object WebhookActionConverter {
                     message.requestThreadControl.metadata,
                 )
             }
+
             is PassThreadControlWebhook -> {
                 PassThreadControlEvent(
                     message.playerId(PlayerType.user),
@@ -169,6 +189,7 @@ internal object WebhookActionConverter {
                     message.passThreadControl.metadata,
                 )
             }
+
             is TakeThreadControlWebhook -> {
                 TakeThreadControlEvent(
                     message.playerId(PlayerType.user),
@@ -178,6 +199,7 @@ internal object WebhookActionConverter {
                     message.takeThreadControl.metadata,
                 )
             }
+
             is ReferralParametersWebhook -> {
                 ReferralParametersEvent(
                     message.playerId(PlayerType.user),
@@ -186,18 +208,18 @@ internal object WebhookActionConverter {
                     message.referral.ref,
                 )
             }
+
             else -> {
                 logger.error { "unknown message $message" }
                 null
             }
         }
-    }
 
     private fun readSentence(
         message: MessageWebhook,
         applicationId: String,
-    ): SendSentence {
-        return SendSentence(
+    ): SendSentence =
+        SendSentence(
             message.playerId(PlayerType.user),
             applicationId,
             message.recipientId(PlayerType.bot),
@@ -205,7 +227,6 @@ internal object WebhookActionConverter {
             mutableListOf(message),
             message.getMessageId().toId(),
         )
-    }
 
     private fun readLocation(
         message: MessageWebhook,

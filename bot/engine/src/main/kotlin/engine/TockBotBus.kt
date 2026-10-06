@@ -126,9 +126,7 @@ internal class TockBotBus(
         userLocale = findSupportedLocale(locale)
     }
 
-    override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? {
-        return context.contextMap[key]
-    }
+    override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? = context.contextMap[key]
 
     override fun <T : Any> setBusContextValue(
         key: DialogContextKey<T>,
@@ -197,11 +195,10 @@ internal class TockBotBus(
     /**
      * Update Action using BotAnswerInterceptor
      */
-    fun applyBotAnswerInterceptor(a: Action): Action {
-        return BotRepository.botAnswerInterceptors.fold(a) { action, interceptor ->
+    fun applyBotAnswerInterceptor(a: Action): Action =
+        BotRepository.botAnswerInterceptors.fold(a) { action, interceptor ->
             interceptor.handle(action, this)
         }
-    }
 
     override fun end(
         action: Action,
@@ -214,23 +211,17 @@ internal class TockBotBus(
     override fun sendRawText(
         plainText: CharSequence?,
         delay: Long,
-    ): BotBus {
-        return answer(SendSentence(botId, connectorId, userId, plainText), delay)
-    }
+    ): BotBus = answer(SendSentence(botId, connectorId, userId, plainText), delay)
 
     override fun sendDebugData(
         title: String,
         data: Any?,
-    ): BotBus {
-        return answer(SendDebug(botId, connectorId, userId, title, data), 0)
-    }
+    ): BotBus = answer(SendDebug(botId, connectorId, userId, title, data), 0)
 
     override fun send(
         action: Action,
         delay: Long,
-    ): BotBus {
-        return answer(action, delay)
-    }
+    ): BotBus = answer(action, delay)
 
     override fun withPriority(priority: ActionPriority): BotBus {
         context.priority = priority
@@ -285,7 +276,10 @@ internal class TockBotBus(
         }
     }
 
-    internal data class QueuedAction(val action: Action, val delay: Long)
+    internal data class QueuedAction(
+        val action: Action,
+        val delay: Long,
+    )
 
     /**
      * @return a callback to force-close the message queue

@@ -19,4 +19,6 @@ package ai.tock.bot.admin.kotlin.compiler
 /**
  *
  */
-class KotlinCompilationException(val errors: List<CompileError>) : RuntimeException()
+class KotlinCompilationException(
+    val errors: List<CompileError>,
+) : RuntimeException()

@@ -63,9 +63,7 @@ fun <T : Bus<T>> T.endForAlexa(
  * Adds an Alexa [ConnectorMessage] if the current connector is Alexa.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun <T : Bus<T>> T.withAlexa(messageProvider: () -> AlexaMessage): T {
-    return withMessage(alexaConnectorType, messageProvider)
-}
+fun <T : Bus<T>> T.withAlexa(messageProvider: () -> AlexaMessage): T = withMessage(alexaConnectorType, messageProvider)
 
 /**
  * End the conversation with the skill.

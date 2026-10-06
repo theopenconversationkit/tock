@@ -27,14 +27,13 @@ enum class MessageTag {
     ;
 
     companion object {
-        fun toMessageTag(action: Action): MessageTag? {
-            return when (action.metadata.notificationType) {
+        fun toMessageTag(action: Action): MessageTag? =
+            when (action.metadata.notificationType) {
                 ActionNotificationType.confirmedEventUpdate -> CONFIRMED_EVENT_UPDATE
                 ActionNotificationType.humanAgent -> HUMAN_AGENT
                 ActionNotificationType.postPurchaseUpdate -> POST_PURCHASE_UPDATE
                 ActionNotificationType.accountUpdate -> ACCOUNT_UPDATE
                 else -> null
             }
-        }
     }
 }

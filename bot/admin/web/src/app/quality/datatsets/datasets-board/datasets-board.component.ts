@@ -11,15 +11,19 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { FileValidators } from '../../../shared/validators';
 import { readFileAsText } from '../../../shared/utils';
 import { TranslocoService } from '@jsverse/transloco';
+import { saveAs } from 'file-saver-es';
+import { buildCsvTemplate, csvToQuestions, CsvParseError } from '../dataset-csv';
 
 export type DatasetSortField = 'name' | 'questions' | 'runs' | 'lastRun';
 export type SortDirection = 'asc' | 'desc';
 
+type ImportableDataset = Parameters<DatasetsService['createDataset']>[0];
+
 @Component({
-    selector: 'tock-datasets-board',
-    templateUrl: './datasets-board.component.html',
-    styleUrl: './datasets-board.component.scss',
-    standalone: false
+  selector: 'tock-datasets-board',
+  templateUrl: './datasets-board.component.html',
+  styleUrl: './datasets-board.component.scss',
+  standalone: false
 })
 export class DatasetsBoardComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
@@ -51,11 +55,14 @@ export class DatasetsBoardComponent implements OnInit, OnDestroy {
       this.configurations = confs;
       if (confs.length) this.fetchDatasets();
     });
+
+    // CSV files carry no name/description: those become required inputs in the modal.
+    this.fileSource.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this._syncImportMetadataValidators();
+    });
   }
 
   fetchDatasets(): void {
-    const { namespace, applicationId: botId } = this.configurations[0];
-
     this.datasetsService
       .getDatasets()
       .pipe(takeUntil(this.destroy$))
@@ -107,23 +114,17 @@ export class DatasetsBoardComponent implements OnInit, OnDestroy {
     this.dialogService.openDialog(DatasetCreateComponent);
   }
 
+  // ---------------------------------------------------------------- Import
+
   importModalRef: NbDialogRef<any>;
-
-  importDataset(): void {
-    this.isImportSubmitted = false;
-    this.importForm.reset();
-    this.importModalRef = this.nbDialogService.open(this.importModal);
-  }
-
-  closeImportModal(): void {
-    this.importModalRef.close();
-  }
 
   importForm: FormGroup = new FormGroup({
     fileSource: new FormControl<File[]>([], {
       nonNullable: true,
-      validators: [Validators.required, FileValidators.mimeTypeSupported(['application/json'])]
-    })
+      validators: [Validators.required, FileValidators.extensionSupported(['json', 'csv'])]
+    }),
+    name: new FormControl<string>('', { nonNullable: true }),
+    description: new FormControl<string>('', { nonNullable: true })
   });
 
   isImportSubmitted: boolean = false;
@@ -132,91 +133,154 @@ export class DatasetsBoardComponent implements OnInit, OnDestroy {
     return this.importForm.get('fileSource') as FormControl;
   }
 
+  get importName(): FormControl {
+    return this.importForm.get('name') as FormControl;
+  }
+
+  get importDescription(): FormControl {
+    return this.importForm.get('description') as FormControl;
+  }
+
+  get importedFile(): File | undefined {
+    return this.fileSource.value?.[0];
+  }
+
+  get isCsvImport(): boolean {
+    return !!this.importedFile && /\.csv$/i.test(this.importedFile.name);
+  }
+
   get canSaveImport(): boolean {
     return this.isImportSubmitted ? this.importForm.valid : this.importForm.dirty;
   }
 
+  importDataset(): void {
+    this.isImportSubmitted = false;
+    this.importForm.reset();
+    this._syncImportMetadataValidators();
+    this.importModalRef = this.nbDialogService.open(this.importModal);
+  }
+
+  closeImportModal(): void {
+    this.importModalRef.close();
+  }
+
+  downloadCsvTemplate(): void {
+    const blob = new Blob([buildCsvTemplate()], { type: 'text/csv;charset=utf-8' });
+    saveAs(blob, 'dataset-template.csv');
+  }
+
+  private _syncImportMetadataValidators(): void {
+    if (this.isCsvImport) {
+      this.importName.setValidators([Validators.required, Validators.minLength(5), Validators.maxLength(100)]);
+      this.importDescription.setValidators([Validators.maxLength(750)]);
+
+      if (!this.importName.value) {
+        this.importName.setValue(this.importedFile.name.replace(/\.csv$/i, '').slice(0, 100), { emitEvent: false });
+      }
+    } else {
+      this.importName.clearValidators();
+      this.importDescription.clearValidators();
+    }
+
+    this.importName.updateValueAndValidity({ emitEvent: false });
+    this.importDescription.updateValueAndValidity({ emitEvent: false });
+  }
+
   submitImportDataset(): void {
     this.isImportSubmitted = true;
-    if (this.canSaveImport) {
-      this.loading = true;
+    if (!this.canSaveImport) return;
 
-      const file = this.fileSource.value[0];
+    this.loading = true;
 
-      readFileAsText(file).then((fileContent) => {
-        try {
-          const importedData = JSON.parse(fileContent.data);
+    readFileAsText(this.importedFile).then((fileContent) => {
+      try {
+        const newDataset = this.isCsvImport ? this._parseCsvImport(fileContent.data) : this._parseJsonImport(fileContent.data);
+        this._persistImportedDataset(newDataset);
+      } catch (e) {
+        this._toastImportError(e);
+        this.loading = false;
+      }
+    });
+  }
 
-          // JSON structure validation
-          if (
-            !importedData.name ||
-            typeof importedData.description !== 'string' ||
-            !Array.isArray(importedData.questions) ||
-            !importedData.questions.every(
-              (q: any) => typeof q.question === 'string' && typeof q.groundTruth === 'string' && q.question.trim() !== ''
-            )
-          ) {
-            this.toastrService.show(
-              this.transloco.translate('quality.datasets-board.invalid_dataset_format_message'),
-              this.transloco.translate('quality.datasets-board.invalid_dataset_format_title'),
-              {
-                duration: 8000,
-                status: 'danger'
-              }
-            );
-            this.loading = false;
-            return;
-          }
+  private _parseJsonImport(raw: string): ImportableDataset {
+    const importedData = JSON.parse(raw); // throws SyntaxError on malformed JSON
 
-          const newDataset: Pick<Dataset, 'name' | 'description' | 'questions'> = {
-            name: importedData.name,
-            description: importedData.description,
-            questions: importedData.questions.map((q: { question: string; groundTruth: string }) => ({
-              question: q.question,
-              groundTruth: q.groundTruth
-            }))
-          };
+    if (
+      !importedData.name ||
+      typeof importedData.description !== 'string' ||
+      !Array.isArray(importedData.questions) ||
+      !importedData.questions.every(
+        (q: any) => typeof q.question === 'string' && typeof q.groundTruth === 'string' && q.question.trim() !== ''
+      )
+    ) {
+      throw new TypeError('INVALID_DATASET_FORMAT');
+    }
 
-          this.datasetsService
-            .createDataset(newDataset)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-              next: (createdDataset) => {
-                this.toastrService.show(
-                  this.transloco.translate('quality.datasets-board.dataset_imported_success_message', { name: createdDataset.name }),
-                  this.transloco.translate('quality.datasets-board.success_title'),
-                  {
-                    duration: 4000,
-                    status: 'success'
-                  }
-                );
-                this.closeImportModal();
-                this.loading = false;
-              },
-              error: (err) => {
-                this.toastrService.show(
-                  this.transloco.translate('quality.datasets-board.dataset_import_failed_message', {
-                    error: err.message || this.transloco.translate('quality.datasets-board.unknown_error')
-                  }),
-                  this.transloco.translate('quality.datasets-board.error_title'),
-                  {
-                    duration: 6000,
-                    status: 'danger'
-                  }
-                );
-                this.loading = false;
-              }
-            });
-        } catch (e) {
+    return {
+      name: importedData.name,
+      description: importedData.description,
+      questions: importedData.questions.map((q: { question: string; groundTruth: string }) => ({
+        question: q.question,
+        groundTruth: q.groundTruth
+      }))
+    };
+  }
+
+  private _parseCsvImport(raw: string): ImportableDataset {
+    return {
+      name: this.importName.value.trim(),
+      description: this.importDescription.value?.trim() ?? '',
+      questions: csvToQuestions(raw) // throws CsvParseError
+    };
+  }
+
+  private _persistImportedDataset(newDataset: ImportableDataset): void {
+    this.datasetsService
+      .createDataset(newDataset)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (createdDataset) => {
           this.toastrService.show(
-            this.transloco.translate('quality.datasets-board.invalid_json_message'),
-            this.transloco.translate('quality.datasets-board.invalid_json_title'),
+            this.transloco.translate('quality.datasets-board.dataset_imported_success_message', { name: createdDataset.name }),
+            this.transloco.translate('quality.datasets-board.success_title'),
+            { duration: 4000, status: 'success' }
+          );
+          this.closeImportModal();
+          this.loading = false;
+        },
+        error: (err) => {
+          this.toastrService.show(
+            this.transloco.translate('quality.datasets-board.dataset_import_failed_message', {
+              error: err.message || this.transloco.translate('quality.datasets-board.unknown_error')
+            }),
+            this.transloco.translate('quality.datasets-board.error_title'),
             { duration: 6000, status: 'danger' }
           );
           this.loading = false;
         }
       });
+  }
+
+  private _toastImportError(e: unknown): void {
+    let messageKey: string;
+    let titleKey: string;
+
+    if (e instanceof CsvParseError) {
+      messageKey = `quality.datasets-board.csv_error_${e.code.toLowerCase()}`;
+      titleKey = 'quality.datasets-board.invalid_dataset_format_title';
+    } else if (e instanceof SyntaxError) {
+      messageKey = 'quality.datasets-board.invalid_json_message';
+      titleKey = 'quality.datasets-board.invalid_json_title';
+    } else {
+      messageKey = 'quality.datasets-board.invalid_dataset_format_message';
+      titleKey = 'quality.datasets-board.invalid_dataset_format_title';
     }
+
+    this.toastrService.show(this.transloco.translate(messageKey), this.transloco.translate(titleKey), {
+      duration: 6000,
+      status: 'danger'
+    });
   }
 
   ngOnDestroy(): void {

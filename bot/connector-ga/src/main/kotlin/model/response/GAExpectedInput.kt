@@ -28,7 +28,8 @@ data class GAExpectedInput(
     val speechBiasingHints: List<String> = emptyList(),
 ) {
     fun toGenericMessage(): GenericMessage? =
-        inputPrompt.toGenericMessage()
+        inputPrompt
+            .toGenericMessage()
             .let {
                 val intentElement = possibleIntents.map { it.toGenericMessage() }.filterNotNull().firstOrNull()
                 if (it == null) {

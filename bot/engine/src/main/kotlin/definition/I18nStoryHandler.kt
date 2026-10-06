@@ -30,7 +30,9 @@ import ai.tock.translator.I18nLocalizedLabel
  * @see StoryHandlerBase
  * @see AsyncStoryHandlerBase
  */
-interface I18nStoryHandler : StoryHandler, I18nKeyProvider {
+interface I18nStoryHandler :
+    StoryHandler,
+    I18nKeyProvider {
     fun i18nKey(
         key: String,
         defaultLabel: CharSequence,

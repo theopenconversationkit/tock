@@ -19,7 +19,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-util</artifactId>
-         <version>26.3.4-SNAPSHOT</version>
+         <version>26.9.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-aws-tools</artifactId>
@@ -27,10 +27,6 @@
 
     <name>aws-tools</name>
     <url>http://maven.apache.org</url>
-
-    <properties>
-        <aws-secretsmanager-caching>1.1.0</aws-secretsmanager-caching>
-    </properties>
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
@@ -72,7 +68,6 @@
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-serialization-json</artifactId>
-            <version>${serialization}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -100,14 +95,12 @@
             <version>${caffeine}</version>
         </dependency>
         <dependency>
-            <groupId>com.amazonaws.secretsmanager</groupId>
-            <artifactId>aws-secretsmanager-caching-java</artifactId>
-            <version>${aws-secretsmanager-caching}</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>secretsmanager</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-sts</artifactId>
-            <version>${aws-sdk}</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sts</artifactId>
         </dependency>
     </dependencies>
 </project>

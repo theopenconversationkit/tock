@@ -20,6 +20,7 @@ object Constants {
     const val OPEN_AI = "OpenAI"
     const val AZURE_OPEN_AI_SERVICE = "AzureOpenAIService"
     const val OLLAMA = "Ollama"
+    const val AWS_BEDROCK = "AwsBedrock"
 
     const val LANGFUSE = "Langfuse"
 

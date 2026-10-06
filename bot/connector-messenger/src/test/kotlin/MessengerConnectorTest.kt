@@ -38,6 +38,10 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -144,27 +148,36 @@ internal class MessengerConnectorTest {
             }
         val callback = MessengerConnectorCallback("appId")
 
-        var time: Long? = null
+        val sendCount = AtomicInteger()
+        val firstSendEnd = AtomicLong()
+        val secondSendStart = AtomicLong()
+        val allSent = CountDownLatch(2)
 
-        every { connector.sendEvent(any()) } answers {
-            // check the second call occurs at least 100s after the first (as we wait 500 for the first call)
-            if (time != null) {
-                assert(System.currentTimeMillis() - time!! >= 100)
+        every { connector.sendEvent(any(), any(), any(), any(), any()) } answers {
+            if (sendCount.incrementAndGet() == 1) {
+                // keep the first send busy so that a concurrent second send would be detected
+                Thread.sleep(200)
+                firstSendEnd.set(System.nanoTime())
             } else {
-                time = System.currentTimeMillis()
-                Thread.sleep(500)
+                secondSendStart.set(System.nanoTime())
             }
+            allSent.countDown()
             null
         }
 
         connector.send(action1, callback)
         connector.send(action2, callback)
 
-        Thread.sleep(1000)
+        assertTrue(allSent.await(10, TimeUnit.SECONDS), "both actions should be sent")
+        assertEquals(2, sendCount.get())
+        assertTrue(secondSendStart.get() >= firstSendEnd.get(), "second action should be sent after the first one")
 
+        // sendEvent(action1) may run before send(action2) is called, so only check each ordering independently
         verifyOrder {
             connector.send(action1, any(), any())
             connector.send(action2, any(), any())
+        }
+        verifyOrder {
             connector.sendEvent(action1, any(), any(), any(), any())
             connector.sendEvent(action2, any(), any(), any(), any())
         }

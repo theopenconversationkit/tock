@@ -95,14 +95,16 @@ internal class BotApiHandler(
                     story.definition.id,
                 )
             val endingStoryId =
-                storySetting?.findEnabledEndWithStoryId(connectorId)
+                storySetting
+                    ?.findEnabledEndWithStoryId(connectorId)
                     .takeIf { response.context.lastResponse }
 
             val messages = response.messages
             if (messages.isEmpty()) {
                 error("no response for $request")
             }
-            messages.subList(0, messages.size - 1)
+            messages
+                .subList(0, messages.size - 1)
                 .forEach { a ->
                     send(a)
                 }
@@ -140,7 +142,8 @@ internal class BotApiHandler(
 
             // switch story if new story
             if (response.storyId != request.storyId) {
-                botDefinition.findStoryDefinitionById(response.storyId, request.context.applicationId)
+                botDefinition
+                    .findStoryDefinitionById(response.storyId, request.context.applicationId)
                     .also {
                         switchStory(it)
                     }
@@ -181,11 +184,26 @@ internal class BotApiHandler(
     ) {
         val actions =
             when (message) {
-                is Sentence -> listOf(toAction(message))
-                is Card -> toActions(message)
-                is CustomMessage -> listOf(toAction(message))
-                is Carousel -> toActions(message)
-                is Debug -> listOf(toAction(message))
+                is Sentence -> {
+                    listOf(toAction(message))
+                }
+
+                is Card -> {
+                    toActions(message)
+                }
+
+                is CustomMessage -> {
+                    listOf(toAction(message))
+                }
+
+                is Carousel -> {
+                    toActions(message)
+                }
+
+                is Debug -> {
+                    listOf(toAction(message))
+                }
+
                 is Event -> {
                     send(toEvent(message))
                     return
@@ -204,7 +222,9 @@ internal class BotApiHandler(
                     }
                 }
 
-                else -> error("unsupported message $message")
+                else -> {
+                    error("unsupported message $message")
+                }
             }
 
         if (actions.isEmpty()) {
@@ -219,21 +239,21 @@ internal class BotApiHandler(
         }
     }
 
-    private fun BotBus.toAction(message: CustomMessage): Action {
-        return SendSentence(
+    private fun BotBus.toAction(message: CustomMessage): Action =
+        SendSentence(
             botId,
             connectorId,
             userId,
             null,
             listOfNotNull(message.message.value).toMutableList(),
         )
-    }
 
     private fun BotBus.toAction(sentence: Sentence): Action {
         val text = translateText(sentence.text)
         if (sentence.suggestions.isNotEmpty() && text != null) {
             val message =
-                underlyingConnector.addSuggestions(text, sentence.suggestions.mapNotNull { translateText(it.title) })
+                underlyingConnector
+                    .addSuggestions(text, sentence.suggestions.mapNotNull { translateText(it.title) })
                     .invoke(this)
             if (message != null) {
                 return SendSentence(
@@ -253,24 +273,24 @@ internal class BotApiHandler(
         )
     }
 
-    private fun BotBus.toAction(data: Debug): Action {
-        return SendDebug(
+    private fun BotBus.toAction(data: Debug): Action =
+        SendDebug(
             botId,
             connectorId,
             userId,
             data.text,
             data.data,
         )
-    }
 
     private fun BotBus.toEvent(data: Event): ai.tock.bot.engine.event.Event =
         when (data.category) {
-            EventCategory.METADATA ->
+            EventCategory.METADATA -> {
                 MetadataEvent(
                     data.key ?: error("null key"),
                     data.value ?: error("null value"),
                     connectorId,
                 )
+            }
         }
 
     private fun BotBus.toActions(card: Card): List<Action> {
@@ -334,17 +354,25 @@ internal class BotApiHandler(
 
 private fun BotBus.translateText(i18n: I18nText?): TranslatedSequence? =
     when {
-        i18n == null -> null
-        i18n.toBeTranslated -> translate(i18n.text, i18n.args)
-        else ->
-            Translator.formatMessage(
-                i18n.text,
-                I18nContext(
-                    userLocale,
-                    userInterfaceType,
-                    targetConnectorType.id,
-                    contextId,
-                ),
-                i18n.args,
-            ).raw
+        i18n == null -> {
+            null
+        }
+
+        i18n.toBeTranslated -> {
+            translate(i18n.text, i18n.args)
+        }
+
+        else -> {
+            Translator
+                .formatMessage(
+                    i18n.text,
+                    I18nContext(
+                        userLocale,
+                        userInterfaceType,
+                        targetConnectorType.id,
+                        contextId,
+                    ),
+                    i18n.args,
+                ).raw
+        }
     }

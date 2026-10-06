@@ -16,4 +16,7 @@
 
 package ai.tock.nlp.front.shared.monitoring
 
-data class ParseRequestLogCountQueryResult(val total: Long, val logs: List<ParseRequestLogCount>)
+data class ParseRequestLogCountQueryResult(
+    val total: Long,
+    val logs: List<ParseRequestLogCount>,
+)

@@ -336,6 +336,7 @@ open class AdminVerticle : WebVerticle() {
                         existingApp,
                         application.toApplication().copy(name = application.name.lowercase()),
                     )
+                if (existingApp == null) onApplicationCreated(newApp, context.userLogin)
                 // trigger a full rebuild if nlp engine change
                 if (appWithSameName?.nlpEngineType != newApp.nlpEngineType ||
                     appWithSameName.normalizeText != newApp.normalizeText
@@ -1300,6 +1301,11 @@ open class AdminVerticle : WebVerticle() {
     protected open fun deleteApplication(app: ApplicationDefinition) {
         front.deleteApplicationById(app._id)
     }
+
+    protected open fun onApplicationCreated(
+        app: ApplicationDefinition,
+        author: String,
+    ) {}
 
     protected open fun saveApplication(
         existingApp: ApplicationDefinition?,

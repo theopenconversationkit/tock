@@ -178,11 +178,12 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
 
     every { bus.translate(any()) } answers { (args[0] as CharSequence).raw }
     every { bus.translate(any(), *anyVararg()) } answers {
-        Translator.formatMessage(
-            args[0].toString(),
-            I18nContext(defaultLocale, textChat, null),
-            args.subList(1, args.size),
-        ).raw
+        Translator
+            .formatMessage(
+                args[0].toString(),
+                I18nContext(defaultLocale, textChat, null),
+                args.subList(1, args.size),
+            ).raw
     }
     every { bus.defaultDelay(any()) } returns 0
 

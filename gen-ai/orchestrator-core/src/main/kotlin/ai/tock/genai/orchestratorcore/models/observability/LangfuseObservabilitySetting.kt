@@ -23,4 +23,5 @@ data class LangfuseObservabilitySetting<T>(
     val publicKey: String,
     val url: String,
     val publicUrl: String? = null,
-) : ObservabilitySettingBase<T>(ObservabilityProvider.Langfuse), HasSecretKey<T>
+) : ObservabilitySettingBase<T>(ObservabilityProvider.Langfuse),
+    HasSecretKey<T>

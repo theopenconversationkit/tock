@@ -16,4 +16,7 @@
 
 package ai.tock.bot.admin.dialog
 
-data class DialogFlowAggregateData(val seriesKey: String, val count: Int)
+data class DialogFlowAggregateData(
+    val seriesKey: String,
+    val count: Int,
+)

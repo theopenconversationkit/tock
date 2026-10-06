@@ -34,11 +34,12 @@ open class StoryDefinitionBase(
     val storyDefinitionConfiguration: StoryDefinitionConfiguration? = null,
 ) : StoryDefinition {
     override val steps: Set<StoryStep<out StoryHandlerDefinition>> =
-        stepsList.onEach {
-            if (it.intent == null) {
-                stepToIntentRepository[it] = this@StoryDefinitionBase
-            }
-        }.toSet()
+        stepsList
+            .onEach {
+                if (it.intent == null) {
+                    stepToIntentRepository[it] = this@StoryDefinitionBase
+                }
+            }.toSet()
 
     override val unsupportedUserInterfaces: Set<UserInterfaceType> = listOfNotNull(unsupportedUserInterface).toSet()
 

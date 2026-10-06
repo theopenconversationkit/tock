@@ -66,15 +66,17 @@ class SynchronizationTest : AbstractIntegrationTest() {
     @Disabled("JVM Crash")
     fun `run base scenario`(context: VertxTestContext) {
         assertEquals(1, front.getSentences(language = Locale.FRENCH).size)
-        webClient.post("/rest/admin/configuration/synchronization").putHeader("Cookie", authCookie).sendJsonObject(
-            JsonObject.mapFrom(
-                BotSynchronization(
-                    source = BotSynchronizationConfig(sourceNamespaceName, sourceAppName, sourceApplicationId.toString()),
-                    target = BotSynchronizationConfig(targetNamespaceName, targetAppName, targetApplicationId.toString()),
+        webClient
+            .post("/rest/admin/configuration/synchronization")
+            .putHeader("Cookie", authCookie)
+            .sendJsonObject(
+                JsonObject.mapFrom(
+                    BotSynchronization(
+                        source = BotSynchronizationConfig(sourceNamespaceName, sourceAppName, sourceApplicationId.toString()),
+                        target = BotSynchronizationConfig(targetNamespaceName, targetAppName, targetApplicationId.toString()),
+                    ),
                 ),
-            ),
-        )
-            .onComplete { result ->
+            ).onComplete { result ->
                 assertEquals(200, result.result().statusCode())
                 val sentences = front.getSentences(language = Locale.FRENCH)
                 assertEquals(2, sentences.size)
@@ -91,13 +93,20 @@ class SynchronizationTest : AbstractIntegrationTest() {
     @Test
     @Disabled("JVM Crash")
     fun `synchronize process clear all stories on a target bot`(context: VertxTestContext) {
-        webClient.post("/rest/admin/namespace/select/$targetNamespaceName").putHeader("Cookie", authCookie)
-            .send().onComplete {
-                webClient.post("/rest/admin/bot/story/new").putHeader("Cookie", authCookie)
+        webClient
+            .post("/rest/admin/namespace/select/$targetNamespaceName")
+            .putHeader("Cookie", authCookie)
+            .send()
+            .onComplete {
+                webClient
+                    .post("/rest/admin/bot/story/new")
+                    .putHeader("Cookie", authCookie)
                     .sendBuffer(Buffer.buffer(targetStory))
                     .onComplete {
                         assertEquals(1, BotAdminService.exportStories(targetNamespaceName, targetAppName).size)
-                        webClient.post("/rest/admin/configuration/synchronization").putHeader("Cookie", authCookie)
+                        webClient
+                            .post("/rest/admin/configuration/synchronization")
+                            .putHeader("Cookie", authCookie)
                             .sendJsonObject(
                                 JsonObject.mapFrom(
                                     BotSynchronization(
@@ -115,8 +124,7 @@ class SynchronizationTest : AbstractIntegrationTest() {
                                             ),
                                     ),
                                 ),
-                            )
-                            .onComplete { result ->
+                            ).onComplete { result ->
                                 assertEquals(200, result.result().statusCode())
                                 assertEquals(0, BotAdminService.exportStories(targetNamespaceName, targetAppName).size)
                                 context.completeNow()
@@ -138,15 +146,17 @@ class SynchronizationTest : AbstractIntegrationTest() {
         } // If intent model not found you still have an opportunity to save sentence
         assertEquals(1, front.exportSentences(targetApplicationId, DumpType.full).sentences.size)
         assertEquals(1, front.exportSentences(sourceApplicationId, DumpType.full).sentences.size)
-        webClient.post("/rest/admin/configuration/synchronization").putHeader("Cookie", authCookie).sendJsonObject(
-            JsonObject.mapFrom(
-                BotSynchronization(
-                    source = BotSynchronizationConfig(sourceNamespaceName, sourceAppName, sourceApplicationId.toString()),
-                    target = BotSynchronizationConfig(targetNamespaceName, targetAppName, targetApplicationId.toString()),
+        webClient
+            .post("/rest/admin/configuration/synchronization")
+            .putHeader("Cookie", authCookie)
+            .sendJsonObject(
+                JsonObject.mapFrom(
+                    BotSynchronization(
+                        source = BotSynchronizationConfig(sourceNamespaceName, sourceAppName, sourceApplicationId.toString()),
+                        target = BotSynchronizationConfig(targetNamespaceName, targetAppName, targetApplicationId.toString()),
+                    ),
                 ),
-            ),
-        )
-            .onComplete { result ->
+            ).onComplete { result ->
                 assertEquals(200, result.result().statusCode())
                 val sentences = front.exportSentences(targetApplicationId, DumpType.full).sentences
                 assertEquals(2, sentences.size)
@@ -177,15 +187,17 @@ class SynchronizationTest : AbstractIntegrationTest() {
         assertEquals(1, front.exportSentences(sourceApplicationId, DumpType.full).sentences.size)
         assertEquals(1, front.exportSentences(targetApplicationId, DumpType.full).sentences.size)
         // copy from "prod" bot to "pre-prod" bot
-        webClient.post("/rest/admin/configuration/synchronization").putHeader("Cookie", authCookie).sendJsonObject(
-            JsonObject.mapFrom(
-                BotSynchronization(
-                    target = BotSynchronizationConfig(sourceNamespaceName, sourceAppName, sourceApplicationId.toString()),
-                    source = BotSynchronizationConfig(targetNamespaceName, targetAppName, targetApplicationId.toString()),
+        webClient
+            .post("/rest/admin/configuration/synchronization")
+            .putHeader("Cookie", authCookie)
+            .sendJsonObject(
+                JsonObject.mapFrom(
+                    BotSynchronization(
+                        target = BotSynchronizationConfig(sourceNamespaceName, sourceAppName, sourceApplicationId.toString()),
+                        source = BotSynchronizationConfig(targetNamespaceName, targetAppName, targetApplicationId.toString()),
+                    ),
                 ),
-            ),
-        )
-            .onComplete { result ->
+            ).onComplete { result ->
                 assertEquals(200, result.result().statusCode())
                 var sentenceDump = front.exportSentences(sourceApplicationId, DumpType.full)
                 val sentences = sentenceDump.sentences
@@ -200,15 +212,17 @@ class SynchronizationTest : AbstractIntegrationTest() {
                 front.deleteSentencesByStatus(ClassifiedSentenceStatus.deleted)
 
                 // copy data back to "prod"
-                webClient.post("/rest/admin/configuration/synchronization").putHeader("Cookie", authCookie).sendJsonObject(
-                    JsonObject.mapFrom(
-                        BotSynchronization(
-                            source = BotSynchronizationConfig(sourceNamespaceName, sourceAppName, sourceApplicationId.toString()),
-                            target = BotSynchronizationConfig(targetNamespaceName, targetAppName, targetApplicationId.toString()),
+                webClient
+                    .post("/rest/admin/configuration/synchronization")
+                    .putHeader("Cookie", authCookie)
+                    .sendJsonObject(
+                        JsonObject.mapFrom(
+                            BotSynchronization(
+                                source = BotSynchronizationConfig(sourceNamespaceName, sourceAppName, sourceApplicationId.toString()),
+                                target = BotSynchronizationConfig(targetNamespaceName, targetAppName, targetApplicationId.toString()),
+                            ),
                         ),
-                    ),
-                )
-                    .onComplete { result2 ->
+                    ).onComplete { result2 ->
                         assertEquals(200, result2.result().statusCode())
 
                         val dump = front.exportSentences(targetApplicationId, DumpType.full)

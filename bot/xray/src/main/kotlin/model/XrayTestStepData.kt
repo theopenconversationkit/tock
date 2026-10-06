@@ -19,4 +19,6 @@ package ai.tock.bot.xray.model
 /**
  *
  */
-data class XrayTestStepData(val raw: String?)
+data class XrayTestStepData(
+    val raw: String?,
+)

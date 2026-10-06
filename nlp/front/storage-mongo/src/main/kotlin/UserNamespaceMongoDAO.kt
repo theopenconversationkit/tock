@@ -80,9 +80,7 @@ object UserNamespaceMongoDAO : UserNamespaceDAO {
         namespace: String,
     ): Boolean = col.countDocuments(and(Login eq user, Namespace eq namespace, Owner eq true)) == 1L
 
-    override fun isExistingNamespace(namespace: String): Boolean {
-        return col.countDocuments(getCaseInsensitiveBsonFilter(Namespace.name, namespace)) != 0L
-    }
+    override fun isExistingNamespace(namespace: String): Boolean = col.countDocuments(getCaseInsensitiveBsonFilter(Namespace.name, namespace)) != 0L
 
     /**
      * obtain the case-insensitive bson filter

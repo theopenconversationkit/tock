@@ -37,17 +37,13 @@ class TemplateGenerationContext internal constructor(
         name: String,
         locale: Locale,
         builder: WhatsappBasicTemplateBuilder.() -> Unit,
-    ): WhatsappTemplate {
-        return WhatsappBasicTemplateBuilder(name, locale, connectorId).apply(builder).build()
-    }
+    ): WhatsappTemplate = WhatsappBasicTemplateBuilder(name, locale, connectorId).apply(builder).build()
 
     fun buildCarousel(
         name: String,
         locale: Locale,
         builder: WhatsappCarouselBuilder.() -> Unit,
-    ): WhatsappTemplate {
-        return WhatsappCarouselBuilder(name, locale, connectorId).apply(builder).build()
-    }
+    ): WhatsappTemplate = WhatsappCarouselBuilder(name, locale, connectorId).apply(builder).build()
 
     /**
      * Uploads an asset file or gets an existing handle if it was previously uploaded
@@ -75,9 +71,9 @@ class TemplateGenerationContext internal constructor(
         fileUrl: String,
         fileType: String,
         fileContents: ByteArray? = null,
-    ): MetaUploadHandle {
-        return apiService.getOrUpload(metaApplicationId, fileUrl, fileType, fileContents)
-    }
+    ): MetaUploadHandle = apiService.getOrUpload(metaApplicationId, fileUrl, fileType, fileContents)
 }
 
-open class AssetUploadingException(message: String) : RuntimeException(message)
+open class AssetUploadingException(
+    message: String,
+) : RuntimeException(message)

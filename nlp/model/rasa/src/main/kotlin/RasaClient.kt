@@ -29,7 +29,9 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Streaming
 
-internal class RasaClient(conf: RasaConfiguration) {
+internal class RasaClient(
+    conf: RasaConfiguration,
+) {
     data class TrainModelRequest(
         val domain: String,
         val config: String,

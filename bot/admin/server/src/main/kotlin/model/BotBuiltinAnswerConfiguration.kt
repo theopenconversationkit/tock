@@ -19,6 +19,8 @@ package ai.tock.bot.admin.model
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 
-data class BotBuiltinAnswerConfiguration(val storyHandlerClassName: String?) : BotAnswerConfiguration(AnswerConfigurationType.builtin) {
+data class BotBuiltinAnswerConfiguration(
+    val storyHandlerClassName: String?,
+) : BotAnswerConfiguration(AnswerConfigurationType.builtin) {
     constructor(conf: BuiltInAnswerConfiguration) : this(conf.storyHandlerClassName)
 }

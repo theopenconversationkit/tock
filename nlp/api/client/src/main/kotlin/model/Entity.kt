@@ -19,4 +19,7 @@ package ai.tock.nlp.api.client.model
 /**
  * An [EntityType] with a role.
  */
-data class Entity(val entityType: EntityType, val role: String)
+data class Entity(
+    val entityType: EntityType,
+    val role: String,
+)

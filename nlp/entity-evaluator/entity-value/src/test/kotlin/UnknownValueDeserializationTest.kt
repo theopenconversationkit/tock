@@ -39,7 +39,11 @@ class UnknownValueDeserializationTest {
         assertTrue(mapper.readValue("""{"@type":"a","b":"c"}""", Value::class.java) is UnknownValue)
     }
 
-    data class V(val a: Value, val b: Value, val c: Value)
+    data class V(
+        val a: Value,
+        val b: Value,
+        val c: Value,
+    )
 
     @Test
     fun testDeserializeListOfUnknown() {

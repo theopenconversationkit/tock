@@ -65,9 +65,7 @@ internal class RocketChatClient(
             savedToken = token
         }
 
-        override fun get(url: String): Token? {
-            return savedToken
-        }
+        override fun get(url: String): Token? = savedToken
     }
 
     private val client: RocketChatClient by lazy {
@@ -89,7 +87,8 @@ internal class RocketChatClient(
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
         val okHttpClient =
-            OkHttpClient.Builder()
+            OkHttpClient
+                .Builder()
                 .addInterceptor(interceptor)
                 .connectTimeout(15, TimeUnit.SECONDS)
                 .readTimeout(15, TimeUnit.SECONDS)
@@ -125,11 +124,15 @@ internal class RocketChatClient(
                                 is State.Authenticating -> {
                                     logger.debug("Authenticating")
                                 }
+
                                 is State.Connected -> {
                                     logger.debug("Connected")
                                     client.subscribeRooms { _, _ -> }
                                 }
-                                else -> logger.debug { status }
+
+                                else -> {
+                                    logger.debug { status }
+                                }
                             }
                         }
                         logger.debug("Done on statusChannel")

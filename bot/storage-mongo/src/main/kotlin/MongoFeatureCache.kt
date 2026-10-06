@@ -65,9 +65,7 @@ internal class MongoFeatureCache : FeatureCache {
         features.remove(globalKey)
     }
 
-    override fun stateOf(key: String): Feature? {
-        return features[key]
-    }
+    override fun stateOf(key: String): Feature? = features[key]
 
     override fun setState(
         key: String,

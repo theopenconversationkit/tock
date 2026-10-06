@@ -23,7 +23,8 @@ import io.vertx.ext.web.impl.OrderListener
 internal class WithExcludedPathHandler(
     val excluded: Set<Regex>,
     val handler: Handler<RoutingContext>,
-) : Handler<RoutingContext>, OrderListener {
+) : Handler<RoutingContext>,
+    OrderListener {
     override fun handle(c: RoutingContext) {
         if (excluded.any { it.matches(c.request().path()) }) {
             c.next()

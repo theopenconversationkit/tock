@@ -50,7 +50,11 @@ class DialogflowTockMapperTest {
         assertEquals(queryText, nlpResult.retainedQuery)
         assertEquals(intentProbability.toDouble(), nlpResult.intentProbability)
         assertEquals(nlpResult.entities.size, 3)
-        assertEquals(nlpResult.entities[0].entity.entityType.name, "$namespace:$numberEntityName")
+        assertEquals(
+            nlpResult.entities[0]
+                .entity.entityType.name,
+            "$namespace:$numberEntityName",
+        )
         assertEquals(nlpResult.entities[0].entity.role, numberEntityName)
         assertEquals(nlpResult.entities[0].value, NumberValue(666.0))
         assertEquals(nlpResult.entities[1].value, StringValue("text_value"))

@@ -215,26 +215,16 @@ class VertxMock : Vertx {
     override fun <T : Any?> executeBlocking(
         blockingCodeHandler: Callable<T?>?,
         ordered: Boolean,
-    ): Future<@Nullable T?>? {
-        return super.executeBlocking(blockingCodeHandler, ordered)
-    }
+    ): Future<@Nullable T?>? = super.executeBlocking(blockingCodeHandler, ordered)
 
     override fun createHttpClient(
         clientOptions: HttpClientOptions?,
         poolOptions: PoolOptions?,
-    ): HttpClientAgent? {
-        return super.createHttpClient(clientOptions, poolOptions)
-    }
+    ): HttpClientAgent? = super.createHttpClient(clientOptions, poolOptions)
 
-    override fun createHttpClient(clientOptions: HttpClientOptions?): HttpClientAgent? {
-        return super.createHttpClient(clientOptions)
-    }
+    override fun createHttpClient(clientOptions: HttpClientOptions?): HttpClientAgent? = super.createHttpClient(clientOptions)
 
-    override fun createHttpClient(poolOptions: PoolOptions?): HttpClientAgent? {
-        return super.createHttpClient(poolOptions)
-    }
+    override fun createHttpClient(poolOptions: PoolOptions?): HttpClientAgent? = super.createHttpClient(poolOptions)
 
-    override fun createHttpClient(): HttpClientAgent? {
-        return super.createHttpClient()
-    }
+    override fun createHttpClient(): HttpClientAgent? = super.createHttpClient()
 }

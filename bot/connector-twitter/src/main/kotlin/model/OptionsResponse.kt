@@ -19,4 +19,6 @@ package ai.tock.bot.connector.twitter.model
 import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("options")
-data class OptionsResponse(val metadata: String) : QuickReplyResponse()
+data class OptionsResponse(
+    val metadata: String,
+) : QuickReplyResponse()

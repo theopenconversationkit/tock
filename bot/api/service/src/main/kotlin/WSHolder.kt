@@ -65,7 +65,12 @@ internal class WSHolder {
         synchronized(response) {
             val r = response.sortedBy { it.botResponse?.context?.date ?: Instant.now() }
             logger.debug { "responses: $r" }
-            if (r.lastOrNull()?.botResponse?.context?.lastResponse == false) {
+            if (r
+                    .lastOrNull()
+                    ?.botResponse
+                    ?.context
+                    ?.lastResponse == false
+            ) {
                 latch = CountDownLatch(1)
             }
 

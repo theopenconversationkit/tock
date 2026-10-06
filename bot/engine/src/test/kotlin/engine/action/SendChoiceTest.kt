@@ -34,9 +34,7 @@ import kotlin.test.assertTrue
  */
 class SendChoiceTest {
     class TestParamObfuscator : MapObfuscator {
-        override fun obfuscate(map: Map<String, String>): Map<String, String> {
-            return map.mapValues { "" }
-        }
+        override fun obfuscate(map: Map<String, String>): Map<String, String> = map.mapValues { "" }
     }
 
     @Test

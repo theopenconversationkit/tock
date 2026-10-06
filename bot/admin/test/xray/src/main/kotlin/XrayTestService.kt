@@ -29,7 +29,7 @@ class XrayTestService : TestService by testCoreService {
     override fun registerServices(): (AdminVerticle).() -> Unit =
         {
             testCoreService.registerServices().invoke(this)
-            /**
+            /*
              * Triggered on "Create" button, after providing connector and test plan key.
              * Will reach Jira to gather all test steps and send them to the bot as a conversation
              */

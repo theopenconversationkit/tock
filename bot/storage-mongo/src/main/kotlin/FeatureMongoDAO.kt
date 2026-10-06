@@ -90,11 +90,10 @@ internal class FeatureMongoDAO(
     private fun isEnabled(
         feature: Feature,
         userId: String?,
-    ): Boolean {
-        return feature.enabled &&
+    ): Boolean =
+        feature.enabled &&
             isEnableForDate(feature, ZonedDateTime.now(internalDefaultZoneId)) &&
             isEnableForUser(feature, userId)
-    }
 
     private fun isEnableForUser(
         feature: Feature,
@@ -112,16 +111,22 @@ internal class FeatureMongoDAO(
     private fun isEnableForDate(
         feature: Feature,
         now: ZonedDateTime,
-    ): Boolean {
-        return when {
-            feature.startDate != null && feature.endDate == null -> now.isAfter(feature.startDate)
-            feature.startDate != null && feature.endDate != null ->
+    ): Boolean =
+        when {
+            feature.startDate != null && feature.endDate == null -> {
+                now.isAfter(feature.startDate)
+            }
+
+            feature.startDate != null && feature.endDate != null -> {
                 now.isAfter(feature.startDate) &&
                     now.isBefore(feature.endDate)
+            }
+
             // FIXME : startDate == null && endDate != null is not handle ?
-            else -> true
+            else -> {
+                true
+            }
         }
-    }
 
     private suspend fun getValues(
         id: String,
@@ -188,7 +193,8 @@ internal class FeatureMongoDAO(
         botId: String,
         namespace: String,
     ): List<FeatureState> =
-        col.find(BotId eq botId, Namespace eq namespace)
+        col
+            .find(BotId eq botId, Namespace eq namespace)
             .toList()
             .mapNotNull {
                 try {

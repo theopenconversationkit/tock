@@ -82,7 +82,8 @@ class DatasetRunProcessorTest {
         assertEquals(fixedClock.instant(), savedRuns.last().endTime)
 
         val completedResults =
-            savedQuestionResults.filter { it.state == DatasetRunQuestionResultState.COMPLETED }
+            savedQuestionResults
+                .filter { it.state == DatasetRunQuestionResultState.COMPLETED }
                 .associateBy { it.questionId }
 
         assertEquals(2, completedResults.size)

@@ -23,7 +23,10 @@ import ai.tock.bot.engine.BotBus
 
 const val DEFAULT_ORCHESTRATION_BLOCKED_MESSAGE = "This action is not allowed in orchestrated path."
 
-sealed class OrchestrationBlockedIntent(private val intents: List<IntentAware>, internal val message: CharSequence) {
+sealed class OrchestrationBlockedIntent(
+    private val intents: List<IntentAware>,
+    internal val message: CharSequence,
+) {
     protected abstract fun concerns(primaryBot: String): Boolean
 
     fun applyTo(
@@ -58,8 +61,9 @@ class BlockedIntentForPrimary(
     override fun concerns(primaryBot: String) = primaryBot == primaryBotId
 }
 
-class BlockOrchestrationStoryHandlerListener(private vararg val restrictions: OrchestrationBlockedIntent) :
-    StoryHandlerListener {
+class BlockOrchestrationStoryHandlerListener(
+    private vararg val restrictions: OrchestrationBlockedIntent,
+) : StoryHandlerListener {
     override fun startAction(
         botBus: BotBus,
         handler: StoryHandler,

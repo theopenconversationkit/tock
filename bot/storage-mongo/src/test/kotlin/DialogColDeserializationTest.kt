@@ -67,9 +67,7 @@ import kotlin.test.assertTrue
  */
 class DialogColDeserializationTest : AbstractTest(false) {
     class TestParamObfuscator : MapObfuscator {
-        override fun obfuscate(map: Map<String, String>): Map<String, String> {
-            return map.mapValues { "" }
-        }
+        override fun obfuscate(map: Map<String, String>): Map<String, String> = map.mapValues { "" }
     }
 
     @Test
@@ -119,7 +117,9 @@ class DialogColDeserializationTest : AbstractTest(false) {
         val dialog =
             Dialog(
                 emptySet(),
-                state = ai.tock.bot.engine.dialog.DialogState(context = DialogContextMap(dialogContextKey to LocalDateTime.now())),
+                state =
+                    ai.tock.bot.engine.dialog
+                        .DialogState(context = DialogContextMap(dialogContextKey to LocalDateTime.now())),
             )
         val playerId = PlayerId("a", PlayerType.user)
         val s =

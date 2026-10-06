@@ -19,9 +19,12 @@ package ai.tock.bot.connector.googlechat
 import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.googlechat.builder.googleChatConnectorType
 import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.shared.booleanProperty
 import com.google.api.services.chat.v1.HangoutsChat
 import com.google.api.services.chat.v1.model.Thread
 import mu.KotlinLogging
+
+private val sendIntroMessage: Boolean = booleanProperty("tock_api_google_chat_connector_test_send_intro_message", false)
 
 data class GoogleChatConnectorCallback(
     override val applicationId: String,
@@ -30,16 +33,27 @@ data class GoogleChatConnectorCallback(
     private val chatService: HangoutsChat,
     private val introMessage: String?,
     val useThread: Boolean,
+    private val waitingMessage: String,
+    private val feedback: GoogleChatFeedback? = null,
 ) : ConnectorCallbackBase(applicationId, googleChatConnectorType) {
     private val logger = KotlinLogging.logger {}
+    var processingMessageName: String? = null
+
+    fun initializeProcessingMessage() {
+        processingMessageName =
+            sendGoogleMessageAndGetName(
+                GoogleChatConnectorTextMessageOut(waitingMessage),
+            )
+    }
 
     /**
      * Called when the UserTimeline is loaded.
      * Sends the intro message if this is a new conversation (empty dialog).
      */
     override fun initialUserTimelineLoaded(userTimeline: UserTimeline) {
-        if (shouldSendIntro(userTimeline)) {
+        if (shouldSendIntro(userTimeline) || sendIntroMessage) {
             sendIntroMessage()
+            initializeProcessingMessage()
         }
     }
 
@@ -60,17 +74,24 @@ data class GoogleChatConnectorCallback(
             "Sending Google Chat intro message: space=$spaceName" +
                 if (useThread) ", thread=$threadName" else ""
         }
-        sendGoogleMessage(
-            GoogleChatConnectorTextMessageOut(message),
-        )
+        val gMessage = GoogleChatConnectorTextMessageOut(message)
+
+        processingMessageName?.let {
+            patchGoogleMessage(it, gMessage)
+            processingMessageName = null
+        } ?: sendGoogleMessageAndGetName(gMessage)
     }
 
     /**
      * Sends message to the Google Chat space/thread.
      */
-    fun sendGoogleMessage(message: GoogleChatConnectorMessage) {
+    fun sendGoogleMessageAndGetName(
+        message: GoogleChatConnectorMessage,
+        feedbackActionId: String? = null,
+    ): String? {
+        var messageName: String? = null
         try {
-            val googleMessage = message.toGoogleMessage()
+            val googleMessage = message.toGoogleMessage().withFeedback(feedbackActionId)
             logger.debug { "Google Message content: $googleMessage" }
 
             if (useThread) {
@@ -93,7 +114,9 @@ data class GoogleChatConnectorCallback(
             }
 
             val response = request.execute()
-            logger.info { "Google Chat API response: ${response?.name}" }
+            messageName = response?.name
+
+            logger.info { "Google Chat API response: $messageName" }
         } catch (e: Exception) {
             logger.error(e) {
                 "Failed to send Google Chat message: " +
@@ -101,5 +124,39 @@ data class GoogleChatConnectorCallback(
                     if (useThread) ", thread=$threadName" else ""
             }
         }
+        return messageName
     }
+
+    fun patchGoogleMessage(
+        messageName: String,
+        message: GoogleChatConnectorMessage,
+        feedbackActionId: String? = null,
+    ) {
+        try {
+            val googleMessage = message.toGoogleMessage().withFeedback(feedbackActionId)
+            chatService
+                .spaces()
+                .messages()
+                .patch(
+                    messageName,
+                    googleMessage,
+                ).setUpdateMask(if (googleMessage.accessoryWidgets == null) "text" else "text,accessoryWidgets")
+                .execute()
+
+            logger.info {
+                "Google Chat message patched: $messageName"
+            }
+        } catch (e: Exception) {
+            logger.error(e) {
+                "Failed to patch Google Chat message: $messageName"
+            }
+        }
+    }
+
+    private fun com.google.api.services.chat.v1.model.Message.withFeedback(actionId: String?) =
+        if (actionId == null || feedback == null) {
+            this
+        } else {
+            feedback.addButtons(this, actionId)
+        }
 }

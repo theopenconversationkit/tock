@@ -72,7 +72,8 @@ open class TockJUnit4Rule<out T : TestContext>(
         locale: Locale = testContext.defaultLocale(),
         userId: PlayerId = testContext.defaultPlayerId(),
     ): BotBusMockContext =
-        botDefinition.newBusMockContext(testContext, story, connectorType, locale, userId)
+        botDefinition
+            .newBusMockContext(testContext, story, connectorType, locale, userId)
             .apply {
                 testContext.botBusMockContext = this
                 lifecycle.configureTestIoc()
@@ -91,8 +92,8 @@ open class TockJUnit4Rule<out T : TestContext>(
     override fun apply(
         base: Statement,
         description: Description,
-    ): Statement {
-        return object : Statement() {
+    ): Statement =
+        object : Statement() {
             override fun evaluate() {
                 lifecycle.start()
                 try {
@@ -103,5 +104,4 @@ open class TockJUnit4Rule<out T : TestContext>(
                 }
             }
         }
-    }
 }

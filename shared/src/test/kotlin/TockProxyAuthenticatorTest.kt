@@ -57,7 +57,8 @@ class TockProxyAuthenticatorTest {
     fun `WHEN Okhttp performs preemptive or basic auth THEN return request with credentials`(challenge: String) {
         val authenticator = TockProxyAuthenticator("Alice", "hunter2")
         val fakeAuthChallengeResponse =
-            Response.Builder()
+            Response
+                .Builder()
                 .request(Request.Builder().url("http://localhost".toHttpUrl()).build())
                 .protocol(Protocol.HTTP_1_1)
                 .code(HttpURLConnection.HTTP_PROXY_AUTH)

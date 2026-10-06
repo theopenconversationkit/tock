@@ -52,9 +52,7 @@ data class MicrosoftValidSigningKey(
     val x5c: List<String>?,
     val endorsements: List<String>?,
 ) : Serializable {
-    override fun toString(): String {
-        return Gson().toJson(this)
-    }
+    override fun toString(): String = Gson().toJson(this)
 }
 
 internal interface MicrosoftJwksApi {

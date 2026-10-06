@@ -16,4 +16,6 @@
 
 package ai.tock.nlp.admin.model
 
-data class TranslateReport(val nbTranslations: Int)
+data class TranslateReport(
+    val nbTranslations: Int,
+)

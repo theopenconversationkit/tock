@@ -120,13 +120,15 @@ class ClassifiedSentenceMongoDAOTest : AbstractTest() {
             count < 100 -> Thread.sleep(count)
             else -> error("no sentence found")
         }
-        return classifiedSentenceDAO.search(
-            SentencesQuery(
-                applicationId = applicationId,
-                language = sentence.language,
-                search = sentence.text,
-            ),
-        ).sentences.firstOrNull() ?: waitForSentence(count + 1)
+        return classifiedSentenceDAO
+            .search(
+                SentencesQuery(
+                    applicationId = applicationId,
+                    language = sentence.language,
+                    search = sentence.text,
+                ),
+            ).sentences
+            .firstOrNull() ?: waitForSentence(count + 1)
     }
 
     @Test
@@ -143,7 +145,13 @@ class ClassifiedSentenceMongoDAOTest : AbstractTest() {
         )
 
         // check
-        assertEquals(entityTypeB.name, waitForSentence().classification.entities.first().type)
+        assertEquals(
+            entityTypeB.name,
+            waitForSentence()
+                .classification.entities
+                .first()
+                .type,
+        )
 
         entityTypeDAO.getEntityTypeByName(entityTypeB.name)!!.apply {
             assertEquals(entityTypeABC.subEntities.map { it.role }, subEntities.map { it.role })

@@ -16,5 +16,6 @@
 
 package ai.tock.bot.connector.iadvize.model.payload
 
-data class CardBundlePayload(val cards: MutableList<GenericCardPayload> = mutableListOf()) :
-    Payload("bundle/card")
+data class CardBundlePayload(
+    val cards: MutableList<GenericCardPayload> = mutableListOf(),
+) : Payload("bundle/card")

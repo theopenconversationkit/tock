@@ -52,7 +52,5 @@ data class ClassifiedEntityReport(
         entity.subEntities.map { ClassifiedEntityReport(it) },
     )
 
-    fun toClassifiedEntity(): ClassifiedEntity {
-        return ClassifiedEntity(type, role, start, end, subEntities.map { it.toClassifiedEntity() })
-    }
+    fun toClassifiedEntity(): ClassifiedEntity = ClassifiedEntity(type, role, start, end, subEntities.map { it.toClassifiedEntity() })
 }

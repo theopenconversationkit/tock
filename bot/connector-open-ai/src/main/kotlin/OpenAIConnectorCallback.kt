@@ -69,8 +69,8 @@ class OpenAIConnectorCallback(
         return OpenAIConnectorResponse(messages)
     }
 
-    private fun toOpenAI(action: Action): OpenAIConnectorMessage? {
-        return when (action) {
+    private fun toOpenAI(action: Action): OpenAIConnectorMessage? =
+        when (action) {
             is SendSentence -> {
                 val message = action.message(openAIConnectorType) as? OpenAIConnectorMessage
                 if (message != null) {
@@ -96,11 +96,11 @@ class OpenAIConnectorCallback(
                 OpenAIConnectorMessage("[unsupported message]")
             }
         }
-    }
 
     fun sendResponse() {
         val messages = actions.mapNotNull { toOpenAI(it) }
-        context?.response()
+        context
+            ?.response()
             ?.putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
             ?.end(writeJson(OpenAIConnectorResponse(messages).toOpenAIResponse()))
     }

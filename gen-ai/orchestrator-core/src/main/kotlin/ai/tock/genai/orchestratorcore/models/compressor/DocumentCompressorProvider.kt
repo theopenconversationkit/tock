@@ -21,8 +21,6 @@ enum class DocumentCompressorProvider {
     ;
 
     companion object {
-        fun findByName(provider: String): DocumentCompressorProvider? {
-            return entries.firstOrNull { it.name == provider }
-        }
+        fun findByName(provider: String): DocumentCompressorProvider? = entries.firstOrNull { it.name == provider }
     }
 }

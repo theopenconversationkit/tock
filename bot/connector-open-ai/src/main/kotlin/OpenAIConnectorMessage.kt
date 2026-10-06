@@ -79,7 +79,8 @@ data class OpenAIConnectorMessage(
     private fun formatText(): String =
         (text ?: "") +
             (
-                suggestions.takeUnless { it.isEmpty() }
+                suggestions
+                    .takeUnless { it.isEmpty() }
                     ?.joinToString(separator = "\n", prefix = "\n", postfix = "") {
                         "- $it"
                     } ?: ""
@@ -88,14 +89,20 @@ data class OpenAIConnectorMessage(
                 ""
             } else {
                 when (mediaMessage) {
-                    is MediaCard -> mediaMessage.formatCard()
-                    is MediaCarousel ->
+                    is MediaCard -> {
+                        mediaMessage.formatCard()
+                    }
+
+                    is MediaCarousel -> {
                         mediaMessage.cards.joinToString(
                             separator = "\n\n",
                             prefix = "",
                         ) { it.formatCard() }
+                    }
 
-                    else -> "[unsupported message]"
+                    else -> {
+                        "[unsupported message]"
+                    }
                 }
             }
 

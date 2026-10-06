@@ -19,4 +19,7 @@ package ai.tock.bot.xray.model
 /**
  *
  */
-data class JiraAttachment(val id: String, val filename: String)
+data class JiraAttachment(
+    val id: String,
+    val filename: String,
+)

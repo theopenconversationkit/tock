@@ -61,9 +61,7 @@ class NlpVerticle : WebVerticle() {
 
     override val logger: KLogger = KotlinLogging.logger {}
 
-    override fun authProvider(): TockAuthProvider? {
-        return if (protectPath) defaultAuthProvider() else super.authProvider()
-    }
+    override fun authProvider(): TockAuthProvider? = if (protectPath) defaultAuthProvider() else super.authProvider()
 
     override fun configure() {
         val front = FrontClient
@@ -116,7 +114,8 @@ class NlpVerticle : WebVerticle() {
                 if (namespace == null || name == null) {
                     badRequest("One of the parameters name or namespace is invalid")
                 } else {
-                    front.getApplicationByNamespaceAndName(namespace, name)
+                    front
+                        .getApplicationByNamespaceAndName(namespace, name)
                         ?.run {
                             front.getIntentsByApplicationId(_id)
                         } ?: emptyList()
@@ -161,11 +160,12 @@ class NlpVerticle : WebVerticle() {
             if (protectPath) {
                 unauthorized()
             } else {
-                front.import(
-                    dump.application.namespace,
-                    dump,
-                    ApplicationImportConfiguration(defaultModelMayExist = true),
-                ).modified
+                front
+                    .import(
+                        dump.application.namespace,
+                        dump,
+                        ApplicationImportConfiguration(defaultModelMayExist = true),
+                    ).modified
             }
         }
 
@@ -173,11 +173,12 @@ class NlpVerticle : WebVerticle() {
             if (protectPath) {
                 unauthorized()
             } else {
-                front.import(
-                    dump.application.namespace,
-                    dump,
-                    ApplicationImportConfiguration(defaultModelMayExist = true),
-                ).modified
+                front
+                    .import(
+                        dump.application.namespace,
+                        dump,
+                        ApplicationImportConfiguration(defaultModelMayExist = true),
+                    ).modified
             }
         }
 
@@ -215,8 +216,8 @@ class NlpVerticle : WebVerticle() {
         }
     }
 
-    override fun defaultHealthcheck(): (RoutingContext) -> Unit {
-        return {
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit =
+        {
             if (checkEntitiesDefaultHealthcheck) {
                 executor.executeBlocking {
                     it.response().setStatusCode(if (FrontClient.healthcheck()) 200 else 500).end()
@@ -225,7 +226,6 @@ class NlpVerticle : WebVerticle() {
                 it.response().end()
             }
         }
-    }
 
     override fun detailedHealthcheck(): (RoutingContext) -> Unit =
         detailedHealthcheck(

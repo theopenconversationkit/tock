@@ -25,4 +25,7 @@ import kotlin.reflect.KClass
  * in order to provide [ConnectorStoryHandler] for each connector id.
  */
 @MustBeDocumented
-annotation class ConnectorIdHandler(val connectorId: String, val value: KClass<out ConnectorSpecificHandling>)
+annotation class ConnectorIdHandler(
+    val connectorId: String,
+    val value: KClass<out ConnectorSpecificHandling>,
+)

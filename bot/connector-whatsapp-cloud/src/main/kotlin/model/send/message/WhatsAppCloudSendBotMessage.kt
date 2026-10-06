@@ -34,12 +34,18 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = WhatsAppCloudSendBotImageMessage::class, name = "image"),
 )
 @JsonPropertyOrder("messaging_product")
-abstract class WhatsAppCloudSendBotMessage(val type: WhatsAppCloudBotMessageType) {
+abstract class WhatsAppCloudSendBotMessage(
+    val type: WhatsAppCloudBotMessageType,
+) {
     @Suppress("unused")
     @JsonProperty("messaging_product")
     val messagingProduct = "whatsapp"
 
-    abstract val to: String?
+    /**
+     * Business-Scoped User ID (BSUID) of the recipient. Phone numbers are not supported anymore.
+     */
+    @get:JsonProperty("recipient")
+    abstract val recipient: String?
 
     @get:JsonProperty("recipient_type")
     abstract val recipientType: WhatsAppCloudBotRecipientType?

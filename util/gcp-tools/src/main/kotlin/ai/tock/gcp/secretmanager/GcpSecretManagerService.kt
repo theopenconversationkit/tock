@@ -57,7 +57,9 @@ class GcpSecretManagerService : SecretManagerService {
         val response: AccessSecretVersionResponse = client.accessSecretVersion(secretVersionName)
         logger.debug { "GCP Secret Manager - The secret '$secretVersionName' has been fetched." }
 
-        return response.payload.data.toByteArray().decodeToString()
+        return response.payload.data
+            .toByteArray()
+            .decodeToString()
     }
 
     private fun createOrUpdateGcpSecret(
@@ -70,7 +72,8 @@ class GcpSecretManagerService : SecretManagerService {
         val secretValue = jacksonObjectMapper().writeValueAsString(secretObject)
         // Create the secret payload.
         val payload: SecretPayload =
-            SecretPayload.newBuilder()
+            SecretPayload
+                .newBuilder()
                 .setData(ByteString.copyFrom(secretValue.toByteArray()))
                 .build()
 
@@ -84,21 +87,22 @@ class GcpSecretManagerService : SecretManagerService {
         try {
             // Build the secret to create with manual replication
             val secretToCreate: Secret =
-                Secret.newBuilder()
+                Secret
+                    .newBuilder()
                     .setReplication(
-                        Replication.newBuilder()
+                        Replication
+                            .newBuilder()
                             .setUserManaged(
-                                Replication.UserManaged.newBuilder()
+                                Replication.UserManaged
+                                    .newBuilder()
                                     .addReplicas(
-                                        Replication.UserManaged.Replica.newBuilder()
+                                        Replication.UserManaged.Replica
+                                            .newBuilder()
                                             .setLocation(EnvConfig.gcpRegion)
                                             .build(),
-                                    )
-                                    .build(),
-                            )
-                            .build(),
-                    )
-                    .build()
+                                    ).build(),
+                            ).build(),
+                    ).build()
 
             val projectName: ProjectName = ProjectName.of(EnvConfig.gcpProjectId)
             val createdSecret = client.createSecret(projectName, secretId, secretToCreate)

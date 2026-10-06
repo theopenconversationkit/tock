@@ -31,9 +31,7 @@ data class SlackMessageIn(
     var text: String,
     val trigger_word: String?,
 ) : SlackConnectorMessage() {
-    fun getRealMessage(): String {
-        return this.text.replace("${this.trigger_word} ", "")
-    }
+    fun getRealMessage(): String = this.text.replace("${this.trigger_word} ", "")
 
     override fun toGenericMessage(): GenericMessage = GenericMessage(texts = mapOf(::text.name to text))
 }

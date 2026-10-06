@@ -25,7 +25,16 @@
     "error_title": "Erreur",
     "invalid_json_message": "Le fichier n'est pas un JSON valide.",
     "invalid_json_title": "JSON invalide",
-    "unknown_error": "Erreur inconnue"
+    "unknown_error": "Erreur inconnue",
+    "download_csv_template": "Modèle CSV",
+    "download_csv_template_tooltip": "Télécharger un fichier CSV vide avec les colonnes attendues",
+    "dataset_name_label": "Nom du dataset",
+    "dataset_name_placeholder": "Nom du dataset",
+    "dataset_description_label": "Description",
+    "dataset_description_placeholder": "Description du dataset (optionnelle)",
+    "csv_error_empty_file": "Le fichier CSV est vide.",
+    "csv_error_missing_question_column": "Colonne « question » introuvable. Utilisez le modèle CSV proposé dans la fenêtre d'import.",
+    "csv_error_no_valid_row": "Aucune question valide n'a été trouvée dans le fichier."
   },
   "dataset-board-entry": {
     "show_questions_tooltip": "Afficher les questions",
@@ -99,7 +108,9 @@
     "create_button": "CRÉER",
     "at_least_one_question_required": "Au moins une question est requise.",
     "an_error_occurred": "Une erreur est survenue",
-    "error_title": "Erreur"
+    "error_title": "Erreur",
+    "export_json_tooltip": "Exporter le dataset complet au format JSON",
+    "export_csv_tooltip": "Exporter les questions au format CSV (le nom et la description ne sont pas inclus)"
   },
   "sample-create-from-run": {
     "title": "Nouvel échantillon d'évaluation",

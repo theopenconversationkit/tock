@@ -34,9 +34,7 @@ object XrayConfiguration {
     @Volatile
     private var configured: Boolean = false
 
-    fun isXrayAvailable(): Boolean {
-        return DEFAULT_XRAY_URL != xrayUrl
-    }
+    fun isXrayAvailable(): Boolean = DEFAULT_XRAY_URL != xrayUrl
 
     fun configure() {
         if (!configured) {

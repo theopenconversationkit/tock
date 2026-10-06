@@ -16,4 +16,7 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson
 
-data class Image(val url: String, val description: String)
+data class Image(
+    val url: String,
+    val description: String,
+)

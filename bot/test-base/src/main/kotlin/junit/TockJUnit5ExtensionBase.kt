@@ -50,7 +50,8 @@ import java.util.Locale
 open class TockJUnit5ExtensionBase<out T : TestContext>(
     val botDefinition: BotDefinition,
     @Suppress("UNCHECKED_CAST") val lifecycle: TestLifecycle<T> = TestLifecycle(TestContext() as T),
-) : BeforeEachCallback, AfterEachCallback {
+) : BeforeEachCallback,
+    AfterEachCallback {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -85,8 +86,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         connectorId: String = botDefinition.botId,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         tests: BotBusMock.() -> Unit,
-    ): BotBusMock {
-        return send(
+    ): BotBusMock =
+        send(
             intent,
             connectorType,
             userInterfaceType,
@@ -106,7 +107,6 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             },
             tests,
         )
-    }
 
     /**
      * Sends a message and execute the tests.
@@ -133,8 +133,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         connectorId: String = botDefinition.botId,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         tests: BotBusMock.() -> Unit,
-    ): BotBusMock {
-        return send(
+    ): BotBusMock =
+        send(
             intent,
             connectorType,
             userInterfaceType,
@@ -146,7 +146,6 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             { message.toAction(userId, connectorId, botId) },
             tests,
         )
-    }
 
     /**
      * Sends a message simulating a click on action of a previous bus log and execute the tests.
@@ -155,14 +154,13 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         busMockLog: BotBusMockLog,
         buttonTitle: String,
         tests: BotBusMock.() -> Unit,
-    ): BotBusMock {
-        return sendMessage(
+    ): BotBusMock =
+        sendMessage(
             message =
                 busMockLog.choice(buttonTitle)
                     ?: error("No choice $buttonTitle found in bus message $busMockLog"),
             tests = tests,
         )
-    }
 
     /**
      * Sends a message simulating a click on action of an element in previous bus log and execute the tests.
@@ -172,14 +170,13 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         elementIndex: Int,
         buttonTitle: String,
         tests: BotBusMock.() -> Unit,
-    ): BotBusMock {
-        return sendMessage(
+    ): BotBusMock =
+        sendMessage(
             message =
                 busMockLog.elementChoice(elementIndex, buttonTitle)
                     ?: error("No choice $buttonTitle found in element $elementIndex of bus message $busMockLog"),
             tests = tests,
         )
-    }
 
     /**
      * Sends a sentence and execute the tests.
@@ -210,8 +207,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         secondaryConnectorTypes: List<ConnectorType> = listOf(),
         metadata: ActionMetadata = ActionMetadata(),
         tests: BotBusMock.() -> Unit,
-    ): BotBusMock {
-        return send(
+    ): BotBusMock =
+        send(
             intent,
             connectorType,
             userInterfaceType,
@@ -236,7 +233,6 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             },
             tests,
         )
-    }
 
     /**
      * Sends an action and execute the tests.
@@ -454,22 +450,23 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         secondaryConnectorTypes: List<ConnectorType> = listOf(),
     ): BotBusMockContext =
-        botDefinition.newBusMockContext(
-            testContext,
-            story,
-            connectorType,
-            locale,
-            userId,
-            botId,
-            connectorId,
-            action,
-            userInterfaceType,
-            userPreferences,
-            secondaryConnectorTypes,
-        ).apply {
-            testContext.botBusMockContext = this
-            lifecycle.configureTestIoc()
-        }
+        botDefinition
+            .newBusMockContext(
+                testContext,
+                story,
+                connectorType,
+                locale,
+                userId,
+                botId,
+                connectorId,
+                action,
+                userInterfaceType,
+                userPreferences,
+                secondaryConnectorTypes,
+            ).apply {
+                testContext.botBusMockContext = this
+                lifecycle.configureTestIoc()
+            }
 
     /**
      * Provides a mock context initialized with the current [testContext] and runs the bus.

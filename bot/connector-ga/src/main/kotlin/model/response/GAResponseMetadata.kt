@@ -16,4 +16,6 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-data class GAResponseMetadata(val status: GAStatus)
+data class GAResponseMetadata(
+    val status: GAStatus,
+)

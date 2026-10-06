@@ -23,15 +23,18 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 
-internal class ChatBaseBotAnswerinterceptor(private val apiKey: String, private val client: ChatBaseClient, private val version: String) :
-    BotAnswerInterceptor {
+internal class ChatBaseBotAnswerinterceptor(
+    private val apiKey: String,
+    private val client: ChatBaseClient,
+    private val version: String,
+) : BotAnswerInterceptor {
     override fun handle(
         action: Action,
         bus: BotBus,
     ): Action {
         val messages =
             when (action) {
-                is SendSentence ->
+                is SendSentence -> {
                     action.messages.map { message ->
                         Message(
                             apiKey = apiKey,
@@ -42,7 +45,11 @@ internal class ChatBaseBotAnswerinterceptor(private val apiKey: String, private 
                             version = version,
                         )
                     }
-                else -> listOf()
+                }
+
+                else -> {
+                    listOf()
+                }
             }
 
         messages.map { message ->

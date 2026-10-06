@@ -31,15 +31,16 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalTockCoroutines::class)
-internal abstract class AsyncBotEngineTest(nbThreads: Int = 4) : BotEngineTest() {
+internal abstract class AsyncBotEngineTest(
+    nbThreads: Int = 4,
+) : BotEngineTest() {
     val executor = spyk(SimpleExecutor(nbThreads))
 
-    override fun baseModule(): Kodein.Module {
-        return Kodein.Module {
+    override fun baseModule(): Kodein.Module =
+        Kodein.Module {
             import(super.baseModule())
             bind<Executor>(overrides = true) with provider { executor }
         }
-    }
 
     suspend fun AsyncStoryDefinition.handle(
         asyncBus: AsyncBotBus,

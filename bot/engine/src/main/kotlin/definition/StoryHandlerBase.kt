@@ -47,7 +47,8 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      * Convenient value to wait before next answer sentence.
      */
     val breath: Long = defaultBreath,
-) : I18nStoryHandler, IntentAware {
+) : I18nStoryHandler,
+    IntentAware {
     companion object {
         private val logger = KotlinLogging.logger {}
 
@@ -56,7 +57,8 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
          */
         internal fun isEndCalled(bus: BotBus): Boolean =
             (bus.userTimeline.currentDialog ?: bus.dialog)
-                .lastAction?.run { this !== bus.action && metadata.lastAnswer } ?: false
+                .lastAction
+                ?.run { this !== bus.action && metadata.lastAnswer } ?: false
     }
 
     /**
@@ -119,7 +121,8 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         val storyDefinition = findStoryDefinition(bus)
         // if not supported user interface, use unknown
         if (storyDefinition?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
-            bus.botDefinition.unknownStory.storyHandler.handle(bus)
+            bus.botDefinition.unknownStory.storyHandler
+                .handle(bus)
         } else {
             // set current i18n provider
             bus.i18nProvider = this
@@ -139,7 +142,9 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                 if (step != null) {
                     @Suppress("UNCHECKED_CAST")
                     val data =
-                        (step as? StoryDataStep<T, Any, *>)?.checkPreconditions()?.invoke(handler, mainData)
+                        (step as? StoryDataStep<T, Any, *>)
+                            ?.checkPreconditions()
+                            ?.invoke(handler, mainData)
                             ?.takeUnless { it is Unit }
                             ?: mainData
                     if (!isEndCalled(bus)) {
@@ -223,9 +228,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         key: String,
         defaultLabel: CharSequence,
         vararg args: Any?,
-    ): I18nLabelValue {
-        return i18nKey(key, defaultLabel, emptySet(), *args)
-    }
+    ): I18nLabelValue = i18nKey(key, defaultLabel, emptySet(), *args)
 
     /**
      * Gets an i18n label with the specified key and defaults. Current namespace is used for the categorization.
@@ -247,11 +250,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         )
     }
 
-    private fun findMainIntentName(): String? {
-        return mainIntentName ?: this::class.simpleName?.lowercase()?.replace("storyhandler", "")
-    }
+    private fun findMainIntentName(): String? = mainIntentName ?: this::class.simpleName?.lowercase()?.replace("storyhandler", "")
 
-    override fun wrappedIntent(): Intent {
-        return findMainIntentName()?.let { Intent(it) } ?: error("unknown main intent name")
-    }
+    override fun wrappedIntent(): Intent = findMainIntentName()?.let { Intent(it) } ?: error("unknown main intent name")
 }

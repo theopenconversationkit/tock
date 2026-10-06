@@ -41,7 +41,8 @@ open class RestOrchestrationCallback(
     private val context: RoutingContext,
     override val actions: MutableList<Action> = mutableListOf(),
     private val orchestrationMapper: ObjectMapper = mapper,
-) : OrchestrationCallback, ConnectorCallbackBase(applicationId, connectorType) {
+) : ConnectorCallbackBase(applicationId, connectorType),
+    OrchestrationCallback {
     private val logger = KotlinLogging.logger {}
 
     override fun sendResponse() {

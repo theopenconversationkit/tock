@@ -116,7 +116,9 @@ abstract class WebVerticle : CoroutineVerticle() {
 
     open val logger: KLogger = KotlinLogging.logger {}
 
-    private data class BooleanResponse(val success: Boolean = true)
+    private data class BooleanResponse(
+        val success: Boolean = true,
+    )
 
     val router: Router by lazy {
         Router.router(sharedVertx).apply {
@@ -239,7 +241,8 @@ abstract class WebVerticle : CoroutineVerticle() {
     }
 
     override suspend fun stop() {
-        server.close()
+        server
+            .close()
             .onComplete { ar -> logger.info { "$verticleName stopped result : ${ar.succeeded()}" } }
             .coAwait()
     }
@@ -253,7 +256,8 @@ abstract class WebVerticle : CoroutineVerticle() {
         logger.info { "Vertx session expiration: $vertxSessionExpiration (ms)" }
 
         val sessionHandler =
-            SessionHandler.create(LocalSessionStore.create(vertx))
+            SessionHandler
+                .create(LocalSessionStore.create(vertx))
                 .setSessionTimeout(vertxSessionExpiration)
                 .setNagHttps(https)
                 .setCookieHttpOnlyFlag(https)
@@ -268,13 +272,25 @@ abstract class WebVerticle : CoroutineVerticle() {
      */
     protected open fun defaultAuthProvider(): TockAuthProvider =
         when {
-            booleanProperty("tock_github_oauth_enabled", false) -> GithubOAuthProvider(sharedVertx)
-            booleanProperty("tock_oauth2_enabled", false) -> OAuth2Provider(sharedVertx)
-            booleanProperty("tock_keycloak_enabled", false) -> KeycloakOAuth2Provider(sharedVertx)
-            booleanProperty("tock_cas_auth_enabled", false) ->
-                loadCasAuthProvider(sharedVertx) ?: PropertyBasedAuthProvider
+            booleanProperty("tock_github_oauth_enabled", false) -> {
+                GithubOAuthProvider(sharedVertx)
+            }
 
-            else -> PropertyBasedAuthProvider
+            booleanProperty("tock_oauth2_enabled", false) -> {
+                OAuth2Provider(sharedVertx)
+            }
+
+            booleanProperty("tock_keycloak_enabled", false) -> {
+                KeycloakOAuth2Provider(sharedVertx)
+            }
+
+            booleanProperty("tock_cas_auth_enabled", false) -> {
+                loadCasAuthProvider(sharedVertx) ?: PropertyBasedAuthProvider
+            }
+
+            else -> {
+                PropertyBasedAuthProvider
+            }
         }
 
     /**
@@ -305,7 +321,8 @@ abstract class WebVerticle : CoroutineVerticle() {
         promise: Promise<Void>,
         port: Int,
     ) {
-        server.requestHandler { r -> router.handle(r) }
+        server
+            .requestHandler { r -> router.handle(r) }
             .listen(port)
             .onComplete { ar ->
                 if (ar.succeeded()) {
@@ -347,7 +364,8 @@ abstract class WebVerticle : CoroutineVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit,
     ) {
-        router.route(method, "$basePath$path")
+        router
+            .route(method, "$basePath$path")
             .handler { context ->
                 val u: TockUser? = context.user() as? TockUser ?: context.session()?.get("tockUser")
                 if (u == null || roles.isNullOrEmpty()) {
@@ -812,8 +830,7 @@ abstract class WebVerticle : CoroutineVerticle() {
                 ) +
                     // in order to support extra headers from web connector
                     listProperty("tock_web_connector_extra_headers", emptyList())
-            )
-                .toSet(),
+            ).toSet(),
     ): CorsHandler =
         CorsHandler.create().run {
             (if (origins.isEmpty()) addOrigin("*") else addOrigins(origins))
@@ -822,13 +839,12 @@ abstract class WebVerticle : CoroutineVerticle() {
                 .allowCredentials(allowCredentials)
         }
 
-    protected fun bodyHandler(): BodyHandler {
-        return BodyHandler
+    protected fun bodyHandler(): BodyHandler =
+        BodyHandler
             .create()
             .setUploadsDirectory(fileUploadDirectory)
             .setBodyLimit(verticleLongProperty("body_limit", 1_000_000L))
             .setMergeFormAttributes(false)
-    }
 
     inline fun <reified T : Any> RoutingContext.readJson(): T = mapper.readValue(this.body().asString())
 

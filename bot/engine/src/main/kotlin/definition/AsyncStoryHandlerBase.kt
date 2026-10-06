@@ -35,7 +35,9 @@ import mu.KotlinLogging
 @ExperimentalTockCoroutines
 abstract class AsyncStoryHandlerBase(
     private val mainIntent: Intent?,
-) : AsyncStoryHandler, I18nStoryHandler, IntentAware {
+) : AsyncStoryHandler,
+    I18nStoryHandler,
+    IntentAware {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -56,7 +58,8 @@ abstract class AsyncStoryHandlerBase(
         val storyDefinition = findStoryDefinition(bus)
         // if not supported user interface, use unknown
         if (storyDefinition?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
-            baseBus.botDefinition.unknownStory.storyHandler.handle(baseBus)
+            baseBus.botDefinition.unknownStory.storyHandler
+                .handle(baseBus)
         } else {
             // set current i18n provider
             baseBus.i18nProvider = this
@@ -78,13 +81,9 @@ abstract class AsyncStoryHandlerBase(
     /**
      * Finds the story definition of this handler.
      */
-    open fun findStoryDefinition(bus: AsyncBus): StoryDefinition? {
-        return findStoryDefinition((bus as AsyncBotBus).syncBus)
-    }
+    open fun findStoryDefinition(bus: AsyncBus): StoryDefinition? = findStoryDefinition((bus as AsyncBotBus).syncBus)
 
-    private fun findStoryDefinition(bus: BotBus): StoryDefinition? {
-        return bus.botDefinition.findStoryByStoryHandler(this, bus.connectorId)
-    }
+    private fun findStoryDefinition(bus: BotBus): StoryDefinition? = bus.botDefinition.findStoryByStoryHandler(this, bus.connectorId)
 
     /**
      * Story i18n category.
@@ -112,9 +111,7 @@ abstract class AsyncStoryHandlerBase(
         key: String,
         defaultLabel: CharSequence,
         vararg args: Any?,
-    ): I18nLabelValue {
-        return i18nKey(key, defaultLabel, emptySet(), *args)
-    }
+    ): I18nLabelValue = i18nKey(key, defaultLabel, emptySet(), *args)
 
     /**
      * Gets an i18n label with the specified key and defaults. Current namespace is used for the categorization.
@@ -136,7 +133,5 @@ abstract class AsyncStoryHandlerBase(
         )
     }
 
-    override fun wrappedIntent(): Intent {
-        return mainIntent ?: error("unknown main intent name")
-    }
+    override fun wrappedIntent(): Intent = mainIntent ?: error("unknown main intent name")
 }

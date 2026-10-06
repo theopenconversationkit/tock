@@ -1,34 +1,61 @@
 name: Build and Deploy MkDocs
 
+# The documentation is published on GitHub Pages from the 'gh-pages' branch:
+# - master:              gh-pages/master/            -> https://doc.tock.ai/tock/master/
+# - docs/* branches:     gh-pages/preview/<branch>/  -> https://doc.tock.ai/tock/preview/<branch>/
+#   ('/' replaced by '-', e.g. docs/my-page -> preview/docs-my-page)
+# Any other branch can be previewed with 'Run workflow' (workflow_dispatch).
+# The preview of a branch is removed when the branch is deleted.
 on:
   push:
     branches:
       - master
+      - 'docs/**'
     paths:
       - docs/**                         # Any change in documentation
       - .github/workflows/doc-deploy.yml # Any change in this workflow
+  workflow_dispatch:
+  delete:
 
-# Restrict default permissions at the workflow level; the deploy job elevates as needed
-permissions:
-  contents: read       # Allow reading repository contents
-
-# Avoid concurrent deployments on the same branch
-concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: true
+# Restrict default permissions at the workflow level; the jobs elevate as needed
+permissions: {}
 
 jobs:
   build:
+    if: github.event_name != 'delete'
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    # Cancel the build of a superseded commit of the same branch
+    concurrency:
+      group: doc-build-${{ github.ref }}
+      cancel-in-progress: true
+    outputs:
+      destination: ${{ steps.destination.outputs.destination }}
 
     steps:
       # Checkout the repository at the pushed commit
       - name: Checkout repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           persist-credentials: false
+          # Full history so git-revision-date-localized shows real page dates
+          fetch-depth: 0
+
+      # 'master' or 'preview/<branch slug>'
+      - name: Compute destination
+        id: destination
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          if [ "$BRANCH" = master ]; then
+            echo "destination=master" >> "$GITHUB_OUTPUT"
+          else
+            slug=$(printf '%s' "$BRANCH" | tr '/' '-' | tr -c 'A-Za-z0-9._-' '-')
+            echo "destination=preview/$slug" >> "$GITHUB_OUTPUT"
+            # Read by docs/hooks/preview.py: noindex and preview banner
+            echo "DOC_PREVIEW_BRANCH=$BRANCH" >> "$GITHUB_ENV"
+          fi
 
       # Setup Python
       - name: Set up Python
@@ -38,42 +65,81 @@ jobs:
 
       # Install Python dependencies for MkDocs
       - name: Install dependencies
-        run: |
-          echo "Installing MkDocs dependencies"
-          pip install -r docs/requirements.txt
+        run: pip install -r docs/requirements.txt
 
       # Build MkDocs site
       - name: Build MkDocs site
-        run: |
-          echo "Building MkDocs site"
-          cd docs
-          # Clean previous 'master' build
-          rm -rf site/master
-          # Build the site into 'site/master'
-          mkdocs build --site-dir site/master
+        working-directory: docs
+        run: mkdocs build --site-dir site
 
-      # Upload the built static files as an artifact for GitHub Pages
-      - name: Upload static files as artifact
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+      - name: Upload site
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          # Path to the directory containing the built site
+          name: site
           path: docs/site
+          retention-days: 1
 
   deploy:
-    # Ensure 'deploy' only runs after 'build' completes successfully
     needs: build
     runs-on: ubuntu-latest
-
     permissions:
-      contents: read
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
+      contents: write # Push to the gh-pages branch
+    # One writer at a time on the gh-pages branch
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
 
     steps:
-      # Deploy the uploaded artifact to GitHub Pages
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+      - name: Download site
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: site
+          path: site
+
+      # Replaces the destination folder only, the other folders of gh-pages are kept
+      - name: Deploy to the gh-pages branch
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: site
+          destination_dir: ${{ needs.build.outputs.destination }}
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Show the URL
+        env:
+          DESTINATION: ${{ needs.build.outputs.destination }}
+        run: echo "Documentation deployed to https://doc.tock.ai/tock/$DESTINATION/ (available within a few minutes)" >> "$GITHUB_STEP_SUMMARY"
+
+  cleanup:
+    if: github.event_name == 'delete' && github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Push to the gh-pages branch
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: gh-pages
+          persist-credentials: false
+
+      - name: Remove the preview of the deleted branch
+        env:
+          BRANCH: ${{ github.event.ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          slug=$(printf '%s' "$BRANCH" | tr '/' '-' | tr -c 'A-Za-z0-9._-' '-')
+          if [ -z "$slug" ] || [ ! -d "preview/$slug" ]; then
+            echo "No preview for $BRANCH"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm -rq "preview/$slug"
+          git commit -m "Remove the documentation preview of $BRANCH"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:gh-pages

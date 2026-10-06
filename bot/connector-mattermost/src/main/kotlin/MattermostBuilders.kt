@@ -66,17 +66,13 @@ fun <T : Bus<T>> T.endForMattermost(
  * Adds a Mattermost [ConnectorMessage] if the current connector is Mattermost.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun <T : Bus<T>> T.withMattermost(messageProvider: () -> MattermostConnectorMessage): T {
-    return withMessage(mattermostConnectorType, messageProvider)
-}
+fun <T : Bus<T>> T.withMattermost(messageProvider: () -> MattermostConnectorMessage): T = withMessage(mattermostConnectorType, messageProvider)
 
 fun I18nTranslator.textMessage(
     message: CharSequence,
     channel: String? = null,
     username: String? = null,
-): MattermostMessageOut {
-    return MattermostMessageOut(translate(message).toString(), channel = channel, username = username)
-}
+): MattermostMessageOut = MattermostMessageOut(translate(message).toString(), channel = channel, username = username)
 
 fun I18nTranslator.textMessageLinks(
     message: CharSequence,
@@ -98,13 +94,12 @@ fun I18nTranslator.mattermostMessage(
     message: CharSequence,
     channel: String? = null,
     username: String? = null,
-): MattermostMessageOut {
-    return MattermostMessageOut(
+): MattermostMessageOut =
+    MattermostMessageOut(
         translate(message).toString(),
         channel = channel,
         username = username,
     )
-}
 
 fun I18nTranslator.mattermostLink(
     title: CharSequence,

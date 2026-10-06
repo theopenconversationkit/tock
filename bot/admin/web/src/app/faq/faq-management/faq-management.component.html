@@ -6,6 +6,17 @@
 
   <section class="grid-actions">
     <button
+      nbButton
+      ghost
+      shape="round"
+      [disabled]="loading.list || loading.edit || !configurations?.length"
+      [nbTooltip]="'faq.faq-management.importFaqsTooltip' | transloco"
+      (click)="openImport()"
+    >
+      <nb-icon icon="upload"></nb-icon>
+    </button>
+
+    <button
       [disabled]="loading.list || !faqs?.length"
       nbButton
       ghost

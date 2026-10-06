@@ -52,8 +52,22 @@ internal class DefinitionBuildersTest : BotEngineTest() {
             storyWithSteps<Step>("yeh") {
                 end("yeh")
             }
-        assertEquals("yeh", yeh.steps.first().baseIntent.wrappedIntent().name)
-        assertEquals("yeh", yeh.steps.last().baseIntent.wrappedIntent().name)
+        assertEquals(
+            "yeh",
+            yeh.steps
+                .first()
+                .baseIntent
+                .wrappedIntent()
+                .name,
+        )
+        assertEquals(
+            "yeh",
+            yeh.steps
+                .last()
+                .baseIntent
+                .wrappedIntent()
+                .name,
+        )
         assertEquals(Step.a, yeh.steps.first())
         assertEquals(Step.b, yeh.steps.last())
     }

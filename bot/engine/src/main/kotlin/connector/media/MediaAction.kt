@@ -23,7 +23,10 @@ import ai.tock.bot.engine.message.GenericMessage
 /**
  * A [MediaMessage] action.
  */
-data class MediaAction(val title: CharSequence, var url: String? = null) : MediaMessage {
+data class MediaAction(
+    val title: CharSequence,
+    var url: String? = null,
+) : MediaMessage {
     override fun toGenericMessage(): GenericMessage? = GenericMessage(choices = listOf(toChoice()))
 
     internal fun toChoice(): Choice =

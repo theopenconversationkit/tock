@@ -46,8 +46,8 @@ data class AlexaMessage(
 ) : ConnectorMessage {
     override val connectorType: ConnectorType = alexaConnectorType
 
-    override fun toGenericMessage(): GenericMessage {
-        return GenericMessage(
+    override fun toGenericMessage(): GenericMessage =
+        GenericMessage(
             attachments =
                 listOfNotNull(
                     card?.run {
@@ -66,5 +66,4 @@ data class AlexaMessage(
                 ),
             metadata = mapOf(::end.name to end.toString()),
         )
-    }
 }

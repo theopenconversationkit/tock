@@ -16,4 +16,6 @@
 
 package ai.tock.bot.connector.twitter.model
 
-data class AttachmentMedia(val id: String)
+data class AttachmentMedia(
+    val id: String,
+)

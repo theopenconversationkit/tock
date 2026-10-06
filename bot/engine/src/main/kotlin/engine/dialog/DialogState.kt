@@ -59,15 +59,17 @@ data class DialogState(
         /**
          * Init a new state from the specified state.
          */
-        fun initFromDialogState(dialog: DialogState): DialogState {
-            return DialogState(
+        fun initFromDialogState(dialog: DialogState): DialogState =
+            DialogState(
                 dialog.currentIntent,
-                dialog.entityValues.map { it.key to EntityStateValue(it.value.value) }.toMap().toMutableMap(),
+                dialog.entityValues
+                    .map { it.key to EntityStateValue(it.value.value) }
+                    .toMap()
+                    .toMutableMap(),
                 dialog.context,
                 dialog.userLocation,
                 dialog.nextActionState,
             )
-        }
     }
 
     internal var hasCurrentSwitchStoryProcess: Boolean
@@ -247,9 +249,7 @@ data class DialogState(
 
     private fun currentEntityValues(): List<EntityValue> = entityValues.mapNotNull { it.value.value }
 
-    fun hasEntity(role: String): Boolean {
-        return hasSubEntity(currentEntityValues(), role)
-    }
+    fun hasEntity(role: String): Boolean = hasSubEntity(currentEntityValues(), role)
 
     /**
      * Does this event contains specified predefined value entity?
@@ -257,7 +257,5 @@ data class DialogState(
     fun hasEntityPredefinedValue(
         role: String,
         value: String,
-    ): Boolean {
-        return hasEntityPredefinedValue(currentEntityValues(), role, value)
-    }
+    ): Boolean = hasEntityPredefinedValue(currentEntityValues(), role, value)
 }

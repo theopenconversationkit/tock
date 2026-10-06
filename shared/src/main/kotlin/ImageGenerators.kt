@@ -80,22 +80,25 @@ class SvgToPngConverter {
 /**
  * Supported generation format.
  */
-enum class ImageFormat(val contentType: String) {
+enum class ImageFormat(
+    val contentType: String,
+) {
     SVG("image/svg+xml"),
     PNG("image/png"),
     ;
 
     companion object {
-        fun findByCode(code: String): ImageFormat? {
-            return values().firstOrNull { format -> format.name.equals(code, ignoreCase = true) }
-        }
+        fun findByCode(code: String): ImageFormat? = values().firstOrNull { format -> format.name.equals(code, ignoreCase = true) }
     }
 }
 
 /**
  * Generates an image from a svg file.
  */
-abstract class SvgGenerator<T : Any>(resourceName: String, resourcePath: String = "/generation/") {
+abstract class SvgGenerator<T : Any>(
+    resourceName: String,
+    resourcePath: String = "/generation/",
+) {
     private val template = "$resourcePath$resourceName.svg"
 
     fun generate(params: T): Document {
@@ -156,10 +159,9 @@ object FontLoader {
     private fun createFont(
         path: String,
         file: String,
-    ): Font {
-        return Font.createFont(
+    ): Font =
+        Font.createFont(
             Font.TRUETYPE_FONT,
             resourceAsStream(path + file),
         )
-    }
 }

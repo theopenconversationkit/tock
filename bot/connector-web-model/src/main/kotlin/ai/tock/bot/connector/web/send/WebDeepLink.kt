@@ -16,4 +16,6 @@
 
 package ai.tock.bot.connector.web.send
 
-data class WebDeepLink(val ref: String)
+data class WebDeepLink(
+    val ref: String,
+)

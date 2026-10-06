@@ -66,8 +66,7 @@ object XrayClient {
             retrofitBuilderWithTimeoutAndLogger(
                 xrayTimeoutInSeconds,
                 interceptors = listOf(basicAuthInterceptor(xrayLogin, xrayPassword)),
-            )
-                .addJacksonConverter()
+            ).addJacksonConverter()
                 .baseUrl(xrayUrl)
                 .build()
                 .create()
@@ -85,18 +84,19 @@ object XrayClient {
         // retrieve all tests of the given test plan
         val tests = xray.getTestsOfTestPlan(testPlanKey).execute().body() ?: error("no test in $testPlanKey")
         // and retrieve the content of those tests, including steps, and return them
-        return xray.getTests(tests.joinToString(";") { it.key })
+        return xray
+            .getTests(tests.joinToString(";") { it.key })
             .execute()
             .body()
             ?: error("unable to get tests for $tests")
     }
 
-    fun getTests(testKey: String): List<XrayTest> {
-        return xray.getTests(testKey)
+    fun getTests(testKey: String): List<XrayTest> =
+        xray
+            .getTests(testKey)
             .execute()
             .body()
             ?: error("unable to get the test $testKey")
-    }
 
     /**
      * Ask the Jira API for the steps of a given test.
@@ -118,7 +118,12 @@ object XrayClient {
         val klaxon = Klaxon()
 
         // get the body content of the response
-        val body = xray.searchIssue(jql).execute().body()?.string()
+        val body =
+            xray
+                .searchIssue(jql)
+                .execute()
+                .body()
+                ?.string()
 
         // parse the body
         val parsed = klaxon.parseJsonObject(StringReader(body))
@@ -126,13 +131,24 @@ object XrayClient {
 
         // if only one issue has been found, return the identifier of the issue
         return when (issuesArray?.size ?: 0) {
-            0 -> NoIssueRetrieved
+            0 -> {
+                NoIssueRetrieved
+            }
+
             1 -> {
                 IssueRetrieved(
-                    issuesArray?.get("key")?.value.toString().replace("[", "").replace("]", ""),
+                    issuesArray
+                        ?.get("key")
+                        ?.value
+                        .toString()
+                        .replace("[", "")
+                        .replace("]", ""),
                 )
             }
-            else -> TooMuchIssuesRetrieved
+
+            else -> {
+                TooMuchIssuesRetrieved
+            }
         }
     }
 
@@ -155,10 +171,9 @@ object XrayClient {
      *
      * @param testExecutionFields contains all required information to be able to create the new issue.
      */
-    fun createNewTestExecutionIssue(textExectuionFields: XrayTestExecutionCreation): JiraIssue {
-        return xray.createTestExecution(textExectuionFields).execute().body()
+    fun createNewTestExecutionIssue(textExectuionFields: XrayTestExecutionCreation): JiraIssue =
+        xray.createTestExecution(textExectuionFields).execute().body()
             ?: error("Test execution creation has failed.")
-    }
 
     /**
      * Send the test execution to Jira.
@@ -175,7 +190,11 @@ object XrayClient {
      * @return the content of the attachment in String format.
      */
     fun getAttachmentToString(attachment: XrayAttachment): String =
-        xray.getAttachment(attachment.id, attachment.fileName).execute().body()?.string()
+        xray
+            .getAttachment(attachment.id, attachment.fileName)
+            .execute()
+            .body()
+            ?.string()
             ?: "error : empty jira attachment"
 
     fun createTest(test: JiraTest): JiraIssue = xray.createTest(test).execute().body() ?: error("error during creating test $test")
@@ -195,10 +214,12 @@ object XrayClient {
     fun addPrecondition(
         preConditionKey: String,
         jiraId: String,
-    ) = xray.addPrecondition(
-        preConditionKey,
-        XrayUpdateTest(listOf(jiraId)),
-    ).execute().body()
+    ) = xray
+        .addPrecondition(
+            preConditionKey,
+            XrayUpdateTest(listOf(jiraId)),
+        ).execute()
+        .body()
 
     fun updateTest(
         jiraId: String,
@@ -210,16 +231,17 @@ object XrayClient {
         name: String,
         content: String,
     ): JiraAttachment =
-        xray.addAttachment(
-            issueId,
-            MultipartBody.Part.createFormData(
-                "file",
-                name,
-                RequestBody.create("text/plain".toMediaType(), content),
-            ),
-        )
-            .execute()
-            .body()?.firstOrNull() ?: error("error during attachment of $content")
+        xray
+            .addAttachment(
+                issueId,
+                MultipartBody.Part.createFormData(
+                    "file",
+                    name,
+                    RequestBody.create("text/plain".toMediaType(), content),
+                ),
+            ).execute()
+            .body()
+            ?.firstOrNull() ?: error("error during attachment of $content")
 
     fun linkTest(
         key1: String,
@@ -257,7 +279,11 @@ object XrayClient {
 }
 
 sealed class SearchIssueResult
+
 object TooMuchIssuesRetrieved : SearchIssueResult()
+
 object NoIssueRetrieved : SearchIssueResult()
 
-data class IssueRetrieved(val key: String) : SearchIssueResult()
+data class IssueRetrieved(
+    val key: String,
+) : SearchIssueResult()

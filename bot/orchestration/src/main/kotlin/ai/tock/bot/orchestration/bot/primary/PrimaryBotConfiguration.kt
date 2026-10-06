@@ -40,8 +40,12 @@ data class PrimaryBotConfiguration(
     fun getOrchestrationData(bus: BotBus): OrchestrationData? = dataProvider.provideOrchestrationData(bus)
 
     companion object {
-        fun takeBackOrchestrationByTimeOut(inactivityDuration: Duration): ((BotBus) -> Boolean) {
-            return { bus -> bus.userTimeline.currentDialog?.lastUserAction?.date?.isBefore(Instant.now().minus(inactivityDuration)) == true }
-        }
+        fun takeBackOrchestrationByTimeOut(inactivityDuration: Duration): ((BotBus) -> Boolean) =
+            { bus ->
+                bus.userTimeline.currentDialog
+                    ?.lastUserAction
+                    ?.date
+                    ?.isBefore(Instant.now().minus(inactivityDuration)) == true
+            }
     }
 }

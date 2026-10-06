@@ -48,8 +48,7 @@ internal class ChatBaseClient {
             retrofitBuilderWithTimeoutAndLogger(
                 longProperty("tock_chatbase_request_timeout_ms", 3000),
                 logger,
-            )
-                .baseUrl(baseUrl)
+            ).baseUrl(baseUrl)
                 .addJacksonConverter()
                 .build()
                 .create()
@@ -63,8 +62,8 @@ internal class ChatBaseClient {
         logger.error { "Chatbase Error body : $errorBody" }
     }
 
-    fun message(message: Message): Boolean {
-        return try {
+    fun message(message: Message): Boolean =
+        try {
             val response = genericMessageApi.message(message).execute()
             if (response.isSuccessful) {
                 response.body()?.status == Status.OK
@@ -77,5 +76,4 @@ internal class ChatBaseClient {
             logger.error(e)
             false
         }
-    }
 }

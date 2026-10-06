@@ -98,7 +98,9 @@
     "open-test-dialog": "Open a test dialog",
     "logout": "Logout"
   },
+  "env-banner": { "hide": "Hide environment indicator" },
   "menu": {
+    "dashboard": "Dashboard",
     "language-understanding": "Language Understanding",
     "stories-answers": "Stories & Answers",
     "gen-ai": "Gen AI",
@@ -130,6 +132,8 @@
     "observability-settings": "Observability settings",
     "vector-db-settings": "Vector DB settings",
     "playground": "Playground",
+    "vector-store-inspection-exploration": "Vector store exploration",
+    "vector-store-inspection-diagnostic": "Retrieval diagnostic",
     "test": "Test",
     "test-plans": "Test plans",
     "activity": "Activity",
@@ -191,7 +195,8 @@
       "create-faq": "Create a FAQ with this question/answer pair",
       "view-observability": "View observability details",
       "feedback-positive": "This message received positive feedback.",
-      "feedback-negative": "This message received negative feedback."
+      "feedback-negative": "This message received negative feedback.",
+      "open-in-vector-store-diagnostic": "Diagnose the retrieval"
     },
     "chat-ui-message": {
       "switch-formatting-tooltip": "Switch message formatting",

@@ -27,4 +27,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonSubTypes(
     JsonSubTypes.Type(value = OptionsResponse::class, name = "options"),
 )
-abstract class QuickReplyResponse()
+abstract class QuickReplyResponse

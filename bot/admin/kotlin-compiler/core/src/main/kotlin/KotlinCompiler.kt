@@ -103,15 +103,16 @@ internal object KotlinCompiler {
                     .flatMap {
                         Paths.get(it).let {
                             if (Files.isDirectory(it)) {
-                                Files.list(it).filter {
-                                    it.toString().endsWith(".jar")
-                                }.collect(Collectors.toList()) + listOf(it)
+                                Files
+                                    .list(it)
+                                    .filter {
+                                        it.toString().endsWith(".jar")
+                                    }.collect(Collectors.toList()) + listOf(it)
                             } else {
                                 listOf(it)
                             }
                         }
-                    }
-                    .distinct()
+                    }.distinct()
                     .apply { logger.info { "class path used : $this" } },
         )
     }
@@ -198,14 +199,11 @@ internal object KotlinCompiler {
                             false
                         }
                 }
-            }
-            ?.let { getMainClassName(it) }
+            }?.let { getMainClassName(it) }
             ?: getMainClassName(files.iterator().next())
     }
 
-    private fun getMainClassName(file: KtFile): String {
-        return PackagePartClassUtils.getPackagePartFqName(file.packageFqName, file.name).asString()
-    }
+    private fun getMainClassName(file: KtFile): String = PackagePartClassUtils.getPackagePartFqName(file.packageFqName, file.name).asString()
 
     private fun createPsiFiles(files: Map<String, String>): List<KtFile> =
         files.entries.mapNotNull {
@@ -262,7 +260,8 @@ internal object KotlinCompiler {
                 { storageManager, ktFiles -> FileBasedDeclarationProviderFactory(storageManager, ktFiles) },
             )
 
-        container.getService(LazyTopDownAnalyzer::class.java)
+        container
+            .getService(LazyTopDownAnalyzer::class.java)
             .analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, files, DataFlowInfo.EMPTY)
 
         val moduleDescriptor = container.getService(ModuleDescriptor::class.java)
@@ -277,7 +276,10 @@ internal object KotlinCompiler {
         )
     }
 
-    private class ErrorAnalyzer(private val currentPsiFiles: List<KtFile>, private val currentProject: Project) {
+    private class ErrorAnalyzer(
+        private val currentPsiFiles: List<KtFile>,
+        private val currentProject: Project,
+    ) {
         fun getAllErrors(): Map<String, List<CompileError>> {
             try {
                 val errors = HashMap<String, MutableList<CompileError>>()
@@ -392,14 +394,13 @@ internal object KotlinCompiler {
             return errors
         }
 
-        private fun convertSeverity(severity: org.jetbrains.kotlin.diagnostics.Severity): Severity {
-            return when (severity) {
+        private fun convertSeverity(severity: org.jetbrains.kotlin.diagnostics.Severity): Severity =
+            when (severity) {
                 org.jetbrains.kotlin.diagnostics.Severity.ERROR -> Severity.ERROR
                 org.jetbrains.kotlin.diagnostics.Severity.INFO -> Severity.INFO
                 org.jetbrains.kotlin.diagnostics.Severity.WARNING -> Severity.WARNING
                 else -> Severity.INFO
             }
-        }
 
         private fun getInterval(
             start: Int,

@@ -116,6 +116,7 @@ class GAConnector internal constructor(
                         runBlocking { switchTimeLine(applicationId, event.userId, event.previousUserId, controller) }
                         sendRequest()
                     }
+
                     isUserAuthenticated(request) -> {
                         logger.debug { "Google Assistant refresh token before story execution" }
                         controller.handle(
@@ -140,7 +141,10 @@ class GAConnector internal constructor(
                             ),
                         )
                     }
-                    else -> sendRequest()
+
+                    else -> {
+                        sendRequest()
+                    }
                 }
             } catch (t: Throwable) {
                 BotRepository.requestTimer.throwable(t, timerData)
@@ -154,8 +158,8 @@ class GAConnector internal constructor(
         }
     }
 
-    private fun isValidToken(context: RoutingContext): Boolean {
-        return if (allowedProjectIds.isNotEmpty()) {
+    private fun isValidToken(context: RoutingContext): Boolean =
+        if (allowedProjectIds.isNotEmpty()) {
             try {
                 val jwt = context.request().getHeader("authorization")
                 IdToken.parse(JacksonFactory.getDefaultInstance(), jwt).let { token ->
@@ -168,7 +172,6 @@ class GAConnector internal constructor(
         } else {
             true
         }
-    }
 
     override fun send(
         event: Event,
@@ -214,7 +217,11 @@ class GAConnector internal constructor(
     ): BotBus.() -> ConnectorMessage? =
         {
             if (message is GAResponseConnectorMessage) {
-                val m = message.expectedInputs.lastOrNull()?.inputPrompt?.richInitialPrompt
+                val m =
+                    message.expectedInputs
+                        .lastOrNull()
+                        ?.inputPrompt
+                        ?.richInitialPrompt
                 if (m != null && m.suggestions.isEmpty()) {
                     message.copy(
                         expectedInputs =
@@ -323,9 +330,11 @@ class GAConnector internal constructor(
                             carouselMessage,
                         )
                     }
+
                     message.cards.size == 1 -> {
                         toConnectorMessage(message.cards.first()).invoke(this)
                     }
+
                     else -> {
                         emptyList()
                     }

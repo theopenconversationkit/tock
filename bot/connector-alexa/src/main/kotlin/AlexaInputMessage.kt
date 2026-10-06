@@ -48,9 +48,8 @@ data class AlexaInputMessage(
 
     override val connectorType: ConnectorType = alexaConnectorType
 
-    override fun toGenericMessage(): GenericMessage {
-        return GenericMessage(
+    override fun toGenericMessage(): GenericMessage =
+        GenericMessage(
             texts = mapOf("json" to intentRequest),
         )
-    }
 }

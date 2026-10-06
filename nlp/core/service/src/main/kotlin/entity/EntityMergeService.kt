@@ -30,16 +30,17 @@ import mu.KotlinLogging
  * To merge intent entity model results & dedicated entity models results.
  */
 internal object EntityMergeService : EntityMerge {
-    sealed class Weighted(var weight: Double, val range: IntOpenRange) : Comparable<Weighted> {
-        override fun compareTo(other: Weighted): Int {
-            return weight.compareTo(other.weight)
-        }
+    sealed class Weighted(
+        var weight: Double,
+        val range: IntOpenRange,
+    ) : Comparable<Weighted> {
+        override fun compareTo(other: Weighted): Int = weight.compareTo(other.weight)
 
-        fun overlap(w: Weighted): Boolean {
-            return range.overlap(w.range)
-        }
+        fun overlap(w: Weighted): Boolean = range.overlap(w.range)
 
-        class WeightedEntity(val entity: EntityRecognition) : Weighted(calculateWeight(entity), entity) {
+        class WeightedEntity(
+            val entity: EntityRecognition,
+        ) : Weighted(calculateWeight(entity), entity) {
             companion object {
                 fun calculateWeight(entity: EntityRecognition): Double {
                     // if it's 100%, it's 100%
@@ -52,11 +53,11 @@ internal object EntityMergeService : EntityMerge {
             }
         }
 
-        class WeightedEntityType(val entityType: EntityTypeRecognition) : Weighted(calculateWeight(entityType), entityType) {
+        class WeightedEntityType(
+            val entityType: EntityTypeRecognition,
+        ) : Weighted(calculateWeight(entityType), entityType) {
             companion object {
-                fun calculateWeight(entity: EntityTypeRecognition): Double {
-                    return entity.probability - if (entity.value.evaluated && entity.value.value == null) 0.5 else 0.0
-                }
+                fun calculateWeight(entity: EntityTypeRecognition): Double = entity.probability - if (entity.value.evaluated && entity.value.value == null) 0.5 else 0.0
             }
         }
     }
@@ -71,8 +72,8 @@ internal object EntityMergeService : EntityMerge {
         intent: Intent,
         entities: List<EntityRecognition>,
         entityTypes: List<EntityTypeRecognition>,
-    ): List<EntityRecognition> {
-        return if (entityTypes.isEmpty()) {
+    ): List<EntityRecognition> =
+        if (entityTypes.isEmpty()) {
             entities
         } else {
             // introduce weight and start by the highest value
@@ -83,7 +84,8 @@ internal object EntityMergeService : EntityMerge {
             // need to trace those already viewed
             val viewed = mutableSetOf<Weighted>()
 
-            all.map { e -> all.filter { e.overlap(it) }.sortedDescending() }
+            all
+                .map { e -> all.filter { e.overlap(it) }.sortedDescending() }
                 // groups are sorted by the highest value of the group
                 .sortedBy { it.first() }
                 .mapNotNull { group ->
@@ -111,11 +113,17 @@ internal object EntityMergeService : EntityMerge {
                         viewed.addAll(all.filter { first.overlap(it) })
                     }
                     when (first) {
-                        null -> null
-                        is WeightedEntity ->
+                        null -> {
+                            null
+                        }
+
+                        is WeightedEntity -> {
                             with(first.entity.value) { if (evaluated && value == null) null else first.entity }
+                        }
+
                         is WeightedEntityType -> {
-                            group.firstOrNull { it is WeightedEntity && intent.hasEntity(first.entityType.entityType, it.entity.role) }
+                            group
+                                .firstOrNull { it is WeightedEntity && intent.hasEntity(first.entityType.entityType, it.entity.role) }
                                 ?.let {
                                     first.entityType.toResult(callContext, text, (it as WeightedEntity).entity.role)
                                 }
@@ -126,7 +134,6 @@ internal object EntityMergeService : EntityMerge {
                 // sorted by range
                 .sorted()
         }
-    }
 
     private fun createOrphanEntity(
         callContext: CallContext,
@@ -152,26 +159,26 @@ internal object EntityMergeService : EntityMerge {
         callContext: CallContext,
         text: String,
         role: String,
-    ): EntityRecognition {
-        return toEntityRecognition(role)
+    ): EntityRecognition =
+        toEntityRecognition(role)
             .run {
                 // need to reevaluate
                 if (callContext.evaluationContext.referenceDateByEntityMap?.containsKey(value.entity) == true) {
-                    entityCore.evaluateEntities(
-                        callContext,
-                        text,
-                        listOf(
-                            copy(
-                                value =
-                                    value.copy(
-                                        evaluated = false,
-                                    ),
+                    entityCore
+                        .evaluateEntities(
+                            callContext,
+                            text,
+                            listOf(
+                                copy(
+                                    value =
+                                        value.copy(
+                                            evaluated = false,
+                                        ),
+                                ),
                             ),
-                        ),
-                    ).first()
+                        ).first()
                 } else {
                     this
                 }
             }
-    }
 }

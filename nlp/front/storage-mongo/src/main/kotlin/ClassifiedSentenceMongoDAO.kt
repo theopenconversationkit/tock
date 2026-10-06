@@ -258,8 +258,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 if (intents != null) Classification_.intentId `in` intents else null,
                 if (language != null) Language eq language else null,
                 if (status != null) Status eq status else null,
-            )
-            .map { it.toSentence() }
+            ).map { it.toSentence() }
             .toList()
     }
 
@@ -296,19 +295,19 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         )
     }
 
-    override fun users(applicationId: Id<ApplicationDefinition>): List<String> {
-        return col.distinct(
-            Classifier,
-            and(ApplicationId eq applicationId, Status `in` listOf(validated, model)),
-        ).filterNotNull()
-    }
+    override fun users(applicationId: Id<ApplicationDefinition>): List<String> =
+        col
+            .distinct(
+                Classifier,
+                and(ApplicationId eq applicationId, Status `in` listOf(validated, model)),
+            ).filterNotNull()
 
-    override fun configurations(applicationId: Id<ApplicationDefinition>): List<String> {
-        return col.distinct(
-            Configuration,
-            and(ApplicationId eq applicationId),
-        ).filterNotNull()
-    }
+    override fun configurations(applicationId: Id<ApplicationDefinition>): List<String> =
+        col
+            .distinct(
+                Configuration,
+                and(ApplicationId eq applicationId),
+            ).filterNotNull()
 
     override fun search(query: SentencesQuery): SentencesQueryResult {
         with(query) {
@@ -348,24 +347,24 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                             } else {
                                 sort(
                                     orderBy(
-                                        query.sort.map {
-                                            when (it.first) {
-                                                "text" -> Text
-                                                "currentIntent" -> Classification_.intentId
-                                                "intentProbability" -> LastIntentProbability
-                                                "entitiesProbability" -> LastEntityProbability
-                                                "lastUpdate" -> UpdateDate
-                                                "lastUsage" -> LastUsage
-                                                "usageCount" -> UsageCount
-                                                "unknownCount" -> UnknownCount
-                                                else -> UpdateDate
-                                            } to it.second
-                                        }.toMap(),
+                                        query.sort
+                                            .map {
+                                                when (it.first) {
+                                                    "text" -> Text
+                                                    "currentIntent" -> Classification_.intentId
+                                                    "intentProbability" -> LastIntentProbability
+                                                    "entitiesProbability" -> LastEntityProbability
+                                                    "lastUpdate" -> UpdateDate
+                                                    "lastUsage" -> LastUsage
+                                                    "usageCount" -> UsageCount
+                                                    "unknownCount" -> UnknownCount
+                                                    else -> UpdateDate
+                                                } to it.second
+                                            }.toMap(),
                                     ),
                                 )
                             }
-                        }
-                        .run {
+                        }.run {
                             if (query.sort.isNotEmpty()) {
                                 safeCollation(
                                     Collation
@@ -377,8 +376,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                             } else {
                                 this
                             }
-                        }
-                        .skip(start.toInt())
+                        }.skip(start.toInt())
                         .run {
                             size?.let { limit(it) } ?: this
                         }
@@ -459,7 +457,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             normalizeText -> {
                 NormalizedText eq search?.normalize(language ?: defaultLocale)
             }
-            else -> Text eq search
+
+            else -> {
+                Text eq search
+            }
         }
 
     private fun SentencesQuery.filterLanguage() = if (language == null) null else Language eq language
@@ -577,7 +578,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                                     .filterNot { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
                                     .apply {
                                         forEach { sub ->
-                                            oldEntityType.subEntities.find { sub.role == it.role }
+                                            oldEntityType.subEntities
+                                                .find { sub.role == it.role }
                                                 ?.let { newSubEntity ->
                                                     newSubEntityDefinitions.add(newSubEntity)
                                                 }

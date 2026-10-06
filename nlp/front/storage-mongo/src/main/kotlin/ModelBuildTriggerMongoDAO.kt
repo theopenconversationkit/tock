@@ -63,9 +63,7 @@ internal object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
         )
     }
 
-    override fun getTriggers(): List<ModelBuildTrigger> {
-        return col.find().toList()
-    }
+    override fun getTriggers(): List<ModelBuildTrigger> = col.find().toList()
 
     override fun save(build: ModelBuild) {
         modelCol.save(build)

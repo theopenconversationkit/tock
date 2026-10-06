@@ -247,8 +247,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
                             it._id != otherIntent._id &&
                             it.sharedIntents.size == 1 &&
                             it.sharedIntents.contains(defaultIntentDefinition._id)
-                    )
-                        .apply { if (this) newOtherIntentId = it._id }
+                    ).apply { if (this) newOtherIntentId = it._id }
                 },
             )
         }

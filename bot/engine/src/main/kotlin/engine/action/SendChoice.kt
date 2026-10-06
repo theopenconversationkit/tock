@@ -127,7 +127,16 @@ class SendChoice(
         metadata: ActionMetadata = ActionMetadata(),
         _deprecatedConstructor: Nothing? = null,
     ) : this(
-        playerId, applicationId, recipientId, intentName, step, parameters, id, date, state, metadata,
+        playerId,
+        applicationId,
+        recipientId,
+        intentName,
+        step,
+        parameters,
+        id,
+        date,
+        state,
+        metadata,
     )
 
     companion object {
@@ -147,9 +156,7 @@ class SendChoice(
         /**
          * Encodes a choice id where text will be analysed by NLP engine.
          */
-        fun encodeNlpChoiceId(text: String): String {
-            return "?$NLP=${encode(text, UTF_8.name())}"
-        }
+        fun encodeNlpChoiceId(text: String): String = "?$NLP=${encode(text, UTF_8.name())}"
 
         internal fun nlpParametersMap(
             title: String,
@@ -182,8 +189,8 @@ class SendChoice(
              * The custom parameters.
              */
             parameters: Map<String, String> = emptyMap(),
-        ): String {
-            return encodeChoiceId(
+        ): String =
+            encodeChoiceId(
                 intent,
                 step?.name,
                 parameters,
@@ -191,7 +198,6 @@ class SendChoice(
                 bus.currentIntent?.wrappedIntent(),
                 sourceAppId = bus.connectorId,
             )
-        }
 
         /**
          * Encodes a choice id.
@@ -213,8 +219,8 @@ class SendChoice(
              * The custom parameters.
              */
             parameters: Map<String, String> = emptyMap(),
-        ): String {
-            return encodeChoiceId(
+        ): String =
+            encodeChoiceId(
                 intent,
                 step,
                 parameters,
@@ -222,7 +228,6 @@ class SendChoice(
                 bus.currentIntent?.wrappedIntent(),
                 sourceAppId = bus.connectorId,
             )
-        }
 
         /**
          * Encodes a choice id.
@@ -292,26 +297,28 @@ class SendChoice(
             sourceAppId: String? = null,
         ): String {
             val currentStep = step ?: busStep
-            return StringBuilder().apply {
-                append(intent.wrappedIntent().name)
-                val params =
-                    parameters +
-                        listOfNotNull(
-                            if (currentStep != null) STEP_PARAMETER to currentStep else null,
-                            if (currentIntent != null && currentIntent != intent) {
-                                PREVIOUS_INTENT_PARAMETER to currentIntent.name
-                            } else {
-                                null
-                            },
-                            if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null,
-                        )
+            return StringBuilder()
+                .apply {
+                    append(intent.wrappedIntent().name)
+                    val params =
+                        parameters +
+                            listOfNotNull(
+                                if (currentStep != null) STEP_PARAMETER to currentStep else null,
+                                if (currentIntent != null && currentIntent != intent) {
+                                    PREVIOUS_INTENT_PARAMETER to currentIntent.name
+                                } else {
+                                    null
+                                },
+                                if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null,
+                            )
 
-                if (params.isNotEmpty()) {
-                    params.map { e ->
-                        "${encode(e.key, UTF_8.name())}=${encode(e.value, UTF_8.name())}"
-                    }.joinTo(this, "&", "?")
-                }
-            }.toString()
+                    if (params.isNotEmpty()) {
+                        params
+                            .map { e ->
+                                "${encode(e.key, UTF_8.name())}=${encode(e.value, UTF_8.name())}"
+                            }.joinTo(this, "&", "?")
+                    }
+                }.toString()
         }
 
         /**
@@ -323,10 +330,12 @@ class SendChoice(
                 id to emptyMap()
             } else {
                 id.substring(0, questionMarkIndex) to
-                    id.substring(questionMarkIndex + 1)
+                    id
+                        .substring(questionMarkIndex + 1)
                         .split("&")
                         .map { s ->
-                            s.split("=")
+                            s
+                                .split("=")
                                 .let { decode(it[0], UTF_8.name()) to decode(it[1], UTF_8.name()) }
                         }.toMap()
             }
@@ -372,9 +381,7 @@ class SendChoice(
                 }
     }
 
-    override fun toMessage(): Message {
-        return Choice(intentName, parameters)
-    }
+    override fun toMessage(): Message = Choice(intentName, parameters)
 
     /**
      * The step of this choice (when applicable).
@@ -398,7 +405,5 @@ class SendChoice(
      */
     val referralParameter: String? get() = parameters[REFERRAL_PARAMETER]
 
-    override fun toString(): String {
-        return "SendChoice(intentName='$intentName', parameters=$parameters)"
-    }
+    override fun toString(): String = "SendChoice(intentName='$intentName', parameters=$parameters)"
 }

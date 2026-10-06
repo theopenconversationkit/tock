@@ -19,4 +19,8 @@ package ai.tock.bot.xray.model
 /**
  *
  */
-data class JiraIssueLink(val type: JiraType, val inwardIssue: JiraKey, val outwardIssue: JiraKey)
+data class JiraIssueLink(
+    val type: JiraType,
+    val inwardIssue: JiraKey,
+    val outwardIssue: JiraKey,
+)

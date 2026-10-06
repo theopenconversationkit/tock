@@ -31,6 +31,7 @@ object GoogleChatFootnoteFormatter {
         footnotes: List<Footnote>,
         condensed: Boolean = false,
         displaySourcesWithoutUrl: Boolean = true,
+        sourcesLabel: String,
     ): String {
         val filteredFootnotes =
             if (displaySourcesWithoutUrl) {
@@ -40,12 +41,13 @@ object GoogleChatFootnoteFormatter {
             }
 
         if (filteredFootnotes.isEmpty()) return text.toString()
-        return if (condensed) formatCondensed(text, filteredFootnotes) else formatDetailed(text, filteredFootnotes)
+        return if (condensed) formatCondensed(text, filteredFootnotes, sourcesLabel) else formatDetailed(text, filteredFootnotes, sourcesLabel)
     }
 
     private fun formatDetailed(
         text: CharSequence,
         footnotes: List<Footnote>,
+        header: String,
     ): String {
         // Even in detailed mode, we apply a deduplication step based on (url, title) pair.
         // This means that multiple footnotes pointing to the same document (e.g. same PDF) with the same title and URL
@@ -53,7 +55,6 @@ object GoogleChatFootnoteFormatter {
         // This is acceptable in the context of Google Chat, where footnote content is not displayed,
         // and thus no relevant information is lost.
         val unique = footnotes.distinctBy { (it.url ?: "") to it.title.toString().trim() }
-        val header = if (unique.size > 1) "Sources" else "Source"
 
         val formatted =
             unique.joinToString("\n") { fn ->
@@ -73,6 +74,7 @@ object GoogleChatFootnoteFormatter {
     private fun formatCondensed(
         text: CharSequence,
         footnotes: List<Footnote>,
+        header: String,
     ): String {
         val unique = footnotes.distinctBy { (it.url ?: "") to it.title.toString().trim() }
         val links =
@@ -82,7 +84,6 @@ object GoogleChatFootnoteFormatter {
                     fn.url?.let { "[[$num]]($it)" } ?: "[$num]"
                 }.joinToString(" ")
 
-        val header = if (unique.size > 1) "Sources" else "Source"
         return "$text\n\n*$header:* $links"
     }
 }

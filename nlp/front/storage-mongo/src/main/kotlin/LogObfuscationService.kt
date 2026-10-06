@@ -22,7 +22,8 @@ import ai.tock.shared.security.TockObfuscatorService
 internal class LogObfuscationService {
     fun obfuscate(log: ParseRequestLog): ParseRequestLog {
         val obfuscatedRanges =
-            log.result?.entities
+            log.result
+                ?.entities
                 ?.filter { it.entity.entityType.obfuscated }
                 ?.map { it.toClosedRange() }
                 ?: emptyList()
@@ -33,7 +34,8 @@ internal class LogObfuscationService {
                         TockObfuscatorService.obfuscate(
                             texts = log.query.queries,
                             obfuscatedRanges =
-                                log.result?.retainedQuery
+                                log.result
+                                    ?.retainedQuery
                                     ?.let { log.query.queries.indexOf(it) }
                                     ?.takeUnless { i -> i == -1 }
                                     ?.let { mapOf(it to obfuscatedRanges) }

@@ -39,7 +39,9 @@ import java.util.Locale
  * An Alexa model to Tock model mapper.
  * Provided via [addAlexaConnector.alexaTockMapper] parameter.
  */
-open class AlexaTockMapper(val applicationId: String) {
+open class AlexaTockMapper(
+    val applicationId: String,
+) {
     /**
      * Returns a Tock intent from an Alexa intent.
      */
@@ -95,22 +97,20 @@ open class AlexaTockMapper(val applicationId: String) {
     /**
      * Returns a [StartSessionEvent] from an Alexa [SessionStartedRequest].
      */
-    open fun toStartSessionEvent(requestEnvelope: SpeechletRequestEnvelope<SessionStartedRequest>): StartSessionEvent {
-        return StartSessionEvent(
+    open fun toStartSessionEvent(requestEnvelope: SpeechletRequestEnvelope<SessionStartedRequest>): StartSessionEvent =
+        StartSessionEvent(
             PlayerId(requestEnvelope.session.user.userId, PlayerType.user),
             applicationId,
         )
-    }
 
     /**
      * Returns a [EndSessionEvent] from an Alexa [SessionEndedRequest].
      */
-    open fun toEndSessionEvent(requestEnvelope: SpeechletRequestEnvelope<SessionEndedRequest>): EndSessionEvent {
-        return EndSessionEvent(
+    open fun toEndSessionEvent(requestEnvelope: SpeechletRequestEnvelope<SessionEndedRequest>): EndSessionEvent =
+        EndSessionEvent(
             PlayerId(requestEnvelope.session.user.userId, PlayerType.user),
             applicationId,
         )
-    }
 
     /**
      * Returns an [Event] from an Alexa [IntentRequest].
@@ -127,7 +127,8 @@ open class AlexaTockMapper(val applicationId: String) {
         var index = 0
 
         val slots =
-            getSlots(request)?.values
+            getSlots(request)
+                ?.values
                 ?.filter { it.value != null && alexaEntityToTockEntity(request, intent, it.name, botDefinition) != null }
                 ?: emptyList()
         val entityValues =

@@ -31,12 +31,11 @@ object ProxyConfiguration {
     fun configure(
         proxyHost: String,
         proxyPort: Int,
-    ): Proxy {
-        return if (proxyHost.isNotBlank()) {
+    ): Proxy =
+        if (proxyHost.isNotBlank()) {
             val address = InetSocketAddress(proxyHost, proxyPort)
             Proxy(Proxy.Type.HTTP, address)
         } else {
             Proxy.NO_PROXY
         }
-    }
 }

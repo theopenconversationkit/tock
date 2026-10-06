@@ -31,13 +31,15 @@ open class AsyncStoryDefinitionBase<S : AsyncStoryStep<*>>(
     stepsList: List<S> = emptyList(),
     unsupportedUserInterface: UserInterfaceType? = null,
     override val tags: Set<StoryTag> = emptySet(),
-) : AsyncStoryDefinition, StoryDefinitionWithSteps<S> {
+) : AsyncStoryDefinition,
+    StoryDefinitionWithSteps<S> {
     override val steps: Set<S> =
-        stepsList.onEach {
-            if (it.intent == null) {
-                stepToIntentRepository[it] = this@AsyncStoryDefinitionBase
-            }
-        }.toSet()
+        stepsList
+            .onEach {
+                if (it.intent == null) {
+                    stepToIntentRepository[it] = this@AsyncStoryDefinitionBase
+                }
+            }.toSet()
 
     override val unsupportedUserInterfaces: Set<UserInterfaceType> = listOfNotNull(unsupportedUserInterface).toSet()
 

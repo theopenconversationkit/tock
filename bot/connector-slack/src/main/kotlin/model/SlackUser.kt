@@ -19,4 +19,7 @@ package ai.tock.bot.connector.slack.model
 /**
  *
  */
-data class SlackUser(val id: String, val name: String)
+data class SlackUser(
+    val id: String,
+    val name: String,
+)

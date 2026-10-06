@@ -112,9 +112,7 @@ internal class NlpTest : BotEngineTest() {
                     dialog: Dialog,
                     event: Event,
                     nlpResult: NlpResult,
-                ): List<EntityValue> {
-                    return listOf(customValue)
-                }
+                ): List<EntityValue> = listOf(customValue)
             }
         BotRepository.registerNlpListener(nlpListener)
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
@@ -137,9 +135,7 @@ internal class NlpTest : BotEngineTest() {
                     dialog: Dialog,
                     event: Event,
                     nlpResult: NlpResult,
-                ): IntentAware? {
-                    return test2
-                }
+                ): IntentAware? = test2
             }
         BotRepository.registerNlpListener(nlpListener)
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)

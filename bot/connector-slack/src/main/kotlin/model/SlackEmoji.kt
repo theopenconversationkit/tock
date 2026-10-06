@@ -16,7 +16,9 @@
 
 package ai.tock.bot.connector.slack.model
 
-enum class SlackEmoji(val format: String) {
+enum class SlackEmoji(
+    val format: String,
+) {
     SMILE(":smile:"),
     CRY(":cry:"),
     HEART(":heart:"),

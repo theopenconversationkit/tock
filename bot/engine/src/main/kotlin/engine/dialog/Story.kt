@@ -63,7 +63,11 @@ data class Story(
     /**
      * The current step of the story.
      */
-    val currentStep: StoryStepDef? get() = definition.steps.asSequence().mapNotNull { findStep(it) }.firstOrNull()
+    val currentStep: StoryStepDef? get() =
+        definition.steps
+            .asSequence()
+            .mapNotNull { findStep(it) }
+            .firstOrNull()
 
     /**
      * True if the story handle metrics and is not a main tracked story
@@ -74,7 +78,10 @@ data class Story(
         if (step.name == this.step) {
             return step
         } else {
-            return step.children.asSequence().mapNotNull { findStep(it) }.firstOrNull()
+            return step.children
+                .asSequence()
+                .mapNotNull { findStep(it) }
+                .firstOrNull()
         }
     }
 
@@ -121,14 +128,21 @@ data class Story(
         return null
     }
 
-    private fun findParentStep(child: StoryStepDef): StoryStepDef? = definition.steps.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
+    private fun findParentStep(child: StoryStepDef): StoryStepDef? =
+        definition.steps
+            .asSequence()
+            .mapNotNull { findParentStep(it, child) }
+            .firstOrNull()
 
     private fun findParentStep(
         current: StoryStepDef,
         child: StoryStepDef,
     ): StoryStepDef? =
         current.takeIf { current.children.any { child.name == it.name } }
-            ?: current.children.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
+            ?: current.children
+                .asSequence()
+                .mapNotNull { findParentStep(it, child) }
+                .firstOrNull()
 
     private inline fun sendStartEvent(startAction: StoryHandlerListener.() -> Boolean): Boolean {
         // stops immediately if any startAction returns false
@@ -250,8 +264,7 @@ data class Story(
                 (
                     currentStep?.children
                         ?: if (definition.hasTag(CHECK_ONLY_SUB_STEPS)) emptyList() else definition.steps
-                )
-                    .any { it.selectFromAction(userTimeline, dialog, action, intent) }
+                ).any { it.selectFromAction(userTimeline, dialog, action, intent) }
         } else {
             false
         }

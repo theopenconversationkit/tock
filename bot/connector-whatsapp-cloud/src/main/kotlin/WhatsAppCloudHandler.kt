@@ -31,4 +31,6 @@ import kotlin.reflect.KClass
 @ConnectorHandler(connectorTypeId = "whatsapp_cloud")
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class WhatsAppCloudHandler(val value: KClass<out ConnectorSpecificHandling>)
+annotation class WhatsAppCloudHandler(
+    val value: KClass<out ConnectorSpecificHandling>,
+)

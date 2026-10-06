@@ -36,19 +36,16 @@ data class Attachment(
         playerId: PlayerId,
         applicationId: String,
         recipientId: PlayerId,
-    ): Action {
-        return SendAttachment(
+    ): Action =
+        SendAttachment(
             playerId,
             applicationId,
             recipientId,
             url,
             type,
         )
-    }
 
-    override fun toPrettyString(): String {
-        return "{$eventType:$url,$type}"
-    }
+    override fun toPrettyString(): String = "{$eventType:$url,$type}"
 
     override fun isSimpleMessage(): Boolean = false
 }

@@ -24,7 +24,9 @@ import java.util.concurrent.CopyOnWriteArraySet
 /**
  *
  */
-internal class StoryConfigurationMonitor(private val storyDAO: StoryDefinitionConfigurationDAO) {
+internal class StoryConfigurationMonitor(
+    private val storyDAO: StoryDefinitionConfigurationDAO,
+) {
     private val logger = KotlinLogging.logger {}
 
     private val botsToMonitor: MutableSet<Bot> = CopyOnWriteArraySet()

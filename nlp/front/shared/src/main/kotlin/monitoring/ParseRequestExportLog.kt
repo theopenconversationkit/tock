@@ -21,4 +21,8 @@ import java.time.Instant
 /**
  * A minimal export log.
  */
-data class ParseRequestExportLog(val text: String, val intent: String? = null, val date: Instant)
+data class ParseRequestExportLog(
+    val text: String,
+    val intent: String? = null,
+    val date: Instant,
+)

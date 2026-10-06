@@ -16,4 +16,6 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.template.management
 
-data class StartUploadAssetResponse(val id: String)
+data class StartUploadAssetResponse(
+    val id: String,
+)

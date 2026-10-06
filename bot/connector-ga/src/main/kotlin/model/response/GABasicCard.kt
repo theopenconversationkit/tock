@@ -29,8 +29,8 @@ data class GABasicCard(
     val image: GAImage? = null,
     val buttons: List<GAButton> = emptyList(),
 ) {
-    fun toGenericMessage(): GenericMessage {
-        return GenericMessage(
+    fun toGenericMessage(): GenericMessage =
+        GenericMessage(
             texts =
                 mapNotNullValues(
                     GABasicCard::title.name to title,
@@ -41,5 +41,4 @@ data class GABasicCard(
             attachments = listOfNotNull(image?.toAttachment()),
             metadata = image?.toMetadata() ?: emptyMap(),
         )
-    }
 }

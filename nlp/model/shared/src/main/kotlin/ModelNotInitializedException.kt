@@ -19,4 +19,6 @@ package ai.tock.nlp.model
 /**
  *
  */
-class ModelNotInitializedException(message: String) : Exception(message)
+class ModelNotInitializedException(
+    message: String,
+) : Exception(message)

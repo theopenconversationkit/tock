@@ -22,7 +22,6 @@ import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.definition.BotDefinition.Companion.defaultBreath
 import ai.tock.bot.definition.Intent.Companion.keyword
 import ai.tock.bot.definition.Intent.Companion.ragexcluded
 import ai.tock.bot.definition.Intent.Companion.unknown
@@ -103,8 +102,8 @@ interface BotDefinition : I18nKeyProvider {
             ragExcludedStory: StoryDefinition? = null,
             ragStory: StoryDefinition? = null,
             ragConfiguration: BotRAGConfiguration? = null,
-        ): StoryDefinition {
-            return if (intent == null) {
+        ): StoryDefinition =
+            if (intent == null) {
                 unknownStory
             } else {
                 val i = findIntent(stories, intent)
@@ -115,7 +114,6 @@ interface BotDefinition : I18nKeyProvider {
                         else -> (if (ragConfiguration?.enabled == true) ragStory else null) ?: unknownStory
                     }
             }
-        }
     }
 
     /**
@@ -169,9 +167,7 @@ interface BotDefinition : I18nKeyProvider {
     fun findIntent(
         intent: String,
         applicationId: String,
-    ): Intent {
-        return findIntent(stories, intent)
-    }
+    ): Intent = findIntent(stories, intent)
 
     /**
      * Finds a [StoryDefinition] from an [Intent].
@@ -179,13 +175,12 @@ interface BotDefinition : I18nKeyProvider {
     fun findStoryDefinition(
         intent: IntentAware?,
         applicationId: String,
-    ): StoryDefinition {
-        return if (intent is StoryDefinition) {
+    ): StoryDefinition =
+        if (intent is StoryDefinition) {
             intent
         } else {
             findStoryDefinition(intent?.wrappedIntent()?.name, applicationId)
         }
-    }
 
     /**
      * Search story by storyId.
@@ -212,14 +207,13 @@ interface BotDefinition : I18nKeyProvider {
     fun findStoryDefinition(
         intent: String?,
         applicationId: String,
-    ): StoryDefinition {
-        return findStoryDefinition(
+    ): StoryDefinition =
+        findStoryDefinition(
             stories,
             intent,
             unknownStory,
             keywordStory,
         )
-    }
 
     /**
      * The unknown story. Used where no valid intent is found.
@@ -293,14 +287,13 @@ interface BotDefinition : I18nKeyProvider {
         playerId: PlayerId,
         applicationId: String,
         recipientId: PlayerId,
-    ): Action {
-        return SendSentence(
+    ): Action =
+        SendSentence(
             playerId,
             applicationId,
             recipientId,
             property("tock_technical_error", "Technical error :( sorry!"),
         )
-    }
 
     /**
      * To manage deactivation.
@@ -425,9 +418,7 @@ interface BotDefinition : I18nKeyProvider {
             override fun i18n(
                 defaultLabel: CharSequence,
                 args: List<Any?>,
-            ): I18nLabelValue {
-                return this@BotDefinition.i18n(defaultLabel, args)
-            }
+            ): I18nLabelValue = this@BotDefinition.i18n(defaultLabel, args)
         }
 
     /**

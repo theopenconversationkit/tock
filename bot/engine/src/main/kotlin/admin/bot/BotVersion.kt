@@ -21,7 +21,10 @@ import ai.tock.bot.admin.bot.ArtifactVersion.Companion.UNKNOWN
 /**
  * A bot version number.
  */
-data class BotVersion(val botVersion: ArtifactVersion, val tockVersion: ArtifactVersion) {
+data class BotVersion(
+    val botVersion: ArtifactVersion,
+    val tockVersion: ArtifactVersion,
+) {
     companion object {
         /**
          * Get the current bot version.
@@ -36,7 +39,8 @@ data class BotVersion(val botVersion: ArtifactVersion, val tockVersion: Artifact
             targetVersion: BotVersion,
         ): BotVersion? {
             // 1 use the tock version
-            return versions.groupBy { it.tockVersion.distanceFrom(targetVersion.tockVersion) }
+            return versions
+                .groupBy { it.tockVersion.distanceFrom(targetVersion.tockVersion) }
                 .minByOrNull { it.key }
                 ?.value
                 ?.run {

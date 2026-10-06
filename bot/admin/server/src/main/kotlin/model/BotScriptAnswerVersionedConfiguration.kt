@@ -22,6 +22,9 @@ import java.time.Instant
 /**
  *
  */
-data class BotScriptAnswerVersionedConfiguration(val script: String, val date: Instant = Instant.now()) {
+data class BotScriptAnswerVersionedConfiguration(
+    val script: String,
+    val date: Instant = Instant.now(),
+) {
     constructor(conf: ScriptAnswerVersionedConfiguration) : this(conf.script, conf.date)
 }

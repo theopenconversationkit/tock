@@ -19,4 +19,6 @@ package ai.tock.bot.connector.web.send
 /**
  * A list of [WebCard].
  */
-data class WebCarousel(val cards: List<WebCard>)
+data class WebCarousel(
+    val cards: List<WebCard>,
+)

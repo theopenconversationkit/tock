@@ -245,10 +245,14 @@ internal class TwitterConnector internal constructor(
                                 }
                             }
                         }
+
                         is Tweet -> {
                             client.sendTweet(message, callback.threadId)
                         }
-                        else -> logger.error { "Unknown message to send by twitter : " + message.javaClass }
+
+                        else -> {
+                            logger.error { "Unknown message to send by twitter : " + message.javaClass }
+                        }
                     }
                 }
             }
@@ -326,9 +330,7 @@ internal class TwitterConnector internal constructor(
     private fun isSignedByTwitter(
         payload: String,
         twitterSignature: String,
-    ): Boolean {
-        return "sha256=${client.b64HmacSHA256(payload)}" == twitterSignature
-    }
+    ): Boolean = "sha256=${client.b64HmacSHA256(payload)}" == twitterSignature
 
     override fun addSuggestions(
         text: CharSequence,
@@ -355,17 +357,24 @@ internal class TwitterConnector internal constructor(
                                     type,
                                     UploadedFilesService.guessContentType(f.url),
                                     content,
-                                    *message.actions.filter { it.url != null }.map { nlpOption(it.title) }.toTypedArray(),
+                                    *message.actions
+                                        .filter { it.url != null }
+                                        .map { nlpOption(it.title) }
+                                        .toTypedArray(),
                                 ),
                             )
                         }
+
                         title != null || subTitle != null -> {
                             val firstText = title ?: subTitle!!
                             listOfNotNull(
                                 if (message.actions.any { it.url != null }) {
                                     directMessageWithButtons(
                                         firstText,
-                                        *message.actions.filter { it.url != null }.map { webUrl(it.title, it.url!!) }.toTypedArray(),
+                                        *message.actions
+                                            .filter { it.url != null }
+                                            .map { webUrl(it.title, it.url!!) }
+                                            .toTypedArray(),
                                     )
                                 } else {
                                     directMessageWithOptions(
@@ -375,10 +384,16 @@ internal class TwitterConnector internal constructor(
                                 },
                             )
                         }
-                        else -> emptyList()
+
+                        else -> {
+                            emptyList()
+                        }
                     }
                 }
-                else -> emptyList()
+
+                else -> {
+                    emptyList()
+                }
             }
         }
 }

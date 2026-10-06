@@ -71,17 +71,11 @@ internal object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
     override fun getApplicationByNamespaceAndName(
         namespace: String,
         name: String,
-    ): ApplicationDefinition? {
-        return col.findOne(Name eq name, Namespace eq namespace)
-    }
+    ): ApplicationDefinition? = col.findOne(Name eq name, Namespace eq namespace)
 
-    override fun getApplicationById(id: Id<ApplicationDefinition>): ApplicationDefinition? {
-        return col.findOneById(id)
-    }
+    override fun getApplicationById(id: Id<ApplicationDefinition>): ApplicationDefinition? = col.findOneById(id)
 
-    override fun getApplications(): List<ApplicationDefinition> {
-        return col.find().toList()
-    }
+    override fun getApplications(): List<ApplicationDefinition> = col.find().toList()
 
     fun getApplicationsByNamespace(namespace: String): List<ApplicationDefinition> = col.find(Namespace eq namespace).toList()
 }

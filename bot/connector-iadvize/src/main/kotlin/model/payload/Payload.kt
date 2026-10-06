@@ -32,4 +32,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(name = "product-offer", value = ProductOfferPayload::class),
     JsonSubTypes.Type(name = "text", value = TextPayload::class),
 )
-abstract class Payload(val contentType: String)
+abstract class Payload(
+    val contentType: String,
+)

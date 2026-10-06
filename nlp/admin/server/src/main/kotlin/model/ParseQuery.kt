@@ -28,8 +28,8 @@ data class ParseQuery(
     val checkExistingQuery: Boolean = true,
     val state: String? = null,
 ) : ApplicationScopedQuery() {
-    fun toQuery(): ParseQuery {
-        return ParseQuery(
+    fun toQuery(): ParseQuery =
+        ParseQuery(
             listOf(query),
             namespace,
             applicationName,
@@ -40,5 +40,4 @@ data class ParseQuery(
             ),
             QueryState(listOfNotNull(state).toSet()),
         )
-    }
 }

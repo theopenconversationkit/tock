@@ -49,19 +49,17 @@ class RestJacksonOrchestratedRuntimeBot(
 ) : OrchestratedRuntimeBot(target) {
     private val targetBotClient = BotRestClient.create(urlBot, timeoutMs, serialisationModules)
 
-    override fun askOrchestration(request: AskEligibilityToOrchestratedBotRequest): SecondaryBotResponse {
-        return targetBotClient.askOrchestration(request).execute().body() ?: SecondaryBotNoResponse(
+    override fun askOrchestration(request: AskEligibilityToOrchestratedBotRequest): SecondaryBotResponse =
+        targetBotClient.askOrchestration(request).execute().body() ?: SecondaryBotNoResponse(
             status = NoOrchestrationStatus.NOT_AVAILABLE,
             metaData = request.metadata ?: OrchestrationMetaData(PlayerId("unknown"), target.botId, PlayerId("orchestrator")),
         )
-    }
 
-    override fun resumeOrchestration(request: ResumeOrchestrationRequest): SecondaryBotResponse {
-        return targetBotClient.resumeOrchestration(request).execute().body() ?: SecondaryBotNoResponse(
+    override fun resumeOrchestration(request: ResumeOrchestrationRequest): SecondaryBotResponse =
+        targetBotClient.resumeOrchestration(request).execute().body() ?: SecondaryBotNoResponse(
             status = NoOrchestrationStatus.END,
             metaData = request.metadata,
         )
-    }
 }
 
 interface BotRestClient {
@@ -81,7 +79,8 @@ interface BotRestClient {
             timeout: Long = 30000L,
             serialisationModules: List<Module> = emptyList(),
         ): BotRestClient =
-            OkHttpClient.Builder()
+            OkHttpClient
+                .Builder()
                 .addInterceptor(HttpLoggingInterceptor().setLevel(Level.BODY))
                 .readTimeout(timeout, TimeUnit.MILLISECONDS)
                 .connectTimeout(timeout, TimeUnit.MILLISECONDS)
@@ -91,8 +90,7 @@ interface BotRestClient {
                 .build()
                 .let {
                     Retrofit.Builder().client(it)
-                }
-                .baseUrl(url)
+                }.baseUrl(url)
                 .addConverterFactory(
                     JacksonConverterFactory.create(
                         jacksonObjectMapper()
@@ -104,8 +102,7 @@ interface BotRestClient {
                             .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
                             .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false),
                     ),
-                )
-                .build()
+                ).build()
                 .create(BotRestClient::class.java)
     }
 }

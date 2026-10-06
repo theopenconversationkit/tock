@@ -1,0 +1,30 @@
+@if (entries.length) {
+<dl class="metadata-grid m-0">
+  @for (entry of entries; track entry.key) {
+  <dt class="text-muted">{{ entry.key }}</dt>
+  <dd class="m-0">
+    @if (isObject(entry.value)) {
+    <tock-vector-store-metadata [metadata]="asRecord(entry.value)"></tock-vector-store-metadata>
+    } @else if (isArray(entry.value)) {
+    <span class="metadata-array">
+      @for (item of asArray(entry.value); track $index) {
+      <span class="metadata-array-item">{{ item }}</span>
+      }
+    </span>
+    } @else if (isLink(entry.value)) {
+    <a
+      [href]="entry.value"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="metadata-link"
+      [nbTooltip]="$any(entry.value)"
+    >
+      {{ entry.value }}
+    </a>
+    } @else {
+    <span>{{ entry.value }}</span>
+    }
+  </dd>
+  }
+</dl>
+}

@@ -39,25 +39,24 @@ class SimpleBotDefinition(
     keywordStory: StoryDefinition = defaultKeywordStory,
     conversation: DialogFlowDefinition? = null,
     botEnabledListener: (Action) -> Unit = {},
-) :
-    BotDefinitionBase(
-            botId,
-            namespace,
-            stories,
-            nlpModelName,
-            unknownStory,
-            helloStory,
-            goodbyeStory,
-            noInputStory,
-            botDisabledStory,
-            botEnabledStory,
-            userLocationStory,
-            handleAttachmentStory,
-            eventListener,
-            keywordStory,
-            conversation,
-            botEnabledListener,
-        ) {
+) : BotDefinitionBase(
+        botId,
+        namespace,
+        stories,
+        nlpModelName,
+        unknownStory,
+        helloStory,
+        goodbyeStory,
+        noInputStory,
+        botDisabledStory,
+        botEnabledStory,
+        userLocationStory,
+        handleAttachmentStory,
+        eventListener,
+        keywordStory,
+        conversation,
+        botEnabledListener,
+    ) {
     // set namespace for story handler
     init {
         (

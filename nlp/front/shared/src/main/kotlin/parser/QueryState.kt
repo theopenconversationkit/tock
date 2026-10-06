@@ -19,7 +19,9 @@ package ai.tock.nlp.front.shared.parser
 /**
  *
  */
-data class QueryState(val states: Set<String> = emptySet()) {
+data class QueryState(
+    val states: Set<String> = emptySet(),
+) {
     companion object {
         val noState = QueryState()
     }

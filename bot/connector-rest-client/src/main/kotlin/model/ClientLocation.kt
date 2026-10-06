@@ -19,5 +19,6 @@ package ai.tock.bot.connector.rest.client.model
 /**
  *
  */
-data class ClientLocation(val location: ClientUserLocation?) :
-    ClientMessage(ClientEventType.location)
+data class ClientLocation(
+    val location: ClientUserLocation?,
+) : ClientMessage(ClientEventType.location)

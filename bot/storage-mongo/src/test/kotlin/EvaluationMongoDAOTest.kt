@@ -45,14 +45,13 @@ class EvaluationMongoDAOTest : AbstractTest() {
         dialogId: String,
         actionId: String,
         status: EvaluationStatus = EvaluationStatus.UNSET,
-    ): Evaluation {
-        return Evaluation(
+    ): Evaluation =
+        Evaluation(
             evaluationSampleId = sampleId,
             dialogId = dialogId.toId<Dialog>(),
             actionId = actionId.toId<Action>(),
             status = status,
         )
-    }
 
     @Test
     fun `should save and retrieve evaluations`() {

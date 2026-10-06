@@ -29,6 +29,8 @@ internal class UserLock_Deserializer : JsonDeserializer<MongoUserLock.UserLock>(
             var _locked_set : Boolean = false
             var _date_: Instant? = null
             var _date_set : Boolean = false
+            var _lockId_: String? = null
+            var _lockId_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -54,6 +56,11 @@ internal class UserLock_Deserializer : JsonDeserializer<MongoUserLock.UserLock>(
                              else p.readValueAs(Instant::class.java);
                             _date_set = true
                             }
+                    "lockId" -> {
+                            _lockId_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _lockId_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -62,8 +69,9 @@ internal class UserLock_Deserializer : JsonDeserializer<MongoUserLock.UserLock>(
                     } 
                 _token_ = currentToken
                         } 
-            return if(__id_set && _locked_set && _date_set)
-                    MongoUserLock.UserLock(_id = __id_!!, locked = _locked_!!, date = _date_!!)
+            return if(__id_set && _locked_set && _date_set && _lockId_set)
+                    MongoUserLock.UserLock(_id = __id_!!, locked = _locked_!!, date = _date_!!,
+                            lockId = _lockId_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(__id_set)
@@ -71,7 +79,9 @@ internal class UserLock_Deserializer : JsonDeserializer<MongoUserLock.UserLock>(
                     if(_locked_set)
                     map[parameters.getValue("locked")] = _locked_
                     if(_date_set)
-                    map[parameters.getValue("date")] = _date_ 
+                    map[parameters.getValue("date")] = _date_
+                    if(_lockId_set)
+                    map[parameters.getValue("lockId")] = _lockId_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -85,7 +95,8 @@ internal class UserLock_Deserializer : JsonDeserializer<MongoUserLock.UserLock>(
         private val parameters: Map<String, KParameter> by lazy(LazyThreadSafetyMode.PUBLICATION) {
                 kotlin.collections.mapOf("_id" to primaryConstructor.findParameterByName("_id")!!,
                 "locked" to primaryConstructor.findParameterByName("locked")!!, "date" to
-                primaryConstructor.findParameterByName("date")!!) }
+                primaryConstructor.findParameterByName("date")!!, "lockId" to
+                primaryConstructor.findParameterByName("lockId")!!) }
 
         private val __id__reference: TypeReference<Id<MongoUserLock.UserLock>> = object :
                 TypeReference<Id<MongoUserLock.UserLock>>() {}

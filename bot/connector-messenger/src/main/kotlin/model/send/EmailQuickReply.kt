@@ -26,7 +26,5 @@ class EmailQuickReply : QuickReply(QuickReplyContentType.user_email) {
         return true
     }
 
-    override fun hashCode(): Int {
-        return contentType.hashCode()
-    }
+    override fun hashCode(): Int = contentType.hashCode()
 }

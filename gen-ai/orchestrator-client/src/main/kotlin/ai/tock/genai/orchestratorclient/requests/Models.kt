@@ -16,7 +16,9 @@
 
 package ai.tock.genai.orchestratorclient.requests
 
-enum class Formatter(val id: String) {
+enum class Formatter(
+    val id: String,
+) {
     F_STRING(id = "f-string"),
     JINJA2(id = "jinja2"),
 }

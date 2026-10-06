@@ -29,8 +29,8 @@ import mu.KotlinLogging
 internal object TwitterMessageConverter {
     val logger = KotlinLogging.logger {}
 
-    fun toEvent(action: Action): ConnectorMessage? {
-        return if (action is SendSentence) {
+    fun toEvent(action: Action): ConnectorMessage? =
+        if (action is SendSentence) {
             if (action.metadata.visibility == ActionVisibility.PUBLIC) {
                 if (action.hasMessage(TwitterConnectorProvider.connectorType)) {
                     action.message(TwitterConnectorProvider.connectorType) as Tweet
@@ -46,12 +46,12 @@ internal object TwitterMessageConverter {
                             null
                         } else {
                             OutcomingEvent(
-                                DirectMessageOutcomingEvent.builder(
-                                    Recipient(action.recipientId.id),
-                                    action.playerId.id,
-                                    this,
-                                )
-                                    .withSourceAppId(action.applicationId)
+                                DirectMessageOutcomingEvent
+                                    .builder(
+                                        Recipient(action.recipientId.id),
+                                        action.playerId.id,
+                                        this,
+                                    ).withSourceAppId(action.applicationId)
                                     .build(),
                             )
                         }
@@ -62,5 +62,4 @@ internal object TwitterMessageConverter {
             logger.warn { "Action $action not supported" }
             null
         }
-    }
 }

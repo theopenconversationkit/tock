@@ -25,7 +25,5 @@ interface OrchestrationDataProvider {
 }
 
 open class DefaultOrchestrationDataProvider : OrchestrationDataProvider {
-    override fun provideOrchestrationData(bus: BotBus): OrchestrationData? {
-        return bus.userText?.let { OrchestrationSentence(it) }
-    }
+    override fun provideOrchestrationData(bus: BotBus): OrchestrationData? = bus.userText?.let { OrchestrationSentence(it) }
 }

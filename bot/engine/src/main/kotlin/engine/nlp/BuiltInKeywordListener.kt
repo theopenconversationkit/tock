@@ -50,11 +50,10 @@ object BuiltInKeywordListener : NlpListener {
     @Volatile
     var keywordRegexp: Regex? = null
 
-    override fun handleKeyword(sentence: String): Intent? {
-        return if (keywords.contains(sentence) || keywordRegexp?.matches(sentence) == true) {
+    override fun handleKeyword(sentence: String): Intent? =
+        if (keywords.contains(sentence) || keywordRegexp?.matches(sentence) == true) {
             Intent.keyword
         } else {
             keywordServices.asSequence().mapNotNull { it.detectKeywordIntent(sentence) }.firstOrNull()
         }
-    }
 }

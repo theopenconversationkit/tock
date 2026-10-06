@@ -41,12 +41,20 @@ data class WhatsAppCloudBotInteractiveMessage(
             texts = texts,
             attachments =
                 listOfNotNull(
-                    interactive.header?.image?.id?.let { Attachment(it, SendAttachment.AttachmentType.image) },
-                    interactive.header?.video?.id?.let { Attachment(it, SendAttachment.AttachmentType.video) },
+                    interactive.header
+                        ?.image
+                        ?.id
+                        ?.let { Attachment(it, SendAttachment.AttachmentType.image) },
+                    interactive.header
+                        ?.video
+                        ?.id
+                        ?.let { Attachment(it, SendAttachment.AttachmentType.video) },
                 ),
             choices =
                 interactive.action.buttons?.map { it.toChoice() }
-                    ?: interactive.action.sections?.flatMap { it.rows ?: listOf() }?.map { it.toChoice() }
+                    ?: interactive.action.sections
+                        ?.flatMap { it.rows ?: listOf() }
+                        ?.map { it.toChoice() }
                     ?: listOf(),
         )
     }

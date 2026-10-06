@@ -28,7 +28,10 @@ import mu.KotlinLogging
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 @ExperimentalTockCoroutines
-abstract class AsyncStoryHandlingBase<out T : AsyncConnectorHandling<AsyncStoryHandlingBase<T>>>(val bus: AsyncBus) : AsyncStoryHandling, AsyncBus by bus {
+abstract class AsyncStoryHandlingBase<out T : AsyncConnectorHandling<AsyncStoryHandlingBase<T>>>(
+    val bus: AsyncBus,
+) : AsyncStoryHandling,
+    AsyncBus by bus {
     companion object {
         private val logger = KotlinLogging.logger {}
 

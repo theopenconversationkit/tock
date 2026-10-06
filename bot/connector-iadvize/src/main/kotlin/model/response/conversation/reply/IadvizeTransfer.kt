@@ -31,7 +31,9 @@ data class IadvizeTransfer(
      * Convert a timeout in seconds
      * @param timeout the [Duration]
      */
-    data class TransferOptions(val timeout: Duration) {
+    data class TransferOptions(
+        val timeout: Duration,
+    ) {
         @JsonIgnore
         fun getTimeoutInSeconds(): Int =
             when (timeout.unit) {

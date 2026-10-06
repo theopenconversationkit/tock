@@ -21,8 +21,8 @@ package ai.tock.bot.connector.messenger.model.send
  */
 interface UserAction {
     companion object {
-        fun extractQuickReplies(userActions: List<UserAction>): List<QuickReply>? {
-            return userActions
+        fun extractQuickReplies(userActions: List<UserAction>): List<QuickReply>? =
+            userActions
                 .filter { it is QuickReply }
                 .map { it as QuickReply }
                 .run {
@@ -35,12 +35,10 @@ interface UserAction {
                         this
                     }
                 }
-        }
 
-        fun extractButtons(userActions: List<UserAction>): List<Button> {
-            return userActions
+        fun extractButtons(userActions: List<UserAction>): List<Button> =
+            userActions
                 .filter { it is Button }
                 .map { it as Button }
-        }
     }
 }

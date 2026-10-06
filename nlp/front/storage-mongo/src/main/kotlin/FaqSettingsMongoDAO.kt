@@ -42,9 +42,7 @@ object FaqSettingsMongoDAO : FaqSettingsDAO {
         c
     }
 
-    override fun getFaqSettingsById(id: Id<FaqSettings>): FaqSettings? {
-        return col.findOneById(id)
-    }
+    override fun getFaqSettingsById(id: Id<FaqSettings>): FaqSettings? = col.findOneById(id)
 
     override fun deleteFaqSettingsById(id: Id<FaqSettings>) {
         col.deleteOneById(id)
@@ -60,7 +58,5 @@ object FaqSettingsMongoDAO : FaqSettingsDAO {
         )
     }
 
-    override fun getFaqSettingsByApplicationId(id: Id<ApplicationDefinition>): FaqSettings? {
-        return col.findOne(FaqSettings::applicationId eq id)
-    }
+    override fun getFaqSettingsByApplicationId(id: Id<ApplicationDefinition>): FaqSettings? = col.findOne(FaqSettings::applicationId eq id)
 }

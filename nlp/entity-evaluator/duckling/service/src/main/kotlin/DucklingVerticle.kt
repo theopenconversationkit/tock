@@ -69,9 +69,7 @@ class DucklingVerticle : WebVerticle() {
         }
     }
 
-    override fun defaultHealthcheck(): (RoutingContext) -> Unit {
-        return { context -> if (DucklingBridge.initialized) context.response().end() else context.fail(500) }
-    }
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit = { context -> if (DucklingBridge.initialized) context.response().end() else context.fail(500) }
 
     override fun detailedHealthcheck(): (RoutingContext) -> Unit =
         detailedHealthcheck(

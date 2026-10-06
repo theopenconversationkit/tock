@@ -27,7 +27,10 @@ import java.time.Instant
 
 @Data(internal = true)
 @JacksonData(internal = true)
-internal data class NlpStatsColId(val actionId: Id<Action>, val dialogId: Id<Dialog>)
+internal data class NlpStatsColId(
+    val actionId: Id<Action>,
+    val dialogId: Id<Dialog>,
+)
 
 /**
  *

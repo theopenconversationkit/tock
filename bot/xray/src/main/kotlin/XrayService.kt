@@ -112,11 +112,20 @@ class XrayService(
 
     fun getTestPlans(): List<XrayTestPlan> = getProjectTestPlans(jiraProject)
 
-    fun execute(namespace: String): XrayPlanExecutionResult {
-        return when {
-            testKeys.isNotEmpty() && testPlanKeys.isNotEmpty() -> throw AssertionError("Cannot execute test plan and test at the same time.")
-            testKeys.isNotEmpty() -> executeTests(namespace)
-            testPlanKeys.isNotEmpty() -> executeTestPlans(namespace)
+    fun execute(namespace: String): XrayPlanExecutionResult =
+        when {
+            testKeys.isNotEmpty() && testPlanKeys.isNotEmpty() -> {
+                throw AssertionError("Cannot execute test plan and test at the same time.")
+            }
+
+            testKeys.isNotEmpty() -> {
+                executeTests(namespace)
+            }
+
+            testPlanKeys.isNotEmpty() -> {
+                executeTestPlans(namespace)
+            }
+
             else -> {
                 logger.warn { "Specify \"testPlanKey\" OR (xor) \"testKey\"." }
                 XrayPlanExecutionResult(
@@ -126,7 +135,6 @@ class XrayService(
                 )
             }
         }
-    }
 
     /**
      * Execution of one or several test plans.
@@ -141,7 +149,8 @@ class XrayService(
         return try {
             // getBotConfiguration retrieves all configuration for the selected namespace
             // getBotConfiguration will reach information stored in tab Configuration on BotAdmin site
-            findTestClient().getBotConfigurations(namespace, testedBotId)
+            findTestClient()
+                .getBotConfigurations(namespace, testedBotId)
                 // retrieve all REST connectors and select the good one
                 .filter { it.connectorType == ConnectorType.rest }
                 .filter {
@@ -151,8 +160,7 @@ class XrayService(
                 // test plan execution
                 .flatMap {
                     exec(XrayExecutionConfiguration(it, testPlanKeys, jiraProject), executionId.toId())
-                }
-                .let {
+                }.let {
                     sendToXray(it)
                 }
         } catch (t: Throwable) {
@@ -176,7 +184,8 @@ class XrayService(
         return try {
             // getBotConfiguration retrieves all configuration for the selected namespace
             // getBotConfiguration will reach information stored in tab Configuration on BotAdmin site
-            findTestClient().getBotConfigurations(namespace, testedBotId)
+            findTestClient()
+                .getBotConfigurations(namespace, testedBotId)
                 // retrieve all REST connectors and select the good one
                 .filter { it.connectorType == ConnectorType.rest }
                 .filter {
@@ -191,8 +200,7 @@ class XrayService(
                         testKeys,
                         executionId.toId(),
                     )
-                }
-                .let {
+                }.let {
                     logger.debug { "Execution with id : $executionId ended for test plan $dummyTestPlanKey" }
                     sendToXray(it)
                 }
@@ -213,7 +221,8 @@ class XrayService(
             .groupBy { it.planKey }
             .forEach { planKey, plans ->
                 // if it is a multi-connector test plan
-                if (plans.map { it.testPlan.dialogs.map { dialogExecutionReport -> dialogExecutionReport.id } }
+                if (plans
+                        .map { it.testPlan.dialogs.map { dialogExecutionReport -> dialogExecutionReport.id } }
                         // no duplicate
                         .run { toSet().size == size }
                 ) {
@@ -247,11 +256,20 @@ class XrayService(
             }
 
         return XrayPlanExecutionResult(
-            success = reports.sumOf { it.execution.dialogs.filter { dialogExecutionReport -> !dialogExecutionReport.error }.size },
+            success =
+                reports.sumOf {
+                    it.execution.dialogs
+                        .filter { dialogExecutionReport -> !dialogExecutionReport.error }
+                        .size
+                },
             total = reports.sumOf { it.execution.dialogs.size },
             errorMessage =
-                reports.map { it.execution.dialogs.find { dialogExecutionReport -> dialogExecutionReport.error }?.errorMessage }
-                    .toString(),
+                reports
+                    .map {
+                        it.execution.dialogs
+                            .find { dialogExecutionReport -> dialogExecutionReport.error }
+                            ?.errorMessage
+                    }.toString(),
         )
     }
 
@@ -284,22 +302,29 @@ class XrayService(
 
         val testExecutionKey =
             when (testExecutionKeyIssue) {
-                TooMuchIssuesRetrieved -> error("too many test executions have been retrieved with summary \"$planKey ${configurations[0].botConfiguration.name}\".")
-                NoIssueRetrieved -> {
-                    XrayClient.createNewTestExecutionIssue(
-                        XrayTestExecutionCreation(
-                            XrayTextExecutionFields(
-                                configurations.get(0).jiraTestProject,
-                                "$planKey - ${
-                                    configurations.map { it.botConfiguration.name }.toSortedSet().joinToString()
-                                }",
-                                "Automatized Test Execution",
-                                JiraIssueType("Test Execution"),
-                            ),
-                        ),
-                    ).key
+                TooMuchIssuesRetrieved -> {
+                    error("too many test executions have been retrieved with summary \"$planKey ${configurations[0].botConfiguration.name}\".")
                 }
-                is IssueRetrieved -> testExecutionKeyIssue.key
+
+                NoIssueRetrieved -> {
+                    XrayClient
+                        .createNewTestExecutionIssue(
+                            XrayTestExecutionCreation(
+                                XrayTextExecutionFields(
+                                    configurations.get(0).jiraTestProject,
+                                    "$planKey - ${
+                                        configurations.map { it.botConfiguration.name }.toSortedSet().joinToString()
+                                    }",
+                                    "Automatized Test Execution",
+                                    JiraIssueType("Test Execution"),
+                                ),
+                            ),
+                        ).key
+                }
+
+                is IssueRetrieved -> {
+                    testExecutionKeyIssue.key
+                }
             }
 
         // gather test execution information
@@ -337,33 +362,51 @@ class XrayService(
                                 },
                             status = if (dialogReport.error) FAIL else PASS,
                             steps =
-                                dialog?.actions?.filter {
-                                    it.playerId.type == bot
-                                }?.map { testActionReport ->
-                                    val status =
-                                        when {
-                                            !dialogReport.error -> PASS
-                                            stepViewed -> TODO
-                                            dialogReport.errorActionId == testActionReport.id -> {
-                                                stepViewed = true
-                                                FAIL
-                                            }
-                                            else -> PASS
-                                        }
-                                    XrayTestExecutionStepReport(
-                                        when (status) {
-                                            PASS -> "Test successful"
-                                            TODO -> "Skipped"
-                                            FAIL ->
-                                                when {
-                                                    dialogReport.returnedMessage != null -> "TestFailed : ${dialogReport.returnedMessage?.toPrettyString()}"
-                                                    dialogReport.errorMessage != null -> "TestFailed : ${dialogReport.errorMessage}"
-                                                    else -> "Test failed"
+                                dialog
+                                    ?.actions
+                                    ?.filter {
+                                        it.playerId.type == bot
+                                    }?.map { testActionReport ->
+                                        val status =
+                                            when {
+                                                !dialogReport.error -> {
+                                                    PASS
                                                 }
-                                        },
-                                        status,
-                                    )
-                                }
+
+                                                stepViewed -> {
+                                                    TODO
+                                                }
+
+                                                dialogReport.errorActionId == testActionReport.id -> {
+                                                    stepViewed = true
+                                                    FAIL
+                                                }
+
+                                                else -> {
+                                                    PASS
+                                                }
+                                            }
+                                        XrayTestExecutionStepReport(
+                                            when (status) {
+                                                PASS -> {
+                                                    "Test successful"
+                                                }
+
+                                                TODO -> {
+                                                    "Skipped"
+                                                }
+
+                                                FAIL -> {
+                                                    when {
+                                                        dialogReport.returnedMessage != null -> "TestFailed : ${dialogReport.returnedMessage?.toPrettyString()}"
+                                                        dialogReport.errorMessage != null -> "TestFailed : ${dialogReport.errorMessage}"
+                                                        else -> "Test failed"
+                                                    }
+                                                }
+                                            },
+                                            status,
+                                        )
+                                    }
                                     ?: emptyList(),
                         )
                     },
@@ -389,8 +432,8 @@ class XrayService(
     private fun exec(
         configuration: XrayExecutionConfiguration,
         executionId: Id<TestPlanExecution>,
-    ): List<TestPlanExecutionReport> {
-        return configuration
+    ): List<TestPlanExecutionReport> =
+        configuration
             .xrayTestPlanKeys
             .mapNotNull { xrayPlanKey ->
                 logger.info { "Start plan $xrayPlanKey execution" }
@@ -420,7 +463,6 @@ class XrayService(
                     logger.info { "Plan $xrayPlanKey executed" }
                 }
             }
-    }
 
     private fun saveTestPlanExecution(testPlanExecution: TestPlanExecution) {
         val testPlanDAO: TestPlanDAO = injector.provide()
@@ -432,8 +474,8 @@ class XrayService(
         planKey: String,
         testKeys: List<String>,
         executionId: Id<TestPlanExecution>,
-    ): List<TestPlanExecutionReport> {
-        return configuration
+    ): List<TestPlanExecutionReport> =
+        configuration
             .xrayTestPlanKeys
             .mapNotNull { xrayPlanKey ->
                 logger.info { "Start plan $xrayPlanKey execution for test plan $planKey" }
@@ -452,7 +494,6 @@ class XrayService(
                     logger.info { "Plan $xrayPlanKey executed for test plan $planKey" }
                 }
             }
-    }
 
     /**
      * This function will execute the common Test Plan.
@@ -502,11 +543,12 @@ class XrayService(
                             connectorJiraMap[configuration.botConfiguration.ownerConnectorType?.id]
                                 ?: emptyList()
                         connectorJiras.isEmpty() ||
-                            XrayClient.getLinkedIssues(it.key, linkedField).intersect(
-                                connectorJiras,
-                            ).isNotEmpty()
-                    }
-                    .filter { it.supportConf(configuration.botConfiguration.name) }
+                            XrayClient
+                                .getLinkedIssues(it.key, linkedField)
+                                .intersect(
+                                    connectorJiras,
+                                ).isNotEmpty()
+                    }.filter { it.supportConf(configuration.botConfiguration.name) }
                     // retrieve all steps of tests of the test plan
                     .map { getDialogReport(configuration, it) },
                 xrayPlanKey,
@@ -534,7 +576,8 @@ class XrayService(
 
         return with(configuration) {
             TestPlan(
-                xrayTests.filter { it.supportConf(configuration.botConfiguration.name) }
+                xrayTests
+                    .filter { it.supportConf(configuration.botConfiguration.name) }
                     .map {
                         getDialogReport(configuration, it)
                     },
@@ -678,7 +721,8 @@ class XrayService(
             XrayClient.saveStep(jira.key, it)
         }
 
-        XrayPrecondition.getPreconditionForUserInterface(dialog.actions.first().userInterfaceType)
+        XrayPrecondition
+            .getPreconditionForUserInterface(dialog.actions.first().userInterfaceType)
             ?.apply {
                 XrayClient.addPrecondition(this, jira.key)
             }

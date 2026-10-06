@@ -1,0 +1,49 @@
+<tock-dashboard-widget
+  [title]="'dashboard.genai-configuration.title' | transloco"
+  icon="cpu"
+  [state]="state"
+  [skeletonLines]="6"
+  [unavailableIcon]="'cpu'"
+  [unavailableTitle]="'dashboard.common.rag-disabled-title' | transloco"
+  [unavailableMessage]="'dashboard.genai-configuration.unavailable-message' | transloco"
+  [unavailableLinkLabel]="'dashboard.common.open-rag-settings' | transloco"
+  unavailableLink="/rag/settings"
+>
+  <button
+    widget-actions
+    nbButton
+    ghost
+    size="tiny"
+    (click)="onRefresh.emit()"
+    [nbTooltip]="'dashboard.genai-configuration.refresh' | transloco"
+  >
+    <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <ng-template #widgetFooter>
+    <span class="metric-label">
+      {{ 'dashboard.genai-configuration.last-checked' | transloco: { date: configuration.lastCheckedAt | date: 'short' } }}
+      &middot;
+      <a [routerLink]="['/rag/settings']">{{ 'dashboard.common.rag-settings' | transloco }}</a>
+    </span>
+  </ng-template>
+
+  <ng-template #widgetBody>
+    @for (check of configuration.checks; track check.label) {
+    <div class="config-row">
+      <span
+        class="status-dot"
+        [class.status-dot-success]="check.status === 'ok'"
+        [class.status-dot-warning]="check.status === 'warning'"
+        [class.status-dot-danger]="check.status === 'error'"
+      ></span>
+      <span class="config-label">{{ check.label }}</span>
+      <span class="config-value">
+        {{ check.value }}
+        @if (check.note) {
+        <div class="config-note">{{ check.note }}</div>
+        }
+      </span>
+    </div>
+    }
+  </ng-template>
+</tock-dashboard-widget>

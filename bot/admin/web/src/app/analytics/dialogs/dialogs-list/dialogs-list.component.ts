@@ -24,15 +24,17 @@ import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { saveAs } from 'file-saver-es';
 import { getExportFileName, scrollToPageTop } from '../../../shared/utils';
 import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { Pagination } from '../../../shared/components';
 import { DialogListFilters } from './dialogs-list-filters/dialogs-list-filters.component';
 import { SortOrder } from '../../../shared/model/misc';
+import { RagAnswerStatus } from '../../../shared/utils';
 
 @Component({
-    selector: 'tock-dialogs-list',
-    templateUrl: './dialogs-list.component.html',
-    styleUrls: ['./dialogs-list.component.scss'],
-    standalone: false
+  selector: 'tock-dialogs-list',
+  templateUrl: './dialogs-list.component.html',
+  styleUrls: ['./dialogs-list.component.scss'],
+  standalone: false
 })
 export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
@@ -68,6 +70,7 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
     private analytics: AnalyticsService,
     public botSharedService: BotSharedService,
     private location: Location,
+    private route: ActivatedRoute,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.dialogAnchorRef = (this.location.getState() as any)?.dialogId;
@@ -78,10 +81,26 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
       this.filters.displayTests = this.botSharedService.session_storage.dialogs.displayTests;
     }
 
+    this.applyQueryParams();
+
     this.state.configurationChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.refresh();
     });
     this.refresh();
+  }
+
+  /**
+   * Seeds the filters from the URL. Used by the dashboard's answer-outcome widget, which
+   * links here with ?ragAnswerStatus=<status> to show the dialogs behind a figure.
+   * Read once from the snapshot: the value only has to prime the initial search.
+   */
+  private applyQueryParams(): void {
+    const ragAnswerStatus = this.route.snapshot.queryParamMap.get('ragAnswerStatus');
+
+    // Ignore an unknown value rather than sending it to the backend.
+    if (ragAnswerStatus && (Object.values(RagAnswerStatus) as string[]).includes(ragAnswerStatus)) {
+      this.filters.ragAnswerStatus = ragAnswerStatus;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {

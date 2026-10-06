@@ -104,7 +104,10 @@ fun start(
     }
 
     val options =
-        WebSocketConnectOptions().setSsl(ssl).setHost(serverHost).setPort(serverPort)
+        WebSocketConnectOptions()
+            .setSsl(ssl)
+            .setHost(serverHost)
+            .setPort(serverPort)
             .setURI("/${botDefinition.apiKey}".trim())
 
     logger.info { "start web socket client: ${options.toJson()}" }
@@ -165,12 +168,10 @@ fun start(
                             }
                         }
                     }
-                }
-                ?.exceptionHandler {
+                }?.exceptionHandler {
                     logger.info("Exception")
                     restart(client, 1)
-                }
-                ?.closeHandler {
+                }?.closeHandler {
                     logger.info("Closed")
                     restart(client, 1)
                 } ?: restart(client, 10).apply { logger.warn { "websocket server not found or unknown key - retry in 10s" } }

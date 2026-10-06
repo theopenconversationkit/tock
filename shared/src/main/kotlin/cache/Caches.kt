@@ -35,8 +35,7 @@ private val inMemoryCache: Cache<Any, Any> =
         .expireAfterAccess(
             longProperty("tock_cache_in_memory_expiration_in_ms", 1000 * 60 * 60L),
             TimeUnit.MILLISECONDS,
-        )
-        .build()
+        ).build()
 
 private val NOT_PRESENT = Any()
 
@@ -65,20 +64,20 @@ fun <T : Any> getOrCache(
     id: Id<T>,
     type: String,
     valueProvider: () -> T?,
-): T? {
-    return inMemoryCache.get(inMemoryKey(id, type)) {
-        cache.get(id, type)
-            ?: try {
-                valueProvider.invoke()?.apply {
-                    putInCache(id, type, this)
+): T? =
+    inMemoryCache
+        .get(inMemoryKey(id, type)) {
+            cache.get(id, type)
+                ?: try {
+                    valueProvider.invoke()?.apply {
+                        putInCache(id, type, this)
+                    }
+                } catch (e: Exception) {
+                    logger.error(e)
+                    null
                 }
-            } catch (e: Exception) {
-                logger.error(e)
-                null
-            }
-            ?: NOT_PRESENT
-    }.replaceNotPresent()
-}
+                ?: NOT_PRESENT
+        }.replaceNotPresent()
 
 /**
  * Returns the value for specified id and type.
@@ -87,16 +86,16 @@ fun <T : Any> getOrCache(
 fun <T : Any> getFromCache(
     id: Id<T>,
     type: String,
-): T? {
-    return try {
-        inMemoryCache.get(inMemoryKey(id, type)) {
-            cache.get(id, type) ?: NOT_PRESENT
-        }.replaceNotPresent()
+): T? =
+    try {
+        inMemoryCache
+            .get(inMemoryKey(id, type)) {
+                cache.get(id, type) ?: NOT_PRESENT
+            }.replaceNotPresent()
     } catch (e: Exception) {
         logger.error(e)
         null
     }
-}
 
 /**
  * Adds in cache the specified value.

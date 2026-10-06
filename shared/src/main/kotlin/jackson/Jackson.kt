@@ -103,8 +103,8 @@ internal fun JsonParser.checkEndToken() {
 /**
  * Read fields from a [JsonParser].
  */
-inline fun <reified FIELDS : Any> JsonParser.read(readValue: (FIELDS, String) -> Unit): FIELDS {
-    return FIELDS::class.createInstance().let { fields ->
+inline fun <reified FIELDS : Any> JsonParser.read(readValue: (FIELDS, String) -> Unit): FIELDS =
+    FIELDS::class.createInstance().let { fields ->
         while (true) {
             fieldNameWithValueReady()?.apply {
                 readValue.invoke(fields, this)
@@ -112,14 +112,11 @@ inline fun <reified FIELDS : Any> JsonParser.read(readValue: (FIELDS, String) ->
         }
         fields
     }
-}
 
 /**
  * Read a list of values from a [JsonParser].
  */
-inline fun <reified T : Any> JsonParser.readListValues(): List<T> {
-    return readValueAs<List<T>>(object : TypeReference<List<T>>() {}) ?: emptyList()
-}
+inline fun <reified T : Any> JsonParser.readListValues(): List<T> = readValueAs<List<T>>(object : TypeReference<List<T>>() {}) ?: emptyList()
 
 /**
  * Add a deserializer in the [SimpleModule].

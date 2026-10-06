@@ -52,8 +52,7 @@ class GoogleChatAuthorisationHandler(
                     GooglePublicKeysManager
                         .Builder(ApacheHttpTransport(), jsonFactory)
                         .build(),
-                )
-                .build()
+                ).build()
     }
 
     override fun handle(routingContext: RoutingContext) {

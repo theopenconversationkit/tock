@@ -25,4 +25,5 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 @ExperimentalTockCoroutines
 abstract class AsyncConnectorHandlingBase<T : AsyncStoryHandlingBase<AsyncConnectorHandlingBase<T>>>(
     override val context: T,
-) : AsyncConnectorHandling<T>, AsyncBus by context
+) : AsyncConnectorHandling<T>,
+    AsyncBus by context

@@ -21,4 +21,6 @@ import ai.tock.nlp.front.shared.config.EntityDefinition
 /**
  *
  */
-data class UpdateEntityDefinitionQuery(val entity: EntityDefinition) : ApplicationScopedQuery()
+data class UpdateEntityDefinitionQuery(
+    val entity: EntityDefinition,
+) : ApplicationScopedQuery()

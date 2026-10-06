@@ -168,8 +168,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
                         intentId = sharedIntentId,
                         status = setOf(ClassifiedSentenceStatus.model),
                     ),
-                )
-                .sentences
+                ).sentences
                 .filter { s -> s.classification.entities.all { intentDefinition.hasEntity(it) } }
         } ?: emptyList()
     }

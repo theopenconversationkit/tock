@@ -35,6 +35,7 @@ import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.injector
+import ai.tock.shared.service.UserDataRedactor
 import ai.tock.shared.sharedTestModule
 import ai.tock.translator.I18nDAO
 import com.github.salomonbrys.kodein.Kodein
@@ -115,12 +116,17 @@ open class TestContext {
     var mockedUserLock: UserLock = newMock()
 
     /**
-     * Default mocked [UserLock].
+     * Default mocked [UserDataRedactor].
+     */
+    var mockedUserDataRedactor: UserDataRedactor = newMock()
+
+    /**
+     * Default mocked [FeatureDAO].
      */
     var mockedFeatureDAO: FeatureDAO = newMock()
 
     /**
-     * Default mocked [UserLock].
+     * Default mocked [DialogFlowDAO].
      */
     var mockedDialogFlowDAO: DialogFlowDAO = newMock()
 
@@ -165,6 +171,7 @@ open class TestContext {
                     bind<DialogReportDAO>() with provider { mockedDialogReportDAO }
                     bind<TestPlanDAO>() with provider { mockedTestPlanDAO }
                     bind<UserLock>() with provider { mockedUserLock }
+                    bind<UserDataRedactor>() with provider { mockedUserDataRedactor }
                     bind<FeatureDAO>() with provider { mockedFeatureDAO }
                     bind<DialogFlowDAO>() with provider { mockedDialogFlowDAO }
                 },

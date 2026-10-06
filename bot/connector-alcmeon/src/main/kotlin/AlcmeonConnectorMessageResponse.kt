@@ -40,6 +40,12 @@ sealed class AlcmeonConnectorMessageResponse : ConnectorMessage {
     ) : AlcmeonConnectorMessageResponse()
 }
 
-data class AlcmeonConnectorMessageOut<T>(val body: T, val delay_ms: Int = 0)
+data class AlcmeonConnectorMessageOut<T>(
+    val body: T,
+    val delay_ms: Int = 0,
+)
 
-data class AlcmeonConnectorMessageExit(val reason: String, val delay_ms: Int = 0)
+data class AlcmeonConnectorMessageExit(
+    val reason: String,
+    val delay_ms: Int = 0,
+)

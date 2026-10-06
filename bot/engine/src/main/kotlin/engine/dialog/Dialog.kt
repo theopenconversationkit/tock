@@ -59,8 +59,8 @@ data class Dialog(
         /**
          * Init a new dialog from the specified dialog.
          */
-        fun initFromDialog(dialog: Dialog): Dialog {
-            return Dialog(
+        fun initFromDialog(dialog: Dialog): Dialog =
+            Dialog(
                 dialog.playerIds,
                 state = DialogState.initFromDialogState(dialog.state),
                 stories =
@@ -77,7 +77,6 @@ data class Dialog(
                 rating = dialog.rating,
                 review = dialog.review,
             )
-        }
     }
 
     /**

@@ -46,24 +46,22 @@ internal object BotDocumentCompressorConfigurationMongoDAO : BotDocumentCompress
     override fun findByNamespaceAndBotId(
         namespace: String,
         botId: String,
-    ): BotDocumentCompressorConfiguration? {
-        return col.findOne(
+    ): BotDocumentCompressorConfiguration? =
+        col.findOne(
             BotDocumentCompressorConfiguration::namespace eq namespace,
             BotDocumentCompressorConfiguration::botId eq botId,
         )
-    }
 
     override fun findByNamespaceAndBotIdAndEnabled(
         namespace: String,
         botId: String,
         enabled: Boolean,
-    ): BotDocumentCompressorConfiguration? {
-        return col.findOne(
+    ): BotDocumentCompressorConfiguration? =
+        col.findOne(
             BotDocumentCompressorConfiguration::namespace eq namespace,
             BotDocumentCompressorConfiguration::botId eq botId,
             BotDocumentCompressorConfiguration::enabled eq enabled,
         )
-    }
 
     override fun save(conf: BotDocumentCompressorConfiguration): BotDocumentCompressorConfiguration {
         col.save(conf)

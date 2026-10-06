@@ -73,9 +73,10 @@ internal class RestConnectorCallback(
             val r =
                 mapper.writeValueAsString(
                     MessageResponse(
-                        actions.filter {
-                            if (!userAction.metadata.debugEnabled) it !is SendDebug else true
-                        }.map { it.toMessage() },
+                        actions
+                            .filter {
+                                if (!userAction.metadata.debugEnabled) it !is SendDebug else true
+                            }.map { it.toMessage() },
                         applicationId,
                         userAction.id.toString(),
                         nlpStats?.locale ?: locale,

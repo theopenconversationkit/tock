@@ -25,7 +25,10 @@ import ai.tock.nlp.core.IntOpenRange
 /**
  *
  */
-data class EntityTypeRecognition(val value: EntityTypeValue, val probability: Double) : IntOpenRange by value {
+data class EntityTypeRecognition(
+    val value: EntityTypeValue,
+    val probability: Double,
+) : IntOpenRange by value {
     @Transient
     val entityType: EntityType = value.entityType
 

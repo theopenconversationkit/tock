@@ -23,7 +23,10 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
 
-class TockProxyAuthenticator(proxyUser: String, proxyPassword: String) : Authenticator {
+class TockProxyAuthenticator(
+    proxyUser: String,
+    proxyPassword: String,
+) : Authenticator {
     private val credential = Credentials.basic(proxyUser, proxyPassword)
 
     companion object {
@@ -52,7 +55,8 @@ class TockProxyAuthenticator(proxyUser: String, proxyPassword: String) : Authent
                 // give up if we already tried to authenticate
             } && response.request.header("Proxy-Authorization") == null
         ) {
-            return response.request.newBuilder()
+            return response.request
+                .newBuilder()
                 .header("Proxy-Authorization", credential)
                 .build()
         }

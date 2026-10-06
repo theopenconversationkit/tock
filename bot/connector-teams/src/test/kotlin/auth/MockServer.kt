@@ -45,9 +45,9 @@ object MockServer {
         val dispatcher =
             object : Dispatcher() {
                 @Throws(InterruptedException::class)
-                override fun dispatch(request: RecordedRequest): MockResponse {
-                    return when {
-                        request.path == "/.well-known/openidconfiguration/" ->
+                override fun dispatch(request: RecordedRequest): MockResponse =
+                    when {
+                        request.path == "/.well-known/openidconfiguration/" -> {
                             MockResponse()
                                 .addHeader("Content-Type", "application/json")
                                 .setBody(
@@ -56,9 +56,10 @@ object MockServer {
                                         "\"jwks_uri\":\"http://${server.hostName}:${server.port}/\"," +
                                         "\"id_token_signing_alg_values_supported\":[\"RS256\"]," +
                                         "\"token_endpoint_auth_methods_supported\":[\"private_key_jwt\"]}",
-                                )
-                                .setResponseCode(200)
-                        request.path == "/.well-known/openid-configuration/" ->
+                                ).setResponseCode(200)
+                        }
+
+                        request.path == "/.well-known/openid-configuration/" -> {
                             MockResponse()
                                 .addHeader("Content-Type", "application/json")
                                 .setBody(
@@ -67,16 +68,20 @@ object MockServer {
                                         "\"jwks_uri\":\"http://${server.hostName}:${server.port}/\"," +
                                         "\"id_token_signing_alg_values_supported\":[\"RS256\"]," +
                                         "\"token_endpoint_auth_methods_supported\":[\"private_key_jwt\"]}",
-                                )
-                                .setResponseCode(200)
-                        request.path == "/" ->
+                                ).setResponseCode(200)
+                        }
+
+                        request.path == "/" -> {
                             MockResponse()
                                 .addHeader("Content-Type", "application/json")
                                 .setBody(jwks)
                                 .setResponseCode(200)
-                        else -> MockResponse().setResponseCode(404)
+                        }
+
+                        else -> {
+                            MockResponse().setResponseCode(404)
+                        }
                     }
-                }
             }
         server.dispatcher = dispatcher
 

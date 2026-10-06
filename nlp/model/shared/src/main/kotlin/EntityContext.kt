@@ -41,9 +41,7 @@ data class EntityContextKey(
     val entityType: EntityType? = null,
     val subEntities: Boolean = false,
 ) : ClassifierContextKey {
-    override fun id(): String {
-        return "$applicationName-$intentName-$language-${engineType.name}-${entityType?.name}-$subEntities"
-    }
+    override fun id(): String = "$applicationName-$intentName-$language-${engineType.name}-${entityType?.name}-$subEntities"
 }
 
 abstract class EntityContext(
@@ -51,9 +49,7 @@ abstract class EntityContext(
     override val engineType: NlpEngineType,
     override val applicationName: String,
 ) : ClassifierContext<EntityContextKey> {
-    override fun toString(): String {
-        return key().toString()
-    }
+    override fun toString(): String = key().toString()
 }
 
 sealed class EntityCallContext(
@@ -80,9 +76,7 @@ class EntityCallContextForIntent(
 
     constructor(context: TestContext, intent: Intent) : this(context.callContext, intent)
 
-    override fun key(): EntityContextKey {
-        return EntityContextKey(applicationName, intent.name, language, engineType)
-    }
+    override fun key(): EntityContextKey = EntityContextKey(applicationName, intent.name, language, engineType)
 }
 
 class EntityCallContextForEntity(
@@ -101,9 +95,7 @@ class EntityCallContextForEntity(
             context.evaluationContext.referenceDateForEntity(entity),
         )
 
-    override fun key(): EntityContextKey {
-        return EntityContextKey(applicationName, null, language, engineType, entityType)
-    }
+    override fun key(): EntityContextKey = EntityContextKey(applicationName, null, language, engineType, entityType)
 }
 
 class EntityCallContextForSubEntities(
@@ -121,8 +113,8 @@ class EntityCallContextForSubEntities(
         context.referenceDate,
     )
 
-    override fun key(): EntityContextKey {
-        return EntityContextKey(
+    override fun key(): EntityContextKey =
+        EntityContextKey(
             applicationName,
             null,
             language,
@@ -130,7 +122,6 @@ class EntityCallContextForSubEntities(
             entityType,
             true,
         )
-    }
 }
 
 sealed class EntityBuildContext(
@@ -166,9 +157,7 @@ class EntityBuildContextForIntent(
 
     constructor(context: TestContext, intent: Intent) : this(context.callContext, intent)
 
-    override fun key(): EntityContextKey {
-        return EntityContextKey(applicationName, intent.name, language, engineType)
-    }
+    override fun key(): EntityContextKey = EntityContextKey(applicationName, intent.name, language, engineType)
 
     override fun select(expressions: List<SampleExpression>): List<SampleExpression> {
         val result = expressions.filter { it.intent == intent }
@@ -183,17 +172,14 @@ class EntityBuildContextForEntity(
     engineType: NlpEngineType,
     applicationName: String,
 ) : EntityBuildContext(language, engineType, applicationName) {
-    override fun key(): EntityContextKey {
-        return EntityContextKey(applicationName, null, language, engineType, entityType)
-    }
+    override fun key(): EntityContextKey = EntityContextKey(applicationName, null, language, engineType, entityType)
 
-    override fun select(expressions: List<SampleExpression>): List<SampleExpression> {
-        return expressions
+    override fun select(expressions: List<SampleExpression>): List<SampleExpression> =
+        expressions
             .asSequence()
             .filter { it.containsEntityType(entityType) }
             .map { it.copy(entities = it.entities.filter { e -> e.isType(entityType) }) }
             .toList()
-    }
 }
 
 class EntityBuildContextForSubEntities(
@@ -205,9 +191,7 @@ class EntityBuildContextForSubEntities(
     constructor(context: BuildContext, entityType: EntityType) :
         this(entityType, context.language, context.engineType, context.application.name)
 
-    override fun key(): EntityContextKey {
-        return EntityContextKey(applicationName, null, language, engineType, entityType, true)
-    }
+    override fun key(): EntityContextKey = EntityContextKey(applicationName, null, language, engineType, entityType, true)
 
     private fun findSampleExpressions(
         text: String,
@@ -234,7 +218,5 @@ class EntityBuildContextForSubEntities(
             emptyList()
         }
 
-    override fun select(expressions: List<SampleExpression>): List<SampleExpression> {
-        return expressions.flatMap { it.entities.flatMap { e -> findSampleExpressions(it.text, e) } }
-    }
+    override fun select(expressions: List<SampleExpression>): List<SampleExpression> = expressions.flatMap { it.entities.flatMap { e -> findSampleExpressions(it.text, e) } }
 }

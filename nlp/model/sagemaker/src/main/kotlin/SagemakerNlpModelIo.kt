@@ -26,9 +26,7 @@ internal object SagemakerNlpModelIo : NlpEngineModelIo {
         error("loading tokenizer model is not supported")
     }
 
-    override fun loadIntentModel(input: NlpModelStream): Any {
-        return SagemakerModelConfiguration()
-    }
+    override fun loadIntentModel(input: NlpModelStream): Any = SagemakerModelConfiguration()
 
     override fun loadEntityModel(input: NlpModelStream): Any = mapper.readValue<String>(input.inputStream)
 

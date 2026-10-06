@@ -1,0 +1,27 @@
+<tock-dashboard-widget
+  [title]="'dashboard.questions-answered.title' | transloco"
+  icon="graph-up-arrow"
+  [state]="state"
+  [emptyTitle]="'dashboard.questions-answered.empty-title' | transloco"
+  [emptyMessage]="'dashboard.questions-answered.empty-message' | transloco"
+>
+  <ng-template #widgetBody>
+    <div class="d-flex align-items-baseline flex-wrap gap-05">
+      <span class="metric-value">{{ usage.total | number }}</span>
+      <span class="metric-label">{{ 'dashboard.questions-answered.unit' | transloco }}</span>
+      <tock-dashboard-delta [value]="delta"></tock-dashboard-delta>
+      <span class="metric-label">
+        {{ 'dashboard.common.vs-previous-period' | transloco: { days: period } }}
+      </span>
+    </div>
+
+    @if (chartOptions) {
+    <div
+      echarts
+      class="questions-chart"
+      [options]="chartOptions"
+      [attr.aria-label]="'dashboard.questions-answered.chart-label' | transloco"
+    ></div>
+    }
+  </ng-template>
+</tock-dashboard-widget>

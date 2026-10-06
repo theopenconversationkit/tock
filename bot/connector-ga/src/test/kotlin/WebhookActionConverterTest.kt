@@ -70,9 +70,7 @@ class WebhookActionConverterTest {
                 override fun transform(
                     stt: String,
                     locale: Locale,
-                ): String {
-                    return stt.replace("Deezer", "10h")
-                }
+                ): String = stt.replace("Deezer", "10h")
             }
         SttService.addListener(sttListener)
         val e = WebhookActionConverter.toEvent(sttRequest, appId)

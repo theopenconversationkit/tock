@@ -19,7 +19,7 @@
     <parent>
         <artifactId>tock-bot</artifactId>
         <groupId>ai.tock</groupId>
-        <version>26.3.4-SNAPSHOT</version>
+        <version>26.9.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -90,7 +90,8 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.16.1</version>
+            <version>${assertj}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

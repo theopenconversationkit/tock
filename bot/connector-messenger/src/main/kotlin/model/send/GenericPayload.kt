@@ -21,14 +21,13 @@ import ai.tock.bot.engine.message.GenericMessage
 /**
  *
  */
-data class GenericPayload(val elements: List<Element>) : ModelPayload(PayloadType.generic) {
-    override fun toGenericMessage(): GenericMessage? {
-        return GenericMessage(
+data class GenericPayload(
+    val elements: List<Element>,
+) : ModelPayload(PayloadType.generic) {
+    override fun toGenericMessage(): GenericMessage? =
+        GenericMessage(
             subElements = elements.map { it.toGenericElement() },
         )
-    }
 
-    override fun obfuscate(): Payload {
-        return GenericPayload(elements.map { it.obfuscate() })
-    }
+    override fun obfuscate(): Payload = GenericPayload(elements.map { it.obfuscate() })
 }

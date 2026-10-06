@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.AbstractTest
+import ai.tock.bot.admin.dashboard.BotDashboardDAO
 import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.dialog.DialogReportDAO
@@ -73,6 +74,7 @@ class EvaluationServiceTest : AbstractTest() {
         private const val BOT_ID = "testBotId"
         private const val USER = "testUser"
 
+        val dashboardDAO: BotDashboardDAO = mockk(relaxed = true)
         val evaluationSampleDAO: EvaluationSampleDAO = mockk()
         val evaluationDAO: EvaluationDAO = mockk()
         val dialogReportDAO: DialogReportDAO = mockk()
@@ -81,6 +83,7 @@ class EvaluationServiceTest : AbstractTest() {
             tockInternalInjector = KodeinInjector()
             val module =
                 Kodein.Module(allowSilentOverride = true) {
+                    bind<BotDashboardDAO>() with provider { dashboardDAO }
                     bind<EvaluationSampleDAO>() with provider { evaluationSampleDAO }
                     bind<EvaluationDAO>() with provider { evaluationDAO }
                     bind<DialogReportDAO>() with provider { dialogReportDAO }
@@ -96,7 +99,7 @@ class EvaluationServiceTest : AbstractTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(evaluationSampleDAO, evaluationDAO, dialogReportDAO)
+        clearMocks(evaluationSampleDAO, evaluationDAO, dialogReportDAO, dashboardDAO)
     }
 
     private fun createDialogReport(
@@ -919,6 +922,14 @@ class EvaluationServiceTest : AbstractTest() {
 
         assertNotNull(result)
         assertEquals(EvaluationSampleStatus.VALIDATED, result.status)
+        verify(exactly = 1) {
+            dashboardDAO.append(
+                match {
+                    it.type == "evaluation" && it.namespace == NAMESPACE && it.botId == BOT_ID && it.author == USER &&
+                        it.params["dialogCount"] == 5 && it.params["positiveRate"] == 100.0 * 10 / 15
+                },
+            )
+        }
     }
 
     @Test
@@ -966,6 +977,7 @@ class EvaluationServiceTest : AbstractTest() {
 
         assertNotNull(result)
         assertEquals(EvaluationSampleStatus.CANCELLED, result.status)
+        verify(exactly = 0) { dashboardDAO.append(any()) }
     }
 
     @Test

@@ -130,82 +130,73 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         asyncCol.watch { listener() }
     }
 
-    override fun getStoryDefinitionById(id: Id<StoryDefinitionConfiguration>): StoryDefinitionConfiguration? {
-        return col.findOneById(id)
-    }
+    override fun getStoryDefinitionById(id: Id<StoryDefinitionConfiguration>): StoryDefinitionConfiguration? = col.findOneById(id)
 
     override fun getStoryDefinitionsByNamespaceAndBotIdWithFileAttached(
         namespace: String,
         botId: String,
-    ): List<StoryDefinitionConfiguration> {
-        return col.find(
-            Namespace eq namespace,
-            BotId eq botId,
-            exists("answers.answers.mediaMessage.file.id", true),
-        ).toList()
-    }
+    ): List<StoryDefinitionConfiguration> =
+        col
+            .find(
+                Namespace eq namespace,
+                BotId eq botId,
+                exists("answers.answers.mediaMessage.file.id", true),
+            ).toList()
 
     override fun getRuntimeStorySettings(
         namespace: String,
         botId: String,
-    ): List<StoryDefinitionConfiguration> {
-        return col.find(
-            and(
-                Namespace eq namespace,
-                BotId eq botId,
-                or(StoryTag.values().map { Tags contains it }),
-            ),
-        ).toList()
-    }
+    ): List<StoryDefinitionConfiguration> =
+        col
+            .find(
+                and(
+                    Namespace eq namespace,
+                    BotId eq botId,
+                    or(StoryTag.values().map { Tags contains it }),
+                ),
+            ).toList()
 
     override fun getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
         namespace: String,
         botId: String,
         intent: String,
-    ): StoryDefinitionConfiguration? {
-        return col.findOne(
+    ): StoryDefinitionConfiguration? =
+        col.findOne(
             Namespace eq namespace,
             BotId eq botId,
             CurrentType ne AnswerConfigurationType.builtin,
             Intent.name_ eq intent,
         )
-    }
 
     override fun getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(
         namespace: String,
         botId: String,
         intentNames: List<String>,
-    ): List<StoryDefinitionConfiguration> {
-        return col.find(
-            Namespace eq namespace,
-            BotId eq botId,
-            CurrentType ne AnswerConfigurationType.builtin,
-            Intent.name_ `in` (intentNames.asIterable()),
-        ).toList()
-    }
+    ): List<StoryDefinitionConfiguration> =
+        col
+            .find(
+                Namespace eq namespace,
+                BotId eq botId,
+                CurrentType ne AnswerConfigurationType.builtin,
+                Intent.name_ `in` (intentNames.asIterable()),
+            ).toList()
 
     override fun getStoryDefinitionByNamespaceAndBotIdAndIntent(
         namespace: String,
         botId: String,
         intent: String,
-    ): StoryDefinitionConfiguration? {
-        return col.findOne(Namespace eq namespace, BotId eq botId, Intent.name_ eq intent)
-    }
+    ): StoryDefinitionConfiguration? = col.findOne(Namespace eq namespace, BotId eq botId, Intent.name_ eq intent)
 
     override fun getStoryDefinitionByNamespaceAndBotIdAndStoryId(
         namespace: String,
         botId: String,
         storyId: String,
-    ): StoryDefinitionConfiguration? {
-        return col.findOne(Namespace eq namespace, BotId eq botId, StoryId eq storyId)
-    }
+    ): StoryDefinitionConfiguration? = col.findOne(Namespace eq namespace, BotId eq botId, StoryId eq storyId)
 
     override fun getStoryDefinitionsByNamespaceAndBotId(
         namespace: String,
         botId: String,
-    ): List<StoryDefinitionConfiguration> {
-        return col.find(and(Namespace eq namespace, BotId eq botId)).toList()
-    }
+    ): List<StoryDefinitionConfiguration> = col.find(and(Namespace eq namespace, BotId eq botId)).toList()
 
     fun customRegexToFindWord(textSearch: String) =
         if (textSearch.trim().isEmpty()) {
@@ -230,24 +221,23 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
                         document(Namespace from Conf.namespace, StoryId from Conf.storyId),
                         Date.max(Date),
                     ),
-                )
-                .toList()
+                ).toList()
                 .associateBy({ it._id.storyId }) { it.date.withZoneSameInstant(defaultZoneId) }
 
-        return col.withDocumentClass<StoryDefinitionConfigurationSummaryExtended>()
+        return col
+            .withDocumentClass<StoryDefinitionConfigurationSummaryExtended>()
             .find(
                 // default list of var args Bson
                 *filterStoryDefinitionSummaries(request)
                     // specific filters for extended
                     .plusElement(
-                        request.textSearch?.takeUnless { it.isBlank() }
+                        request.textSearch
+                            ?.takeUnless { it.isBlank() }
                             ?.let { Name.regex(customRegexToFindWord(request.textSearch ?: ""), "i") },
-                    )
-                    .plusElement(
+                    ).plusElement(
                         if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else null,
                     ),
-            )
-            .projection(
+            ).projection(
                 StoryDefinitionConfigurationSummaryExtended::_id,
                 StoryDefinitionConfigurationSummaryExtended::storyId,
                 StoryDefinitionConfigurationSummaryExtended::botId,
@@ -256,8 +246,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
                 StoryDefinitionConfigurationSummaryExtended::name,
                 StoryDefinitionConfigurationSummaryExtended::category,
                 StoryDefinitionConfigurationSummaryExtended::description,
-            )
-            .safeCollation(Collation.builder().locale(defaultLocale.language).build())
+            ).safeCollation(Collation.builder().locale(defaultLocale.language).build())
             .sort(ascending(StoryDefinitionConfigurationSummaryExtended::name))
             .map { it.copy(lastEdited = dateById[it.storyId]) }
             .toList()
@@ -265,7 +254,8 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
 
     override fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationMinimalSummaryRequest): List<StoryDefinitionConfigurationSummaryMinimumMetrics> {
         val data = filterStoryDefinitionSummaries(request)
-        return col.withDocumentClass<StoryDefinitionConfigurationSummaryMinimumMetrics>()
+        return col
+            .withDocumentClass<StoryDefinitionConfigurationSummaryMinimumMetrics>()
             .find(*data)
             .projection(
                 StoryDefinitionConfigurationSummaryMinimumMetrics::_id,
@@ -275,8 +265,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
                 StoryDefinitionConfigurationSummaryMinimumMetrics::name,
                 StoryDefinitionConfigurationSummaryMinimumMetrics::category,
                 StoryDefinitionConfigurationSummaryMinimumMetrics::metricStory,
-            )
-            .safeCollation(Collation.builder().locale(defaultLocale.language).build())
+            ).safeCollation(Collation.builder().locale(defaultLocale.language).build())
             .sort(ascending(StoryDefinitionConfigurationSummaryMinimumMetrics::name))
             .toList()
     }
@@ -316,10 +305,11 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         botId: String,
     ) {
         val deletingStories =
-            col.find(
-                Filters.eq("namespace", namespace),
-                Filters.eq("botId", botId),
-            ).toList()
+            col
+                .find(
+                    Filters.eq("namespace", namespace),
+                    Filters.eq("botId", botId),
+                ).toList()
         if (deletingStories.isNotEmpty()) {
             deletingStories.forEach { deletingStory ->
                 historyCol.save(StoryDefinitionConfigurationHistoryCol(deletingStory, true))
@@ -345,6 +335,11 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
     }
 }
 
-private data class DateProjectionKey(val storyId: String)
+private data class DateProjectionKey(
+    val storyId: String,
+)
 
-private data class DateProjection(val _id: DateProjectionKey, val date: ZonedDateTime)
+private data class DateProjection(
+    val _id: DateProjectionKey,
+    val date: ZonedDateTime,
+)

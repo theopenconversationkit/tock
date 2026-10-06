@@ -1,0 +1,70 @@
+<nb-card class="dialog-card">
+  <nb-card-header class="d-flex align-items-center gap-05">
+    <i class="bi bi-person-badge"></i>
+    <span class="flex-grow-1">{{ 'dashboard.identity-edit.title' | transloco }}</span>
+    <button
+      nbButton
+      ghost
+      size="tiny"
+      (click)="cancel()"
+      [attr.aria-label]="'dashboard.common.close' | transloco"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body [formGroup]="form">
+    <tock-form-control
+      [label]="'dashboard.identity-edit.display-name' | transloco"
+      name="displayName"
+      [controls]="form.controls.displayName"
+      [hasMargin]="true"
+      [information]="'dashboard.identity-edit.display-name-help' | transloco"
+    >
+      <input
+        nbInput
+        fullWidth
+        formControlName="displayName"
+        [placeholder]="'dashboard.identity-edit.display-name-placeholder' | transloco"
+      />
+    </tock-form-control>
+
+    <p class="metric-label mb-3">
+      {{ 'dashboard.identity-edit.technical-name' | transloco: { name: technicalName } }}
+    </p>
+
+    <tock-form-control
+      [label]="'dashboard.identity-edit.notes' | transloco"
+      name="notes"
+      [controls]="form.controls.notes"
+      [information]="'dashboard.identity-edit.notes-help' | transloco"
+    >
+      <textarea
+        nbInput
+        fullWidth
+        rows="10"
+        formControlName="notes"
+        [placeholder]="'dashboard.identity-edit.notes-placeholder' | transloco"
+      ></textarea>
+    </tock-form-control>
+  </nb-card-body>
+
+  <nb-card-footer class="d-flex justify-content-end gap-05">
+    <button
+      nbButton
+      ghost
+      size="small"
+      (click)="cancel()"
+    >
+      {{ 'dashboard.common.cancel' | transloco }}
+    </button>
+    <button
+      nbButton
+      status="primary"
+      size="small"
+      (click)="save()"
+    >
+      {{ 'dashboard.identity-edit.save' | transloco }}
+    </button>
+  </nb-card-footer>
+</nb-card>

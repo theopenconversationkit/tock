@@ -25,5 +25,7 @@ data class UpdateBot(
     val distributionRules: List<DistributionRule>,
     val external: BotId,
 ) {
-    data class BotId(val idBot: String)
+    data class BotId(
+        val idBot: String,
+    )
 }

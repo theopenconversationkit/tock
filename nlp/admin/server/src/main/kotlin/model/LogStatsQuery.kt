@@ -27,12 +27,11 @@ data class LogStatsQuery(
     val minOccurrences: Int?,
     val onlyCurrentLocale: Boolean = false,
 ) : ApplicationScopedQuery() {
-    fun toStatQuery(application: ApplicationDefinition): ParseRequestLogStatQuery {
-        return ParseRequestLogStatQuery(
+    fun toStatQuery(application: ApplicationDefinition): ParseRequestLogStatQuery =
+        ParseRequestLogStatQuery(
             application._id,
             if (onlyCurrentLocale) currentLanguage else null,
             intent,
             minOccurrences,
         )
-    }
 }

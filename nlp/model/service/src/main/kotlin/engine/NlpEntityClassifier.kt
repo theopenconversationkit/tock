@@ -22,4 +22,6 @@ import ai.tock.shared.ThreadSafe
  *
  */
 @ThreadSafe
-abstract class NlpEntityClassifier(val model: EntityModelHolder) : EntityClassifier
+abstract class NlpEntityClassifier(
+    val model: EntityModelHolder,
+) : EntityClassifier

@@ -35,9 +35,7 @@ abstract class Webhook : MessengerConnectorMessage() {
     abstract val timestamp: Long
     open val priorMessage: PriorMessage? get() = null
 
-    override fun toGenericMessage(): GenericMessage? {
-        return null
-    }
+    override fun toGenericMessage(): GenericMessage? = null
 
     open fun playerId(playerType: PlayerType): PlayerId = PlayerId(sender?.id ?: error("null sender field in webhook"), playerType)
 

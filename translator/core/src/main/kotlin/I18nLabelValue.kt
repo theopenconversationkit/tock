@@ -84,9 +84,7 @@ class I18nLabelValue constructor(
      */
     fun withArgs(vararg newArgs: Any?): I18nLabelValue = withArgs(listOf(*newArgs))
 
-    override fun toString(): String {
-        return defaultLabel.toString()
-    }
+    override fun toString(): String = defaultLabel.toString()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

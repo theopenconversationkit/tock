@@ -19,4 +19,7 @@ package ai.tock.bot.engine.user
 /**
  *
  */
-data class UserLocation(val lat: Double, val lng: Double)
+data class UserLocation(
+    val lat: Double,
+    val lng: Double,
+)

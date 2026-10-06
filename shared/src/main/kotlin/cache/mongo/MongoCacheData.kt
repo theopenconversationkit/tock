@@ -41,16 +41,13 @@ internal class MongoCacheData(
             id: Id<T>,
             type: String,
             v: T,
-        ): MongoCacheData {
-            return when (v) {
+        ): MongoCacheData =
+            when (v) {
                 is String -> MongoCacheData(id, type, s = v)
                 is ByteArray -> MongoCacheData(id, type, b = v)
                 else -> MongoCacheData(id, type, a = AnyValueWrapper(v))
             }
-        }
     }
 
-    fun toValue(): Any {
-        return s ?: b ?: a!!.value!!
-    }
+    fun toValue(): Any = s ?: b ?: a!!.value!!
 }

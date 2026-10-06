@@ -16,4 +16,8 @@
 
 package ai.tock.shared.exception.error
 
-data class ErrorMessage(val code: String? = null, val message: String, val params: Any? = null)
+data class ErrorMessage(
+    val code: String? = null,
+    val message: String,
+    val params: Any? = null,
+)

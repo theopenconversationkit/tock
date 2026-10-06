@@ -100,8 +100,7 @@ fun createSecuredApi(
         logger,
         interceptors = listOf(tokenAuthenticationInterceptor(tokenProvider)),
         proxy = proxy,
-    )
-        .baseUrl(BASE_URL)
+    ).baseUrl(BASE_URL)
         .addConverterFactory(JacksonConverterFactory.create())
         .build()
         .create()

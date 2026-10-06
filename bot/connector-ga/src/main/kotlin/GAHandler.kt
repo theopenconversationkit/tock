@@ -29,4 +29,6 @@ import kotlin.reflect.KClass
 @ConnectorHandler(connectorTypeId = GA_CONNECTOR_TYPE_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class GAHandler(val value: KClass<out ConnectorSpecificHandling>)
+annotation class GAHandler(
+    val value: KClass<out ConnectorSpecificHandling>,
+)

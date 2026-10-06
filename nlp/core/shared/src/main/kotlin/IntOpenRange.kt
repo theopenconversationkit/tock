@@ -28,20 +28,14 @@ interface IntOpenRange : Comparable<IntOpenRange> {
         return if (c == 0) other.end.compareTo(end) else c
     }
 
-    fun overlap(range: IntOpenRange): Boolean {
-        return overlap(range.start, range.end)
-    }
+    fun overlap(range: IntOpenRange): Boolean = overlap(range.start, range.end)
 
     fun overlap(
         start: Int,
         end: Int,
-    ): Boolean {
-        return this.end > start && this.start < end
-    }
+    ): Boolean = this.end > start && this.start < end
 
-    fun isSameRange(range: IntOpenRange): Boolean {
-        return start == range.start && end == range.end
-    }
+    fun isSameRange(range: IntOpenRange): Boolean = start == range.start && end == range.end
 
     /**
      * Transforms this range into an [IntRange].

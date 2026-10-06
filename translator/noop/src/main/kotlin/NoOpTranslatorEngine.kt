@@ -27,7 +27,5 @@ internal object NoOpTranslatorEngine : TranslatorEngine {
         text: String,
         source: Locale,
         target: Locale,
-    ): String {
-        return text
-    }
+    ): String = text
 }

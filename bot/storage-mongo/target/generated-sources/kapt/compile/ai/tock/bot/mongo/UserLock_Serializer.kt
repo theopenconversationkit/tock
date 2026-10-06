@@ -26,6 +26,11 @@ internal class UserLock_Serializer :
         gen.writeFieldName("date")
         val _date_ = value.date
         serializers.defaultSerializeValue(_date_, gen)
+        gen.writeFieldName("lockId")
+        val _lockId_ = value.lockId
+        if(_lockId_ == null) { gen.writeNull() } else {
+                gen.writeString(_lockId_)
+                }
         gen.writeEndObject()
     }
 }

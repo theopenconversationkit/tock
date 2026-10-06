@@ -39,11 +39,15 @@ import kotlin.system.exitProcess
 
 // helper to fill database with large data
 internal object FillMongo {
-    class Def(bus: BotBus) : HandlerDef<Connector>(bus) {
+    class Def(
+        bus: BotBus,
+    ) : HandlerDef<Connector>(bus) {
         override fun answer() {}
     }
 
-    class Connector(context: Def) : ConnectorDef<Def>(context)
+    class Connector(
+        context: Def,
+    ) : ConnectorDef<Def>(context)
 
     @JvmStatic
     fun main(args: Array<String>) {

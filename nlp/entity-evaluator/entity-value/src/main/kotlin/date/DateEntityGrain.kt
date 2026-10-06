@@ -30,7 +30,9 @@ import java.time.temporal.TemporalAdjusters
  *
  */
 @Suppress("ktlint:standard:enum-entry-name-case")
-enum class DateEntityGrain(val time: Boolean) {
+enum class DateEntityGrain(
+    val time: Boolean,
+) {
     // the order is important (duckling parsing)
     timezone(false),
     unknown(false),
@@ -57,8 +59,8 @@ enum class DateEntityGrain(val time: Boolean) {
         fun maxGrain(
             start: ZonedDateTime,
             end: ZonedDateTime,
-        ): DateEntityGrain {
-            return if (start.plusSeconds(1) >= end) {
+        ): DateEntityGrain =
+            if (start.plusSeconds(1) >= end) {
                 second
             } else if (start.truncatedTo(MINUTES).plusMinutes(1) >= end.truncatedTo(MINUTES)) {
                 minute
@@ -73,28 +75,34 @@ enum class DateEntityGrain(val time: Boolean) {
             } else {
                 year
             }
-        }
     }
 
-    fun truncate(date: ZonedDateTime): ZonedDateTime {
-        return try {
+    fun truncate(date: ZonedDateTime): ZonedDateTime =
+        try {
             when (this) {
                 second -> date.truncatedTo(SECONDS)
+
                 minute -> date.truncatedTo(MINUTES)
+
                 hour -> date.truncatedTo(HOURS)
+
                 day_of_week, day -> date.truncatedTo(DAYS)
+
                 // TODO depending of the timezone for the start of day
                 week -> date.with(TemporalAdjusters.previous(DayOfWeek.MONDAY)).truncatedTo(DAYS)
+
                 month -> date.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(DAYS)
+
                 quarter -> date.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(DAYS)
+
                 year -> date.with(TemporalAdjusters.firstDayOfYear()).truncatedTo(DAYS)
+
                 else -> date
             }
         } catch (e: Exception) {
             // ignore
             date
         }
-    }
 
     fun calculateInclusiveEnd(
         start: ZonedDateTime,

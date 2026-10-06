@@ -28,10 +28,9 @@ data class MediaElement(
     @JsonProperty("attachment_id") val attachmentId: String,
     val buttons: List<Button>? = null,
 ) {
-    fun toGenericElement(): GenericElement {
-        return GenericElement(
+    fun toGenericElement(): GenericElement =
+        GenericElement(
             choices = buttons?.map { it.toChoice() } ?: emptyList(),
             attachments = listOf(Attachment(attachmentId, mediaType.toAttachmentType())),
         )
-    }
 }

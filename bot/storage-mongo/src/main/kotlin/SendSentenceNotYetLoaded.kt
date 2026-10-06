@@ -88,7 +88,5 @@ internal class SendSentenceNotYetLoaded(
             nlpStatsLoaded = true
         }
 
-    override fun toString(): String {
-        return if (messageLoaded) super.toString() else "SendSentenceWithNotLoadedMessage(dialogId=$dialogId, messageLoaded=$messageLoaded, nlpStatsLoaded=$nlpStatsLoaded)"
-    }
+    override fun toString(): String = if (messageLoaded) super.toString() else "SendSentenceWithNotLoadedMessage(dialogId=$dialogId, messageLoaded=$messageLoaded, nlpStatsLoaded=$nlpStatsLoaded)"
 }

@@ -57,8 +57,8 @@ internal object BusinessChatConnectorProvider : ConnectorProvider {
     /**
      * Returns the configuration fields for the bot admin
      */
-    override fun configuration(): ConnectorTypeConfiguration {
-        return ConnectorTypeConfiguration(
+    override fun configuration(): ConnectorTypeConfiguration =
+        ConnectorTypeConfiguration(
             businessChatConnectorType,
             listOf(
                 ConnectorTypeConfigurationField(
@@ -69,7 +69,6 @@ internal object BusinessChatConnectorProvider : ConnectorProvider {
             ),
             resourceAsString("/businesschat.svg"),
         )
-    }
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> =
         setOf(

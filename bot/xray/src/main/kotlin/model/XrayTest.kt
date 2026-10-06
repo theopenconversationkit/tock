@@ -27,9 +27,7 @@ data class XrayTest(
     val key: String = "",
     val precondition: List<XrayPrecondition> = emptyList(),
 ) {
-    fun supportConf(conf: String): Boolean {
-        return precondition.isEmpty() || precondition.any { it.supportConf(conf) }
-    }
+    fun supportConf(conf: String): Boolean = precondition.isEmpty() || precondition.any { it.supportConf(conf) }
 
     fun findUserInterface(): UserInterfaceType = precondition.mapNotNull { it.findUserInterface() }.firstOrNull() ?: textChat
 }

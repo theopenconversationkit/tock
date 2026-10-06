@@ -29,15 +29,12 @@ data class ListPayload(
     val topElementStyle: ListElementStyle?,
     val buttons: List<Button>?,
 ) : ModelPayload(PayloadType.list) {
-    override fun toGenericMessage(): GenericMessage? {
-        return GenericMessage(
+    override fun toGenericMessage(): GenericMessage? =
+        GenericMessage(
             choices = buttons?.map { it.toChoice() } ?: emptyList(),
             subElements = elements.map { it.toGenericElement() },
             metadata = mapNotNullValues(ListPayload::topElementStyle.name to topElementStyle?.name),
         )
-    }
 
-    override fun obfuscate(): Payload {
-        return ListPayload(elements.map { it.obfuscate() }, topElementStyle, buttons)
-    }
+    override fun obfuscate(): Payload = ListPayload(elements.map { it.obfuscate() }, topElementStyle, buttons)
 }

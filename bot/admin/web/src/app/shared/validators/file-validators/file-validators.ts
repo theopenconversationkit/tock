@@ -40,4 +40,31 @@ export class FileValidators {
       return filesNameWithWrongType.length ? { filesNameWithWrongType } : null;
     };
   }
+
+  static extensionSupported(extensions: string[]): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!Array.isArray(extensions) || !Array.isArray(control.value)) {
+        throw new TypeError('invalid argument. The parameter must be an array');
+      }
+
+      if (!extensions.length) {
+        throw new Error('the extensions parameter cannot be empty');
+      }
+
+      const normalized = extensions.map((e) => e.toLowerCase().replace(/^\./, ''));
+      const filesNameWithWrongType: string[] = [];
+
+      control.value.forEach((f: File) => {
+        if (!(f instanceof File)) {
+          throw new TypeError(`invalid arguments. ${f} must be a File object`);
+        }
+        const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
+        if (!normalized.includes(ext)) {
+          filesNameWithWrongType.push(f.name);
+        }
+      });
+
+      return filesNameWithWrongType.length ? { filesNameWithWrongType } : null;
+    };
+  }
 }

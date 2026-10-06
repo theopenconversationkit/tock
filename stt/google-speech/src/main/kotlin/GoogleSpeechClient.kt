@@ -68,18 +68,18 @@ internal object GoogleSpeechClient : STT {
             SpeechClient.create().use { speechClient ->
 
                 val config =
-                    RecognitionConfig.newBuilder()
+                    RecognitionConfig
+                        .newBuilder()
                         .setEncoding(
                             RecognitionConfig.AudioEncoding.FLAC,
-                        )
-                        .setLanguageCode(language.toString())
+                        ).setLanguageCode(language.toString())
                         .build()
                 val audio =
-                    RecognitionAudio.newBuilder()
+                    RecognitionAudio
+                        .newBuilder()
                         .setContent(
                             ByteString.copyFrom(parseUnknown(bytes)),
-                        )
-                        .build()
+                        ).build()
                 val response = speechClient.recognize(config, audio)
                 logger.info { response }
                 response.getResults(0).getAlternatives(0).transcript

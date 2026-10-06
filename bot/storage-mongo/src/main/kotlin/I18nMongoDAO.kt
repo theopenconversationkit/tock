@@ -159,9 +159,7 @@ internal object I18nMongoDAO : I18nDAO {
             labelIds?.takeUnless { it.isEmpty() }?.let { filteredIds -> _id nin filteredIds },
         )
 
-    override fun getLabelById(id: Id<I18nLabel>): I18nLabel? {
-        return col.findOneById(id)
-    }
+    override fun getLabelById(id: Id<I18nLabel>): I18nLabel? = col.findOneById(id)
 
     override fun save(label: I18nLabelContract) {
         val sortedLabel = sortLocalizedLabels(label)
@@ -206,8 +204,8 @@ internal object I18nMongoDAO : I18nDAO {
         label: I18nLabel,
         localized: I18nLocalizedLabel,
         contextId: String,
-    ): Bson {
-        return and(
+    ): Bson =
+        and(
             ContextId eq contextId,
             LabelId eq label._id,
             label::namespace eq label.namespace,
@@ -215,7 +213,6 @@ internal object I18nMongoDAO : I18nDAO {
             InterfaceType eq localized.interfaceType,
             ConnectorId eq localized.connectorId,
         )
-    }
 
     override fun deleteAlternativeIndexes(
         label: I18nLabel,
@@ -267,21 +264,19 @@ internal object I18nMongoDAO : I18nDAO {
         }
     }
 
-    override fun getLabelStats(namespace: String): List<I18nLabelStat> {
-        return statCol.find(I18nLabelStat_.Namespace eq namespace).toList()
-    }
+    override fun getLabelStats(namespace: String): List<I18nLabelStat> = statCol.find(I18nLabelStat_.Namespace eq namespace).toList()
 
     override fun getLabelIdsFromStats(
         namespace: String,
         timeMarker: Instant,
-    ): Set<Id<I18nLabel>> {
-        return statCol
+    ): Set<Id<I18nLabel>> =
+        statCol
             .projection(
                 I18nLabelStat::labelId,
                 and(
                     I18nLabelStat_.Namespace eq namespace,
                     I18nLabelStat_.LastUpdate gte timeMarker,
                 ),
-            ).distinct().toSet()
-    }
+            ).distinct()
+            .toSet()
 }

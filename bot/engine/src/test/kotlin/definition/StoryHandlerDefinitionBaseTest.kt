@@ -68,22 +68,34 @@ internal class StoryHandlerDefinitionBaseTest {
 
     @FirstConnectorHandler(FirstConnectorDef::class)
     @SecondConnectorHandler(SecondConnectorWithParameterDef::class)
-    class SimpleDefWithConnector(bus: BotBus) : HandlerDef<SimpleConnectorDef>(bus)
+    class SimpleDefWithConnector(
+        bus: BotBus,
+    ) : HandlerDef<SimpleConnectorDef>(bus)
 
-    abstract class SimpleConnectorDef(context: SimpleDefWithConnector) : ConnectorDef<SimpleDefWithConnector>(context)
+    abstract class SimpleConnectorDef(
+        context: SimpleDefWithConnector,
+    ) : ConnectorDef<SimpleDefWithConnector>(context)
 
-    class FirstConnectorDef(context: SimpleDefWithConnector) : SimpleConnectorDef(context)
+    class FirstConnectorDef(
+        context: SimpleDefWithConnector,
+    ) : SimpleConnectorDef(context)
 
-    class SecondConnectorWithParameterDef(context: SimpleDefWithConnector, val parameter: String = "parameter") :
-        SimpleConnectorDef(context)
+    class SecondConnectorWithParameterDef(
+        context: SimpleDefWithConnector,
+        val parameter: String = "parameter",
+    ) : SimpleConnectorDef(context)
 
     @ConnectorHandler(connectorTypeId = "connectorType1")
     @Target(AnnotationTarget.CLASS)
     @MustBeDocumented
-    annotation class FirstConnectorHandler(val value: KClass<out ConnectorSpecificHandling>)
+    annotation class FirstConnectorHandler(
+        val value: KClass<out ConnectorSpecificHandling>,
+    )
 
     @ConnectorHandler(connectorTypeId = "connectorType2")
     @Target(AnnotationTarget.CLASS)
     @MustBeDocumented
-    annotation class SecondConnectorHandler(val value: KClass<out ConnectorSpecificHandling>)
+    annotation class SecondConnectorHandler(
+        val value: KClass<out ConnectorSpecificHandling>,
+    )
 }

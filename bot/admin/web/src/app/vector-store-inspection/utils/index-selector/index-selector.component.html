@@ -1,0 +1,36 @@
+<tock-form-control
+  [label]="label"
+  name="index"
+>
+  <nb-select
+    fullWidth
+    class="index-select"
+    [selected]="selected"
+    (selectedChange)="onSelect($event)"
+    (blur)="hideTooltips()"
+    [placeholder]="placeholder"
+  >
+    @for (index of indexes; track index.indexName) {
+    <nb-option
+      [value]="index"
+      class="index-option"
+    >
+      <div class="index-option-row">
+        @if (index.isCurrent) {
+        <nb-icon
+          icon="check-circle-fill"
+          class="text-success index-current-icon"
+        ></nb-icon>
+        }
+        <span
+          class="index-name"
+          [nbTooltip]="index.indexName"
+        >
+          {{ index.indexName }}
+        </span>
+        <span class="index-date text-muted">{{ index.indexDatetime | date: 'y/MM/dd - HH:mm' }}</span>
+      </div>
+    </nb-option>
+    }
+  </nb-select>
+</tock-form-control>

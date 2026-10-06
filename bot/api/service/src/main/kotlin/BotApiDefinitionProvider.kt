@@ -85,7 +85,8 @@ internal class BotApiDefinitionProvider(
                             ApplicationDump(
                                 application = application,
                                 intents =
-                                    intents.filter { it.name.withoutNamespace() != Intent.unknown.name.withoutNamespace() }
+                                    intents
+                                        .filter { it.name.withoutNamespace() != Intent.unknown.name.withoutNamespace() }
                                         .map {
                                             it.copy(
                                                 name = it.name.withoutNamespace(),

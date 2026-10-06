@@ -29,13 +29,10 @@ data class SampleExpression(
     val entities: List<SampleEntity> = emptyList(),
     val context: SampleContext = SampleContext(),
 ) {
-    fun entityValues(def: Entity): List<String> {
-        return entities
+    fun entityValues(def: Entity): List<String> =
+        entities
             .filter { it.definition == def }
             .map { text.substring(it.start, it.end) }
-    }
 
-    fun containsEntityType(entityType: EntityType): Boolean {
-        return entities.any { it.isType(entityType) }
-    }
+    fun containsEntityType(entityType: EntityType): Boolean = entities.any { it.isType(entityType) }
 }

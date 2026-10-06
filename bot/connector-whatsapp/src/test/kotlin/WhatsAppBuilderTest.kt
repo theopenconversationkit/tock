@@ -78,11 +78,44 @@ class WhatsAppBuilderTest {
         assertEquals(WhatsAppBotRecipientType.individual, result.recipientType)
         assertEquals(WhatsAppBotInteractiveType.button, result.interactive.type)
         assertEquals("text", result.interactive.body?.text)
-        assertEquals(2, result.interactive.action?.buttons?.size)
-        assertEquals("title1", result.interactive.action?.buttons?.get(0)?.reply?.title)
-        assertEquals("?_nlp=title1", result.interactive.action?.buttons?.get(0)?.reply?.id)
-        assertEquals("title2", result.interactive.action?.buttons?.get(1)?.reply?.title)
-        assertEquals("intent", result.interactive.action?.buttons?.get(1)?.reply?.id)
+        assertEquals(
+            2,
+            result.interactive.action
+                ?.buttons
+                ?.size,
+        )
+        assertEquals(
+            "title1",
+            result.interactive.action
+                ?.buttons
+                ?.get(0)
+                ?.reply
+                ?.title,
+        )
+        assertEquals(
+            "?_nlp=title1",
+            result.interactive.action
+                ?.buttons
+                ?.get(0)
+                ?.reply
+                ?.id,
+        )
+        assertEquals(
+            "title2",
+            result.interactive.action
+                ?.buttons
+                ?.get(1)
+                ?.reply
+                ?.title,
+        )
+        assertEquals(
+            "intent",
+            result.interactive.action
+                ?.buttons
+                ?.get(1)
+                ?.reply
+                ?.id,
+        )
     }
 
     @Test
@@ -102,12 +135,57 @@ class WhatsAppBuilderTest {
         assertEquals(WhatsAppBotRecipientType.individual, result.recipientType)
         assertEquals(WhatsAppBotInteractiveType.list, result.interactive.type)
         assertEquals("text", result.interactive.body?.text)
-        assertEquals(1, result.interactive.action?.sections?.size)
-        assertEquals("title1", result.interactive.action?.sections?.get(0)?.rows?.get(0)?.title)
-        assertEquals("?_nlp=title1", result.interactive.action?.sections?.get(0)?.rows?.get(0)?.id)
-        assertEquals("title2", result.interactive.action?.sections?.get(0)?.rows?.get(1)?.title)
-        assertEquals("subtitle", result.interactive.action?.sections?.get(0)?.rows?.get(1)?.description)
-        assertEquals("intent", result.interactive.action?.sections?.get(0)?.rows?.get(1)?.id)
+        assertEquals(
+            1,
+            result.interactive.action
+                ?.sections
+                ?.size,
+        )
+        assertEquals(
+            "title1",
+            result.interactive.action
+                ?.sections
+                ?.get(0)
+                ?.rows
+                ?.get(0)
+                ?.title,
+        )
+        assertEquals(
+            "?_nlp=title1",
+            result.interactive.action
+                ?.sections
+                ?.get(0)
+                ?.rows
+                ?.get(0)
+                ?.id,
+        )
+        assertEquals(
+            "title2",
+            result.interactive.action
+                ?.sections
+                ?.get(0)
+                ?.rows
+                ?.get(1)
+                ?.title,
+        )
+        assertEquals(
+            "subtitle",
+            result.interactive.action
+                ?.sections
+                ?.get(0)
+                ?.rows
+                ?.get(1)
+                ?.description,
+        )
+        assertEquals(
+            "intent",
+            result.interactive.action
+                ?.sections
+                ?.get(0)
+                ?.rows
+                ?.get(1)
+                ?.id,
+        )
     }
 
     @Test

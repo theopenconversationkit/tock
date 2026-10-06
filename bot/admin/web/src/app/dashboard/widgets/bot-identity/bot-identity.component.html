@@ -1,0 +1,49 @@
+<tock-dashboard-widget
+  [title]="'dashboard.identity.title' | transloco"
+  icon="person-badge"
+  [state]="state"
+  [skeletonLines]="4"
+>
+  <ng-template #widgetBody>
+    <div class="identity-names">
+      <div>
+        <div class="metric-label">{{ 'dashboard.identity.display-name' | transloco }}</div>
+        @if (identity.displayName) {
+        <div class="identity-display-name">{{ identity.displayName }}</div>
+        } @else {
+        <div class="metric-label identity-unset">{{ 'dashboard.identity.display-name-unset' | transloco }}</div>
+        }
+      </div>
+
+      <div>
+        <div class="metric-label">{{ 'dashboard.identity.technical-name' | transloco }}</div>
+        <div class="identity-technical-name">{{ technicalName }}</div>
+      </div>
+    </div>
+
+    <div class="identity-notes">
+      @if (hasNotes) {
+      <pre class="identity-notes-text">{{ identity.notes }}</pre>
+      <div class="metric-label mt-1">
+        {{ 'dashboard.identity.meta' | transloco: { date: identity.updatedAt | date: 'dd MMM yyyy', author: identity.updatedBy } }}
+      </div>
+      } @else {
+      <div class="metric-label">{{ 'dashboard.identity.notes-empty' | transloco }}</div>
+      }
+    </div>
+  </ng-template>
+
+  <ng-template #widgetFooter>
+    @if (canEdit) {
+    <button
+      nbButton
+      ghost
+      size="small"
+      (click)="onEdit.emit()"
+    >
+      <i class="bi bi-pencil"></i>
+      {{ 'dashboard.identity.edit' | transloco }}
+    </button>
+    }
+  </ng-template>
+</tock-dashboard-widget>

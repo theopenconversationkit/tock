@@ -24,5 +24,7 @@ data class Message<T : Payload>(
     val payload: T,
     val createdAt: String,
 ) {
-    data class Author(val role: String)
+    data class Author(
+        val role: String,
+    )
 }

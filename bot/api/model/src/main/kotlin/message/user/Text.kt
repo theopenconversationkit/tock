@@ -16,6 +16,8 @@
 
 package ai.tock.bot.api.model.message.user
 
-data class Text(val text: String) : UserMessage {
+data class Text(
+    val text: String,
+) : UserMessage {
     override fun toString(): String = text
 }

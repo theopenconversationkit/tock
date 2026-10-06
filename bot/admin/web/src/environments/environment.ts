@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { EnvBannerConfig } from '../app/shared/env-banner/env-banner.model';
+
 // The file contents for the current environment will overwrite these during build.
 // The build system defaults to the dev environment which uses `environment.ts`, but if you do
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
@@ -25,5 +27,6 @@ export const environment = {
   ssologin: false,
   default_user: 'techadmin@app.com',
   default_password: 'password',
-  serverUrl: 'http://localhost:7999/rest'
+  serverUrl: '/rest',
+  envBanner: { label: 'LOCAL', color: '#f2a900' } as EnvBannerConfig | null
 };

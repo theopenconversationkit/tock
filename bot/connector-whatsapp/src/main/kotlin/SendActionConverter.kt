@@ -28,8 +28,8 @@ import ai.tock.bot.engine.action.SendSentence
  *
  */
 object SendActionConverter {
-    fun toBotMessage(action: Action): WhatsAppSendBotMessage? {
-        return if (action is SendSentence) {
+    fun toBotMessage(action: Action): WhatsAppSendBotMessage? =
+        if (action is SendSentence) {
             (action.message(whatsAppConnectorType) as? WhatsAppBotMessage)
                 ?.let {
                     it.toSendBotMessage(
@@ -46,5 +46,4 @@ object SendActionConverter {
         } else {
             null
         }
-    }
 }

@@ -1,0 +1,104 @@
+<nb-card
+  class="shadow-sm mb-2"
+  [class.pinned-entry]="pinned"
+>
+  <nb-card-body class="list-grid">
+    <div
+      (click)="switchContentDetail()"
+      class="pointer unselectable"
+      [nbTooltip]="'vsi.diagnostic.show_content_tooltip' | transloco"
+    >
+      <div class="list-entry-name font-weight-bold ellipsis">{{ result.title }}</div>
+      <div class="list-entry-desc text-muted">{{ result.chunkId }}</div>
+    </div>
+
+    @if (usesVector) {
+    <div class="text-right">
+      @if (result.ranks.vector !== null) {
+      <div class="rank-value">{{ result.ranks.vector }}</div>
+      <div class="score-value text-muted">{{ result.scores.vector | number: '1.3-3' }}</div>
+      } @else {
+      <div
+        class="rank-value text-muted"
+        [nbTooltip]="'vsi.diagnostic.not_in_channel_tooltip' | transloco"
+      >
+        &mdash;
+      </div>
+      }
+    </div>
+    } @if (usesFts) {
+    <div class="text-right">
+      @if (result.ranks.fts !== null) {
+      <div class="rank-value">{{ result.ranks.fts }}</div>
+      <div class="score-value text-muted">{{ result.scores.fts | number: '1.3-3' }}</div>
+      } @else {
+      <div
+        class="rank-value text-muted"
+        [nbTooltip]="'vsi.diagnostic.not_in_channel_tooltip' | transloco"
+      >
+        &mdash;
+      </div>
+      }
+    </div>
+    } @if (isHybrid) {
+    <div class="text-right">
+      @if (result.ranks.rrf !== null) {
+      <div class="rank-value font-weight-bold">{{ result.ranks.rrf }}</div>
+      <div class="score-value text-muted">{{ result.scores.rrf | number: '1.4-4' }}</div>
+      } @else {
+      <div class="rank-value text-muted">&mdash;</div>
+      }
+    </div>
+    } @if (showCompressor) {
+    <div class="text-right">
+      @if (result.scores.compressor !== null) {
+      <div class="rank-value">{{ result.scores.compressor | number: '1.3-3' }}</div>
+      } @else {
+      <div
+        class="rank-value text-muted"
+        [nbTooltip]="'vsi.diagnostic.not_compressed_tooltip' | transloco"
+      >
+        &mdash;
+      </div>
+      }
+    </div>
+    }
+
+    <div class="text-right">
+      <span
+        class="rounded px-2 py-1 font-size-small outcome-badge"
+        [class]="'status-' + outcomeStatus"
+        [nbTooltip]="'vsi.diagnostic.outcomes.' + result.outcome + '_tooltip' | transloco"
+      >
+        {{ 'vsi.diagnostic.outcomes.' + result.outcome | transloco }}
+      </span>
+    </div>
+
+    <div class="text-right">
+      <button
+        nbButton
+        ghost
+        shape="round"
+        size="small"
+        [status]="pinned ? 'primary' : 'basic'"
+        [disabled]="!canPin"
+        [nbTooltip]="(pinned ? 'vsi.diagnostic.unpin_tooltip' : 'vsi.diagnostic.pin_tooltip') | transloco"
+        (click)="togglePin()"
+      >
+        <nb-icon [icon]="pinned ? 'pin-angle-fill' : 'pin-angle'"></nb-icon>
+      </button>
+    </div>
+  </nb-card-body>
+
+  @if (displayContent) {
+  <nb-card-body class="background-basic-color-2 p-2 inner-shade-top">
+    <div class="background-basic-color-1 rounded px-2 py-1 font-size-small text-muted chunk-content">{{ result.content }}</div>
+
+    @if (result.metadata) {
+    <div class="background-basic-color-1 rounded px-2 py-1 mt-2">
+      <tock-vector-store-metadata [metadata]="result.metadata"></tock-vector-store-metadata>
+    </div>
+    }
+  </nb-card-body>
+  }
+</nb-card>

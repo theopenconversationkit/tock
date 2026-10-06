@@ -19,4 +19,7 @@ package ai.tock.nlp.entity
 /**
  *
  */
-data class VolumeValue(val value: Number, val unit: String) : Value
+data class VolumeValue(
+    val value: Number,
+    val unit: String,
+) : Value

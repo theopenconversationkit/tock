@@ -23,13 +23,12 @@ data class CallButton(
     val title: String,
     val payload: String,
 ) : Button(ButtonType.phone_number) {
-    override fun toChoice(): Choice {
-        return Choice(
+    override fun toChoice(): Choice =
+        Choice(
             SendChoice.PHONE_CALL_INTENT,
             mapOf(
                 SendChoice.TITLE_PARAMETER to title,
                 SendChoice.PHONE_CALL_INTENT to payload,
             ),
         )
-    }
 }

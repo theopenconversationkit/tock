@@ -91,13 +91,9 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
         asyncDictionaryCol.watch { listener() }
     }
 
-    override fun getEntityTypeByName(name: String): EntityTypeDefinition? {
-        return col.findOne(Name eq name)
-    }
+    override fun getEntityTypeByName(name: String): EntityTypeDefinition? = col.findOne(Name eq name)
 
-    override fun getEntityTypes(): List<EntityTypeDefinition> {
-        return col.find().toList()
-    }
+    override fun getEntityTypes(): List<EntityTypeDefinition> = col.find().toList()
 
     override fun deleteEntityTypeByName(name: String): Boolean {
         dictionaryCol.deleteOne(and(Namespace eq name.namespace(), EntityName eq name.name()))
@@ -125,28 +121,29 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
     ) {
         // see https://github.com/theopenconversationkit/tock/issues/1257
         if (isDocumentDB()) {
-            dictionaryCol.findOne(
-                Namespace eq entityTypeName.namespace(),
-                EntityName eq entityTypeName.name(),
-            )?.apply {
-                dictionaryCol.updateOne(
-                    and(
-                        Namespace eq entityTypeName.namespace(),
-                        EntityName eq entityTypeName.name(),
-                    ),
-                    copy(
-                        values =
-                            values.map { v ->
-                                val newList = v.labels[locale]?.filter { it != label }
-                                if (newList != null) {
-                                    v.copy(labels = v.labels + (locale to newList))
-                                } else {
-                                    v
-                                }
-                            },
-                    ),
-                )
-            }
+            dictionaryCol
+                .findOne(
+                    Namespace eq entityTypeName.namespace(),
+                    EntityName eq entityTypeName.name(),
+                )?.apply {
+                    dictionaryCol.updateOne(
+                        and(
+                            Namespace eq entityTypeName.namespace(),
+                            EntityName eq entityTypeName.name(),
+                        ),
+                        copy(
+                            values =
+                                values.map { v ->
+                                    val newList = v.labels[locale]?.filter { it != label }
+                                    if (newList != null) {
+                                        v.copy(labels = v.labels + (locale to newList))
+                                    } else {
+                                        v
+                                    }
+                                },
+                        ),
+                    )
+                }
         } else {
             dictionaryCol.updateOne(
                 and(

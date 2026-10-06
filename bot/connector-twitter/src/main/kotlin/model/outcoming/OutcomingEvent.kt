@@ -26,8 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 data class OutcomingEvent(
     val event: AbstractOutcomingEvent,
     @JsonIgnore val attachmentData: AttachmentData? = null,
-) :
-    TwitterConnectorMessage() {
+) : TwitterConnectorMessage() {
     override fun toGenericMessage(): GenericMessage? = event.toGenericMessage()
 
     @JsonIgnore

@@ -55,26 +55,19 @@ internal class OAuth2Provider(
                         "tock_oauth2_supported_grant_types",
                         emptyList(),
                     ).takeUnless { it.isEmpty() },
-                )
-                .setClientId(
+                ).setClientId(
                     property("tock_oauth2_client_id", ""),
-                )
-                .setClientSecret(
+                ).setClientSecret(
                     property("tock_oauth2_secret_key", ""),
-                )
-                .setSite(
+                ).setSite(
                     property("tock_oauth2_site_url", ""),
-                )
-                .setTokenPath(
+                ).setTokenPath(
                     property("tock_oauth2_access_token_path", ""),
-                )
-                .setAuthorizationPath(
+                ).setAuthorizationPath(
                     property("tock_oauth2_authorize_path", ""),
-                )
-                .setUserInfoPath(
+                ).setUserInfoPath(
                     property("tock_oauth2_userinfo_path", ""),
-                )
-                .apply {
+                ).apply {
                     val proxyHost = propertyOrNull("tock_oauth2_proxy_host")
                     val proxyPort = intProperty("tock_oauth2_proxy_port", 0)
                     if (proxyHost != null) {
@@ -87,7 +80,8 @@ internal class OAuth2Provider(
                     }
                 },
         ),
-) : SSOTockAuthProvider(vertx), OAuth2Auth by oauth2 {
+) : SSOTockAuthProvider(vertx),
+    OAuth2Auth by oauth2 {
     companion object {
         private val logger = KotlinLogging.logger {}
         private val namespaceMapping = mapProperty("tock_custom_namespace_mapping", emptyMap())
@@ -111,7 +105,8 @@ internal class OAuth2Provider(
             setupCallback(verticle.router.get(callbackPath(verticle)))
         }
 
-        verticle.router.route("/*")
+        verticle.router
+            .route("/*")
             .handler { context ->
 
                 val user = context.user()
@@ -129,7 +124,8 @@ internal class OAuth2Provider(
                             } else {
                                 JsonObject(
                                     String(
-                                        Base64.getDecoder()
+                                        Base64
+                                            .getDecoder()
                                             .decode(user.get<String>("id_token").split(".")[1]),
                                     ),
                                 )

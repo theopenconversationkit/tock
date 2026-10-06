@@ -20,12 +20,6 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-class FileTemplate(BaseModel):
-    name: str = Field(description='The file name.')
-    type: str = Field(description='The dataset template.')
-    file: str = Field(description='The file containing dataset items.')
-
-
 class BotInfo(BaseModel):
     namespace: str = Field(description='The namespace.')
     bot_id: str = Field(description='The bot id.')
@@ -70,6 +64,3 @@ class ActivityOutput(BaseModel):
     success_rate: float = Field(description='The success rate.')
 
 
-class DatasetTemplate(BaseModel):
-    type: str = Field(description='The dataset template.')
-    file: str = Field(description='The file containing dataset items.')

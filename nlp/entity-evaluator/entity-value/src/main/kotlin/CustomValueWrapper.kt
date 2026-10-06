@@ -31,7 +31,10 @@ import kotlin.reflect.KClass
  * Usually, it is better to extend [Value] directly.
  */
 @JsonDeserialize(using = CustomValueDeserializer::class)
-data class CustomValueWrapper(val klass: String, val value: Any?) : Value {
+data class CustomValueWrapper(
+    val klass: String,
+    val value: Any?,
+) : Value {
     internal class CustomValueDeserializer : JsonDeserializer<CustomValueWrapper>() {
         override fun deserialize(
             jp: JsonParser,

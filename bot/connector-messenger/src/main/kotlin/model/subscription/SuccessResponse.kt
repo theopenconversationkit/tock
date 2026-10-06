@@ -16,4 +16,6 @@
 
 package ai.tock.bot.connector.messenger.model.subscription
 
-internal data class SuccessResponse(val success: Boolean?)
+internal data class SuccessResponse(
+    val success: Boolean?,
+)

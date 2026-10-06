@@ -35,18 +35,15 @@ data class Location(
         playerId: PlayerId,
         applicationId: String,
         recipientId: PlayerId,
-    ): Action {
-        return SendLocation(
+    ): Action =
+        SendLocation(
             playerId,
             applicationId,
             recipientId,
             location,
         )
-    }
 
-    override fun toPrettyString(): String {
-        return "{$eventType:${location?.lat},${location?.lng}}"
-    }
+    override fun toPrettyString(): String = "{$eventType:${location?.lat},${location?.lng}}"
 
     override fun isSimpleMessage(): Boolean = false
 }

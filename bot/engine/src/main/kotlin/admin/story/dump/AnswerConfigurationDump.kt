@@ -23,7 +23,9 @@ import ai.tock.bot.admin.answer.MessageAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 
-abstract class AnswerConfigurationDump(val answerType: AnswerConfigurationType) {
+abstract class AnswerConfigurationDump(
+    val answerType: AnswerConfigurationType,
+) {
     companion object {
         fun toDump(answer: List<AnswerConfiguration>): List<AnswerConfigurationDump> = answer.map { toDump(it) }
 

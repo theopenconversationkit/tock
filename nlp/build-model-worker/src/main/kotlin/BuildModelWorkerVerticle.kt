@@ -57,7 +57,8 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                         !BuildModelWorker.buildModelWithDeletedSentences() &&
                         !BuildModelWorker.buildModelForTriggeredApplication() &&
                         (
-                            ZonedDateTime.now(defaultZoneId)
+                            ZonedDateTime
+                                .now(defaultZoneId)
                                 .run {
                                     hour >= testModelTimeframe[0] &&
                                         hour <= testModelTimeframe[1] &&

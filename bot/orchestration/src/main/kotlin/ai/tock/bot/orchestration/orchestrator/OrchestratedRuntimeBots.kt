@@ -18,6 +18,8 @@ package ai.tock.bot.orchestration.orchestrator
 
 import ai.tock.bot.orchestration.shared.OrchestrationTargetedBot
 
-class OrchestratedRuntimeBots(private val bots: List<OrchestratedRuntimeBot>) {
+class OrchestratedRuntimeBots(
+    private val bots: List<OrchestratedRuntimeBot>,
+) {
     fun get(target: OrchestrationTargetedBot): OrchestratedRuntimeBot? = bots.firstOrNull { it.target == target }
 }

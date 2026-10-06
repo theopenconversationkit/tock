@@ -146,7 +146,7 @@ class RestConnector(
     ): BotBus.() -> ConnectorMessage? =
         {
             when (targetConnectorType) {
-                rest ->
+                rest -> {
                     MessageResponse(
                         listOf(
                             Sentence(
@@ -161,7 +161,11 @@ class RestConnector(
                         ),
                         applicationId,
                     )
-                else -> getTargetConnector(targetConnectorType)?.addSuggestions(text, suggestions)?.invoke(this)
+                }
+
+                else -> {
+                    getTargetConnector(targetConnectorType)?.addSuggestions(text, suggestions)?.invoke(this)
+                }
             }
         }
 
@@ -181,14 +185,17 @@ class RestConnector(
                     }
                     message
                 }
-                else -> getTargetConnector(targetConnectorType)?.addSuggestions(message, suggestions)?.invoke(this)
+
+                else -> {
+                    getTargetConnector(targetConnectorType)?.addSuggestions(message, suggestions)?.invoke(this)
+                }
             }
         }
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
         {
             when (targetConnectorType) {
-                rest ->
+                rest -> {
                     listOfNotNull(
                         message.toGenericMessage()?.let {
                             MessageResponse(
@@ -202,7 +209,11 @@ class RestConnector(
                             )
                         },
                     )
-                else -> getTargetConnector(targetConnectorType)?.toConnectorMessage(message)?.invoke(this) ?: emptyList()
+                }
+
+                else -> {
+                    getTargetConnector(targetConnectorType)?.toConnectorMessage(message)?.invoke(this) ?: emptyList()
+                }
             }
         }
 }

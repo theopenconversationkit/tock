@@ -18,4 +18,6 @@ package ai.tock.nlp.entity
 
 import java.time.Duration
 
-data class DurationValue(val value: Duration) : Value
+data class DurationValue(
+    val value: Duration,
+) : Value

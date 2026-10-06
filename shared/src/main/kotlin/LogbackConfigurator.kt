@@ -35,7 +35,9 @@ import ch.qos.logback.core.util.FileSize
 /**
  * Default logback configurator.
  */
-internal class LogbackConfigurator : ContextAwareBase(), Configurator {
+internal class LogbackConfigurator :
+    ContextAwareBase(),
+    Configurator {
     private val defaultLevel =
         Level.toLevel(
             property(

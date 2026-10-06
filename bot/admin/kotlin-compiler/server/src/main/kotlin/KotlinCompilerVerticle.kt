@@ -43,9 +43,9 @@ class KotlinCompilerVerticle : WebVerticle() {
         }
     }
 
-    override fun defaultHealthcheck(): (RoutingContext) -> Unit {
-        return { it.response().end() }
-    }
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit = { it.response().end() }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = ai.tock.shared.vertx.detailedHealthcheck()
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit =
+        ai.tock.shared.vertx
+            .detailedHealthcheck()
 }

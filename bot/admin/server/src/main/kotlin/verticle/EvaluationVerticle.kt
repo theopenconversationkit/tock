@@ -48,7 +48,8 @@ class EvaluationVerticle : AbstractNamespaceRetriever() {
                     val statusParam = context.queryParam("status").firstOrNull()
                     val status =
                         statusParam?.let {
-                            ai.tock.bot.admin.evaluation.EvaluationSampleStatus.valueOf(it)
+                            ai.tock.bot.admin.evaluation.EvaluationSampleStatus
+                                .valueOf(it)
                         }
                     EvaluationService.findSamplesByBotId(namespace, botId, status)
                 }

@@ -61,7 +61,11 @@ class DucklingClientIntegrationTest {
         val result = DucklingClient.parse("fr", listOf("time"), now(), systemDefault(), "Aujourd’hui")
         println(result)
         assertEquals(
-            LocalDateTime.now().atZone(systemDefault()).withFixedOffsetZone().truncatedTo(ChronoUnit.DAYS),
+            LocalDateTime
+                .now()
+                .atZone(systemDefault())
+                .withFixedOffsetZone()
+                .truncatedTo(ChronoUnit.DAYS),
             parse(result!![0][":value"][":values"][0][":value"].string(), formatter),
         )
     }
@@ -72,7 +76,11 @@ class DucklingClientIntegrationTest {
         val result = DucklingClient.parse("fr", listOf("time"), referenceDate, systemDefault(), "dans 1h")
         println(result)
         assertEquals(
-            referenceDate.plusHours(1).withSecond(0).withNano(0).withFixedOffsetZone(),
+            referenceDate
+                .plusHours(1)
+                .withSecond(0)
+                .withNano(0)
+                .withFixedOffsetZone(),
             parse(result!![0][":value"][":values"][0][":value"].string(), formatter),
         )
     }
@@ -108,7 +116,11 @@ class DucklingClientIntegrationTest {
         val result = DucklingClient.parse("fr", listOf("time"), now, zoneId, "dans 1h")
         println(result)
         assertEquals(
-            now.withZoneSameInstant(zoneId).plusHours(1).toLocalDateTime().truncatedTo(ChronoUnit.MINUTES),
+            now
+                .withZoneSameInstant(zoneId)
+                .plusHours(1)
+                .toLocalDateTime()
+                .truncatedTo(ChronoUnit.MINUTES),
             parse(result!![0][":value"][":values"][0][":value"].string(), formatter).toLocalDateTime(),
         )
     }

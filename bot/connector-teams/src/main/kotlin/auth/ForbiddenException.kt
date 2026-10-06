@@ -15,4 +15,6 @@
  */
 package ai.tock.bot.connector.teams.auth
 
-internal class ForbiddenException(message: String) : Exception(message)
+internal class ForbiddenException(
+    message: String,
+) : Exception(message)

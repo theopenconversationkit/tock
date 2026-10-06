@@ -64,7 +64,9 @@ private const val VERSION = "20.0"
 /**
  * Messenger client.
  */
-internal class MessengerClient(val secretKey: String) {
+internal class MessengerClient(
+    val secretKey: String,
+) {
     interface GraphApi {
         @POST("/v$VERSION/me/messages")
         fun sendMessage(
@@ -176,8 +178,7 @@ internal class MessengerClient(val secretKey: String) {
                 longProperty("tock_messenger_request_timeout_ms", 30000),
                 logger,
                 requestGZipEncoding = booleanProperty("tock_messenger_request_gzip", true),
-            )
-                .baseUrl("https://graph.facebook.com")
+            ).baseUrl("https://graph.facebook.com")
                 .addJacksonConverter()
                 .build()
                 .create()
@@ -186,100 +187,95 @@ internal class MessengerClient(val secretKey: String) {
                 longProperty("tock_messenger_request_timeout_ms", 5000),
                 logger,
                 Level.BASIC,
-            )
-                .baseUrl("https://www.facebook.com")
+            ).baseUrl("https://www.facebook.com")
                 .build()
                 .create()
     }
 
-    fun healthcheck(): Boolean {
-        return try {
+    fun healthcheck(): Boolean =
+        try {
             statusApi.status().execute().isSuccessful
         } catch (t: Throwable) {
             logger.error(t)
             false
         }
-    }
 
     fun sendMessage(
         token: String,
         messageRequest: MessageRequest,
-    ): SendResponse {
-        return send(messageRequest) { graphApi.sendMessage(token, messageRequest).execute() }
-    }
+    ): SendResponse = send(messageRequest) { graphApi.sendMessage(token, messageRequest).execute() }
 
     fun sendAttachment(
         token: String,
         request: AttachmentRequest,
-    ): SendResponse? {
-        return graphApi.sendAttachment(token, request).execute().body()
-    }
+    ): SendResponse? = graphApi.sendAttachment(token, request).execute().body()
 
     fun sendAction(
         token: String,
         actionRequest: ActionRequest,
-    ): SendResponse? {
-        return try {
+    ): SendResponse? =
+        try {
             send(actionRequest) { graphApi.sendAction(token, actionRequest).execute() }
         } catch (e: Exception) {
             // log and ignore
             logger.info(e)
             null
         }
-    }
 
     fun sendCustomEvent(
         applicationId: String,
         customEventRequest: CustomEventRequest,
-    ): SendResponse {
-        return send(customEventRequest) { graphApi.sendCustomEvent(applicationId, customEventRequest).execute() }
-    }
+    ): SendResponse = send(customEventRequest) { graphApi.sendCustomEvent(applicationId, customEventRequest).execute() }
 
     fun requestThreadControl(
         token: String,
         request: RequestThreadControlRequest,
-    ): SendResponse? {
-        return try {
+    ): SendResponse? =
+        try {
             send(request) { graphApi.requestThreadControl(token, request).execute() }
         } catch (e: Exception) {
             // log and ignore
             logger.error(e)
             null
         }
-    }
 
     fun takeThreadControl(
         token: String,
         request: TakeThreadControlRequest,
-    ): SendResponse? {
-        return try {
+    ): SendResponse? =
+        try {
             send(request) { graphApi.takeThreadControl(token, request).execute() }
         } catch (e: Exception) {
             // log and ignore
             logger.error(e)
             null
         }
-    }
 
     fun passThreadControl(
         token: String,
         request: PassThreadControlRequest,
-    ): SendResponse? {
-        return try {
+    ): SendResponse? =
+        try {
             send(request) { graphApi.passThreadControl(token, request).execute() }
         } catch (e: Exception) {
             // log and ignore
             logger.error(e)
             null
         }
-    }
 
     fun getThreadOwnerId(
         token: String,
         userId: String,
     ): String? =
         try {
-            graphApi.threadOwner(token, userId).execute().body()?.data?.firstOrNull()?.threadOwner?.appId
+            graphApi
+                .threadOwner(token, userId)
+                .execute()
+                .body()
+                ?.data
+                ?.firstOrNull()
+                ?.threadOwner
+                ?.appId
         } catch (e: Exception) {
             logger.warn(e)
             null
@@ -287,15 +283,17 @@ internal class MessengerClient(val secretKey: String) {
 
     fun getSecondaryReceivers(token: String): List<SecondaryReceiverData>? =
         try {
-            graphApi.secondaryReceivers(token).execute().body()?.data
+            graphApi
+                .secondaryReceivers(token)
+                .execute()
+                .body()
+                ?.data
         } catch (e: Exception) {
             logger.warn(e)
             null
         }
 
-    private fun defaultUserProfile(): UserProfile {
-        return UserProfile("", "", null, null, 0, null)
-    }
+    private fun defaultUserProfile(): UserProfile = UserProfile("", "", null, null, 0, null)
 
     fun getUserProfile(
         token: String,
@@ -303,8 +301,10 @@ internal class MessengerClient(val secretKey: String) {
     ): UserProfile {
         val requestTimerData = requestTimer.start("messenger_user_profile")
         return try {
-            graphApi.getUserProfile(recipient.id!!, token, getProfileFields(extendedProfileFields))
-                .execute().body() ?: defaultUserProfile()
+            graphApi
+                .getUserProfile(recipient.id!!, token, getProfileFields(extendedProfileFields))
+                .execute()
+                .body() ?: defaultUserProfile()
         } catch (e: Exception) {
             logger.warn { recipient }
             logger.logError(e, requestTimerData)
@@ -336,9 +336,7 @@ internal class MessengerClient(val secretKey: String) {
     private fun <T : Any> send(
         request: T,
         call: (T) -> Response<SendResponse>,
-    ): SendResponse {
-        return send(request, call, 0)
-    }
+    ): SendResponse = send(request, call, 0)
 
     private fun <T> warnRequest(
         request: T,
@@ -407,15 +405,14 @@ internal class MessengerClient(val secretKey: String) {
     fun getSubscriptions(
         appId: String,
         appToken: String,
-    ): SubscriptionsResponse? {
-        return try {
+    ): SubscriptionsResponse? =
+        try {
             graphApi.getSubscriptions(appId, appToken).execute().body()
         } catch (e: Exception) {
             // log and ignore
             logger.error(e)
             null
         }
-    }
 
     fun subscriptions(
         appId: String,
@@ -423,8 +420,8 @@ internal class MessengerClient(val secretKey: String) {
         fields: String,
         verifyToken: String,
         appToken: String,
-    ): SuccessResponse? {
-        return try {
+    ): SuccessResponse? =
+        try {
             if (callbackUrl == "") {
                 throw ConnectorException("No callback URL found to subscribe webhook")
             }
@@ -434,33 +431,30 @@ internal class MessengerClient(val secretKey: String) {
             logger.error(e)
             null
         }
-    }
 
     fun deleteSubscribedApps(
         pageId: String,
         fields: String,
         token: String,
-    ): SuccessResponse? {
-        return try {
+    ): SuccessResponse? =
+        try {
             graphApi.deleteSubscribedApps(pageId, fields, token).execute().body()
         } catch (e: Exception) {
             // log and ignore
             logger.error(e)
             null
         }
-    }
 
     fun subscribedApps(
         pageId: String,
         fields: String,
         token: String,
-    ): SuccessResponse? {
-        return try {
+    ): SuccessResponse? =
+        try {
             graphApi.subscribedApps(pageId, fields, token).execute().body()
         } catch (e: Exception) {
             // log and ignore
             logger.error(e)
             null
         }
-    }
 }

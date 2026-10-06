@@ -16,4 +16,6 @@
 
 package ai.tock.bot.api.model.message.bot
 
-data class Suggestion(val title: I18nText)
+data class Suggestion(
+    val title: I18nText,
+)

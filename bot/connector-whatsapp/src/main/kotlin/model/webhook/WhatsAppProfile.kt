@@ -19,4 +19,6 @@ package ai.tock.bot.connector.whatsapp.model.webhook
 /**
  *
  */
-data class WhatsAppProfile(val name: String)
+data class WhatsAppProfile(
+    val name: String,
+)

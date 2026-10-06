@@ -25,9 +25,8 @@ data class MediaPayload(
     val elements: List<MediaElement>,
     val sharable: Boolean = false,
 ) : ModelPayload(PayloadType.media) {
-    override fun toGenericMessage(): GenericMessage? {
-        return GenericMessage(
+    override fun toGenericMessage(): GenericMessage? =
+        GenericMessage(
             subElements = elements.map { it.toGenericElement() },
         )
-    }
 }

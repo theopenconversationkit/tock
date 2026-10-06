@@ -30,11 +30,10 @@ internal object IntentSelectorService {
         }
     }
 
-    fun selector(data: ParserRequestData): SelectorBase {
-        return if (data.intentsQualifiers.isEmpty()) {
+    fun selector(data: ParserRequestData): SelectorBase =
+        if (data.intentsQualifiers.isEmpty()) {
             DefaultIntentSelector(data)
         } else {
             ExpectedIntentSelector(data)
         }
-    }
 }

@@ -28,8 +28,9 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
 /**
  * Base implementation of [StoryHandlerDefinition].
  */
-abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val bus: BotBus) :
-    BotBus by bus,
+abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(
+    val bus: BotBus,
+) : BotBus by bus,
     StoryHandlerDefinition {
     companion object {
         private val logger = KotlinLogging.logger {}

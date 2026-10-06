@@ -90,7 +90,8 @@ fun String.stripAccents(): String = Normalizer.normalize(this, Normalizer.Form.N
 fun String.normalize(locale: Locale): String = this.lowercase(locale).removeTrailingPunctuation().stripAccents()
 
 fun allowDiacriticsInRegexp(s: String): String =
-    s.replace("e", "[eéèêë]", ignoreCase = true)
+    s
+        .replace("e", "[eéèêë]", ignoreCase = true)
         .replace("a", "[aàáâãä]", ignoreCase = true)
         .replace("i", "[iìíîï]", ignoreCase = true)
         .replace("o", "[oòóôõöø]", ignoreCase = true)

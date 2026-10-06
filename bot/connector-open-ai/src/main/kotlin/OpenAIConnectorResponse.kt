@@ -20,7 +20,9 @@ import ai.tock.bot.connector.openai.OpenAIConnector.Companion.defaultModel
 import ai.tock.shared.Dice
 import com.aallam.openai.api.chat.ChatCompletion
 
-data class OpenAIConnectorResponse(val messages: List<OpenAIConnectorMessage>) {
+data class OpenAIConnectorResponse(
+    val messages: List<OpenAIConnectorMessage>,
+) {
     fun toOpenAIResponse(): ChatCompletion =
         ChatCompletion(
             id = Dice.newId(),

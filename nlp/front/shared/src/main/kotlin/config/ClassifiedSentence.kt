@@ -151,8 +151,8 @@ data class ClassifiedSentence(
     fun toSampleExpression(
         intentProvider: (Id<IntentDefinition>) -> Intent,
         entityTypeProvider: (String) -> EntityType?,
-    ): SampleExpression {
-        return SampleExpression(
+    ): SampleExpression =
+        SampleExpression(
             text,
             intentProvider.invoke(classification.intentId),
             classification.entities.mapNotNull {
@@ -160,13 +160,12 @@ data class ClassifiedSentence(
             },
             SampleContext(language),
         )
-    }
 
     private fun toSampleEntity(
         entity: ClassifiedEntity,
         entityTypeProvider: (String) -> EntityType?,
-    ): SampleEntity? {
-        return entityTypeProvider
+    ): SampleEntity? =
+        entityTypeProvider
             .invoke(entity.type)
             ?.run {
                 SampleEntity(
@@ -176,5 +175,4 @@ data class ClassifiedSentence(
                     entity.end,
                 )
             }
-    }
 }

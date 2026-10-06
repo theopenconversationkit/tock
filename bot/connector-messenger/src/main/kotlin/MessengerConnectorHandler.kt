@@ -71,7 +71,8 @@ internal class MessengerConnectorHandler(
                     try {
                         handleMessage(c, targetConnectorId, m, notifiedOnly) {
                             try {
-                                conn.getThreadOwner(m.playerId(user))
+                                conn
+                                    .getThreadOwner(m.playerId(user))
                                     ?.let { appId ->
                                         pageIdConnectorIdMap[pageId]
                                             ?.firstOrNull { connectorIdApplicationIdMap[it] == appId }
@@ -85,14 +86,15 @@ internal class MessengerConnectorHandler(
                     } catch (e: Throwable) {
                         try {
                             logger.logError(e, requestTimerData)
-                            controller.errorMessage(
-                                m.playerId(bot),
-                                applicationId,
-                                m.recipientId(user),
-                            ).let {
-                                conn.sendEvent(it)
-                                conn.endTypingAnswer(it)
-                            }
+                            controller
+                                .errorMessage(
+                                    m.playerId(bot),
+                                    applicationId,
+                                    m.recipientId(user),
+                                ).let {
+                                    conn.sendEvent(it)
+                                    conn.endTypingAnswer(it)
+                                }
                         } catch (t: Throwable) {
                             logger.error(e)
                         }

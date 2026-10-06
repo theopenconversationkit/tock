@@ -1,0 +1,58 @@
+// --- The width fix -------------------------------------------------------
+//
+// nb-select degrades badly inside a width-constrained wrapper: the trigger
+// button lays its label and caret in a flex row, but the label has no
+// min-width:0, so it refuses to shrink and either overflows or shoves the
+// caret out. In the dropdown, nb-option does not constrain its content, so a
+// long index name widens the panel and forces a horizontal scrollbar.
+//
+// The fix is the same idea in both places: allow the text box to shrink below
+// its content width (min-width:0) and ellipsis the overflow. The full value
+// stays reachable through the tooltip.
+
+.index-select {
+  // Constrain the trigger's inner label so it ellipsises instead of pushing
+  // the caret. ::ng-deep is needed to reach into Nebular's button markup;
+  // scoped to this component's class so it does not leak.
+  ::ng-deep .select-button {
+    min-width: 0;
+
+    .select-value,
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+  }
+}
+
+.index-option-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  // Options render in an overlay whose width tracks the trigger. Bounding the
+  // row to the available width lets the name ellipsis rather than widen the
+  // panel and trigger a horizontal scrollbar.
+  max-width: 100%;
+  min-width: 0;
+}
+
+.index-current-icon {
+  flex: 0 0 auto;
+  font-size: 1rem;
+}
+
+.index-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.index-date {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}

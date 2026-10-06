@@ -16,4 +16,6 @@
 
 package ai.tock.bot.connector.iadvize.model.payload
 
-data class TextPayload(val value: CharSequence) : Payload("text")
+data class TextPayload(
+    val value: CharSequence,
+) : Payload("text")

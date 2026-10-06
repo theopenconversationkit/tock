@@ -82,7 +82,8 @@ internal class ConfiguredStoryHandler(
             ) {
                 bus.dialog.state.changeValue(
                     role,
-                    bus.entityValueDetails(entityTypeName)
+                    bus
+                        .entityValueDetails(entityTypeName)
                         ?.let { v ->
                             v.copy(entity = Entity(v.entity.entityType, role))
                         },
@@ -92,7 +93,15 @@ internal class ConfiguredStoryHandler(
 
             if (bus.entityValueDetails(role) == null && entity.hasCurrentAnswer()) {
                 // if the role is generic and there is another role in the entity list: skip
-                if (role != entityTypeName || bus.entities.none { entity.entityType == it.value.value?.entity?.entityType?.name }) {
+                if (role != entityTypeName ||
+                    bus.entities.none {
+                        entity.entityType ==
+                            it.value.value
+                                ?.entity
+                                ?.entityType
+                                ?.name
+                    }
+                ) {
                     // else send entity question
                     entity.send(bus)
                     switchStoryIfEnding(null, bus)
@@ -106,7 +115,8 @@ internal class ConfiguredStoryHandler(
 
         // Manage step
         val busStep = bus.step as? Step
-        busStep?.configuration
+        busStep
+            ?.configuration
             ?.also { step ->
 
                 if (step.hasCurrentAnswer()) {
@@ -114,7 +124,12 @@ internal class ConfiguredStoryHandler(
                 }
                 val targetIntent =
                     step.targetIntent?.name
-                        ?: (bus.intent.takeIf { !step.hasCurrentAnswer() }?.wrappedIntent()?.name)
+                        ?: (
+                            bus.intent
+                                .takeIf { !step.hasCurrentAnswer() }
+                                ?.wrappedIntent()
+                                ?.name
+                        )
                 bus.botDefinition
                     .takeIf { targetIntent != null }
                     ?.findStoryDefinition(targetIntent, bus.connectorId)
@@ -202,7 +217,8 @@ internal class ConfiguredStoryHandler(
         bus: BotBus,
         metrics: List<StoryDefinitionStepMetric>,
     ) {
-        metrics.map { it.indicatorName }
+        metrics
+            .map { it.indicatorName }
             .distinct()
             .map { bus.createMetric(MetricType.QUESTION_ASKED, it) }
             .also {
@@ -216,7 +232,11 @@ internal class ConfiguredStoryHandler(
      * Remove the ask again process to the last story if no more ask again round available
      */
     private fun removeAskAgainProcess(bus: BotBus) {
-        if (bus.dialog.stories.lastOrNull()?.definition?.hasTag(StoryTag.ASK_AGAIN) == true && bus.dialog.state.hasCurrentAskAgainProcess && bus.dialog.state.askAgainRound == 0) {
+        if (bus.dialog.stories
+                .lastOrNull()
+                ?.definition
+                ?.hasTag(StoryTag.ASK_AGAIN) == true && bus.dialog.state.hasCurrentAskAgainProcess && bus.dialog.state.askAgainRound == 0
+        ) {
             bus.dialog.state.hasCurrentAskAgainProcess = false
         }
     }
@@ -227,7 +247,15 @@ internal class ConfiguredStoryHandler(
             val entityTypeName = entity.entityTypeName
             if (bus.entityValueDetails(role) == null && entity.hasCurrentAnswer()) {
                 // if the role is generic and there is an other role in the entity list: skip
-                if (role != entityTypeName || bus.entities.none { entity.entityType == it.value.value?.entity?.entityType?.name }) {
+                if (role != entityTypeName ||
+                    bus.entities.none {
+                        entity.entityType ==
+                            it.value.value
+                                ?.entity
+                                ?.entityType
+                                ?.name
+                    }
+                ) {
                     return true
                 }
             }
@@ -239,8 +267,14 @@ internal class ConfiguredStoryHandler(
         step: StoryDefinitionConfigurationStep?,
         bus: BotBus,
     ) {
-        if (!isMissingMandatoryEntities(bus) && bus.story.definition.steps.isEmpty() || step?.hasNoChildren == true) {
-            configuration.findEnabledEndWithStoryId(bus.connectorId)
+        if ((
+                !isMissingMandatoryEntities(bus) &&
+                    bus.story.definition.steps
+                        .isEmpty()
+            ) || step?.hasNoChildren == true
+        ) {
+            configuration
+                .findEnabledEndWithStoryId(bus.connectorId)
                 ?.let { bus.botDefinition.findStoryDefinitionById(it, bus.connectorId) }
                 ?.let {
                     // before switching story (Only for an ending rule), we need to save a snapshot with the current intent
@@ -271,13 +305,28 @@ internal class ConfiguredStoryHandler(
     private fun StoryDefinitionAnswersContainer.send(bus: BotBus) {
         findCurrentAnswer().apply {
             when (this) {
-                null -> bus.fallbackAnswer()
-                is SimpleAnswerConfiguration -> bus.handleSimpleAnswer(this@send, this)
-                is ScriptAnswerConfiguration -> bus.handleScriptAnswer(this@send)
-                is BuiltInAnswerConfiguration ->
-                    (bus.botDefinition as BotDefinitionWrapper).builtInStory(configuration.storyId)
-                        .storyHandler.handle(bus)
-                else -> error("type not supported for now: $this")
+                null -> {
+                    bus.fallbackAnswer()
+                }
+
+                is SimpleAnswerConfiguration -> {
+                    bus.handleSimpleAnswer(this@send, this)
+                }
+
+                is ScriptAnswerConfiguration -> {
+                    bus.handleScriptAnswer(this@send)
+                }
+
+                is BuiltInAnswerConfiguration -> {
+                    (bus.botDefinition as BotDefinitionWrapper)
+                        .builtInStory(configuration.storyId)
+                        .storyHandler
+                        .handle(bus)
+                }
+
+                else -> {
+                    error("type not supported for now: $this")
+                }
             }
         }
     }
@@ -296,9 +345,11 @@ internal class ConfiguredStoryHandler(
             val isMissingMandatoryEntities = isMissingMandatoryEntities(this)
             val steps = story.definition.steps.isNotEmpty()
             val answers = fillCarousel(simple)
-            answers.takeUnless { it.isEmpty() }
+            answers
+                .takeUnless { it.isEmpty() }
                 ?.let {
-                    it.subList(0, it.size - 1)
+                    it
+                        .subList(0, it.size - 1)
                         .forEach { a ->
                             send(container, a)
                         }
@@ -326,7 +377,8 @@ internal class ConfiguredStoryHandler(
     private fun BotBus.fillCarousel(simple: SimpleAnswerConfiguration): List<SimpleAnswer> {
         val transformedAnswers = mutableListOf<SimpleAnswer>()
         logger.debug { "Configured answers: ${simple.answers}" }
-        simple.answers.takeUnless { it.isEmpty() }
+        simple.answers
+            .takeUnless { it.isEmpty() }
             ?.run {
                 forEach { a ->
                     if (
@@ -350,6 +402,7 @@ internal class ConfiguredStoryHandler(
                                         ),
                                     )
                                 }
+
                                 is MediaCardDescriptor -> {
                                     // Merge current and previous card to a carousel
                                     transformedAnswers.removeLast()
@@ -362,7 +415,10 @@ internal class ConfiguredStoryHandler(
                                         ),
                                     )
                                 }
-                                else -> transformedAnswers.add(a)
+
+                                else -> {
+                                    transformedAnswers.add(a)
+                                }
                             }
                         } else {
                             transformedAnswers.add(a)
@@ -389,15 +445,15 @@ internal class ConfiguredStoryHandler(
                 ?.takeIf { it.checkValidity() }
                 ?.let {
                     underlyingConnector.toConnectorMessage(it.toMessage(this)).invoke(this)
-                }
-                ?.let { messages ->
+                }?.let { messages ->
                     if (end && suggestions.isNotEmpty() && messages.isNotEmpty()) {
                         messages.take(messages.size - 1) +
                             (
-                                underlyingConnector.addSuggestions(
-                                    messages.last(),
-                                    suggestions,
-                                ).invoke(this)
+                                underlyingConnector
+                                    .addSuggestions(
+                                        messages.last(),
+                                        suggestions,
+                                    ).invoke(this)
                                     ?: messages.last()
                             )
                     } else {
@@ -405,7 +461,8 @@ internal class ConfiguredStoryHandler(
                     }
                 }
                 ?: listOfNotNull(
-                    suggestions.takeIf { suggestions.isNotEmpty() && end }
+                    suggestions
+                        .takeIf { suggestions.isNotEmpty() && end }
                         ?.let { underlyingConnector.addSuggestions(label, suggestions).invoke(this) },
                 )
 
@@ -419,10 +476,10 @@ internal class ConfiguredStoryHandler(
                         null,
                         mutableListOf(it),
                     )
-                }
-                .takeUnless { it.isEmpty() }
+                }.takeUnless { it.isEmpty() }
                 ?: listOf(
-                    answer.footnotes?.takeIf { it.isNotEmpty() }
+                    answer.footnotes
+                        ?.takeIf { it.isNotEmpty() }
                         ?.let {
                             SendSentenceWithFootnotes(
                                 playerId = botId,
@@ -450,7 +507,8 @@ internal class ConfiguredStoryHandler(
     }
 
     private fun BotBus.handleScriptAnswer(container: StoryDefinitionAnswersContainer) {
-        container.storyDefinition(definition, configuration)
+        container
+            .storyDefinition(definition, configuration)
             ?.storyHandler
             ?.handle(this)
             ?: run {
@@ -459,9 +517,7 @@ internal class ConfiguredStoryHandler(
             }
     }
 
-    override fun equals(other: Any?): Boolean {
-        return (other as? ConfiguredStoryHandler)?.configuration == configuration
-    }
+    override fun equals(other: Any?): Boolean = (other as? ConfiguredStoryHandler)?.configuration == configuration
 
     override fun hashCode(): Int = configuration.hashCode()
 }

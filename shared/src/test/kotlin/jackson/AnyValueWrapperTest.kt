@@ -28,16 +28,25 @@ import kotlin.test.assertNull
  *
  */
 class AnyValueWrapperTest {
-    data class Custom(val name: String)
+    data class Custom(
+        val name: String,
+    )
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
     sealed class Either {
-        data class ThisOne(val anyProperty: String) : Either()
+        data class ThisOne(
+            val anyProperty: String,
+        ) : Either()
 
-        data class AnotherOne(val anyProperty: String, val otherProperty: Int) : Either()
+        data class AnotherOne(
+            val anyProperty: String,
+            val otherProperty: Int,
+        ) : Either()
     }
 
-    data class Somes(val somes: List<Either>)
+    data class Somes(
+        val somes: List<Either>,
+    )
 
     @Test
     fun serializeAndDeserializeAnyValueWrapper_shouldLeftDataInchanged() {

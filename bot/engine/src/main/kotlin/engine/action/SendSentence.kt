@@ -49,8 +49,7 @@ open class SendSentence(
      * Used by analysed nlp (ie Alexa).
      */
     var precomputedNlp: NlpResult? = null,
-) :
-    Action(playerId, recipientId, connectorId, id, date, state, metadata) {
+) : Action(playerId, recipientId, connectorId, id, date, state, metadata) {
     @Deprecated(
         "Use constructor with connectorId",
         ReplaceWith(
@@ -101,23 +100,15 @@ open class SendSentence(
     @Transient
     val stringText: String? = text?.toString()
 
-    fun message(type: ConnectorType): ConnectorMessage? {
-        return messages.find { it.connectorType == type }
-    }
+    fun message(type: ConnectorType): ConnectorMessage? = messages.find { it.connectorType == type }
 
-    fun hasMessage(type: ConnectorType): Boolean {
-        return messages.any { it.connectorType == type }
-    }
+    fun hasMessage(type: ConnectorType): Boolean = messages.any { it.connectorType == type }
 
     fun hasMessage(types: List<ConnectorType>): Boolean = messages.any { types.contains(it.connectorType) }
 
-    override fun toMessage(): Message {
-        return Sentence(stringText, messages, state.userInterface) { nlpStats }
-    }
+    override fun toMessage(): Message = Sentence(stringText, messages, state.userInterface) { nlpStats }
 
-    override fun toString(): String {
-        return stringText ?: if (messages.isNotEmpty()) messages.toString() else ""
-    }
+    override fun toString(): String = stringText ?: if (messages.isNotEmpty()) messages.toString() else ""
 
     fun hasEmptyText(): Boolean = precomputedNlp == null && text.isNullOrBlank()
 

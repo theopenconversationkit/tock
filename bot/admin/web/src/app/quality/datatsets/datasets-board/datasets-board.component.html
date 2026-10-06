@@ -135,9 +135,62 @@
             [autofocus]="true"
             [fullWidth]="true"
             [multiple]="false"
-            [fileTypeAccepted]="['json']"
+            [fileTypeAccepted]="['json', 'csv']"
           ></tock-file-upload>
         </tock-form-control>
+
+        <div class="d-flex justify-content-end mb-2">
+          <button
+            type="button"
+            nbButton
+            ghost
+            size="tiny"
+            [nbTooltip]="'quality.datasets-board.download_csv_template_tooltip' | transloco"
+            (click)="downloadCsvTemplate()"
+          >
+            <nb-icon
+              icon="filetype-csv"
+              class="mr-2"
+            ></nb-icon>
+            {{ 'quality.datasets-board.download_csv_template' | transloco }}
+          </button>
+        </div>
+
+        @if (isCsvImport) {
+        <tock-form-control
+          name="name"
+          [label]="'quality.datasets-board.dataset_name_label' | transloco"
+          [required]="true"
+          [controls]="importName"
+          [showError]="isImportSubmitted"
+        >
+          <nb-form-field>
+            <input
+              nbInput
+              fullWidth
+              formControlName="name"
+              [placeholder]="'quality.datasets-board.dataset_name_placeholder' | transloco"
+            />
+          </nb-form-field>
+        </tock-form-control>
+
+        <tock-form-control
+          name="description"
+          [label]="'quality.datasets-board.dataset_description_label' | transloco"
+          [controls]="importDescription"
+          [showError]="isImportSubmitted"
+        >
+          <nb-form-field>
+            <textarea
+              nbInput
+              fullWidth
+              rows="2"
+              formControlName="description"
+              [placeholder]="'quality.datasets-board.dataset_description_placeholder' | transloco"
+            ></textarea>
+          </nb-form-field>
+        </tock-form-control>
+        }
       </form>
     </nb-card-body>
 

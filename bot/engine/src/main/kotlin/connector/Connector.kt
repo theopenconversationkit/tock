@@ -26,6 +26,7 @@ import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserPreferences
+import ai.tock.bot.engine.user.UserState
 
 /**
  * A connector connects bots to users via a dedicated interface (like Messenger, Google Assistant, Slack... ).
@@ -138,6 +139,15 @@ interface Connector {
      * if false, profile is loaded for each request.
      */
     val persistProfileLoaded: Boolean get() = true
+
+    /**
+     * @return `true` if the profile should be [refreshed][refreshProfile] before further processing the current request
+     */
+    fun shouldRefreshProfile(
+        profile: UserPreferences,
+        state: UserState,
+        connectorData: ConnectorData,
+    ): Boolean = !state.profileRefreshed
 
     /**
      * Load user preferences - default implementation returns null.

@@ -22,4 +22,6 @@ import java.util.Locale
 /**
  *
  */
-data class SampleContext(val language: Locale = defaultLocale)
+data class SampleContext(
+    val language: Locale = defaultLocale,
+)

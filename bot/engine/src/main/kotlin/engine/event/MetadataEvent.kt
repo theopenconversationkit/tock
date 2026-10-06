@@ -20,7 +20,11 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_RESPONSE_METADATA
 import java.util.UUID
 
-class MetadataEvent(val type: String, val value: String, applicationId: String) : Event(applicationId) {
+class MetadataEvent(
+    val type: String,
+    val value: String,
+    applicationId: String,
+) : Event(applicationId) {
     companion object {
         fun intent(
             intent: Intent,

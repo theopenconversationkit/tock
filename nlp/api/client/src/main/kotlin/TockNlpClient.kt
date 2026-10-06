@@ -54,7 +54,9 @@ import java.util.concurrent.TimeUnit
 /**
  *  Wraps calls to the NLP stack.
  */
-class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http://localhost:8888") : NlpClient {
+class TockNlpClient(
+    baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http://localhost:8888",
+) : NlpClient {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -73,11 +75,13 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
 
         val timeout = longProperty("tock_nlp_client_request_timeout_ms", 20000)
         val retrofit =
-            Retrofit.Builder()
+            Retrofit
+                .Builder()
                 .baseUrl("$baseUrl/rest/nlp/")
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
                 .client(
-                    OkHttpClient.Builder()
+                    OkHttpClient
+                        .Builder()
                         .readTimeout(timeout, TimeUnit.MILLISECONDS)
                         .connectTimeout(timeout, TimeUnit.MILLISECONDS)
                         .writeTimeout(timeout, TimeUnit.MILLISECONDS)
@@ -92,10 +96,8 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
                                     ).toString(),
                                 ),
                             ),
-                        )
-                        .build(),
-                )
-                .build()
+                        ).build(),
+                ).build()
         nlpService = retrofit.create(NlpService::class.java)
     }
 
@@ -111,17 +113,11 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
                 null
             }
 
-    override fun parse(query: NlpQuery): NlpResult? {
-        return nlpService.parse(query).execute().parseAndReturns()
-    }
+    override fun parse(query: NlpQuery): NlpResult? = nlpService.parse(query).execute().parseAndReturns()
 
-    override fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult? {
-        return nlpService.evaluateEntities(query).execute().parseAndReturns()
-    }
+    override fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult? = nlpService.evaluateEntities(query).execute().parseAndReturns()
 
-    override fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult? {
-        return nlpService.mergeValues(query).execute().parseAndReturns()
-    }
+    override fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult? = nlpService.mergeValues(query).execute().parseAndReturns()
 
     override fun markAsUnknown(query: MarkAsUnknownQuery) {
         nlpService.markAsUnknown(query).execute()
@@ -131,10 +127,11 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
         namespace: String,
         name: String,
         locale: Locale,
-    ): ApplicationDefinition? {
-        return nlpService.createApplication(CreateApplicationQuery(name, namespace = namespace, locale = locale))
-            .execute().body()
-    }
+    ): ApplicationDefinition? =
+        nlpService
+            .createApplication(CreateApplicationQuery(name, namespace = namespace, locale = locale))
+            .execute()
+            .body()
 
     private fun createMultipart(stream: InputStream): MultipartBody.Part {
         val dump =
@@ -159,42 +156,47 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
     override fun getIntentsByNamespaceAndName(
         namespace: String,
         name: String,
-    ): List<IntentDefinition>? {
-        return nlpService.getIntentsByNamespaceAndName(namespace, name).execute().parseAndReturns()
-    }
+    ): List<IntentDefinition>? = nlpService.getIntentsByNamespaceAndName(namespace, name).execute().parseAndReturns()
 
     override fun getApplicationByNamespaceAndName(
         namespace: String,
         name: String,
-    ): ApplicationDefinition? {
-        return nlpService.getApplicationByNamespaceAndName(namespace, name).execute().parseAndReturns()
-    }
+    ): ApplicationDefinition? = nlpService.getApplicationByNamespaceAndName(namespace, name).execute().parseAndReturns()
 
-    override fun importNlpDump(stream: InputStream): Boolean {
-        return nlpService.importNlpDump(createMultipart(stream)).execute().body()?.success ?: false
-    }
+    override fun importNlpDump(stream: InputStream): Boolean =
+        nlpService
+            .importNlpDump(createMultipart(stream))
+            .execute()
+            .body()
+            ?.success ?: false
 
-    override fun importNlpPlainDump(dump: ApplicationDump): Boolean {
-        return nlpService.importNlpPlainDump(dump).execute().body()?.success ?: false
-    }
+    override fun importNlpPlainDump(dump: ApplicationDump): Boolean =
+        nlpService
+            .importNlpPlainDump(dump)
+            .execute()
+            .body()
+            ?.success ?: false
 
-    override fun importNlpSentencesDump(stream: InputStream): Boolean {
-        return nlpService.importNlpSentencesDump(createMultipart(stream)).execute().body()?.success ?: false
-    }
+    override fun importNlpSentencesDump(stream: InputStream): Boolean =
+        nlpService
+            .importNlpSentencesDump(createMultipart(stream))
+            .execute()
+            .body()
+            ?.success ?: false
 
-    override fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean {
-        return nlpService.importNlpPlainSentencesDump(dump).execute().body()?.success ?: false
-    }
+    override fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean =
+        nlpService
+            .importNlpPlainSentencesDump(dump)
+            .execute()
+            .body()
+            ?.success ?: false
 
-    override fun logsCount(query: NlpLogCountQuery): List<NlpLogCount>? {
-        return nlpService.logsCount(query).execute().parseAndReturns()
-    }
+    override fun logsCount(query: NlpLogCountQuery): List<NlpLogCount>? = nlpService.logsCount(query).execute().parseAndReturns()
 
-    override fun healthcheck(): Boolean {
-        return try {
+    override fun healthcheck(): Boolean =
+        try {
             nlpService.healthcheck().execute().isSuccessful
         } catch (t: Throwable) {
             false
         }
-    }
 }

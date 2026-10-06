@@ -237,7 +237,8 @@ object BotRepository {
                 BotApplicationConfigurationKey(applicationId = applicationId, namespace = namespace, botId = botId)
             }
         val conf = key?.let { getConfigurationByApplicationId(it) } ?: error("unknown application $applicationId")
-        connectorControllerMap.getValue(conf)
+        connectorControllerMap
+            .getValue(conf)
             .notifyAndCheckState(recipientId, intent, step, parameters, transientContext, stateModifier, notificationType, errorListener)
     }
 
@@ -395,16 +396,18 @@ object BotRepository {
 
         // check that nlp applications exist
         if (createApplicationIfNotExists) {
-            bots.distinctBy { it.namespace to it.nlpModelName }
+            bots
+                .distinctBy { it.namespace to it.nlpModelName }
                 .forEach { botDefinition ->
                     try {
-                        nlpClient.createApplication(
-                            botDefinition.namespace,
-                            botDefinition.nlpModelName,
-                            defaultLocale,
-                        )?.apply {
-                            logger.info { "nlp application initialized $namespace $name with locale $supportedLocales" }
-                        }
+                        nlpClient
+                            .createApplication(
+                                botDefinition.namespace,
+                                botDefinition.nlpModelName,
+                                defaultLocale,
+                            )?.apply {
+                                logger.info { "nlp application initialized $namespace $name with locale $supportedLocales" }
+                            }
                     } catch (e: Exception) {
                         logger.error(e)
                     }
@@ -461,9 +464,7 @@ object BotRepository {
     /**
      * Returns the [ConnectorProvider] for the specified [ConnectorType].
      */
-    fun findConnectorProvider(connectorType: ConnectorType): ConnectorProvider? {
-        return connectorProviders.firstOrNull { it.connectorType == connectorType }
-    }
+    fun findConnectorProvider(connectorType: ConnectorType): ConnectorProvider? = connectorProviders.firstOrNull { it.connectorType == connectorType }
 
     private fun checkAsyncBotConfigurations() {
         executor.executeBlocking { checkBotConfigurations() }
@@ -480,11 +481,13 @@ object BotRepository {
         // the existing confs mapped by path
         val existingConfsByPath: Map<String?, BotApplicationConfiguration> =
             connectorControllerMap.keys
-                .groupBy { it.path }.mapValues { it.value.first() }
+                .groupBy { it.path }
+                .mapValues { it.value.first() }
         // the existing confs mapped by id
         val existingConfsById: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> =
             connectorControllerMap.keys
-                .groupBy { it._id }.mapValues { it.value.first() }
+                .groupBy { it._id }
+                .mapValues { it.value.first() }
         // path -> botAppConf
         val confs: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> =
             botConfigurationDAO
@@ -605,7 +608,8 @@ object BotRepository {
             logger.debug { "locales for ${botDefinition.namespace}:${botDefinition.nlpModelName}: $supportedLocales" }
         }
         val bot = Bot(botDefinition, conf, supportedLocales)
-        return botConfigurationDAO.save(conf)
+        return botConfigurationDAO
+            .save(conf)
             .apply {
                 val controller = TockConnectorController.register(connector, bot, verticle, conf)
                 // install connector services

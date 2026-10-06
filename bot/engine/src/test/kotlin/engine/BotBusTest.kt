@@ -143,7 +143,12 @@ internal class BotBusTest : BotEngineTest() {
         bus.switchStory(withoutStep)
         assertEquals(withoutStep, bus.story.definition)
         assertNull(bus.step)
-        assertEquals(withoutStep, bus.dialog.stories.last().definition)
+        assertEquals(
+            withoutStep,
+            bus.dialog.stories
+                .last()
+                .definition,
+        )
     }
 
     @Test
@@ -206,9 +211,7 @@ internal class BotBusTest : BotEngineTest() {
         override fun handle(
             action: Action,
             bus: BotBus,
-        ): Action {
-            return Sentence("new response").toAction(PlayerId(""), "applicationId", PlayerId(""))
-        }
+        ): Action = Sentence("new response").toAction(PlayerId(""), "applicationId", PlayerId(""))
     }
 
     @Test

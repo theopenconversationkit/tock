@@ -83,8 +83,8 @@ data class FaqQueryResult(
     fun toFaqDefinitionDetailed(
         faqQueryResult: FaqQueryResult,
         i18nLabel: I18nLabel,
-    ): FaqDefinitionDetailed {
-        return FaqDefinitionDetailed(
+    ): FaqDefinitionDetailed =
+        FaqDefinitionDetailed(
             faqQueryResult._id,
             faqQueryResult.botId,
             faqQueryResult.namespace,
@@ -99,5 +99,4 @@ data class FaqQueryResult(
             i18nLabel,
             faqQueryResult.storyName,
         )
-    }
 }

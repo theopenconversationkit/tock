@@ -56,9 +56,7 @@ object NlpClassifierService : NlpClassifier {
     private val logger = KotlinLogging.logger {}
     private val nlpApplicationConfigurationDAO: NlpApplicationConfigurationDAO by injector.instance()
 
-    override fun supportedNlpEngineTypes(): Set<NlpEngineType> {
-        return NlpEngineRepository.registeredNlpEngineTypes()
-    }
+    override fun supportedNlpEngineTypes(): Set<NlpEngineType> = NlpEngineRepository.registeredNlpEngineTypes()
 
     private fun tokenizeForIntentClassifier(
         context: IntentContext,
@@ -73,28 +71,28 @@ object NlpClassifierService : NlpClassifier {
     override fun classifyIntent(
         context: IntentContext,
         text: String,
-    ): IntentClassification {
-        return NlpEngineRepository.getIntentClassifier(context).classifyIntent(
+    ): IntentClassification =
+        NlpEngineRepository.getIntentClassifier(context).classifyIntent(
             context,
             text,
             tokenizeForIntentClassifier(context, text),
         )
-    }
 
     override fun classifyIntent(
         context: IntentContext,
         modelHolder: ModelHolder,
         text: String,
-    ): IntentClassification {
-        return NlpEngineRepository.getIntentClassifier(context, modelHolder as IntentModelHolder)
+    ): IntentClassification =
+        NlpEngineRepository
+            .getIntentClassifier(context, modelHolder as IntentModelHolder)
             .classifyIntent(context, text, tokenizeForIntentClassifier(context, text))
-    }
 
     override fun classifyEntities(
         context: EntityCallContext,
         text: String,
     ): List<EntityRecognition> =
-        NlpEngineRepository.getEntityClassifier(context)
+        NlpEngineRepository
+            .getEntityClassifier(context)
             ?.let {
                 classifyEntities(
                     it,
@@ -108,11 +106,11 @@ object NlpClassifierService : NlpClassifier {
         context: EntityCallContext,
         modelHolder: ModelHolder,
         text: String,
-    ): List<EntityRecognition> {
-        return NlpEngineRepository.getEntityClassifier(context, modelHolder as EntityModelHolder)
+    ): List<EntityRecognition> =
+        NlpEngineRepository
+            .getEntityClassifier(context, modelHolder as EntityModelHolder)
             ?.let { classifyEntities(it, context, text, tokenizeForEntityClassifier(context, text)) }
             ?: emptyList()
-    }
 
     private fun classifyEntities(
         entityClassifier: EntityClassifier,
@@ -145,13 +143,12 @@ object NlpClassifierService : NlpClassifier {
     override fun buildIntentModel(
         context: IntentContext,
         expressions: List<SampleExpression>,
-    ): ModelHolder {
-        return getModelBuilder(context).buildIntentModel(
+    ): ModelHolder =
+        getModelBuilder(context).buildIntentModel(
             context,
             getCurrentModelConfiguration(context.applicationName, context.engineType),
             expressions,
         )
-    }
 
     override fun buildAndSaveIntentModel(
         context: IntentContext,
@@ -187,13 +184,9 @@ object NlpClassifierService : NlpClassifier {
         }
     }
 
-    override fun isIntentModelExist(context: IntentContext): Boolean {
-        return NlpModelRepository.isIntentModelExist(context)
-    }
+    override fun isIntentModelExist(context: IntentContext): Boolean = NlpModelRepository.isIntentModelExist(context)
 
-    override fun isEntityModelExist(context: EntityBuildContext): Boolean {
-        return NlpModelRepository.isEntityModelExist(context)
-    }
+    override fun isEntityModelExist(context: EntityBuildContext): Boolean = NlpModelRepository.isEntityModelExist(context)
 
     override fun deleteOrphans(
         applicationsAndIntents: Map<Application, Set<Intent>>,
@@ -254,10 +247,9 @@ object NlpClassifierService : NlpClassifier {
     override fun getCurrentModelConfiguration(
         applicationName: String,
         nlpEngineType: NlpEngineType,
-    ): NlpApplicationConfiguration {
-        return nlpApplicationConfigurationDAO.loadLastConfiguration(applicationName, nlpEngineType)
+    ): NlpApplicationConfiguration =
+        nlpApplicationConfigurationDAO.loadLastConfiguration(applicationName, nlpEngineType)
             ?: NlpEngineRepository.getProvider(nlpEngineType).modelBuilder.defaultNlpApplicationConfiguration()
-    }
 
     override fun updateModelConfiguration(
         applicationName: String,
@@ -267,13 +259,12 @@ object NlpClassifierService : NlpClassifier {
         nlpApplicationConfigurationDAO.saveNewConfiguration(applicationName, engineType, configuration)
     }
 
-    fun healthcheck(): List<Pair<String, () -> Boolean>> {
-        return registeredNlpEngineTypes().flatMap {
+    fun healthcheck(): List<Pair<String, () -> Boolean>> =
+        registeredNlpEngineTypes().flatMap {
             val healthcheck = getProvider(it).healthcheck()
             listOf(
                 "${it.name}-entity" to { healthcheck().entityClassifier },
                 "${it.name}-intent" to { healthcheck().intentClassifier },
             )
         }
-    }
 }

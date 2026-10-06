@@ -78,8 +78,11 @@ class IadvizeAuthenticationClient {
     /**
      * Request a new access token.
      */
-    private fun getToken(): Token {
-        return iadvizeApi.createToken(credentials.username, credentials.password, grantType = PASSWORD).execute().body()
+    private fun getToken(): Token =
+        iadvizeApi
+            .createToken(credentials.username, credentials.password, grantType = PASSWORD)
+            .execute()
+            .body()
             ?.let {
                 val value = it.accessToken ?: authenticationFailedError()
                 val time = it.expiresIn?.let { s -> LocalDateTime.now().plusSeconds(s.toLong() - DELAY_SECONDS) }
@@ -87,10 +90,12 @@ class IadvizeAuthenticationClient {
                 Token(value, time).also { t -> token.set(t) }
             }
             ?: authenticationFailedError()
-    }
 
     /**
      * Stored Token representation.
      */
-    data class Token(val value: String, val expireAt: LocalDateTime?)
+    data class Token(
+        val value: String,
+        val expireAt: LocalDateTime?,
+    )
 }

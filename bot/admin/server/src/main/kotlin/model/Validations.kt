@@ -25,7 +25,9 @@ interface ToValidate {
  * if no errors return an empty list
  * otherwise return a list of errors
  */
-data class Valid<T : ToValidate>(val data: T) {
+data class Valid<T : ToValidate>(
+    val data: T,
+) {
     init {
         data.validate().let {
             if (it.isNotEmpty()) throw ValidationError(it.joinToString("\n"))
@@ -33,4 +35,6 @@ data class Valid<T : ToValidate>(val data: T) {
     }
 }
 
-data class ValidationError(override val message: String?) : Exception(message)
+data class ValidationError(
+    override val message: String?,
+) : Exception(message)

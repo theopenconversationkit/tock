@@ -77,13 +77,14 @@ class IndicatorServiceTest {
 
         init {
             tockInternalInjector = KodeinInjector()
-            Kodein.Module {
-                bind<IndicatorDAO>() with singleton { dao }
-            }.also {
-                tockInternalInjector.inject(
-                    Kodein { import(it) },
-                )
-            }
+            Kodein
+                .Module {
+                    bind<IndicatorDAO>() with singleton { dao }
+                }.also {
+                    tockInternalInjector.inject(
+                        Kodein { import(it) },
+                    )
+                }
         }
 
         private val dao: IndicatorDAO = mockk(relaxed = true)
@@ -134,8 +135,7 @@ class IndicatorServiceTest {
             .and(
                 "Indicator not exist with request name or label and the given application name",
                 similarIndicatorNotExist,
-            )
-            .and("The indicator to persist in database is captured", captureIndicatorToSave)
+            ).and("The indicator to persist in database is captured", captureIndicatorToSave)
             .`when`("IndicatorService's save method is called", callServiceSave)
             .then("The dao's existByNameAndBotId must be called exactly once", daoExistByFnIsCalledOnce)
             .and(
@@ -144,8 +144,7 @@ class IndicatorServiceTest {
                 - Indicator to persist must have a not null id
                 """.trimIndent(),
                 checkIndicatorToPersist,
-            )
-            .run()
+            ).run()
     }
 
     @Test
@@ -197,8 +196,7 @@ class IndicatorServiceTest {
                 - Error is of type IndicatorAlreadyExists
                 """.trimIndent(),
                 checkError,
-            )
-            .run()
+            ).run()
     }
 
     @Test
@@ -257,8 +255,7 @@ class IndicatorServiceTest {
                 - Indicator to persist must not have a null id
                 """.trimIndent(),
                 checkIndicatorToPersist,
-            )
-            .run()
+            ).run()
     }
 
     @Test
@@ -319,8 +316,7 @@ class IndicatorServiceTest {
                 - Error is of type IndicatorNotFound
                 """.trimIndent(),
                 checkError,
-            )
-            .run()
+            ).run()
     }
 
     @Test
@@ -432,9 +428,10 @@ class IndicatorServiceTest {
             description = DESCRIPTION,
             dimensions = DIMENSIONS,
             values =
-                VALUES.map {
-                    IndicatorValueRequest(it.first, it.second)
-                }.toSet(),
+                VALUES
+                    .map {
+                        IndicatorValueRequest(it.first, it.second)
+                    }.toSet(),
         )
 
     private fun updateIndicatorRequest() =
@@ -443,9 +440,10 @@ class IndicatorServiceTest {
             description = NEW_DESCRIPTION,
             dimensions = NEW_DIMENSIONS,
             values =
-                NEW_VALUES.map {
-                    IndicatorValueRequest(it.first, it.second)
-                }.toSet(),
+                NEW_VALUES
+                    .map {
+                        IndicatorValueRequest(it.first, it.second)
+                    }.toSet(),
         )
 }
 

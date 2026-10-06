@@ -114,7 +114,9 @@ object UploadedFilesService {
     ) {
         val bytes: ByteArray? = getFileContentFromId(id)
         if (bytes != null) {
-            context.response().putHeader("Content-Type", guessContentType(id))
+            context
+                .response()
+                .putHeader("Content-Type", guessContentType(id))
                 .end(Buffer.buffer(bytes))
         } else {
             context.response().setStatusCode(404).end()
@@ -138,12 +140,16 @@ object UploadedFilesService {
             }
         }
 
-    internal fun configure(): CoroutineRouterSupport.(Router) -> Unit {
-        return { router ->
+    internal fun configure(): CoroutineRouterSupport.(Router) -> Unit =
+        { router ->
             router.get("$basePath*").blocking { context ->
-                val id = context.request().uri().substring(basePath.length).lowercase()
+                val id =
+                    context
+                        .request()
+                        .uri()
+                        .substring(basePath.length)
+                        .lowercase()
                 downloadFile(context, id)
             }
         }
-    }
 }

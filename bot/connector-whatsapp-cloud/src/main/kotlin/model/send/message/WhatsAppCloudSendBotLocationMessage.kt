@@ -21,5 +21,5 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppC
 data class WhatsAppCloudSendBotLocationMessage(
     val location: WhatsAppCloudBotLocation,
     override val recipientType: WhatsAppCloudBotRecipientType,
-    override val to: String,
+    override val recipient: String,
 ) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.location)

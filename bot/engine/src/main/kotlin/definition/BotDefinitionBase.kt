@@ -30,15 +30,17 @@ import ai.tock.bot.engine.nlp.BuiltInKeywordListener.deleteKeyword
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener.endTestContextKeyword
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener.testContextKeyword
 import ai.tock.bot.engine.nlp.keywordServices
-import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.shared.Executor
+import ai.tock.shared.coroutines.launchCoroutine
 import ai.tock.shared.error
 import ai.tock.shared.injector
-import ai.tock.shared.vertx.vertx
+import ai.tock.shared.service.UserDataRedactor
 import ai.tock.translator.I18nKeyProvider.Companion.generateKey
 import ai.tock.translator.I18nLabelValue
 import com.github.salomonbrys.kodein.instance
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.delay
 import mu.KotlinLogging
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Base implementation of [BotDefinition].
@@ -113,13 +115,12 @@ open class BotDefinitionBase(
         /**
          * Returns a (potential) keyword from the [BotBus].
          */
-        fun getKeyword(bus: BotBus): String? {
-            return if (bus.action is SendSentence) {
+        fun getKeyword(bus: BotBus): String? =
+            if (bus.action is SendSentence) {
                 (bus.action as SendSentence).stringText
             } else {
                 null
             }
-        }
 
         /**
          * The default handler used to handle test context initialization.
@@ -195,21 +196,17 @@ open class BotDefinitionBase(
             )
 
         private fun BotBus.handleDelete() {
-            val userTimelineDao: UserTimelineDAO by injector.instance()
+            val userDataRedactor: UserDataRedactor by injector.instance()
+            val executor: Executor by injector.instance()
             // run later to avoid the lock effect :)
-            vertx.setTimer(1000) {
-                vertx.executeBlocking(
-                    {
-                        try {
-                            runBlocking {
-                                userTimelineDao.remove(botDefinition.namespace, userId)
-                            }
-                        } catch (e: Exception) {
-                            logger.error(e)
-                        }
-                    },
-                    false,
-                )
+            // this must happen in a coroutine scope separate from the main story handling, so no AsyncBus here
+            executor.launchCoroutine {
+                delay(1000.milliseconds)
+                try {
+                    userDataRedactor.deleteByUserId(botDefinition.namespace, userId.id)
+                } catch (e: Exception) {
+                    logger.error(e)
+                }
             }
         }
 
@@ -264,7 +261,5 @@ open class BotDefinitionBase(
      */
     override val defaultRagExcludedAnswer: I18nLabelValue get() = i18n("Sorry, I can't answer your question (Topic not covered)")
 
-    override fun toString(): String {
-        return botId
-    }
+    override fun toString(): String = botId
 }

@@ -1,0 +1,62 @@
+.evaluation-entry {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--card-divider-color);
+
+  &.evaluation-entry-first {
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+.evaluation-ring {
+  flex: none;
+}
+
+.evaluation-ring-track {
+  fill: none;
+  stroke: var(--background-basic-color-3);
+  stroke-width: 7;
+}
+
+.evaluation-ring-value {
+  fill: none;
+  stroke: var(--color-success-default);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+.evaluation-ring-text {
+  font-size: 15px;
+  font-weight: 300;
+  fill: var(--text-basic-color);
+}
+
+.evaluation-detail {
+  flex: 1;
+  min-width: 0;
+}
+
+.evaluation-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.evaluation-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-hint-color);
+}
+
+.evaluation-meta-author {
+  font-style: italic;
+}

@@ -225,7 +225,8 @@ private fun <T> tryExecuteDataset(
 
         KotlinLogging.logger {}.error(e) { "Datasets API error: ${e.message}" }
 
-        context.response()
+        context
+            .response()
             .setStatusCode(statusCode)
             .end(ObjectMapper().writeValueAsString(ErrorMessage(e.message)))
 

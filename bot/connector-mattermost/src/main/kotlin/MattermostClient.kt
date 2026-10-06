@@ -50,8 +50,7 @@ internal class MattermostClient(
         retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_mattermost_request_timeout_ms", 30000),
             logger,
-        )
-            .baseUrl(mattermostUrl)
+        ).baseUrl(mattermostUrl)
             .addJacksonConverter()
             .build()
             .create()

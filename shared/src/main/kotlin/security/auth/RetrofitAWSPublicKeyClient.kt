@@ -45,14 +45,16 @@ internal object RetrofitAWSPublicKeyClient {
             retrofitBuilderWithTimeoutAndLogger(
                 longProperty("tock_aws_public_key_request_timeout_ms", 30000),
                 logger,
-            )
-                .baseUrl("https://public-keys.auth.elb.$awsRegion.amazonaws.com")
+            ).baseUrl("https://public-keys.auth.elb.$awsRegion.amazonaws.com")
                 .addJacksonConverter()
                 .build()
                 .create()
     }
 
-    fun getPublicKey(keyID: String): String? {
-        return api.getPublicKey(keyID).execute().body()?.string()
-    }
+    fun getPublicKey(keyID: String): String? =
+        api
+            .getPublicKey(keyID)
+            .execute()
+            .body()
+            ?.string()
 }

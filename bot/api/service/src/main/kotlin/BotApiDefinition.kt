@@ -65,7 +65,9 @@ internal class FallbackStoryDefinition(
         defaultUnknown.intents,
     )
 
-internal class ApiStep(s: StepConfiguration) : StoryStep<StoryHandlerDefinition> {
+internal class ApiStep(
+    s: StepConfiguration,
+) : StoryStep<StoryHandlerDefinition> {
     override val name: String = s.name
     override val intent: IntentAware = Intent(s.mainIntent)
     override val otherStarterIntents: Set<IntentAware> = s.otherStarterIntents.map { Intent(it) }.toSet()

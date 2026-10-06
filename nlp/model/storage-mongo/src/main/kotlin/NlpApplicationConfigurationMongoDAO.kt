@@ -49,7 +49,8 @@ internal object NlpApplicationConfigurationMongoDAO : NlpApplicationConfiguratio
     )
 
     private val col =
-        database.getCollection<NlpApplicationConfigurationCol>("nlp_application_configuration")
+        database
+            .getCollection<NlpApplicationConfigurationCol>("nlp_application_configuration")
             .apply {
                 ensureIndex(descending(ApplicationName, EngineType, Date))
             }
@@ -66,12 +67,11 @@ internal object NlpApplicationConfigurationMongoDAO : NlpApplicationConfiguratio
         applicationName: String,
         engineType: NlpEngineType,
         updated: Instant,
-    ): NlpApplicationConfiguration? {
-        return col
+    ): NlpApplicationConfiguration? =
+        col
             .find(ApplicationName eq applicationName, EngineType eq engineType, Date lt updated)
             .descendingSort(Date)
             .limit(1)
             .firstOrNull()
             ?.configuration
-    }
 }

@@ -31,6 +31,9 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_not_found,
     create_error_response,
 )
+from gen_ai_orchestrator.models.llm.awsbedrock.aws_bedrock_llm_setting import (
+    AwsBedrockLLMSetting,
+)
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
@@ -128,6 +131,15 @@ async def get_llm_provider_setting_by_id(
             api_base=HttpUrl('https://doc.tock.ai/tock'),
             api_version='2023-05-15',
             temperature=0.7,
+        )
+    elif provider_id == LLMProvider.AWS_BEDROCK:
+        return AwsBedrockLLMSetting(
+            provider=LLMProvider.AWS_BEDROCK,
+            model='anthropic.claude-3-5-sonnet-20240620-v1:0',
+            temperature=0.7,
+            guardrail_id=None,
+            guardrail_version=None,
+            guardrail_trace=False,
         )
     else:
         raise GenAIUnknownProviderException(

@@ -50,6 +50,13 @@ scripts/connector-messenger/ngrok.exe
 **/.env
 **/.python-version
 gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools/**/*.json
+gen-ai/orchestrator-server/src/main/python/server/poetry.lock
+
+# Maven version backups
+**/pom.xml.versionsBackup
+
+# MCP
+.playwright-mcp/
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python

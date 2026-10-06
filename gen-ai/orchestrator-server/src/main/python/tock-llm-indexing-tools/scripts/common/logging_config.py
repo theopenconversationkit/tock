@@ -45,12 +45,6 @@ def configure_logging(cli_args):
     console_handler.setFormatter(colorlog.ColoredFormatter(f"%(log_color)s{log_format}"))
     app_logger.addHandler(console_handler)
 
-    langfuse_logger = logging.getLogger('langfuse')
-    langfuse_logger.setLevel(log_level)
-    langfuse_logger.addHandler(file_handler)
-    langfuse_logger.addHandler(console_handler)
-    langfuse_logger.propagate = False
-
     opensearch_logger = logging.getLogger('opensearch')
     opensearch_logger.setLevel(logging.INFO)
     opensearch_logger.addHandler(file_handler)
@@ -74,12 +68,6 @@ def configure_logging(cli_args):
     openai_logger.addHandler(file_handler)
     openai_logger.addHandler(console_handler)
     openai_logger.propagate = False
-
-    langfuse_logger = logging.getLogger('backoff')
-    langfuse_logger.setLevel(log_level)
-    langfuse_logger.addHandler(file_handler)
-    langfuse_logger.addHandler(console_handler)
-    langfuse_logger.propagate = False
 
     def handle_exception(exc_type, exc_value, exc_traceback):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)

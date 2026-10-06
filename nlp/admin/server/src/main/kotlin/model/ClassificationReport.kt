@@ -92,7 +92,5 @@ data class ClassificationReport(
         emptyMap(),
     )
 
-    fun toClassification(): Classification {
-        return Classification(intentId ?: Intent.UNKNOWN_INTENT_NAME.toId(), entities.map { it.toClassifiedEntity() })
-    }
+    fun toClassification(): Classification = Classification(intentId ?: Intent.UNKNOWN_INTENT_NAME.toId(), entities.map { it.toClassifiedEntity() })
 }

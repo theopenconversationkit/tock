@@ -24,7 +24,9 @@ import software.amazon.awssdk.services.sagemakerruntime.SageMakerRuntimeClient
 import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointRequest
 import java.nio.charset.Charset
 
-class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties) {
+class SagemakerAwsClient(
+    private val configuration: SagemakerAwsClientProperties,
+) {
     val name = configuration.name
 
     // for intentions and entities
@@ -56,12 +58,14 @@ class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties
     )
 
     private val runtimeClient: SageMakerRuntimeClient =
-        SageMakerRuntimeClient.builder()
+        SageMakerRuntimeClient
+            .builder()
             .region(configuration.region)
             .build()
 
     private val sagemakerClient: SageMakerClient =
-        SageMakerClient.builder()
+        SageMakerClient
+            .builder()
             .region(configuration.region)
             .build()
 
@@ -71,7 +75,8 @@ class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties
 
     private fun invokeSageMakerIntentEndpoint(payload: String): ParsedIntentResponse {
         val endpointRequest =
-            InvokeEndpointRequest.builder()
+            InvokeEndpointRequest
+                .builder()
                 .endpointName(configuration.endpointName)
                 .contentType(configuration.contentType)
                 .body(SdkBytes.fromString("{\"inputs\":\"$payload\"}", Charset.defaultCharset()))
@@ -82,7 +87,8 @@ class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties
 
     private fun invokeSageMakerEntitiesEndpoint(payload: String): ParsedEntitiesResponse {
         val endpointRequest =
-            InvokeEndpointRequest.builder()
+            InvokeEndpointRequest
+                .builder()
                 .endpointName(configuration.endpointName)
                 .contentType(configuration.contentType)
                 .body(SdkBytes.fromString("{\"inputs\":\"$payload\"}", Charset.defaultCharset()))
@@ -94,7 +100,8 @@ class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties
 
     fun healthcheck(): Boolean {
         val endpointRequest =
-            DescribeEndpointRequest.builder()
+            DescribeEndpointRequest
+                .builder()
                 .endpointName(configuration.endpointName)
                 .build()
         val response = sagemakerClient.describeEndpoint(endpointRequest)

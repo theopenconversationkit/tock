@@ -37,20 +37,18 @@ import java.util.Locale
 internal class TockDialogflowNlpClient : NlpClient {
     private val projectId = property("dialogflow_project_id", "please set a google project id")
 
-    override fun parse(query: NlpQuery): NlpResult? {
-        return DialogflowService.detectIntentText(
-            projectId,
-            query.queries.firstOrNull() ?: "",
-            query.context.dialogId,
-            query.context.language.toString(),
-        )?.let {
-            DialogflowTockMapper().toNlpResult(it, query.namespace)
-        }
-    }
+    override fun parse(query: NlpQuery): NlpResult? =
+        DialogflowService
+            .detectIntentText(
+                projectId,
+                query.queries.firstOrNull() ?: "",
+                query.context.dialogId,
+                query.context.language.toString(),
+            )?.let {
+                DialogflowTockMapper().toNlpResult(it, query.namespace)
+            }
 
-    override fun healthcheck(): Boolean {
-        return true
-    }
+    override fun healthcheck(): Boolean = true
 
     override fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult? = null
 

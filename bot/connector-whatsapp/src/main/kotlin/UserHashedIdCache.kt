@@ -23,7 +23,8 @@ import java.util.concurrent.TimeUnit
 
 object UserHashedIdCache {
     private val idCache: Cache<String, String> =
-        CacheBuilder.newBuilder()
+        CacheBuilder
+            .newBuilder()
             .expireAfterAccess(2, TimeUnit.MINUTES)
             .build()
 

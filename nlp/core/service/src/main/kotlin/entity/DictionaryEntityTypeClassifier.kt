@@ -29,19 +29,21 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
     override fun classifyEntities(
         context: EntityCallContext,
         text: String,
-    ): List<EntityTypeRecognition> {
-        return when (context) {
+    ): List<EntityTypeRecognition> =
+        when (context) {
             is EntityCallContextForIntent -> classifyForIntent(context, text.stripAccents().trim())
-            is EntityCallContextForEntity -> emptyList() // TODO
+
+            is EntityCallContextForEntity -> emptyList()
+
+            // TODO
             is EntityCallContextForSubEntities -> emptyList() // TODO
         }
-    }
 
     private fun classifyForIntent(
         context: EntityCallContextForIntent,
         text: String,
-    ): List<EntityTypeRecognition> {
-        return context
+    ): List<EntityTypeRecognition> =
+        context
             .intent
             .entities
             .asSequence()
@@ -92,11 +94,9 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
                 } else {
                     emptySequence()
                 }
-            }
-            .flatMap { it }
+            }.flatMap { it }
             .distinct()
             .toList()
-    }
 
     private fun predefinedValueOfSynonym(
         locale: Locale,

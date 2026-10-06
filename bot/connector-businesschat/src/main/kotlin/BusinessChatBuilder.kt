@@ -29,9 +29,7 @@ import ai.tock.bot.engine.Bus
  * Adds a Business Chat [ConnectorMessage] if the current connector is Business Chat.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
-fun <T : Bus<T>> T.withBusinessChat(messageProvider: () -> BusinessChatConnectorMessage): T {
-    return withMessage(businessChatConnectorType, messageProvider)
-}
+fun <T : Bus<T>> T.withBusinessChat(messageProvider: () -> BusinessChatConnectorMessage): T = withMessage(businessChatConnectorType, messageProvider)
 
 /**
  * Creates a [BusinessChatText].

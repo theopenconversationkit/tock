@@ -157,7 +157,8 @@ class BotApiHandlerTest {
         handler.send(bus)
 
         assertEquals(
-            bus.dialog.state.nextActionState?.intentsQualifiers,
+            bus.dialog.state.nextActionState
+                ?.intentsQualifiers,
             listOf(NlpIntentQualifier("intent1", 0.5), NlpIntentQualifier("intent2", 0.5)),
         )
     }
@@ -190,7 +191,13 @@ class BotApiHandlerTest {
         verify { clientController.send(capture(slot), any()) }
 
         assertEquals(mockedBus.toUserRequest().context.actionsHistory, slot.captured.context.actionsHistory)
-        assertEquals(mockedBus.toUserRequest().context.actionsHistory?.size, 2)
+        assertEquals(
+            mockedBus
+                .toUserRequest()
+                .context.actionsHistory
+                ?.size,
+            2,
+        )
         assertTrue(mockedBus.toUserRequest().context.actionsHistory != null)
     }
 
@@ -222,7 +229,13 @@ class BotApiHandlerTest {
         verify { clientController.send(capture(slot), any()) }
 
         assertEquals(null, slot.captured.context.actionsHistory)
-        assertEquals(mockedBus.toUserRequest().context.actionsHistory?.size, null)
+        assertEquals(
+            mockedBus
+                .toUserRequest()
+                .context.actionsHistory
+                ?.size,
+            null,
+        )
         assertTrue(mockedBus.toUserRequest().context.actionsHistory == null)
     }
 
@@ -250,7 +263,13 @@ class BotApiHandlerTest {
         verify { clientController.send(capture(slot), any()) }
 
         assertEquals(emptyList(), slot.captured.context.actionsHistory)
-        assertEquals(0, mockedBus.toUserRequest().context.actionsHistory?.size)
+        assertEquals(
+            0,
+            mockedBus
+                .toUserRequest()
+                .context.actionsHistory
+                ?.size,
+        )
         assertTrue(mockedBus.toUserRequest().context.actionsHistory != null)
     }
 }

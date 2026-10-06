@@ -22,7 +22,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class GenAIOrchestratorInterceptor(private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()) : Interceptor {
+class GenAIOrchestratorInterceptor(
+    private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper(),
+) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         try {
             // Proceed with the request
@@ -50,11 +52,13 @@ class GenAIOrchestratorInterceptor(private val jsonObjectMapper: ObjectMapper = 
                 val errorResponse = jsonObjectMapper.readValue(errorBody, ErrorResponse::class.java)
                 throw GenAIOrchestratorBusinessError(error = errorResponse)
             }
+
             422 -> {
                 // Unprocessable Entity
                 val errorResponse = jsonObjectMapper.readValue(errorBody, HTTPValidationErrorResponse::class.java)
                 throw GenAIOrchestratorValidationError(detail = errorResponse.detail)
             }
+
             else -> {
                 throw Exception("Generative AI Orchestrator unknown error")
             }

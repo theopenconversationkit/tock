@@ -61,20 +61,20 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
     override fun classifyEntities(
         context: EntityCallContext,
         text: String,
-    ): List<EntityTypeRecognition> {
-        return classify(context, text)
-    }
+    ): List<EntityTypeRecognition> = classify(context, text)
 
     private fun classify(
         context: EntityCallContext,
         text: String,
-    ): List<EntityTypeRecognition> {
-        return when (context) {
+    ): List<EntityTypeRecognition> =
+        when (context) {
             is EntityCallContextForIntent -> classifyForIntent(context, text)
-            is EntityCallContextForEntity -> emptyList() // TODO
+
+            is EntityCallContextForEntity -> emptyList()
+
+            // TODO
             is EntityCallContextForSubEntities -> emptyList() // TODO
         }
-    }
 
     private fun classifyForIntent(
         context: EntityCallContextForIntent,
@@ -173,59 +173,88 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
     private fun parseDimension(
         parseResult: JSONValue,
         dimension: String,
-    ): List<ValueWithRange> {
-        return when (dimension) {
-            TIME_DIMENSION -> parseDate(parseResult)
-            "number" -> parseSimple(parseResult, dimension) { NumberValue(it[":value"].number()) }
-            "ordinal" -> parseSimple(parseResult, dimension) { OrdinalValue(it[":value"].number()) }
-            "distance" ->
+    ): List<ValueWithRange> =
+        when (dimension) {
+            TIME_DIMENSION -> {
+                parseDate(parseResult)
+            }
+
+            "number" -> {
+                parseSimple(parseResult, dimension) { NumberValue(it[":value"].number()) }
+            }
+
+            "ordinal" -> {
+                parseSimple(parseResult, dimension) { OrdinalValue(it[":value"].number()) }
+            }
+
+            "distance" -> {
                 parseSimple(
                     parseResult,
                     dimension,
                 ) { DistanceValue(it[":value"].number(), it[":unit"].string()) }
+            }
+
             "temperature" -> {
                 parseSimple(
                     parseResult,
                     dimension,
                 ) { TemperatureValue(it[":value"].number(), TemperatureUnit.valueOf(it[":unit"].string())) }
             }
-            "volume" ->
+
+            "volume" -> {
                 parseSimple(
                     parseResult,
                     dimension,
                 ) { VolumeValue(it[":value"].number(), it[":unit"].string()) }
+            }
+
             "amount-of-money" -> {
                 parseSimple(
                     parseResult,
                     dimension,
                 ) { AmountOfMoneyValue(it[":value"].number(), it[":unit"].string()) }
             }
-            "url" -> parseSimple(parseResult, dimension) { UrlValue(it[":value"].string()) }
-            "email" -> parseSimple(parseResult, dimension) { EmailValue(it[":value"].string()) }
-            "phone-number" -> parseSimple(parseResult, dimension) { PhoneNumberValue(it[":value"].string()) }
-            "duration" -> parseDuration(parseResult)
-            else -> error("Not yet supported yet : $dimension")
+
+            "url" -> {
+                parseSimple(parseResult, dimension) { UrlValue(it[":value"].string()) }
+            }
+
+            "email" -> {
+                parseSimple(parseResult, dimension) { EmailValue(it[":value"].string()) }
+            }
+
+            "phone-number" -> {
+                parseSimple(parseResult, dimension) { PhoneNumberValue(it[":value"].string()) }
+            }
+
+            "duration" -> {
+                parseDuration(parseResult)
+            }
+
+            else -> {
+                error("Not yet supported yet : $dimension")
+            }
         }
-    }
 
     private fun parseDuration(parseResult: JSONValue): List<ValueWithRange> {
         var start = Integer.MAX_VALUE
         var end = Integer.MIN_VALUE
-        return parseResult.iterable().mapNotNull {
-            if (it[":dim"].string() == "duration") {
-                val n = it[":value"][":normalized"]
-                val v = n[":value"].number().toLong()
-                val u =
-                    if (n[":unit"].string() == "second") ChronoUnit.SECONDS else error("unknown unit: ${n[":unit"]}")
+        return parseResult
+            .iterable()
+            .mapNotNull {
+                if (it[":dim"].string() == "duration") {
+                    val n = it[":value"][":normalized"]
+                    val v = n[":value"].number().toLong()
+                    val u =
+                        if (n[":unit"].string() == "second") ChronoUnit.SECONDS else error("unknown unit: ${n[":unit"]}")
 
-                start = Math.min(start, it[":start"].int())
-                end = Math.max(end, it[":end"].int())
-                Duration.of(v, u)
-            } else {
-                null
-            }
-        }
-            .takeUnless { it.isEmpty() }
+                    start = Math.min(start, it[":start"].int())
+                    end = Math.max(end, it[":end"].int())
+                    Duration.of(v, u)
+                } else {
+                    null
+                }
+            }.takeUnless { it.isEmpty() }
             ?.reduce { a, b -> a + b }
             ?.let {
                 listOf(ValueWithRange(start, end, DurationValue(it), "duration"))
@@ -237,8 +266,8 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
         parseResult: JSONValue,
         dim: String,
         parseFunction: (JSONValue) -> Value,
-    ): List<ValueWithRange> {
-        return parseResult.iterable().mapNotNull {
+    ): List<ValueWithRange> =
+        parseResult.iterable().mapNotNull {
             if (it[":dim"].string() == dim) {
                 val value = parseFunction.invoke(it[":value"])
                 val start = it[":start"].int()
@@ -248,7 +277,6 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
                 null
             }
         }
-    }
 
     private fun parseDate(parseResult: JSONValue): List<ValueWithRange> {
         var result = mutableListOf<ValueWithRange>()
@@ -376,7 +404,14 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
                     r1.start,
                     r2.end,
                     DateEntityValue(
-                        dateGrain.date.plus(Duration.ofSeconds(timeGrain.date.toLocalTime().toSecondOfDay().toLong())),
+                        dateGrain.date.plus(
+                            Duration.ofSeconds(
+                                timeGrain.date
+                                    .toLocalTime()
+                                    .toSecondOfDay()
+                                    .toLong(),
+                            ),
+                        ),
                         timeGrain.grain,
                     ),
                     TIME_DIMENSION,
@@ -390,7 +425,5 @@ internal object DucklingParser : EntityTypeEvaluator, EntityTypeClassifier, Pars
     override fun merge(
         context: EntityCallContextForEntity,
         values: List<ValueDescriptor>,
-    ): ValueDescriptor? {
-        return DatesMerge.merge(context, values)
-    }
+    ): ValueDescriptor? = DatesMerge.merge(context, values)
 }

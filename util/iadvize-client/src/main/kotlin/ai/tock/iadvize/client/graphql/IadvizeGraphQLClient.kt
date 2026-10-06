@@ -53,7 +53,12 @@ class IadvizeGraphQLClient {
         execute(
             RoutingRuleRequest(RoutingRuleRequest.Variables(distributionRule)),
             { checkAvailability(it) },
-            { it.routingRule?.availability?.chat?.isAvailable },
+            {
+                it.routingRule
+                    ?.availability
+                    ?.chat
+                    ?.isAvailable
+            },
         )
 
     /**
@@ -69,7 +74,8 @@ class IadvizeGraphQLClient {
             CustomDataRequest(CustomDataRequest.Variables(conversationId)),
             { getCustomData(it) },
             {
-                it.visitorConversationCustomData?.customData
+                it.visitorConversationCustomData
+                    ?.customData
                     ?.find { data -> data.key == customData.first }
                     ?.value == customData.second
             },
@@ -118,7 +124,10 @@ class IadvizeGraphQLClient {
             .let {
                 with(it.body()) body@{
                     when (this@body) {
-                        null -> graphQlDataNotFoundError()
+                        null -> {
+                            graphQlDataNotFoundError()
+                        }
+
                         else -> {
                             if (this@body.hasErrors()) {
                                 graphQlNotSuccessResponseError(

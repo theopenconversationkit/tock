@@ -80,13 +80,17 @@ object EvaluationService {
         createdBy: String,
     ): EvaluationSampleDTO =
         when {
-            request.dialogInfo != null && request.datasetRunInfo == null ->
+            request.dialogInfo != null && request.datasetRunInfo == null -> {
                 createEvaluationSampleFromDialogs(namespace, botId, request, request.dialogInfo, createdBy)
+            }
 
-            request.datasetRunInfo != null && request.dialogInfo == null ->
+            request.datasetRunInfo != null && request.dialogInfo == null -> {
                 createEvaluationSampleFromRuns(namespace, botId, request, request.datasetRunInfo, createdBy)
+            }
 
-            else -> throw BadRequestException("Exactly one of dialogInfo or datasetRunInfo is required")
+            else -> {
+                throw BadRequestException("Exactly one of dialogInfo or datasetRunInfo is required")
+            }
         }
 
     private fun createEvaluationSampleFromDialogs(
@@ -402,6 +406,21 @@ object EvaluationService {
 
         val statusCounts = evaluationDAO.countByStatus(updatedSample._id)
         val evaluationsResult = EvaluationsResult.fromStatusCounts(statusCounts)
+        if (targetStatus == EvaluationSampleStatus.VALIDATED) {
+            val positiveRate =
+                if (evaluationsResult.evaluated == 0) {
+                    0.0
+                } else {
+                    100.0 * evaluationsResult.positiveCount / evaluationsResult.evaluated
+                }
+            BotHistoryService.record(
+                updatedSample.namespace,
+                updatedSample.botId,
+                "evaluation",
+                changedBy,
+                mapOf("positiveRate" to positiveRate, "dialogCount" to updatedSample.dialogsCount),
+            )
+        }
 
         return EvaluationSampleDTO.from(updatedSample, evaluationsResult)
     }

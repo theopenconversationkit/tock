@@ -63,14 +63,18 @@ object BotAdminAnalyticsService {
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
 
     private val requestCache =
-        CacheBuilder.newBuilder().expireAfterWrite(Duration.ofMinutes(1))
+        CacheBuilder
+            .newBuilder()
+            .expireAfterWrite(Duration.ofMinutes(1))
             .build(
                 object : CacheLoader<RequestCacheKey, UserAnalyticsQueryResult>() {
                     override fun load(key: RequestCacheKey): UserAnalyticsQueryResult = key.operation.loader(key)
                 },
             )
     private val storyConfigurationIdNameCache =
-        CacheBuilder.newBuilder().expireAfterWrite(Duration.ofMinutes(1))
+        CacheBuilder
+            .newBuilder()
+            .expireAfterWrite(Duration.ofMinutes(1))
             .build(
                 object : CacheLoader<String, String>() {
                     override fun load(key: String): String =
@@ -139,13 +143,15 @@ object BotAdminAnalyticsService {
             val botId = request.botId
             val applicationIds = loadApplications(request).map { it._id }
             val (series, data) =
-                dialogFlowDAO.countMessagesByIntent(
-                    namespace,
-                    botId,
-                    applicationIds.toSet(),
-                    request.from,
-                    request.to,
-                ).toList().unzip()
+                dialogFlowDAO
+                    .countMessagesByIntent(
+                        namespace,
+                        botId,
+                        applicationIds.toSet(),
+                        request.from,
+                        request.to,
+                    ).toList()
+                    .unzip()
             UserAnalyticsQueryResult(data, series)
         }),
         countMessagesByStory(loader = { (request, _) ->
@@ -153,13 +159,15 @@ object BotAdminAnalyticsService {
             val botId = request.botId
             val applicationIds = loadApplications(request).map { it._id }
             val (series, data) =
-                dialogFlowDAO.countMessagesByStory(
-                    namespace,
-                    botId,
-                    applicationIds.toSet(),
-                    request.from,
-                    request.to,
-                ).toList().unzip()
+                dialogFlowDAO
+                    .countMessagesByStory(
+                        namespace,
+                        botId,
+                        applicationIds.toSet(),
+                        request.from,
+                        request.to,
+                    ).toList()
+                    .unzip()
             UserAnalyticsQueryResult(data, series.map { storyConfigurationIdNameCache.get(it) })
         }),
         countMessagesByStoryCategory(loader = { (request, _) ->
@@ -167,13 +175,15 @@ object BotAdminAnalyticsService {
             val botId = request.botId
             val applicationIds = loadApplications(request).map { it._id }
             val (series, data) =
-                dialogFlowDAO.countMessagesByStoryCategory(
-                    namespace,
-                    botId,
-                    applicationIds.toSet(),
-                    request.from,
-                    request.to,
-                ).toList().unzip()
+                dialogFlowDAO
+                    .countMessagesByStoryCategory(
+                        namespace,
+                        botId,
+                        applicationIds.toSet(),
+                        request.from,
+                        request.to,
+                    ).toList()
+                    .unzip()
             UserAnalyticsQueryResult(data, series)
         }),
         countMessagesByStoryType(loader = { (request, _) ->
@@ -181,13 +191,15 @@ object BotAdminAnalyticsService {
             val botId = request.botId
             val applicationIds = loadApplications(request).map { it._id }
             val (series, data) =
-                dialogFlowDAO.countMessagesByStoryType(
-                    namespace,
-                    botId,
-                    applicationIds.toSet(),
-                    request.from,
-                    request.to,
-                ).toList().unzip()
+                dialogFlowDAO
+                    .countMessagesByStoryType(
+                        namespace,
+                        botId,
+                        applicationIds.toSet(),
+                        request.from,
+                        request.to,
+                    ).toList()
+                    .unzip()
             UserAnalyticsQueryResult(data, series)
         }),
         countMessagesByStoryLocale(loader = { (request, _) ->
@@ -195,13 +207,15 @@ object BotAdminAnalyticsService {
             val botId = request.botId
             val applicationIds = loadApplications(request).map { it._id }
             val (series, data) =
-                dialogFlowDAO.countMessagesByStoryLocale(
-                    namespace,
-                    botId,
-                    applicationIds.toSet(),
-                    request.from,
-                    request.to,
-                ).toList().unzip()
+                dialogFlowDAO
+                    .countMessagesByStoryLocale(
+                        namespace,
+                        botId,
+                        applicationIds.toSet(),
+                        request.from,
+                        request.to,
+                    ).toList()
+                    .unzip()
             UserAnalyticsQueryResult(data, series)
         }),
         countMessagesByActionType(loader = { (request, _) ->
@@ -209,26 +223,33 @@ object BotAdminAnalyticsService {
             val botId = request.botId
             val applicationIds = loadApplications(request).map { it._id }
             val (series, data) =
-                dialogFlowDAO.countMessagesByActionType(
-                    namespace,
-                    botId,
-                    applicationIds.toSet(),
-                    request.from,
-                    request.to,
-                ).toList().unzip()
+                dialogFlowDAO
+                    .countMessagesByActionType(
+                        namespace,
+                        botId,
+                        applicationIds.toSet(),
+                        request.from,
+                        request.to,
+                    ).toList()
+                    .unzip()
             val usedIntents =
-                dialogFlowDAO.countMessagesByIntent(
-                    namespace,
-                    botId,
-                    applicationIds.toSet(),
-                    request.from,
-                    request.to,
-                ).keys.toList()
+                dialogFlowDAO
+                    .countMessagesByIntent(
+                        namespace,
+                        botId,
+                        applicationIds.toSet(),
+                        request.from,
+                        request.to,
+                    ).keys
+                    .toList()
             UserAnalyticsQueryResult(data, series, usedIntents)
         }),
     }
 
-    private data class RequestCacheKey(val request: DialogFlowRequest, val operation: Operation) {
+    private data class RequestCacheKey(
+        val request: DialogFlowRequest,
+        val operation: Operation,
+    ) {
         override fun equals(other: Any?): Boolean =
             if (other is RequestCacheKey) {
                 operation == other.operation &&
@@ -369,10 +390,11 @@ object BotAdminAnalyticsService {
     private fun getDatesBetween(
         startDate: LocalDate,
         endDate: LocalDate,
-    ): List<String> {
-        return startDate.datesUntil(endDate.plusDays(1))
-            .map { it.toString() }.toList()
-    }
+    ): List<String> =
+        startDate
+            .datesUntil(endDate.plusDays(1))
+            .map { it.toString() }
+            .toList()
 
     private fun collectAnalyticsSeries(queryResult: Map<String, List<DialogFlowAggregateData>>): List<String> {
         val series =

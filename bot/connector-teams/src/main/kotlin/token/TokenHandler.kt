@@ -35,7 +35,10 @@ import kotlin.concurrent.fixedRateTimer
  * Handle the generation and the refresh of the token header
  * This token is mandatory in request from bot to teams via microsoft-api
  */
-class TokenHandler(private val appId: String, private val password: String) {
+class TokenHandler(
+    private val appId: String,
+    private val password: String,
+) {
     private val logger = KotlinLogging.logger {}
 
     @Volatile
@@ -61,8 +64,7 @@ class TokenHandler(private val appId: String, private val password: String) {
             longProperty("tock_microsoft_request_timeout", 30000),
             logger,
             logLevel,
-        )
-            .baseUrl("https://login.microsoftonline.com")
+        ).baseUrl("https://login.microsoftonline.com")
             .addJacksonConverter(teamsMapper)
             .build()
             .create()
@@ -89,10 +91,11 @@ class TokenHandler(private val appId: String, private val password: String) {
 
     private fun fetchToken() {
         val response =
-            loginApi.login(
-                clientId = appId,
-                clientSecret = password,
-            ).execute()
+            loginApi
+                .login(
+                    clientId = appId,
+                    clientSecret = password,
+                ).execute()
         token = response.body()?.accessToken ?: error("empty access token")
         tokenExpiration = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
     }

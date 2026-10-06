@@ -23,8 +23,6 @@ enum class StoriesImportMode {
     ;
 
     companion object {
-        fun findMode(key: String): StoriesImportMode? {
-            return entries.firstOrNull { it.name == key }
-        }
+        fun findMode(key: String): StoriesImportMode? = entries.firstOrNull { it.name == key }
     }
 }

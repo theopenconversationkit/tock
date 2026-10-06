@@ -18,7 +18,9 @@ package ai.tock.bot.connector.messenger.model.subscription
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-internal data class SubscriptionsResponse(val data: List<SubscriptionsData>)
+internal data class SubscriptionsResponse(
+    val data: List<SubscriptionsData>,
+)
 
 internal data class SubscriptionsData(
     val active: Boolean?,

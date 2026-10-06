@@ -23,8 +23,6 @@ enum class VectorStoreProvider {
     ;
 
     companion object {
-        fun findByName(provider: String): VectorStoreProvider? {
-            return entries.firstOrNull { it.name == provider }
-        }
+        fun findByName(provider: String): VectorStoreProvider? = entries.firstOrNull { it.name == provider }
     }
 }

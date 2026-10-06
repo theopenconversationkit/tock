@@ -22,7 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonValue
 
 @JsonTypeName("CAROUSEL")
-data class TemplateCarousel(val cards: List<TemplateCard>) : TemplateComponent() {
+data class TemplateCarousel(
+    val cards: List<TemplateCard>,
+) : TemplateComponent() {
     constructor(vararg cards: TemplateCard) : this(listOf(*cards))
 
     override fun looselyEquals(other: TemplateComponent): Boolean {
@@ -36,7 +38,9 @@ data class TemplateCarousel(val cards: List<TemplateCard>) : TemplateComponent()
     }
 }
 
-data class TemplateCard(val components: List<TemplateCardComponent>) {
+data class TemplateCard(
+    val components: List<TemplateCardComponent>,
+) {
     constructor(
         header: TemplateCardHeader,
         body: TemplateCardBody,
@@ -60,7 +64,10 @@ sealed class TemplateCardComponent {
 }
 
 @JsonTypeName("HEADER")
-data class TemplateCardHeader private constructor(val format: HeaderFormat, val example: Map<String, List<String>>) : TemplateCardComponent() {
+data class TemplateCardHeader private constructor(
+    val format: HeaderFormat,
+    val example: Map<String, List<String>>,
+) : TemplateCardComponent() {
     constructor(format: HeaderFormat, imageHandle: MetaUploadHandle) : this(format, mapOf("header_handle" to listOf(imageHandle.value)))
 
     override fun looselyEquals(other: TemplateCardComponent): Boolean {
@@ -107,6 +114,8 @@ data class TemplateCardBody(
 }
 
 @JsonTypeName("BUTTONS")
-data class TemplateCardButtons private constructor(val buttons: List<WhatsappTemplateButton>) : TemplateCardComponent() {
+data class TemplateCardButtons private constructor(
+    val buttons: List<WhatsappTemplateButton>,
+) : TemplateCardComponent() {
     constructor(first: WhatsappTemplateButton, second: WhatsappTemplateButton? = null) : this(listOfNotNull(first, second))
 }

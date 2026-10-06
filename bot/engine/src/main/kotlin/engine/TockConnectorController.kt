@@ -29,6 +29,7 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.event.TypingOnEvent
+import ai.tock.bot.engine.user.LockAcquisitionException
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserPreferences
@@ -39,22 +40,22 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
-import ai.tock.shared.longProperty
 import ai.tock.shared.provide
 import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import io.vertx.kotlin.coroutines.awaitBlocking
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.net.URI
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.time.Duration.Companion.milliseconds
 
+@Deprecated("Use coroutine stories to perform asynchronous operations")
 private val synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
+
+@Deprecated("Use coroutine stories to perform asynchronous operations")
 private val asynchronousMode = booleanProperty("tock_timeline_persistence_asynchronous_mode", false)
 
 /**
@@ -91,9 +92,6 @@ internal class TockConnectorController(
             controller.connector.unregister(controller)
         }
     }
-
-    private val maxLockedAttempts = intProperty("tock_bot_max_locked_attempts", 10)
-    private val lockedAttemptsWait = longProperty("tock_bot_locked_attempts_wait_in_ms", 500L).milliseconds
 
     private val userLock: UserLock by injector.instance()
     private val userTimelineDAO: UserTimelineDAO by injector.instance()
@@ -137,8 +135,7 @@ internal class TockConnectorController(
         try {
             if (!botDefinition.eventListener.listenEvent(this, data, event)) {
                 when (event) {
-                    is Action -> handleAction(event, 0, data)
-
+                    is Action -> handleAction(event, data)
                     else -> callback.eventSkipped(event)
                 }
             } else {
@@ -174,16 +171,20 @@ internal class TockConnectorController(
     @ExperimentalTockCoroutines
     private suspend fun handleAction(
         action: Action,
-        nbAttempts: Int,
         data: ConnectorData,
     ) {
         val callback = data.callback
-        try {
-            val playerId = action.playerId
-            val id = playerId.id
+        val playerId = action.playerId
+        val id = playerId.id
 
+        try {
             logger.debug { "try to lock $playerId" }
-            if (userLock.tryLock(id)) {
+            // Not aborting on lock loss to preserve old behavior
+            userLock.withLock(
+                userId = id,
+                postLockRelease = { callback.userLockReleased(action) },
+                abortOnLockLoss = false,
+            ) {
                 try {
                     callback.userLocked(action)
 
@@ -193,7 +194,7 @@ internal class TockConnectorController(
                             action.playerId,
                             data.priorUserId,
                             data.groupId,
-                            storyDefinitionLoader(action.applicationId),
+                            storyDefinitionLoader(action.connectorId),
                         )
 
                     // Notify callback that timeline has been loaded
@@ -208,24 +209,17 @@ internal class TockConnectorController(
 
                     if (synchronousMode && data.saveTimeline) {
                         userTimelineDAO.save(userTimeline, bot.botDefinition)
+                    } else if (asynchronousMode) {
+                        logger.warn { "Deprecated asynchronous timeline saving mode used, late writes will not be protected by the lock" }
                     }
                 } catch (t: Throwable) {
-                    send(null, data, action, errorMessage(action.recipientId, action.applicationId, action.playerId))
+                    send(null, data, action, errorMessage(action.recipientId, action.connectorId, action.playerId))
                     callback.exceptionThrown(action, t)
-                } finally {
-                    if (!asynchronousMode) {
-                        userLock.releaseLock(id)
-                        callback.userLockReleased(action)
-                    }
                 }
-            } else if (nbAttempts < maxLockedAttempts) {
-                logger.debug { "$playerId locked - wait" }
-                delay(lockedAttemptsWait)
-                handleAction(action, nbAttempts + 1, data)
-            } else {
-                logger.debug { "$playerId locked for $maxLockedAttempts times - skip $action" }
-                callback.eventSkipped(action)
             }
+        } catch (e: LockAcquisitionException) {
+            logger.debug(e) { "failed to acquire lock for $playerId - skip $action" }
+            callback.eventSkipped(action)
         } catch (t: Throwable) {
             callback.exceptionThrown(action, t)
         }
@@ -247,7 +241,7 @@ internal class TockConnectorController(
                         action.playerId,
                         data.priorUserId,
                         data.groupId,
-                        storyDefinitionLoader(action.applicationId),
+                        storyDefinitionLoader(action.connectorId),
                     )
                 bot.support(action, userTimeline, this@TockConnectorController, data)
             } catch (t: Throwable) {
@@ -270,13 +264,14 @@ internal class TockConnectorController(
         serviceIdentifier: String,
         installer: CoroutineRouterSupport.(Router) -> Unit,
     ) {
-        verticle.registerServices(serviceIdentifier) { router ->
-            // healthcheck
-            router.get("$serviceIdentifier/healthcheck").handler {
-                it.response().end()
-            }
-            installer(router)
-        }.also { serviceInstallers.add(it) }
+        verticle
+            .registerServices(serviceIdentifier) { router ->
+                // healthcheck
+                router.get("$serviceIdentifier/healthcheck").handler {
+                    it.response().end()
+                }
+                installer(router)
+            }.also { serviceInstallers.add(it) }
     }
 
     override fun unregisterServices() {
@@ -303,12 +298,6 @@ internal class TockConnectorController(
                     }
                 }
                 data.callback.eventAnswered(userAction)
-                if (asynchronousMode) {
-                    runBlocking {
-                        userLock.releaseLock(userAction.playerId.id)
-                    }
-                    data.callback.userLockReleased(action)
-                }
             }
         }
     }
@@ -316,22 +305,18 @@ internal class TockConnectorController(
     fun loadProfile(
         data: ConnectorData,
         playerId: PlayerId,
-    ): UserPreferences? {
-        return connector.loadProfile(data.callback, playerId)
-    }
+    ): UserPreferences? = connector.loadProfile(data.callback, playerId)
 
     fun refreshProfile(
         data: ConnectorData,
         playerId: PlayerId,
-    ): UserPreferences? {
-        return connector.refreshProfile(data.callback, playerId)
-    }
+    ): UserPreferences? = connector.refreshProfile(data.callback, playerId)
 
     fun startTypingInAnswerTo(
         action: Action,
         data: ConnectorData,
     ) {
-        connector.send(TypingOnEvent(action.playerId, action.applicationId), data.callback)
+        connector.send(TypingOnEvent(action.playerId, action.connectorId), data.callback)
     }
 
     fun sendIntent(

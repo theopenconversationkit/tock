@@ -22,7 +22,9 @@ import ai.tock.bot.engine.message.GenericMessage
 /**
  * A list of [MediaCard].
  */
-data class MediaCarousel(val cards: List<MediaCard>) : MediaMessage {
+data class MediaCarousel(
+    val cards: List<MediaCard>,
+) : MediaMessage {
     override fun checkValidity(): Boolean = cards.isNotEmpty()
 
     override fun toGenericMessage(): GenericMessage? = GenericMessage(subElements = cards.mapNotNull { it.toGenericMessage() }.map { GenericElement(it) })

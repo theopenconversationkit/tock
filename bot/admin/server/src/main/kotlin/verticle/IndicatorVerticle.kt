@@ -136,8 +136,7 @@ class IndicatorVerticle {
                 } ?: false
             }
 
-            blockingJsonPost(METRICS_BY_APPLICATION_NAME_PATH, authorizedRoles) {
-                    context: RoutingContext, request: Requests ->
+            blockingJsonPost(METRICS_BY_APPLICATION_NAME_PATH, authorizedRoles) { context: RoutingContext, request: Requests ->
                 checkNamespaceAndExecute(context, currentContextApp) {
                     MetricService.filterAndGroupBy(createFilterMetric(namespace = it.namespace, it.name, request.filter), request.groupBy)
                 }
@@ -185,7 +184,9 @@ fun <T> WebVerticle.checkNamespaceAndExecute(
     }
 }
 
-data class ErrorMessage(val message: String? = "Unexpected error occurred")
+data class ErrorMessage(
+    val message: String? = "Unexpected error occurred",
+)
 
 /**
  * try to execute [block] code otherwise throw an exception and set the status code
@@ -195,8 +196,8 @@ data class ErrorMessage(val message: String? = "Unexpected error occurred")
 private fun <T> tryExecute(
     context: RoutingContext,
     block: () -> T,
-): T? {
-    return try {
+): T? =
+    try {
         // in case of success the status code is 201 for POST creation method in this Verticle
         if (context.request().method() == HttpMethod.POST) {
             context.response().statusCode = 201
@@ -214,10 +215,10 @@ private fun <T> tryExecute(
 
         KotlinLogging.logger {}.error { "Error ${e.message}" }
 
-        context.response()
+        context
+            .response()
             .setStatusCode(statusCode)
             .end(ObjectMapper().writeValueAsString(ErrorMessage(e.message)))
 
         null
     }
-}

@@ -59,6 +59,16 @@ def test_get_em_provider_setting_by_id():
     assert response.json()['provider'] == provider_id
 
 
+def test_get_aws_bedrock_em_provider_setting_by_id():
+    """Test getting the AwsBedrock EM provider setting example."""
+    provider_id = EMProvider.AWS_BEDROCK.value
+    response = client.get(f"{urls_prefix}/{provider_id}/setting/example")
+    assert response.status_code == 200
+    body = response.json()
+    assert body['provider'] == provider_id
+    assert body['model']
+
+
 def test_check_em_provider_setting():
     """Test checking a provider setting (use example for checking)."""
     provider_id = list(EMProvider)[0].value

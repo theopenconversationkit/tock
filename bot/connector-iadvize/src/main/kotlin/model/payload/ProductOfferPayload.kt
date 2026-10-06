@@ -28,10 +28,11 @@ data class ProductOfferPayload(
     val availability: AvailabilityStatus,
     val image: Image?,
     val actions: MutableList<Action> = mutableListOf(),
-) :
-    Payload("product-offer") {
+) : Payload("product-offer") {
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    enum class AvailabilityStatus(val status: String) {
+    enum class AvailabilityStatus(
+        val status: String,
+    ) {
         AVAILABLE("available"),
         UNAVAILABLE("unavailable"),
     }

@@ -8,6 +8,7 @@ import { DatasetsService } from '../services/datasets.service';
 import { getExportFileName } from '../../../shared/utils';
 import { saveAs } from 'file-saver-es';
 import { TranslocoService } from '@jsverse/transloco';
+import { questionsToCsv } from '../dataset-csv';
 
 interface QuestionForm {
   question: FormControl<string>;
@@ -20,15 +21,17 @@ interface DatasetForm {
   questions: FormArray<FormGroup<QuestionForm>>;
 }
 
+export type DatasetExportFormat = 'json' | 'csv';
+
 const question_minLength = 2;
 const question_maxLength = 1500;
 const groundtruth_maxLength = 1500;
 
 @Component({
-    selector: 'tock-dataset-create',
-    templateUrl: './dataset-create.component.html',
-    styleUrl: './dataset-create.component.scss',
-    standalone: false
+  selector: 'tock-dataset-create',
+  templateUrl: './dataset-create.component.html',
+  styleUrl: './dataset-create.component.scss',
+  standalone: false
 })
 export class DatasetCreateComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
@@ -273,22 +276,32 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
       });
   }
 
-  exportDataset(): void {
-    const dataStr = JSON.stringify({
-      name: this.form.controls.name.value,
-      description: this.form.controls.description.value,
-      questions: this._getFilledQuestions(true) // Omit question IDs in export since they are only relevant for diffing during updates
-    });
+  /**
+   * JSON exports the whole dataset. CSV exports questions only:
+   * name and description have no place in a flat two-column file.
+   */
+  exportDataset(format: DatasetExportFormat = 'json'): void {
+    // Question IDs are omitted in exports since they are only relevant for diffing during updates
+    const questions = this._getFilledQuestions(true);
+
+    const content =
+      format === 'json'
+        ? JSON.stringify({
+            name: this.form.controls.name.value,
+            description: this.form.controls.description.value,
+            questions
+          })
+        : questionsToCsv(questions);
 
     const exportFileName = getExportFileName(
       this.stateService.currentApplication.namespace,
       this.stateService.currentApplication.name,
       'dataset',
-      'json'
+      format
     );
 
-    const blob = new Blob([dataStr], {
-      type: 'application/json'
+    const blob = new Blob([content], {
+      type: format === 'json' ? 'application/json' : 'text/csv;charset=utf-8'
     });
 
     saveAs(blob, exportFileName);

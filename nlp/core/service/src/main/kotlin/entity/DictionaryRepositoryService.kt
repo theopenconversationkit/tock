@@ -40,7 +40,5 @@ internal object DictionaryRepositoryService : DictionaryRepository {
     fun isSupportedEntityType(
         namespace: String,
         name: String,
-    ): Boolean {
-        return dictionaries[namespace]?.containsKey(name) == true
-    }
+    ): Boolean = dictionaries[namespace]?.containsKey(name) == true
 }

@@ -115,53 +115,40 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         col.deleteMany(and(FaqDefinition::botId eq id, FaqDefinition::namespace eq namespace))
     }
 
-    override fun getFaqDefinitionById(id: Id<FaqDefinition>): FaqDefinition? {
-        return col.findOneById(id)
-    }
+    override fun getFaqDefinitionById(id: Id<FaqDefinition>): FaqDefinition? = col.findOneById(id)
 
     override fun getFaqDefinitionByBotIdAndNamespace(
         botId: String,
         namespace: String,
-    ): List<FaqDefinition> {
-        return col.find(
-            and(
-                FaqDefinition::botId eq botId,
-                FaqDefinition::namespace eq namespace,
-            ),
-        ).into(ArrayList())
-    }
+    ): List<FaqDefinition> =
+        col
+            .find(
+                and(
+                    FaqDefinition::botId eq botId,
+                    FaqDefinition::namespace eq namespace,
+                ),
+            ).into(ArrayList())
 
-    override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? {
-        return col.findOne(FaqDefinition::intentId eq id)
-    }
+    override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? = col.findOne(FaqDefinition::intentId eq id)
 
-    override fun getFaqDefinitionByIntentIds(intentIds: Set<Id<IntentDefinition>>): List<FaqDefinition> {
-        return col.find(FaqDefinition::intentId `in` intentIds).into(ArrayList())
-    }
+    override fun getFaqDefinitionByIntentIds(intentIds: Set<Id<IntentDefinition>>): List<FaqDefinition> = col.find(FaqDefinition::intentId `in` intentIds).into(ArrayList())
 
-    override fun getFaqDefinitionByTags(tags: Set<String>): List<FaqDefinition> {
-        return col.find(FaqDefinition::tags `in` tags).into(ArrayList())
-    }
+    override fun getFaqDefinitionByTags(tags: Set<String>): List<FaqDefinition> = col.find(FaqDefinition::tags `in` tags).into(ArrayList())
 
-    override fun getFaqDefinitionByI18nId(id: Id<I18nLabel>): FaqDefinition? {
-        return col.findOne(FaqDefinition::i18nId eq id)
-    }
+    override fun getFaqDefinitionByI18nId(id: Id<I18nLabel>): FaqDefinition? = col.findOne(FaqDefinition::i18nId eq id)
 
-    override fun getFaqDefinitionByI18nIds(ids: Set<Id<I18nLabel>>): List<FaqDefinition>? {
-        return col.find(FaqDefinition::i18nId `in` ids).into(ArrayList())
-    }
+    override fun getFaqDefinitionByI18nIds(ids: Set<Id<I18nLabel>>): List<FaqDefinition>? = col.find(FaqDefinition::i18nId `in` ids).into(ArrayList())
 
     override fun getFaqDefinitionByIntentIdAndBotIdAndNamespace(
         intentId: Id<IntentDefinition>,
         botId: String,
         namespace: String,
-    ): FaqDefinition? {
-        return col.findOne(
+    ): FaqDefinition? =
+        col.findOne(
             FaqDefinition::intentId eq intentId,
             FaqDefinition::namespace eq namespace,
             FaqDefinition::botId eq botId,
         )
-    }
 
     override fun save(faqDefinition: FaqDefinition) {
         col.replaceOneWithFilter(
@@ -220,21 +207,22 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     override fun getTags(
         botId: String,
         namespace: String,
-    ): List<String> {
-        return col.aggregate<FaqDefinitionTag>(
-            joinOnIntentDefinition(),
-            match(
-                andNotNull(
-                    filterOnNamespaceAndBotId(botId, namespace),
+    ): List<String> =
+        col
+            .aggregate<FaqDefinitionTag>(
+                joinOnIntentDefinition(),
+                match(
+                    andNotNull(
+                        filterOnNamespaceAndBotId(botId, namespace),
+                    ),
                 ),
-            ),
-            // unwind : to flat tags array into an object
-            FaqDefinition::tags.unwind(),
-            groupByTag(),
-            projectByTag(),
-            sortAscending(FaqDefinitionTag::tag),
-        ).map { it.tag }.toList()
-    }
+                // unwind : to flat tags array into an object
+                FaqDefinition::tags.unwind(),
+                groupByTag(),
+                projectByTag(),
+                sortAscending(FaqDefinitionTag::tag),
+            ).map { it.tag }
+            .toList()
 
     /**
      * @see FaqDefinitionDAO.makeMigration
@@ -253,35 +241,36 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
             val updateDate: Instant,
         )
 
-        col.aggregate<FaqProjection>(
-            match(
-                FaqDefinition::namespace exists false,
-                // to ensure old faq migration if not done (see Tock version 23.3.0)
-                FaqDefinition::botId exists true,
-            ),
-        ).forEach { projection ->
-            thread(true) {
-                with(projection) {
-                    val namespace =
-                        intentIdSupplier.invoke(intentId)
-                            ?: throw Exception("Fail to migrate Faq with intent $intentId  due to namespace not found with id $intentId")
+        col
+            .aggregate<FaqProjection>(
+                match(
+                    FaqDefinition::namespace exists false,
+                    // to ensure old faq migration if not done (see Tock version 23.3.0)
+                    FaqDefinition::botId exists true,
+                ),
+            ).forEach { projection ->
+                thread(true) {
+                    with(projection) {
+                        val namespace =
+                            intentIdSupplier.invoke(intentId)
+                                ?: throw Exception("Fail to migrate Faq with intent $intentId  due to namespace not found with id $intentId")
 
-                    logger.info { "Migrate FaqDefinition ${projection._id} with namespace $namespace" }
+                        logger.info { "Migrate FaqDefinition ${projection._id} with namespace $namespace" }
 
-                    FaqDefinition(
-                        _id,
-                        botId,
-                        namespace,
-                        intentId,
-                        i18nId,
-                        tags,
-                        enabled,
-                        creationDate,
-                        updateDate,
-                    )
-                }.let { faq -> col.save(faq) }
+                        FaqDefinition(
+                            _id,
+                            botId,
+                            namespace,
+                            intentId,
+                            i18nId,
+                            tags,
+                            enabled,
+                            creationDate,
+                            updateDate,
+                        )
+                    }.let { faq -> col.save(faq) }
+                }
             }
-        }
     }
 
     private const val CLASSIFIED_SENTENCE_COLLECTION = "classified_sentence"
@@ -545,32 +534,26 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     /**
      * Util method to do an union on the not null filter predicates
      */
-    private fun orNotNull(vararg predicates: Bson?): Bson {
-        return or(
+    private fun orNotNull(vararg predicates: Bson?): Bson =
+        or(
             predicates.filterNotNull(),
         )
-    }
 
     /**
      * Util method to do an intersection on the not null filter predicates
      */
-    private fun andNotNull(vararg predicates: Bson?): Bson {
-        return and(
+    private fun andNotNull(vararg predicates: Bson?): Bson =
+        and(
             predicates.filterNotNull(),
         )
-    }
 
     /**
      * Util method to sort ascending the properties given
      */
-    private fun sortAscending(vararg properties: KProperty<*>): Bson {
-        return sort(ascending(properties.asList()))
-    }
+    private fun sortAscending(vararg properties: KProperty<*>): Bson = sort(ascending(properties.asList()))
 
     /**
      * Util method to sort descending the properties given
      */
-    private fun sortDescending(vararg properties: KProperty<*>): Bson {
-        return sort(descending(properties.asList()))
-    }
+    private fun sortDescending(vararg properties: KProperty<*>): Bson = sort(descending(properties.asList()))
 }

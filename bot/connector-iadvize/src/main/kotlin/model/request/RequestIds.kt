@@ -18,7 +18,10 @@ package ai.tock.bot.connector.iadvize.model.request
 
 import io.vertx.ext.web.RoutingContext
 
-data class RequestIds(val idConnectorVersion: String, val idWebsite: String) {
+data class RequestIds(
+    val idConnectorVersion: String,
+    val idWebsite: String,
+) {
     constructor(context: RoutingContext) :
         this(
             context.request().getParam("idConnectorVersion"),

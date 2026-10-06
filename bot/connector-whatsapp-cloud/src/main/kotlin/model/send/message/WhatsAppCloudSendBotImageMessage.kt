@@ -19,7 +19,7 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 data class WhatsAppCloudSendBotImageMessage(
     val image: Image,
     override val recipientType: WhatsAppCloudBotRecipientType,
-    override val to: String,
+    override val recipient: String,
 ) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.image) {
     data class Image(
         val id: String?,

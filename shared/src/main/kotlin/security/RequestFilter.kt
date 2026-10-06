@@ -45,22 +45,29 @@ interface RequestFilter {
     fun accept(request: HttpServerRequest): Boolean
 }
 
-internal class RequestFiltersComposer(private val filters: List<RequestFilter>) : RequestFilter {
-    override fun accept(request: HttpServerRequest): Boolean {
-        return filters.all { it.accept(request) }
-    }
+internal class RequestFiltersComposer(
+    private val filters: List<RequestFilter>,
+) : RequestFilter {
+    override fun accept(request: HttpServerRequest): Boolean = filters.all { it.accept(request) }
 }
 
-internal class IPRequestFilter(private val allowedIps: Set<String>) : RequestFilter {
+internal class IPRequestFilter(
+    private val allowedIps: Set<String>,
+) : RequestFilter {
     override fun accept(request: HttpServerRequest): Boolean {
         val directIp = request.remoteAddress().host()
-        val forwardedIp = request.getHeader("X-Forwarded-For")?.split(",")?.lastOrNull()?.trim()
+        val forwardedIp =
+            request
+                .getHeader("X-Forwarded-For")
+                ?.split(",")
+                ?.lastOrNull()
+                ?.trim()
         return allowedIps.contains(directIp) || allowedIps.contains(forwardedIp)
     }
 }
 
-internal class XAuthTokenRequestFilter(private val token: String) : RequestFilter {
-    override fun accept(request: HttpServerRequest): Boolean {
-        return token == request.getHeader("X-Auth-Token")
-    }
+internal class XAuthTokenRequestFilter(
+    private val token: String,
+) : RequestFilter {
+    override fun accept(request: HttpServerRequest): Boolean = token == request.getHeader("X-Auth-Token")
 }

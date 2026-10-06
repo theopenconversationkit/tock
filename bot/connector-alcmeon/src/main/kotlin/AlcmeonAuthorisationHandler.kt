@@ -22,7 +22,9 @@ import org.apache.commons.codec.binary.Hex
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-class AlcmeonAuthorisationHandler(secret: String) : Handler<RoutingContext> {
+class AlcmeonAuthorisationHandler(
+    secret: String,
+) : Handler<RoutingContext> {
     private val signingKey =
         SecretKeySpec(
             secret.toByteArray(),
@@ -49,7 +51,5 @@ class AlcmeonAuthorisationHandler(secret: String) : Handler<RoutingContext> {
         }
     }
 
-    private fun calculateSignature(payload: String): String {
-        return String(Hex().encode(mac.doFinal(payload.toByteArray())))
-    }
+    private fun calculateSignature(payload: String): String = String(Hex().encode(mac.doFinal(payload.toByteArray())))
 }

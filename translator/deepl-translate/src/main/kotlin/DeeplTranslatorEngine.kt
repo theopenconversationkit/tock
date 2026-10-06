@@ -22,7 +22,9 @@ import ai.tock.translator.TranslatorEngine
 import org.apache.commons.text.StringEscapeUtils
 import java.util.Locale
 
-internal class DeeplTranslatorEngine(client: DeeplClient) : TranslatorEngine {
+internal class DeeplTranslatorEngine(
+    client: DeeplClient,
+) : TranslatorEngine {
     private val deeplClient = client
 
     private val supportedLanguages: Set<String>? = propertyOrNull("tock_translator_deepl_target_languages")?.split(",")?.map { it.trim() }?.toSet()

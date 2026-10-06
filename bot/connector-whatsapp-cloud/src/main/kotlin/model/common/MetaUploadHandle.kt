@@ -24,4 +24,6 @@ import ai.tock.bot.connector.whatsapp.cloud.spi.TemplateGenerationContext
  * @see TemplateGenerationContext.getOrUpload
  */
 @JvmInline
-value class MetaUploadHandle internal constructor(val value: String)
+value class MetaUploadHandle internal constructor(
+    val value: String,
+)

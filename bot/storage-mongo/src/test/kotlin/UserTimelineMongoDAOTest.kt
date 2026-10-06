@@ -33,13 +33,19 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.message.DebugMessage
+import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.nlp.api.client.model.NlpQuery
+import ai.tock.nlp.api.client.model.NlpQueryContext
+import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.shared.defaultNamespace
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNull
+import org.litote.kmongo.eq
 import org.litote.kmongo.newId
 import java.time.ZonedDateTime
 import java.util.Locale
@@ -97,10 +103,12 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
         runBlocking {
             val id = PlayerId("id", PlayerType.user)
             val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))))
+            u.userPreferences.firstName = "Ada"
             UserTimelineMongoDAO.save(u, "namespace")
+            UserTimelineMongoDAO.dialogTextCol.save(DialogTextCol("migration text", u.dialogs.single().id))
             println(UserTimelineMongoDAO.loadWithLastValidDialog("namespace", id, null) { error("no story provided") })
 
-            val newId = PlayerId("id", PlayerType.user, "a")
+            val newId = PlayerId("new-id", PlayerType.user, "a")
             UserTimelineMongoDAO.updatePlayerId("namespace", id, newId)
             println(UserTimelineMongoDAO.loadWithLastValidDialog("namespace", newId, null) { error("no story provided") })
             assertEquals(
@@ -111,7 +119,86 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                 newId,
                 UserTimelineMongoDAO.loadWithoutDialogs("namespace", newId).playerId,
             )
+            assertEquals(
+                u.userPreferences,
+                UserTimelineMongoDAO.loadWithoutDialogs("namespace", newId).userPreferences,
+            )
+            assertEquals(
+                u.dialogs.single().id,
+                UserTimelineMongoDAO.dialogTextCol.findOne(DialogTextCol::text eq "migration text")?.dialogId,
+            )
         }
+
+    @Test
+    suspend fun `remove deletes dialog-owned side collections`() {
+        val namespace = "remove-dialog-dependencies"
+        val user = PlayerId("remove-dialog-dependencies-user", PlayerType.user)
+        val bot = PlayerId("remove-dialog-dependencies-bot", PlayerType.bot)
+        val actionId = newId<ai.tock.bot.engine.action.Action>()
+        val storyDefinition =
+            StoryDefinitionBase(
+                "remove-dialog-dependencies-story",
+                object : SimpleStoryHandlerBase() {
+                    override fun action(bus: BotBus) {}
+                },
+            )
+        val dialog =
+            Dialog(
+                playerIds = setOf(user, bot),
+                stories =
+                    mutableListOf(
+                        Story(
+                            storyDefinition,
+                            Intent.unknown,
+                            actions =
+                                mutableListOf(
+                                    SendSentence(
+                                        user,
+                                        "remove-dialog-dependencies-app",
+                                        bot,
+                                        "text",
+                                        mutableListOf(),
+                                        actionId,
+                                        state = EventState(),
+                                    ),
+                                ),
+                        ),
+                    ),
+            )
+        UserTimelineMongoDAO.save(UserTimeline(user, dialogs = mutableListOf(dialog)), namespace)
+        delay(100)
+
+        UserTimelineMongoDAO.dialogTextCol.deleteMany(DialogTextCol::dialogId eq dialog.id)
+        UserTimelineMongoDAO.dialogTextCol.save(DialogTextCol("text", dialog.id))
+        UserTimelineMongoDAO.connectorMessageCol.save(ConnectorMessageCol(ConnectorMessageColId(actionId, dialog.id), emptyList()))
+        UserTimelineMongoDAO.nlpStatsCol.save(
+            NlpStatsCol(
+                NlpStatsColId(actionId, dialog.id),
+                NlpCallStats(
+                    Locale.ENGLISH,
+                    nlpQuery = NlpQuery(listOf("text"), namespace, "app", NlpQueryContext(Locale.ENGLISH)),
+                    nlpResult = NlpResult("unknown", namespace, Locale.ENGLISH, retainedQuery = "text"),
+                ),
+                namespace,
+            ),
+        )
+        UserTimelineMongoDAO.snapshotCol.save(SnapshotCol(dialog.id, emptyList()))
+        val archivedId = newId<ArchivedEntityValuesCol>()
+        UserTimelineMongoDAO.archivedEntityValuesCol.save(
+            ArchivedEntityValuesCol(
+                archivedId,
+                listOf(ArchivedEntityValuesCol.ArchivedEntityValueWrapper(null, actionId)),
+            ),
+        )
+
+        assertTrue(UserTimelineMongoDAO.remove(namespace, user) > 0)
+
+        assertNull(UserTimelineMongoDAO.dialogTextCol.findOne(DialogTextCol::dialogId eq dialog.id))
+        assertNull(UserTimelineMongoDAO.connectorMessageCol.findOneById(ConnectorMessageColId(actionId, dialog.id)))
+        assertNull(UserTimelineMongoDAO.nlpStatsCol.findOneById(NlpStatsColId(actionId, dialog.id)))
+        assertNull(UserTimelineMongoDAO.snapshotCol.findOneById(dialog.id))
+        assertNull(UserTimelineMongoDAO.archivedEntityValuesCol.findOneById(archivedId))
+    }
 
     @Test
     fun `save appends dialog snapshots without overwriting previous snapshots`() =
@@ -245,8 +332,8 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                     endDate: ZonedDateTime,
                     action1Text: String,
                     action2Text: String,
-                ): Dialog {
-                    return Dialog(
+                ): Dialog =
+                    Dialog(
                         playerIds = setOf(userId, botPlayerId),
                         stories =
                             mutableListOf(
@@ -261,7 +348,6 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                                 ),
                             ),
                     )
-                }
 
                 val dialogA = createDialogWithTwoActions(dialogAStart, dialogAEnd, "action1", "action2")
                 val dialogB = createDialogWithTwoActions(dialogBStart, dialogBEnd, "action3", "action4")
@@ -400,8 +486,8 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                     }
                 val storyDef = StoryDefinitionBase("test_story", storyHandler)
 
-                fun createSingleActionDialog(actionDate: ZonedDateTime): Dialog {
-                    return Dialog(
+                fun createSingleActionDialog(actionDate: ZonedDateTime): Dialog =
+                    Dialog(
                         playerIds = setOf(userId, botPlayerId),
                         stories =
                             mutableListOf(
@@ -425,7 +511,6 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                                 ),
                             ),
                     )
-                }
 
                 val dialogExact = createSingleActionDialog(dialogAtExactDate)
                 val dialogBefore = createSingleActionDialog(dialogBeforeDate)

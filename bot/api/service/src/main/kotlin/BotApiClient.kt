@@ -40,7 +40,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URI
 import java.util.concurrent.TimeUnit
 
-internal class BotApiClient(baseUrl: String) {
+internal class BotApiClient(
+    baseUrl: String,
+) {
     private val connectionTimeoutInMs = longProperty("tock_bot_api_connection_timeout_in_ms", 3000L)
     private val timeoutInMs = longProperty("tock_bot_api_timeout_in_ms", 60000L)
     private val reachabilityInMs = longProperty("tock_bot_api_webhook_reachability_in_ms", 10000L)
@@ -191,12 +193,10 @@ internal class BotApiClient(baseUrl: String) {
                                 } else {
                                     methodAndBody("POST", mapper.writeValueAsString(request).toRequestBody())
                                 }
-                            }
-                            .connectTimeout(connectionTimeoutInMs, TimeUnit.MILLISECONDS)
+                            }.connectTimeout(connectionTimeoutInMs, TimeUnit.MILLISECONDS)
                             .readTimeout(timeoutInMs, TimeUnit.MILLISECONDS),
                     ),
-                )
-                .threadPriority(Thread.MAX_PRIORITY)
+                ).threadPriority(Thread.MAX_PRIORITY)
                 .build()
                 .apply {
                     closeListener.source = this
@@ -208,7 +208,9 @@ internal class BotApiClient(baseUrl: String) {
         }
 }
 
-private class CloseListener(var source: BackgroundEventSource? = null) {
+private class CloseListener(
+    var source: BackgroundEventSource? = null,
+) {
     fun close() {
         source?.close()
     }

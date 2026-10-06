@@ -27,6 +27,12 @@ class ThreadOwnerDeserializationTest {
     fun `GIVEN Thread owner data THEN deserialization is ok`() {
         val t = """{"data":[{"thread_owner":{"app_id":"655869374944173"}}]}"""
         val threadOwner: ThreadOwnerResponse = mapper.readValue(t)
-        assertEquals("655869374944173", threadOwner.data.firstOrNull()?.threadOwner?.appId)
+        assertEquals(
+            "655869374944173",
+            threadOwner.data
+                .firstOrNull()
+                ?.threadOwner
+                ?.appId,
+        )
     }
 }

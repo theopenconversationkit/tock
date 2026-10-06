@@ -100,27 +100,28 @@ fun <T> Vertx.blocking(
             err = ar.cause()
         }
     }
-    this.executeBlocking<T>(
-        {
+    this
+        .executeBlocking<T>(
+            {
+                try {
+                    blockingHandler.invoke(p)
+                } catch (throwable: Throwable) {
+                    logger.error(throwable) { throwable.message }
+                    p.fail(throwable)
+                } finally {
+                    p.tryFail("call not completed")
+                }
+                err?.let { throw it }
+                res
+            },
+            false,
+        ).onComplete { ar ->
             try {
-                blockingHandler.invoke(p)
-            } catch (throwable: Throwable) {
-                logger.error(throwable) { throwable.message }
-                p.fail(throwable)
-            } finally {
-                p.tryFail("call not completed")
+                resultHandler.invoke(ar)
+            } catch (e: Throwable) {
+                logger.error(e) { e.message }
             }
-            err?.let { throw it }
-            res
-        },
-        false,
-    ).onComplete { ar ->
-        try {
-            resultHandler.invoke(ar)
-        } catch (e: Throwable) {
-            logger.error(e) { e.message }
         }
-    }
 }
 
 /**

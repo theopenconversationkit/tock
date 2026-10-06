@@ -41,16 +41,20 @@ internal object WebhookActionConverter {
         client: WhatsAppClient,
     ): Event? {
         val senderId = createHashedId(message.from)
+
         return when (message) {
-            is WhatsAppTextMessage ->
+            is WhatsAppTextMessage -> {
                 SendSentence(
                     PlayerId(senderId),
                     applicationId,
                     PlayerId(applicationId, PlayerType.bot),
                     message.text.body,
                 )
+            }
+
             is WhatsAppVoiceMessage -> {
-                client.getMedia(message.voice.id)
+                client
+                    .getMedia(message.voice.id)
                     ?.let { audio ->
                         stt.parse(audio)?.let { text ->
                             SendSentence(
@@ -62,14 +66,19 @@ internal object WebhookActionConverter {
                         }
                     }
             }
-            is WhatsAppButtonMessage ->
+
+            is WhatsAppButtonMessage -> {
                 SendSentence(
                     PlayerId(senderId),
                     applicationId,
                     PlayerId(applicationId, PlayerType.bot),
                     message.button.text,
                 )
-            else -> null
+            }
+
+            else -> {
+                null
+            }
         }
     }
 }

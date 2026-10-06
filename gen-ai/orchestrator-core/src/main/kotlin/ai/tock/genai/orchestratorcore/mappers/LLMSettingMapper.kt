@@ -16,6 +16,7 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
+import ai.tock.genai.orchestratorcore.models.llm.AwsBedrockLLMSetting
 import ai.tock.genai.orchestratorcore.models.llm.AzureOpenAILLMSetting
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
@@ -35,7 +36,7 @@ object LLMSettingMapper {
     fun toDTO(entity: LLMSetting): LLMSettingDTO =
         with(entity) {
             when (this) {
-                is OpenAILLMSetting ->
+                is OpenAILLMSetting -> {
                     OpenAILLMSetting(
                         apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
                         temperature = temperature,
@@ -43,8 +44,9 @@ object LLMSettingMapper {
                         model = model,
                         baseUrl = baseUrl,
                     )
+                }
 
-                is AzureOpenAILLMSetting ->
+                is AzureOpenAILLMSetting -> {
                     AzureOpenAILLMSetting(
                         apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
                         temperature = temperature,
@@ -54,16 +56,29 @@ object LLMSettingMapper {
                         model = model,
                         apiVersion = apiVersion,
                     )
+                }
 
-                is OllamaLLMSetting ->
+                is OllamaLLMSetting -> {
                     OllamaLLMSetting(
                         temperature = temperature,
                         model = model,
                         baseUrl = baseUrl,
                     )
+                }
 
-                else ->
+                is AwsBedrockLLMSetting -> {
+                    AwsBedrockLLMSetting(
+                        temperature = temperature,
+                        model = model,
+                        guardrailId = guardrailId,
+                        guardrailVersion = guardrailVersion,
+                        guardrailTrace = guardrailTrace,
+                    )
+                }
+
+                else -> {
                     throw IllegalArgumentException("Unsupported LLM Setting")
+                }
             }
         }
 
@@ -85,7 +100,7 @@ object LLMSettingMapper {
     ): LLMSetting =
         with(dto) {
             when (this) {
-                is OpenAILLMSetting ->
+                is OpenAILLMSetting -> {
                     OpenAILLMSetting(
                         apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey, rawByForce),
                         temperature = temperature,
@@ -93,8 +108,9 @@ object LLMSettingMapper {
                         model = model,
                         baseUrl = baseUrl,
                     )
+                }
 
-                is AzureOpenAILLMSetting ->
+                is AzureOpenAILLMSetting -> {
                     AzureOpenAILLMSetting(
                         SecurityUtils.createSecretKey(namespace, botId, feature, apiKey, rawByForce),
                         temperature = temperature,
@@ -104,15 +120,29 @@ object LLMSettingMapper {
                         apiVersion = apiVersion,
                         model = model,
                     )
+                }
 
-                is OllamaLLMSetting ->
+                is OllamaLLMSetting -> {
                     OllamaLLMSetting(
                         temperature = temperature,
                         model = model,
                         baseUrl = baseUrl,
                     )
-                else ->
+                }
+
+                is AwsBedrockLLMSetting -> {
+                    AwsBedrockLLMSetting(
+                        temperature = temperature,
+                        model = model,
+                        guardrailId = guardrailId,
+                        guardrailVersion = guardrailVersion,
+                        guardrailTrace = guardrailTrace,
+                    )
+                }
+
+                else -> {
                     throw IllegalArgumentException("Unsupported LLM Setting")
+                }
             }
         }
 }

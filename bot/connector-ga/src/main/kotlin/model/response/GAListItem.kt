@@ -27,8 +27,8 @@ data class GAListItem(
     val description: String? = null,
     val image: GAImage? = null,
 ) {
-    fun toGenericElement(): GenericElement {
-        return GenericElement(
+    fun toGenericElement(): GenericElement =
+        GenericElement(
             choices = listOf(optionInfo.toChoice()),
             texts =
                 mapNotNullValues(
@@ -36,9 +36,9 @@ data class GAListItem(
                     GAListItem::description.name to description,
                 ),
             attachments =
-                image?.url
+                image
+                    ?.url
                     ?.let { listOf(Attachment(it, AttachmentType.image)) }
                     ?: emptyList(),
         )
-    }
 }

@@ -16,4 +16,6 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-data class GAOpenUrlAction(val url: String)
+data class GAOpenUrlAction(
+    val url: String,
+)

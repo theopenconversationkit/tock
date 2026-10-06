@@ -106,7 +106,8 @@ class DatasetRunProcessor(
         }
 
         val questionResultsById =
-            datasetRunDAO.getQuestionResultsByRunId(run._id)
+            datasetRunDAO
+                .getQuestionResultsByRunId(run._id)
                 .associateBy { it.questionId }
                 .toMutableMap()
 

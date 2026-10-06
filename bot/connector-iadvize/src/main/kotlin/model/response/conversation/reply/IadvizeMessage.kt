@@ -30,8 +30,8 @@ data class IadvizeMessage(
 ) : IadvizeReply(ReplyType.message) {
     constructor(messagePayload: String) : this(TextPayload(messagePayload))
 
-    override fun toChatBotActionOrMessageInput(): ChatbotActionOrMessageInput {
-        return if (quickReplies.isEmpty() && payload is TextPayload) {
+    override fun toChatBotActionOrMessageInput(): ChatbotActionOrMessageInput =
+        if (quickReplies.isEmpty() && payload is TextPayload) {
             // A simple message
             ChatbotActionOrMessageInput(
                 chatbotMessage =
@@ -55,5 +55,4 @@ data class IadvizeMessage(
                     ),
             )
         }
-    }
 }

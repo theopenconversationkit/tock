@@ -19,4 +19,6 @@ package ai.tock.nlp.entity
 /**
  *
  */
-data class UrlValue(val value: String) : Value
+data class UrlValue(
+    val value: String,
+) : Value

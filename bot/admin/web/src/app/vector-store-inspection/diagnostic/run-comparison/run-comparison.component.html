@@ -1,0 +1,138 @@
+<nb-card class="shadow-sm mt-3">
+  <nb-card-body>
+    <div class="d-flex align-items-center flex-wrap gap-2">
+      <span class="font-weight-bold">{{ 'vsi.comparison.title' | transloco }}</span>
+
+      @for (field of comparison.changedFields; track field) {
+      <span class="rounded px-2 py-1 font-size-small changed-field">
+        {{ 'vsi.comparison.fields.' + field | transloco }}
+      </span>
+      } @if (!comparison.changedFields.length) {
+      <span class="font-size-small text-muted">{{ 'vsi.comparison.nothing_changed' | transloco }}</span>
+      }
+
+      <button
+        nbButton
+        ghost
+        size="small"
+        class="ml-auto"
+        (click)="onClear.emit()"
+      >
+        {{ 'vsi.comparison.clear_button' | transloco }}
+      </button>
+    </div>
+
+    <div class="runs-grid mt-3">
+      <div class="run-summary background-basic-color-2 rounded px-3 py-2">
+        <div class="list-entry-desc text-muted">{{ 'vsi.comparison.reference_label' | transloco }}</div>
+        <div class="list-entry-desc ellipsis">{{ comparison.reference.label }}</div>
+        <div class="list-entry-desc text-muted ellipsis">{{ comparison.reference.request.query }}</div>
+      </div>
+
+      <div class="run-summary background-basic-color-2 rounded px-3 py-2 current-run">
+        <div class="list-entry-desc text-muted">{{ 'vsi.comparison.current_label' | transloco }}</div>
+        <div class="list-entry-desc ellipsis">{{ comparison.current.label }}</div>
+        <div class="list-entry-desc text-muted ellipsis">{{ comparison.current.request.query }}</div>
+      </div>
+    </div>
+
+    <div class="counters-grid mt-3">
+      <div class="background-basic-color-2 rounded px-3 py-2">
+        <div class="stat-value">{{ comparison.commonInTopK }}</div>
+        <div class="list-entry-desc text-muted">{{ 'vsi.comparison.common_in_top_k' | transloco }}</div>
+      </div>
+      <div class="background-basic-color-2 rounded px-3 py-2">
+        <div class="stat-value text-danger">{{ comparison.lost }}</div>
+        <div class="list-entry-desc text-muted">{{ 'vsi.comparison.lost' | transloco }}</div>
+      </div>
+      <div class="background-basic-color-2 rounded px-3 py-2">
+        <div class="stat-value text-success">{{ comparison.gained }}</div>
+        <div class="list-entry-desc text-muted">{{ 'vsi.comparison.gained' | transloco }}</div>
+      </div>
+      <div class="background-basic-color-2 rounded px-3 py-2">
+        <div class="stat-value">{{ movedRows.length }}</div>
+        <div class="list-entry-desc text-muted">{{ 'vsi.comparison.divergences' | transloco }}</div>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>
+
+<div class="comparison-grid list-header text-muted mt-2">
+  <div class="ellipsis">{{ 'vsi.comparison.chunk_column' | transloco }}</div>
+  <div class="text-right">{{ 'vsi.comparison.reference_column' | transloco }}</div>
+  <div class="text-right">{{ 'vsi.comparison.current_column' | transloco }}</div>
+  <div class="text-right">{{ 'vsi.comparison.delta_column' | transloco }}</div>
+</div>
+
+@for (row of visibleRows; track row.chunkId) {
+<nb-card
+  class="shadow-sm mb-2"
+  [class.pinned-entry]="row.pinned"
+  [class.lost-entry]="row.delta === 'lost'"
+  [class.gained-entry]="row.delta === 'gained'"
+>
+  <nb-card-body class="comparison-grid">
+    <div>
+      <div class="list-entry-name font-weight-bold ellipsis">
+        @if (row.pinned) {
+        <nb-icon
+          icon="pin-angle-fill"
+          class="mr-1"
+        ></nb-icon>
+        }
+        {{ row.title }}
+      </div>
+      <div class="list-entry-desc text-muted">{{ row.chunkId }}</div>
+    </div>
+
+    <div class="text-right rank-value">
+      @if (row.rankReference !== null) {
+      <span>{{ row.rankReference }}</span>
+      } @else {
+      <span class="text-muted">&mdash;</span>
+      }
+    </div>
+
+    <div class="text-right rank-value">
+      @if (row.rankCurrent !== null) {
+      <span>{{ row.rankCurrent }}</span>
+      } @else {
+      <span class="text-muted">&mdash;</span>
+      }
+    </div>
+
+    <div class="text-right font-size-small">
+      @if (row.delta === 'lost') {
+      <span
+        class="text-danger"
+        [nbTooltip]="'vsi.comparison.absence.' + row.absenceReason + '_tooltip' | transloco"
+      >
+        {{ 'vsi.comparison.absence.' + row.absenceReason | transloco }}
+      </span>
+      } @else if (row.delta === 'gained') {
+      <span class="text-success">{{ 'vsi.comparison.deltas.gained' | transloco }}</span>
+      } @else if (row.delta === 'moved') {
+      <span [class.text-success]="movement(row) > 0">
+        {{ 'vsi.comparison.deltas.moved' | transloco: { movement: movement(row) > 0 ? '+' + movement(row) : movement(row) } }}
+      </span>
+      } @else {
+      <span class="text-muted">{{ 'vsi.comparison.deltas.stable' | transloco }}</span>
+      }
+    </div>
+  </nb-card-body>
+</nb-card>
+}
+
+@if (stableRows.length) {
+<div class="d-flex justify-content-center mt-2">
+  <button
+    nbButton
+    ghost
+    size="small"
+    (click)="switchStableDetail()"
+  >
+    <nb-icon [icon]="displayStable ? 'chevron-up' : 'chevron-down'"></nb-icon>
+    {{ 'vsi.comparison.stable_toggle' | transloco: { count: stableRows.length } }}
+  </button>
+</div>
+}

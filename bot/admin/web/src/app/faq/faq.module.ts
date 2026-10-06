@@ -48,6 +48,7 @@ import { FaqManagementListComponent } from './faq-management/faq-management-list
 import { FaqManagementEditComponent } from './faq-management/faq-management-edit/faq-management-edit.component';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { FaqManagementSettingsComponent } from './faq-management/faq-management-settings/faq-management-settings.component';
+import { FaqManagementImportComponent } from './faq-management/faq-management-import/faq-management-import.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FaqService } from './services/faq.service';
 import { BotAnalyticsModule } from '../analytics/analytics.module';
@@ -91,6 +92,7 @@ import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
     FaqManagementFiltersComponent,
     FaqManagementListComponent,
     FaqManagementEditComponent,
+    FaqManagementImportComponent,
     FaqManagementSettingsComponent,
     FaqTabsComponent
   ],

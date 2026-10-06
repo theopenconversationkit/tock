@@ -113,12 +113,12 @@ fun <T : Bus<T>> T.directMessageWithButtons(
 ): OutcomingEvent = directMessageWithButtons(message, ctas.toList())
 
 private fun <T : Bus<T>> T.directMessageBuidler(message: CharSequence): DirectMessageOutcomingEvent.Builder =
-    DirectMessageOutcomingEvent.builder(
-        target = Recipient(userId.id),
-        senderId = botId.id,
-        text = translate(message).toString(),
-    )
-        .withSourceAppId(applicationId)
+    DirectMessageOutcomingEvent
+        .builder(
+            target = Recipient(userId.id),
+            senderId = botId.id,
+            text = translate(message).toString(),
+        ).withSourceAppId(applicationId)
 
 /**
  * Creates a direct message with quick replies
@@ -492,9 +492,7 @@ private fun actionVisibility(botBus: BotBus) = botBus.action.metadata.visibility
  * Create a tweet
  * @see https://developer.twitter.com/en/docs/tweets/post-and-engage/overview
  */
-fun BotBus.tweet(message: CharSequence): Tweet {
-    return Tweet(translate(message).toString())
-}
+fun BotBus.tweet(message: CharSequence): Tweet = Tweet(translate(message).toString())
 
 /**
  * Create a tweet with a link for DM to the account listened
@@ -505,6 +503,4 @@ fun BotBus.tweetWithInviteForDM(
     message: CharSequence,
     welcomeMessageID: String? = null,
     defaultMessage: String? = null,
-): Tweet {
-    return Tweet(translate(message).toString(), botId.id, welcomeMessageID, defaultMessage)
-}
+): Tweet = Tweet(translate(message).toString(), botId.id, welcomeMessageID, defaultMessage)

@@ -159,8 +159,14 @@ data class StoryDefinitionConfiguration(
 
     private fun findFeatures(applicationId: String?): List<StoryDefinitionConfigurationFeature> =
         when {
-            features.isEmpty() -> emptyList()
-            applicationId == null -> features.filter { it.botApplicationConfigurationId == null }
+            features.isEmpty() -> {
+                emptyList()
+            }
+
+            applicationId == null -> {
+                features.filter { it.botApplicationConfigurationId == null }
+            }
+
             else -> {
                 val app =
                     BotRepository.getConfigurationByApplicationId(

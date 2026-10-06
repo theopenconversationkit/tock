@@ -22,4 +22,6 @@ import ai.tock.bot.test.TestContext
 /**
  * JUnit5 extension.
  */
-open class TockJUnit5Extension(botDefinition: BotDefinition) : TockJUnit5ExtensionBase<TestContext>(botDefinition)
+open class TockJUnit5Extension(
+    botDefinition: BotDefinition,
+) : TockJUnit5ExtensionBase<TestContext>(botDefinition)

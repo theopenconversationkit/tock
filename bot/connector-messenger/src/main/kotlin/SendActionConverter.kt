@@ -42,22 +42,25 @@ object SendActionConverter {
     fun toMessageRequest(
         action: Action,
         personaId: String? = null,
-    ): MessageRequest? {
-        return when (action) {
-            is SendSentence ->
+    ): MessageRequest? =
+        when (action) {
+            is SendSentence -> {
                 if (action.hasMessage(MessengerConnectorProvider.connectorType)) {
                     action.message(MessengerConnectorProvider.connectorType) as Message
                 } else {
                     TextMessage(action.stringText ?: "")
                 }
+            }
 
-            is SendAttachment ->
+            is SendAttachment -> {
                 AttachmentMessage(
                     Attachment(
                         AttachmentType.fromTockAttachmentType(action.type),
                         UrlPayload.getUrlPayload(action),
                     ),
                 )
+            }
+
             else -> {
                 logger.warn { "action not supported : $action " }
                 null
@@ -73,5 +76,4 @@ object SendActionConverter {
                 personaId,
             )
         }
-    }
 }

@@ -67,7 +67,5 @@ data class EventState(
      */
     var sourceApplicationId: String? = null,
 ) {
-    fun getEntity(role: String): List<EntityValue> {
-        return entityValues.filter { it.entity.role == role }
-    }
+    fun getEntity(role: String): List<EntityValue> = entityValues.filter { it.entity.role == role }
 }

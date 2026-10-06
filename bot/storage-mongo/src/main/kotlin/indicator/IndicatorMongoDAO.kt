@@ -45,8 +45,8 @@ object IndicatorMongoDAO : IndicatorDAO {
         name: String,
         namespace: String,
         botId: String,
-    ): Boolean {
-        return (
+    ): Boolean =
+        (
             col.countDocuments(
                 and(
                     Indicator::namespace eq namespace,
@@ -55,7 +55,6 @@ object IndicatorMongoDAO : IndicatorDAO {
                 ),
             ) > 0
         )
-    }
 
     override fun findByNameAndBotId(
         name: String,
@@ -74,12 +73,13 @@ object IndicatorMongoDAO : IndicatorDAO {
         namespace: String,
         botId: String,
     ): List<Indicator> =
-        col.find(
-            and(
-                Indicator::namespace eq namespace,
-                Indicator::botId eq botId,
-            ),
-        ).toList()
+        col
+            .find(
+                and(
+                    Indicator::namespace eq namespace,
+                    Indicator::botId eq botId,
+                ),
+            ).toList()
 
     override fun findAll(): List<Indicator> = col.find().toList()
 
@@ -90,19 +90,21 @@ object IndicatorMongoDAO : IndicatorDAO {
         namespace: String,
         botId: String,
     ): Boolean =
-        col.deleteOne(
-            Indicator::name eq name,
-            Indicator::namespace eq namespace,
-            Indicator::botId eq botId,
-            Indicator::type eq IndicatorType.CUSTOM,
-        ).deletedCount == 1L
+        col
+            .deleteOne(
+                Indicator::name eq name,
+                Indicator::namespace eq namespace,
+                Indicator::botId eq botId,
+                Indicator::type eq IndicatorType.CUSTOM,
+            ).deletedCount == 1L
 
     override fun deleteByApplicationName(
         namespace: String,
         botId: String,
     ): Boolean =
-        col.deleteMany(
-            Indicator::namespace eq namespace,
-            Indicator::botId eq botId,
-        ).deletedCount > 0
+        col
+            .deleteMany(
+                Indicator::namespace eq namespace,
+                Indicator::botId eq botId,
+            ).deletedCount > 0
 }

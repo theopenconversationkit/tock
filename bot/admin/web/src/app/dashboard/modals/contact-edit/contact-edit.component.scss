@@ -1,0 +1,12 @@
+.dialog-card {
+  width: 34rem;
+  max-width: 92vw;
+}
+
+.delete-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--color-danger-hover);
+}

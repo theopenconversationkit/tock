@@ -19,6 +19,11 @@ package ai.tock.bot.connector.messenger.model.handover
 /**
  *
  */
-data class SecondaryReceiverResponse(val data: List<SecondaryReceiverData>)
+data class SecondaryReceiverResponse(
+    val data: List<SecondaryReceiverData>,
+)
 
-data class SecondaryReceiverData(val id: String, val name: String)
+data class SecondaryReceiverData(
+    val id: String,
+    val name: String,
+)

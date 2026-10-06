@@ -21,7 +21,10 @@ import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
 import ai.tock.shared.security.TockObfuscatorService
 
-class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
+class TextMessage(
+    val text: String,
+    quickReplies: List<QuickReply>? = null,
+) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
     override fun toGenericMessage(): GenericMessage? {
         val texts = mapOf(TEXT_PARAM to text)
         return if (quickReplies?.isNotEmpty() == true) {
@@ -47,17 +50,11 @@ class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Me
         return true
     }
 
-    override fun obfuscate(): ConnectorMessage {
-        return TextMessage(TockObfuscatorService.obfuscate(text)!!, quickReplies)
-    }
+    override fun obfuscate(): ConnectorMessage = TextMessage(TockObfuscatorService.obfuscate(text)!!, quickReplies)
 
-    override fun hashCode(): Int {
-        return text.hashCode()
-    }
+    override fun hashCode(): Int = text.hashCode()
 
-    override fun toString(): String {
-        return "TextMessage(text='$text',quickReplies=$quickReplies)"
-    }
+    override fun toString(): String = "TextMessage(text='$text',quickReplies=$quickReplies)"
 
     override fun copy(quickReplies: List<QuickReply>?): Message = TextMessage(text, quickReplies)
 }

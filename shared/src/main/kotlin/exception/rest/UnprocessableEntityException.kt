@@ -24,8 +24,9 @@ import io.netty.handler.codec.http.HttpResponseStatus
  * Http 422 exception - Unprocessable Entity.
  * Used when the request is syntactically correct but semantically invalid.
  */
-class UnprocessableEntityException(httpResponseBody: ErrorMessageWrapper) :
-    RestException(httpResponseBody, HttpResponseStatus(422, "Unprocessable Entity")) {
+class UnprocessableEntityException(
+    httpResponseBody: ErrorMessageWrapper,
+) : RestException(httpResponseBody, HttpResponseStatus(422, "Unprocessable Entity")) {
     constructor(errorCode: Int, message: String) :
         this(ErrorMessageWrapper(setOf(ErrorMessage(errorCode.toString(), message))))
 

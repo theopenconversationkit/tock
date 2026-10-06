@@ -32,6 +32,13 @@ data class WhatsAppInteractive(
         @JsonIgnore get() = listReply?.payload ?: buttonReply?.payload ?: error("interactive message has no list_reply and no button_reply")
 }
 
-data class WhatsAppInteractiveButtonReply(val title: String, val payload: String)
+data class WhatsAppInteractiveButtonReply(
+    val title: String,
+    val payload: String,
+)
 
-data class WhatsAppInteractiveListReply(val title: String, val description: String, val payload: String)
+data class WhatsAppInteractiveListReply(
+    val title: String,
+    val description: String,
+    val payload: String,
+)

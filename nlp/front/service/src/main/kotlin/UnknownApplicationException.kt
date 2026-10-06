@@ -19,4 +19,7 @@ package ai.tock.nlp.front.service
 /**
  * Thrown when no application is found.
  */
-class UnknownApplicationException(namespace: String, applicationName: String) : IllegalStateException("unknown application $namespace:$applicationName")
+class UnknownApplicationException(
+    namespace: String,
+    applicationName: String,
+) : IllegalStateException("unknown application $namespace:$applicationName")

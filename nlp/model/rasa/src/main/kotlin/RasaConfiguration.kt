@@ -36,7 +36,7 @@ class RasaConfiguration(
 ) {
     fun getMarkdownConfiguration(locale: Locale): String =
         when (locale.language) {
-            Locale.ENGLISH.language ->
+            Locale.ENGLISH.language -> {
                 """
 pipeline:
   - name: ConveRTTokenizer
@@ -53,7 +53,9 @@ pipeline:
   - name: EntitySynonymMapper
   - name: ResponseSelector
     epochs: 100"""
-            else ->
+            }
+
+            else -> {
                 """language: "${locale.language}"  # your two-letter language code
 
 pipeline:
@@ -70,6 +72,7 @@ pipeline:
   - name: EntitySynonymMapper
   - name: ResponseSelector
     epochs: 100"""
+            }
         }
 
     fun getModelFilePath(fileName: String) = modelBasePath + fileName

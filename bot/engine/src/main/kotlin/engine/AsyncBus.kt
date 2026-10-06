@@ -42,7 +42,9 @@ import ai.tock.translator.UserInterfaceType
 import java.util.Locale
 
 @ExperimentalTockCoroutines
-interface AsyncBus : DialogEntityAccess, I18nKeyProvider {
+interface AsyncBus :
+    DialogEntityAccess,
+    I18nKeyProvider {
     /**
      * The connector ID.
      */

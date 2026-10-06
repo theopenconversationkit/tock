@@ -60,16 +60,22 @@ internal class WhatsAppClient(
     login: String,
     password: String,
 ) {
-    data class LoginResponse(val users: List<LoginUser> = emptyList())
+    data class LoginResponse(
+        val users: List<LoginUser> = emptyList(),
+    )
 
     data class LoginUser(
         val token: String,
         @get:JsonProperty("expires_after") val expiresAfter: OffsetDateTime,
     )
 
-    data class MediaResponse(val media: List<MediaId> = emptyList())
+    data class MediaResponse(
+        val media: List<MediaId> = emptyList(),
+    )
 
-    data class MediaId(val id: String)
+    data class MediaId(
+        val id: String,
+    )
 
     private interface WhatsAppLoginApi {
         @Headers("Content-Type: application/json")
@@ -117,21 +123,21 @@ internal class WhatsAppClient(
                 .addDeserializer(
                     OffsetDateTime::class,
                     object : InstantDeserializer<OffsetDateTime>(
-                            OffsetDateTime::class.java,
-                            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssXXX"),
-                            { OffsetDateTime.from(it) },
-                            { a -> OffsetDateTime.ofInstant(Instant.ofEpochMilli(a.value), a.zoneId) },
-                            { a ->
-                                OffsetDateTime.ofInstant(
-                                    Instant.ofEpochSecond(a.integer, a.fraction.toLong()),
-                                    a.zoneId,
-                                )
-                            },
-                            { d, z -> d.withOffsetSameInstant(z.rules.getOffset(d.toLocalDateTime())) },
-                            false,
-                            false,
-                            false,
-                        ) {
+                        OffsetDateTime::class.java,
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssXXX"),
+                        { OffsetDateTime.from(it) },
+                        { a -> OffsetDateTime.ofInstant(Instant.ofEpochMilli(a.value), a.zoneId) },
+                        { a ->
+                            OffsetDateTime.ofInstant(
+                                Instant.ofEpochSecond(a.integer, a.fraction.toLong()),
+                                a.zoneId,
+                            )
+                        },
+                        { d, z -> d.withOffsetSameInstant(z.rules.getOffset(d.toLocalDateTime())) },
+                        false,
+                        false,
+                        false,
+                    ) {
                     },
                 ),
         )
@@ -142,8 +148,7 @@ internal class WhatsAppClient(
                 longProperty("tock_whatsapp_request_timeout_ms", 30000),
                 logger,
                 interceptors = listOf(basicAuthInterceptor(login, password)),
-            )
-                .baseUrl(whatsAppUrl)
+            ).baseUrl(whatsAppUrl)
                 .addJacksonConverter(clientMapper)
                 .build()
                 .create()
@@ -153,8 +158,7 @@ internal class WhatsAppClient(
                 longProperty("tock_whatsapp_request_timeout_ms", 30000),
                 logger,
                 interceptors = listOf(tokenInterceptor()),
-            )
-                .baseUrl(whatsAppUrl)
+            ).baseUrl(whatsAppUrl)
                 .addJacksonConverter(clientMapper)
                 .build()
                 .create()
@@ -163,26 +167,25 @@ internal class WhatsAppClient(
     /**
      * Create a Bearer token interceptor.
      */
-    private fun tokenInterceptor(): Interceptor {
-        return Interceptor { chain ->
+    private fun tokenInterceptor(): Interceptor =
+        Interceptor { chain ->
             val original = chain.request()
 
             val requestBuilder =
-                original.newBuilder()
+                original
+                    .newBuilder()
                     .header("Authorization", "Bearer $token")
 
             val request = requestBuilder.build()
             chain.proceed(request)
         }
-    }
 
-    private fun checkLogin(): Boolean {
-        return if (token == null || tokenExpiration?.isBefore(OffsetDateTime.now().plusHours(1)) != false) {
+    private fun checkLogin(): Boolean =
+        if (token == null || tokenExpiration?.isBefore(OffsetDateTime.now().plusHours(1)) != false) {
             login()
         } else {
             true
         }
-    }
 
     private fun Response<*>.logError() {
         val error = message()
@@ -192,15 +195,14 @@ internal class WhatsAppClient(
         logger.warn { "Messenger Error body : $errorBody" }
     }
 
-    fun getMedia(id: String): ByteArray? {
-        return if (checkLogin()) {
+    fun getMedia(id: String): ByteArray? =
+        if (checkLogin()) {
             api.getMedia(id).execute().run {
                 body()?.bytes() ?: null.also { logError() }
             }
         } else {
             null
         }
-    }
 
     fun sendMessage(message: WhatsAppSendBotMessage) {
         if (checkLogin()) {
@@ -215,13 +217,19 @@ internal class WhatsAppClient(
 
                     is WhatsAppSendBotImageMessage -> {
                         val response =
-                            api.sendMedia(
-                                message.image.contentType,
-                                message.image.byteImages!!.toRequestBody(
-                                    message.image.contentType.toMediaType(),
-                                ),
-                            ).execute()
-                        val id = response.body()?.media?.firstOrNull()?.id
+                            api
+                                .sendMedia(
+                                    message.image.contentType,
+                                    message.image.byteImages!!.toRequestBody(
+                                        message.image.contentType.toMediaType(),
+                                    ),
+                                ).execute()
+                        val id =
+                            response
+                                .body()
+                                ?.media
+                                ?.firstOrNull()
+                                ?.id
                         if (id == null) {
                             response.logError()
                         } else {
@@ -239,8 +247,8 @@ internal class WhatsAppClient(
         }
     }
 
-    fun login(): Boolean {
-        return try {
+    fun login(): Boolean =
+        try {
             val response = loginApi.login().execute()
             if (response.isSuccessful) {
                 response.body()?.users?.firstOrNull()?.let {
@@ -256,5 +264,4 @@ internal class WhatsAppClient(
             logger.error(e)
             false
         }
-    }
 }

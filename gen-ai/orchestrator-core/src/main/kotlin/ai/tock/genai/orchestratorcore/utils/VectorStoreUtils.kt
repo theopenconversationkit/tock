@@ -53,11 +53,15 @@ object VectorStoreUtils {
                     OpenSearchParams(k = kNeighborsDocuments, searchType = DocumentSearchType.SIMILARITY_SEARCH) to
                         OpenSearchUtils.normalizeDocumentIndexName(namespace, botId, indexSessionId)
                 }
+
                 VectorStoreProvider.PGVector.name -> {
                     PGVectorParams(k = kNeighborsDocuments, searchType = documentSearchType) to
                         PGVectorUtils.normalizeDocumentIndexName(namespace, botId, indexSessionId)
                 }
-                else -> throw IllegalArgumentException("Unsupported Vector Store Provider [$vectorStore]")
+
+                else -> {
+                    throw IllegalArgumentException("Unsupported Vector Store Provider [$vectorStore]")
+                }
             }
 
         return Pair(documentSearchParams, indexName)

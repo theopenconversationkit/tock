@@ -20,7 +20,9 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.model.BotAnswerConfiguration
 import java.util.Locale
 
-abstract class AnswerConfigurationContent(val answerType: AnswerConfigurationType) {
+abstract class AnswerConfigurationContent(
+    val answerType: AnswerConfigurationType,
+) {
     companion object {
         fun fromLabel(label: String): List<AnswerConfigurationContent> = listOf(SimpleAnswerConfigurationContent(listOf(SimpleAnswerContent(label))))
     }

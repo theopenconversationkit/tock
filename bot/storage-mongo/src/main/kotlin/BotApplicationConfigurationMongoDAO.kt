@@ -77,42 +77,31 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         asyncCol.watch { listener() }
     }
 
-    override fun getConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? {
-        return col.findOneById(id)
-    }
+    override fun getConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? = col.findOneById(id)
 
     override fun getConfigurationByApplicationIdAndBotId(
         namespace: String,
         applicationId: String,
         botId: String,
-    ): BotApplicationConfiguration? {
-        return col.findOne(Namespace eq namespace, ApplicationId eq applicationId, BotId eq botId)
-    }
+    ): BotApplicationConfiguration? = col.findOne(Namespace eq namespace, ApplicationId eq applicationId, BotId eq botId)
 
     override fun getConfigurationsByNamespaceAndBotId(
         namespace: String,
         botId: String,
-    ): List<BotApplicationConfiguration> {
-        return col.find(Namespace eq namespace, BotId eq botId).toList()
-    }
+    ): List<BotApplicationConfiguration> = col.find(Namespace eq namespace, BotId eq botId).toList()
 
-    override fun getConfigurationByPath(path: String): BotApplicationConfiguration? {
-        return col.findOne(Path eq path)
-    }
+    override fun getConfigurationByPath(path: String): BotApplicationConfiguration? = col.findOne(Path eq path)
 
-    override fun getConfigurationByTargetId(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? {
-        return col.findOne(TargetConfigurationId eq id)
-    }
+    override fun getConfigurationByTargetId(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? = col.findOne(TargetConfigurationId eq id)
 
-    override fun save(conf: BotApplicationConfiguration): BotApplicationConfiguration {
-        return try {
+    override fun save(conf: BotApplicationConfiguration): BotApplicationConfiguration =
+        try {
             col.save(conf)
             conf
         } catch (e: Exception) {
             logger.error(e)
             conf
         }
-    }
 
     override fun delete(conf: BotApplicationConfiguration) {
         col.deleteOneById(conf._id)
@@ -121,21 +110,15 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     override fun getConfigurationsByNamespaceAndNlpModel(
         namespace: String,
         nlpModel: String,
-    ): List<BotApplicationConfiguration> {
-        return col.find(Namespace eq namespace, NlpModel eq nlpModel).toList()
-    }
+    ): List<BotApplicationConfiguration> = col.find(Namespace eq namespace, NlpModel eq nlpModel).toList()
 
     override fun getConfigurationsByBotNamespaceAndConfigurationName(
         namespace: String,
         botId: String,
         configurationName: String,
-    ): List<BotApplicationConfiguration> {
-        return col.find(Namespace eq namespace, BotId eq botId, Name eq configurationName).toList()
-    }
+    ): List<BotApplicationConfiguration> = col.find(Namespace eq namespace, BotId eq botId, Name eq configurationName).toList()
 
-    override fun getConfigurations(): List<BotApplicationConfiguration> {
-        return col.find().toList()
-    }
+    override fun getConfigurations(): List<BotApplicationConfiguration> = col.find().toList()
 
     override fun save(conf: BotConfiguration) {
         botCol.replaceOne(
@@ -152,21 +135,15 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     override fun getBotConfigurationsByNamespaceAndBotId(
         namespace: String,
         botId: String,
-    ): List<BotConfiguration> {
-        return botCol.find(Namespace eq namespace, BotId eq botId).toList()
-    }
+    ): List<BotConfiguration> = botCol.find(Namespace eq namespace, BotId eq botId).toList()
 
     override fun getBotConfigurationsByNamespaceAndNameAndBotId(
         namespace: String,
         name: String,
         botId: String,
-    ): BotConfiguration? {
-        return botCol.findOne(Namespace eq namespace, Name eq name, BotId eq botId)
-    }
+    ): BotConfiguration? = botCol.findOne(Namespace eq namespace, Name eq name, BotId eq botId)
 
-    override fun getBotConfigurations(): List<BotConfiguration> {
-        return botCol.find().toList()
-    }
+    override fun getBotConfigurations(): List<BotConfiguration> = botCol.find().toList()
 
     override fun delete(conf: BotConfiguration) {
         botCol.deleteOne(
@@ -189,6 +166,5 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
                     it.applicationId,
                     it._id.toString(),
                 )
-            }
-            .toSet()
+            }.toSet()
 }

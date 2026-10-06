@@ -70,7 +70,7 @@ import org.junit.jupiter.api.BeforeEach
  *
  */
 internal abstract class BotEngineTest {
-    val userLock: UserLock = mockk(relaxed = true)
+    val userLock: UserLock = mockk()
     val userTimelineDAO: UserTimelineDAO = mockk(relaxed = true)
     val userId = PlayerId("id")
     val botId = PlayerId("bot", PlayerType.bot)
@@ -129,8 +129,8 @@ internal abstract class BotEngineTest {
         TockBotBus(connectorController, userTimeline, dialog, userAction, connectorData, botDefinition)
     }
 
-    open fun baseModule(): Kodein.Module {
-        return Kodein.Module {
+    open fun baseModule(): Kodein.Module =
+        Kodein.Module {
             import(sharedTestModule)
             bind<NlpClient>() with provider { nlpClient }
             bind<NlpController>() with provider { nlp }
@@ -148,7 +148,6 @@ internal abstract class BotEngineTest {
             bind<BotBusinessRulesConfigurationDAO>() with provider { botBusinessRulesConfigurationDAO }
             bind<StoryConfigurationMonitor>() with provider { storyConfigurationMonitor }
         }
-    }
 
     @BeforeEach
     fun before() {

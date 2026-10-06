@@ -45,8 +45,8 @@ fun addRestConnector(
      * The owner of the rest connector (if applicable)
      */
     ownerConnectorType: ConnectorType? = null,
-): ConnectorConfiguration {
-    return ConnectorConfiguration(
+): ConnectorConfiguration =
+    ConnectorConfiguration(
         applicationId,
         path,
         ConnectorType.rest,
@@ -54,7 +54,6 @@ fun addRestConnector(
         baseUrl,
         ownerConnectorType,
     )
-}
 
 /**
  * Generates a default connector path from a base configuration.
@@ -67,12 +66,11 @@ private fun generateRestConnectorPath(botConfiguration: BotApplicationConfigurat
 /**
  * Returns a rest configuration from a base configuration.
  */
-fun addRestConnector(botConfiguration: BotApplicationConfiguration): ConnectorConfiguration {
-    return addRestConnector(
+fun addRestConnector(botConfiguration: BotApplicationConfiguration): ConnectorConfiguration =
+    addRestConnector(
         "test-${botConfiguration.applicationId}",
         generateRestConnectorPath(botConfiguration),
         botConfiguration.name,
         botConfiguration.baseUrl,
         botConfiguration.connectorType,
     )
-}

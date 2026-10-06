@@ -1,6 +1,7 @@
 {
   "faq-management": {
     "title": "Stories FAQ",
+    "importFaqsTooltip": "Importer des FAQ",
     "exportAllFaqsTooltip": "Exporter toutes les FAQ",
     "faqParametersTooltip": "Paramètres des FAQ",
     "disableAllFaqsTooltip": "Désactiver toutes les FAQ actuellement actives",
@@ -15,6 +16,12 @@
     "faqsDisabledSuccess": "{{ count }} FAQ désactivées avec succès",
     "allFaqsAlreadyDisabled": "Toutes les FAQ sont déjà désactivées",
     "faqSavedSuccess": "FAQ {{ action }} avec succès"
+  },
+  "faq-management-import": {
+    "title": "Importer des FAQ",
+    "fileLabel": "Export JSON des FAQ",
+    "invalidFileMessage": "Le fichier ne correspond pas à un export JSON de FAQ valide.",
+    "successMessage": "{{ count }} FAQ importée(s) avec succès"
   },
   "faq-management-edit": {
     "newFaqTitle": "Nouvelle FAQ",

@@ -20,11 +20,10 @@ enum class EMProvider {
     OpenAI,
     AzureOpenAIService,
     Ollama,
+    AwsBedrock,
     ;
 
     companion object {
-        fun findByName(provider: String): EMProvider? {
-            return entries.firstOrNull { it.name == provider }
-        }
+        fun findByName(provider: String): EMProvider? = entries.firstOrNull { it.name == provider }
     }
 }

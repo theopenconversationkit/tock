@@ -26,7 +26,9 @@ package ai.tock.bot.definition
  *
  * where KeyEnum implements [ParameterKey].
  */
-data class Parameters(private val entries: Map<String, String>) {
+data class Parameters(
+    private val entries: Map<String, String>,
+) {
     companion object {
         /**
          * An empty parameters.

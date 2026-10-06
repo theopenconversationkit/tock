@@ -59,12 +59,15 @@ class AlcmeonConnector(
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
-            router.get("$path/description")
+            router
+                .get("$path/description")
                 .handler { context -> context.response().end(description) }
-            router.post("$path/start")
+            router
+                .post("$path/start")
                 .handler(authorisationHandler)
                 .handler { context -> handleMessage(context, controller) }
-            router.post("$path/handle-event")
+            router
+                .post("$path/handle-event")
                 .handler(authorisationHandler)
                 .handler { context -> handleMessage(context, controller) }
         }
@@ -88,14 +91,13 @@ class AlcmeonConnector(
             }
         }
 
-    override fun canHandleMessageFor(otherConnectorType: ConnectorType): Boolean {
-        return otherConnectorType.id in
+    override fun canHandleMessageFor(otherConnectorType: ConnectorType): Boolean =
+        otherConnectorType.id in
             setOf(
                 ALCMEON_CONNECTOR_TYPE_ID,
                 messengerConnectorType.id,
                 whatsAppConnectorType.id,
             )
-    }
 
     private fun handleMessage(
         context: RoutingContext,
@@ -112,19 +114,32 @@ class AlcmeonConnector(
                 when (message) {
                     is AlcmeonConnectorWhatsappMessageIn -> {
                         when (message.event) {
-                            is AlcmeonConnectorWhatsappMessageInteractiveEvent ->
+                            is AlcmeonConnectorWhatsappMessageInteractiveEvent -> {
                                 SendChoice.decodeChoice(
                                     message.event.interactive.payload,
                                     PlayerId(senderId),
                                     connectorId,
                                     PlayerId(connectorId, PlayerType.bot),
                                 )
-                            is AlcmeonConnectorWhatsappMessageTextEvent -> sendSentence(senderId, message.event.text.body)
-                            else -> sendSentence(senderId, null)
+                            }
+
+                            is AlcmeonConnectorWhatsappMessageTextEvent -> {
+                                sendSentence(senderId, message.event.text.body)
+                            }
+
+                            else -> {
+                                sendSentence(senderId, null)
+                            }
                         }
                     }
-                    is AlcmeonConnectorFacebookMessageIn -> sendSentence(senderId, message.event.message.text)
-                    else -> sendSentence(senderId, null)
+
+                    is AlcmeonConnectorFacebookMessageIn -> {
+                        sendSentence(senderId, message.event.message.text)
+                    }
+
+                    else -> {
+                        sendSentence(senderId, null)
+                    }
                 }
 
             executor.executeBlocking {

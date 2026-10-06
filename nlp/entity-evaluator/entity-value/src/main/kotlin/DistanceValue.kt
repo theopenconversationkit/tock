@@ -19,4 +19,7 @@ package ai.tock.nlp.entity
 /**
  *
  */
-data class DistanceValue(val value: Number, val unit: String) : Value
+data class DistanceValue(
+    val value: Number,
+    val unit: String,
+) : Value

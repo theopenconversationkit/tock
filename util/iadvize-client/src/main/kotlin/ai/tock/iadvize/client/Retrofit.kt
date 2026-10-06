@@ -37,7 +37,9 @@ import kotlin.system.measureTimeMillis
 /**
  * Logging interceptor for Retrofit client.
  */
-private class LoggingInterceptor(val logger: KLogger) : Interceptor {
+private class LoggingInterceptor(
+    val logger: KLogger,
+) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val connection = chain.connection()
         val protocol = connection?.protocol() ?: Protocol.HTTP_1_1
@@ -48,8 +50,14 @@ private class LoggingInterceptor(val logger: KLogger) : Interceptor {
         val requestHeaders = request.headers.onEach { logger.debug { "${it.first}: ${it.second}" } }
         val requestBody = request.body
         when {
-            requestBody == null -> logger.info("--> END ${request.method}")
-            bodyEncoded(requestHeaders) -> logger.info("--> END ${request.method} (encoded body omitted)")
+            requestBody == null -> {
+                logger.info("--> END ${request.method}")
+            }
+
+            bodyEncoded(requestHeaders) -> {
+                logger.info("--> END ${request.method} (encoded body omitted)")
+            }
+
             else -> {
                 with(requestBody) {
                     val buffer = Buffer()
@@ -95,13 +103,20 @@ private class LoggingInterceptor(val logger: KLogger) : Interceptor {
         val responseHeaders = response.headers.onEach { logger.debug { "${it.first} : ${it.second}" } }
 
         when {
-            !response.promisesBody() -> logger.info("<-- END HTTP")
-            bodyEncoded(responseHeaders) -> logger.info("<-- END HTTP (encoded body omitted)")
+            !response.promisesBody() -> {
+                logger.info("<-- END HTTP")
+            }
+
+            bodyEncoded(responseHeaders) -> {
+                logger.info("<-- END HTTP (encoded body omitted)")
+            }
+
             else -> {
                 with(responseBody!!) {
                     val buffer =
                         source()
-                            .apply { request(java.lang.Long.MAX_VALUE) }.buffer
+                            .apply { request(java.lang.Long.MAX_VALUE) }
+                            .buffer
 
                     if (!isPlaintext(buffer)) {
                         logger.info("")
@@ -169,7 +184,8 @@ fun retrofitBuilderWithTimeoutAndLogger(
     interceptors: List<Interceptor> = emptyList(),
     proxy: Proxy? = null,
 ): Retrofit.Builder =
-    OkHttpClient.Builder()
+    OkHttpClient
+        .Builder()
         .readTimeout(ms, TimeUnit.MILLISECONDS)
         .connectTimeout(ms, TimeUnit.MILLISECONDS)
         .writeTimeout(ms, TimeUnit.MILLISECONDS)
@@ -179,8 +195,7 @@ fun retrofitBuilderWithTimeoutAndLogger(
             // support compatible tls
             connectionSpecs(listOf(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
             takeIf { proxy != null }?.proxy(proxy)
-        }
-        .build()
+        }.build()
         .let { Retrofit.Builder().client(it) }
 
 /**
@@ -188,7 +203,8 @@ fun retrofitBuilderWithTimeoutAndLogger(
  */
 fun tokenAuthenticationInterceptor(token: () -> String) =
     Interceptor { chain ->
-        chain.request()
+        chain
+            .request()
             .newBuilder()
             .header(AUTHORIZATION, "$BEARER ${token()}")
             .build()

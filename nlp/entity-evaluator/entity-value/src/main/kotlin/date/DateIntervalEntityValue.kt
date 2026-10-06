@@ -27,17 +27,11 @@ data class DateIntervalEntityValue(
     val date: DateEntityValue,
     val toDate: DateEntityValue,
 ) : DateEntityRange {
-    override fun start(): ZonedDateTime {
-        return date.date
-    }
+    override fun start(): ZonedDateTime = date.date
 
-    override fun inclusiveEnd(zoneId: ZoneId): ZonedDateTime {
-        return toDate.grain.calculateInclusiveEnd(toDate.date, zoneId)
-    }
+    override fun inclusiveEnd(zoneId: ZoneId): ZonedDateTime = toDate.grain.calculateInclusiveEnd(toDate.date, zoneId)
 
-    override fun end(zoneId: ZoneId): ZonedDateTime {
-        return toDate.grain.calculateEnd(toDate.date, zoneId)
-    }
+    override fun end(zoneId: ZoneId): ZonedDateTime = toDate.grain.calculateEnd(toDate.date, zoneId)
 
     override fun duration(): Duration = Duration.between(date.grain.truncate(start()), toDate.grain.truncate(end(start().zone)))
 }

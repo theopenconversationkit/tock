@@ -57,8 +57,8 @@ abstract class AsyncDelegatingStoryHandlerBase<T : AsyncStoryHandling, D>(
         s: AsyncStoryStep<T>,
         context: T,
         preconditionResult: D,
-    ): Boolean {
-        return with(context) {
+    ): Boolean =
+        with(context) {
             if (s is AsyncStoryDataStep<*, *, *>) {
                 @Suppress("UNCHECKED_CAST")
                 with(s as AsyncStoryDataStep<T, D, *>) {
@@ -70,7 +70,6 @@ abstract class AsyncDelegatingStoryHandlerBase<T : AsyncStoryHandling, D>(
                 }
             }
         }
-    }
 
     override suspend fun action(bus: AsyncBus) {
         val preconditionResult = checkPreconditions().invoke(bus)

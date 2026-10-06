@@ -44,9 +44,7 @@ object VectorStoreService {
     fun getVectorStoreConfiguration(
         namespace: String,
         botId: String,
-    ): BotVectorStoreConfiguration? {
-        return vectorStoreConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-    }
+    ): BotVectorStoreConfiguration? = vectorStoreConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
 
     /**
      * Get the Vector Store configuration
@@ -58,9 +56,7 @@ object VectorStoreService {
         namespace: String,
         botId: String,
         enabled: Boolean,
-    ): BotVectorStoreConfiguration? {
-        return vectorStoreConfigurationDAO.findByNamespaceAndBotIdAndEnabled(namespace, botId, enabled)
-    }
+    ): BotVectorStoreConfiguration? = vectorStoreConfigurationDAO.findByNamespaceAndBotIdAndEnabled(namespace, botId, enabled)
 
     /**
      * Deleting the Vector Store Configuration
@@ -88,7 +84,20 @@ object VectorStoreService {
      * @throws [BadRequestException] if the vector store configuration is invalid
      * @return [BotVectorStoreConfiguration]
      */
-    fun saveVectorStore(vectorStoreConfig: BotVectorStoreConfigurationDTO): BotVectorStoreConfiguration {
+    fun saveVectorStore(
+        vectorStoreConfig: BotVectorStoreConfigurationDTO,
+        author: String? = null,
+    ): BotVectorStoreConfiguration =
+        BotHistoryService.configuration(
+            vectorStoreConfig.namespace,
+            vectorStoreConfig.botId,
+            "vector-store",
+            author,
+            previous = { vectorStoreConfigurationDAO.findByNamespaceAndBotId(vectorStoreConfig.namespace, vectorStoreConfig.botId) },
+            save = { saveWithValidation(vectorStoreConfig) },
+        )
+
+    private fun saveWithValidation(vectorStoreConfig: BotVectorStoreConfigurationDTO): BotVectorStoreConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(vectorStoreConfig.namespace, vectorStoreConfig.botId).firstOrNull()
             ?: WebVerticle.badRequest("No Vector Store configuration is defined yet [namespace: ${vectorStoreConfig.namespace}, botId = ${vectorStoreConfig.botId}]")
         return saveVectorStoreConfiguration(vectorStoreConfig)

@@ -35,28 +35,24 @@ infix fun Entity.setTo(text: String): EntityValue = EntityValue(null, null, this
 /**
  * Does this event contains specified role entity?
  */
-internal fun List<EntityValue>.hasEntity(role: String): Boolean {
-    return hasSubEntity(this, role)
-}
+internal fun List<EntityValue>.hasEntity(role: String): Boolean = hasSubEntity(this, role)
 
 internal fun hasEntityPredefinedValue(
     entities: List<EntityValue>,
     role: String,
     value: String,
-): Boolean {
-    return entities.filter { it.entity.role == role || hasEntityPredefinedValue(it.subEntities, role, value) }
+): Boolean =
+    entities
+        .filter { it.entity.role == role || hasEntityPredefinedValue(it.subEntities, role, value) }
         .firstOrNull {
             (it.value as? StringValue)?.value == value ||
                 hasEntityPredefinedValue(it.subEntities, role, value)
         } != null
-}
 
 internal fun hasSubEntity(
     entities: List<EntityValue>,
     role: String,
-): Boolean {
-    return entities.any { it.entity.role == role } || entities.any { hasSubEntity(it.subEntities, role) }
-}
+): Boolean = entities.any { it.entity.role == role } || entities.any { hasSubEntity(it.subEntities, role) }
 
 /**
  * A (may be not yet evaluated) value linked to an entity stored in the context.
@@ -124,9 +120,7 @@ data class EntityValue(
             true,
         )
 
-    override fun toString(): String {
-        return if (evaluated) value?.toString() ?: "null" else content ?: "no content"
-    }
+    override fun toString(): String = if (evaluated) value?.toString() ?: "null" else content ?: "no content"
 
     internal fun toClosedRange(): IntRange? = if (start != null && end != null && start < end) IntRange(start, end - 1) else null
 }

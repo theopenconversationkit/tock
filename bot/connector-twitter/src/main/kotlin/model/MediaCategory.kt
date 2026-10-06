@@ -23,7 +23,9 @@ import ai.tock.bot.connector.twitter.model.MediaCategory.VIDEO
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.video
 
-enum class MediaCategory(val mediaCategory: String) {
+enum class MediaCategory(
+    val mediaCategory: String,
+) {
     GIF("dm_gif"),
     IMAGE("dm_image"),
     VIDEO("dm_video"),

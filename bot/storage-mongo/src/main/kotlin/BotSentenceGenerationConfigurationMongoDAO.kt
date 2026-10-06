@@ -48,9 +48,7 @@ internal object BotSentenceGenerationConfigurationMongoDAO : BotSentenceGenerati
     override fun findByNamespaceAndBotId(
         namespace: String,
         botId: String,
-    ): BotSentenceGenerationConfiguration? {
-        return col.findOne(Namespace eq namespace, BotId eq botId)
-    }
+    ): BotSentenceGenerationConfiguration? = col.findOne(Namespace eq namespace, BotId eq botId)
 
     override fun save(conf: BotSentenceGenerationConfiguration): BotSentenceGenerationConfiguration {
         col.save(conf)

@@ -19,7 +19,9 @@ package ai.tock.bot.definition
 /**
  * Base implementation of [BotProvider]
  */
-open class BotProviderBase(val botDefinition: BotDefinition) : BotProvider {
+open class BotProviderBase(
+    val botDefinition: BotDefinition,
+) : BotProvider {
     override fun botDefinition(): BotDefinition = botDefinition
 
     override fun equals(other: Any?): Boolean = botProviderId == (other as? BotProvider)?.botProviderId

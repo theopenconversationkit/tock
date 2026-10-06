@@ -46,24 +46,22 @@ internal object BotObservabilityConfigurationMongoDAO : BotObservabilityConfigur
     override fun findByNamespaceAndBotId(
         namespace: String,
         botId: String,
-    ): BotObservabilityConfiguration? {
-        return col.findOne(
+    ): BotObservabilityConfiguration? =
+        col.findOne(
             BotObservabilityConfiguration::namespace eq namespace,
             BotObservabilityConfiguration::botId eq botId,
         )
-    }
 
     override fun findByNamespaceAndBotIdAndEnabled(
         namespace: String,
         botId: String,
         enabled: Boolean,
-    ): BotObservabilityConfiguration? {
-        return col.findOne(
+    ): BotObservabilityConfiguration? =
+        col.findOne(
             BotObservabilityConfiguration::namespace eq namespace,
             BotObservabilityConfiguration::botId eq botId,
             BotObservabilityConfiguration::enabled eq enabled,
         )
-    }
 
     override fun save(conf: BotObservabilityConfiguration): BotObservabilityConfiguration {
         col.save(conf)

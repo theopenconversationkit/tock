@@ -22,6 +22,8 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
  * [StoryStep] without custom [StoryHandlerDefinition].
  */
 @OptIn(ExperimentalTockCoroutines::class)
-interface SimpleStoryStep : StoryStep<StoryHandlerDefinition>, AsyncStoryStep<AsyncStoryHandling> {
+interface SimpleStoryStep :
+    StoryStep<StoryHandlerDefinition>,
+    AsyncStoryStep<AsyncStoryHandling> {
     override val children: Set<SimpleStoryStep> get() = emptySet()
 }

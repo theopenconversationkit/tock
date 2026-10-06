@@ -16,12 +16,16 @@
 
 package ai.tock.bot.admin.indicators
 
-enum class Dimensions(val value: String) {
+enum class Dimensions(
+    val value: String,
+) {
     GEN_AI("Gen AI"),
     RAG("RAG"),
 }
 
-enum class IndicatorValues(val value: IndicatorValue) {
+enum class IndicatorValues(
+    val value: IndicatorValue,
+) {
     @Deprecated("Use new status")
     SUCCESS(IndicatorValue(name = "success", label = "SUCCESS")),
 
@@ -32,7 +36,9 @@ enum class IndicatorValues(val value: IndicatorValue) {
     NO_ANSWER(IndicatorValue(name = "no answer", label = "NO ANSWER")),
 }
 
-enum class Indicators(val value: Indicator) {
+enum class Indicators(
+    val value: Indicator,
+) {
     @Deprecated("Use RAG status")
     GEN_AI(
         Indicator(

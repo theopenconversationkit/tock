@@ -28,22 +28,20 @@ val EMPTY_TRANSLATED_STRING: TranslatedSequence = RawString("")
  *
  * @see CharSequence.raw
  */
-data class RawString(private val wrapped: CharSequence) :
-    CharSequence by wrapped, TranslatedSequence {
+data class RawString(
+    private val wrapped: CharSequence,
+) : CharSequence by wrapped,
+    TranslatedSequence {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun toString(): String {
-        return wrapped.toString()
-    }
+    override fun toString(): String = wrapped.toString()
 
     override fun subSequence(
         startIndex: Int,
         endIndex: Int,
-    ): TranslatedSequence {
-        return RawString(wrapped.subSequence(startIndex, endIndex))
-    }
+    ): TranslatedSequence = RawString(wrapped.subSequence(startIndex, endIndex))
 
     override fun plus(other: Any?): TranslatedSequence {
         logger.warn { "adding a String to a TranslatedSequence is not recommended - please use message format pattern" }

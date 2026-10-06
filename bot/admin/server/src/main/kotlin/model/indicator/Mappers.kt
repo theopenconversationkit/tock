@@ -31,8 +31,8 @@ fun toIndicator(
     namespace: String,
     botId: String,
     request: SaveIndicatorRequest,
-): Indicator {
-    return Indicator(
+): Indicator =
+    Indicator(
         type = IndicatorType.CUSTOM,
         name = request.name,
         label = request.label,
@@ -42,7 +42,6 @@ fun toIndicator(
         dimensions = request.dimensions,
         values = request.values.map { IndicatorValue(it.name, it.label) }.toSet(),
     )
-}
 
 /**
  * Map an [indicator][Indicator] to [IndicatorResponse]

@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.whatsapp.cloud
 
-import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache.createHashedId
 import ai.tock.bot.connector.whatsapp.cloud.database.repository.PayloadWhatsAppCloudDAO
 import ai.tock.bot.connector.whatsapp.cloud.database.repository.PayloadWhatsAppCloudMongoDAO
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudButtonMessage
@@ -34,24 +33,35 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserLocation
+import mu.KotlinLogging
 
 internal object WebhookActionConverter {
+    private val logger = KotlinLogging.logger {}
     private val payloadWhatsApp: PayloadWhatsAppCloudDAO = PayloadWhatsAppCloudMongoDAO
 
     fun toEvent(
         message: WhatsAppCloudMessage,
         applicationId: String,
         whatsAppCloudApiService: WhatsAppCloudApiService,
+        userId: String? = null,
     ): Event? {
-        val senderId = createHashedId(message.from)
+        // The Business-Scoped User ID (BSUID) is the only supported user identifier: phone
+        // numbers are no longer used to identify (nor route messages to) a WhatsApp user.
+        val userIdentifier =
+            userId ?: message.fromUserId ?: run {
+                logger.warn { "no BSUID found in message $message" }
+                return null
+            }
+        val senderId = userIdentifier
         return when (message) {
-            is WhatsAppCloudTextMessage ->
+            is WhatsAppCloudTextMessage -> {
                 SendSentence(
                     PlayerId(senderId),
                     applicationId,
                     PlayerId(applicationId, PlayerType.bot),
                     message.text.body,
                 )
+            }
 
             is WhatsAppCloudImageMessage -> {
                 val binaryImg = whatsAppCloudApiService.downloadImgByBinary(message.image.id, message.image.mimeType)
@@ -64,13 +74,14 @@ internal object WebhookActionConverter {
                 )
             }
 
-            is WhatsAppCloudLocationMessage ->
+            is WhatsAppCloudLocationMessage -> {
                 SendLocation(
                     PlayerId(senderId),
                     applicationId,
                     PlayerId(applicationId, PlayerType.bot),
                     UserLocation(message.location.latitude, message.location.longitude),
                 )
+            }
 
             is WhatsAppCloudButtonMessage -> {
                 val messageCopy = getMessageButtonCopy(message)
@@ -103,7 +114,9 @@ internal object WebhookActionConverter {
                 }
             }
 
-            else -> null
+            else -> {
+                null
+            }
         }
     }
 

@@ -23,9 +23,7 @@ interface IntentSelector {
     companion object {
         val defaultIntentSelector =
             object : IntentSelector {
-                override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
-                    return if (classification.hasNext()) classification.next() to classification.probability() else null
-                }
+                override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? = if (classification.hasNext()) classification.next() to classification.probability() else null
             }
     }
 

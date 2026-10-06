@@ -35,7 +35,10 @@ import kotlin.reflect.KClass
  */
 @JsonDeserialize(using = AnyValueDeserializer::class)
 @JsonSerialize(using = AnyValueSerializer::class)
-data class AnyValueWrapper(val klass: KClass<*>, val value: Any?) {
+data class AnyValueWrapper(
+    val klass: KClass<*>,
+    val value: Any?,
+) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }

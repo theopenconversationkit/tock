@@ -42,8 +42,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = WhatsAppCloudVideoMessage::class, name = "video"),
     JsonSubTypes.Type(value = WhatsAppCloudLocationMessage::class, name = "location"),
 )
-abstract class WhatsAppCloudMessage(val type: WhatsAppCloudMessageType) {
-    abstract val from: String
+abstract class WhatsAppCloudMessage(
+    val type: WhatsAppCloudMessageType,
+) {
+    // Sender phone number. May be omitted (see WhatsApp Business-Scoped User IDs)
+    abstract val from: String?
+
+    // Business-Scoped User ID (BSUID) of the sender, used as user identifier instead of the phone number
+    abstract val fromUserId: String?
     abstract val id: String
     abstract val timestamp: String
     abstract val context: ContextContent?

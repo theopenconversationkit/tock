@@ -79,9 +79,7 @@ internal class BotRepositoryTest : BotEngineTest() {
             object : ConnectorProvider {
                 override val connectorType: ConnectorType = connectorType
 
-                override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
-                    return mockk(relaxed = true)
-                }
+                override fun connector(connectorConfiguration: ConnectorConfiguration): Connector = mockk(relaxed = true)
             }
         BotRepository.registerConnectorProvider(connectorProvider)
         BotRepository.registerBotProvider(
@@ -240,7 +238,11 @@ internal class BotRepositoryTest : BotEngineTest() {
             verticleSlot.captured.configure()
             // then check path is healthcheck + files + /1
             assertEquals(3, verticleSlot.captured.router.routes.size)
-            assertEquals("/1", verticleSlot.captured.router.routes[1].path)
+            assertEquals(
+                "/1",
+                verticleSlot.captured.router.routes[1]
+                    .path,
+            )
             // then call the update
             listenChangesCalled = true
             lambda<() -> Unit>().invoke()
@@ -250,11 +252,15 @@ internal class BotRepositoryTest : BotEngineTest() {
 
         val installer1: (Router) -> Unit = mockk()
         every { installer1(any()) } answers {
-            verticleSlot.captured.router.route("/1").handler {}
+            verticleSlot.captured.router
+                .route("/1")
+                .handler {}
         }
         val installer2: (Router) -> Unit = mockk()
         every { installer2(any()) } answers {
-            verticleSlot.captured.router.route("/2").handler {}
+            verticleSlot.captured.router
+                .route("/2")
+                .handler {}
         }
         every { connector.register(capture(controllerSlot)) } answers {
             controllerSlot.captured.registerServices(
@@ -267,6 +273,10 @@ internal class BotRepositoryTest : BotEngineTest() {
 
         // check verticle contains installer2 route (and so unregister has been called on installer1)
         assertEquals(3, verticleSlot.captured.router.routes.size)
-        assertEquals("/2", verticleSlot.captured.router.routes[2].path)
+        assertEquals(
+            "/2",
+            verticleSlot.captured.router.routes[2]
+                .path,
+        )
     }
 }

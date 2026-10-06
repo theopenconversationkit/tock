@@ -81,28 +81,17 @@ data class IntentDefinition(
     fun findEntity(
         type: String,
         role: String,
-    ): EntityDefinition? {
-        return entities.firstOrNull { it.entityTypeName == type && it.role == role }
-    }
+    ): EntityDefinition? = entities.firstOrNull { it.entityTypeName == type && it.role == role }
 
-    fun findEntity(role: String): EntityDefinition? {
-        return entities.firstOrNull { it.role == role }
-    }
+    fun findEntity(role: String): EntityDefinition? = entities.firstOrNull { it.role == role }
 
-    fun findEntity(entity: Entity): EntityDefinition? {
-        return findEntity(entity.entityType.name, entity.role)
-    }
+    fun findEntity(entity: Entity): EntityDefinition? = findEntity(entity.entityType.name, entity.role)
 
-    fun hasEntity(entity: Entity): Boolean {
-        return findEntity(entity) != null
-    }
+    fun hasEntity(entity: Entity): Boolean = findEntity(entity) != null
 
-    fun hasEntity(entity: ClassifiedEntity): Boolean {
-        return findEntity(entity.type, entity.role) != null
-    }
+    fun hasEntity(entity: ClassifiedEntity): Boolean = findEntity(entity.type, entity.role) != null
 
-    fun supportStates(states: Set<String>): Boolean {
-        return mandatoryStates.isEmpty() ||
+    fun supportStates(states: Set<String>): Boolean =
+        mandatoryStates.isEmpty() ||
             states.any { mandatoryStates.contains(it.lowercase()) }
-    }
 }

@@ -46,8 +46,8 @@ object CompletionService {
         request: PlaygroundRequest,
         namespace: String,
         botId: String,
-    ): CompletionResponse? {
-        return completionService
+    ): CompletionResponse? =
+        completionService
             .generate(
                 CompletionRequest(
                     llmSetting =
@@ -57,14 +57,14 @@ object CompletionService {
                         ),
                     prompt = request.prompt,
                     observabilitySetting =
-                        ObservabilityService.getObservabilityConfiguration(
-                            namespace,
-                            botId,
-                            enabled = true,
-                        )?.setting,
+                        ObservabilityService
+                            .getObservabilityConfiguration(
+                                namespace,
+                                botId,
+                                enabled = true,
+                            )?.setting,
                 ),
             )
-    }
 
     /**
      * Generate sentences

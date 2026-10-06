@@ -35,7 +35,9 @@ data class WhatsAppParameter(
     val payload: String? = null,
 )
 
-data class WhatsAppImageParameter(val link: String)
+data class WhatsAppImageParameter(
+    val link: String,
+)
 
 data class WhatsAppCurrencyParameter(
     @get:JsonProperty("fallback_value")

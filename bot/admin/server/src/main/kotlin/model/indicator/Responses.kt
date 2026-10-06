@@ -29,4 +29,7 @@ data class IndicatorResponse(
     val values: Set<IndicatorValueResponse>,
 )
 
-data class IndicatorValueResponse(val name: String, val label: String)
+data class IndicatorValueResponse(
+    val name: String,
+    val label: String,
+)

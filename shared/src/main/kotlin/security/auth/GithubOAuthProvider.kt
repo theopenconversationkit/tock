@@ -50,7 +50,8 @@ internal class GithubOAuthProvider(
                 }
             },
         ),
-) : SSOTockAuthProvider(vertx), OAuth2Auth by oauth2 {
+) : SSOTockAuthProvider(vertx),
+    OAuth2Auth by oauth2 {
     val logger: KLogger = KotlinLogging.logger {}
     private val executor: Executor get() = injector.provide()
 

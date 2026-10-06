@@ -21,4 +21,7 @@ import ai.tock.bot.definition.Intent
 /**
  * Used by [NlpCallStats]. Pair Intent - probability.
  */
-data class NlpIntentStat(val intent: Intent, val probability: Double)
+data class NlpIntentStat(
+    val intent: Intent,
+    val probability: Double,
+)

@@ -116,8 +116,8 @@ data class SentenceReport(
         ClassificationReport(error),
     )
 
-    fun toClassifiedSentence(): ClassifiedSentence {
-        return ClassifiedSentence(
+    fun toClassifiedSentence(): ClassifiedSentence =
+        ClassifiedSentence(
             if (key == null) text else decrypt(key!!),
             language,
             applicationId,
@@ -131,5 +131,4 @@ data class SentenceReport(
             reviewComment = reviewComment,
             qualifier = qualifier,
         )
-    }
 }

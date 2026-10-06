@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import { EnvBannerConfig } from '../app/shared/env-banner/env-banner.model';
+
 export const environment = {
   production: true,
   autologin: false,
   ssologin: false,
   default_user: '',
   default_password: '',
-  serverUrl: '/rest'
+  serverUrl: '/rest',
+  envBanner: null as EnvBannerConfig | null
 };

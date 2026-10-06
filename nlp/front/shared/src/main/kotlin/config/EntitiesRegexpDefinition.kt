@@ -19,4 +19,6 @@ package ai.tock.nlp.front.shared.config
 /**
  *
  */
-data class EntitiesRegexpDefinition(val regexp: String)
+data class EntitiesRegexpDefinition(
+    val regexp: String,
+)

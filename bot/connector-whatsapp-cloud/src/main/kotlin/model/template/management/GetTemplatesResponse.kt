@@ -18,4 +18,6 @@ package ai.tock.bot.connector.whatsapp.cloud.model.template.management
 
 import ai.tock.bot.connector.whatsapp.cloud.model.template.WhatsappTemplate
 
-data class GetTemplatesResponse(val data: List<WhatsappTemplate>)
+data class GetTemplatesResponse(
+    val data: List<WhatsappTemplate>,
+)

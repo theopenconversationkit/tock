@@ -63,8 +63,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     private val logger = KotlinLogging.logger {}
     private val ragService: RAGService get() = injector.provide()
 
-    override fun handleProactiveAnswer(botBus: BotBus): StoryDefinition? {
-        return with(botBus) {
+    override fun handleProactiveAnswer(botBus: BotBus): StoryDefinition? =
+        with(botBus) {
             // Save story handled metric
             BotRepository.saveMetric(createMetric(MetricType.STORY_HANDLED))
 
@@ -75,16 +75,17 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
             // Footnotes building
             val preparedFootnotes =
-                footnotes?.map {
-                    Footnote(
-                        it.identifier,
-                        it.title,
-                        it.url,
-                        if (action.metadata.sourceWithContent) it.content else null,
-                        it.score,
-                        it.metadata,
-                    )
-                }?.toMutableList() ?: mutableListOf()
+                footnotes
+                    ?.map {
+                        Footnote(
+                            it.identifier,
+                            it.title,
+                            it.url,
+                            if (action.metadata.sourceWithContent) it.content else null,
+                            it.score,
+                            it.metadata,
+                        )
+                    }?.toMutableList() ?: mutableListOf()
 
             // Identifying text to be sent
             val textToSend = if (answer?.displayAnswer == true) answer.answer.orEmpty() else ""
@@ -110,7 +111,6 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
             redirectStory
         }
-    }
 
     private fun updateObservabilityInfo(
         botBus: BotBus,
@@ -136,8 +136,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     private fun ragStoryRedirection(
         botDefinition: BotDefinition,
         response: RAGResponse?,
-    ): StoryDefinition? {
-        return response?.answer?.redirectionIntent?.let {
+    ): StoryDefinition? =
+        response?.answer?.redirectionIntent?.let {
             if (UNKNOWN_INTENT == it) {
                 throw GenAIOrchestratorParsingError(
                     message = "RAG - Story redirection failed",
@@ -156,7 +156,6 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
             targetStory
         }
-    }
 
     /**
      * Call RAG API
@@ -272,11 +271,12 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 val errorAnswer = LLMAnswer(status = "technical_error", answer = technicalErrorMessage)
 
                 debug =
-                    (debug as? MutableMap<String, Any?> ?: mutableMapOf()).apply {
-                        this["error"] = ragError
-                    }.apply {
-                        this["answer"] = errorAnswer
-                    }
+                    (debug as? MutableMap<String, Any?> ?: mutableMapOf())
+                        .apply {
+                            this["error"] = ragError
+                        }.apply {
+                            this["answer"] = errorAnswer
+                        }
 
                 return RAGResult(
                     answer = errorAnswer,
@@ -294,33 +294,39 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
         dialog: Dialog,
         nLastMessages: Int,
     ): List<ChatMessage> =
-        dialog.stories.flatMap { it.actions }.mapNotNull {
-            when (it) {
-                is SendSentence ->
-                    if (it.text == null) {
-                        null
-                    } else {
+        dialog.stories
+            .flatMap { it.actions }
+            .mapNotNull {
+                when (it) {
+                    is SendSentence -> {
+                        if (it.text == null) {
+                            null
+                        } else {
+                            ChatMessage(
+                                text = it.text.toString(),
+                                type =
+                                    if (PlayerType.user == it.playerId.type) {
+                                        ChatMessageType.HUMAN
+                                    } else {
+                                        ChatMessageType.AI
+                                    },
+                            )
+                        }
+                    }
+
+                    is SendSentenceWithFootnotes -> {
                         ChatMessage(
                             text = it.text.toString(),
-                            type =
-                                if (PlayerType.user == it.playerId.type) {
-                                    ChatMessageType.HUMAN
-                                } else {
-                                    ChatMessageType.AI
-                                },
+                            type = ChatMessageType.AI,
                         )
                     }
 
-                is SendSentenceWithFootnotes ->
-                    ChatMessage(
-                        text = it.text.toString(),
-                        type = ChatMessageType.AI,
-                    )
-
-                // Other types of action are not considered part of history.
-                else -> null
+                    // Other types of action are not considered part of history.
+                    else -> {
+                        null
+                    }
+                }
             }
-        }
             // drop the last message, because it corresponds to the user's current question
             .dropLast(n = 1)
             // take last 10 messages
@@ -384,15 +390,14 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * @param label The human-readable label to convert.
      * @return A normalized ID suitable for technical use (e.g., keys, identifiers).
      */
-    private fun generateNameFromTag(label: String): String {
-        return label
+    private fun generateNameFromTag(label: String): String =
+        label
             .trim()
             .lowercase()
             // keep letters (including accents) + numbers + spaces, replace others with "_"
             .replace(Regex("[^\\p{L}\\p{Nd}\\s]"), "_")
             // replace spaces (including multiple spaces) with "_"
             .replace(Regex("\\s+"), "_")
-    }
 
     /**
      * Generates a human-readable label from a technical ID.

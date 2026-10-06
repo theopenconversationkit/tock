@@ -27,11 +27,13 @@ import ai.tock.bot.engine.message.GenericMessage
 /**
  *
  */
-class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickReply>? = null) :
-    Message(quickReplies?.run { if (isEmpty()) null else this }) {
-    override fun toGenericMessage(): GenericMessage? {
-        return when (attachment.type) {
-            audio, file, image, video ->
+class AttachmentMessage(
+    val attachment: Attachment,
+    quickReplies: List<QuickReply>? = null,
+) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
+    override fun toGenericMessage(): GenericMessage? =
+        when (attachment.type) {
+            audio, file, image, video -> {
                 GenericMessage(
                     this,
                     attachments =
@@ -42,7 +44,11 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
                             ),
                         ),
                 )
-            template -> attachment.payload.toGenericMessage()
+            }
+
+            template -> {
+                attachment.payload.toGenericMessage()
+            }
         }?.run {
             if (quickReplies?.isNotEmpty() == true) {
                 copy(
@@ -53,18 +59,20 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
                 this
             }
         }
-    }
 
-    override fun obfuscate(): ConnectorMessage {
-        return when (attachment.type) {
-            template ->
+    override fun obfuscate(): ConnectorMessage =
+        when (attachment.type) {
+            template -> {
                 AttachmentMessage(
                     attachment.copy(payload = attachment.payload.obfuscate()),
                     quickReplies,
                 )
-            else -> this
+            }
+
+            else -> {
+                this
+            }
         }
-    }
 
     override fun findElements(): List<Element> =
         with(attachment.payload) {
@@ -87,13 +95,9 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
         return true
     }
 
-    override fun hashCode(): Int {
-        return attachment.hashCode()
-    }
+    override fun hashCode(): Int = attachment.hashCode()
 
-    override fun toString(): String {
-        return "AttachmentMessage(attachment=$attachment,quickReplies=$quickReplies)"
-    }
+    override fun toString(): String = "AttachmentMessage(attachment=$attachment,quickReplies=$quickReplies)"
 
     override fun copy(quickReplies: List<QuickReply>?): Message = AttachmentMessage(attachment, quickReplies)
 }

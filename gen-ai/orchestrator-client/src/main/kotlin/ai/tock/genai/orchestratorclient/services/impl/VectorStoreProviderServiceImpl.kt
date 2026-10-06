@@ -29,10 +29,11 @@ class VectorStoreProviderServiceImpl : VectorStoreProviderService {
 
     override fun checkSetting(query: VectorStoreProviderSettingStatusRequest): ProviderSettingStatusResponse? {
         val response =
-            vectorStoreProviderApi.checkVectorStoreSetting(
-                query,
-                query.vectorStoreSetting?.provider ?: VectorStoreProvider.Default,
-            ).execute()
+            vectorStoreProviderApi
+                .checkVectorStoreSetting(
+                    query,
+                    query.vectorStoreSetting?.provider ?: VectorStoreProvider.Default,
+                ).execute()
         return response.body()
     }
 }

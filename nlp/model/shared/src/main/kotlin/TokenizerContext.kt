@@ -27,7 +27,8 @@ data class TokenizerContext(
     override val language: Locale,
     override val engineType: NlpEngineType,
     override val applicationName: String,
-) : ClassifierContext<TokenizerContext>, ClassifierContextKey {
+) : ClassifierContext<TokenizerContext>,
+    ClassifierContextKey {
     constructor(callContext: CallContext) : this(
         callContext.language,
         callContext.engineType,
@@ -46,11 +47,7 @@ data class TokenizerContext(
         entityContext.applicationName,
     )
 
-    override fun key(): TokenizerContext {
-        return this
-    }
+    override fun key(): TokenizerContext = this
 
-    override fun id(): String {
-        return "$language-${engineType.name}"
-    }
+    override fun id(): String = "$language-${engineType.name}"
 }

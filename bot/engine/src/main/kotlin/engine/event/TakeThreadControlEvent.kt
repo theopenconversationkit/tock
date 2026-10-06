@@ -28,7 +28,5 @@ class TakeThreadControlEvent(
     val previousOwnerAppId: String,
     val metadata: String? = null,
 ) : OneToOneEvent(userId, recipientId, applicationId) {
-    override fun toString(): String {
-        return "[TakeThreadControlEvent] from $previousOwnerAppId with metadata $metadata"
-    }
+    override fun toString(): String = "[TakeThreadControlEvent] from $previousOwnerAppId with metadata $metadata"
 }

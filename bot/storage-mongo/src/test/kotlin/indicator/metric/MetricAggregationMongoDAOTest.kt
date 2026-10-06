@@ -461,7 +461,8 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             result.any {
                 it.type == MetricType.QUESTION_REPLIED && it.trackedStoryId !in
                     listOf(
-                        storyId1, storyId30,
+                        storyId1,
+                        storyId30,
                     )
             }
         }

@@ -29,10 +29,9 @@ internal fun createCloudApiClient(connectorConfiguration: ConnectorConfiguration
         connectorConfiguration.parameters.getValue(TOKEN),
         connectorConfiguration.parameters.getValue(WHATSAPP_BUSINESS_ACCOUNT_ID),
         connectorConfiguration.parameters.getValue(WHATSAPP_PHONE_NUMBER_ID),
-    )
-        .apply {
-            cloudApiClientCache[connectorConfiguration.connectorId] = this
-        }
+    ).apply {
+        cloudApiClientCache[connectorConfiguration.connectorId] = this
+    }
 
 /**
  * Allow to retrieve the WhatsAppCloudApiClient from the cache.

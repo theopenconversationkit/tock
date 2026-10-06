@@ -70,7 +70,9 @@ inline fun <reified T : ConnectorDef<*>> mockConnector(
 }
 
 @PublishedApi
-internal class MyProvider<T : ConnectorDef<*>>(private val connector: T) : ConnectorHandlerProvider {
+internal class MyProvider<T : ConnectorDef<*>>(
+    private val connector: T,
+) : ConnectorHandlerProvider {
     override fun provide(
         storyDef: StoryHandlerDefinition,
         connectorType: ConnectorType,

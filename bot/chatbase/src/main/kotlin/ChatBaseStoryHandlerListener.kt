@@ -23,8 +23,11 @@ import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryHandlerListener
 import ai.tock.bot.engine.BotBus
 
-internal class ChatBaseStoryHandlerListener(private val apiKey: String, private val client: ChatBaseClient, private val version: String) :
-    StoryHandlerListener {
+internal class ChatBaseStoryHandlerListener(
+    private val apiKey: String,
+    private val client: ChatBaseClient,
+    private val version: String,
+) : StoryHandlerListener {
     override fun startAction(
         botBus: BotBus,
         handler: StoryHandler,

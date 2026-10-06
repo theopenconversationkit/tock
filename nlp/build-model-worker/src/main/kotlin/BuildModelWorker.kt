@@ -34,7 +34,10 @@ import java.util.Locale
  *
  */
 class BuildModelWorker {
-    data class ModelRefreshKey(val applicationId: Id<ApplicationDefinition>, val language: Locale)
+    data class ModelRefreshKey(
+        val applicationId: Id<ApplicationDefinition>,
+        val language: Locale,
+    )
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -113,7 +116,8 @@ class BuildModelWorker {
             sentences: List<ClassifiedSentence>,
             onlyIfNotExists: Boolean = false,
         ) {
-            front.getEntityTypes()
+            front
+                .getEntityTypes()
                 .filter { it.subEntities.isNotEmpty() }
                 .filter { it.name.namespace() == app.namespace }
                 .forEach { entityType ->

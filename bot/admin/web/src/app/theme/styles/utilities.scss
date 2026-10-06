@@ -560,3 +560,102 @@ nb-menu {
     background-color: var(--card-background-color) !important;
   }
 }
+
+// ---------------------------------------------------------------------------
+// Dashboard utilities
+// These are metric-display primitives rather than dashboard-specific rules:
+// any board reporting a figure, a share or a health state can reuse them.
+// ---------------------------------------------------------------------------
+
+// A single headline figure and its caption.
+.metric-value {
+  font-size: 2rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.metric-value-sm {
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.metric-label {
+  font-size: 0.8125rem;
+  color: var(--text-hint-color);
+}
+
+// Health indicator, meant to sit before a label.
+.status-dot {
+  display: inline-block;
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--text-disabled-color);
+}
+
+.status-dot-success {
+  background-color: var(--color-success-default);
+}
+
+.status-dot-warning {
+  background-color: var(--color-warning-default);
+}
+
+.status-dot-danger {
+  background-color: var(--color-danger-default);
+}
+
+// Two-part proportion bar. Children are sized with [style.width.%].
+.stacked-bar {
+  display: flex;
+  overflow: hidden;
+  height: 0.625rem;
+  border-radius: 1rem;
+  background-color: var(--background-basic-color-3);
+
+  > span {
+    display: block;
+  }
+}
+
+.stacked-bar-success {
+  background-color: var(--color-success-default);
+}
+
+.stacked-bar-danger {
+  background-color: var(--color-danger-default);
+}
+
+// Small status pill. Named `status-badge` rather than `badge`: Bootstrap's badge
+// module is not imported here, but the name is worth leaving free.
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.0625rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  background-color: var(--background-basic-color-3);
+  color: var(--text-hint-color);
+}
+
+.status-badge-success {
+  background-color: var(--color-success-transparent-100);
+  color: var(--color-success-hover);
+}
+
+.status-badge-warning {
+  background-color: var(--color-warning-transparent-100);
+  color: var(--color-warning-hover);
+}
+
+.status-badge-danger {
+  background-color: var(--color-danger-transparent-100);
+  color: var(--color-danger-hover);
+}

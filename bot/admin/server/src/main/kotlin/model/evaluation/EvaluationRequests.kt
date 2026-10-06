@@ -38,13 +38,21 @@ data class CreateEvaluationSampleRequest(
 ) : ToValidate {
     override fun validate(): List<String> =
         when {
-            dialogInfo == null && datasetRunInfo == null ->
+            dialogInfo == null && datasetRunInfo == null -> {
                 listOf("Either dialogInfo or datasetRunInfo is required")
-            dialogInfo != null && datasetRunInfo != null ->
+            }
+
+            dialogInfo != null && datasetRunInfo != null -> {
                 listOf("Only one of dialogInfo or datasetRunInfo can be set")
-            datasetRunInfo != null && datasetRunInfo.runId.isBlank() ->
+            }
+
+            datasetRunInfo != null && datasetRunInfo.runId.isBlank() -> {
                 listOf("A dataset run is required")
-            else -> emptyList()
+            }
+
+            else -> {
+                emptyList()
+            }
         }
 }
 
@@ -163,8 +171,8 @@ data class EvaluationSampleDTO(
         fun from(
             sample: EvaluationSample,
             evaluationsResult: EvaluationsResult,
-        ): EvaluationSampleDTO {
-            return EvaluationSampleDTO(
+        ): EvaluationSampleDTO =
+            EvaluationSampleDTO(
                 _id = sample._id.toString(),
                 botId = sample.botId,
                 namespace = sample.namespace,
@@ -187,6 +195,5 @@ data class EvaluationSampleDTO(
                 createdFromRun = sample.createdFromRun?.toString(),
                 evaluationsResult = evaluationsResult,
             )
-        }
     }
 }

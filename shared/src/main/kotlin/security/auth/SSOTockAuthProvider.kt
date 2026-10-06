@@ -28,7 +28,9 @@ import io.vertx.ext.web.handler.SessionHandler
 /**
  *
  */
-abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider {
+abstract class SSOTockAuthProvider(
+    val vertx: Vertx,
+) : TockAuthProvider {
     object AddSSOCookieHandler : Handler<RoutingContext> {
         override fun handle(c: RoutingContext) {
             val cookie = Cookie.cookie("tock-sso", "1")

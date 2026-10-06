@@ -51,7 +51,9 @@ import java.util.Locale
 import kotlin.coroutines.CoroutineContext
 
 @ExperimentalTockCoroutines
-open class AsyncBotBus(val syncBus: BotBus) : AsyncBus {
+open class AsyncBotBus(
+    val syncBus: BotBus,
+) : AsyncBus {
     companion object {
         /**
          * Helper method to retrieve the current bus,
@@ -101,28 +103,18 @@ open class AsyncBotBus(val syncBus: BotBus) : AsyncBus {
         syncBus.nextUserActionState = nextActionState
     }
 
-    override fun choice(key: ParameterKey): String? {
-        return syncBus.choice(key)
-    }
+    override fun choice(key: ParameterKey): String? = syncBus.choice(key)
 
-    override fun booleanChoice(key: ParameterKey): Boolean {
-        return syncBus.booleanChoice(key)
-    }
+    override fun booleanChoice(key: ParameterKey): Boolean = syncBus.booleanChoice(key)
 
-    override fun hasActionEntity(role: String): Boolean {
-        return syncBus.hasActionEntity(role)
-    }
+    override fun hasActionEntity(role: String): Boolean = syncBus.hasActionEntity(role)
 
     override fun <T : Value> entityValue(
         role: String,
         valueTransformer: (EntityValue) -> T?,
-    ): T? {
-        return synchronized(syncBus) { syncBus.entityValue(role, valueTransformer) }
-    }
+    ): T? = synchronized(syncBus) { syncBus.entityValue(role, valueTransformer) }
 
-    override fun entityValueDetails(role: String): EntityValue? {
-        return synchronized(syncBus) { syncBus.entityValueDetails(role) }
-    }
+    override fun entityValueDetails(role: String): EntityValue? = synchronized(syncBus) { syncBus.entityValueDetails(role) }
 
     override fun changeEntityValue(
         role: String,
@@ -134,9 +126,7 @@ open class AsyncBotBus(val syncBus: BotBus) : AsyncBus {
     override fun changeEntityValue(
         entity: Entity,
         newValue: Value?,
-    ) {
-        return synchronized(syncBus) { syncBus.changeEntityValue(entity, newValue) }
-    }
+    ) = synchronized(syncBus) { syncBus.changeEntityValue(entity, newValue) }
 
     override fun removeAllEntityValues() {
         // Synchronized to avoid ConcurrentModificationException with other entity setters
@@ -145,9 +135,7 @@ open class AsyncBotBus(val syncBus: BotBus) : AsyncBus {
         }
     }
 
-    override fun <T : Any> getContextValue(key: DialogContextKey<T>): T? {
-        return syncBus.dialog.state.context[key]
-    }
+    override fun <T : Any> getContextValue(key: DialogContextKey<T>): T? = syncBus.dialog.state.context[key]
 
     override fun <T : Any> setContextValue(
         key: DialogContextKey<T>,
@@ -163,9 +151,7 @@ open class AsyncBotBus(val syncBus: BotBus) : AsyncBus {
         syncBus.setBusContextValue(key, value)
     }
 
-    override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? {
-        return syncBus.getBusContextValue(key)
-    }
+    override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? = syncBus.getBusContextValue(key)
 
     override suspend fun isFeatureEnabled(
         feature: FeatureType,
@@ -198,25 +184,19 @@ open class AsyncBotBus(val syncBus: BotBus) : AsyncBus {
         key: String,
         defaultLabel: String,
         vararg args: Any?,
-    ): I18nLabelValue {
-        return syncBus.i18nKey(key, defaultLabel, *args)
-    }
+    ): I18nLabelValue = syncBus.i18nKey(key, defaultLabel, *args)
 
     override fun i18nWithKey(
         key: String,
         defaultLabel: String,
         defaultI18n: Set<I18nLocalizedLabel>,
         vararg args: Any?,
-    ): I18nLabelValue {
-        return syncBus.i18nKey(key, defaultLabel, defaultI18n, *args)
-    }
+    ): I18nLabelValue = syncBus.i18nKey(key, defaultLabel, defaultI18n, *args)
 
     override fun i18n(
         defaultLabel: CharSequence,
         args: List<Any?>,
-    ): I18nLabelValue {
-        return syncBus.i18n(defaultLabel, args)
-    }
+    ): I18nLabelValue = syncBus.i18n(defaultLabel, args)
 
     override suspend fun send(
         i18nText: CharSequence,
@@ -297,7 +277,9 @@ open class AsyncBotBus(val syncBus: BotBus) : AsyncBus {
             toMessageList(null, syncBus, messageProvider)
         }
 
-    data class Ref(val bus: AsyncBotBus) : CoroutineContext.Element {
+    data class Ref(
+        val bus: AsyncBotBus,
+    ) : CoroutineContext.Element {
         companion object Key : CoroutineContext.Key<Ref>
 
         override val key = Key

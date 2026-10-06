@@ -43,7 +43,8 @@ data class WebMessage(
     override val deepLink: WebDeepLink? = null,
     override val footnotes: List<Footnote> = emptyList(),
     override val actionId: String? = null,
-) : WebMessageContract, WebConnectorMessage {
+) : WebMessageContract,
+    WebConnectorMessage {
     constructor(content: WebMessageContent) : this(
         content.text,
         content.buttons,

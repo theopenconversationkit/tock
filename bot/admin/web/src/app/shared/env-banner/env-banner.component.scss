@@ -1,0 +1,54 @@
+// src/app/shared/env-banner/env-banner.component.scss
+.env-banner__rule {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  z-index: 1040;
+  pointer-events: none;
+}
+
+.env-banner {
+  position: fixed;
+  left: -3.5rem;
+  bottom: 1.75rem;
+  width: 14rem;
+  z-index: 1030;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  padding: 0.35rem 0;
+  transform: rotate(45deg);
+  transform-origin: center;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  pointer-events: none;
+  user-select: none;
+
+  box-shadow: 0px 2px 7px #00000050;
+}
+
+.env-banner__close {
+  pointer-events: auto;
+  cursor: pointer;
+  display: inline-flex;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: 0.7rem;
+  opacity: 0.6;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+}

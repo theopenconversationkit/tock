@@ -33,6 +33,7 @@ hooks:
   - material/overrides/hooks/shortcodes.py
   - hooks/copyapiswagger.py
   - hooks/Rellinkadd.py
+  - hooks/preview.py
 
 plugins:
   - tags

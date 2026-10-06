@@ -46,24 +46,22 @@ internal object BotVectorStoreConfigurationMongoDAO : BotVectorStoreConfiguratio
     override fun findByNamespaceAndBotId(
         namespace: String,
         botId: String,
-    ): BotVectorStoreConfiguration? {
-        return col.findOne(
+    ): BotVectorStoreConfiguration? =
+        col.findOne(
             BotVectorStoreConfiguration::namespace eq namespace,
             BotVectorStoreConfiguration::botId eq botId,
         )
-    }
 
     override fun findByNamespaceAndBotIdAndEnabled(
         namespace: String,
         botId: String,
         enabled: Boolean,
-    ): BotVectorStoreConfiguration? {
-        return col.findOne(
+    ): BotVectorStoreConfiguration? =
+        col.findOne(
             BotVectorStoreConfiguration::namespace eq namespace,
             BotVectorStoreConfiguration::botId eq botId,
             BotVectorStoreConfiguration::enabled eq enabled,
         )
-    }
 
     override fun save(conf: BotVectorStoreConfiguration): BotVectorStoreConfiguration {
         col.save(conf)

@@ -171,13 +171,9 @@ object ModelTesterService : ModelTester {
         }
     }
 
-    override fun searchTestIntentErrors(query: TestErrorQuery): IntentTestErrorQueryResult {
-        return modelDAO.searchTestIntentErrors(query)
-    }
+    override fun searchTestIntentErrors(query: TestErrorQuery): IntentTestErrorQueryResult = modelDAO.searchTestIntentErrors(query)
 
-    override fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResult {
-        return modelDAO.searchTestEntityErrors(query)
-    }
+    override fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResult = modelDAO.searchTestEntityErrors(query)
 
     override fun deleteTestIntentError(
         applicationId: Id<ApplicationDefinition>,
@@ -195,7 +191,5 @@ object ModelTesterService : ModelTester {
         modelDAO.deleteTestEntityError(applicationId, language, text)
     }
 
-    override fun getTestBuilds(query: TestErrorQuery): List<TestBuild> {
-        return modelDAO.getTestBuilds(query)
-    }
+    override fun getTestBuilds(query: TestErrorQuery): List<TestBuild> = modelDAO.getTestBuilds(query)
 }

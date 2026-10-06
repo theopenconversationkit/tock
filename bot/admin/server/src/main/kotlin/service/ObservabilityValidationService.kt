@@ -27,15 +27,14 @@ import ai.tock.shared.provide
 object ObservabilityValidationService {
     private val observabilityProviderService: ObservabilityProviderService get() = injector.provide()
 
-    fun validate(config: BotObservabilityConfiguration): Set<ErrorMessage> {
-        return mutableSetOf<ErrorMessage>().apply {
+    fun validate(config: BotObservabilityConfiguration): Set<ErrorMessage> =
+        mutableSetOf<ErrorMessage>().apply {
             addAll(
                 observabilityProviderService
                     .checkSetting(ObservabilityProviderSettingStatusRequest(config.setting))
                     .getErrors("Observability setting check failed"),
             )
         }
-    }
 
     private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> = this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
 }

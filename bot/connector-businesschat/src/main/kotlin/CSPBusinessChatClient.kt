@@ -67,7 +67,9 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegrationService) {
+internal class CSPBusinessChatClient(
+    val integrationService: BusinessChatIntegrationService,
+) {
     private val logger = KotlinLogging.logger { }
     private val businessChatClientApi: BusinessChatClientApi
 
@@ -117,9 +119,15 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
         ): Call<DecodePayloadResponse>
     }
 
-    private data class FileChecksum(val fileChecksum: String, val size: Int, val receipt: String)
+    private data class FileChecksum(
+        val fileChecksum: String,
+        val size: Int,
+        val receipt: String,
+    )
 
-    private data class UploadResponse(val singleFile: FileChecksum)
+    private data class UploadResponse(
+        val singleFile: FileChecksum,
+    )
 
     private data class PreUploadResponse(
         @JsonProperty("upload-url")
@@ -135,11 +143,17 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
         val downloadUrl: String,
     )
 
-    private data class DecodePayloadResponse(val data: DecodePayloadData)
+    private data class DecodePayloadResponse(
+        val data: DecodePayloadData,
+    )
 
-    private data class DecodePayloadData(val replyMessage: DecodePayloadReplyMessage)
+    private data class DecodePayloadData(
+        val replyMessage: DecodePayloadReplyMessage,
+    )
 
-    private data class DecodePayloadReplyMessage(val title: String)
+    private data class DecodePayloadReplyMessage(
+        val title: String,
+    )
 
     init {
         businessChatClientApi = integrationService.createClient(BusinessChatClientApi::class, logger)
@@ -179,11 +193,13 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
         val logging = HttpLoggingInterceptor()
         logging.level = HttpLoggingInterceptor.Level.BODY
         val client =
-            OkHttpClient.Builder()
+            OkHttpClient
+                .Builder()
                 .addInterceptor(logging)
                 .connectionSpecs(
                     listOf(
-                        ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
+                        ConnectionSpec
+                            .Builder(ConnectionSpec.COMPATIBLE_TLS)
                             .tlsVersions(TlsVersion.TLS_1_2)
                             .build(),
                     ),
@@ -201,24 +217,25 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
         val fileChecksum = jacksonObjectMapper().readValue<UploadResponse>(rep).singleFile.fileChecksum
 
         // send attachement
-        businessChatClientApi.sendAttachment(
-            encryptedAttachment.size,
-            Attachment(
-                attachment.sourceId,
-                attachment.destinationId,
-                arrayOf(
-                    AttachmentDictionnary(
-                        name = """${UUID.randomUUID()}.png""",
-                        mimeType = attachment.mimeType,
-                        size = encryptedAttachment.size,
-                        signatureBase64 = fileChecksum,
-                        url = preUploadResponse.mmcsUrl,
-                        owner = preUploadResponse.mmcsOwner,
-                        key = hexKey,
+        businessChatClientApi
+            .sendAttachment(
+                encryptedAttachment.size,
+                Attachment(
+                    attachment.sourceId,
+                    attachment.destinationId,
+                    arrayOf(
+                        AttachmentDictionnary(
+                            name = """${UUID.randomUUID()}.png""",
+                            mimeType = attachment.mimeType,
+                            size = encryptedAttachment.size,
+                            signatureBase64 = fileChecksum,
+                            url = preUploadResponse.mmcsUrl,
+                            owner = preUploadResponse.mmcsOwner,
+                            key = hexKey,
+                        ),
                     ),
                 ),
-            ),
-        ).execute()
+            ).execute()
     }
 
     private fun encryptAttachment(
@@ -249,8 +266,7 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
                             null
                         },
                     )
-                }
-                .unzip()
+                }.unzip()
 
         val response =
             businessChatClientApi
@@ -290,10 +306,15 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
     fun receiveListPickerChoice(receivedModel: ReceivedModel): ListPickerChoice? {
         when {
             isListPickerReply(receivedModel) -> {
-                with(receivedModel.interactiveData!!.data.replyMessage!!.title) {
+                with(
+                    receivedModel.interactiveData!!
+                        .data.replyMessage!!
+                        .title,
+                ) {
                     return ListPickerChoice(this)
                 }
             }
+
             isComplexListPickerReply(receivedModel) -> {
                 // Payload is encrypted and has to be downloaded
                 // see https://developer.apple.com/documentation/businesschatapi/messages_sent/interactive_messages/receiving_large_interactive_data_payloads
@@ -302,26 +323,30 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
 
                 // getting the download url
                 val preDownloadResponse =
-                    businessChatClientApi.preDownloadAttachment(
-                        businessId,
-                        dataRef.url,
-                        dataRef.signatureBase64,
-                        dataRef.owner,
-                    ).execute().body()
+                    businessChatClientApi
+                        .preDownloadAttachment(
+                            businessId,
+                            dataRef.url,
+                            dataRef.signatureBase64,
+                            dataRef.owner,
+                        ).execute()
+                        .body()
 
                 // download the encrypted payload
                 val logging = HttpLoggingInterceptor()
                 logging.level = HttpLoggingInterceptor.Level.BODY
                 val client =
-                    OkHttpClient.Builder().addInterceptor(logging)
+                    OkHttpClient
+                        .Builder()
+                        .addInterceptor(logging)
                         .connectionSpecs(
                             listOf(
-                                ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
+                                ConnectionSpec
+                                    .Builder(ConnectionSpec.COMPATIBLE_TLS)
                                     .tlsVersions(TlsVersion.TLS_1_2)
                                     .build(),
                             ),
-                        )
-                        .build()
+                        ).build()
 
                 val download =
                     Request
@@ -346,22 +371,25 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
                 val unzippedResult = ungzip(decryptedAttachment)
 
                 val payload =
-                    businessChatClientApi.decodePayload(
-                        dataRef.bid,
-                        businessId,
-                        RequestBody.create("application/x-www-form-urlencoded".toMediaType(), unzippedResult),
-                    ).execute().run {
-                        body()
-                            ?: errorBody()?.string()?.let {
-                                logger.error("body is empty, then use errorBody")
-                                mapper.readValue<DecodePayloadResponse>(it)
-                            }
-                            ?: error("payload is null")
-                    }
+                    businessChatClientApi
+                        .decodePayload(
+                            dataRef.bid,
+                            businessId,
+                            RequestBody.create("application/x-www-form-urlencoded".toMediaType(), unzippedResult),
+                        ).execute()
+                        .run {
+                            body()
+                                ?: errorBody()?.string()?.let {
+                                    logger.error("body is empty, then use errorBody")
+                                    mapper.readValue<DecodePayloadResponse>(it)
+                                }
+                                ?: error("payload is null")
+                        }
                 with(payload.data.replyMessage.title) {
                     return ListPickerChoice(this)
                 }
             }
+
             else -> {
                 logger.error { "interactiveDataRef is null" }
                 return null
@@ -370,22 +398,23 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
     }
 
     fun sendRichLink(richLink: BusinessChatConnectorRichLinkMessage) {
-        businessChatClientApi.sendRichLink(
-            RichLinkMessage(
-                richLink.sourceId,
-                richLink.destinationId,
-                RichLinkData(
-                    richLink.url,
-                    richLink.title,
-                    Assets(
-                        ai.tock.bot.connector.businesschat.model.csp.richLink.Image(
-                            richLink.image,
-                            richLink.mimeType,
+        businessChatClientApi
+            .sendRichLink(
+                RichLinkMessage(
+                    richLink.sourceId,
+                    richLink.destinationId,
+                    RichLinkData(
+                        richLink.url,
+                        richLink.title,
+                        Assets(
+                            ai.tock.bot.connector.businesschat.model.csp.richLink.Image(
+                                richLink.image,
+                                richLink.mimeType,
+                            ),
                         ),
                     ),
                 ),
-            ),
-        ).execute()
+            ).execute()
     }
 
     private fun isListPickerReply(receivedModel: ReceivedModel) = receivedModel.interactiveData != null && receivedModel.interactiveData.data.replyMessage != null

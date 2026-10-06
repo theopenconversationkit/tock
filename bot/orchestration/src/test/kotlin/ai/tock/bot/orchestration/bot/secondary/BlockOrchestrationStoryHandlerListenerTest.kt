@@ -89,10 +89,9 @@ internal class BlockOrchestrationStoryHandlerListenerTest {
     private fun mockBotBus(
         busAction: Action,
         busIntent: IntentAware? = null,
-    ): BotBus {
-        return mockk(relaxed = true) {
+    ): BotBus =
+        mockk(relaxed = true) {
             every { action } returns busAction
             every { intent } returns busIntent
         }
-    }
 }

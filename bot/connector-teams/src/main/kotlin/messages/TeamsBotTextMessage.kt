@@ -26,15 +26,18 @@ import ai.tock.shared.mapNotNullValues
 import com.microsoft.bot.schema.CardAction
 import com.microsoft.bot.schema.CardImage
 
-class TeamsCarousel(val listMessage: List<TeamsBotMessage>) : TeamsBotMessage(null) {
-    override fun toGenericMessage(): GenericMessage? {
-        return GenericMessage(
+class TeamsCarousel(
+    val listMessage: List<TeamsBotMessage>,
+) : TeamsBotMessage(null) {
+    override fun toGenericMessage(): GenericMessage? =
+        GenericMessage(
             subElements = listMessage.map { GenericElement(it.toGenericMessage() ?: GenericMessage()) },
         )
-    }
 }
 
-class TeamsBotTextMessage(text: String) : TeamsBotMessage(text) {
+class TeamsBotTextMessage(
+    text: String,
+) : TeamsBotMessage(text) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is TeamsBotTextMessage) return false
@@ -42,16 +45,13 @@ class TeamsBotTextMessage(text: String) : TeamsBotMessage(text) {
         return true
     }
 
-    override fun toString(): String {
-        return text ?: ""
-    }
+    override fun toString(): String = text ?: ""
 
-    override fun toGenericMessage(): GenericMessage {
-        return GenericMessage(
+    override fun toGenericMessage(): GenericMessage =
+        GenericMessage(
             connectorType = connectorType,
             texts = mapOf("text" to toString()),
         )
-    }
 }
 
 class TeamsHeroCard(
@@ -104,8 +104,8 @@ class TeamsHeroCard(
             "tap=${tap?.value})"
     }
 
-    override fun toGenericMessage(): GenericMessage {
-        return GenericMessage(
+    override fun toGenericMessage(): GenericMessage =
+        GenericMessage(
             connectorType = connectorType,
             texts =
                 mapNotNullValues(
@@ -135,15 +135,14 @@ class TeamsHeroCard(
                     )
                 } ?: emptyList(),
         )
-    }
 }
 
 class TeamsCardAction(
     val actionTitle: String,
     val buttons: List<CardAction>,
 ) : TeamsBotMessage(null) {
-    override fun toGenericMessage(): GenericMessage? {
-        return GenericMessage(
+    override fun toGenericMessage(): GenericMessage? =
+        GenericMessage(
             connectorType = connectorType,
             texts = mapNotNullValues(TITLE_PARAM to actionTitle),
             choices =
@@ -161,7 +160,6 @@ class TeamsCardAction(
                     )
                 },
         )
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -189,11 +187,10 @@ class TeamsCardAction(
     }
 }
 
-fun CardAction.equalsTo(other: CardAction?): Boolean {
-    return image == other?.image &&
+fun CardAction.equalsTo(other: CardAction?): Boolean =
+    image == other?.image &&
         text == other?.text &&
         title == other?.title &&
         displayText == other?.displayText &&
         type?.name == other?.type?.name &&
         value == other?.value
-}

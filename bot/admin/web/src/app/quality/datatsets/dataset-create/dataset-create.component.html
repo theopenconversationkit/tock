@@ -180,20 +180,39 @@
     [ngClass]="{ 'justify-content-between': isEditMode }"
   >
     @if (isEditMode) {
-    <button
-      nbButton
-      ghost="true"
-      status="primary"
-      tabindex="-1"
-      [disabled]="isLoading"
-      (click)="exportDataset()"
-    >
-      <nb-icon
-        icon="download"
-        class="mr-2"
-      ></nb-icon>
-      {{ 'quality.dataset-create.export_dataset_button' | transloco }}
-    </button>
+    <div class="d-flex gap-05">
+      <button
+        nbButton
+        ghost="true"
+        status="primary"
+        tabindex="-1"
+        [disabled]="isLoading"
+        [nbTooltip]="'quality.dataset-create.export_json_tooltip' | transloco"
+        (click)="exportDataset('json')"
+      >
+        <nb-icon
+          icon="download"
+          class="mr-2"
+        ></nb-icon>
+        JSON
+      </button>
+
+      <button
+        nbButton
+        ghost="true"
+        status="primary"
+        tabindex="-1"
+        [disabled]="isLoading"
+        [nbTooltip]="'quality.dataset-create.export_csv_tooltip' | transloco"
+        (click)="exportDataset('csv')"
+      >
+        <nb-icon
+          icon="download"
+          class="mr-2"
+        ></nb-icon>
+        CSV
+      </button>
+    </div>
     }
 
     <div class="d-flex gap-1">

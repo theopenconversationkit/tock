@@ -21,7 +21,7 @@ If you use **service account impersonation**, the *source* service account must 
 
 |  Required Element |  Description |
 |---------------------|-----------------|
-| **Bot project number** | The numeric ID of your project (e.g., `37564789203`) |
+| **Authentication Audience** | The public HTTPS endpoint configured for the Google Chat app |
 | **JSON credentials** | Service account credentials file |
 | **(Optional) GSA to impersonate** | Email of the target service account if using impersonation |
 
@@ -33,7 +33,7 @@ If you use **service account impersonation**, the *source* service account must 
 
 ```
 HTTP endpoint URL       → https://your-ngrok-url.ngrok-free.app/io/app/assistant/google_chat
-Authentication Audience → Project Number
+Authentication Audience → HTTP endpoint URL
 ```
 
 ---
@@ -49,11 +49,12 @@ Authentication Audience → Project Number
 |-----------|-------------|
 | **Connector type** | `google_chat` |
 | **Application base URL** | `https://area-simple-teal.ngrok-free.app` |
-| **Bot project number** | `37564789203` |
+| **Authentication Audience** | `https://area-simple-teal.ngrok-free.app/io/app/assistant/google_chat` |
 | **Service account credential json content** | `{"type": "service_account", ...}` |
 | **Service account to impersonate** (optional) | `bot-sa@project.iam.gserviceaccount.com` |
 | **Use condensed footnotes** | `1` = condensed, `0` = detailed |
 | **Display sources without URL** | `1` = displayed, `0` = hidden |
+| **Enable feedback buttons** | `1` = enabled, `0` = disabled (default) |
 
 ---
 
@@ -94,6 +95,12 @@ The connector includes a converter that transforms standard Markdown into a simp
 ---
 
 ##  Bot Behavior
+
+### Feedback buttons
+
+When feedback is enabled, final bot answers include thumbs-up and thumbs-down buttons. The first vote is stored on the corresponding Tock action. The two buttons are then replaced with the selected button in a disabled state, preventing further changes from the Google Chat message.
+
+Waiting and introductory messages don't include feedback buttons.
 
 ###  Conversation Management
 

@@ -20,11 +20,14 @@ import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.Contex
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.DocumentContent
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ErrorItem
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.Referral
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class WhatsAppCloudDocumentMessage(
     val text: DocumentContent?,
     override val id: String,
-    override val from: String,
+    override val from: String? = null,
+    @JsonProperty("from_user_id")
+    override val fromUserId: String? = null,
     override val timestamp: String,
     override val context: ContextContent? = null,
     override val referral: Referral? = null,

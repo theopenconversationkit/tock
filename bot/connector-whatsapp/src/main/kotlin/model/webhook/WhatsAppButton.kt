@@ -16,4 +16,7 @@
 
 package ai.tock.bot.connector.whatsapp.model.webhook
 
-class WhatsAppButton(val text: String, val payload: String?)
+class WhatsAppButton(
+    val text: String,
+    val payload: String?,
+)

@@ -29,4 +29,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = QuickReply::class, name = "quick_reply"),
     JsonSubTypes.Type(value = UrlButton::class, name = "url_button"),
 )
-abstract class Button(val type: ButtonType)
+abstract class Button(
+    val type: ButtonType,
+)

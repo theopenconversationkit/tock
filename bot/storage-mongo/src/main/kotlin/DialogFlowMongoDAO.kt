@@ -131,19 +131,22 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     private val logger = KotlinLogging.logger {}
 
     internal val flowStateCol =
-        MongoBotConfiguration.database.getCollection<DialogFlowStateCol>("flow_state")
+        MongoBotConfiguration.database
+            .getCollection<DialogFlowStateCol>("flow_state")
             .apply {
                 ensureIndex(Namespace, BotId, StoryDefinitionId, Intent, Step, Entities, StoryType, StoryName)
             }
 
     internal val flowTransitionCol =
-        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionCol>("flow_transition")
+        MongoBotConfiguration.database
+            .getCollection<DialogFlowStateTransitionCol>("flow_transition")
             .apply {
                 ensureIndex(Namespace, BotId, PreviousStateId, NextStateId, Intent, Step, NewEntities, Type)
             }
 
     internal val flowTransitionStatsCol =
-        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatCol>("flow_transition_stats")
+        MongoBotConfiguration.database
+            .getCollection<DialogFlowStateTransitionStatCol>("flow_transition_stats")
             .apply {
                 try {
                     ensureIndex(TransitionId, Date)
@@ -162,7 +165,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             }
 
     private val flowTransitionStatsDateAggregationCol =
-        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatDateAggregationCol>("flow_transition_stats_date")
+        MongoBotConfiguration.database
+            .getCollection<DialogFlowStateTransitionStatDateAggregationCol>("flow_transition_stats_date")
             .apply {
                 try {
                     ensureIndex(
@@ -187,7 +191,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     private val flowTransitionStatsDialogAggregationColTTL = longProperty("tock_bot_flow_stats_index_ttl_days", 365)
 
     private val flowTransitionStatsDialogAggregationCol =
-        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatDialogAggregationCol>("flow_transition_stats_dialog")
+        MongoBotConfiguration.database
+            .getCollection<DialogFlowStateTransitionStatDialogAggregationCol>("flow_transition_stats_dialog")
             .apply {
                 try {
                     ensureIndex(
@@ -211,7 +216,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             }
 
     private val flowTransitionStatsUserAggregationCol =
-        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatUserAggregationCol>("flow_transition_stats_user")
+        MongoBotConfiguration.database
+            .getCollection<DialogFlowStateTransitionStatUserAggregationCol>("flow_transition_stats_user")
             .apply {
                 try {
                     ensureIndex(
@@ -452,7 +458,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                         flowTransitionStatsDateAggregationCol
                             .aggregate<DialogFlowAggregateApplicationIdResult>(distinct, proj)
                             .forEach {
-                                if (Duration.between(it.date.atZone(defaultZoneId), now)
+                                if (Duration
+                                        .between(it.date.atZone(defaultZoneId), now)
                                         .toDays() < flowTransitionStatsDialogAggregationColTTL - 2
                                 ) {
                                     val match =
@@ -531,37 +538,39 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
 
         @Suppress("UNCHECKED_CAST")
         val transitionsWithStats =
-            transitions.map {
-                DialogFlowStateTransitionData(
-                    it.previousStateId as? Id<DialogFlowStateData>?,
-                    it.nextStateId as Id<DialogFlowStateData>,
-                    it.intent,
-                    it.step,
-                    it.newEntities,
-                    it.type,
-                    stats[it._id] ?: 0,
-                )
-            }.filter { it.count != 0L }
+            transitions
+                .map {
+                    DialogFlowStateTransitionData(
+                        it.previousStateId as? Id<DialogFlowStateData>?,
+                        it.nextStateId as Id<DialogFlowStateData>,
+                        it.intent,
+                        it.step,
+                        it.newEntities,
+                        it.type,
+                        stats[it._id] ?: 0,
+                    )
+                }.filter { it.count != 0L }
 
         val transitionCountByNext =
             transitionsWithStats.groupBy { it.nextStateId }.mapValues { e -> e.value.sumByLong { it.count } }
 
         @Suppress("UNCHECKED_CAST")
         val statesWithStats =
-            states.map { s ->
-                DialogFlowStateData(
-                    s.storyDefinitionId,
-                    s.intent,
-                    s.step,
-                    s.entities,
-                    s.storyType,
-                    s.storyName,
-                    transitionCountByNext[s._id as Id<DialogFlowStateData>] ?: 0L,
-                    s._id as Id<DialogFlowStateData>,
-                )
-            }.filter {
-                it.count != 0L
-            }
+            states
+                .map { s ->
+                    DialogFlowStateData(
+                        s.storyDefinitionId,
+                        s.intent,
+                        s.step,
+                        s.entities,
+                        s.storyType,
+                        s.storyName,
+                        transitionCountByNext[s._id as Id<DialogFlowStateData>] ?: 0L,
+                        s._id as Id<DialogFlowStateData>,
+                    )
+                }.filter {
+                    it.count != 0L
+                }
 
         return ApplicationDialogFlowData(statesWithStats, transitionsWithStats, emptyList())
     }
@@ -689,7 +698,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 DialogFlowAggregateResult::count from Count.projection,
             )
         logger.debug { "Flow Message pipeline: [$match, $group, $proj]" }
-        return flowTransitionStatsDateAggregationCol.aggregate<DialogFlowAggregateResult>(match, group, proj)
+        return flowTransitionStatsDateAggregationCol
+            .aggregate<DialogFlowAggregateResult>(match, group, proj)
             .associateBy({ DayOfWeek.of(it.date.toInt()) }, { it.count })
     }
 
@@ -869,7 +879,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     ): Map<String, Int> {
         val proj = projectToResult()
         logger.debug { "Flow Message pipeline: [$match, $group, $proj]" }
-        return flowTransitionStatsDateAggregationCol.aggregate<DialogFlowAggregateResult>(match, group, proj)
+        return flowTransitionStatsDateAggregationCol
+            .aggregate<DialogFlowAggregateResult>(match, group, proj)
             .associateBy({ it.seriesKey }, { it.count })
     }
 
@@ -925,8 +936,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     Pair<Id<DialogFlowStateTransitionCol>, Long>::first from _id,
                     Pair<*, Long>::second from Pair<*, Long>::second,
                 ),
-            )
-            .map { it.first.toId<DialogFlowStateTransitionCol>() to it.second }
+            ).map { it.first.toId<DialogFlowStateTransitionCol>() to it.second }
             .toList()
 
     private fun findState(
@@ -981,7 +991,11 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             state._id,
             lastUserAction?.state?.intent,
             lastUserAction?.state?.step,
-            lastUserAction?.state?.entityValues?.map { it.entity.role }?.toSortedSet() ?: emptySet(),
+            lastUserAction
+                ?.state
+                ?.entityValues
+                ?.map { it.entity.role }
+                ?.toSortedSet() ?: emptySet(),
             when (lastUserAction) {
                 is SendChoice -> choice
                 is SendLocation -> location
@@ -1025,8 +1039,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 step,
                 newEntities,
                 type,
-            )
-                .also { flowTransitionCol.insertOne(it) }
+            ).also { flowTransitionCol.insertOne(it) }
         )
 
     fun addFlowStat(
@@ -1067,7 +1080,9 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
 
 @Data(internal = true)
 @JacksonData(internal = true)
-internal data class GroupByIdContainer(val _id: GroupById)
+internal data class GroupByIdContainer(
+    val _id: GroupById,
+)
 
 @Data(internal = true)
 @JacksonData(internal = true)
@@ -1083,19 +1098,27 @@ internal data class GroupById(
 
 @Data(internal = true)
 @JacksonData(internal = true)
-internal data class ConfigurationLookup(val configuration: BotApplicationConfiguration)
+internal data class ConfigurationLookup(
+    val configuration: BotApplicationConfiguration,
+)
 
 @Data(internal = true)
 @JacksonData(internal = true)
-internal data class TransitionLookup(val transition: DialogFlowStateTransitionCol)
+internal data class TransitionLookup(
+    val transition: DialogFlowStateTransitionCol,
+)
 
 @Data(internal = true)
 @JacksonData(internal = true)
-internal data class NextStateLookup(val nextState: DialogFlowStateCol)
+internal data class NextStateLookup(
+    val nextState: DialogFlowStateCol,
+)
 
 @Data(internal = true)
 @JacksonData(internal = true)
-internal data class StoryLookup(val story: StoryDefinitionConfiguration)
+internal data class StoryLookup(
+    val story: StoryDefinitionConfiguration,
+)
 
 private fun KProperty<TemporalAccessor?>.kDateToString(
     format: String? = "%Y-%m-%d",

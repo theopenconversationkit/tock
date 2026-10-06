@@ -58,7 +58,10 @@ class ListPickerData(
     val requestIdentifier: String = UUID.randomUUID().toString()
 }
 
-class Image(val identifier: String, val data: String)
+class Image(
+    val identifier: String,
+    val data: String,
+)
 
 class ListPicker(
     val sections: List<ListPickerSection> = emptyList(),

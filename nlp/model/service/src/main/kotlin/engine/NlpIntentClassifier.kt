@@ -22,4 +22,6 @@ import ai.tock.shared.ThreadSafe
  *
  */
 @ThreadSafe
-abstract class NlpIntentClassifier(val model: IntentModelHolder) : IntentClassifier
+abstract class NlpIntentClassifier(
+    val model: IntentModelHolder,
+) : IntentClassifier

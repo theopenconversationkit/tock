@@ -364,22 +364,24 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         assertEquals(
             expected = 2,
             actual =
-                classifiedSentencesDao.getSentences(
-                    setOf(intentId3, intentId2, intentIdtoDel),
-                    Locale.FRENCH,
-                    ClassifiedSentenceStatus.validated,
-                ).size,
+                classifiedSentencesDao
+                    .getSentences(
+                        setOf(intentId3, intentId2, intentIdtoDel),
+                        Locale.FRENCH,
+                        ClassifiedSentenceStatus.validated,
+                    ).size,
             message = "There should be two classified sentences",
         )
 
         assertEquals(
             expected = 1,
             actual =
-                classifiedSentencesDao.getSentences(
-                    setOf(intentIdtoDel),
-                    Locale.FRENCH,
-                    ClassifiedSentenceStatus.deleted,
-                ).size,
+                classifiedSentencesDao
+                    .getSentences(
+                        setOf(intentIdtoDel),
+                        Locale.FRENCH,
+                        ClassifiedSentenceStatus.deleted,
+                    ).size,
             "There should be one classified sentences deleted",
         )
 
@@ -457,22 +459,24 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         assertEquals(
             expected = 2,
             actual =
-                classifiedSentencesDao.getSentences(
-                    setOf(intentId3, intentId2, intentIdtoDel),
-                    Locale.FRENCH,
-                    ClassifiedSentenceStatus.validated,
-                ).size,
+                classifiedSentencesDao
+                    .getSentences(
+                        setOf(intentId3, intentId2, intentIdtoDel),
+                        Locale.FRENCH,
+                        ClassifiedSentenceStatus.validated,
+                    ).size,
             message = "There should be two classified sentences",
         )
 
         assertEquals(
             expected = 1,
             actual =
-                classifiedSentencesDao.getSentences(
-                    setOf(intentIdtoDel),
-                    Locale.FRENCH,
-                    ClassifiedSentenceStatus.deleted,
-                ).size,
+                classifiedSentencesDao
+                    .getSentences(
+                        setOf(intentIdtoDel),
+                        Locale.FRENCH,
+                        ClassifiedSentenceStatus.deleted,
+                    ).size,
             "There should be one classified sentences deleted",
         )
 
@@ -540,11 +544,12 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         assertEquals(
             expected = 3,
             actual =
-                classifiedSentencesDao.getSentences(
-                    setOf(intentId3, intentId2, intentId4),
-                    Locale.FRENCH,
-                    ClassifiedSentenceStatus.validated,
-                ).size,
+                classifiedSentencesDao
+                    .getSentences(
+                        setOf(intentId3, intentId2, intentId4),
+                        Locale.FRENCH,
+                        ClassifiedSentenceStatus.validated,
+                    ).size,
             message = "There should be 3 classified sentences",
         )
 
@@ -702,8 +707,8 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     private fun createFaqQuery(
         enabled: Boolean?,
         search: String?,
-    ): FaqQuery {
-        return FaqQuery(
+    ): FaqQuery =
+        FaqQuery(
             0,
             10,
             search,
@@ -715,7 +720,6 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             applicationId.toString(),
             namespace,
         )
-    }
 
     private fun createUtterance(
         text: String,

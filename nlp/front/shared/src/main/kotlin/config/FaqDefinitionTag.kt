@@ -19,4 +19,6 @@ package ai.tock.nlp.front.shared.config
 /**
  * Tag element of a FaqDefinition
  */
-data class FaqDefinitionTag(val tag: String)
+data class FaqDefinitionTag(
+    val tag: String,
+)

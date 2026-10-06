@@ -23,7 +23,9 @@ import ai.tock.nlp.front.service.ParserRequestData
 /**
  *
  */
-internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(data) {
+internal class ExpectedIntentSelector(
+    data: ParserRequestData,
+) : SelectorBase(data) {
     override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
         with(classification) {
             val qualifiedIntents = mutableMapOf<Intent, Double>()

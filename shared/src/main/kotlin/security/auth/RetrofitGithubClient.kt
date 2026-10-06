@@ -29,7 +29,9 @@ import retrofit2.http.Header
  *
  */
 internal object RetrofitGithubClient {
-    data class GithubUser(val login: String)
+    data class GithubUser(
+        val login: String,
+    )
 
     private interface GithubApi {
         @GET("/user")
@@ -47,14 +49,16 @@ internal object RetrofitGithubClient {
             retrofitBuilderWithTimeoutAndLogger(
                 longProperty("tock_github_api_request_timeout_ms", 5000),
                 logger,
-            )
-                .baseUrl("https://api.github.com")
+            ).baseUrl("https://api.github.com")
                 .addJacksonConverter()
                 .build()
                 .create()
     }
 
-    fun login(token: String): String {
-        return api.user("token $token").execute().body()?.login ?: error("no login found for $token")
-    }
+    fun login(token: String): String =
+        api
+            .user("token $token")
+            .execute()
+            .body()
+            ?.login ?: error("no login found for $token")
 }

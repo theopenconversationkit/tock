@@ -156,8 +156,8 @@ interface ClientBus : Bus<ClientBus> {
     override fun translate(
         text: CharSequence?,
         vararg args: Any?,
-    ): I18nText {
-        return if (text.isNullOrBlank()) {
+    ): I18nText =
+        if (text.isNullOrBlank()) {
             I18nText("", toBeTranslated = false)
         } else if (text is I18nLabelValue) {
             I18nText(text.defaultLabel.toString(), text.args.map { it?.toString() }, key = text.key)
@@ -166,7 +166,6 @@ interface ClientBus : Bus<ClientBus> {
         } else {
             I18nText(text.toString(), args.map { it?.toString() })
         }
-    }
 
     /**
      * Handles the action and switches the context to the specified story definition.

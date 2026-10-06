@@ -54,12 +54,20 @@ class DefaultConnectorHandlerProviderTest {
     }
 
     @TestHandler(TestConnDef::class)
-    class TestDef(bus: BotBus) : HandlerDef<TestConnDef<HandlerDef<*>>>(bus)
+    class TestDef(
+        bus: BotBus,
+    ) : HandlerDef<TestConnDef<HandlerDef<*>>>(bus)
 
-    class TestConnDef<out T : StoryHandlerDefinition>(context: T) : ConnectorStoryHandlerBase<T>(context)
+    class TestConnDef<out T : StoryHandlerDefinition>(
+        context: T,
+    ) : ConnectorStoryHandlerBase<T>(context)
 
-    class InvalidTestConnDef(provider: () -> TestDef) : ConnectorStoryHandlerBase<TestDef>(provider())
+    class InvalidTestConnDef(
+        provider: () -> TestDef,
+    ) : ConnectorStoryHandlerBase<TestDef>(provider())
 
     @TestHandler(InvalidTestConnDef::class)
-    class InvalidTestDef(bus: BotBus) : HandlerDef<InvalidTestConnDef>(bus)
+    class InvalidTestDef(
+        bus: BotBus,
+    ) : HandlerDef<InvalidTestConnDef>(bus)
 }

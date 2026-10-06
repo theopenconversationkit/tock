@@ -22,7 +22,9 @@ import ai.tock.nlp.front.service.ParserRequestData
 /**
  *
  */
-internal abstract class SelectorBase(val data: ParserRequestData) : IntentSelector {
+internal abstract class SelectorBase(
+    val data: ParserRequestData,
+) : IntentSelector {
     /**
      * The intents with p > 0.1
      */

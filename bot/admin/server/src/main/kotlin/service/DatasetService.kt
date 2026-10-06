@@ -78,7 +78,8 @@ object DatasetService {
         namespace: String,
         botId: String,
     ): List<DatasetDTO> =
-        datasetDAO.getDatasetsByNamespaceAndBotId(namespace, botId)
+        datasetDAO
+            .getDatasetsByNamespaceAndBotId(namespace, botId)
             .map { dataset ->
                 val runs = datasetRunDAO.getRunsByDatasetId(dataset._id)
                 dataset.toDTO(
@@ -292,7 +293,8 @@ object DatasetService {
 
         val questionResults = datasetRunDAO.getQuestionResultsByRunId(run._id)
         val dialogsById =
-            dialogReportDAO.findByDialogByIds(questionResults.mapNotNull { it.dialogId }.toSet())
+            dialogReportDAO
+                .findByDialogByIds(questionResults.mapNotNull { it.dialogId }.toSet())
                 .associateBy { it.id }
 
         return questionResults.map { questionResult ->
@@ -312,7 +314,8 @@ object DatasetService {
     private fun getRunActionRefs(run: DatasetRun): List<ActionRef> {
         val questionResults = datasetRunDAO.getQuestionResultsByRunId(run._id)
         val dialogsById =
-            dialogReportDAO.findByDialogByIds(questionResults.mapNotNull { it.dialogId }.toSet())
+            dialogReportDAO
+                .findByDialogByIds(questionResults.mapNotNull { it.dialogId }.toSet())
                 .associateBy { it.id }
 
         return questionResults.mapNotNull { questionResult ->
@@ -374,13 +377,17 @@ object DatasetService {
         cachedDialog: DialogReport?,
     ): ResolvedRunAction =
         when (questionResult.state) {
-            DatasetRunQuestionResultState.COMPLETED -> resolveCompletedRunAction(run, questionResult, cachedDialog)
-            else ->
+            DatasetRunQuestionResultState.COMPLETED -> {
+                resolveCompletedRunAction(run, questionResult, cachedDialog)
+            }
+
+            else -> {
                 ResolvedRunAction(
                     state = DatasetRunActionState.FAILED,
                     action = null,
                     error = questionResult.error ?: "Dataset question execution failed before producing an answer.",
                 )
+            }
         }
 
     private fun resolveCompletedRunAction(
@@ -467,18 +474,20 @@ object DatasetService {
                 ),
             )
 
-        return dialogReportDAO.search(
-            DialogReportQuery(
-                namespace = run.namespace,
-                nlpModel = run.botId,
-                start = 0,
-                size = 10,
-                playerId = playerId,
-                displayTests = true,
-            ),
-        ).dialogs.firstOrNull { dialog ->
-            dialog.actions.any { it.id.toString() == questionResult.userActionId }
-        }
+        return dialogReportDAO
+            .search(
+                DialogReportQuery(
+                    namespace = run.namespace,
+                    nlpModel = run.botId,
+                    start = 0,
+                    size = 10,
+                    playerId = playerId,
+                    displayTests = true,
+                ),
+            ).dialogs
+            .firstOrNull { dialog ->
+                dialog.actions.any { it.id.toString() == questionResult.userActionId }
+            }
     }
 
     private fun cacheActionReferences(
@@ -516,7 +525,8 @@ object DatasetService {
         botId: String,
     ): BotApplicationConfiguration {
         val candidates =
-            applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(namespace, botId)
+            applicationConfigurationDAO
+                .getConfigurationsByNamespaceAndBotId(namespace, botId)
                 .filter { it.connectorType == ConnectorType.rest }
 
         return when (candidates.size) {
@@ -539,13 +549,19 @@ object DatasetService {
 
     private fun sanitizeSnapshot(value: Any?): Any? =
         when (value) {
-            is Map<*, *> ->
+            is Map<*, *> -> {
                 value.entries
                     .filter { it.key != "apiKey" }
                     .associate { (key, nestedValue) -> key.toString() to sanitizeSnapshot(nestedValue) }
+            }
 
-            is Iterable<*> -> value.map { sanitizeSnapshot(it) }
-            else -> value
+            is Iterable<*> -> {
+                value.map { sanitizeSnapshot(it) }
+            }
+
+            else -> {
+                value
+            }
         }
 
     private fun cancelPendingQuestionResults(runId: String): List<DatasetRunQuestionResult> {
@@ -638,7 +654,8 @@ object DatasetService {
         val statusCounts = ragAnswerStatuses.associateWith { 0 }.toMutableMap()
         var nonRagAnswers = 0
         val dialogsById =
-            dialogReportDAO.findByDialogByIds(mapNotNull { it.dialogId }.toSet())
+            dialogReportDAO
+                .findByDialogByIds(mapNotNull { it.dialogId }.toSet())
                 .associateBy { it.id }
 
         forEach { questionResult ->
@@ -662,7 +679,8 @@ object DatasetService {
     }
 
     private fun ActionReport.ragAnswerStatus(): String? =
-        ragDebug.extractRagAnswerStatus()
+        ragDebug
+            .extractRagAnswerStatus()
             ?.lowercase()
 
     private fun Any?.extractRagAnswerStatus(): String? {
@@ -686,19 +704,32 @@ private data class DatasetRunAnswerStats(
     val nonRagAnswers: Int = 0,
 )
 
-sealed class DatasetError(message: String) : RuntimeException(message) {
-    class DatasetNotFound(datasetId: String) : DatasetError("Dataset $datasetId not found")
+sealed class DatasetError(
+    message: String,
+) : RuntimeException(message) {
+    class DatasetNotFound(
+        datasetId: String,
+    ) : DatasetError("Dataset $datasetId not found")
 
-    class RunNotFound(runId: String) : DatasetError("Run $runId not found")
+    class RunNotFound(
+        runId: String,
+    ) : DatasetError("Run $runId not found")
 
-    class ActiveRunConflict(datasetId: String) :
-        DatasetError("Dataset $datasetId cannot be modified while a run is QUEUED or RUNNING")
+    class ActiveRunConflict(
+        datasetId: String,
+    ) : DatasetError("Dataset $datasetId cannot be modified while a run is QUEUED or RUNNING")
 
-    class RunStateConflict(runId: String, state: DatasetRunState) :
-        DatasetError("Run $runId is already $state")
+    class RunStateConflict(
+        runId: String,
+        state: DatasetRunState,
+    ) : DatasetError("Run $runId is already $state")
 
-    class RunNotFinished(runId: String, state: DatasetRunState) :
-        DatasetError("Run $runId is not yet finished, current state is $state")
+    class RunNotFinished(
+        runId: String,
+        state: DatasetRunState,
+    ) : DatasetError("Run $runId is not yet finished, current state is $state")
 
-    class InvalidRequest(message: String) : DatasetError(message)
+    class InvalidRequest(
+        message: String,
+    ) : DatasetError(message)
 }

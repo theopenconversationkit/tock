@@ -47,9 +47,7 @@ fun Executor.launchCoroutine(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> Unit,
-): Job {
-    return CoroutineScope(asCoroutineDispatcher()).launch(context, start, block)
-}
+): Job = CoroutineScope(asCoroutineDispatcher()).launch(context, start, block)
 
 /**
  * fire and forget a suspend block on [Dispatchers.IO].

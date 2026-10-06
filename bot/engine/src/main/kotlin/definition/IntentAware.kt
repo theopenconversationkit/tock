@@ -29,7 +29,5 @@ interface IntentAware {
     /**
      * Is it the right intent?
      */
-    infix fun wrap(intent: Intent?): Boolean {
-        return wrappedIntent() == intent
-    }
+    infix fun wrap(intent: Intent?): Boolean = wrappedIntent() == intent
 }

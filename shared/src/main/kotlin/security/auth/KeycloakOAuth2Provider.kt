@@ -52,8 +52,7 @@ internal class KeycloakOAuth2Provider(
                         "tock_keycloak_grant_types",
                         emptyList(),
                     ).takeUnless { it.isEmpty() },
-                )
-                .setClientId(property("tock_keycloak_client_id", "tock"))
+                ).setClientId(property("tock_keycloak_client_id", "tock"))
                 .setClientSecret(property("tock_keycloak_secret_key", "thesecretkeyfromkeycloak"))
                 .setSite(property("tock_keycloak_site_url", "https://keycloak/realms/myrealm"))
                 .setTokenPath(property("tock_keycloak_access_token_path", "/protocol/openid-connect/token"))
@@ -73,7 +72,8 @@ internal class KeycloakOAuth2Provider(
                     }
                 },
         ),
-) : SSOTockAuthProvider(vertx), OAuth2Auth by oauth2 {
+) : SSOTockAuthProvider(vertx),
+    OAuth2Auth by oauth2 {
     companion object {
         private val logger = KotlinLogging.logger {}
         private val userNamespaceAttribute = property("tock_custom_namespace_mapping", "tock_namespace")

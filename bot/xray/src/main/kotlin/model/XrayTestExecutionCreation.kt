@@ -16,4 +16,6 @@
 
 package ai.tock.bot.xray.model
 
-class XrayTestExecutionCreation(val fields: XrayTextExecutionFields)
+class XrayTestExecutionCreation(
+    val fields: XrayTextExecutionFields,
+)

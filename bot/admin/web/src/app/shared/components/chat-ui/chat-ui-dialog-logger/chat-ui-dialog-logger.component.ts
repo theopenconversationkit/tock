@@ -32,10 +32,10 @@ import { UserRole } from '../../../../model/auth';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-    selector: 'tock-chat-ui-dialog-logger',
-    templateUrl: './chat-ui-dialog-logger.component.html',
-    styleUrl: './chat-ui-dialog-logger.component.scss',
-    standalone: false
+  selector: 'tock-chat-ui-dialog-logger',
+  templateUrl: './chat-ui-dialog-logger.component.html',
+  styleUrl: './chat-ui-dialog-logger.component.scss',
+  standalone: false
 })
 export class ChatUiDialogLoggerComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
@@ -223,6 +223,27 @@ export class ChatUiDialogLoggerComponent implements OnInit, OnDestroy {
     if (debugData.question_answering_prompt) {
       this.router.navigate(['playground'], { state: { question_answering_prompt: debugData.question_answering_prompt } });
     }
+  }
+
+  /**
+   * Opens the retrieval diagnostic pre-filled with what this exchange actually
+   * used: the raw question, plus the condensed question and keywords the
+   * condensation model produced at the time. Replaying with the recorded
+   * values avoids a fresh, non-deterministic condensation changing the inputs.
+   */
+  goToVectorStoreDiagnostic(action: ActionReport): void {
+    const debugData = action.ragDebug;
+    if (!debugData?.user_question) return;
+
+    this.router.navigate(['vector-store-inspection/diagnostic'], {
+      state: {
+        question: debugData.user_question,
+        condensed_question: debugData.condensing_llm_answer?.condensed_question,
+        key_words: debugData.condensing_llm_answer?.key_words,
+        indexName: debugData.document_index_name,
+        k: debugData.document_search_params?.k
+      }
+    });
   }
 
   messageClicked(action: ActionReport): void {

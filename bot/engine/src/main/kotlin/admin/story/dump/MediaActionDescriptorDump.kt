@@ -24,7 +24,10 @@ import ai.tock.translator.I18nLabelValue
 /**
  * Descriptor for [MediaAction].
  */
-data class MediaActionDescriptorDump(val title: I18nLabelValue, var url: String? = null) : MediaMessageDescriptorDump {
+data class MediaActionDescriptorDump(
+    val title: I18nLabelValue,
+    var url: String? = null,
+) : MediaMessageDescriptorDump {
     override val type: MediaMessageType = action
 
     constructor(media: MediaActionDescriptor) : this(

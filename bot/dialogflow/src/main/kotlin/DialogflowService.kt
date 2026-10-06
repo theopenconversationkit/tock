@@ -82,7 +82,10 @@ internal object DialogflowService {
                 }
 
             // Set the text (hello) and language code (en-US) for the query
-            TextInput.newBuilder().setText(dialogflowText).setLanguageCode(languageCode)
+            TextInput
+                .newBuilder()
+                .setText(dialogflowText)
+                .setLanguageCode(languageCode)
                 .apply {
                     QueryInput.newBuilder().setText(this).build().apply {
                         it.detectIntent(session, this).apply {
@@ -112,8 +115,17 @@ internal object DialogflowService {
     fun getIntents(projectId: String): List<Intent> {
         IntentsClient.create(intentsSettings).use {
             val parent = ProjectAgentName.of(projectId)
-            val request = ListIntentsRequest.newBuilder().setIntentView(IntentView.INTENT_VIEW_FULL).setParent(parent.toString()).build()
-            return it.listIntents(request).iterateAll().asSequence().toList()
+            val request =
+                ListIntentsRequest
+                    .newBuilder()
+                    .setIntentView(IntentView.INTENT_VIEW_FULL)
+                    .setParent(parent.toString())
+                    .build()
+            return it
+                .listIntents(request)
+                .iterateAll()
+                .asSequence()
+                .toList()
         }
     }
 }

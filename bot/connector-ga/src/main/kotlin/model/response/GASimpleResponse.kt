@@ -24,8 +24,8 @@ data class GASimpleResponse(
     val ssml: String? = null,
     val displayText: String? = null,
 ) {
-    fun toGenericMessage(): GenericMessage {
-        return GenericMessage(
+    fun toGenericMessage(): GenericMessage =
+        GenericMessage(
             texts =
                 mapNotNullValues(
                     GASimpleResponse::textToSpeech.name to textToSpeech,
@@ -33,5 +33,4 @@ data class GASimpleResponse(
                     GASimpleResponse::displayText.name to displayText,
                 ),
         )
-    }
 }

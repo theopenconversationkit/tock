@@ -74,13 +74,15 @@ internal class WebConnectorCallback(
 
     fun sendResponse() {
         WebRequestInfosByEvent.invalidate(eventId)
-        context?.response()
+        context
+            ?.response()
             ?.putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
             ?.end(webMapper.writeValueAsString(createResponse(actions)))
     }
 
     fun sendStreamedResponse(action: Action) {
-        context?.response()
+        context
+            ?.response()
             ?.sendSseMessage(webMapper.writeValueAsString(createResponse(listOf(action))))
     }
 

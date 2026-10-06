@@ -19,7 +19,9 @@ package ai.tock.nlp.api.client.model
 /**
  * State used in [NlpQuery].
  */
-data class NlpQueryState(val states: Set<String> = emptySet()) {
+data class NlpQueryState(
+    val states: Set<String> = emptySet(),
+) {
     companion object {
         val noState = NlpQueryState(emptySet())
     }

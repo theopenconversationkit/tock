@@ -46,12 +46,11 @@ internal object BotBusinessRulesConfigurationMongoDAO : BotBusinessRulesConfigur
     override fun findByNamespaceAndBotId(
         namespace: String,
         botId: String,
-    ): BotBusinessRulesConfiguration? {
-        return col.findOne(
+    ): BotBusinessRulesConfiguration? =
+        col.findOne(
             BotBusinessRulesConfiguration::namespace eq namespace,
             BotBusinessRulesConfiguration::botId eq botId,
         )
-    }
 
     override fun save(conf: BotBusinessRulesConfiguration): BotBusinessRulesConfiguration {
         col.save(conf)

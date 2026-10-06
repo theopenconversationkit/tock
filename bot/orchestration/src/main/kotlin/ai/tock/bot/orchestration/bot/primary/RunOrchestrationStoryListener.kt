@@ -80,7 +80,10 @@ class RunOrchestrationStoryListener(
         }
 
         return when (val eligibility = callOrchestrationForEligibility(botAction)) {
-            is EligibilityOrchestrationResponse -> handleEligibleOrchestration(eligibility, botAction)
+            is EligibilityOrchestrationResponse -> {
+                handleEligibleOrchestration(eligibility, botAction)
+            }
+
             else -> {
                 logger.info { "Fail to start an orchestration caused by a ${eligibility?.javaClass?.name ?: "null"} eligibility from the orchestrator" }
                 true
@@ -112,6 +115,7 @@ class RunOrchestrationStoryListener(
                 end()
                 false
             }
+
             else -> {
                 logger.info { "Fail to start an orchestration caused by a ${response.javaClass.name ?: "null"} response from the orchestrator" }
                 true
@@ -122,18 +126,17 @@ class RunOrchestrationStoryListener(
     private fun BotBus.callOrchestrationForFirstAction(
         eligibility: EligibilityOrchestrationResponse,
         botAction: SecondaryBotAction,
-    ): OrchestrationResponse {
-        return orchestrator.resumeOrchestration(
+    ): OrchestrationResponse =
+        orchestrator.resumeOrchestration(
             ResumeOrchestrationRequest(
                 targetBot = eligibility.targetBot,
                 action = botAction,
                 metadata = OrchestrationMetaData(playerId = userId, applicationId = applicationId, recipientId = botId),
             ),
         )
-    }
 
-    private fun BotBus.callOrchestrationForEligibility(botAction: SecondaryBotAction): OrchestrationResponse? {
-        return configuration.getOrchestrationData(this)?.let { data ->
+    private fun BotBus.callOrchestrationForEligibility(botAction: SecondaryBotAction): OrchestrationResponse? =
+        configuration.getOrchestrationData(this)?.let { data ->
             orchestrator.askOrchestration(
                 AskEligibilityToOrchestratorRequest(
                     eligibleTargetBots = targetConnectorType.getEligibleBots(),
@@ -148,7 +151,6 @@ class RunOrchestrationStoryListener(
                 ),
             )
         }
-    }
 
     private fun BotBus.resumeOrchestration(orchestration: Orchestration): Boolean {
         logger.info { "Try to resume the orchestration to ${orchestration.targetBot}" }
@@ -202,6 +204,7 @@ class RunOrchestrationStoryListener(
                 end()
                 false
             }
+
             else -> {
                 logger.info { "End of the orchestration caused by a ${response.javaClass.name} response from the orchestrator" }
                 orchestrationRepository.end(orchestration.playerId)
@@ -242,7 +245,7 @@ var BotBus.blockTakeOverFromPrimaryBot: Boolean
  * This interceptor fills secondary bot response actions with orchestration information.
  * It must be registered by secondary bot.
  */
-internal class OrchestrationSecondaryBotResponseInterceptor() : BotAnswerInterceptor {
+internal class OrchestrationSecondaryBotResponseInterceptor : BotAnswerInterceptor {
     override fun handle(
         action: Action,
         bus: BotBus,

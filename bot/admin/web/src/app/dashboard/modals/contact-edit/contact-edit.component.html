@@ -1,0 +1,142 @@
+<nb-card class="dialog-card">
+  <nb-card-header class="d-flex align-items-center gap-05">
+    <i class="bi bi-person-lines-fill"></i>
+    <span class="flex-grow-1">
+      {{ (isEdit ? 'dashboard.contact-edit.title-edit' : 'dashboard.contact-edit.title-add') | transloco }}
+    </span>
+    <button nbButton ghost size="tiny" (click)="cancel()" [attr.aria-label]="'dashboard.common.close' | transloco">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body [formGroup]="form">
+    <p class="metric-label mb-3">{{ 'dashboard.contact-edit.intro' | transloco }}</p>
+
+    <tock-form-control
+      [label]="'dashboard.contact-edit.role' | transloco"
+      name="role"
+      [controls]="form.controls.role"
+      [required]="true"
+      [hasMargin]="true"
+      [information]="'dashboard.contact-edit.role-help' | transloco"
+    >
+      <input
+        nbInput
+        fullWidth
+        formControlName="role"
+        [placeholder]="'dashboard.contact-edit.role-placeholder' | transloco"
+        [nbAutocomplete]="roleAutocomplete"
+      />
+      <nb-autocomplete #roleAutocomplete>
+        @for (suggestion of roleSuggestions; track suggestion) {
+          <nb-option [value]="suggestion">{{ suggestion }}</nb-option>
+        }
+      </nb-autocomplete>
+    </tock-form-control>
+
+    <tock-form-control
+      [label]="'dashboard.contact-edit.name' | transloco"
+      name="name"
+      [controls]="form.controls.name"
+      [required]="true"
+      [hasMargin]="true"
+    >
+      <input
+        nbInput
+        fullWidth
+        formControlName="name"
+        [placeholder]="'dashboard.contact-edit.name-placeholder' | transloco"
+      />
+    </tock-form-control>
+
+    <div class="row">
+      <div class="col-6">
+        <tock-form-control
+          [label]="'dashboard.contact-edit.email' | transloco"
+          name="email"
+          [controls]="form.controls.email"
+          [hasMargin]="true"
+        >
+          <input
+            nbInput
+            fullWidth
+            type="email"
+            formControlName="email"
+            [placeholder]="'dashboard.contact-edit.email-placeholder' | transloco"
+          />
+        </tock-form-control>
+      </div>
+
+      <div class="col-6">
+        <tock-form-control
+          [label]="'dashboard.contact-edit.link' | transloco"
+          name="link"
+          [controls]="form.controls.link"
+          [hasMargin]="true"
+          [information]="'dashboard.contact-edit.link-help' | transloco"
+        >
+          <input nbInput fullWidth type="url" formControlName="link" placeholder="https://" />
+        </tock-form-control>
+      </div>
+    </div>
+
+    <tock-form-control
+      [label]="'dashboard.contact-edit.note' | transloco"
+      name="note"
+      [controls]="form.controls.note"
+      [hasMargin]="true"
+    >
+      <textarea
+        nbInput
+        fullWidth
+        rows="2"
+        formControlName="note"
+        [placeholder]="'dashboard.contact-edit.note-placeholder' | transloco"
+      ></textarea>
+    </tock-form-control>
+
+    <tock-form-control
+      [label]="'dashboard.contact-edit.comment' | transloco"
+      name="comment"
+      [controls]="form.controls.comment"
+      [information]="'dashboard.contact-edit.comment-help' | transloco"
+    >
+      <textarea
+        nbInput
+        fullWidth
+        rows="3"
+        formControlName="comment"
+        [placeholder]="'dashboard.contact-edit.comment-placeholder' | transloco"
+      ></textarea>
+    </tock-form-control>
+  </nb-card-body>
+
+  <nb-card-footer class="d-flex align-items-center gap-05">
+    <span class="flex-grow-1">
+      @if (isEdit) {
+        @if (!confirmDelete) {
+          <button nbButton status="danger" ghost size="small" (click)="askDelete()">
+            <i class="bi bi-trash"></i>
+            {{ 'dashboard.contact-edit.remove' | transloco }}
+          </button>
+        } @else {
+          <span class="delete-confirm">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {{ 'dashboard.contact-edit.remove-confirm' | transloco }}
+            <button nbButton status="danger" size="tiny" (click)="remove()">
+              {{ 'dashboard.contact-edit.remove' | transloco }}
+            </button>
+            <button nbButton ghost size="tiny" (click)="cancelDelete()">
+              {{ 'dashboard.common.cancel' | transloco }}
+            </button>
+          </span>
+        }
+      }
+    </span>
+
+    <button nbButton ghost size="small" (click)="cancel()">{{ 'dashboard.common.cancel' | transloco }}</button>
+    <button nbButton status="primary" size="small" [disabled]="!canSave" (click)="save()">
+      {{ (isEdit ? 'dashboard.contact-edit.save' : 'dashboard.contact-edit.add') | transloco }}
+    </button>
+  </nb-card-footer>
+</nb-card>

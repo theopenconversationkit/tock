@@ -1,0 +1,39 @@
+<tock-dashboard-widget
+  [title]="'dashboard.user-feedback.title' | transloco"
+  icon="hand-thumbs-up"
+  [state]="state"
+  [skeletonLines]="3"
+  [emptyTitle]="'dashboard.user-feedback.empty-title' | transloco"
+  [emptyMessage]="'dashboard.user-feedback.empty-message' | transloco"
+>
+  <ng-template #widgetBody>
+    <div class="d-flex align-items-baseline gap-05">
+      <span class="metric-value">{{ positiveRate | percent: '1.0-0' }}</span>
+      <span class="metric-label">{{ 'dashboard.user-feedback.positive' | transloco }}</span>
+      <tock-dashboard-delta [value]="delta"></tock-dashboard-delta>
+    </div>
+
+    <div class="stacked-bar mt-3">
+      <span
+        class="stacked-bar-success"
+        [style.width.%]="positiveRate * 100"
+      ></span>
+      <span
+        class="stacked-bar-danger"
+        [style.width.%]="(1 - positiveRate) * 100"
+      ></span>
+    </div>
+
+    <div class="d-flex justify-content-between mt-2 feedback-counts">
+      <span><i class="bi bi-hand-thumbs-up text-success"></i> {{ usage.feedbackUp | number }}</span>
+      <span><i class="bi bi-hand-thumbs-down text-danger"></i> {{ usage.feedbackDown | number }}</span>
+    </div>
+
+    <div class="metric-label mt-2">
+      {{
+        'dashboard.user-feedback.coverage'
+          | transloco: { ratings: total | number, answers: usage.total | number, rate: responseRate | percent: '1.1-1' }
+      }}
+    </div>
+  </ng-template>
+</tock-dashboard-widget>
