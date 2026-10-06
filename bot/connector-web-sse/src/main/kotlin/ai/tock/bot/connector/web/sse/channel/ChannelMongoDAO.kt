@@ -136,14 +136,14 @@ internal object ChannelMongoDAO : ChannelDAO {
                         logger.error(e) {
                             "Failed to send SSE message"
                         }
-                        Future.succeededFuture()
+                        Future.failedFuture(e)
                     },
                 )
         } catch (e: Exception) {
             logger.error(e) {
                 "Failed to send SSE message"
             }
-            Future.succeededFuture()
+            Future.failedFuture(e)
         }
 
     override fun updateRecipientId(
