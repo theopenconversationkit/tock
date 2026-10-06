@@ -71,7 +71,7 @@ export class KnowledgeBaseRestService extends KnowledgeBaseService {
     return this.rest.get(this.url(`/jobs/${encodeURIComponent(id)}`), (value) => value);
   }
   getActiveJob(): Observable<KB.KnowledgeBaseJob | null> {
-    return this.rest.get(this.url('/jobs/active'), (value) => (value?.id ? value : null));
+    return this.rest.get(this.url('/jobs/active'), (value) => (value?.id ? value : null), true);
   }
   searchAndLocateEntry(payload: { question: string; entryId?: string | null }): Observable<KB.KnowledgeBaseRetrievalTest> {
     return this.rest.post(this.url('/retrieval-test'), payload);

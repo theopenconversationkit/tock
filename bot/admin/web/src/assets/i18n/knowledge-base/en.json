@@ -58,17 +58,19 @@
   },
   "sync-banner": {
     "no_index_title": "No vector index is configured for this bot",
-    "no_index_message": "Tock can create the index and project the {{published}} published entry(ies) into it, with no external ingestion tool.",
+    "no_index_message": "Tock can create the index from the {{published}} published entry(ies).",
+    "no_index_message_non_admin": "No vector index exists yet for this bot. Creating it is up to an administrator. Your published entries will be taken into account once an index is in place.",
     "missing_index_title": "The configured index cannot be found",
     "missing_index_message": "The index identifier configured for this bot matches no existing index. Fix it in the RAG settings or re-create an index from the knowledge base.",
+    "missing_index_message_non_admin": "The index identifier configured for this bot matches no existing index. An administrator must fix the configuration or re-create an index. Your published entries will be taken into account once the index is restored.",
     "missing_index_rag_active": "RAG is enabled: the bot is currently querying a missing or empty index.",
     "ready_title": "The index is up to date",
     "embedding_incompatible_title": "Publishing is blocked on this index",
     "out_of_sync_title": "The index does not reflect the knowledge base",
     "pending_count": "{{count}} entry(ies) awaiting indexation",
     "orphan_count": "{{count}} orphan entry(ies) still present in the index",
-    "composition": "{{kb}} KB entries · {{other}} documentary chunks",
-    "composition_kb_only": "{{kb}} KB entries",
+    "composition": "{{kb}} entries · {{other}} documentary chunks",
+    "composition_kb_only": "{{kb}} entries",
     "provenance_full": "Index created on {{date}} by {{origin}} ({{createdBy}})",
     "provenance_no_author": "Index created on {{date}} by {{origin}}",
     "provenance_no_date": "Index created by {{origin}} ({{createdBy}})",
@@ -84,10 +86,10 @@
     "recreate_index_button": "Re-create an index",
     "create_index_tooltip": "Create an index session from the published entries",
     "open_rag_settings": "Open RAG settings",
-    "repair_button": "Repair index",
-    "repair_tooltip": "Reproject published entries and clean up orphan rows. Creations, edits and unpublications are already applied.",
+    "repair_button": "Synchronize entries",
+    "repair_tooltip": "Reproject the knowledge base's published entries and remove unpublished or deleted ones from the index. External data (ingested by a third-party tool) is left untouched.",
     "verify_button": "Check index",
-    "failed_count": "{{count}} entries failed to synchronize. Index repair is needed."
+    "failed_count": "{{count}} entries failed to synchronize. A synchronization is needed."
   },
   "entry-detail": {
     "new_title": "New entry",
@@ -95,6 +97,7 @@
     "back_tooltip": "Back to the list",
     "save_button": "Save",
     "cancel_button": "Cancel",
+    "back_to_entries_button": "Back",
     "title_label": "Heading",
     "title_placeholder": "The information, phrased the way a user would",
     "title_help": "This identifies the entry and is what matching relies on first. A question, but just as well a statement or a topic.",
@@ -252,6 +255,7 @@
     "index_missing": "The configured index cannot be found. Fix the identifier in the RAG settings or re-create an index from the knowledge base.",
     "create_blocked_rag_not_configured": "Cannot create the index: this bot has no RAG configuration. An administrator must first fill it in the RAG settings.",
     "create_blocked_embedding_model_undefined": "Cannot create the index: the embedding model is not set in the RAG settings (model field of the Azure OpenAI configuration).",
+    "create_blocked_embedding_model_undefined_non_admin": "Cannot create the index: the embedding model is not set. An administrator must fill it in the RAG settings.",
     "create_blocked_no_published_entry": "Publish at least one entry to be able to create the index."
   },
   "validation": {

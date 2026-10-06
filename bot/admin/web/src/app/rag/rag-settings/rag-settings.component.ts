@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, forkJoin, merge, Observable, of, Subject, switchMap, takeUntil, pairwise, from, catchError } from 'rxjs';
 import { NbDialogRef, NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
@@ -59,10 +59,10 @@ interface RagSettingsForm {
 }
 
 @Component({
-    selector: 'tock-rag-settings',
-    templateUrl: './rag-settings.component.html',
-    styleUrls: ['./rag-settings.component.scss'],
-    standalone: false
+  selector: 'tock-rag-settings',
+  templateUrl: './rag-settings.component.html',
+  styleUrls: ['./rag-settings.component.scss'],
+  standalone: false
 })
 export class RagSettingsComponent implements OnInit, CanComponentDeactivate, DirtyStateGuard, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
@@ -92,16 +92,16 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   @ViewChild('exportConfirmationModal') exportConfirmationModal: TemplateRef<any>;
   @ViewChild('importModal') importModal: TemplateRef<any>;
 
-  constructor(
-    private state: StateService,
-    private rest: RestService,
-    private toastrService: NbToastrService,
-    private botConfiguration: BotConfigurationService,
-    private nbWindowService: NbWindowService,
-    private nbDialogService: NbDialogService,
-    private dirtyState: DirtyStateService,
-    private translocoService: TranslocoService
-  ) {}
+  private state = inject(StateService);
+  private rest = inject(RestService);
+  private toastrService = inject(NbToastrService);
+  private botConfiguration = inject(BotConfigurationService);
+  private nbWindowService = inject(NbWindowService);
+  private nbDialogService = inject(NbDialogService);
+  private dirtyState = inject(DirtyStateService);
+  private translocoService = inject(TranslocoService);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.dirtyState.register(this);
@@ -565,36 +565,36 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
           this.loading = false;
         },
-        error: (error) => {
-          // Check if the save was refused because the embedding model doesn't match the index
-          const isIncompatibleIndex =
-            error.error?.errors?.some?.((e: any) => e?.messageKey === 'rag.embedding.incompatible_index') ||
-            error.error?.errors?.['rag.embedding.incompatible_index'];
+        error: (error) => this.onSaveError(error)
+      });
+    }
+  }
 
-          const messageKey = isIncompatibleIndex ? 'rag.rag-settings.embedding_incompatible_error' : 'rag.rag-settings.an_error_occurred';
+  private onSaveError(error: any): void {
+    // The server refuses a save whose embedding model contradicts the one recorded on the index.
+    const errors = error?.error?.errors;
+    const incompatibleIndex = Array.isArray(errors) && errors.some((e: any) => e?.message === 'rag.embedding.incompatible_index');
+    const messageKey = incompatibleIndex ? 'rag.rag-settings.embedding_incompatible_error' : 'rag.rag-settings.an_error_occurred';
 
-          this.toastrService.danger(
-            this.translocoService.translate(messageKey),
-            this.translocoService.translate('rag.rag-settings.error_title'),
-            {
-              duration: 5000,
-              status: 'danger'
-            }
-          );
+    this.toastrService.danger(
+      this.translocoService.translate(messageKey),
+      this.translocoService.translate('rag.rag-settings.error_title'),
+      {
+        duration: 5000,
+        status: 'danger'
+      }
+    );
 
-          if (error.error) {
-            this.nbWindowService.open(DebugViewerWindowComponent, {
-              title: this.translocoService.translate('rag.rag-settings.an_error_occurred'),
-              context: {
-                debug: error.error
-              }
-            });
-          }
-
-          this.loading = false;
+    if (error?.error && !incompatibleIndex) {
+      this.nbWindowService.open(DebugViewerWindowComponent, {
+        title: this.translocoService.translate('rag.rag-settings.an_error_occurred'),
+        context: {
+          debug: error.error
         }
       });
     }
+
+    this.loading = false;
   }
 
   get hasExportableData(): boolean {

@@ -15,17 +15,6 @@
 -->
 
 <div class="d-flex align-items-center mb-3">
-  <button
-    nbButton
-    ghost
-    shape="round"
-    class="mr-2"
-    [nbTooltip]="'knowledge-base.entry-detail.back_tooltip' | transloco"
-    (click)="cancel()"
-  >
-    <nb-icon icon="arrow-left"></nb-icon>
-  </button>
-
   <h1 class="flex-grow-1 m-0">
     {{ (isNew ? 'knowledge-base.entry-detail.new_title' : 'knowledge-base.entry-detail.edit_title') | transloco }}
   </h1>
@@ -37,7 +26,7 @@
       size="medium"
       (click)="cancel()"
     >
-      {{ 'knowledge-base.entry-detail.cancel_button' | transloco }}
+      {{ cancelButtonLabelKey | transloco }}
     </button>
     <button
       nbButton

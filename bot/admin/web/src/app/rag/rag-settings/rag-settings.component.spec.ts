@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
@@ -215,37 +216,70 @@ describe('RagSettingsComponent', () => {
     });
   });
 
-  describe('embedding incompatibility error detection', () => {
-    it('detects incompatible index from error response structure', () => {
-      // The error detection logic in submit() checks error.error?.errors for incompatibility.
-      // This test verifies that structure is recognized correctly, without mocking the full submit flow.
-      const error1 = {
-        error: {
-          errors: [{ messageKey: 'rag.embedding.incompatible_index' }]
-        }
-      };
-      const error2 = {
-        error: {
-          errors: { 'rag.embedding.incompatible_index': true }
-        }
-      };
-      const error3 = {
-        error: { message: 'Generic server error' }
-      };
+  describe('save error handling', () => {
+    let toastr: { danger: jasmine.Spy };
+    let windowOpen: jasmine.Spy;
 
-      // Inline the detection logic to verify it works
-      const detect = (err: any) =>
-        err.error?.errors?.some?.((e: any) => e?.messageKey === 'rag.embedding.incompatible_index') ||
-        err.error?.errors?.['rag.embedding.incompatible_index'];
-
-      expect(detect(error1)).toBeTruthy();
-      expect(detect(error2)).toBeTruthy();
-      expect(detect(error3)).toBeFalsy();
+    beforeEach(() => {
+      toastr = TestBed.inject(NbToastrService) as unknown as { danger: jasmine.Spy };
+      toastr.danger = jasmine.createSpy('danger');
+      windowOpen = spyOn(TestBed.inject(NbWindowService), 'open');
+      spyOn(component['translocoService'], 'translate').and.callFake(((key: string) => key) as any);
     });
 
-    it('has the new i18n key defined in both languages', () => {
-      // Verify the key is present (it would be empty or undefined if not added to the i18n files)
-      expect(component['translocoService'].translate('rag.rag-settings.embedding_incompatible_error')).toBeTruthy();
+    it('shows the dedicated message when the server refuses an incompatible embedding model', () => {
+      component['onSaveError'](
+        new HttpErrorResponse({
+          status: 400,
+          error: { errors: [{ code: null, message: 'rag.embedding.incompatible_index', params: null }] }
+        })
+      );
+
+      expect(toastr.danger).toHaveBeenCalledWith('rag.rag-settings.embedding_incompatible_error', 'rag.rag-settings.error_title', {
+        duration: 5000,
+        status: 'danger'
+      });
+      expect(windowOpen).not.toHaveBeenCalled();
+      expect(component.loading).toBeFalse();
+    });
+
+    it('keeps the generic message and the debug window for any other error', () => {
+      component['onSaveError'](
+        new HttpErrorResponse({
+          status: 400,
+          error: { errors: [{ code: null, message: 'rag.some.other_error', params: null }] }
+        })
+      );
+
+      expect(toastr.danger).toHaveBeenCalledWith('rag.rag-settings.an_error_occurred', 'rag.rag-settings.error_title', {
+        duration: 5000,
+        status: 'danger'
+      });
+      expect(windowOpen).toHaveBeenCalled();
+      expect(component.loading).toBeFalse();
+    });
+
+    it('routes a failed submit through the save error handling', () => {
+      const rest = TestBed.inject(RestService) as unknown as { post: jasmine.Spy };
+      rest.post = jasmine.createSpy('post').and.returnValue(
+        throwError(
+          () =>
+            new HttpErrorResponse({
+              status: 400,
+              error: { errors: [{ code: null, message: 'rag.embedding.incompatible_index', params: null }] }
+            })
+        )
+      );
+      spyOnProperty(component, 'canSave').and.returnValue(true);
+      component.form.markAsDirty();
+
+      component.submit();
+
+      expect(rest.post).toHaveBeenCalled();
+      expect(toastr.danger).toHaveBeenCalledWith('rag.rag-settings.embedding_incompatible_error', 'rag.rag-settings.error_title', {
+        duration: 5000,
+        status: 'danger'
+      });
     });
   });
 });

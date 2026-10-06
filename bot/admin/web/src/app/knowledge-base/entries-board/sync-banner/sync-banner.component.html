@@ -34,7 +34,7 @@
       @if (indexState === IndexState.NONE) { @if (blocker) {
       <div class="text-muted sync-banner-message">
         {{ blockerMessageKey | transloco }}
-        @if (blocker === Blocker.RAG_NOT_CONFIGURED) {
+        @if (canOpenRagSettings) {
         <div>
           <a
             class="sync-banner-link"
@@ -46,14 +46,14 @@
       </div>
       } @else {
       <div class="text-muted sync-banner-message">
-        {{ 'knowledge-base.sync-banner.no_index_message' | transloco: { published: syncStatus.counts.published } }}
+        {{ noIndexMessageKey | transloco: { published: syncStatus.counts.published } }}
       </div>
       } }
 
       <!-- Index session configured but no usable collection behind it -->
       @if (indexState === IndexState.MISSING) {
       <div class="text-muted sync-banner-message">
-        {{ 'knowledge-base.sync-banner.missing_index_message' | transloco }}
+        {{ missingIndexMessageKey | transloco }}
         @if (syncStatus.ragEnabled) {
         <div>{{ 'knowledge-base.sync-banner.missing_index_rag_active' | transloco }}</div>
         }
@@ -61,7 +61,7 @@
       @if (blocker) {
       <div class="text-muted sync-banner-message">
         {{ blockerMessageKey | transloco }}
-        @if (blocker === Blocker.RAG_NOT_CONFIGURED) {
+        @if (canOpenRagSettings) {
         <div>
           <a
             class="sync-banner-link"

@@ -42,7 +42,6 @@ export class KnowledgeBaseSyncBannerComponent {
   @Output() onFilterOrphan = new EventEmitter<void>();
 
   IndexState = KnowledgeBaseIndexState;
-  Blocker = CreateIndexBlocker;
 
   /**
    * The banner is where the index status is surfaced: which state it is in, what it holds, where it
@@ -106,18 +105,41 @@ export class KnowledgeBaseSyncBannerComponent {
     }
   }
 
-  /** i18n key of the blocker message shown in NONE / MISSING, null when creation is not blocked. */
+  /**
+   * i18n key of the blocker message shown in NONE / MISSING, null when creation is not blocked.
+   * Index creation is admin-only, so a blocker a business user cannot lift themselves points to an
+   * administrator; NO_PUBLISHED_ENTRY stays the same, since publishing is within the business user's reach.
+   */
   get blockerMessageKey(): string | null {
     switch (this.blocker) {
       case CreateIndexBlocker.RAG_NOT_CONFIGURED:
         return 'knowledge-base.job.create_blocked_rag_not_configured';
       case CreateIndexBlocker.EMBEDDING_MODEL_UNDEFINED:
-        return 'knowledge-base.job.create_blocked_embedding_model_undefined';
+        return this.isAdmin
+          ? 'knowledge-base.job.create_blocked_embedding_model_undefined'
+          : 'knowledge-base.job.create_blocked_embedding_model_undefined_non_admin';
       case CreateIndexBlocker.NO_PUBLISHED_ENTRY:
         return 'knowledge-base.job.create_blocked_no_published_entry';
       default:
         return null;
     }
+  }
+
+  /**
+   * NONE with nothing blocking creation. Only an admin can create the index — it may need to be built from
+   * an external ingestion tool — so a business user gets an informative message rather than a call to act.
+   */
+  get noIndexMessageKey(): string {
+    return this.isAdmin
+      ? 'knowledge-base.sync-banner.no_index_message'
+      : 'knowledge-base.sync-banner.no_index_message_non_admin';
+  }
+
+  /** MISSING: correcting the configuration or re-creating the index is admin-only. */
+  get missingIndexMessageKey(): string {
+    return this.isAdmin
+      ? 'knowledge-base.sync-banner.missing_index_message'
+      : 'knowledge-base.sync-banner.missing_index_message_non_admin';
   }
 
   /** Human-readable index origin: mapped label for known origins, the raw value otherwise. */
@@ -155,6 +177,14 @@ export class KnowledgeBaseSyncBannerComponent {
       default:
         return this.outOfSync || this.embeddingIncompatible ? 'exclamation-triangle' : 'database-check';
     }
+  }
+
+  /**
+   * The link to the RAG settings is offered only to an admin: the settings page is admin-only, so a
+   * simple user would just be bounced. The blocker message itself stays visible to everyone.
+   */
+  get canOpenRagSettings(): boolean {
+    return this.isAdmin && this.blocker === CreateIndexBlocker.RAG_NOT_CONFIGURED;
   }
 
   /** Linked from the RAG_NOT_CONFIGURED blocker; the route lives in the rag module. */

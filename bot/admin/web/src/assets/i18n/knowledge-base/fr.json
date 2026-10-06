@@ -54,21 +54,24 @@
     "rag_never_activated": "La RAG n'est jamais activée par cette action.",
     "create_button": "Créer",
     "recreate_button": "Re-créer",
-    "cancel_button": "Annuler"
+    "cancel_button": "Annuler",
+    "back_to_entries_button": "Retour"
   },
   "sync-banner": {
     "no_index_title": "Aucun index vectoriel n'est configuré pour ce bot",
-    "no_index_message": "Tock peut créer l'index et y projeter les {{published}} entrée(s) publiée(s), sans outil d'ingestion externe.",
+    "no_index_message": "Tock peut créer l'index à partir des {{published}} entrée(s) publiée(s).",
+    "no_index_message_non_admin": "Aucun index vectoriel n'existe encore pour ce bot. Sa création relève d'un administrateur. Vos entrées publiées seront prises en compte dès qu'un index sera en place.",
     "missing_index_title": "L'index configuré est introuvable",
     "missing_index_message": "L'identifiant d'index configuré pour ce bot ne correspond à aucun index existant. Corrigez-le dans les paramètres RAG ou re-créez un index depuis la base de connaissance.",
+    "missing_index_message_non_admin": "L'identifiant d'index configuré pour ce bot ne correspond à aucun index existant. Un administrateur doit corriger la configuration ou re-créer un index. Vos entrées publiées seront prises en compte une fois l'index rétabli.",
     "missing_index_rag_active": "La RAG est active : le bot interroge actuellement un index inexistant ou vide.",
     "ready_title": "L'index est à jour",
     "embedding_incompatible_title": "Publication bloquée sur cet index",
     "out_of_sync_title": "L'index ne reflète pas la base de connaissances",
     "pending_count": "{{count}} entrée(s) en attente d'indexation",
     "orphan_count": "{{count}} entrée(s) orpheline(s) encore présente(s) dans l'index",
-    "composition": "{{kb}} entrées KB · {{other}} extraits documentaires",
-    "composition_kb_only": "{{kb}} entrées KB",
+    "composition": "{{kb}} entrées · {{other}} extraits documentaires",
+    "composition_kb_only": "{{kb}} entrées",
     "provenance_full": "Index créé le {{date}} par {{origin}} ({{createdBy}})",
     "provenance_no_author": "Index créé le {{date}} par {{origin}}",
     "provenance_no_date": "Index créé par {{origin}} ({{createdBy}})",
@@ -84,10 +87,10 @@
     "recreate_index_button": "Re-créer un index",
     "create_index_tooltip": "Créer une session d'index à partir des entrées publiées",
     "open_rag_settings": "Ouvrir les paramètres RAG",
-    "repair_button": "Réparer l'index",
-    "repair_tooltip": "Reprojeter les entrées publiées et nettoyer les lignes orphelines. Les créations, modifications et dépublications, elles, sont déjà appliquées.",
+    "repair_button": "Synchroniser les entrées",
+    "repair_tooltip": "Reprojeter les entrées publiées de la base de connaissance et retirer de l'index celles dépubliées ou supprimées. Les données externes (ingérées par un outil tiers) ne sont pas touchées.",
     "verify_button": "Vérifier l’index",
-    "failed_count": "{{count}} entrée(s) en échec de synchronisation. Une réparation est nécessaire."
+    "failed_count": "{{count}} entrée(s) en échec de synchronisation. Une synchronisation est nécessaire."
   },
   "entry-detail": {
     "new_title": "Nouvelle entrée",
@@ -95,6 +98,7 @@
     "back_tooltip": "Retour à la liste",
     "save_button": "Enregistrer",
     "cancel_button": "Annuler",
+    "back_to_entries_button": "Retour",
     "title_label": "Intitulé",
     "title_placeholder": "L'information, formulée comme un utilisateur le ferait",
     "title_help": "C'est ce qui identifie l'entrée et ce sur quoi le rapprochement se fait en priorité. Une question, mais aussi bien une affirmation ou un thème.",
@@ -252,6 +256,7 @@
     "index_missing": "L'index configuré est introuvable. Corrigez l'identifiant dans les paramètres RAG ou re-créez un index depuis la base de connaissance.",
     "create_blocked_rag_not_configured": "Impossible de créer l'index : ce bot n'a pas de configuration RAG. Un administrateur doit d'abord la renseigner dans les paramètres RAG.",
     "create_blocked_embedding_model_undefined": "Impossible de créer l'index : le modèle d'embedding n'est pas renseigné dans les paramètres RAG (champ modèle de la configuration Azure OpenAI).",
+    "create_blocked_embedding_model_undefined_non_admin": "Impossible de créer l'index : le modèle d'embedding n'est pas renseigné. Un administrateur doit le compléter dans les paramètres RAG.",
     "create_blocked_no_published_entry": "Publiez au moins une entrée pour pouvoir créer l'index."
   },
   "validation": {

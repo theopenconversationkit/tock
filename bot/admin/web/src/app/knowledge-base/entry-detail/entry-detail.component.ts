@@ -291,6 +291,11 @@ export class KnowledgeBaseEntryDetailComponent implements OnInit, OnDestroy {
     return this.form.valid && this.form.dirty && !this.saving;
   }
 
+  /** Cancel button label adapts to the form state: "Annuler" when dirty, "Retour" when clean. */
+  get cancelButtonLabelKey(): string {
+    return this.form.dirty ? 'knowledge-base.entry-detail.cancel_button' : 'knowledge-base.entry-detail.back_to_entries_button';
+  }
+
   private buildPayload(): KnowledgeBaseEntryPayload {
     return {
       title: this.title.value.trim(),
