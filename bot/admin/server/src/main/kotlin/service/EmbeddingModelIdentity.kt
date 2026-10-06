@@ -30,7 +30,6 @@ import ai.tock.genai.orchestratorcore.models.em.OpenAIEMSetting
  * (apiBase, baseUrl, apiVersion) nor Azure's arbitrary per-resource deploymentName.
  */
 object EmbeddingModelIdentity {
-
     /**
      * The normalized embedding model, or null when it is unknown (Azure without an explicit model). null is never
      * blocking: Tock cannot certify a model it does not know, so it declines to create a collection but never refuses
@@ -39,9 +38,12 @@ object EmbeddingModelIdentity {
     fun normalized(setting: EMSettingBase<*>): String? =
         when (setting) {
             is OpenAIEMSetting<*> -> normalize(setting.model)
+
             is OllamaEMSetting<*> -> normalize(setting.model, stripLatest = true)
+
             // Azure exposes an optional model; deploymentName is an arbitrary per-resource name and must NOT be used.
             is AzureOpenAIEMSetting<*> -> normalize(setting.model)
+
             else -> null
         }
 

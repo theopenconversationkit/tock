@@ -23,6 +23,7 @@ import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.model.genai.BotRAGConfigurationDTO
+import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseIndexState
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.definition.IntentWithoutNamespace
@@ -51,13 +52,12 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.unmockkObject
 import io.mockk.slot
+import io.mockk.unmockkObject
 import io.mockk.verify
-import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseIndexState
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
 

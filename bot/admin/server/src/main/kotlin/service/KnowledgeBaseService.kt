@@ -27,8 +27,8 @@ import ai.tock.bot.admin.knowledgebase.KnowledgeBaseProjection
 import ai.tock.bot.admin.knowledgebase.KnowledgeBaseProjectionState
 import ai.tock.bot.admin.model.genai.VectorStoreInspectionCondenseRequestDTO
 import ai.tock.bot.admin.model.genai.VectorStoreInspectionSearchRequestDTO
-import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseBulkStatus
 import ai.tock.bot.admin.model.knowledgebase.CreateIndexBlocker
+import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseBulkStatus
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseCollectionInfo
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseCounts
 import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseEntryDTO
@@ -203,10 +203,17 @@ class KnowledgeBaseService(
     // by a runtime query). OpenSearch reports null counts/cmetadata, so exists → READY, which is not covered here.
     private fun deriveIndexState(state: KnowledgeBaseIndexStateResponse): KnowledgeBaseIndexState =
         when {
-            !state.exists -> KnowledgeBaseIndexState.MISSING
-            state.rowCount != null && state.rowCount == 0 && state.cmetadata?.containsKey("schema_version") != true ->
+            !state.exists -> {
                 KnowledgeBaseIndexState.MISSING
-            else -> KnowledgeBaseIndexState.READY
+            }
+
+            state.rowCount != null && state.rowCount == 0 && state.cmetadata?.containsKey("schema_version") != true -> {
+                KnowledgeBaseIndexState.MISSING
+            }
+
+            else -> {
+                KnowledgeBaseIndexState.READY
+            }
         }
 
     /**

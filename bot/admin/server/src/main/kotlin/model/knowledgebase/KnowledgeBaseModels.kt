@@ -83,7 +83,9 @@ enum class KnowledgeBaseIndexState { NONE, MISSING, READY }
  * Why creating an index is currently impossible, evaluated in this priority order. null means creation is allowed.
  * [validationKey] is the i18n key returned as the validation error when enqueue rejects a creation.
  */
-enum class CreateIndexBlocker(val validationKey: String) {
+enum class CreateIndexBlocker(
+    val validationKey: String,
+) {
     RAG_NOT_CONFIGURED("knowledge-base.job.create_blocked_rag_not_configured"),
     EMBEDDING_MODEL_UNDEFINED("knowledge-base.job.create_blocked_embedding_model_undefined"),
     NO_PUBLISHED_ENTRY("knowledge-base.job.create_blocked_no_published_entry"),

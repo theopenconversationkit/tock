@@ -474,7 +474,12 @@ class KnowledgeBaseServiceTest {
             processor().process(job)
 
             // The failure is recorded on the job only.
-            assertTrue(dao.jobs.getValue(job._id).failures.isNotEmpty())
+            assertTrue(
+                dao.jobs
+                    .getValue(job._id)
+                    .failures
+                    .isNotEmpty(),
+            )
             // The current index entry is NOT marked pending, and its live projection is left exactly as it was.
             assertNull(dao.entries.getValue(saved.entry.id).pendingJobId)
             assertEquals(currentProjection, dao.projections.values.single { it.targetId == target.id && it.entryId == saved.entry.id })

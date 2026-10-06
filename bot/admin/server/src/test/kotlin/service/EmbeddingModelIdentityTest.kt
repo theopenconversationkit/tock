@@ -30,8 +30,7 @@ class EmbeddingModelIdentityTest {
 
     private fun ollama(model: String) = OllamaEMSetting<SecretKey>(model, "https://example.org")
 
-    private fun azure(model: String?) =
-        AzureOpenAIEMSetting<SecretKey>(RawSecretKey("k"), "https://example.org", "deployment-x", "2024-01-01", model)
+    private fun azure(model: String?) = AzureOpenAIEMSetting<SecretKey>(RawSecretKey("k"), "https://example.org", "deployment-x", "2024-01-01", model)
 
     @Test fun `openai and ollama normalize to their model, trimmed`() {
         assertEquals("text-embedding-3-small", EmbeddingModelIdentity.normalized(openAI("  text-embedding-3-small  ")))
