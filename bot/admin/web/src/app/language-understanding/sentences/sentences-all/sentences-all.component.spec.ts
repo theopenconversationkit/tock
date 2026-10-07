@@ -19,7 +19,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SentencesAllComponent } from './sentences-all.component';
 import { TestSharedModule } from '../../../shared/test-shared.module';
 
-describe('SentencesSearchComponent', () => {
+describe('SentencesAllComponent', () => {
   let component: SentencesAllComponent;
   let fixture: ComponentFixture<SentencesAllComponent>;
 
