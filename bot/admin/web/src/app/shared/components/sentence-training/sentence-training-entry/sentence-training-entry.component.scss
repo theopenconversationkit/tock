@@ -69,6 +69,10 @@
   white-space: pre-wrap;
 }
 
+.sentence-status {
+  color: var(--text-basic-color);
+}
+
 .actions-grid {
   display: grid;
   grid-template-columns: repeat(8, auto);
@@ -142,7 +146,7 @@ tock-sentence-training-sentence {
 
     &:hover,
     &:focus-visible {
-      background: rgba(143, 155, 179, 0.12) !important;
+      background: var(--button-ghost-basic-hover-background-color) !important;
 
       nb-icon, .btn-text {
         color: var(--text-basic-color) !important;
@@ -155,7 +159,7 @@ tock-sentence-training-sentence {
     }
 
     &:active {
-      background: rgba(143, 155, 179, 0.22) !important;
+      background: var(--button-ghost-basic-active-background-color) !important;
     }
   }
 }
