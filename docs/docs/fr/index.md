@@ -14,7 +14,7 @@ ses modèles et données conversationnelles.
 
 > Tock est utilisé en production depuis 2016 par SNCF (assistant OUI.sncf, aujourd'hui SNCF Connect)
 > (Web/mobile, réseaux sociaux, enceintes connectées) et [de plus en plus d'organisations](project/showcase.md) 
-> (ENEDIS, Linagora, AlloCovid...).
+> (ENEDIS, Orange, Crédit Mutuel Arkéa...).
 
 L'ensemble du code source est disponible sur [GitHub](https://github.com/theopenconversationkit/tock) sous 
 [licence Apache 2](https://github.com/theopenconversationkit/tock/blob/master/LICENSE). 

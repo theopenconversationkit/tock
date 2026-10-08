@@ -36,7 +36,8 @@ or whose intent has no story (see [How the bot answers](how-it-works.md)):
 ### Question condensing
 
 * **Configuration**: the LLM used to condense questions (see the [list of LLM providers](providers/llm-embedding.md)).
-* **Prompt**: the condensing prompt.
+* **Prompt**: the condensing prompt. It also returns the keywords (`key_words`) used by full text and hybrid
+  searches: a custom prompt must keep this field for them to work.
 * **Max number of messages in history**: number of dialog messages taken into account when condensing the question
   (zero: no history).
 

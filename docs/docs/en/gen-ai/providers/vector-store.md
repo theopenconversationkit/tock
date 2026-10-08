@@ -14,8 +14,8 @@ Here are the vector stores supported by Tock:
 | [PGVector](https://github.com/pgvector/pgvector) (PostgreSQL) | `PGVector` | ✅ | ✅ | ✅ | ✅ |
 | [OpenSearch](https://opensearch.org/) | `OpenSearch` | ✅ | | | vector search only |
 
-With OpenSearch, the search type chosen in the [RAG settings](../rag.md#indexing-session) is ignored:
-a similarity search is always used.
+With OpenSearch, only similarity search is available: choosing full text or hybrid search
+in the [RAG settings](../rag.md#indexing-session) makes RAG requests fail.
 
 ## PGVector
 
@@ -38,6 +38,12 @@ The schema is provided in
 [`gen-ai/orchestrator-server/sql/schema.sql`](https://github.com/theopenconversationkit/tock/blob/master/gen-ai/orchestrator-server/sql/schema.sql):
 it creates the tables used by the indexing tools, and a `fts_vector` column generated from the chunk contents
 (with the `french` text search configuration), with its index.
+This script is not run automatically: it must be applied to the database, including one that is already indexed
+(the column is then computed for the existing chunks).
+
+Full text search does not use the question itself, but the keywords (`key_words`) produced by the
+question condensing prompt (see the [RAG settings](../rag.md)). If this prompt returns no keywords,
+full text search finds no documents, and hybrid search falls back to similarity search only.
 
 ## OpenSearch
 

@@ -37,7 +37,8 @@ d'_inconnues_, ou dont l'intention n'a pas de story (voir [Comment le bot répon
 ### Condensation de la question (_Question condensing_)
 
 * **Configuration** : le LLM utilisé pour condenser les questions (voir la [liste des fournisseurs de LLM](providers/llm-embedding.md)).
-* **Prompt** : le prompt de condensation.
+* **Prompt** : le prompt de condensation. Il renvoie aussi les mots-clés (`key_words`) utilisés par les recherches
+  plein texte et hybride : un prompt personnalisé doit conserver ce champ pour qu'elles fonctionnent.
 * **Max number of messages in history** : nombre de messages du dialogue pris en compte pour condenser la question
   (zéro : pas d'historique).
 
