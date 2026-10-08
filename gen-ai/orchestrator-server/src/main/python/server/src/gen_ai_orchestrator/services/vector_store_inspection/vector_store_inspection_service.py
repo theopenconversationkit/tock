@@ -502,7 +502,7 @@ async def _fts_documents(factory: PGVectorFactory, query: str, k: int):
         factory.pool.async_engine,
         text("""
             WITH q AS (
-                SELECT websearch_to_tsquery('french', unaccent(:query)) AS ts_query
+                SELECT websearch_to_tsquery('french', :query) AS ts_query
             )
             SELECT e.document, e.cmetadata, ts_rank(e.fts_vector, q.ts_query) AS score
             FROM langchain_pg_embedding e
@@ -633,7 +633,7 @@ async def _pinned_fts_metrics(
     )
     statement = text(f"""
         WITH q AS (
-            SELECT websearch_to_tsquery('french', unaccent(:query)) AS ts_query
+            SELECT websearch_to_tsquery('french', :query) AS ts_query
         ), targets AS (
             SELECT
                 e.collection_id,
