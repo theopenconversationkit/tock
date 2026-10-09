@@ -19,12 +19,12 @@ import { SentenceTrainingMode } from '../../../shared/components/sentence-traini
 import { SentenceTrainingComponent } from '../../../shared/components';
 
 @Component({
-    selector: 'tock-sentences-search',
-    templateUrl: './sentences-search.component.html',
-    styleUrls: ['./sentences-search.component.scss'],
-    standalone: false
+  selector: 'tock-sentences-search',
+  templateUrl: './sentences-all.component.html',
+  styleUrls: ['./sentences-all.component.scss'],
+  standalone: false
 })
-export class SentencesSearchComponent {
+export class SentencesAllComponent {
   mode = SentenceTrainingMode.SEARCH;
   @ViewChild(SentenceTrainingComponent) sentencesTraining;
 

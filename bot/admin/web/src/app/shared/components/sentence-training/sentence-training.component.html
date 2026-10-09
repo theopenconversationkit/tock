@@ -31,7 +31,8 @@
               [checked]="selection?.selected?.length === sentences?.length"
               [indeterminate]="selection?.selected?.length && selection.selected.length < sentences?.length"
               (checkedChange)="handleToggleSelectAll($event)"
-            ></nb-checkbox>
+            ><span class="grid-columns-header-label">{{ 'shared.sentence-training.select-all' | transloco }}</span>
+            </nb-checkbox>
             @if (selection.selected.length) {
             <div
               class="d-flex gap-1"
@@ -87,27 +88,18 @@
             </div>
             }
           </div>
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-1">
-            <span
-              class="pointer"
-              (click)="toggleSort()"
-              data-testid="sort"
-            >
-              {{ 'shared.sentence-training.sort-by-creation-date' | transloco }}
-              @if (isSorted) {
-              <nb-icon
-                class="align-middle"
-                icon="chevron-down-outline"
-                pack="nebular-essentials"
-              ></nb-icon>
-              } @if (!isSorted) {
-              <nb-icon
-                class="align-middle"
-                icon="chevron-up-outline"
-                pack="nebular-essentials"
-              ></nb-icon>
-              }
-            </span>
+          <div class="d-flex justify-content-end align-items-center gap-3">
+          <button
+            type="button"
+            class="sort-button d-flex align-items-center"
+            (click)="toggleSort()"
+            [nbTooltip]="'shared.sentence-training.sort-by-creation-date' | transloco"
+            data-testid="sort"
+          >
+          <nb-icon [icon]="isSorted ? 'sort-down-alt' : 'sort-up-alt'" style="margin-right: 4px"></nb-icon>
+          {{ 'shared.sentence-training.sort-by-creation-date' | transloco }}
+        </button>
+
             <tock-pagination
               [pagination]="pagination"
               (onPaginationChange)="paginationChange()"

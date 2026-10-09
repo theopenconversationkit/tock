@@ -62,7 +62,7 @@ or from a conversation via the _Test the bot_ page in _Tock Studio_.
 
 The buttons and commands under each sentence are identical to those in the _Try it_ tab (see above).
 
-## The _Search_ tab
+## The _All_ tab
 
 This screen allows you to search through all the sentences: _Inbox_ but also qualified sentences
 saved in the model.

@@ -114,7 +114,7 @@
   "menu-items": {
     "new-sentence": "New sentence",
     "inbox-sentences": "Inbox sentences",
-    "search-sentences": "Search sentences",
+    "search-sentences": "All sentences",
     "unknown-sentences": "Unknown sentences",
     "intents": "Intents",
     "entities": "Entities",
@@ -265,6 +265,7 @@
         "ragexcluded-tooltip": "Set all selected sentences as ragexcluded"
       },
       "sort-by-creation-date": "Sort by creation date",
+      "select-all": "Select all",
       "action-titles": {
         "delete": "Delete",
         "unknown": "Unknown",
@@ -355,9 +356,18 @@
     },
     "sentence-training-entry": {
       "review-comment": "Review comment",
+      "copy": "Copy",
+      "test": "Test",
       "copy-sentence": "Copy sentence",
       "test-sentence": "Test this sentence in a dialog",
       "sentence-status": "Sentence status",
+      "status": {
+        "deleted": "Deleted",
+        "inbox": "Inbox",
+        "model": "Included in model",
+        "validated": "Validated",
+        "unknown": "Unknown"
+      },
       "sentence-configuration": "Sentence configuration",
       "qualifier": "Qualifier",
       "intent-association": "Intent association",
