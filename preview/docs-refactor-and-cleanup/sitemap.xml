@@ -274,6 +274,13 @@
         <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag-prompt-context.html"/>
     </url>
     <url>
+        <loc>Nonegen-ai/rag-prompt-reference.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag-prompt-reference.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag-prompt-reference.html"/>
+    </url>
+    <url>
         <loc>Nonegen-ai/rag-prompt.html</loc>
         <lastmod>2026-10-09</lastmod>
         <changefreq>daily</changefreq>
@@ -372,11 +379,25 @@
         <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/run-platform.html"/>
     </url>
     <url>
+        <loc>Noneoperate/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/index.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/index.html"/>
+    </url>
+    <url>
         <loc>Noneoperate/architecture.html</loc>
         <lastmod>2026-10-09</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/architecture.html"/>
         <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/architecture.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/authentication.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/authentication.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/authentication.html"/>
     </url>
     <url>
         <loc>Noneoperate/cloud.html</loc>
@@ -433,6 +454,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/upgrade.html"/>
         <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/upgrade.html"/>
+    </url>
+    <url>
+        <loc>Noneproject/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/index.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/index.html"/>
     </url>
     <url>
         <loc>Noneproject/changelog.html</loc>
@@ -869,6 +897,13 @@
         <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag-prompt-context.html"/>
     </url>
     <url>
+        <loc>Nonefr/gen-ai/rag-prompt-reference.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag-prompt-reference.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag-prompt-reference.html"/>
+    </url>
+    <url>
         <loc>Nonefr/gen-ai/rag-prompt.html</loc>
         <lastmod>2026-10-09</lastmod>
         <changefreq>daily</changefreq>
@@ -967,11 +1002,25 @@
         <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/run-platform.html"/>
     </url>
     <url>
+        <loc>Nonefr/operate/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/index.html"/>
+    </url>
+    <url>
         <loc>Nonefr/operate/architecture.html</loc>
         <lastmod>2026-10-09</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/architecture.html"/>
         <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/architecture.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/authentication.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/authentication.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/authentication.html"/>
     </url>
     <url>
         <loc>Nonefr/operate/cloud.html</loc>
@@ -1028,6 +1077,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/upgrade.html"/>
         <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/upgrade.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/project/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/index.html"/>
     </url>
     <url>
         <loc>Nonefr/project/changelog.html</loc>

@@ -381,7 +381,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../operate/architecture.html" class="md-tabs__link">
+        <a href="../operate/index.html" class="md-tabs__link">
           
   
   
@@ -403,7 +403,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../project/why.html" class="md-tabs__link">
+        <a href="../project/index.html" class="md-tabs__link">
           
   
   
@@ -630,34 +630,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/run-platform.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Déployer une plateforme Tock
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../getting-started/first-bot-studio.html" class="md-nav__link">
         
   
@@ -694,6 +666,34 @@
     
   
     Premier bot en Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/run-platform.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Déployer une plateforme Tock
   
 
     
@@ -1160,6 +1160,8 @@
       
         
       
+        
+      
     
     
     
@@ -1251,6 +1253,34 @@
     
   
     Prompt RAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rag-prompt-reference.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Référence du prompt RAG
   
 
     
@@ -2485,7 +2515,7 @@
   <span class="md-ellipsis">
     
   
-    Custom Metrics
+    Metrics
   
 
     
@@ -3642,6 +3672,12 @@
     
       
         
+          
+        
+      
+        
+      
+        
       
         
       
@@ -3675,8 +3711,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../operate/index.html" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -3690,8 +3727,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
@@ -3703,6 +3746,8 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -3879,6 +3924,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../operate/authentication.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentification Tock Studio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../operate/supervision.html" class="md-nav__link">
         
   
@@ -3973,6 +4046,10 @@
     
       
         
+          
+        
+      
+        
       
         
       
@@ -4000,8 +4077,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../project/index.html" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -4015,8 +4093,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
@@ -4028,6 +4112,8 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -4410,7 +4496,7 @@ traiter la longue traîne des questions couvertes par vos documents.</p>
 <ol>
 <li>Le modèle NLU détecte l'intention de la phrase (voir <a href="../studio/nlu.html">Compréhension du langage</a>).</li>
 <li>Si une story (ou une FAQ) démarre avec cette intention, c'est elle qui répond : le LLM n'est pas appelé.</li>
-<li>Si la phrase est qualifiée avec l'intention <code>ragexcluded</code>, le bot répond avec sa story <em>RAG excluded</em>
+<li>Si la phrase est qualifiée avec l'intention <code>tock:ragexcluded</code>, le bot répond avec sa story <em>RAG excluded</em>
    (par défaut : <em>« Sorry, I can't answer your question (Topic not covered) »</em>). Voir les <a href="#exclure-des-sujets-du-rag">exclusions RAG</a>.</li>
 <li>Sinon, la phrase est inconnue ou son intention n'a pas de story : si le <a href="rag.html#activation-du-rag">RAG est activé</a>,
    le bot appelle l'<a href="orchestrator-api.html">orchestrateur Gen AI</a>, qui condense la question, recherche les documents
@@ -4456,7 +4542,7 @@ traiter la longue traîne des questions couvertes par vos documents.</p>
 </tbody>
 </table>
 <h3 id="exclure-des-sujets-du-rag">Exclure des sujets du RAG</h3>
-<p>Une <a href="rag-exclusion.html">exclusion RAG</a> qualifie une phrase avec l'intention <code>ragexcluded</code>. Une fois le modèle NLU
+<p>Une <a href="rag-exclusion.html">exclusion RAG</a> qualifie une phrase avec l'intention <code>tock:ragexcluded</code>. Une fois le modèle NLU
 entraîné avec suffisamment de phrases de ce type, les phrases proches sont reconnues comme exclues et n'atteignent
 jamais le LLM. C'est plus sûr qu'une consigne dans le prompt, car la décision est prise avant l'appel au LLM.</p>
 <h3 id="repondre-avec-une-story-plutot-quavec-le-llm">Répondre avec une story plutôt qu'avec le LLM</h3>
@@ -4466,7 +4552,7 @@ Pour entraîner rapidement le modèle NLU sur une nouvelle FAQ, les phrases d'en
 <a href="sentence-generation.html">générées par un LLM</a>.</p>
 <h3 id="rediriger-du-rag-vers-une-story">Rediriger du RAG vers une story</h3>
 <p>Le LLM de réponse peut aussi passer la main à une story. Quand sa réponse JSON contient une <code>redirection_intent</code>
-(voir le <a href="rag-prompt.html#redirection_intent">schéma de sortie du prompt</a>), le bot envoie la réponse générée, puis bascule
+(voir le <a href="rag-prompt-reference.html#redirection_intent">schéma de sortie du prompt</a>), le bot envoie la réponse générée, puis bascule
 sur la story démarrée par cette intention, par exemple un transfert vers un conseiller. L'intention doit avoir une story,
 et ne peut pas être <code>unknown</code>.</p>
 <h3 id="restreindre-les-intentions-suivantes">Restreindre les intentions suivantes</h3>
@@ -4769,7 +4855,7 @@ parcours ne sont alors pas envoyées au RAG.</p>
     <span class="md-icon" title="Dernière mise à jour">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="28 septembre 2026 20:27:10 UTC">28 septembre 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="9 octobre 2026 09:08:56 UTC">9 octobre 2026</span>
   </span>
 
     

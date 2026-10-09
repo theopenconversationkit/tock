@@ -381,7 +381,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../operate/architecture.html" class="md-tabs__link">
+        <a href="../operate/index.html" class="md-tabs__link">
           
   
   
@@ -403,7 +403,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../project/why.html" class="md-tabs__link">
+        <a href="../project/index.html" class="md-tabs__link">
           
   
   
@@ -831,34 +831,6 @@
   
   
     <li class="md-nav__item">
-      <a href="run-platform.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Déployer une plateforme Tock
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="first-bot-studio.html" class="md-nav__link">
         
   
@@ -895,6 +867,34 @@
     
   
     Premier bot en Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="run-platform.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Déployer une plateforme Tock
   
 
     
@@ -1223,6 +1223,8 @@
       
         
       
+        
+      
     
     
     
@@ -1311,6 +1313,34 @@
     
   
     Prompt RAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gen-ai/rag-prompt-reference.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Référence du prompt RAG
   
 
     
@@ -2536,7 +2566,7 @@
   <span class="md-ellipsis">
     
   
-    Custom Metrics
+    Metrics
   
 
     
@@ -3693,6 +3723,12 @@
     
       
         
+          
+        
+      
+        
+      
+        
       
         
       
@@ -3726,8 +3762,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../operate/index.html" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -3741,8 +3778,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
@@ -3754,6 +3797,8 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -3930,6 +3975,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../operate/authentication.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentification Tock Studio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../operate/supervision.html" class="md-nav__link">
         
   
@@ -4024,6 +4097,10 @@
     
       
         
+          
+        
+      
+        
       
         
       
@@ -4051,8 +4128,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../project/index.html" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -4066,8 +4144,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
@@ -4079,6 +4163,8 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -4521,7 +4607,7 @@ puis demande à un LLM de rédiger une réponse à partir de ces passages, avec 
 <li><a href="https://git-scm.com/">Git</a>, <a href="https://www.python.org/">Python 3</a> (aucun paquet supplémentaire n'est nécessaire),
   et des versions récentes de <a href="https://www.docker.com/">Docker</a> et <a href="https://docs.docker.com/compose/">Docker Compose</a></li>
 <li><a href="https://ollama.com/download">Ollama</a>, et environ 16 Go de RAM pour faire tourner la plateforme et un modèle 7B</li>
-<li>Tock <strong>26.3.5</strong> ou plus récent : les versions précédentes de l'outil d'indexation échouent au démarrage, et leur
+<li>Tock <strong>26.9.0</strong> ou plus récent : les versions précédentes de l'outil d'indexation échouent au démarrage, et leur
   schéma PostgreSQL ne permet pas la recherche hybride utilisée plus bas</li>
 </ul>
 <blockquote>
@@ -4870,6 +4956,7 @@ d'indexation par :</p>
 dans les réglages RAG : le modèle d'embedding des réglages RAG doit toujours être celui utilisé pour l'indexation.</p>
 <h2 id="aller-plus-loin">Aller plus loin</h2>
 <ul>
+<li>Prenez en charge les parcours qui ne doivent pas être laissés au LLM avec des stories : <a href="first-bot-studio.html">Créer son premier bot avec Tock Studio</a>.</li>
 <li>Améliorez les réponses avec le <a href="../gen-ai/rag-prompt.html">prompt RAG</a> et le <a href="../gen-ai/rag-prompt-context.html"><em>Rag prompt context</em></a>
   (sujets couverts et exclus, lexique métier).</li>
 <li>Comprenez pourquoi une section de la documentation est (ou n'est pas) utilisée avec le <a href="../gen-ai/vector-store-inspection.html">diagnostic de recherche</a>.</li>
@@ -5168,7 +5255,7 @@ dans les réglages RAG : le modèle d'embedding des réglages RAG doit toujours 
     <span class="md-icon" title="Dernière mise à jour">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="1 octobre 2026 14:48:07 UTC">1 octobre 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="9 octobre 2026 09:08:56 UTC">9 octobre 2026</span>
   </span>
 
     

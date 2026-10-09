@@ -381,7 +381,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../operate/architecture.html" class="md-tabs__link">
+        <a href="../../operate/index.html" class="md-tabs__link">
           
   
   
@@ -403,7 +403,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../project/why.html" class="md-tabs__link">
+        <a href="../../project/index.html" class="md-tabs__link">
           
   
   
@@ -630,34 +630,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/run-platform.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Run a Tock platform
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../getting-started/first-bot-studio.html" class="md-nav__link">
         
   
@@ -694,6 +666,34 @@
     
   
     First bot in Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/run-platform.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run a Tock platform
   
 
     
@@ -1022,6 +1022,8 @@
       
         
       
+        
+      
     
     
     
@@ -1110,6 +1112,34 @@
     
   
     RAG prompt
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gen-ai/rag-prompt-reference.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG prompt reference
   
 
     
@@ -2335,7 +2365,7 @@
   <span class="md-ellipsis">
     
   
-    Custom Metrics
+    Metrics
   
 
     
@@ -3760,6 +3790,12 @@
     
       
         
+          
+        
+      
+        
+      
+        
       
         
       
@@ -3793,8 +3829,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../operate/index.html" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -3808,8 +3845,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
@@ -3821,6 +3864,8 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -3997,6 +4042,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../operate/authentication.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tock Studio authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../operate/supervision.html" class="md-nav__link">
         
   
@@ -4091,6 +4164,10 @@
     
       
         
+          
+        
+      
+        
       
         
       
@@ -4118,8 +4195,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../project/index.html" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -4133,8 +4211,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
@@ -4146,6 +4230,8 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -4654,12 +4740,12 @@
 <p>The project consists of various modules, the main modules concern the <code>tock-bot-engine</code> engine</p>
 <h2 id="story">Story</h2>
 <p>A Story is a piece of conversation about a specific topic.
-It is linked to at least one intention (intent) - the StarterIntent</p>
+It is linked to at least one intent (intent) - the StarterIntent</p>
 <p>No "story selection" service as there can be a scxml reading library for the state machine, story routing is part of the engine in general.</p>
 <h3 id="pre-defined-story-slot">Pre-defined story slot</h3>
 <p>These are StoryDefinition called at various times in the bot outside the classic flow, generally for a specific action.</p>
 <ul>
-<li>unknownStory: Default story if no intention is detected</li>
+<li>unknownStory: Default story if no intent is detected</li>
 <li>keywordStory: If a keyword is recognized in the user message, bypass the NLP and launch this story directly</li>
 <li>helloStory: Launched when the bot starts</li>
 <li>goodbyeStory: Launched when the bot exits</li>
@@ -4673,7 +4759,7 @@ It is linked to at least one intention (intent) - the StarterIntent</p>
 In the case of receiving an attachment, the bot expects a SendAttachment action from the connector. NLP is then bypassed</p>
 <h3 id="switchstory">SwitchStory</h3>
 <p>It is possible to automatically switch from one Story to another from a story using BotBus::switchStory(StoryDefinition).
-The story is added to the dialog as the last story and its main intention is defined as the current intention.
+The story is added to the dialog as the last story and its main intent is defined as the current intent.
 Switching from one Story to another does not make sense for the state machine, changes are made, by definition, through a transition, never from state to state.
 By implementing the internal event system it is possible to have a similar behavior with the state machine, the event triggers the transition in the state machine which triggers the corresponding Story.</p>
 <h3 id="intent-story-id">Intent = Story Id</h3>
@@ -5034,7 +5120,7 @@ Steps can also contain child steps.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 7, 2025 10:16:52 UTC">February 7, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 9, 2026 09:08:56 UTC">October 9, 2026</span>
   </span>
 
     

@@ -381,7 +381,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../operate/architecture.html" class="md-tabs__link">
+        <a href="../operate/index.html" class="md-tabs__link">
           
   
   
@@ -403,7 +403,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../project/why.html" class="md-tabs__link">
+        <a href="../project/index.html" class="md-tabs__link">
           
   
   
@@ -630,34 +630,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/run-platform.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Run a Tock platform
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../getting-started/first-bot-studio.html" class="md-nav__link">
         
   
@@ -694,6 +666,34 @@
     
   
     First bot in Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/run-platform.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run a Tock platform
   
 
     
@@ -1032,6 +1032,8 @@
       
         
       
+        
+      
     
     
     
@@ -1123,6 +1125,34 @@
     
   
     RAG prompt
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rag-prompt-reference.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG prompt reference
   
 
     
@@ -2415,7 +2445,7 @@
   <span class="md-ellipsis">
     
   
-    Custom Metrics
+    Metrics
   
 
     
@@ -3572,6 +3602,12 @@
     
       
         
+          
+        
+      
+        
+      
+        
       
         
       
@@ -3605,8 +3641,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../operate/index.html" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -3620,8 +3657,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
@@ -3633,6 +3676,8 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -3809,6 +3854,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../operate/authentication.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tock Studio authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../operate/supervision.html" class="md-nav__link">
         
   
@@ -3903,6 +3976,10 @@
     
       
         
+          
+        
+      
+        
       
         
       
@@ -3930,8 +4007,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../project/index.html" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -3945,8 +4023,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
@@ -3958,6 +4042,8 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -4281,7 +4367,7 @@ which shows what it would change.</p>
 <p><img alt="Compressor settings" src="../img/gen-ai/gen-ai-settings-compressor.png" title="Compressor settings" /></p>
 <ul>
 <li><strong>Compressor activation</strong>: enables or disables the compressor for the bot.</li>
-<li><strong>Provider</strong>: the only provider available is <code>BloomzRerank</code>, a reranking model exposed as an HTTP service:<ul>
+<li><strong>Provider</strong>: the only provider available in <em>Tock Studio</em> is <code>BloomzRerank</code>, a reranking model exposed as an HTTP service:<ul>
 <li><strong>Endpoint</strong>: base URL of the service. The orchestrator sends the question and the documents to its <code>/score</code> route.</li>
 <li><strong>Label</strong>: the label of the model output used as score (e.g. <code>entailment</code>).</li>
 <li><strong>Minimum score</strong>: documents scored below this value (between 0 and 1) are dropped.</li>
@@ -4291,6 +4377,9 @@ which shows what it would change.</p>
 </ul>
 </li>
 </ul>
+<p>The Gen AI orchestrator also supports the <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/rerank.html">Bedrock Rerank API</a>
+(provider <code>AwsBedrockRerank</code>, with the ARN of the rerank model in <code>model_arn</code>), usable through its
+<a href="orchestrator-api.html">API</a> only. It uses the AWS credentials described for <a href="providers/llm-embedding.html#aws-bedrock">AWS Bedrock</a>.</p>
 <p>The compressor is fault-tolerant: if the reranking service fails or does not answer in time,
 the original documents are used unchanged.</p>
 <p>The settings can be exported (optionally with sensitive data, such as the endpoint) and imported,
@@ -4586,7 +4675,7 @@ to copy them between bots or environments, and deleted.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 28, 2026 20:27:10 UTC">September 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 9, 2026 09:08:56 UTC">October 9, 2026</span>
   </span>
 
     

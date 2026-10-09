@@ -381,7 +381,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../operate/architecture.html" class="md-tabs__link">
+        <a href="../operate/index.html" class="md-tabs__link">
           
   
   
@@ -403,7 +403,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../project/why.html" class="md-tabs__link">
+        <a href="../project/index.html" class="md-tabs__link">
           
   
   
@@ -630,34 +630,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/run-platform.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Déployer une plateforme Tock
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../getting-started/first-bot-studio.html" class="md-nav__link">
         
   
@@ -694,6 +666,34 @@
     
   
     Premier bot en Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/run-platform.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Déployer une plateforme Tock
   
 
     
@@ -1022,6 +1022,8 @@
       
         
       
+        
+      
     
     
     
@@ -1110,6 +1112,34 @@
     
   
     Prompt RAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gen-ai/rag-prompt-reference.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Référence du prompt RAG
   
 
     
@@ -2335,7 +2365,7 @@
   <span class="md-ellipsis">
     
   
-    Custom Metrics
+    Metrics
   
 
     
@@ -3763,6 +3793,12 @@
     
       
         
+          
+        
+      
+        
+      
+        
       
         
       
@@ -3796,8 +3832,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../operate/index.html" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -3811,8 +3848,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
@@ -3824,6 +3867,8 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -4000,6 +4045,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../operate/authentication.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentification Tock Studio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../operate/supervision.html" class="md-nav__link">
         
   
@@ -4094,6 +4167,10 @@
     
       
         
+          
+        
+      
+        
       
         
       
@@ -4121,8 +4198,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../project/index.html" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -4136,8 +4214,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
@@ -4149,6 +4233,8 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -4680,7 +4766,7 @@ Kotlin.</p>
 <div class="highlight"><pre><span></span><code><span class="w">      </span><span class="n">implementation</span><span class="w"> </span><span class="s1">'ai.tock:bot-toolkit:26.9.0'</span>
 </code></pre></div>
 <h3 id="aligner-les-versions-des-dependances-avec-le-bom-tock">Aligner les versions des dépendances avec le BOM Tock</h3>
-<p>Depuis Tock 26.3.5, le <em>bill of materials</em> <code>tock-bom</code> liste les artefacts Tock et les versions de leurs
+<p>Depuis Tock 26.9.0, le <em>bill of materials</em> <code>tock-bom</code> liste les artefacts Tock et les versions de leurs
 dépendances tierces (Kotlin, coroutines, kotlinx-serialization, Jackson, Netty/Vert.x, OkHttp, AWS SDK, Google...).</p>
 <p>Sans lui, votre outil de build résout ces librairies de son côté, et peut se retrouver avec des versions
 incompatibles dans le classpath (par exemple deux versions de Netty ou de Jackson), car Maven n'applique pas
@@ -4827,6 +4913,11 @@ on peut appeler une ou plusieurs des fonctions suivantes depuis le <code>main</c
 <p>Bien sûr, le <code>StoryHandler</code> de <code>greetings</code> ne dépend pas du contexte : la réponse est toujours la même.</p>
 <p>Pour le développement de stories complexes, nous avons besoin d'une abstraction supplémentaire.</p>
 <h3 id="intentions-secondaires">Intentions secondaires</h3>
+<blockquote>
+<p>Les exemples de cette section et des suivantes proviennent du
+<a href="https://github.com/theopenconversationkit/tock-bot-open-data">bot Open Data</a> : <code>SearchDef</code>, <code>Place</code>, <code>PlaceValue</code>,
+<code>Section</code>... sont des classes de ce bot, pas de l'API Tock.</p>
+</blockquote>
 <p>Voici le début de la définition de la story <code>search</code> :</p>
 <div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">search</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">storyDef</span><span class="o">&lt;</span><span class="n">SearchDef</span><span class="o">&gt;</span><span class="p">(</span>
 <span class="w">        </span><span class="s">"search"</span><span class="p">,</span>
@@ -4952,17 +5043,16 @@ Voici le code de cette classe :</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">MessengerSearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span><span class="w"> </span><span class="n">SearchDef</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Section</span><span class="o">&gt;</span><span class="p">):</span><span class="w"> </span><span class="n">ConnectorMessage</span><span class="w"> </span><span class="o">=</span>
-<span class="w">          </span><span class="n">flexibleListTemplate</span><span class="p">(</span>
+<span class="w">          </span><span class="n">genericTemplate</span><span class="p">(</span>
 <span class="w">                </span><span class="n">sections</span><span class="p">.</span><span class="na">map</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">section</span><span class="w"> </span><span class="o">-&gt;</span>
 <span class="w">                      </span><span class="n">with</span><span class="p">(</span><span class="n">section</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                          </span><span class="n">listElement</span><span class="p">(</span>
+<span class="w">                          </span><span class="n">genericElement</span><span class="p">(</span>
 <span class="w">                                </span><span class="n">title</span><span class="p">(),</span>
 <span class="w">                                </span><span class="n">content</span><span class="p">(),</span>
 <span class="w">                                </span><span class="n">trainImage</span>
 <span class="w">                          </span><span class="p">)</span>
 <span class="w">                      </span><span class="p">}</span>
-<span class="w">                </span><span class="p">},</span>
-<span class="w">                </span><span class="n">compact</span>
+<span class="w">                </span><span class="p">}</span>
 <span class="w">          </span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -5356,7 +5446,7 @@ L'utilisation de <a href="#utiliser-handlerdef"><code>HandlerDef</code></a> est 
     <span class="md-icon" title="Dernière mise à jour">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="29 septembre 2026 21:14:33 UTC">29 septembre 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="9 octobre 2026 09:08:56 UTC">9 octobre 2026</span>
   </span>
 
     
