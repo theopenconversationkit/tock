@@ -6,6 +6,8 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="Superviser une plateforme Tock et ses bots : healthchecks, monitoring de disponibilité et logs.">
+      
       
       
       
@@ -1083,7 +1085,7 @@
   <span class="md-ellipsis">
     
   
-    Rag settings
+    RAG settings
   
 
     
@@ -4867,14 +4869,14 @@ Voici quelques exemples à titre indicatif :</p>
 </ul>
 <h2 id="journalisation-logs">Journalisation (logs)</h2>
 <h3 id="logs-applicatifs">Logs applicatifs</h3>
-<p>Tock utilise <a href="http://www.slf4j.org">SLF4J</a> et <a href="http://logback.qos.ch/">Logback</a> pour générer ses logs applicatifs côté serveur.</p>
+<p>Tock utilise <a href="https://www.slf4j.org">SLF4J</a> et <a href="https://logback.qos.ch/">Logback</a> pour générer ses logs applicatifs côté serveur.</p>
 <p>Par défaut Tock configure automatiquement ses logs et quelques propriétés permettent de modifier la configuration.</p>
 <p>Il est possible de configurer finement les logs en fonction des besoins, notamment avec des fichiers de 
 configuration Logback ou avec Docker Compose.</p>
 <h4 id="auto-configuration">Auto-configuration</h4>
 <p>Par défaut, en l'absence de configuration spécifique, Tock configure ses logs automatiquement grâce à la classe 
 <a href="https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/LogbackConfigurator.kt"><code>LogbackConfigurator</code></a>.
-Celle-ci configure <a href="http://logback.qos.ch/">Logback</a> programmatiquement, avec le comportement suivant :</p>
+Celle-ci configure <a href="https://logback.qos.ch/">Logback</a> programmatiquement, avec le comportement suivant :</p>
 <ul>
 <li>Niveau de log général <code>DEBUG</code> si <code>tock_env=dev</code> (par défaut), ou <code>INFO</code> pour les autres environnements et la production<ul>
 <li>Exception pour les logs <code>org.mongodb.driver</code> toujours à <code>INFO</code></li>
@@ -4964,7 +4966,7 @@ directement en ligne de commande, soit dans un descripteur type <code>docker-com
 </div>
 </div>
 <h4 id="fichiers-logback">Fichiers Logback</h4>
-<p>Il est possible de configurer finement les logs Tock en configurant directement <a href="http://logback.qos.ch/">Logback</a>.
+<p>Il est possible de configurer finement les logs Tock en configurant directement <a href="https://logback.qos.ch/">Logback</a>.
 Pour cela, différentes possibilités existent, notamment des fichiers de configuration en format XML ou Groovy. 
 Ci-dessous un exemple de configuration :</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">logback.xml</label><label for="__tabbed_4_2">logback.groovy</label></div>
@@ -5024,9 +5026,9 @@ Ci-dessous un exemple de configuration :</p>
 <p>De nombreuses possibilités sont offertes pour configurer les logs grâce à ces fichiers de configuration :
 niveaux de logs ajustés en fonction des packages/frameworks embarqués, modification du pattern par défaut, 
 journalisation de logs fichiers et archivage auto avec un 
-<a href="http://logback.qos.ch/manual/appenders.html#RollingFileAppender"><code>RollingFileAppender</code></a>, redirection des logs 
+<a href="https://logback.qos.ch/manual/appenders.html#RollingFileAppender"><code>RollingFileAppender</code></a>, redirection des logs 
 vers un serveur de base de données ou email, etc.
-Pour en savoir plus, se référer à la <a href="http://logback.qos.ch/manual/configuration.html">documentation Logback</a>.</p>
+Pour en savoir plus, se référer à la <a href="https://logback.qos.ch/manual/configuration.html">documentation Logback</a>.</p>
 <p>Une fois le fichier de configuration Logback créé, il faut s'assurer que celui-ci est dans la <em>classpath</em> du 
 composant Tock et que Logback l'identifie comme la configuration à suivre (pour cela on utilise généralement 
 la propriété <code>-Dlogback.configurationFile</code> au démarrage du composant Java).</p>
@@ -5429,7 +5431,7 @@ exemple d'implémentation de Tock dans Docker Compose.</p>
     <span class="md-icon" title="Dernière mise à jour">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="3 mai 2023 12:21:19 UTC">3 mai 2023</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="9 octobre 2026 16:17:42 UTC">9 octobre 2026</span>
   </span>
 
     

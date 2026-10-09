@@ -6,6 +6,8 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="The main notions of Tock: applications, connectors, intents, entities, stories, and the generative AI vocabulary.">
+      
       
       
       
@@ -1356,7 +1358,7 @@
   <span class="md-ellipsis">
     
   
-    Rag settings
+    RAG settings
   
 
     
@@ -4843,125 +4845,82 @@ answers them without calling the LLM (see <a href="gen-ai/rag-exclusion.html">RA
 <p>The Python service that runs the generative AI features (RAG, sentence generation, playground...) and calls the
 LLM, embedding, vector store and observability providers (see <a href="gen-ai/index.html">Gen AI</a>).</p>
 <h2 id="terms-mappings">Terms &amp; Mappings</h2>
-<p>The tables below provide mappings between terms used in Tock and other conversational
-solutions:</p>
+<p>The table below gives approximate mappings between the terms used in Tock and other conversational solutions:</p>
 <table>
 <thead>
 <tr>
 <th>Tock</th>
-<th>DialogFlow</th>
-<th>Alexa</th>
-<th>Watson</th>
+<th>Dialogflow CX</th>
+<th>Amazon Lex V2</th>
+<th>IBM watsonx Assistant</th>
+<th>Microsoft Copilot Studio</th>
+<th>Rasa</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Intent</td>
-<td>Intent</td>
-<td>Intent</td>
-<td>Intent</td>
-</tr>
-<tr>
-<td>Entity</td>
-<td>Entity</td>
-<td>Entity / Slot Value</td>
-<td>Entity</td>
-</tr>
-<tr>
-<td>Sentence</td>
-<td>Query</td>
-<td>Utterance / Slot</td>
-<td>Message</td>
-</tr>
-<tr>
-<td>Story</td>
-<td>Context</td>
-<td></td>
-<td>Dialog / Node</td>
-</tr>
-<tr>
-<td>Builtin Story</td>
-<td>Fulfillment</td>
-<td>Request Handler</td>
-<td>Webhook</td>
+<td>Application</td>
+<td>Agent</td>
+<td>Bot</td>
+<td>Assistant</td>
+<td>Agent</td>
+<td>Assistant</td>
 </tr>
 <tr>
 <td>Connector</td>
 <td>Integration</td>
-<td></td>
-<td>Integration / Channel</td>
-</tr>
-<tr>
-<td>Configuration</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Application</td>
-<td>Project / Agent</td>
-<td>Skill</td>
-<td>Skill / Assistant</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>Tock</th>
-<th>RASA</th>
-<th>DYDU <em>(Do You Dream Up)</em></th>
-<th>Clevy</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Intent</td>
-<td>Intent</td>
-<td>Reword</td>
-<td>Question</td>
-</tr>
-<tr>
-<td>Entity</td>
-<td>Entity</td>
-<td>Group</td>
-<td></td>
-</tr>
-<tr>
-<td>Sentence</td>
-<td>User input</td>
-<td>Sentence</td>
-<td>Reformulation</td>
-</tr>
-<tr>
-<td>Story</td>
-<td>Story</td>
-<td>Knowledge</td>
-<td>Knowledge</td>
-</tr>
-<tr>
-<td>Builtin Story</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Connector</td>
-<td></td>
-<td>Channel</td>
 <td>Channel integration</td>
+<td>Integration / Channel</td>
+<td>Channel</td>
+<td>Channel connector</td>
 </tr>
 <tr>
-<td>Configuration</td>
-<td></td>
-<td>Space</td>
-<td></td>
+<td>Intent</td>
+<td>Intent</td>
+<td>Intent</td>
+<td>Intent</td>
+<td>Topic trigger</td>
+<td>Intent</td>
 </tr>
 <tr>
-<td>Application</td>
-<td>Domain</td>
-<td>Bot</td>
-<td></td>
+<td>Entity</td>
+<td>Entity type</td>
+<td>Slot type / Slot</td>
+<td>Entity</td>
+<td>Entity</td>
+<td>Entity / Slot</td>
+</tr>
+<tr>
+<td>Sentence</td>
+<td>Training phrase</td>
+<td>Sample utterance</td>
+<td>User example</td>
+<td>Trigger phrase</td>
+<td>Training example</td>
+</tr>
+<tr>
+<td>Story</td>
+<td>Flow / Page</td>
+<td>Intent (with its slots)</td>
+<td>Action</td>
+<td>Topic</td>
+<td>Flow / Story</td>
+</tr>
+<tr>
+<td>Story programmed in Kotlin</td>
+<td>Webhook</td>
+<td>Lambda function</td>
+<td>Custom extension</td>
+<td>Power Automate flow</td>
+<td>Custom action</td>
+</tr>
+<tr>
+<td>RAG</td>
+<td>Data store agent</td>
+<td><code>AMAZON.QnAIntent</code></td>
+<td>Conversational search</td>
+<td>Knowledge sources</td>
+<td>Enterprise Search</td>
 </tr>
 </tbody>
 </table>
@@ -5260,7 +5219,7 @@ this or that channel.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 7, 2025 10:16:52 UTC">February 7, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 9, 2026 16:17:42 UTC">October 9, 2026</span>
   </span>
 
     

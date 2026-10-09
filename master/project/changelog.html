@@ -6,6 +6,8 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="The main changes of each Tock release.">
+      
       
       
       
@@ -1081,7 +1083,7 @@
   <span class="md-ellipsis">
     
   
-    Rag settings
+    RAG settings
   
 
     
@@ -4175,6 +4177,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#2691-unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        26.9.1 (unreleased)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#2690-2026-09-29" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4292,6 +4305,17 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#2691-unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        26.9.1 (unreleased)
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#2690-2026-09-29" class="md-nav__link">
@@ -4449,6 +4473,15 @@ The complete list of changes (pull requests, contributors) is available in the
 <a href="https://github.com/theopenconversationkit/tock/releases">GitHub releases</a>.</p>
 <p>Tock versions follow the <code>YY.M.patch</code> scheme: <code>26.3.x</code> is the release line started in March 2026.
 Artifacts are published on <a href="https://central.sonatype.com/namespace/ai.tock">Maven Central</a> under the <code>ai.tock</code> group.</p>
+<h2 id="2691-unreleased">26.9.1 (unreleased)</h2>
+<ul>
+<li>Removed connectors: Alexa, Google Assistant, Twitter, Apple Business Chat and Rocket.Chat,
+  and the Chatbase analytics module (see <a href="../operate/upgrade.html#2691">Upgrade</a>)</li>
+<li><em>Tock Studio</em>: the <em>Alexa Export</em> advanced option is removed</li>
+<li>Teams: request timeout set by the new <code>tock_teams_request_timeout_ms</code> property</li>
+<li>Web connector: the events missed by an SSE client are queued again correctly</li>
+<li>Security updates of the dependencies (Angular, LangChain)</li>
+</ul>
 <h2 id="2690-2026-09-29">26.9.0 (2026-09-29)</h2>
 <ul>
 <li>Java 21 is now the minimum version</li>
@@ -4819,7 +4852,7 @@ Artifacts are published on <a href="https://central.sonatype.com/namespace/ai.to
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 9, 2026 11:48:26 UTC">October 9, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 9, 2026 16:17:42 UTC">October 9, 2026</span>
   </span>
 
     
