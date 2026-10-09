@@ -43,27 +43,11 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-connector-ga</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-connector-google-chat</artifactId>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-connector-alexa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-connector-slack</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-connector-rocketchat</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-connector-twitter</artifactId>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
@@ -80,10 +64,6 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-connector-mattermost</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-connector-businesschat</artifactId>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>

@@ -114,5 +114,5 @@ val story = story("story") { bus ->
 
 ### Other options
 
-Look at [KDoc](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector.slack/index.html)
+Look at [KDoc](https://javadoc.io/doc/ai.tock/tock-bot-connector-slack/latest/ai/tock/bot/connector/slack/package-summary.html)
  for other options

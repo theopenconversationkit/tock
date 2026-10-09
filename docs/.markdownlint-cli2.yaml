@@ -1,0 +1,24 @@
+# Configuration of markdownlint (https://github.com/DavidAnson/markdownlint), run by the CI on the documentation.
+# Only a few rules are enabled: the ones that catch rendering problems (headings, lists, blockquotes, links, images).
+# Run it locally from the repository root:
+#   npx markdownlint-cli2 --config docs/.markdownlint-cli2.yaml "docs/docs/**/*.md"
+config:
+  default: false
+  # Heading levels only increment by one level at a time
+  MD001: true
+  # A single H1 per page (the front matter title is not counted)
+  MD025:
+    front_matter_title: ""
+  # Blank line inside a blockquote, which splits it in two
+  MD028: true
+  # Lists surrounded by blank lines, otherwise Python-Markdown does not render them
+  MD032: true
+  # Empty links
+  MD042: true
+  # Images with an alternative text
+  MD045: true
+  # Reversed link syntax (text)[url]
+  MD011: true
+
+ignores:
+  - "**/prompt-examples/**"

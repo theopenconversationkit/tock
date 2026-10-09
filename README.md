@@ -1,4 +1,4 @@
-[![Build Status](https://app.travis-ci.com/theopenconversationkit/tock.png)](https://app.travis-ci.com/github/theopenconversationkit/tock)
+[![Build Status](https://github.com/theopenconversationkit/tock/actions/workflows/validate-build.yml/badge.svg?branch=master)](https://github.com/theopenconversationkit/tock/actions/workflows/validate-build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/ai.tock/tock-root.svg)](https://search.maven.org/search?q=tock)
 [![Release Date](https://img.shields.io/github/release-date/theopenconversationkit/tock)](https://github.com/theopenconversationkit/tock/releases)
 
@@ -18,12 +18,14 @@ _Curious about what Tock is or, who is using it? Check out our [website](https:/
 
 Open Conversational AI platform to build Bots:
 
-* _Natural Language Processing_ open source stack, compatible with OpenNLP, Stanford, Rasa and more
-* _Tock Studio_ user interface to build stories and analytics
+* _Generative AI_: RAG answers from your documents, with OpenAI, Azure OpenAI, AWS Bedrock or Ollama models
+  and PGVector or OpenSearch vector stores, combined with deterministic stories
+* _Natural Language Processing_ open source stack, compatible with OpenNLP, Rasa, Amazon SageMaker and more
+* _Tock Studio_ user interface to build stories, configure the generative AI and analyze conversations
 * _Conversational DSL_ for Kotlin, Nodejs, Python and REST API
-* _Built-in connectors_ for numerous text/voice channels: Messenger, WhatsApp, Google Assistant, Alexa, Twitter and more
-* _Provided toolkits_ for custom Web/Mobile integration with React and Flutter
-* _Deploy anywhere_ in the Cloud or On-Premise with Docker
+* _Built-in connectors_ for numerous channels: Web, WhatsApp, Messenger, Teams, Slack, Google Chat and more
+* _Provided toolkits_ for custom Web integration with React and Vue
+* _Deploy anywhere_ in the Cloud or On-Premise with Docker or Kubernetes (Helm chart)
  
 🏠 Home: [https://doc.tock.ai](https://doc.tock.ai)
  

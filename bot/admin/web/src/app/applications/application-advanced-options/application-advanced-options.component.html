@@ -1,4 +1,4 @@
-@if (!exportAlexa && !tokenizerProperties) {
+@if (!tokenizerProperties) {
 <div>
   <button
     nbButton
@@ -29,53 +29,7 @@
   >
     {{ 'applications.application-advanced-options.nluEngineConfigurationButton' | transloco }}
   </button>
-  &nbsp;
-  <button
-    nbButton
-    outline
-    shape="rectangle"
-    status="primary"
-    (click)="exportAlexa = true"
-  >
-    {{ 'applications.application-advanced-options.alexaExportButton' | transloco }}
-  </button>
 </div>
-} @if (exportAlexa) {
-<nb-card>
-  <nb-card-body>
-    <div class="d-flex">
-      <nb-select
-        [placeholder]="'applications.application-advanced-options.selectLocalePlaceholder' | transloco"
-        [(ngModel)]="alexaLocale"
-        class="mr-3"
-      >
-        @for (locale of application.supportedLocales; track locale) {
-        <nb-option [value]="locale">
-          {{ state.localeName(locale) }}
-        </nb-option>
-        }
-      </nb-select>
-      <button
-        nbButton
-        outline
-        status="primary"
-        size="small"
-        (click)="exportAlexa = false"
-      >
-        {{ 'applications.application-advanced-options.cancelButton' | transloco }}
-      </button>
-      <button
-        nbButton
-        status="primary"
-        size="small"
-        style="margin-left: 10px"
-        (click)="downloadAlexaExport()"
-      >
-        {{ 'applications.application-advanced-options.exportButton' | transloco }}
-      </button>
-    </div>
-  </nb-card-body>
-</nb-card>
 } @if (tokenizerProperties) {
 <nb-card>
   <nb-card-body>
