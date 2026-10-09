@@ -238,6 +238,7 @@
     "create_done_title": "Index created",
     "create_done_switch": "{{projected}} entry(ies) indexed. The bot now uses this new index.",
     "create_done_snapshot": "{{projected}} entry(ies) indexed. Session id: {{indexSessionId}}",
+    "create_done_failures": "{{projected}} entry(ies) indexed, {{failed}} failed. The bot was not switched to this new index. Session id: {{indexSessionId}}",
     "create_done_copy_button": "Copy the id",
     "create_done_close_button": "Close",
     "session_id_copied": "Session id copied",

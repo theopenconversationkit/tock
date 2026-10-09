@@ -119,7 +119,9 @@ class KnowledgeBaseJobProcessor(
             dao.saveJob(job)
             ids.forEach { id ->
                 kotlinx.coroutines.currentCoroutineContext().ensureActive()
-                val entry = dao.entries(job.namespace, job.botId).firstOrNull { it._id == id }
+                // Targeted read: a fresh per-entry read is needed to see changes made while this job runs, but it must
+                // not reload and deserialize the whole corpus on every iteration (that was quadratic under the lock).
+                val entry = dao.entry(job.namespace, job.botId, id)
                 val projection = projections[id]
                 try {
                     if (target != null) {
@@ -181,14 +183,25 @@ class KnowledgeBaseJobProcessor(
             }
             if (create && job.switchIndex && job.failures.isEmpty()) {
                 check(target != null && ids.isNotEmpty()) { "knowledge-base.validation.index_configuration" }
-                val current = checkNotNull(ragDAO.findByNamespaceAndBotId(job.namespace, job.botId))
-                val freshTarget = service.target(job.namespace, job.botId, target.session)
-                check(freshTarget?.id == target.id && freshTarget.embeddingModel == target.embeddingModel) { "knowledge-base.job.configuration_changed" }
-                check(sessionMatches(current.indexSessionId, job)) { "knowledge-base.job.configuration_changed" }
-                // Point the bot at the new collection. Never touch `enabled`: switching the index and activating RAG
-                // are two different actions.
-                val updated = current.copy(indexSessionId = target.session)
-                if (current != updated) RAGService.switchKnowledgeBaseIndex(current, updated)
+                // `ids.isNotEmpty()` does not prove the collection was created: an entry can sit in `ids` purely by
+                // pendingJobId (e.g. unpublished while this job waited) and produce no write at all. Probe the collection
+                // and switch only onto a READY one, never onto a MISSING (empty, uncertified) collection. A probe failure
+                // (transient outage) must leave the bot on its current index, so a job that cannot confirm the collection
+                // completes WITHOUT switching rather than guessing. The probe is a non-creating raw read, so confirming
+                // here cannot itself materialize an empty collection. `job.projected` is deliberately NOT used as proof:
+                // it is reset to 0 when a RUNNING job is resumed, so a crash could make an already-created collection
+                // look empty.
+                val confirmed = runCatching { service.probe(target) }.getOrNull()
+                if (confirmed?.state == KnowledgeBaseIndexState.READY) {
+                    val current = checkNotNull(ragDAO.findByNamespaceAndBotId(job.namespace, job.botId))
+                    val freshTarget = service.target(job.namespace, job.botId, target.session)
+                    check(freshTarget?.id == target.id && freshTarget.embeddingModel == target.embeddingModel) { "knowledge-base.job.configuration_changed" }
+                    check(sessionMatches(current.indexSessionId, job)) { "knowledge-base.job.configuration_changed" }
+                    // Point the bot at the new collection. Never touch `enabled`: switching the index and activating RAG
+                    // are two different actions.
+                    val updated = current.copy(indexSessionId = target.session)
+                    if (current != updated) RAGService.switchKnowledgeBaseIndex(current, updated)
+                }
             }
             dao.saveJob(job.copy(state = KnowledgeBaseJobState.COMPLETED, endedAt = Instant.now()))
         } catch (e: Exception) {

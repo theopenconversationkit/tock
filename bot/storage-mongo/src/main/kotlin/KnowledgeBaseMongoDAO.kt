@@ -28,6 +28,7 @@ import org.litote.kmongo.deleteMany
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
+import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.`in`
@@ -62,6 +63,17 @@ internal object KnowledgeBaseMongoDAO : KnowledgeBaseDAO {
         namespace: String,
         botId: String,
     ): List<KnowledgeBaseEntry> = entries.find(KnowledgeBaseEntry::namespace eq namespace, KnowledgeBaseEntry::botIds `in` listOf(botId)).toList()
+
+    override fun entry(
+        namespace: String,
+        botId: String,
+        id: String,
+    ): KnowledgeBaseEntry? =
+        entries.findOne(
+            KnowledgeBaseEntry::_id eq id,
+            KnowledgeBaseEntry::namespace eq namespace,
+            KnowledgeBaseEntry::botIds `in` listOf(botId),
+        )
 
     override fun saveEntry(entry: KnowledgeBaseEntry) {
         entries.save(entry)

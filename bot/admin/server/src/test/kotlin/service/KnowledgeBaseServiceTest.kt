@@ -602,6 +602,12 @@ private class MemoryKnowledgeBaseDAO : KnowledgeBaseDAO {
         botId: String,
     ) = entries.values.filter { it.namespace == namespace && botId in it.botIds }
 
+    override fun entry(
+        namespace: String,
+        botId: String,
+        id: String,
+    ) = entries[id]?.takeIf { it.namespace == namespace && botId in it.botIds }
+
     override fun saveEntry(entry: KnowledgeBaseEntry) {
         entries[entry._id] = entry
     }

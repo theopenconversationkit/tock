@@ -170,6 +170,62 @@ async def stored_rows(factory) -> list[KnowledgeBaseStoredRow]:
     ]
 
 
+async def owned_entries(factory, candidate_ids: list[str]) -> dict[str, str]:
+    """
+    Ownership map row_id -> entry_id, restricted to the given candidate ids that are internal_kb rows of this
+    collection. Only the id and ownership metadata are read, never the document content or a recomputed hash: this
+    answers "does this row belong to this entry?" for a deletion, not a full corpus inventory (that was quadratic
+    when the worker deletes one entry at a time). A collection whose table does not exist yet yields an empty map,
+    so deleting from an absent/empty index is a no-op rather than an error.
+    """
+    if not candidate_ids:
+        return {}
+    if isinstance(factory, PGVectorFactory):
+        async with factory.pool.async_engine.connect() as connection:
+            if (
+                await connection.execute(
+                    text("SELECT to_regclass('langchain_pg_embedding')")
+                )
+            ).scalar() is None:
+                return {}
+            result = await connection.execute(
+                text("""
+                SELECT e.id, e.cmetadata
+                FROM langchain_pg_embedding e
+                JOIN langchain_pg_collection c ON c.uuid = e.collection_id
+                WHERE c.name = :name
+                  AND e.cmetadata->>'source_type' = 'internal_kb'
+                  AND e.id = ANY(:ids)
+            """),
+                {'name': factory.index_name, 'ids': candidate_ids},
+            )
+            rows = [(r.id, r.cmetadata or {}) for r in result]
+    else:
+
+        def read():
+            client = factory.get_vector_store().client
+            if not client.indices.exists(index=factory.index_name):
+                return []
+            response = client.mget(
+                index=factory.index_name, body={'ids': candidate_ids}
+            )
+            return [
+                (doc['_id'], doc['_source'].get('metadata', {}))
+                for doc in response.get('docs', [])
+                if doc.get('found')
+                and doc['_source'].get('metadata', {}).get('source_type')
+                == 'internal_kb'
+            ]
+
+        rows = await asyncio.to_thread(read)
+    return {
+        str(identifier): str(
+            metadata.get('kb_entry_id') or metadata.get('id') or identifier
+        )
+        for identifier, metadata in rows
+    }
+
+
 async def inspect_rows(
     request: KnowledgeBaseTargetRequest,
 ) -> KnowledgeBaseRowsResponse:
@@ -291,7 +347,14 @@ async def delete_entries(
     request: KnowledgeBaseDeleteRequest,
 ) -> KnowledgeBaseWriteResponse:
     factory = factory_for(request)
-    owned = {row.row_id: row.entry_id for row in await stored_rows(factory)}
+    candidates = {
+        identifier
+        for entry in request.entries
+        for identifier in (
+            entry.row_ids or [row_id(request.index_name, entry.entry_id)]
+        )
+    }
+    owned = await owned_entries(factory, list(candidates))
     results = []
     for entry in request.entries:
         ids = entry.row_ids or [row_id(request.index_name, entry.entry_id)]

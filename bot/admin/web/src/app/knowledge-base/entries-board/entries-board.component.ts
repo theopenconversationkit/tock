@@ -500,14 +500,26 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
    * to the created one instead.
    */
   private notifyIndexCreated(job: KnowledgeBaseJob, switched: boolean | null): void {
-    const botSwitched = switched ?? (!!job.indexSessionId && job.syncStatus?.indexSessionId === job.indexSessionId);
+    // Whether the bot actually switched is a server fact, not the dialog checkbox: the worker only switches when the
+    // create finished with no failures onto a confirmed collection, and `enqueue` may even return a different,
+    // already-active create job than the one this checkbox described. Trust the resulting bot config when the sync
+    // status is available; fall back to the requested intent only when it is not, and never claim a switch on failures.
+    const botSwitched = job.syncStatus
+      ? !!job.indexSessionId && job.syncStatus.indexSessionId === job.indexSessionId
+      : switched === true && job.failures.length === 0;
 
     const subtitle = botSwitched
       ? this.transloco.translate('knowledge-base.job.create_done_switch', { projected: job.projected })
-      : this.transloco.translate('knowledge-base.job.create_done_snapshot', {
-          projected: job.projected,
-          indexSessionId: job.indexSessionId
-        });
+      : job.failures.length > 0
+        ? this.transloco.translate('knowledge-base.job.create_done_failures', {
+            projected: job.projected,
+            failed: job.failures.length,
+            indexSessionId: job.indexSessionId
+          })
+        : this.transloco.translate('knowledge-base.job.create_done_snapshot', {
+            projected: job.projected,
+            indexSessionId: job.indexSessionId
+          });
 
     const closeAction = {
       actionName: this.transloco.translate('knowledge-base.job.create_done_close_button'),

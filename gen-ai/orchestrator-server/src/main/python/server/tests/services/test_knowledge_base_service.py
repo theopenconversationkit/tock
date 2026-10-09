@@ -26,9 +26,6 @@ from gen_ai_orchestrator.routers.requests.knowledge_base_requests import (
     KnowledgeBaseIndexRequest,
     KnowledgeBaseTargetRequest,
 )
-from gen_ai_orchestrator.routers.responses.knowledge_base_responses import (
-    KnowledgeBaseStoredRow,
-)
 from gen_ai_orchestrator.services.knowledge_base import (
     knowledge_base_service as kb,
 )
@@ -291,11 +288,8 @@ async def test_delete_is_collection_scoped_and_cannot_remove_documentary_rows():
     factory = MagicMock(spec=PGVectorFactory)
     store = SimpleNamespace(adelete=AsyncMock())
     factory.get_vector_store.return_value = store
-    owned = [
-        KnowledgeBaseStoredRow(
-            row_id='owned', entry_id='entry', content_hash='hash', title='Title'
-        )
-    ]
+    # Only 'owned' belongs to this entry; 'documentary' and 'another-entry' are not in the ownership map.
+    owned = {'owned': 'entry'}
     deletion = KnowledgeBaseDeleteRequest(
         index_name='ns_test_one',
         index_name_prefix='ns_test_',
@@ -305,7 +299,7 @@ async def test_delete_is_collection_scoped_and_cannot_remove_documentary_rows():
     )
     with (
         patch.object(kb, 'factory_for', return_value=factory),
-        patch.object(kb, 'stored_rows', AsyncMock(return_value=owned)),
+        patch.object(kb, 'owned_entries', AsyncMock(return_value=owned)),
     ):
         result = await kb.delete_entries(deletion)
     store.adelete.assert_awaited_once_with(['owned'], collection_only=True)
@@ -317,7 +311,7 @@ async def test_delete_missing_entry_is_idempotent():
     factory = MagicMock(spec=PGVectorFactory)
     with (
         patch.object(kb, 'factory_for', return_value=factory),
-        patch.object(kb, 'stored_rows', AsyncMock(return_value=[])),
+        patch.object(kb, 'owned_entries', AsyncMock(return_value={})),
     ):
         response = await kb.delete_entries(
             KnowledgeBaseDeleteRequest(
@@ -347,15 +341,37 @@ async def test_pgvector_real_upsert_session_isolation_deletion_and_external_drif
     )
     embedding = DeterministicFakeEmbedding(size=8)
     em_factory = SimpleNamespace(get_embedding_model=lambda: embedding)
-    first = request(vector_store_setting=setting)
+    # A creation job carries collection_metadata; a plain write does not. On a fresh database the collection does not
+    # exist yet, so the first write of each session must be a creating one, otherwise index_entries refuses it.
+    creation_metadata = {
+        'schema_version': 1,
+        'created_at': '2026-01-01T00:00:00+00:00',
+        'origin': 'tock_kb',
+    }
+    first = request(vector_store_setting=setting, collection_metadata=creation_metadata)
     second = request(
         vector_store_setting=setting,
         index_name='ns_test_bot_kb_session_two',
         index_session_id='two',
+        collection_metadata=creation_metadata,
     )
     with patch.object(kb, 'get_em_factory', return_value=em_factory):
-        await kb.index_entries(first)
-        await kb.index_entries(second)
+        # Without creation metadata an absent collection is not created implicitly: the write is refused, nothing is
+        # written, and no table is left behind for the real creations below.
+        absent = await kb.index_entries(
+            request(
+                vector_store_setting=setting,
+                index_name='ns_test_bot_kb_session_absent',
+                index_session_id='absent',
+            )
+        )
+        assert absent.results[0].error == 'knowledge-base.job.index_missing'
+
+        created_first = await kb.index_entries(first)
+        created_second = await kb.index_entries(second)
+        for created in (created_first, created_second):
+            assert created.results[0].error is None
+            assert created.results[0].count == 1
         changed = first.model_copy(
             update={
                 'entries': [
@@ -576,11 +592,8 @@ async def test_opensearch_pinned_chunk_outside_results_has_no_rank_and_is_not_re
 async def test_opensearch_delete_uses_refreshing_sync_helper_and_preserves_other_sources():
     store = SimpleNamespace(delete=MagicMock(return_value=True))
     factory = SimpleNamespace(get_vector_store=lambda: store)
-    owned = [
-        KnowledgeBaseStoredRow(
-            row_id='owned', entry_id='entry', content_hash='hash', title='Title'
-        )
-    ]
+    # 'documentary' is absent from the ownership map, so it must never reach the delete call.
+    owned = {'owned': 'entry'}
     deletion = KnowledgeBaseDeleteRequest(
         index_name='index',
         index_name_prefix='index',
@@ -588,7 +601,7 @@ async def test_opensearch_delete_uses_refreshing_sync_helper_and_preserves_other
     )
     with (
         patch.object(kb, 'factory_for', return_value=factory),
-        patch.object(kb, 'stored_rows', AsyncMock(return_value=owned)),
+        patch.object(kb, 'owned_entries', AsyncMock(return_value=owned)),
     ):
         response = await kb.delete_entries(deletion)
     store.delete.assert_called_once_with(['owned'])

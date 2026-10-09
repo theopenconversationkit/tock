@@ -57,6 +57,7 @@ import ai.tock.shared.provide
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import mu.KotlinLogging
 import java.net.URI
 import java.security.MessageDigest
 import java.time.Instant
@@ -70,6 +71,8 @@ class KnowledgeBaseService(
     private val indexing: KnowledgeBaseIndexingService = injector.provide(),
 ) {
     companion object {
+        private val logger = KotlinLogging.logger {}
+
         val default: KnowledgeBaseService by lazy { KnowledgeBaseService() }
 
         fun hash(value: String): String = MessageDigest.getInstance("SHA-256").digest(value.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
@@ -265,7 +268,7 @@ class KnowledgeBaseService(
         namespace: String,
         botId: String,
         id: String,
-    ): KnowledgeBaseEntry = dao.entries(namespace, botId).firstOrNull { it._id == id && !it.deleted } ?: throw NotFoundException(404, "Knowledge base entry not found")
+    ): KnowledgeBaseEntry = dao.entry(namespace, botId, id)?.takeIf { !it.deleted } ?: throw NotFoundException(404, "Knowledge base entry not found")
 
     fun sync(
         namespace: String,
@@ -546,7 +549,17 @@ class KnowledgeBaseService(
             job.projected,
             job.removed,
             job.indexSessionId,
-            if (job.state in listOf(KnowledgeBaseJobState.COMPLETED, KnowledgeBaseJobState.FAILED)) sync(job.namespace, job.botId) else null,
+            // The complementary sync status is best-effort: `sync()` re-probes the provider, which deliberately
+            // propagates outages. A finished job's persisted state (COMPLETED/FAILED, error, failures) must stay
+            // readable even when that probe fails, so GET /jobs/:id never turns into a 500 that makes the dashboard
+            // lose track of the job. Consumers already treat a null syncStatus as "no post-job summary available".
+            if (job.state in listOf(KnowledgeBaseJobState.COMPLETED, KnowledgeBaseJobState.FAILED)) {
+                runCatching { sync(job.namespace, job.botId) }
+                    .onFailure { logger.warn(it) { "Knowledge base job ${job._id}: sync status unavailable, returning persisted job only." } }
+                    .getOrNull()
+            } else {
+                null
+            },
             job.error,
         )
 

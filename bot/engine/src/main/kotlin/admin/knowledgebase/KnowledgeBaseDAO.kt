@@ -27,6 +27,17 @@ interface KnowledgeBaseDAO {
         botId: String,
     ): List<KnowledgeBaseEntry>
 
+    /**
+     * Single entry by id, scoped to the namespace/bot, without loading the whole corpus. Returns the raw entry
+     * including deleted ones (the projection worker must see them); callers that want only live entries filter
+     * `deleted` themselves. Null when no entry with that id belongs to this bot.
+     */
+    fun entry(
+        namespace: String,
+        botId: String,
+        id: String,
+    ): KnowledgeBaseEntry?
+
     fun saveEntry(entry: KnowledgeBaseEntry)
 
     fun pendingEntries(): List<KnowledgeBaseEntry>
