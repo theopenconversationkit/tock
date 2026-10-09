@@ -70,10 +70,7 @@
     "uploadDumpButton": "Importer un dump",
     "triggerBuildButton": "Déclencher la compilation",
     "nluEngineConfigurationButton": "Configuration du moteur NLU",
-    "alexaExportButton": "Export Alexa",
-    "selectLocalePlaceholder": "Sélectionner la locale à exporter",
     "cancelButton": "Annuler",
-    "exportButton": "Exporter",
     "tokenizerPropertiesLabel": "Propriétés du tokeniseur",
     "tokenizerPropertiesPlaceholder": "Propriétés du tokeniseur",
     "intentClassifierPropertiesLabel": "Propriétés du classifieur d'intentions",
@@ -82,9 +79,7 @@
     "entityClassifierPropertiesPlaceholder": "Propriétés du classifieur d'entités",
     "updateConfigurationButton": "Mettre à jour la configuration",
     "buildStarted": "Compilation de l'application démarrée",
-    "buildTitle": "Compilation",
-    "alexaExportProvided": "Fichier d'export Alexa fourni",
-    "alexaTitle": "Alexa"
+    "buildTitle": "Compilation"
   },
   "application-upload": {
     "uploadDumpTitle": "Importer un dump",

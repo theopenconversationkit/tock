@@ -32,7 +32,6 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.TockUserRole
 import ai.tock.translator.I18nDAO
-import chat.rocket.common.util.ifNull
 import com.github.salomonbrys.kodein.instance
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -256,13 +255,13 @@ object SynchronizationService {
 
         botConfigurationDAO
             .getConfigurationByPath(nonConflictingFirstPath)
-            .ifNull { BotAdminService.saveApplicationConfiguration(first.copy(path = nonConflictingFirstPath)) }
+            ?: BotAdminService.saveApplicationConfiguration(first.copy(path = nonConflictingFirstPath))
         botConfigurationDAO
             .getConfigurationByPath(firstPath)
-            .ifNull { BotAdminService.saveApplicationConfiguration(second.copy(path = firstPath)) }
+            ?: BotAdminService.saveApplicationConfiguration(second.copy(path = firstPath))
         botConfigurationDAO
             .getConfigurationByPath(secondPath)
-            .ifNull { BotAdminService.saveApplicationConfiguration(first.copy(path = secondPath)) }
+            ?: BotAdminService.saveApplicationConfiguration(first.copy(path = secondPath))
         val firstUpdated = BotAdminService.getBotConfigurationById(first._id)
         val secondUpdated = BotAdminService.getBotConfigurationById(second._id)
         return firstUpdated!! to secondUpdated!!

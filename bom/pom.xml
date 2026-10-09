@@ -1039,31 +1039,6 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>travis-deploy</id>
-            <activation>
-                <property>
-                    <name>travis</name>
-                </property>
-            </activation>
-            <properties>
-                <gpg.skip>false</gpg.skip>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonatype.central</groupId>
-                        <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>${plugin.publishing-maven}</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <publishingServerId>central</publishingServerId>
-                            <autoPublish>true</autoPublish>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 
 </project>

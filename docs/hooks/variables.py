@@ -1,0 +1,26 @@
+#   Copyright (C) 2025-2026 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+"""Replace {{ name }} placeholders in pages with the values of `extra.variables` in mkdocs.yml.
+
+Used for values repeated in many pages, such as the Tock version in dependency snippets.
+"""
+import re
+
+PLACEHOLDER = re.compile(r'\{\{\s*([a-z_]+)\s*\}\}')
+
+
+def on_page_markdown(markdown, *, page, config, files):
+    variables = config.extra.get('variables', {})
+    return PLACEHOLDER.sub(lambda m: str(variables.get(m.group(1), m.group(0))), markdown)

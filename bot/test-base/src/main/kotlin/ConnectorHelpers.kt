@@ -15,10 +15,6 @@
  */
 package ai.tock.bot.test
 
-import ai.tock.bot.connector.alexa.AlexaMessage
-import ai.tock.bot.connector.alexa.alexaConnectorType
-import ai.tock.bot.connector.ga.GAResponseConnectorMessage
-import ai.tock.bot.connector.ga.gaConnectorType
 import ai.tock.bot.connector.messenger.messengerConnectorType
 import ai.tock.bot.connector.messenger.model.MessengerConnectorMessage
 import ai.tock.bot.connector.slack.model.SlackConnectorMessage
@@ -32,19 +28,9 @@ import ai.tock.bot.connector.whatsapp.whatsAppConnectorType
 fun BotBusMockLog.messenger(): MessengerConnectorMessage? = message(messengerConnectorType) as? MessengerConnectorMessage
 
 /**
- * The Google Assistant message if any.
- */
-fun BotBusMockLog.ga(): GAResponseConnectorMessage? = message(gaConnectorType) as? GAResponseConnectorMessage
-
-/**
  * The Slack message if any.
  */
 fun BotBusMockLog.slack(): SlackConnectorMessage? = message(slackConnectorType) as? SlackConnectorMessage
-
-/**
- * The Alexa message if any.
- */
-fun BotBusMockLog.alexa(): AlexaMessage? = message(alexaConnectorType) as? AlexaMessage
 
 /**
  * The WhatsApp message if any.

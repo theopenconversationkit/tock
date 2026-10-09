@@ -26,6 +26,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions
+import io.vertx.core.Future
 import mu.KotlinLogging
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
@@ -111,31 +112,39 @@ internal object ChannelMongoDAO : ChannelDAO {
                     ChannelEvent::recipientId eq recipientId,
                     ChannelEvent::status eq ChannelEvent.Status.ENQUEUED,
                 ),
-            ).forEach { event ->
-                process(event, handler)
+            ).fold(Future.succeededFuture<Void>()) { future, event ->
+                // Wait for the previous event to be fully processed before handling the next one,
+                // so missed events are delivered in order.
+                future.compose { process(event, handler) }
             }
     }
 
     private fun process(
         event: ChannelEvent,
         handler: ChannelEvent.Handler,
-    ) {
+    ): Future<Void> =
         try {
-            handler(event).onComplete({ processed ->
-                if (processed) {
-                    webChannelResponseCol.updateOneById(event._id, ChannelEvent::status setTo ChannelEvent.Status.PROCESSED)
-                }
-            }, { e ->
-                logger.error(e) {
-                    "Failed to send SSE message"
-                }
-            })
+            handler(event)
+                .compose(
+                    { processed ->
+                        if (processed) {
+                            webChannelResponseCol.updateOneById(event._id, ChannelEvent::status setTo ChannelEvent.Status.PROCESSED)
+                        }
+                        Future.succeededFuture()
+                    },
+                    { e ->
+                        logger.error(e) {
+                            "Failed to send SSE message"
+                        }
+                        Future.failedFuture(e)
+                    },
+                )
         } catch (e: Exception) {
             logger.error(e) {
                 "Failed to send SSE message"
             }
+            Future.failedFuture(e)
         }
-    }
 
     override fun updateRecipientId(
         oldRecipientId: String,

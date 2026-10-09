@@ -2,13 +2,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { Application, NlpApplicationConfiguration, NlpModelConfiguration } from '../../model/application';
 import { ApplicationService } from '../../core-nlp/applications.service';
-import { saveAs } from 'file-saver-es';
-import { ApplicationScopedQuery } from '../../model/commons';
 import { NlpEngineType } from '../../model/nlp';
 import { Subject } from 'rxjs';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { ApplicationUploadComponent } from '../application-upload/application-upload.component';
-import { getExportFileName } from '../../shared/utils';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
@@ -22,8 +19,6 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
   application: Application;
   @Input()
   nlpEngineTypeChange: Subject<NlpEngineType>;
-  exportAlexa: boolean = false;
-  alexaLocale: string;
   tokenizerProperties: string;
   intentClassifierProperties: string;
   entityClassifierProperties: string;
@@ -37,9 +32,6 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.application && this.application.supportedLocales.length > 0) {
-      this.alexaLocale = this.application.supportedLocales[0];
-    }
     this.nlpEngineTypeChange.subscribe((type) => {
       this.application.nlpEngineType = type;
       if (this.tokenizerProperties) {
@@ -66,29 +58,6 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
           { duration: 2000 }
         )
       );
-  }
-
-  downloadAlexaExport(): void {
-    setTimeout((_) => {
-      const query = new ApplicationScopedQuery(this.application.namespace, this.application.name, this.alexaLocale);
-      this.applicationService.getAlexaExport(query).subscribe((blob) => {
-        this.exportAlexa = false;
-
-        const exportFileName = getExportFileName(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          'alexa',
-          'json'
-        );
-        saveAs(blob, exportFileName);
-
-        this.toastrService.show(
-          this.transloco.translate('applications.application-advanced-options.alexaExportProvided'),
-          this.transloco.translate('applications.application-advanced-options.alexaTitle'),
-          { duration: 2000 }
-        );
-      });
-    });
   }
 
   displayConfiguration(): void {
