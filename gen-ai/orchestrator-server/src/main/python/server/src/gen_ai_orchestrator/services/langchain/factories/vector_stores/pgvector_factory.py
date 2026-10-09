@@ -55,14 +55,22 @@ class PGVectorFactory(LangChainVectorStoreFactory):
 
     setting: PGVectorStoreSetting
 
-    def get_vector_store(self, async_mode: Optional[bool] = True) -> PGVector:
+    def get_vector_store(
+        self,
+        async_mode: Optional[bool] = True,
+        collection_metadata: Optional[dict] = None,
+    ) -> PGVector:
         engine = self.pool.async_engine if async_mode else self.pool.sync_engine
+        # PGVector's constructor calls get_or_create: if the collection is absent it is created, born with this
+        # collection_metadata (set once, never overwritten on later opens). Callers that must not create a collection
+        # (existence probes) never go through here — they read langchain_pg_collection directly.
         return PGVector(
             embeddings=self.embedding_function,
             collection_name=self.index_name,
             connection=engine,
             use_jsonb=True,
             async_mode=async_mode,
+            collection_metadata=collection_metadata,
         )
 
     def get_vector_store_retriever(

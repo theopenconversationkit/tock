@@ -352,6 +352,32 @@
                   formControlName="indexSessionId"
                 />
               </tock-form-control>
+
+              @if (indexStatusMissing) {
+              <p class="text-warning mt-1 mb-0">
+                <nb-icon
+                  icon="exclamation-triangle"
+                  class="mr-1"
+                ></nb-icon>
+                {{ 'rag.rag-settings.index_status_missing' | transloco }}
+              </p>
+              } @if (indexStatusUnknownModel) {
+              <p class="text-warning mt-1 mb-0">
+                <nb-icon
+                  icon="exclamation-triangle"
+                  class="mr-1"
+                ></nb-icon>
+                {{ 'rag.rag-settings.index_status_unknown_model' | transloco }}
+              </p>
+              } @if (indexStatusMismatch) {
+              <p class="text-danger mt-1 mb-0">
+                <nb-icon
+                  icon="exclamation-triangle"
+                  class="mr-1"
+                ></nb-icon>
+                {{ 'rag.rag-settings.index_status_mismatch' | transloco: { indexModel: indexStatusIndexModel, botModel: indexStatusBotModel } }}
+              </p>
+              }
             </div>
             <div class="col-12 col-lg-6 px-3">
               <tock-form-control

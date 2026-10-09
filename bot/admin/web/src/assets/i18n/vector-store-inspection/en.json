@@ -50,7 +50,9 @@
     },
     "capability_notes": {
       "hybrid_and_fts_not_implemented": "This provider only supports vector search. Full text and hybrid modes are not implemented.",
-      "inspection_not_implemented": "Vector store inspection is not implemented for this provider."
+      "inspection_not_implemented": "Vector store inspection is not implemented for this provider.",
+      "document_exploration_not_implemented": "OpenSearch document exploration is not available yet.",
+      "pinned_exact_rank_not_implemented": "Exact ranks for pinned chunks outside the retrieved results are unavailable with OpenSearch."
     },
     "step_question": "1 · Question",
     "step_retrieval": "2 · Retrieval",

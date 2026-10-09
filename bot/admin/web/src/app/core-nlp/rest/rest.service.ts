@@ -68,10 +68,12 @@ export class RestService {
     return headers;
   }
 
-  get<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
+  get<T>(path: string, parseFunction: (value: any) => T, silent = false): Observable<T> {
     return this.http.get(`${this.url}${path}`, { headers: this.headers(), withCredentials: true }).pipe(
       map((res: string) => parseFunction(res || {})),
-      catchError((e) => this.handleError(this, e))
+      // A silent call (background polling) lets the caller handle errors instead of toasting them;
+      // authentication errors still go through handleError so the login redirect is preserved.
+      catchError((e) => (silent && e?.status !== 401 && e?.status !== 403 ? observableThrowError(e) : this.handleError(this, e)))
     );
   }
 

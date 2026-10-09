@@ -1,0 +1,58 @@
+.sync-banner {
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--border-basic-color-4);
+
+  &--info {
+    border-left-color: var(--color-info-default);
+  }
+
+  &--success {
+    border-left-color: var(--color-success-default);
+  }
+
+  &--warning {
+    border-left-color: var(--color-warning-default);
+  }
+}
+
+.sync-banner-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.sync-banner-title {
+  font-weight: 600;
+}
+
+.sync-banner-message {
+  font-size: 0.85rem;
+}
+
+.sync-banner-details {
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sync-banner-warning {
+  font-size: 0.78rem;
+  color: var(--color-warning-default);
+}
+
+.sync-banner-link {
+  cursor: pointer;
+  text-decoration: underline;
+  color: var(--text-hint-color);
+
+  &:hover {
+    color: var(--text-basic-color);
+  }
+}
+
+.sync-banner-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

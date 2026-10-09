@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, forkJoin, Observable, Subject, takeUntil, pairwise, from } from 'rxjs';
+import { debounceTime, forkJoin, merge, Observable, of, Subject, switchMap, takeUntil, pairwise, from, catchError } from 'rxjs';
 import { NbDialogRef, NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 
 import { RestService } from '../../core-nlp/rest/rest.service';
@@ -11,7 +11,7 @@ import {
   QuestionAnswering_prompt,
   DocumentSearchTypes
 } from './models/engines-configurations';
-import { RagSettings } from './models';
+import { RagEmbeddingCoherence, RagIndexState, RagIndexStatus, RagSettings } from './models';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DebugViewerWindowComponent } from '../../shared/components/debug-viewer-window/debug-viewer-window.component';
@@ -59,10 +59,10 @@ interface RagSettingsForm {
 }
 
 @Component({
-    selector: 'tock-rag-settings',
-    templateUrl: './rag-settings.component.html',
-    styleUrls: ['./rag-settings.component.scss'],
-    standalone: false
+  selector: 'tock-rag-settings',
+  templateUrl: './rag-settings.component.html',
+  styleUrls: ['./rag-settings.component.scss'],
+  standalone: false
 })
 export class RagSettingsComponent implements OnInit, CanComponentDeactivate, DirtyStateGuard, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
@@ -85,22 +85,40 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
   loading: boolean = false;
 
+  /** State and embedding coherence of the collection the configured index session resolves to, refreshed as it is edited. */
+  indexStatus: RagIndexStatus | null = null;
+  private indexStatusTrigger$: Subject<void> = new Subject();
+
   @ViewChild('exportConfirmationModal') exportConfirmationModal: TemplateRef<any>;
   @ViewChild('importModal') importModal: TemplateRef<any>;
 
-  constructor(
-    private state: StateService,
-    private rest: RestService,
-    private toastrService: NbToastrService,
-    private botConfiguration: BotConfigurationService,
-    private nbWindowService: NbWindowService,
-    private nbDialogService: NbDialogService,
-    private dirtyState: DirtyStateService,
-    private translocoService: TranslocoService
-  ) {}
+  private state = inject(StateService);
+  private rest = inject(RestService);
+  private toastrService = inject(NbToastrService);
+  private botConfiguration = inject(BotConfigurationService);
+  private nbWindowService = inject(NbWindowService);
+  private nbDialogService = inject(NbDialogService);
+  private dirtyState = inject(DirtyStateService);
+  private translocoService = inject(TranslocoService);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.dirtyState.register(this);
+
+    // Index status is refreshed on load and on every edit of the session id or the embedding. Debounced,
+    // and switchMap cancels an in-flight check so a burst of edits only surfaces the last answer.
+    this.indexStatusTrigger$
+      .pipe(
+        debounceTime(400),
+        switchMap(() => this.loadIndexStatus()),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((status) => (this.indexStatus = status));
+
+    merge(this.indexSessionId.valueChanges, this.emProvider.valueChanges, this.form.get('emSetting').valueChanges)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.indexStatusTrigger$.next());
 
     this.form.valueChanges.pipe(takeUntil(this.destroy$), debounceTime(200)).subscribe(() => {
       this.setActivationDisabledState();
@@ -165,6 +183,8 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
       this.loading = true;
       this.configurations = confs;
 
+      this.indexStatus = null;
+
       if (confs.length) {
         forkJoin([this.getRagSettingsLoader()]).subscribe((res) => {
           const settings = res[0];
@@ -172,7 +192,10 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
             this.settingsBackup = deepCopy(settings);
             setTimeout(() => {
               this.initForm(settings);
+              this.indexStatusTrigger$.next();
             });
+          } else {
+            this.indexStatusTrigger$.next();
           }
 
           this.loading = false;
@@ -186,6 +209,35 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   private getRagSettingsLoader(): Observable<RagSettings> {
     const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/rag`;
     return this.rest.get<RagSettings>(url, (settings: RagSettings) => settings);
+  }
+
+  /**
+   * The candidate configuration as the save endpoint expects it. Reused as is for the read only
+   * index-status check: the server reads its `indexSessionId` and `emSetting` only, but the endpoint
+   * deserializes the full configuration DTO, exactly like the save.
+   */
+  private buildRagConfigBody(): RagSettings {
+    const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
+    delete formValue['questionCondensingLlmProvider'];
+    delete formValue['questionAnsweringLlmProvider'];
+    delete formValue['emProvider'];
+    formValue.namespace = this.state.currentApplication.namespace;
+    formValue.botId = this.state.currentApplication.name;
+    return formValue;
+  }
+
+  /** Reads the state and embedding coherence of the collection the current session id resolves to. */
+  private loadIndexStatus(): Observable<RagIndexStatus | null> {
+    const session = (this.indexSessionId.value ?? '').trim();
+
+    // A blank session resolves to NONE server side; report it directly without a round trip.
+    if (!session) {
+      return of({ indexState: RagIndexState.NONE, collectionEmbeddingModel: null, coherence: RagEmbeddingCoherence.UNKNOWN });
+    }
+
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/rag/index-status`;
+    // A failed status check must never disrupt editing: swallow the error and clear the hint.
+    return this.rest.post<RagSettings, RagIndexStatus>(url, this.buildRagConfigBody()).pipe(catchError(() => of(null)));
   }
 
   form = new FormGroup<RagSettingsForm>({
@@ -257,6 +309,29 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
   get documentSearchType(): FormControl {
     return this.form.get('documentSearchType') as FormControl;
+  }
+
+  /** No collection backs the configured session id. */
+  get indexStatusMissing(): boolean {
+    return this.indexStatus?.indexState === RagIndexState.MISSING;
+  }
+
+  /** The index exists but does not declare the model it was built with, so coherence cannot be asserted. */
+  get indexStatusUnknownModel(): boolean {
+    return this.indexStatus?.indexState === RagIndexState.READY && this.indexStatus?.coherence === RagEmbeddingCoherence.UNKNOWN;
+  }
+
+  /** The index was built with a different embedding model: the save will be refused. */
+  get indexStatusMismatch(): boolean {
+    return this.indexStatus?.coherence === RagEmbeddingCoherence.MISMATCH;
+  }
+
+  get indexStatusIndexModel(): string | null {
+    return this.indexStatus?.collectionEmbeddingModel ?? null;
+  }
+
+  get indexStatusBotModel(): string {
+    return this.form.get('emSetting')?.get('model')?.value ?? '';
   }
 
   get canSave(): boolean {
@@ -490,29 +565,36 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
           this.loading = false;
         },
-        error: (error) => {
-          this.toastrService.danger(
-            this.translocoService.translate('rag.rag-settings.an_error_occurred'),
-            this.translocoService.translate('rag.rag-settings.error_title'),
-            {
-              duration: 5000,
-              status: 'danger'
-            }
-          );
+        error: (error) => this.onSaveError(error)
+      });
+    }
+  }
 
-          if (error.error) {
-            this.nbWindowService.open(DebugViewerWindowComponent, {
-              title: this.translocoService.translate('rag.rag-settings.an_error_occurred'),
-              context: {
-                debug: error.error
-              }
-            });
-          }
+  private onSaveError(error: any): void {
+    // The server refuses a save whose embedding model contradicts the one recorded on the index.
+    const errors = error?.error?.errors;
+    const incompatibleIndex = Array.isArray(errors) && errors.some((e: any) => e?.message === 'rag.embedding.incompatible_index');
+    const messageKey = incompatibleIndex ? 'rag.rag-settings.embedding_incompatible_error' : 'rag.rag-settings.an_error_occurred';
 
-          this.loading = false;
+    this.toastrService.danger(
+      this.translocoService.translate(messageKey),
+      this.translocoService.translate('rag.rag-settings.error_title'),
+      {
+        duration: 5000,
+        status: 'danger'
+      }
+    );
+
+    if (error?.error && !incompatibleIndex) {
+      this.nbWindowService.open(DebugViewerWindowComponent, {
+        title: this.translocoService.translate('rag.rag-settings.an_error_occurred'),
+        context: {
+          debug: error.error
         }
       });
     }
+
+    this.loading = false;
   }
 
   get hasExportableData(): boolean {

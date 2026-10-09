@@ -40,3 +40,36 @@ export interface RagSettings {
   documentSearchType: string;
   maxDocumentsRetrieved: number;
 }
+
+/**
+ * State of the collection an index session id resolves to, mirrors the server side
+ * `KnowledgeBaseIndexState`.
+ * NONE: no index session configured. MISSING: an id is set but no usable collection backs it.
+ * READY: the collection exists and can be queried.
+ */
+export enum RagIndexState {
+  NONE = 'NONE',
+  MISSING = 'MISSING',
+  READY = 'READY'
+}
+
+/**
+ * Coherence of the configured embedding model against the one the index was built with, mirrors the
+ * server side `EmbeddingCoherence`. Only MISMATCH blocks the save; UNKNOWN (either side unknown) never does.
+ */
+export enum RagEmbeddingCoherence {
+  MATCH = 'MATCH',
+  MISMATCH = 'MISMATCH',
+  UNKNOWN = 'UNKNOWN'
+}
+
+/**
+ * Response of `POST /gen-ai/bots/:botId/configuration/rag/index-status`: the state and embedding
+ * coherence of the collection the candidate `indexSessionId` resolves to. Read only, computed server side.
+ */
+export interface RagIndexStatus {
+  indexState: RagIndexState;
+  /** Embedding model read from the collection's contract metadata, null when missing or absent */
+  collectionEmbeddingModel: string | null;
+  coherence: RagEmbeddingCoherence;
+}

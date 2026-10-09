@@ -1,0 +1,309 @@
+/*
+ * Copyright (C) 2017/2025 SNCF Connect & Tech
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package ai.tock.bot.admin.service
+
+import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
+import ai.tock.bot.admin.knowledgebase.KnowledgeBaseDAO
+import ai.tock.bot.admin.knowledgebase.KnowledgeBaseEntryStatus
+import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJob
+import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJobFailure
+import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJobProgress
+import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJobState
+import ai.tock.bot.admin.knowledgebase.KnowledgeBaseJobType
+import ai.tock.bot.admin.knowledgebase.KnowledgeBaseProjection
+import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseIndexState
+import ai.tock.bot.engine.user.UserLock
+import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseDeleteRequest
+import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseDeletion
+import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseDocument
+import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseIndexRequest
+import ai.tock.genai.orchestratorclient.requests.KnowledgeBaseTargetRequest
+import ai.tock.genai.orchestratorclient.services.KnowledgeBaseIndexingService
+import ai.tock.shared.Executor
+import ai.tock.shared.injector
+import ai.tock.shared.longProperty
+import ai.tock.shared.provide
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import mu.KotlinLogging
+import java.time.Duration
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.util.concurrent.atomic.AtomicBoolean
+
+class KnowledgeBaseJobProcessor(
+    private val service: KnowledgeBaseService = KnowledgeBaseService.default,
+    private val indexing: KnowledgeBaseIndexingService = injector.provide(),
+    private val ragDAO: BotRAGConfigurationDAO = injector.provide(),
+) {
+    private val dao: KnowledgeBaseDAO get() = service.dao
+
+    /** The unlocked read is only a wake-up hint; work is read again under the shared lease. */
+    internal suspend fun processPending(lock: UserLock) {
+        val pending =
+            withContext(Dispatchers.IO) {
+                dao.nextJob() != null ||
+                    dao.pendingEntries().any { entry -> entry.pendingJobId?.let { dao.job(it) == null } == true }
+            }
+        if (!pending) return
+
+        // Renew the Mongo lease separately from blocking IO, including during recovery.
+        lock.withLock("knowledge-base-projection-worker") {
+            withContext(Dispatchers.IO) {
+                while (processNext()) {
+                    kotlinx.coroutines.currentCoroutineContext().ensureActive()
+                }
+            }
+        }
+    }
+
+    /** Caller owns the shared worker lock, including while resuming RUNNING jobs. */
+    suspend fun processNext(): Boolean {
+        service.recoverOutbox()
+        val queued = dao.nextJob() ?: return false
+        process(queued)
+        return true
+    }
+
+    internal suspend fun process(queued: KnowledgeBaseJob) {
+        var job = queued.copy(state = KnowledgeBaseJobState.RUNNING, endedAt = null, error = null, failures = emptyList(), projected = 0, removed = 0)
+        dao.saveJob(job)
+        try {
+            val create = job.type == KnowledgeBaseJobType.CREATE_INDEX
+            val target = service.target(job.namespace, job.botId, if (create) job.indexSessionId else null)
+            // One probe of the collection per job (never in the per-entry loop). Errors surface, never masquerade.
+            val probe = target?.let { service.probe(it) }
+            if (create) {
+                check(target != null) { "knowledge-base.validation.index_configuration" }
+                check(sessionMatches(target.rag.indexSessionId, job)) { "knowledge-base.job.configuration_changed" }
+            } else if (target != null && probe!!.state == KnowledgeBaseIndexState.MISSING) {
+                // MISSING: every write/delete job, and VERIFY/REPAIR, fails immediately before touching any projection.
+                // Entries keep their pending state (never acknowledged here) so a later repair catches up.
+                throw IllegalStateException("knowledge-base.job.index_missing")
+            }
+            val embeddingIncompatible = probe?.embeddingIncompatible == true
+            // A non-switching creation must not acknowledge entries: their pending changes still target the current index.
+            val ackEntries = !(create && !job.switchIndex)
+            // On CREATE, the first write is allowed to create the collection, born with its Tock contract metadata.
+            val collectionMetadata = if (create) collectionMetadata(job, target!!) else null
+            if (target != null && job.type in listOf(KnowledgeBaseJobType.REPAIR_INDEX, KnowledgeBaseJobType.VERIFY_INDEX)) verify(target)
+            if (job.type == KnowledgeBaseJobType.VERIFY_INDEX) {
+                dao.saveJob(job.copy(state = KnowledgeBaseJobState.COMPLETED, endedAt = Instant.now()))
+                return
+            }
+            val all = dao.entries(job.namespace, job.botId)
+            val projections = target?.let { dao.projections(job.namespace, job.botId, it.id) }.orEmpty().associateBy { it.entryId }
+            val ids =
+                if (create || job.type == KnowledgeBaseJobType.REPAIR_INDEX) {
+                    (all.filter { (!it.deleted && it.status == KnowledgeBaseEntryStatus.PUBLISHED) || it.pendingJobId != null }.map { it._id } + projections.keys).distinct()
+                } else {
+                    job.entryIds.distinct()
+                }
+            job = job.copy(progress = KnowledgeBaseJobProgress(total = ids.size))
+            dao.saveJob(job)
+            ids.forEach { id ->
+                kotlinx.coroutines.currentCoroutineContext().ensureActive()
+                // Targeted read: a fresh per-entry read is needed to see changes made while this job runs, but it must
+                // not reload and deserialize the whole corpus on every iteration (that was quadratic under the lock).
+                val entry = dao.entry(job.namespace, job.botId, id)
+                val projection = projections[id]
+                try {
+                    if (target != null) {
+                        val current = service.target(job.namespace, job.botId, if (create) target.session else null)
+                        check(current?.id == target.id && current.embeddingModel == target.embeddingModel) { "knowledge-base.job.configuration_changed" }
+                        if (create) check(sessionMatches(current.rag.indexSessionId, job)) { "knowledge-base.job.configuration_changed" }
+                        val published = entry != null && !entry.deleted && entry.status == KnowledgeBaseEntryStatus.PUBLISHED
+                        if (published) {
+                            // The collection's embedding model differs from the bot's: refuse to write into it.
+                            check(!embeddingIncompatible) { "knowledge-base.job.embedding_changed" }
+                            val expectedRowId = "kb-" + KnowledgeBaseService.hash("${target.indexName}/$id")
+                            if (projection?.contentHash != entry!!.contentHash || projection?.rowIds != listOf(expectedRowId)) {
+                                val response =
+                                    indexing.index(
+                                        KnowledgeBaseIndexRequest(
+                                            target.setting,
+                                            target.indexName,
+                                            target.indexPrefix,
+                                            target.rag.emSetting,
+                                            target.session,
+                                            listOf(KnowledgeBaseDocument(id, entry.title, entry.searchHints, entry.content, entry.sourceUrl)),
+                                            collectionMetadata,
+                                        ),
+                                    )
+                                kotlinx.coroutines.currentCoroutineContext().ensureActive()
+                                val result = response.results.single()
+                                check(result.error == null && result.count == 1 && result.rowIds.size == 1) { result.error ?: "knowledge-base.job.index_failed" }
+                                val obsolete = projection?.rowIds.orEmpty().filter { it !in result.rowIds }
+                                if (obsolete.isNotEmpty()) job = job.copy(removed = job.removed + remove(target, id, obsolete))
+                                dao.saveProjection(KnowledgeBaseProjection("${target.id}/$id", job.namespace, job.botId, target.id, target.session, id, entry.contentHash, result.rowIds, entry.title))
+                                job = job.copy(projected = job.projected + result.count)
+                            }
+                        } else if (projection != null || entry == null || entry.everPublished) {
+                            // Attempt deterministic removal even without a journal: a previous process may have died after writing the vector.
+                            job = job.copy(removed = job.removed + remove(target, id, projection?.rowIds.orEmpty()))
+                            projection?.let { dao.deleteProjection(it._id) }
+                        }
+                    }
+                    kotlinx.coroutines.currentCoroutineContext().ensureActive()
+                    if (entry != null && ackEntries) dao.acknowledge(entry)
+                } catch (e: Exception) {
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    // A CREATE_INDEX failure concerns the collection being (re-)created, not the current index: never
+                    // mark the entry pending (that would disturb its projection on the live index). Record it on the job
+                    // only. This holds with and without switchIndex.
+                    if (entry != null && !create) dao.markProjectionPending(entry, job._id)
+                    val safeError = e.message?.takeIf { it.startsWith("knowledge-base.") } ?: "knowledge-base.job.projection_failed"
+                    job = job.copy(failures = job.failures + KnowledgeBaseJobFailure(id, entry?.title ?: projection?.title ?: id, safeError))
+                }
+                job = job.copy(progress = job.progress.copy(done = job.progress.done + 1, failed = job.failures.size))
+                dao.saveJob(job)
+            }
+            if (target != null && job.failures.isNotEmpty()) {
+                try {
+                    verify(target)
+                } catch (e: Exception) {
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                }
+            }
+            if (create && job.switchIndex && job.failures.isEmpty()) {
+                check(target != null && ids.isNotEmpty()) { "knowledge-base.validation.index_configuration" }
+                // `ids.isNotEmpty()` does not prove the collection was created: an entry can sit in `ids` purely by
+                // pendingJobId (e.g. unpublished while this job waited) and produce no write at all. Probe the collection
+                // and switch only onto a READY one, never onto a MISSING (empty, uncertified) collection. A probe failure
+                // (transient outage) must leave the bot on its current index, so a job that cannot confirm the collection
+                // completes WITHOUT switching rather than guessing. The probe is a non-creating raw read, so confirming
+                // here cannot itself materialize an empty collection. `job.projected` is deliberately NOT used as proof:
+                // it is reset to 0 when a RUNNING job is resumed, so a crash could make an already-created collection
+                // look empty.
+                val confirmed = runCatching { service.probe(target) }.getOrNull()
+                if (confirmed?.state == KnowledgeBaseIndexState.READY) {
+                    val current = checkNotNull(ragDAO.findByNamespaceAndBotId(job.namespace, job.botId))
+                    val freshTarget = service.target(job.namespace, job.botId, target.session)
+                    check(freshTarget?.id == target.id && freshTarget.embeddingModel == target.embeddingModel) { "knowledge-base.job.configuration_changed" }
+                    check(sessionMatches(current.indexSessionId, job)) { "knowledge-base.job.configuration_changed" }
+                    // Point the bot at the new collection. Never touch `enabled`: switching the index and activating RAG
+                    // are two different actions.
+                    val updated = current.copy(indexSessionId = target.session)
+                    if (current != updated) RAGService.switchKnowledgeBaseIndex(current, updated)
+                }
+            }
+            dao.saveJob(job.copy(state = KnowledgeBaseJobState.COMPLETED, endedAt = Instant.now()))
+        } catch (e: Exception) {
+            if (e is kotlinx.coroutines.CancellationException) throw e
+            dao.saveJob(
+                job.copy(
+                    state = KnowledgeBaseJobState.FAILED,
+                    endedAt = Instant.now(),
+                    error = e.message?.takeIf { it.startsWith("knowledge-base.") } ?: "knowledge-base.job.projection_failed",
+                ),
+            )
+        }
+    }
+
+    /**
+     * The bot's current RAG indexSessionId still matches what the job expects: either the value seen at enqueue
+     * (expectedIndexSessionId) or the collection the job itself is (re-)creating. Anything else is a concurrent change.
+     */
+    private fun sessionMatches(
+        current: String?,
+        job: KnowledgeBaseJob,
+    ): Boolean {
+        val normalized = current?.takeIf { it.isNotBlank() }
+        return normalized == job.expectedIndexSessionId || normalized == job.indexSessionId
+    }
+
+    /** The Tock contract metadata a CREATE_INDEX job writes so its collection is born certified (PGVector only). */
+    private fun collectionMetadata(
+        job: KnowledgeBaseJob,
+        target: KnowledgeBaseTarget,
+    ): Map<String, Any?> =
+        buildMap {
+            put("schema_version", 1)
+            put("created_at", Instant.now().truncatedTo(ChronoUnit.SECONDS).toString())
+            put("origin", "tock_kb")
+            job.requestedBy?.let { put("created_by", it) }
+            put("embedding_provider", target.rag.emSetting.provider.name)
+            // Omitted when unknown; a creation with an undefined model is already blocked upstream by createIndexBlocker.
+            target.embeddingModel?.let { put("embedding_model", it) }
+        }
+
+    private suspend fun remove(
+        target: KnowledgeBaseTarget,
+        entryId: String,
+        rowIds: List<String>,
+    ): Int {
+        val result = indexing.delete(KnowledgeBaseDeleteRequest(target.setting, target.indexName, target.indexPrefix, listOf(KnowledgeBaseDeletion(entryId, rowIds)))).results.single()
+        kotlinx.coroutines.currentCoroutineContext().ensureActive()
+        check(result.error == null) { result.error ?: "knowledge-base.job.delete_failed" }
+        return result.count
+    }
+
+    private suspend fun verify(target: KnowledgeBaseTarget) {
+        // Finish the remote read before touching the journal: a provider outage must not masquerade as an empty index.
+        val rows = indexing.rows(KnowledgeBaseTargetRequest(target.setting, target.indexName, target.indexPrefix)).rows
+        kotlinx.coroutines.currentCoroutineContext().ensureActive()
+        val old = dao.projections(target.namespace, target.botId, target.id)
+        val groups = rows.groupBy { it.entryId }
+        old.filter { it.entryId !in groups }.forEach { dao.deleteProjection(it._id) }
+        groups.forEach { (id, stored) ->
+            val hash = if (stored.size == 1) stored.single().contentHash else ""
+            dao.saveProjection(
+                KnowledgeBaseProjection(
+                    "${target.id}/$id",
+                    target.namespace,
+                    target.botId,
+                    target.id,
+                    target.session,
+                    id,
+                    hash,
+                    stored.map { it.rowId },
+                    stored.first().title,
+                    old.firstOrNull { it.entryId == id && it.contentHash == stored.first().contentHash }?.projectedAt ?: Instant.now(),
+                ),
+            )
+        }
+    }
+}
+
+object KnowledgeBaseJobWorker {
+    private val started = AtomicBoolean(false)
+    private val processing = AtomicBoolean(false)
+    private val logger = KotlinLogging.logger {}
+    private val executor: Executor by lazy { injector.provide() }
+    private val lock: UserLock by lazy { injector.provide() }
+
+    fun start() {
+        if (!started.compareAndSet(false, true)) return
+        executor.setPeriodic(Duration.ofMillis(1), Duration.ofMillis(longProperty("tock_knowledge_base_worker_poll_interval_ms", 1000))) {
+            if (processing.compareAndSet(false, true)) {
+                executor.executeBlocking {
+                    try {
+                        runBlocking {
+                            KnowledgeBaseJobProcessor().processPending(lock)
+                        }
+                    } catch (_: Exception) {
+                        logger.warn { "Knowledge base worker interrupted; persisted work will be retried." }
+                    } finally {
+                        processing.set(false)
+                    }
+                }
+            }
+        }
+    }
+}

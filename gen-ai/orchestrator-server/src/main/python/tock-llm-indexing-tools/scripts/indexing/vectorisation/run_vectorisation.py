@@ -43,7 +43,7 @@ import copy
 import csv
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from uuid import uuid4
 
@@ -253,7 +253,30 @@ def main():
             index_name=index_name,
             embedding_function=em_factory.get_embedding_model(),
         )
-        vector_store = vector_store_factory.get_vector_store(async_mode=False)
+
+        # PGVector creates the collection lazily on construction (get_or_create). Give it the same Tock contract
+        # metadata the admin worker writes, so a collection born from this script is certified too: schema_version
+        # marks it as Tock-managed, and embedding_model is the identity later used to refuse chunks embedded with a
+        # different model. OpenSearch has no collection-level metadata, so this stays PGVector-only. An already
+        # existing collection keeps its original metadata: get_or_create never re-stamps it.
+        if input_config.vector_store_setting.provider == VectorStoreProvider.PGVECTOR:
+            provider = input_config.em_setting.provider
+            collection_metadata = {
+                'schema_version': 1,
+                'created_at': datetime.now(timezone.utc).isoformat(),
+                'origin': 'ingestion_script',
+                'embedding_provider': getattr(provider, 'value', provider),
+            }
+            # Omit when unknown (e.g. Azure without an explicit model), as the worker does: an unknown identity is
+            # non-blocking at usage, whereas a wrong one would be.
+            if input_config.em_setting.model:
+                collection_metadata['embedding_model'] = input_config.em_setting.model
+            vector_store = vector_store_factory.get_vector_store(
+                async_mode=False,
+                collection_metadata=collection_metadata,
+            )
+        else:
+            vector_store = vector_store_factory.get_vector_store(async_mode=False)
 
         # Index all chunks in vector DB
         if input_config.embedding_max_chunks is not None:

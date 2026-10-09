@@ -1,3 +1,4 @@
+import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
@@ -77,6 +78,8 @@ interface CompressorThresholds {
   standalone: false
 })
 export class DiagnosticComponent implements OnInit, OnDestroy {
+  private readonly route = inject(ActivatedRoute);
+  private kbPinApplied = false;
   @ViewChildren(NbTooltipDirective) tooltips: QueryList<NbTooltipDirective>;
 
   destroy$: Subject<unknown> = new Subject();
@@ -135,25 +138,19 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   private readonly toastrService = inject(NbToastrService);
   private readonly translocoService = inject(TranslocoService);
   private navigationIndexName: string | null = null;
+  private navigationIndexRefreshed = false;
   public readonly state = inject(VectorStoreInspectionStateService);
 
   ngOnInit(): void {
     this.applyNavigationState();
 
     // The list must be fed before the selection, otherwise nb-select cannot
-    // match the preselected index against options it does not hold yet.
+    // match the preselected index against options it does not hold yet. The requested index may arrive before the
+    // list (this subscription re-applies on every emission) or after a cached list already replayed (the KB hand-off
+    // sets it in the later configurations callback, which calls applyRequestedIndex itself).
     this.state.indexes$.pipe(takeUntil(this.destroy$)).subscribe((indexes) => {
       this.indexes = indexes;
-      if (this.navigationIndexName && indexes.length) {
-        const indexName = this.navigationIndexName;
-        this.navigationIndexName = null;
-        const index = indexes.find((candidate) => candidate.indexName === indexName);
-        if (index) {
-          this.state.selectIndex(index);
-        } else {
-          this.toastrService.warning('', this.translocoService.translate('vsi.diagnostic.index_not_found', { indexName }));
-        }
-      }
+      this.applyRequestedIndex();
     });
 
     this.state.currentIndex$.pipe(takeUntil(this.destroy$)).subscribe((index) => {
@@ -190,6 +187,20 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
       const botChanged = this.state.applyBotContext(this.botKey(confs));
 
       if (!confs.length) return;
+      if (!this.kbPinApplied) {
+        const params = this.route.snapshot.queryParamMap;
+        const chunkId = params.get('chunkId');
+        if (chunkId) {
+          this.kbPinApplied = true;
+          if (!this.state.isPinned(chunkId)) this.state.togglePin(chunkId);
+          this.question = params.get('question') || '';
+          this.navigationIndexName = params.get('indexName');
+          // The index list was already replayed from cache by the indexes$ subscription before this callback ran,
+          // so apply the requested selection here instead of waiting for an emission that a cached loadIndexes(false)
+          // will not produce.
+          this.applyRequestedIndex();
+        }
+      }
 
       if (botChanged) {
         this.clearResults();
@@ -203,6 +214,33 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
       if (!this.capabilities) this.state.loadCapabilities().pipe(takeUntil(this.destroy$)).subscribe();
       if (!this.compressorSettings) this.loadCompressorSettings();
     });
+  }
+
+  /**
+   * Applies the index requested by navigation (KB hand-off or dialog logger) to the current list. Idempotent and
+   * safe to call both when the list changes and when the requested name is set late. An index absent from the list
+   * may have just been created (e.g. from the knowledge base), so refresh the list once and let the resulting
+   * emission retry through this same method; if it is still missing after that, warn the user.
+   */
+  private applyRequestedIndex(): void {
+    const indexName = this.navigationIndexName;
+    if (!indexName || !this.indexes.length) return;
+
+    const index = this.indexes.find((candidate) => candidate.indexName === indexName);
+    if (index) {
+      this.navigationIndexName = null;
+      this.state.selectIndex(index);
+      return;
+    }
+
+    if (this.navigationIndexRefreshed) {
+      this.navigationIndexName = null;
+      this.toastrService.warning('', this.translocoService.translate('vsi.diagnostic.index_not_found', { indexName }));
+      return;
+    }
+
+    this.navigationIndexRefreshed = true;
+    this.state.refreshIndexes().pipe(takeUntil(this.destroy$)).subscribe();
   }
 
   /**

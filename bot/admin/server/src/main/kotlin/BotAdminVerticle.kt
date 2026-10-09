@@ -46,6 +46,7 @@ import ai.tock.bot.admin.module.satisfactionContentModule
 import ai.tock.bot.admin.service.BotHistoryService
 import ai.tock.bot.admin.service.DataMigrationService
 import ai.tock.bot.admin.service.DatasetRunWorker
+import ai.tock.bot.admin.service.KnowledgeBaseJobWorker
 import ai.tock.bot.admin.service.SynchronizationService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
@@ -56,6 +57,7 @@ import ai.tock.bot.admin.verticle.DialogVerticle
 import ai.tock.bot.admin.verticle.EvaluationVerticle
 import ai.tock.bot.admin.verticle.GenAIVerticle
 import ai.tock.bot.admin.verticle.IndicatorVerticle
+import ai.tock.bot.admin.verticle.KnowledgeBaseVerticle
 import ai.tock.bot.connector.ConnectorType.Companion.rest
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.rest.addRestConnector
@@ -126,6 +128,7 @@ open class BotAdminVerticle : AdminVerticle() {
         vertx.eventBus().consumer<Boolean>(ServerStatus.SERVER_STARTED) {
             if (it.body()) {
                 DatasetRunWorker.start()
+                KnowledgeBaseJobWorker.start()
 
                 if (booleanProperty(Properties.FAQ_MIGRATION_ENABLED, false)) {
                     FaqAdminService.makeMigration()
@@ -171,6 +174,7 @@ open class BotAdminVerticle : AdminVerticle() {
         dialogVerticle.configure(this)
         aiVerticle.configure(this)
         datasetsVerticle.configure(this)
+        KnowledgeBaseVerticle().configure(this)
         evaluationVerticle.configure(this)
         DashboardVerticle().configure(this)
 
