@@ -40,7 +40,7 @@ def build_docs(rows) -> list[Document]:
 def build_sql() -> TextClause:
     return text("""
         WITH q AS (
-            SELECT websearch_to_tsquery(:language, unaccent(:query)) AS ts_query
+            SELECT websearch_to_tsquery(:language, :query) AS ts_query
         )
         SELECT
             d.document,
