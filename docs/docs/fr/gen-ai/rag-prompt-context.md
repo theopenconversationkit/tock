@@ -1,5 +1,6 @@
 ---
 title: Rag prompt context
+description: "Injecter les sujets couverts, les sujets exclus et un lexique métier dans le prompt de réponse du RAG."
 ---
 
 # Le menu _Rag prompt context_

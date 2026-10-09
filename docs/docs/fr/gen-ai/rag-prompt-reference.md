@@ -1,5 +1,6 @@
 ---
 title: Référence du prompt RAG
+description: "Structure du cadre de prompt RAG de Tock et de la sortie JSON attendue du LLM."
 ---
 
 # Référence du prompt RAG

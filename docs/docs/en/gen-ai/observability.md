@@ -1,5 +1,6 @@
 ---
 title: Observability settings
+description: "Trace the LLM calls of the Gen AI orchestrator to understand a bad answer, its latency and its cost."
 ---
 
 # The _Observability settings_ menu

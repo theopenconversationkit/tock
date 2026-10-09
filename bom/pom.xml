@@ -331,27 +331,7 @@
             </dependency>
             <dependency>
                 <groupId>ai.tock</groupId>
-                <artifactId>tock-bot-connector-ga</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ai.tock</groupId>
                 <artifactId>tock-bot-connector-slack</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ai.tock</groupId>
-                <artifactId>tock-bot-connector-alexa</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ai.tock</groupId>
-                <artifactId>tock-bot-connector-rocketchat</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ai.tock</groupId>
-                <artifactId>tock-bot-connector-twitter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -367,11 +347,6 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-bot-connector-teams</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ai.tock</groupId>
-                <artifactId>tock-bot-connector-businesschat</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -522,11 +497,6 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-bot-admin-server</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ai.tock</groupId>
-                <artifactId>tock-analytics-chatbase</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

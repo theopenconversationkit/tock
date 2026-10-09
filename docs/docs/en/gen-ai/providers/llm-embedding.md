@@ -1,5 +1,6 @@
 ---
 title: LLM and Embedding model providers
+description: "The LLM and embedding model providers supported by Tock, and how to configure them."
 ---
 
 # LLM and Embedding model providers

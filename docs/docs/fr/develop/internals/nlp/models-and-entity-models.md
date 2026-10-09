@@ -1,5 +1,6 @@
 ---
 title: Modèles NLP et d'entités
+description: "Les moteurs NLP et modèles d'entités pris en charge par Tock, et leur utilisation."
 ---
 
 # Modèles NLP et d'entités

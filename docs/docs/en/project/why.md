@@ -1,5 +1,6 @@
 ---
 title: Why Tock
+description: "Why Tock was created at OUI.sncf, and why it remains an open and independent platform."
 ---
 
 # Why Tock?
@@ -29,5 +30,5 @@ The complete Tock solution is shared with the community in order to federate and
 > Several other companies leverage Tock in production (see [showcase](showcase.md)).
 >
 > Eventually, we believe that Tock should join an Open Source organization,
-> such as the [_TOSIT (The Open Source I Trust)_](http://tosit.fr/) association 
+> such as the [_TOSIT (The Open Source I Trust)_](https://tosit.fr/) association 
 > or an [Open Source foundation](https://opensource.com/resources/organizations) or consortium.

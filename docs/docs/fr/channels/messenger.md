@@ -1,5 +1,6 @@
 ---
 title: Messenger
+description: "Connecter un bot Tock à une page Facebook pour discuter avec les utilisateurs sur Messenger."
 ---
 
 # Connecteur Messenger

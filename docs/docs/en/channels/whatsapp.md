@@ -1,5 +1,6 @@
 ---
 title: WhatsApp
+description: "Connect a Tock bot to WhatsApp with the WhatsApp Business Cloud API of Meta."
 ---
 
 # WhatsApp connector

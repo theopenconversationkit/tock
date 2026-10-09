@@ -1,5 +1,6 @@
 ---
 title: Synchronization
+description: "Copy the stories, intents and training of a bot to another bot, for instance from pre-production to production."
 ---
 
 # The _Synchronization_ screen

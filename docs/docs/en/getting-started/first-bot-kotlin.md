@@ -1,5 +1,6 @@
 ---
 title: First bot in Kotlin
+description: "Program your first Tock journeys in Kotlin, connected to a Tock Studio platform."
 ---
 
 # Programming journeys in Kotlin

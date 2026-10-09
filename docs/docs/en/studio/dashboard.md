@@ -1,5 +1,6 @@
 ---
 title: Dashboard
+description: "The Tock Studio dashboard: overview of the activity and of the knowledge of a bot."
 ---
 
 # The _Dashboard_

@@ -1,5 +1,6 @@
 ---
 title: Improving the answers
+description: "The improvement loop of a RAG bot, and the Tock Studio tools used at each step."
 ---
 
 # Improving the generated answers

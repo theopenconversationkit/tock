@@ -1,5 +1,6 @@
 ---
 title: L'interface Tock Studio
+description: "Les caractéristiques générales de l'interface Tock Studio : connexion et bandeau de l'application."
 ---
 
 # L'interface Tock Studio

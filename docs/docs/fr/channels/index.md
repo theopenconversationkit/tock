@@ -1,5 +1,6 @@
 ---
 title: Canaux
+description: "Les canaux auxquels connecter un bot Tock, avec les connecteurs fournis et les kits web."
 ---
 
 # Construire un bot multicanal avec Tock

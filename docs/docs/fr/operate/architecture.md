@@ -1,5 +1,6 @@
 ---
 title: Architecture
+description: "L'architecture d'une plateforme Tock : composants, dépendances, flux et configuration des proxys."
 ---
 
 # Architecture de Tock

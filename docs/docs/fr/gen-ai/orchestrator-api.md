@@ -1,5 +1,6 @@
 ---
 title: API de l'orchestrateur Gen AI
+description: "L'API de l'orchestrateur IA générative de Tock, le service Python derrière le RAG et les autres fonctions d'IA générative."
 ---
 
 # API de l'orchestrateur Gen AI

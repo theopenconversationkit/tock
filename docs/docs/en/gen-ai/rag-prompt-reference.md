@@ -1,5 +1,6 @@
 ---
 title: RAG prompt reference
+description: "Structure of the Tock RAG prompt framework and of the JSON output expected from the LLM."
 ---
 
 # RAG prompt reference

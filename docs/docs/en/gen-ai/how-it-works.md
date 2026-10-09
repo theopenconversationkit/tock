@@ -1,5 +1,6 @@
 ---
 title: How the bot answers
+description: "How a Tock bot combines generated answers (RAG), stories and FAQs, and where each one is configured."
 ---
 
 # How the bot answers: stories, FAQs and RAG

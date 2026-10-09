@@ -35,6 +35,8 @@ mkdocs build --strict
 - The menu is defined explicitly by the `nav:` section of `mkdocs.yml`: a new page must be added there.
   Section titles are translated with `nav_translations` (in the `fr` language of the `i18n` plugin);
   page titles come from each page's `title:` front matter.
+- Each page also gives a one-sentence `description:` in its front matter (in its own language),
+  used as the meta description by search engines and link previews.
 - Images go in `docs/img/`.
 - `hooks/copyapiswagger.py` copies the Swagger / OpenAPI files of the web connector and the NLP API
   into `docs/api/` (git-ignored) before each build.

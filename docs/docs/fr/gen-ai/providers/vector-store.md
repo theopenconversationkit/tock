@@ -1,5 +1,6 @@
 ---
 title: Fournisseurs de bases vectorielles
+description: "Les bases vectorielles prises en charge par le RAG de Tock, et leur configuration."
 ---
 
 # Fournisseurs de bases vectorielles

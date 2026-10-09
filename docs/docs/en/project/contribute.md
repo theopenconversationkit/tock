@@ -1,5 +1,6 @@
 ---
 title: Contributing
+description: "Contribute to Tock: sources, build, code and documentation rules, pull requests."
 ---
 
 # Contribute to Tock
@@ -60,7 +61,6 @@ Here is an overview of the sources of the `tock` repository (see also the [packa
 
 * `bot`: the conversational platform (interfaces, API, connectors, etc.), depending on the _NLU_ modules
 * `docs`: this documentation site, built with MkDocs
-* `dokka`: the Dokka documentation of the Kotlin framework
 * `etc`: utility scripts
 * `gen-ai`: the Gen AI orchestrator (Python) and its Kotlin client
 * `nlp`: the _NLU_ platform alone (interfaces, API, entity models, etc.)

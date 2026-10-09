@@ -1,5 +1,6 @@
 ---
 title: Communauté
+description: "Rejoindre la communauté Tock : Gitter, actualités, GitHub, l'association TOSIT, la démo publique et comment nous contacter."
 ---
 
 # Communauté Tock
@@ -75,7 +76,7 @@ Tock s'inscrit dans le cadre du Groupe de Travail _Chatbots_ du TOSIT.
 
 La solution est d'ores et déjà utilisée par plusieurs membres du TOSIT, dont SNCF.
 
-Pour en savoir plus, voir le site de l'association : [http://tosit.fr/](http://tosit.fr/)
+Pour en savoir plus, voir le site de l'association : [http://tosit.fr/](https://tosit.fr/)
 
 ![Logo TOSIT](../../img/tosit.png){style="width:75px;"}
 

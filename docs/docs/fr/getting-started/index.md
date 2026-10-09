@@ -1,5 +1,6 @@
 ---
 title: Démarrer
+description: "Tutoriels pour démarrer avec Tock : un bot RAG, un premier bot dans Tock Studio et en Kotlin, et votre propre plateforme."
 ---
 
 # Démarrer

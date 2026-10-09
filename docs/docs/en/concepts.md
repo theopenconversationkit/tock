@@ -1,5 +1,6 @@
 ---
 title: Concepts
+description: "The main notions of Tock: applications, connectors, intents, entities, stories, and the generative AI vocabulary."
 ---
 
 # Conversational concepts for Tock
@@ -175,30 +176,18 @@ LLM, embedding, vector store and observability providers (see [Gen AI](gen-ai/in
 
 ## Terms & Mappings
 
-The tables below provide mappings between terms used in Tock and other conversational
-solutions:
+The table below gives approximate mappings between the terms used in Tock and other conversational solutions:
 
-| Tock | DialogFlow | Alexa | Watson |
-|------------------|----------------------|---------------------|-----------------------|
-| Intent | Intent | Intent | Intent |
-| Entity | Entity | Entity / Slot Value | Entity |
-| Sentence | Query | Utterance / Slot | Message |
-| Story | Context | | Dialog / Node |
-| Builtin Story | Fulfillment | Request Handler | Webhook |
-| Connector | Integration | | Integration / Channel |
-| Configuration | | | |
-| Application | Project / Agent | Skill | Skill / Assistant |
-
-| Tock | RASA | DYDU _(Do You Dream Up)_ | Clevy |
-|------------------|---------------------|--------------------|---------------------|
-| Intent | Intent | Reword | Question |
-| Entity | Entity | Group | |
-| Sentence | User input | Sentence | Reformulation |
-| Story | Story | Knowledge | Knowledge |
-| Builtin Story | | | |
-| Connector | | Channel | Channel integration |
-| Configuration | | Space | |
-| Application | Domain | Bot | |
+| Tock | Dialogflow CX | Amazon Lex V2 | IBM watsonx Assistant | Microsoft Copilot Studio | Rasa |
+|---|---|---|---|---|---|
+| Application | Agent | Bot | Assistant | Agent | Assistant |
+| Connector | Integration | Channel integration | Integration / Channel | Channel | Channel connector |
+| Intent | Intent | Intent | Intent | Topic trigger | Intent |
+| Entity | Entity type | Slot type / Slot | Entity | Entity | Entity / Slot |
+| Sentence | Training phrase | Sample utterance | User example | Trigger phrase | Training example |
+| Story | Flow / Page | Intent (with its slots) | Action | Topic | Flow / Story |
+| Story programmed in Kotlin | Webhook | Lambda function | Custom extension | Power Automate flow | Custom action |
+| RAG | Data store agent | `AMAZON.QnAIntent` | Conversational search | Knowledge sources | Enterprise Search |
 
 > The documentation of the [Tock connectors](channels/index.md) also gives the correspondence with other terms specific to
 > this or that channel.

@@ -1,5 +1,6 @@
 ---
 title: Bot intégré
+description: "Développer un bot Tock avec le DSL Kotlin : dépendances, stories, entités, connecteurs et configuration."
 ---
 
 # Développer en mode Bot intégré

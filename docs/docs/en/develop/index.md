@@ -1,5 +1,6 @@
 ---
 title: Develop
+description: "Go beyond Tock Studio: program journeys in Kotlin or with the Bot API in other languages."
 ---
 
 # Developing bots with Tock

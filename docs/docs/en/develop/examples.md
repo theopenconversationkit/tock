@@ -1,5 +1,6 @@
 ---
 title: Examples
+description: "Tock code examples, such as the Open Data bot, and how to run them with Docker or in an IDE."
 ---
 
 # Tock code examples

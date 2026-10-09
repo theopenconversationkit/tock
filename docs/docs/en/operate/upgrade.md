@@ -1,5 +1,6 @@
 ---
 title: Upgrading Tock
+description: "Upgrade a Tock platform and its bots to a new version, and the changes that require an action."
 ---
 
 # Upgrading Tock
@@ -36,6 +37,9 @@ no migration script needs to be run, unless stated in the version notes.
 (`connector-twitter`), Apple Business Chat (`connector-businesschat`) and Rocket.Chat (`connector-rocketchat`), whose
 platforms were shut down or are no longer used, are no longer provided. Remove their configurations in
 _Settings_ > _Configurations_, and their dependencies from your bots.
+
+**Removed module.** The Chatbase analytics module (`tock-analytics-chatbase`), whose service was shut down,
+is no longer provided: remove its dependency from your bots.
 
 **Renamed property.** The timeout of the calls to the Bot Framework API of the Teams connector is now set by
 `tock_teams_request_timeout_ms`. The former `tock_whatsapp_request_timeout_ms` property is still read when the new

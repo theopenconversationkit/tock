@@ -1,5 +1,6 @@
 ---
 title: Metrics
+description: "Create and view statistics on the use of the Tock stories."
 ---
 
 # The *Metrics* menu

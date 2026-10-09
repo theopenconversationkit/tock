@@ -1,5 +1,6 @@
 ---
 title: Changelog
+description: "Les principales évolutions de chaque version de Tock."
 ---
 
 # Changelog
@@ -10,6 +11,15 @@ La liste complète des changements (pull requests, contributeurs) est disponible
 
 Les versions de Tock suivent le schéma `AA.M.correctif` : `26.3.x` est la ligne de versions démarrée en mars 2026.
 Les artefacts sont publiés sur [Maven Central](https://central.sonatype.com/namespace/ai.tock) sous le groupe `ai.tock`.
+
+## 26.9.1 (non publiée)
+
+* Connecteurs retirés : Alexa, Google Assistant, Twitter, Apple Business Chat et Rocket.Chat,
+  ainsi que le module d'analytics Chatbase (voir [Mise à jour](../operate/upgrade.md#2691))
+* _Tock Studio_ : l'option avancée _Alexa Export_ est retirée
+* Teams : délai des appels défini par la nouvelle propriété `tock_teams_request_timeout_ms`
+* Connecteur Web : les événements manqués par un client SSE sont de nouveau mis en file correctement
+* Mises à jour de sécurité des dépendances (Angular, LangChain)
 
 ## 26.9.0 (2026-09-29)
 

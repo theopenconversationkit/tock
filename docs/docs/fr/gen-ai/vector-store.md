@@ -1,5 +1,6 @@
 ---
 title: Vector DB settings
+description: "Configurer la base de données vectorielle à laquelle le RAG d'un bot Tock est connecté."
 ---
 
 # Le menu _Vector DB settings_

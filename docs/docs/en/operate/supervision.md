@@ -1,5 +1,6 @@
 ---
 title: Supervision
+description: "Supervise a Tock platform and its bots: healthchecks, lifeline monitoring and logs."
 ---
 # Supervision
 
@@ -242,7 +243,7 @@ to wait for the component to be ready at startup
 
 ### Application logs
 
-Tock uses [SLF4J](http://www.slf4j.org) and [Logback](http://logback.qos.ch/) to generate its server-side application logs.
+Tock uses [SLF4J](https://www.slf4j.org) and [Logback](https://logback.qos.ch/) to generate its server-side application logs.
 
 By default, Tock automatically configures its logs and a few properties allow you to modify the configuration.
 
@@ -252,7 +253,7 @@ It is possible to finely configure the logs according to your needs, in particul
 
 By default, in the absence of specific configuration, Tock configures its logs automatically using the class
 [`LogbackConfigurator`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/LogbackConfigurator.kt).
-This configures [Logback](http://logback.qos.ch/) programmatically, with the following behavior:
+This configures [Logback](https://logback.qos.ch/) programmatically, with the following behavior:
 
 - General log level `DEBUG` if `tock_env=dev` (default), or `INFO` for other environments and production
 - Exception for `org.mongodb.driver` logs always at `INFO`
@@ -313,7 +314,7 @@ Here is an example configuring Tock Studio logs (`admin_web`) in Docker:
 
 #### Logback Files
 
-It is possible to finely configure the Tock logs by directly configuring [Logback](http://logback.qos.ch/).
+It is possible to finely configure the Tock logs by directly configuring [Logback](https://logback.qos.ch/).
 For this, different possibilities exist, in particular configuration files in XML or Groovy format. Below is an example configuration:
 
 === "logback.xml"
@@ -371,9 +372,9 @@ In this example:
 Many possibilities are offered to configure the logs thanks to these configuration files:
 log levels adjusted according to the embedded packages/frameworks, modification of the default pattern,
 logging of log files and automatic archiving with a
-[`RollingFileAppender`](http://logback.qos.ch/manual/appenders.html#RollingFileAppender), redirection of logs
+[`RollingFileAppender`](https://logback.qos.ch/manual/appenders.html#RollingFileAppender), redirection of logs
 to a database or email server, etc.
-For more information, refer to the [Logback documentation](http://logback.qos.ch/manual/configuration.html).
+For more information, refer to the [Logback documentation](https://logback.qos.ch/manual/configuration.html).
 
 Once the Logback configuration file has been created, you must ensure that it is in the _classpath_ of the
 Tock component and that Logback identifies it as the configuration to follow (for this, you generally use

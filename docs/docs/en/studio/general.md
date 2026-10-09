@@ -1,5 +1,6 @@
 ---
 title: The Tock Studio interface
+description: "The general features of the Tock Studio interface: logging in and the application banner."
 ---
 
 # The Tock Studio interface

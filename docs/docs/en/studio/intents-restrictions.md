@@ -1,5 +1,6 @@
 ---
 title: Intent Restriction
+description: "Restrict the intents that can be detected at a given step of a conversation."
 ---
 
 # Restricting the scope of intents

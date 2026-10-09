@@ -1,5 +1,6 @@
 ---
 title: Évaluation NLP
+description: "Comment l'API NLP de Tock analyse une phrase : détection de l'intention, évaluation des entités et fusion des résultats."
 ---
 
 # Évaluation NLP

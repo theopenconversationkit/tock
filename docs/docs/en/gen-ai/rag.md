@@ -1,5 +1,6 @@
 ---
-title: Rag settings
+title: RAG settings
+description: "Configure the RAG of a Tock bot: LLM, embeddings, question condensing, document search and answering prompt."
 ---
 
 # The _Rag settings_ menu

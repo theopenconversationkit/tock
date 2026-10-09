@@ -1,5 +1,6 @@
 ---
 title: Premier bot avec Tock Studio
+description: "Créer votre premier bot conversationnel sans code dans Tock Studio, sur la plateforme de démonstration."
 ---
 
 # Créer son premier bot avec Tock Studio

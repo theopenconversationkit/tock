@@ -1,5 +1,6 @@
 ---
 title: Conversational models
+description: "Build and improve the conversational model of a bot in Tock Studio, step by step."
 ---
 
 # Building conversational models

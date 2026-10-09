@@ -1,5 +1,6 @@
 ---
 title: User Showcase
+description: "Bots and services built with Tock by teams and organizations, and the awards they received."
 ---
 
 # User showcase
@@ -290,7 +291,7 @@ To find out more, see _Les Acteurs Du Libre_ (French).
 
 ### *Best Robot Experience 2019* (OUI.sncf)
 
-![logo kotlin](../../img/blog.png "Acteurs du libre")
+![OUI.sncf team receiving the Best Robot Experience 2019 award](../../img/best-robot-experience-2019.jpg "Best Robot Experience 2019")
 
 In 2019, _OUIbot_ was awarded the 
 _[Best Robot Experience](https://blog-cultures-services.com/2019/07/09/ouibot-de-ouisncf-laureat-prix-best-robot-experience-2019/)_
@@ -309,7 +310,7 @@ More on the [Cultures Services](https://blog-cultures-services.com/2019/07/09/ou
 
 In 2018, _OUIbot_ (the [OUI.sncf](https://en.oui.sncf/en/) assistant, with 10.000 users a day) 
 received the _[Best Robot Experience](https://www.sensduclient.com/2018/04/ouibot-ouisncf-est-le-gagnant-de-best.html)_
- award from the [Académie du Service](http://www.academieduservice.com/) / [Sens du client](http://www.sensduclient.com/).
+ award from the [Académie du Service](https://www.academieduservice.com/) / [Sens du client](https://www.sensduclient.com/).
  
 Given to [Caroline Chupin](https://www.linkedin.com/in/caroline-chupin-2790bb51/) for OUI.sncf,
 the award assessed mutliple criteria to rank 24 virtual agents from prestigious organizations (companies, GAFAM, public sector). 
@@ -320,7 +321,7 @@ To find out more, visit the [Sens du client](https://www.sensduclient.com/2018/0
 ## What about you?
 
 Various organizations already leverage Tock to build conversational agents, which are not mentionned here 
-(among them, several of the [TOSIT](http://tosit.fr/) companies). 
+(among them, several of the [TOSIT](https://tosit.fr/) companies). 
 Sometimes these applications are not dedicated to public usage and their organization will not communicate
 about them. We will mention them here when it is possible ;)
 
@@ -355,7 +356,7 @@ Website [www.oui.sncf](https://www.oui.sncf/bot), social networks, voice assista
 In 2019, _OUIbot_ answers approximately 10.000 users a day. It has been awarded _[Best Robot Experience](https://blog-cultures-services.com/2019/07/09/ouibot-de-ouisncf-laureat-prix-best-robot-experience-2019/)_
  for the second year in a row.
 
-![img Best robot experience](../../img/blog.png "Best robot experience")
+![OUI.sncf team receiving the Best Robot Experience 2019 award](../../img/best-robot-experience-2019.jpg "Best Robot Experience 2019")
  
 * **Name:** _[OUIbot](https://www.oui.sncf/services/assistant)_
 * **Date of birth:** launched in 2016, until OUI.sncf was replaced by [SNCF Connect](#sncf-connect) in 2022

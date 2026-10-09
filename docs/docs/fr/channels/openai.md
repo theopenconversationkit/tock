@@ -1,5 +1,6 @@
 ---
 title: API OpenAI
+description: "Exposer un bot Tock via une API compatible OpenAI chat completions, pour des clients comme Open WebUI."
 ---
 
 # Connecteur compatible OpenAI

@@ -1,5 +1,6 @@
 ---
 title: Operate
+description: "Install, configure and run a Tock platform: architecture, deployment, security and supervision."
 ---
 
 # Operating a Tock platform

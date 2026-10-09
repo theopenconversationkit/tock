@@ -1,5 +1,6 @@
 ---
 title: Connecteurs
+description: "Développer un connecteur Tock personnalisé pour intégrer un bot à un nouveau canal."
 ---
 
 # Les connecteurs Tock

@@ -1,5 +1,6 @@
 ---
 title: Installation
+description: "Installer une plateforme Tock avec Docker, sur Kubernetes ou sans Docker : MongoDB, composants, exposition réseau et proxys."
 ---
 
 # Installation Tock

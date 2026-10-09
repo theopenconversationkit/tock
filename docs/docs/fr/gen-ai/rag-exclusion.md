@@ -1,5 +1,6 @@
 ---
 title: Sentences Rag exclusions
+description: "Exclure des sujets des réponses générées en qualifiant des phrases comme exclues du RAG."
 ---
 
 # Le menu _Sentences Rag exclusions_

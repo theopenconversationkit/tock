@@ -1,5 +1,6 @@
 ---
 title: Configuration reference
+description: "Reference of the configuration properties of the Tock components."
 ---
 
 # Configuration reference
@@ -472,7 +473,7 @@ The vector store variables are described on the [Vector DB settings](../gen-ai/v
 
 ### Xray tests
 
-Properties of the `tock-bot-xray` module, which runs the Xray test plans of a bot.
+Properties of the `tock-xray-plugin` module, which runs the Xray test plans of a bot.
 
 | Property | Default | Description |
 |----------|---------|-------------|

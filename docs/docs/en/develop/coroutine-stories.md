@@ -1,5 +1,6 @@
 ---
 title: Coroutine stories
+description: "Write Kotlin stories as sequential coroutines that wait for the user answers."
 ---
 
 # Using Kotlin Coroutines in Tock Stories

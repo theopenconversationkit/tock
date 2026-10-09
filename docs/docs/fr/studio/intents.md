@@ -1,5 +1,6 @@
 ---
 title: Intentions
+description: "Gérer les intentions d'une application dans Tock Studio."
 ---
 
 # L'écran _Language Understanding > Intents_

@@ -1,5 +1,6 @@
 ---
 title: Gen AI - Inspection de la base vectorielle
+description: "Inspecter le contenu de la base vectorielle d'un bot, et comprendre pourquoi un chunk est transmis ou non au LLM."
 ---
 
 # Inspection de la base vectorielle

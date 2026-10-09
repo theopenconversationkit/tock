@@ -1,5 +1,6 @@
 ---
 title: Contribuer
+description: "Contribuer à Tock : sources, build, règles de code et de documentation, pull requests."
 ---
 
 # Contribuer à Tock
@@ -59,7 +60,6 @@ Voici une description des sources du dépôt `tock` (voir aussi la page [package
 
 * `bot` : la plateforme conversationnelle (interfaces, API, connecteurs, etc.), en dépendance sur les modules _NLU_
 * `docs` : ce site de documentation, généré avec MkDocs
-* `dokka` : la documentation Dokka du framework Kotlin
 * `etc` : des scripts utilitaires
 * `gen-ai` : l'orchestrateur Gen AI (Python) et son client Kotlin
 * `nlp` : la plateforme _NLU_ uniquement (interfaces, API, modèles d'entités, etc.) 

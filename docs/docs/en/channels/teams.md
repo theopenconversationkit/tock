@@ -1,5 +1,6 @@
 ---
 title: Microsoft Teams
+description: "Connect a Tock bot to Microsoft Teams with the Bot Framework REST API."
 ---
 
 # Microsoft Teams connector

@@ -1,5 +1,6 @@
 ---
 title: Integrated bot (Kotlin)
+description: "Develop a Tock bot with the Kotlin DSL: dependencies, stories, entities, connectors and configuration."
 ---
 # Develop in Integrated bot mode
 

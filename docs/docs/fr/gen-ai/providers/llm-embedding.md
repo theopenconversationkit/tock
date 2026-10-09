@@ -1,5 +1,6 @@
 ---
 title: Fournisseurs de LLM et d'embeddings
+description: "Les fournisseurs de LLM et de modèles d'embedding pris en charge par Tock, et leur configuration."
 ---
 
 # Fournisseurs de LLM et d'embeddings

@@ -1,5 +1,6 @@
 ---
 title: Développer
+description: "Aller au-delà de Tock Studio : programmer des parcours en Kotlin ou avec la Bot API dans d'autres langages."
 ---
 
 # Développer des bots avec Tock

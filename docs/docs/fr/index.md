@@ -1,5 +1,6 @@
 ---
 title: Accueil
+description: "Tock, The Open Conversation Kit : une plateforme open source pour construire des assistants conversationnels avec RAG et parcours maîtrisés."
 ---
 
 # Bienvenue sur Tock : une plateforme conversationnelle ouverte, avec ou sans IA générative
@@ -86,7 +87,7 @@ L'ensemble de la plateforme peut fonctionner _conteneurisée_ (implémentation [
 La plateforme applicative par défaut est la [JVM](https://fr.wikipedia.org/wiki/Machine_virtuelle_Java). 
 Le langage de référence est [Kotlin](https://kotlinlang.org/) mais d'autres langages de programmation peuvent être utilisés via les API mises à disposition.
 
-Côté serveur, Tock utilise [Vert.x](http://vertx.io/) et [MongoDB](https://www.mongodb.com ) <sup>(alt. [DocumentDB](https://aws.amazon.com/fr/documentdb/))</sup>. 
+Côté serveur, Tock utilise [Vert.x](https://vertx.io/) et [MongoDB](https://www.mongodb.com ) <sup>(alt. [DocumentDB](https://aws.amazon.com/fr/documentdb/))</sup>. 
 Différentes briques _NLU_ peuvent être utilisées, mais Tock n'a pas de dépendance forte envers l'une d'elles.
 
 Les interfaces graphiques _Tock Studio_ sont écrites avec [Angular](https://angular.dev/) en [Typescript](https://www.typescriptlang.org/).
