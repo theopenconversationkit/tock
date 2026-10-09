@@ -46,9 +46,6 @@ pour intégrer un bot Tock dans une page Web (voir [Vue](../channels/index.md#vu
 * [`tock-mcp-server`](https://github.com/theopenconversationkit/tock-mcp-server) : un serveur [MCP](https://modelcontextprotocol.io/),
 écrit en Go, qui expose un bot Tock aux agents et assistants IA via son [connecteur Web](../channels/web.md).
 
-* [`tock-bot-samples`](https://github.com/theopenconversationkit/tock-bot-samples) : des exemples de code notamment pour programmer des parcours en mode _WebHook_ ou _WebSocket_ 
-comme dans les [guides Tock](../getting-started/first-bot-kotlin.md).
-
 * [`tock-bot-demo`](https://github.com/theopenconversationkit/tock-bot-demo) : un bot de démonstration écrit en Kotlin
 avec la [Bot API](../develop/bot-api.md), sous licence [AGPL v3](https://www.gnu.org/licenses/agpl-3.0.html).
  
@@ -97,7 +94,7 @@ _Bot API_ est `docker-compose-bot.yml`.
 
 Le projet est construit avec [Maven](https://maven.apache.org/), y compris les modules Web impliquant 
 [NPM](https://www.npmjs.com/) et [Angular](https://angular.dev/).
-Il nécessite un JDK 17 ou plus récent ; Node.js est téléchargé par le build Maven pour les modules Web :
+Il nécessite un JDK 21 ou plus récent ; Node.js est téléchargé par le build Maven pour les modules Web :
  
 `$ mvn package`
 

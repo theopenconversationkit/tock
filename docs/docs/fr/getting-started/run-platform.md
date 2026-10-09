@@ -2,11 +2,10 @@
 title: Déployer une plateforme Tock
 ---
 
-# Deployer une plateforme avec Docker
+# Déployer une plateforme avec Docker
 
-
-Dans les sections précédentes pour découvrir et tester Tock, vous avez utilisé la 
-[plateforme de démonstration](https://demo.tock.ai/). Cela vous a permis de découvrir 
+Dans les guides [Créer son premier bot avec Tock Studio](first-bot-studio.md) et
+[Programmer des parcours en Kotlin](first-bot-kotlin.md), vous avez utilisé la [plateforme de démonstration](https://demo.tock.ai/). Cela vous a permis de découvrir 
 la construction et la configuration des bots Tock sans avoir à installer la plateforme au préalable. 
 
 Dans ce guide, vous allez apprendre à déployer une plateforme complète Tock en quelques minutes, grâce 
@@ -14,7 +13,7 @@ Dans ce guide, vous allez apprendre à déployer une plateforme complète Tock e
 
 Notez qu'il est tout à fait possible de déployer Tock sans utiliser Docker. 
 
-## Ce que vous allez creer
+## Ce que vous allez créer
 
 * Une plateforme Tock complète en local : _Tock Studio_, _Bot API_, etc.
 
@@ -40,7 +39,7 @@ du [JDK](https://jdk.java.net/) et de [Maven](https://maven.apache.org/)
 
 > Sans _IDE_ ou sans Maven, pas de problème. Il est tout à fait possible de compiler et exécuter le programme avec d'autres outils.
 
-## Deployer une plateforme Tock - sans les sources
+## Déployer une plateforme Tock - sans les sources
 
 Il est possible de récupérer seulement quelques fichiers du dépôt GitHub, sans télécharger toutes les sources Tock. 
  En quelques lignes de commande, la plateforme est opérationnelle.
@@ -63,8 +62,7 @@ $ curl -o .env https://raw.githubusercontent.com/theopenconversationkit/tock-doc
 $ docker compose up
 ```
 
-
-## Deployer une plateforme Tock - depuis les sources
+## Déployer une plateforme Tock - depuis les sources
 
 Ceci est une manière alternative de démarrer Tock, à partir du dépôt 
  [Tock Docker](https://github.com/theopenconversationkit/tock-docker). 
@@ -107,21 +105,13 @@ précédents guides pour plus de commentaires.
 
 Au premier accès à la plateforme locale :
 
-* Saisissez un nom pour l'application
+* _Choose your language_ : sélectionnez une langue - vous pourrez en ajouter d'autres par la suite - puis _Next_
 
-* Sélectionnez une langue - vous pourrez en ajouter d'autres par la suite
+* _Select a first Channel_ : sélectionnez _slack_, puis _Next_
 
-* Validez pour créer l'application
+* _Create your Assistant_ : _Create_
 
-* Allez dans _Settings_ > _Configurations_
- 
- * _Create a new Configuration_
- 
- * Sélectionnez le type de connecteur _Slack_
- 
- * _Create_
-
-> Notez l'_API Key_ automatiquement générée pour votre application. Elle vous servira si vous essayez le mode _WebSocket_
+> Notez l'_API Key_ automatiquement générée pour votre application (_Settings_ > _Configurations_). Elle vous servira si vous essayez le mode _WebSocket_
 > dans la suite de ce guide (optionnel).
 
 * Allez dans _Stories & Answers_ > _New Story_
@@ -169,8 +159,6 @@ fun main() {
 }
 ```
 
-> Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples).
-
 * Remplacez la clef d'API par celle de votre propre application Tock. Pour cela, dans _Tock Studio_, 
 allez dans _Settings_ > _Configurations_ et reportez la valeur _API Key_ dans le code.
 
@@ -206,7 +194,7 @@ développements, pour les contributeurs Tock ou encore si vous devez travailler 
 
 Vous venez de terminer les guides de démarrage rapide Tock. À partir de là, vous pouvez :
 
-* [Construire un bot RAG](rag-tutorial.md) qui répond à partir de vos documents
+* Ajouter des [réponses générées](../gen-ai/index.md) à votre bot (le [tutoriel RAG](rag-tutorial.md) démarre une plateforme avec l'orchestrateur Gen AI)
 * Découvrir les écrans de [_Tock Studio_](../studio/index.md)
 * Connecter le bot à un [canal](../channels/index.md)
 * Préparer une [installation de production](../operate/installation.md)

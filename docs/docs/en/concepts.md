@@ -23,10 +23,9 @@ See [_Tock Studio > Settings > Applications_](studio/configuration.md#the-applic
 
 ### *Configuration*
 
-In a Tock application in NLP mode, a _configuration_ groups one or more _connectors_ for different
-channels (see below).
+A _configuration_ groups the _connectors_ of a bot for different channels (see below).
 
-In conversational mode, **a _configuration_ corresponds to a set of responses and behaviors of the _bot_**
+**A _configuration_ also corresponds to a set of responses and behaviors of the _bot_**
 on these channels. For example, for the same scenario (_story_) of the application it is possible to configure different
 responses (_answers_, _story rules_, etc.) according to several _configurations_.
 
@@ -60,7 +59,7 @@ they are therefore shared between the applications in this _namespace_.
 
 See [_Tock Studio > Settings > Namespaces_](studio/configuration.md#the-namespaces-tab).
 
-### *Intentions*
+### *Intents*
 
 To be able to define actions following a user request,
 it is first necessary to classify or categorize this request.
@@ -68,21 +67,21 @@ it is first necessary to classify or categorize this request.
 What we call an _intention_ is precisely this classification.
 
 For example, the sentences "What's the weather like?", "Is it nice tomorrow?", "I hope it won't rain in Paris?"
-can all be categorized with the "weather" intention.
+can all be categorized with the "weather" intent.
 
 From the sentences manually classified by a user,
 Tock will automatically build a statistical model that will allow it,
-for a new sentence, to determine what the most likely intention is.
+for a new sentence, to determine what the most likely intent is.
 
 To take the example above, with a model made up of the three example sentences,
 it is likely that a new sentence of the type "What will the weather be like tomorrow?" will be
-automatically recognized by Tock as corresponding to the intention "weather".
+automatically recognized by Tock as corresponding to the intent "weather".
 
 See [_Tock Studio > Language Understanding_](studio/nlu.md).
 
 ### *Entities*
 
-Once the intention has been determined, it is often useful to identify the meaning of certain words in the sentence.
+Once the intent has been determined, it is often useful to identify the meaning of certain words in the sentence.
 
 In the sentence "Is it nice tomorrow?", the word "tomorrow" has a meaning that must be used
 to answer the question in a relevant way.
@@ -109,8 +108,8 @@ See [_Tock Studio > Language Understanding_](studio/nlu.md).
 A scenario or _story_ is a functional grouping that allows you to answer questions
 on a well-defined subject.
 
-It is generally initiated by a main intention and can also use, optionally,
-a tree of so-called "secondary" intentions.
+It is generally initiated by a main intent and can also use, optionally,
+a tree of so-called "secondary" intents.
 
 To take the weather example, to someone asking "What's the weather like?",
 it can be useful to ask the question of where they are.
@@ -153,6 +152,26 @@ See [_Tock Studio > Gen AI > Rag settings_](gen-ai/rag.md).
 
 The instructions given to the LLM. The RAG answering prompt defines the scope of the bot, its tone and the
 rules it must follow (see [RAG prompt](gen-ai/rag-prompt.md)).
+
+### *Question condensing*
+
+Before searching the documents, an LLM rewrites the user question as a standalone question, using the latest
+messages of the conversation: _"and on Sunday?"_ becomes _"what are the opening hours on Sunday?"_.
+
+### *Reranking (compressor)*
+
+A reranking model rescores the retrieved chunks against the question, to keep only the most relevant ones
+(see [Compressor settings](gen-ai/compressor.md)).
+
+### *RAG exclusion*
+
+A sentence qualified with the `tock:ragexcluded` intent: the NLU model recognizes the excluded topics, and the bot
+answers them without calling the LLM (see [RAG exclusions](gen-ai/rag-exclusion.md)).
+
+### *Gen AI orchestrator*
+
+The Python service that runs the generative AI features (RAG, sentence generation, playground...) and calls the
+LLM, embedding, vector store and observability providers (see [Gen AI](gen-ai/index.md)).
 
 ## Terms & Mappings
 

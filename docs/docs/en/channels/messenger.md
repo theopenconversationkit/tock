@@ -35,7 +35,7 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 
 * Give it a name (e.g. _My Tock Bot_)
 
-<img src="../img/channels/messenger/create-app-2.png" alt="create an app part 3" 
+<img src="../img/channels/messenger/create-page-2.png" alt="Create a page part 3" 
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" />
 
 > Recommendation: do not publish the page to limit its access to Messenger users:
@@ -48,24 +48,24 @@ _Settings > General > Page visibility > **Not published**_
 * _Add an app_
 
 
-<img src="../img/channels/messenger/create-app-0.png" alt="Créer une application partie 1"
+<img src="../img/channels/messenger/create-app-0.png" alt="Create an app part 1"
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
 
  _Create an app_ > _Manage professional integrations_
 
 
-<img src="../img/channels/messenger/create-app-1.png" alt="Créer une application partie 2"
+<img src="../img/channels/messenger/create-app-1.png" alt="Create an app part 2"
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
 
 * Enter a name for the _application_
-<img src="../img/channels/messenger/create-app-2.png" alt="Créer une application partie 3" 
+<img src="../img/channels/messenger/create-app-2.png" alt="Create an app part 3" 
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" />
 * Add a product: _Messenger_
 
-<img src="../img/channels/messenger/add-messenger-page-0.png" alt="Ajouter messenger à une application partie 1"
+<img src="../img/channels/messenger/add-messenger-page-0.png" alt="Add Messenger to an app part 1"
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
 
-<img src="../img/channels/messenger/add-messenger-page-1.png" alt="Add messenger to an application part 2" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 40%;" />
+<img src="../img/channels/messenger/add-messenger-page-1.png" alt="Add Messenger to an app part 2" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 40%;" />
 
 ## Create a Messenger connector
 
@@ -89,12 +89,12 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 * _Application Id_ : it is found on your application page on [https://developers.facebook.com](https://developers.facebook.com)
 
 
-<img src="../img/channels/messenger/app-id.png" alt="Trouver l'id d'application" 
+<img src="../img/channels/messenger/app-id.png" alt="Find the app ID" 
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width:  75%;" />
 
 * _Page Id_ : it is on the page linked to your application on [https://facebook.com](https://facebook.com)
 
-<img src="../img/channels/messenger/page-id-0.png" alt="ID de page partie 1" 
+<img src="../img/channels/messenger/page-id-0.png" alt="Page ID part 1" 
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width:  75%;" />
 
 <img src="../img/channels/messenger/page-id-1.png" alt="Page ID part 2"
@@ -102,17 +102,10 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 
 * _Call Token_: The token can be found on your app page on [https://developers.facebook.com](https://developers.facebook.com)
 
-<img src="../img/channels/messenger/create-app-0.png" alt="Créer une application partie 1"
-style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
-
 * _Webhook Token_ : choose any token (even `token` if you want) and write it down for later -
 every call to Tock from Facebook will be made passing this token
 
 * _Secret_ : copy from your user's page application on [https://developers.facebook.com](https://developers.facebook.com)
-
-<img src="../img/channels/messenger/create-app-1.png" alt="Créer une application partie 2"
-style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
-
 
 * _Persona Id_ : you can leave this field empty
 

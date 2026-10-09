@@ -1,12 +1,12 @@
 ---
-title: Custom Metrics
+title: Metrics
 ---
 
-# The *Custom Metrics* menu
+# The *Metrics* menu
 
-The _Custom Metrics_ menu allows you to create and view statistics on the consultation and use of Tock stories.
+The _Metrics_ menu allows you to create and view statistics on the consultation and use of Tock stories.
 
-It is intended for a business audience that wants to monitor the performance of stories (FAQs, scenarios, etc.) within a Tock application.
+It is intended for a business audience that wants to monitor the performance of stories (FAQs, journeys, etc.) within a Tock application.
 
 > To access this page, you must have the _botUser_ role.
 
@@ -127,7 +127,7 @@ In the _Answers_ section, enter the answer to return to users when their questio
 
 Once defined, the indicators must be associated with the _actions_ of a _story_ in order to be triggered by users and thus result in the recording of a _hit_.
 
-### Creating a satisfaction *Metrics Story*
+### Creating a satisfaction *Metric story*
 
 From the main menu, go to _Stories & Answers_ then to the _New story_ tab.
 
@@ -143,7 +143,7 @@ Enter a response using the _Answer_ field of the action (e.g. `I am delighted to
 
 In the _Indicators_ list, select the value of the indicator provided for this purpose (in our example, `Overall satisfaction: Satisfied`).
 
-![Metric Story Step 1](../img/metrics_story-1.png "Metric Story Step 1")
+![Metric story Step 1](../img/metrics_story-1.png "Metric story Step 1")
 
 Repeat for the "Not satisfied" action:
 
@@ -153,7 +153,7 @@ Indicate an _Intent_ name for the action (e.g. `satisfaction_nok`).
 Enter a response using the _Answer_ field (e.g. `Can you specify the problem encountered?`).
 In the _Indicators_ list, select the value of the indicator provided for this purpose (in our example, `Overall satisfaction: Not satisfied`).
 
-![Step 2 of Metric Story](../img/metrics_story-2.png "Step 2 of Metric Story")
+![Step 2 of Metric story](../img/metrics_story-2.png "Step 2 of Metric story")
 
 You will now be able to define the _Actions_ to propose to users who answered `No` to the initial question:
 
@@ -164,32 +164,22 @@ Indicate an _Intent_ name for the action (for example `satisfaction_questionmisu
 Enter an answer using the _Answer_ field (for example `Thank you for your help. Would you like to try to rephrase your question or be put in touch with an advisor?`).
 In the _Indicators_ list, select the value of the indicator provided for this purpose (in our example, `Overall satisfaction: question not understood`).
 
-![Step 3 of Metric Story](../img/metrics_story-3.png "Step 3 of Metric Story")
+![Step 3 of Metric story](../img/metrics_story-3.png "Step 3 of Metric story")
 
 Continue the operations described above until you have completely defined your satisfaction _story_ according to the desired indicators.
 
 Now that you have assigned at least one indicator to an action, you have the possibility to mark this _story_ as a _Metric story_ using the switch located at the top right of the _Actions_ section.
 
-![Step 4 of Metric Story](../img/metrics_story-4.png "Step 4 of Metric Story")
+![Step 4 of Metric story](../img/metrics_story-4.png "Step 4 of Metric story")
 
 You can now validate the creation of the _Metric story_ by clicking on the _Create story_ button at the bottom of the page.
 
 > A _story_ marked as _Metric story_ allows you to record the satisfaction for the _story_ previously triggered by the user. A _Metric story_ must therefore be defined as a _story_ for redirecting business _stories. The indicators recorded following user responses will therefore refer to the story that was executed just before the _Metric story_ was triggered. If indicators are associated with the _actions_ of a _story_ not marked as _Metric story_, the statistics recorded will only concern the story carrying these _actions_.
 
-### Defining a *Metric Story* as a redirection story
+### Defining a *Metric story* as a redirection story
 
-To define a _Metric Story_ as a _story_ for redirecting all your FAQs, go to the _Faq Management_ entry using the main menu.
+To ask for satisfaction after every FAQ answer, select the _Metric story_ in the FAQ parameters
+(see [Satisfaction question](faq.md#satisfaction-question)): it is then triggered after each FAQ story.
 
-Click on the `Faq parameters` icon at the top right of the page.
-
-![The Faq parameters button](../img/metrics_redirection-1.png "The Faq parameters button")
-
-Enable the _Ask for satisfaction after answering on FAQ question_ checkbox then select the _Metric story_ previously created.
-
-![Redirection story](../img/metrics_redirection-2.png "Redirection story")
-
-Click on the _Save_ button.
-
-From now on, after each execution of a _story_ of type Faq, the _story_ "Story satisfaction" will be triggered and will allow to ask users for feedback.
-
-For a more precise adjustment of the _stories_ giving rise to a redirection, go to _Stories & Answers_, _Rules_ tab
+For the other _stories_, go to _Stories & Answers > Rules_ and add an _Ending_ rule towards the _Metric story_
+(see [Story rules](stories-and-answers.md#story-rules)).

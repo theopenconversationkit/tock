@@ -26,16 +26,21 @@ In _Tock Studio_, create a _Google Chat_ connector in _Settings > Configurations
 | Field | Description |
 |-------|-------------|
 | Application base URL | Public base URL of the bot |
-| Authentication Audience | The HTTP endpoint URL configured in Google Cloud |
+| Authentication Audience (Google Chat app connection setting) | The HTTP endpoint URL configured in Google Cloud |
+| Service account email to impersonate | (optional) email of the target service account; takes priority over the JSON credentials |
+| Service account credential file path | (optional) path of a JSON credential file, used instead of the JSON content below |
 | Service account credential json content | JSON credentials of the service account |
-| Service account to impersonate | (optional) email of the target service account |
 | Use condensed footnotes | `1`: condensed sources, `0`: detailed sources |
 | Display sources without URL | `1`: displayed, `0`: hidden |
+| Introductory message | (optional) message sent once, at the start of a new conversation |
+| Use thread | `1`: the bot replies in threads, `0` (default): it replies directly in the space |
+| Sources label | Title of the sources block (default: `Sources`) |
+| Waiting message | Message displayed while the answer is being generated (default: `💭 Thinking...`) |
 | Enable feedback buttons | `1`: thumbs up / down buttons on the final answers, `0` (default): disabled |
 
 ## Behavior
 
-* **Threads**: in a space, the bot replies in the thread of the user message; in direct messages, it starts a new thread.
+* **Threads**: with _Use thread_ enabled, the bot replies in the thread of the user message, or starts a new thread when there is none.
 * **Formatting**: Markdown is converted to the simplified formatting of Google Chat (bold, italic, code, lists, links...).
 * **Sources**: the sources of RAG answers are displayed as footnotes, condensed or detailed.
 * **Feedback**: when enabled, the first vote is stored on the corresponding Tock action, and the buttons are then disabled.

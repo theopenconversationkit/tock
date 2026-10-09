@@ -9,7 +9,7 @@ The _Settings_ > _Synchronization_ screen copies the stories, intents and traini
 then copy them to the production bot, or copy the sentences received by a production bot to a pre-production bot
 to qualify them.
 
-![Synchronization](../../img/synchronization.png "Synchronization screen")
+![Synchronization](../img/synchronization.png "Synchronization screen")
 
 Select the namespace and the application of the source and of the target, then start the synchronization.
 

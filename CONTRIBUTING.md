@@ -48,7 +48,7 @@ After each release:
 1. Update the versions displayed in the documentation:
    ```sh
    etc/update-doc-version.sh            # uses the latest tock-* git tag
-   etc/update-doc-version.sh 26.3.5     # or an explicit version
+   etc/update-doc-version.sh 26.9.1     # or an explicit version
    ```
 2. Add an entry for the release to the changelog, in both languages:
    [`docs/docs/en/project/changelog.md`](docs/docs/en/project/changelog.md) and

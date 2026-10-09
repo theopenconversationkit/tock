@@ -30,19 +30,33 @@ no migration script needs to be run, unless stated in the version notes.
 
 ## Version notes
 
-### 26.3.5
+### 26.9.1
 
 **Removed connectors.** The connectors for Alexa (`connector-alexa`), Google Assistant (`connector-ga`), Twitter
 (`connector-twitter`), Apple Business Chat (`connector-businesschat`) and Rocket.Chat (`connector-rocketchat`), whose
 platforms were shut down or are no longer used, are no longer provided. Remove their configurations in
 _Settings_ > _Configurations_, and their dependencies from your bots.
 
+**Renamed property.** The timeout of the calls to the Bot Framework API of the Teams connector is now set by
+`tock_teams_request_timeout_ms`. The former `tock_whatsapp_request_timeout_ms` property is still read when the new
+one is not set.
+
+**Removed option.** The _Alexa Export_ option of the application advanced options has been removed from _Tock Studio_.
+
+### 26.9.0
+
+**Java 21.** Tock is now built for Java 21: the bots and the platform need a Java 21 (or later) runtime, and
+the Kotlin bots must target the JVM 21 (`kotlin.compiler.jvmTarget`).
+
+**Bill of materials.** The new `tock-bom` artifact aligns the versions of the Tock dependencies in your bots
+(see [Aligning dependency versions](../develop/kotlin-bot.md#aligning-dependency-versions-with-the-tock-bom)).
+
 ### 26.3.0
 
 **The RAG answers must be a structured JSON object.** The _Question answering_ prompt of every bot, in
 _Gen AI_ > _Rag settings_, must be updated before deploying this version, otherwise the bot can no longer
 answer with the RAG. See the [RAG prompt](../gen-ai/rag-prompt.md) documentation, which describes the expected
-[JSON output](../gen-ai/rag-prompt.md#4-json-output-schema) and provides prompt examples.
+[JSON output](../gen-ai/rag-prompt-reference.md#json-output-schema) and provides prompt examples.
 
 ### 25.10.0
 

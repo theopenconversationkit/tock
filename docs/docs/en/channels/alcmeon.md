@@ -12,6 +12,11 @@ until it gives the hand back to Alcmeon.
 * **Connector type**: `alcmeon`
 * **Sources and README**: [connector-alcmeon](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-alcmeon)
 
+## Prerequisites
+
+* An Alcmeon account, with a bot on the channels to serve
+* A public HTTPS URL for the bot, declared in Alcmeon as the URL of the sub-bot
+
 ## Configuration
 
 Create an application on Alcmeon to get its secret, then create an _Alcmeon_ connector in _Tock Studio_:

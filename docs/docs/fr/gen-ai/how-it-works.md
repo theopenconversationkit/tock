@@ -32,7 +32,7 @@ Pour chaque phrase de l'utilisateur :
 
 1. Le modèle NLU détecte l'intention de la phrase (voir [Compréhension du langage](../studio/nlu.md)).
 2. Si une story (ou une FAQ) démarre avec cette intention, c'est elle qui répond : le LLM n'est pas appelé.
-3. Si la phrase est qualifiée avec l'intention `ragexcluded`, le bot répond avec sa story _RAG excluded_
+3. Si la phrase est qualifiée avec l'intention `tock:ragexcluded`, le bot répond avec sa story _RAG excluded_
    (par défaut : _« Sorry, I can't answer your question (Topic not covered) »_). Voir les [exclusions RAG](#exclure-des-sujets-du-rag).
 4. Sinon, la phrase est inconnue ou son intention n'a pas de story : si le [RAG est activé](rag.md#activation-du-rag),
    le bot appelle l'[orchestrateur Gen AI](orchestrator-api.md), qui condense la question, recherche les documents
@@ -53,7 +53,7 @@ Plusieurs leviers, du plus léger au plus fort, encadrent ce que répond le LLM 
 
 ### Exclure des sujets du RAG
 
-Une [exclusion RAG](rag-exclusion.md) qualifie une phrase avec l'intention `ragexcluded`. Une fois le modèle NLU
+Une [exclusion RAG](rag-exclusion.md) qualifie une phrase avec l'intention `tock:ragexcluded`. Une fois le modèle NLU
 entraîné avec suffisamment de phrases de ce type, les phrases proches sont reconnues comme exclues et n'atteignent
 jamais le LLM. C'est plus sûr qu'une consigne dans le prompt, car la décision est prise avant l'appel au LLM.
 
@@ -67,7 +67,7 @@ Pour entraîner rapidement le modèle NLU sur une nouvelle FAQ, les phrases d'en
 ### Rediriger du RAG vers une story
 
 Le LLM de réponse peut aussi passer la main à une story. Quand sa réponse JSON contient une `redirection_intent`
-(voir le [schéma de sortie du prompt](rag-prompt.md#redirection_intent)), le bot envoie la réponse générée, puis bascule
+(voir le [schéma de sortie du prompt](rag-prompt-reference.md#redirection_intent)), le bot envoie la réponse générée, puis bascule
 sur la story démarrée par cette intention, par exemple un transfert vers un conseiller. L'intention doit avoir une story,
 et ne peut pas être `unknown`.
 

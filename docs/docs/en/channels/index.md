@@ -14,9 +14,6 @@ The whole point of Tock connectors lies in the ability to develop conversational
 independently of the channel(s) used to talk to it. It is thus possible to create a bot for a channel,
 then make it multichannel later by adding connectors.
 
-The _Web connector_ has the particularity of exposing a generic API to interact with a Tock bot.
-As a result, it allows even more integrations on the "frontend" side, using this API as a gateway.
-
 This page actually lists:
 
 - The [_connectors_](index.md#connectors-provided-with-tock) provided with the Tock distribution:
@@ -28,21 +25,18 @@ This page actually lists:
 ![logo google chat ](../img/ggchat.png "google chat"){style="width:50px;"}
 ![logo mattermost](../img/mattermost.svg "Mattermost"){style="width:50px;"}
 ![logo web](../img/web.png "web"){style="width:50px;"}
-![logo test](../img/test.jpeg "test"){style="width:50px;"}
+![logo openai](../img/openai.png "OpenAI"){style="width:50px;"}
 
 - The [kits using the _Web connector_](index.md#integrations-via-the-web-connector) to integrate other channels:
 
 ![logo React](../img/React.png "React"){style="width:50px;"}
 ![logo Vue](../img/Vue.svg "Vue"){style="width:50px;"}
-![logo Sharepoint](../img/sharepoint.png "SharePoint"){style="width:50px;"}
 
 - The [possible integrations for voice processing](index.md#voice-technologies):
 
 ![logo android](../img/android.png "Android"){style="width:50px;"}
-![logo teams](../img/teams.png "teams"){style="width:50px;"}
 ![logo ios](../img/ios.png "ios"){style="width:50px;"}
 ![Logo voxygen](../img/voxygen.png "Voxygen"){style="width: 100px;"}
-![Logo nuance](../img/nuance.png "Nuance"){style="width: 75px;"}
 
 ## Connectors provided with Tock
 
@@ -60,12 +54,15 @@ This page actually lists:
 | OpenAI-compatible clients (e.g. [Open WebUI](https://docs.openwebui.com/)) | text | `openai` | [OpenAI API](openai.md) |
 
 New connectors are regularly added, depending on the needs of the projects.
-The connectors for Alexa, Google Assistant, Twitter, Apple Business Chat and Rocket.Chat were removed in Tock 26.3.5
-(see [Upgrading Tock](../operate/upgrade.md#2635)).
+The connectors for Alexa, Google Assistant, Twitter, Apple Business Chat and Rocket.Chat are removed in Tock 26.9.1
+(see [Upgrading Tock](../operate/upgrade.md#2691)).
 To learn more about the bots using these connectors in production, see the [Tock showcase](../project/showcase.md).
 
-The _test_ connector is internal to Tock: it is used to talk to a bot directly in _Tock Studio_
-(_Test_ menu), by emulating the other connectors.
+The former WhatsApp connector for the _On-Premise API_ (`whatsapp`), sunset by Meta, is still provided but deprecated:
+use `whatsapp_cloud` (see [WhatsApp](whatsapp.md)).
+
+The _test_ connector (`rest`, module `connector-rest`) is internal to Tock: it is used to talk to a bot directly
+in _Tock Studio_ (_Test_ menu), by emulating the other connectors.
 
 ## Integrations via the Web connector
 
@@ -103,7 +100,7 @@ Its appearance and wording can be customized, for example with the
 For more information, see the sources and the _README_ in the
 [`tock-vue-kit`](https://github.com/theopenconversationkit/tock-vue-kit) repository on GitHub.
 
-### SharePoint *(beta)*
+### SharePoint *(archived)*
 
 ![logo Sharepoint](../img/sharepoint.png "SharePoint"){style="width:75px;"}
 
@@ -113,7 +110,7 @@ via a [Web connector](web.md) and manage the graphic rendering of the bot in the
 
 * **Integration** : [Microsoft SharePoint](https://www.microsoft.com/en-us/microsoft-365/sharepoint/collaboration)
 * **Type** : Websites & Intranets
-* **Status** : Beta, in development
+* **Status** : Archived, no longer maintained since 2020
 
 For more information, see the sources and the _README_ in the
 [`tock-sharepoint`](https://github.com/theopenconversationkit/tock-sharepoint) repository on GitHub.
@@ -163,7 +160,7 @@ The company [Allo-Media](https://www.allo-media.net/) offers an AI platform base
 
 [Voxygen](https://www.voxygen.fr/) offers speech synthesis services.
 
-On the occasion of the development of the [AlloCovid](https://www.allocovid.com/) bot, an [Allo-Media connector](https://github.com/theopenconversationkit/allocovid/blob/master/src/main/kotlin/AlloMediaConnector.kt)
+On the occasion of the development of the AlloCovid bot, in 2020, an [Allo-Media connector](https://github.com/theopenconversationkit/allocovid/blob/master/src/main/kotlin/AlloMediaConnector.kt)
 was developed to integrate the bot (Tock) with the Allo-Media services:
 _Speech-To-Text_ and _Text-To-Speech_ with Voxygen.
 
@@ -174,7 +171,7 @@ _Speech-To-Text_ and _Text-To-Speech_ with Voxygen.
 
 
 * **Technology**: Allo-Media & Voxygen
-* **Status**: used with Tock in production (via Allo-Media connector)
+* **Status**: used with Tock in production for AlloCovid in 2020 (the [`allocovid`](https://github.com/theopenconversationkit/allocovid) repository is archived)
 
 ### Nuance
 

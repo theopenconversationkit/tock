@@ -8,14 +8,14 @@ The project consists of various modules, the main modules concern the `tock-bot-
 
 ## Story
 A Story is a piece of conversation about a specific topic.
-It is linked to at least one intention (intent) - the StarterIntent
+It is linked to at least one intent (intent) - the StarterIntent
 
 No "story selection" service as there can be a scxml reading library for the state machine, story routing is part of the engine in general.
 
 ### Pre-defined story slot
 These are StoryDefinition called at various times in the bot outside the classic flow, generally for a specific action.
 
-- unknownStory: Default story if no intention is detected
+- unknownStory: Default story if no intent is detected
 - keywordStory: If a keyword is recognized in the user message, bypass the NLP and launch this story directly
 - helloStory: Launched when the bot starts
 - goodbyeStory: Launched when the bot exits
@@ -30,7 +30,7 @@ In the case of receiving an attachment, the bot expects a SendAttachment action 
 
 ### SwitchStory
 It is possible to automatically switch from one Story to another from a story using BotBus::switchStory(StoryDefinition).
-The story is added to the dialog as the last story and its main intention is defined as the current intention.
+The story is added to the dialog as the last story and its main intent is defined as the current intent.
 Switching from one Story to another does not make sense for the state machine, changes are made, by definition, through a transition, never from state to state.
 By implementing the internal event system it is possible to have a similar behavior with the state machine, the event triggers the transition in the state machine which triggers the corresponding Story.
 

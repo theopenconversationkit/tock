@@ -17,7 +17,7 @@ the user is prompted to authenticate via their GitHub account. The user must the
 their account - only the GitHub account identifier is read by Tock.
 
 * On a default Tock platform, the credentials are `admin@app.com` / `password`.<br/>They are set by the
-`tock_users` and `tock_passwords` properties, which must be changed: see [Security](../operate/security.md#implementation-by-properties).
+`tock_users` and `tock_passwords` properties, which must be changed: see [_Tock Studio_ authentication](../operate/authentication.md#implementation-by-properties).
 
 > It is also possible, as an alternative, to use an authentication mechanism upstream of the application, for example via
 > an [Apache HTTPd](https://httpd.apache.org/) service or a cloud service such as [AWS Cognito](https://aws.amazon.com/cognito/)

@@ -57,6 +57,9 @@ Le chart est publié à la fois comme artefact OCI et dans un dépôt Helm class
 
 > Chaque version du chart déploie par défaut une version donnée de Tock (`appVersion` dans `helm search repo tock`).
 > Pour déployer une autre version de Tock, renseignez l'`image.tag` de chaque composant dans votre fichier de valeurs.
+>
+> La dernière version du chart (0.6.3) déploie par défaut Tock 25.10.7, plus ancien que la version décrite dans cette
+> documentation ({{ tock_version }}) : définissez `image.tag` à `{{ tock_version }}` pour utiliser les fonctionnalités décrites ici.
 
 Une fois la release installée, Helm affiche les URL de _Tock Studio_ et de la Bot API.
 L'identifiant/mot de passe par défaut de _Tock Studio_ est `admin@app.com` / `password` : changez-le avant d'ouvrir

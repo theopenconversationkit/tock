@@ -10,6 +10,12 @@ with the [Bot Framework REST API](https://learn.microsoft.com/azure/bot-service/
 * **Connector type**: `teams`
 * **Sources and README**: [connector-teams](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-teams)
 
+## Prerequisites
+
+* A Microsoft 365 tenant where custom apps can be uploaded in Teams
+* An Azure subscription, to register the bot in Azure Bot Service
+* A public HTTPS URL for the bot
+
 ## Configuration
 
 1. Register a bot in the Microsoft Bot Framework / Azure Bot Service, to get an **App ID** and a **password**.
@@ -27,7 +33,7 @@ with the [Bot Framework REST API](https://learn.microsoft.com/azure/bot-service/
 To test a bot running locally, expose it with a secure tunnel (for instance [ngrok](https://ngrok.com/)).
 
 The timeouts of the calls to Microsoft are set by `tock_microsoft_request_timeout` and
-`tock_whatsapp_request_timeout_ms` (see [Configuration](../operate/configuration.md#other-connectors)).
+`tock_teams_request_timeout_ms` (see [Configuration](../operate/configuration.md#other-connectors)).
 
 ## Cards
 

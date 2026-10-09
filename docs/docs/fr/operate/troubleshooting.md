@@ -19,7 +19,7 @@ Cette page liste des problèmes fréquents et leurs causes habituelles. Commence
 ## Je ne peux pas me connecter à _Tock Studio_
 
 **Les identifiants sont refusés.** Par défaut, les identifiants sont `admin@app.com` / `password`. Si `tock_users`
-et `tock_passwords` sont définis, ils remplacent cet utilisateur par défaut (voir [Sécurité](security.md#implementation-par-proprietes)).
+et `tock_passwords` sont définis, ils remplacent cet utilisateur par défaut (voir [Authentification _Tock Studio_](authentication.md#implementation-par-proprietes)).
 
 **La connexion réussit, mais la session est aussitôt perdue.** Hors environnement de dev, le cookie de session
 n'est envoyé qu'en HTTPS. Servez _Tock Studio_ en HTTPS, ou définissez `tock_https_env=false` si le TLS est géré par un
@@ -54,7 +54,7 @@ _Model Quality_ > _Model Builds_.
 **Les réponses ne citent jamais de document.** Vérifiez qu'une session d'indexation est sélectionnée dans les
 [réglages du RAG](../gen-ai/rag.md#session-dindexation), et que la base vectorielle configurée dans _Tock Studio_ ou par les
 variables d'environnement est celle où les documents ont été indexés : la base vectorielle par défaut n'est pas la même dans
-_Bot Admin_ et dans l'orchestrateur (voir [Vector DB settings](../gen-ai/vector-store.md)).
+_Tock Studio_ et les bots, et dans l'orchestrateur (voir [Vector DB settings](../gen-ai/vector-store.md)).
 Le [diagnostic de recherche](../gen-ai/vector-store-inspection.md#diagnostic-de-recherche) montre les documents trouvés
 pour une question.
 

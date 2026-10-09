@@ -14,12 +14,9 @@ Tout l'intérêt des connecteurs Tock réside dans la possibilité de développe
 indépendamment du ou des canaux utilisés pour lui parler. Il est ainsi possible de créer un bot pour un canal,
 puis le rendre multicanal par la suite en ajoutant des connecteurs.
 
-Le _connecteur Web_ a la particularité d'exposer une API générique pour interagir avec un bot Tock.
-En conséquence, il permet encore davantage d'intégrations côté "frontend", utilisant cette API comme passerelle.
-
 Cette page liste en fait :
 
-- Les [_connecteurs_](#integrations-via-le-connecteur-web) fournis avec la distribution Tock :
+- Les [_connecteurs_](#connecteurs-fournis-avec-tock) fournis avec la distribution Tock :
 
 ![logo messenger](../img/messenger.png "Messenger"){style="width:50px;"}
 ![Logo slack](../img/slack.png "Slack"){style="width: 75px;"}
@@ -29,20 +26,17 @@ Cette page liste en fait :
 ![logo mattermost](../img/mattermost.svg "Mattermost"){style="width:50px;"}
 ![logo web](../img/web.png "web"){style="width:50px;"}
 ![logo web](../img/openai.png "Open AI"){style="width:50px;"}
-![logo test](../img/test.jpeg "test"){style="width:50px;"}
+![logo openai](../img/openai.png "OpenAI"){style="width:50px;"}
 
 - Les [kits utilisant le _connecteur Web_](#integrations-via-le-connecteur-web) pour intégrer d'autres canaux :  
 
 ![logo React](../img/React.png "React"){style="width:50px;"}
 ![logo Vue](../img/Vue.svg "Vue"){style="width:50px;"}
-![logo Sharepoint](../img/sharepoint.png "SharePoint"){style="width:50px;"}
 
 - Les [intégrations possibles pour le traitement de la voix](index.md#technologies-vocales) :  
 ![logo android](../img/android.png "Android"){style="width:50px;"}
-![logo teams](../img/teams.png "teams"){style="width:50px;"}
 ![logo ios](../img/ios.png "ios"){style="width:50px;"}
 ![Logo voxygen](../img/voxygen.png "Voxygen"){style="width: 100px;"}
-![Logo nuance](../img/nuance.png "Nuance"){style="width: 75px;"}
 
 ## Connecteurs fournis avec Tock
 
@@ -60,14 +54,17 @@ Cette page liste en fait :
 | Clients compatibles OpenAI (ex. [Open WebUI](https://docs.openwebui.com/)) | texte | `openai` | [API OpenAI](openai.md) |
 
 De nouveaux connecteurs sont régulièrement ajoutés, en fonction des besoins des projets.
-Les connecteurs Alexa, Google Assistant, Twitter, Apple Business Chat et Rocket.Chat ont été retirés dans Tock 26.3.5
-(voir [Mettre à jour Tock](../operate/upgrade.md#2635)).
+Les connecteurs Alexa, Google Assistant, Twitter, Apple Business Chat et Rocket.Chat sont retirés dans Tock 26.9.1
+(voir [Mettre à jour Tock](../operate/upgrade.md#2691)).
 Pour en savoir plus sur les bots utilisant ces connecteurs en production, voir la [vitrine Tock](../project/showcase.md).
 
-Le connecteur _test_ est interne à Tock : il permet de parler à un bot directement dans _Tock Studio_
-(menu _Test_), en émulant les autres connecteurs.
+L'ancien connecteur WhatsApp pour l'_API On-Premise_ (`whatsapp`), arrêtée par Meta, est encore fourni mais déprécié :
+utilisez `whatsapp_cloud` (voir [WhatsApp](whatsapp.md)).
 
-## Integrations via le connecteur Web
+Le connecteur _test_ (`rest`, module `connector-rest`) est interne à Tock : il permet de parler à un bot directement
+dans _Tock Studio_ (menu _Test_), en émulant les autres connecteurs.
+
+## Intégrations via le connecteur Web
 
 Le _connecteur Web_ expose une API générique pour interagir avec un bot Tock.
 En conséquence, il permet encore davantage d'intégrations côté "frontend", utilisant cette API comme passerelle.
@@ -81,7 +78,7 @@ L'application Web communique avec le bot via un [connecteur Web](web.md).
 
 * **Intégration** : [React](https://fr.reactjs.org/) (JavaScript / JSX)
 * **Type** : applications Web
-* **Status** : utilisé en production depuis 2020
+* **Statut** : utilisé en production depuis 2020
 
 Pour en savoir plus, voir les sources et le _README_ dans le dépôt 
 [`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit) sur GitHub.
@@ -98,13 +95,13 @@ Son apparence et ses libellés sont personnalisables, par exemple avec le
 
 * **Intégration** : [Vue](https://fr.vuejs.org/) 3 (JavaScript / TypeScript)
 * **Type** : applications et sites Web
-* **Status** : utilisé en production, publié sur [npm](https://www.npmjs.com/package/tock-vue-kit),
+* **Statut** : utilisé en production, publié sur [npm](https://www.npmjs.com/package/tock-vue-kit),
   voir la [page de démonstration](https://doc.tock.ai/tock-vue-kit/)
 
 Pour en savoir plus, voir les sources et le _README_ dans le dépôt 
 [`tock-vue-kit`](https://github.com/theopenconversationkit/tock-vue-kit) sur GitHub.
 
-### SharePoint *(beta)*
+### SharePoint *(archivé)*
 
 ![logo Sharepoint](../img/sharepoint.png "SharePoint"){style="width:50px;"}
 
@@ -114,7 +111,7 @@ via un [connecteur Web](web.md) et gérer le rendu graphique du bot dans la page
 
 * **Intégration** : [Microsoft SharePoint](https://www.microsoft.com/fr-fr/microsoft-365/sharepoint/collaboration)
 * **Type** : sites Web & intranets
-* **Status** : beta, en développement
+* **Statut** : archivé, plus maintenu depuis 2020
 
 Pour en savoir plus, voir les sources et le _README_ dans le dépôt 
 [`tock-sharepoint`](https://github.com/theopenconversationkit/tock-sharepoint) sur GitHub.
@@ -146,7 +143,7 @@ pour des développements mobiles natifs.
 ![logo teams](../img/teams.png "teams"){style="width:75px;"}
 
 * **Technologie** : STT & TTS Google / Android
-* **Status** : utilisé avec Tock en production
+* **Statut** : utilisé avec Tock en production
 (via le connecteur [Microsoft Teams](teams.md) et en natif Android pour les bots intégrés _on-app_)
 
 ### Apple / iOS
@@ -157,7 +154,7 @@ pour des développements mobiles natifs.
 ![logo ios](../img/ios.png "ios"){style="width:50px;"}
 
 * **Technologie** : STT & TTS Apple / iOS
-* **Status** : utilisé avec Tock en production (en natif iOS pour les bots intégrés _on-app_)
+* **Statut** : utilisé avec Tock en production (en natif iOS pour les bots intégrés _on-app_)
 
 ### Allo-Media & Voxygen
 
@@ -165,16 +162,16 @@ La société [Allo-Media](https://www.allo-media.net/) propose une plateforme IA
 
 [Voxygen](https://www.voxygen.fr/) propose des services de synthèse vocale.
 
-A l'occasion du développement du bot [AlloCovid](https://www.allocovid.com/), un [connecteur Allo-Media](https://github.com/theopenconversationkit/allocovid/blob/master/src/main/kotlin/AlloMediaConnector.kt)
+À l'occasion du développement du bot AlloCovid, en 2020, un [connecteur Allo-Media](https://github.com/theopenconversationkit/allocovid/blob/master/src/main/kotlin/AlloMediaConnector.kt)
 a été développé pour intégrer le bot (Tock) aux services Allo-Media : 
 _Speech-To-Text_ et _Text-To-Speech_ avec Voxygen.
 
-![logo android](../img/android.png "Android"){style="width:50px;"}
+![logo Allo-Media](../img/allomedia.png "Allo-Media"){style="width:100px;"}
 
 ![Logo voxygen](../img/voxygen.png "Voxygen"){style="width: 100px;"}
 
 * **Technologie** : Allo-Media & Voxygen
-* **Status** : utilisé avec Tock en production (via connecteur Allo-Media)
+* **Statut** : utilisé avec Tock en production pour AlloCovid en 2020 (le dépôt [`allocovid`](https://github.com/theopenconversationkit/allocovid) est archivé)
  
 ### Nuance
 
@@ -196,7 +193,7 @@ Tock présente plusieurs avantages :
 * Même si un bot est connecté à plusieurs canaux/partenaires externes, seule la plateforme Tock possède l'ensemble des
 conversations sur tous ces canaux.
 
-## Developper son propre connecteur
+## Développer son propre connecteur
 
 Il est possible de créer son propre connecteur Tock, par exemple pour interfacer un bot Tock avec un canal propre à 
 l'organisation (souvent un site Web ou une application mobile spécifiques), ou bien quand un canal grand public 

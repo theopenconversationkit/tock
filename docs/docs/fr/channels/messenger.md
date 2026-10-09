@@ -100,15 +100,12 @@ style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.
 <img src="../../img/channels/messenger/page-id-1.png" alt="ID de page partie 2" 
 style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); width: 75%;" />
 
-* _Call Token_ : le jeton se trouve sur la page de votre application sur [https://developers.facebook.com](https://developers.facebook.com) 
+* _Call Token_ : le jeton se trouve sur la page de votre application sur [https://developers.facebook.com](https://developers.facebook.com)
 
-<img src="../../img/channels/messenger/create-app-0.png" alt="Créer une application partie 1"
-style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
+* _Webhook Token_ : choisissez un jeton quelconque (même `token` si vous le souhaitez) et notez-le pour plus tard -
+chaque appel de Facebook vers Tock passera ce jeton
 
-* _Créer une app_ > _Gérer les intégrations professionnelles_
-
-<img src="../../img/channels/messenger/create-app-1.png" alt="Créer une application partie 2"
-style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" />
+* _Secret_ : à copier depuis la page de l'application sur [https://developers.facebook.com](https://developers.facebook.com)
 
 * _Persona Id_ : vous pouvez laisser ce champ vide
 

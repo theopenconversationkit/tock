@@ -70,7 +70,7 @@ Voir [Installation](installation.md#base-de-donnees-mongodb).
 
 ### Authentification _Tock Studio_
 
-Voir [Sécurité](security.md#authentification). Sans aucune des propriétés `*_enabled` ci-dessous, les utilisateurs
+Voir [Authentification _Tock Studio_](authentication.md). Sans aucune des propriétés `*_enabled` ci-dessous, les utilisateurs
 sont définis par les propriétés `tock_users`, `tock_passwords`, `tock_organizations` et `tock_roles`.
 
 | Propriété | Défaut | Description |
@@ -303,11 +303,10 @@ Voir [WhatsApp](../channels/whatsapp.md).
 | `tock_whatsappcloud_request_timeout_ms` | `30000` | Délai maximal des appels à l'API WhatsApp |
 | `tock_whatsappcloud_request_gzip` | `false` | Compresse les requêtes |
 | `tock_whatsapp_cloud_restricted_phone_numbers` | | Ne répond qu'à ces numéros de téléphone (tests) |
+| `tock_whatsapp_cloud_restricted_user_ids` | | Ne répond qu'à ces identifiants utilisateurs Business-Scoped (BSUID), en plus des numéros ci-dessus (tests) |
 | `tock_whatsapp_sync_templates` | `false` | Synchronise les modèles de messages avec WhatsApp |
 | `tock_whatsapp_reupload_images` | `true` | Téléverse les images vers WhatsApp au lieu d'envoyer leur URL |
 | `tock_whatsapp_error_on_invalid_messages` | `false` | Échoue au lieu de logger un avertissement sur un message qui ne respecte pas les limites de WhatsApp |
-| `tock_whatsapp_persistent_cache` | `false` | Stocke les identifiants utilisateurs hachés dans MongoDB. Nécessite `tock_encrypt_pass` |
-| `tock_whatsapp_memory_timeout_in_minutes` | `60` | Expiration du cache en mémoire de ces identifiants |
 | `tock_whatsapp_payload` | `whatsapp_payload` | Collection stockant les _payloads_ des boutons |
 | `tock_whatsapp_payload_ttl_days` | `10` | Conservation de ces _payloads_ |
 
@@ -332,7 +331,8 @@ Voir [Messenger](../channels/messenger.md).
 | Propriété | Défaut | Description |
 |-----------|--------|-------------|
 | `tock_microsoft_request_timeout` | `5000` | Teams : délai maximal des appels récupérant les clés Microsoft, en millisecondes |
-| `tock_whatsapp_request_timeout_ms` | `30000` | Teams : délai maximal des appels à l'API Bot Framework (malgré son nom) |
+| `tock_teams_request_timeout_ms` | `30000` | Teams : délai maximal des appels à l'API Bot Framework (anciennement `tock_whatsapp_request_timeout_ms`, encore lue si la nouvelle propriété n'est pas définie) |
+| `tock_whatsapp_request_timeout_ms` | `30000` | WhatsApp (connecteur _On-Premise API_ déprécié) : délai maximal des appels à l'API WhatsApp |
 | `tock_mattermost_request_timeout_ms` | `30000` | Mattermost : délai maximal des appels à l'API Mattermost |
 | `tock_slack_old_api_style` | `false` | Slack : utilise l'ancien format de l'API Slack |
 | `tock_api_google_chat_connector_test_send_intro_message` | `false` | Google Chat : envoie un message d'introduction en mode test |
@@ -464,6 +464,8 @@ Les variables de la base vectorielle sont décrites dans la page [Vector DB sett
 | `tock_gen_ai_orchestrator_db_pool_recycle` | `3600` | Durée de vie maximale d'une connexion, en secondes |
 | `tock_gen_ai_orchestrator_vector_store_test_query` | `Any definition` | Requête utilisée pour tester la connexion à la base vectorielle |
 | `tock_gen_ai_orchestrator_vector_store_test_max_docs_retrieved` | `4` | Nombre de documents récupérés par ce test |
+| `tock_gen_ai_orchestrator_aws_bedrock_credentials_profile_name` | | Profil AWS utilisé pour appeler [AWS Bedrock](../gen-ai/providers/llm-embedding.md#aws-bedrock) |
+| `tock_gen_ai_orchestrator_aws_bedrock_credentials_allow_default_profile` | `false` | Sans profil, utilise la chaîne d'identifiants AWS par défaut (rôle IAM, IRSA, variables d'environnement) au lieu d'échouer |
 | `tock_gcp_project_id` | | Projet GCP des secrets, avec le gestionnaire de secrets GCP |
 
 ## Autres modules

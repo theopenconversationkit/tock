@@ -26,16 +26,21 @@ Dans _Tock Studio_, créez un connecteur _Google Chat_ dans _Settings > Configur
 | Champ | Description |
 |-------|-------------|
 | Application base URL | URL publique de base du bot |
-| Authentication Audience | L'URL du endpoint HTTP configurée dans Google Cloud |
+| Authentication Audience (Google Chat app connection setting) | L'URL du endpoint HTTP configurée dans Google Cloud |
+| Service account email to impersonate | (facultatif) email du compte de service cible ; prioritaire sur les identifiants JSON |
+| Service account credential file path | (facultatif) chemin d'un fichier d'identifiants JSON, utilisé à la place du contenu JSON ci-dessous |
 | Service account credential json content | Identifiants JSON du compte de service |
-| Service account to impersonate | (facultatif) email du compte de service cible |
 | Use condensed footnotes | `1` : sources condensées, `0` : sources détaillées |
 | Display sources without URL | `1` : affichées, `0` : masquées |
+| Introductory message | (facultatif) message envoyé une seule fois, au début d'une nouvelle conversation |
+| Use thread | `1` : le bot répond dans des fils de discussion, `0` (défaut) : il répond directement dans l'espace |
+| Sources label | Titre du bloc des sources (défaut : `Sources`) |
+| Waiting message | Message affiché pendant la génération de la réponse (défaut : `💭 Thinking...`) |
 | Enable feedback buttons | `1` : boutons pouce levé / baissé sur les réponses finales, `0` (défaut) : désactivés |
 
 ## Comportement
 
-* **Fils de discussion** : dans un espace, le bot répond dans le fil du message de l'utilisateur ; en message direct, il démarre un nouveau fil.
+* **Fils de discussion** : si _Use thread_ est activé, le bot répond dans le fil du message de l'utilisateur, ou démarre un nouveau fil s'il n'y en a pas.
 * **Mise en forme** : le Markdown est converti vers la mise en forme simplifiée de Google Chat (gras, italique, code, listes, liens...).
 * **Sources** : les sources des réponses RAG sont affichées en notes de bas de page, condensées ou détaillées.
 * **Feedback** : s'il est activé, le premier vote est enregistré sur l'action Tock correspondante, puis les boutons sont désactivés.

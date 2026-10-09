@@ -161,6 +161,10 @@ La base MongoDB doit être configurée en _replica set_, car Tock tire parti des
 
 > Un _replica set_ à un seul nœud suffit pour le développement. En production, déployez au moins 3 _nœuds_ pour améliorer la résilience.
 
+Les images Docker de [`tock-docker`](https://github.com/theopenconversationkit/tock-docker) utilisent la dernière version de MongoDB.
+Certaines fonctionnalités nécessitent une version récente : par exemple, l'expiration des messages non délivrés du
+[connecteur Web](../channels/web.md#proprietes-de-configuration) nécessite MongoDB 7.1 ou plus récent.
+
 Différents scénarios sont possibles pour la base de données :
 
 - Installer les noeuds MongoDB sur un ou plusieurs serveurs (méthode classique)
@@ -285,7 +289,7 @@ Bien sûr, l'implémentation du bot lui-même n'est pas fournie avec Tock (chacu
 
 ### Proxies HTTP
 
-Les [propriétés système Java](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/doc-files/net-properties.html)
+Les [propriétés système Java](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/doc-files/net-properties.html)
 `https.proxyHost`, `http.proxyHost` et `http.nonProxyHosts` sont la méthode recommandée pour configurer un proxy.
 
 ### Packaging du bot

@@ -18,6 +18,7 @@ Ils se configurent dans _Tock Studio_, dans les écrans de réglages Gen AI. Voi
 | [OpenAI](https://platform.openai.com/docs/overview) (ou toute API compatible OpenAI) | `OpenAI` | ✅ | ✅ |
 | [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/) | `AzureOpenAIService` | ✅ | ✅ |
 | [Ollama](https://ollama.com/)  | `Ollama`             | ✅  | ✅          |
+| [AWS Bedrock](https://aws.amazon.com/bedrock/) | `AwsBedrock` | ✅ | ✅ |
 | Bloomz (service d'embeddings auto-hébergé) | `Bloomz` |     | ✅ (orchestrateur uniquement) |
 
 ## Réglages communs des LLM
@@ -92,6 +93,46 @@ LLM (pour les embeddings, les mêmes réglages sans `temperature`, avec un modè
   "temperature": 0.7
 }
 ```
+
+## AWS Bedrock
+
+[AWS Bedrock](https://aws.amazon.com/bedrock/) donne accès à des modèles hébergés par AWS (Amazon Nova, Anthropic Claude,
+Mistral, embeddings Titan...). Aucune clé d'API n'est stockée : l'orchestrateur utilise les identifiants AWS de son
+environnement, et la région est celle du profil AWS sélectionné. Définissez l'une de ces variables d'environnement sur l'orchestrateur :
+
+* `tock_gen_ai_orchestrator_aws_bedrock_credentials_profile_name` : le profil AWS à utiliser,
+* `tock_gen_ai_orchestrator_aws_bedrock_credentials_allow_default_profile=true` : utilise la chaîne d'identifiants AWS
+  par défaut (rôle IAM, IRSA, variables d'environnement). Sans l'une des deux, les appels échouent.
+
+L'accès aux modèles doit être accordé dans la console Bedrock, pour le compte et la région.
+
+LLM :
+
+```json
+{
+  "provider": "AwsBedrock",
+  "model": "amazon.nova-lite-v1:0",
+  "temperature": 0.7,
+  "guardrail_id": "arn:aws:bedrock:eu-west-3:123456789012:guardrail/my-guardrail",
+  "guardrail_version": "1",
+  "guardrail_trace": false
+}
+```
+
+Les réglages `guardrail_*` (facultatifs) appliquent un [Bedrock Guardrail](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html)
+aux appels du LLM : `guardrail_id` et `guardrail_version` se renseignent ensemble, et `guardrail_trace` journalise
+le détail des interventions du guardrail.
+
+Embeddings :
+
+```json
+{
+  "provider": "AwsBedrock",
+  "model": "amazon.titan-embed-text-v2:0"
+}
+```
+
+Voir [RAG sur AWS](../../getting-started/rag-aws.md) pour un déploiement complet avec Bedrock et Amazon OpenSearch.
 
 ## Bloomz
 

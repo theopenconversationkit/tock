@@ -114,9 +114,9 @@ nav:
       - getting-started/index.md
       - getting-started/rag-tutorial.md
       - getting-started/rag-aws.md
-      - getting-started/run-platform.md
       - getting-started/first-bot-studio.md
       - getting-started/first-bot-kotlin.md
+      - getting-started/run-platform.md
       - concepts.md
   - Gen AI:
       - gen-ai/index.md
@@ -128,6 +128,7 @@ nav:
       - Answer generation:
           - gen-ai/rag.md
           - gen-ai/rag-prompt.md
+          - gen-ai/rag-prompt-reference.md
           - gen-ai/rag-prompt-context.md
           - gen-ai/compressor.md
           - gen-ai/rag-exclusion.md
@@ -196,16 +197,19 @@ nav:
               - develop/internals/nlp/models-and-entity-models.md
               - develop/internals/nlp/evaluation.md
   - Operate:
+      - operate/index.md
       - operate/architecture.md
       - operate/installation.md
       - operate/kubernetes.md
       - operate/configuration.md
       - operate/upgrade.md
       - operate/security.md
+      - operate/authentication.md
       - operate/supervision.md
       - operate/cloud.md
       - operate/troubleshooting.md
   - Project:
+      - project/index.md
       - project/why.md
       - project/showcase.md
       - project/community.md

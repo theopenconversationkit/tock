@@ -27,7 +27,7 @@ Choisissez un **Webhook verify token**, utilisé lors de l'enregistrement du web
 
 1. Dans _Tock Studio_, créez un connecteur _WhatsApp Cloud_ dans _Settings > Configurations_, avec ces valeurs.
 2. Dans les réglages de webhook de l'application Meta (avec les événements de webhook `messages` activés), renseignez :
-    * l'URL du connecteur, par exemple `https://<hôte-du-bot>/io/<namespace>/<bot>/whatsapp`
+    * l'URL du connecteur, par exemple `https://<hôte-du-bot>/io/<namespace>/<bot>/whatsapp_cloud`
       (le chemin du connecteur est affiché dans sa configuration),
     * le webhook verify token.
 

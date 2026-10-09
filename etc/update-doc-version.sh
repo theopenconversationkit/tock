@@ -17,7 +17,7 @@
 
 # Updates the versions displayed in the documentation (docs/mkdocs.yml, extra.variables):
 # - tock_version: the given version, or the latest tock-* git tag
-# - kotlin_version: the Kotlin version of the root pom.xml
+# - kotlin_version: the Kotlin version of bom/pom.xml
 #
 # Usage: etc/update-doc-version.sh [version]
 
@@ -27,7 +27,7 @@ root_dir="$(cd "$(dirname "$0")/.." && pwd)"
 mkdocs_file="$root_dir/docs/mkdocs.yml"
 
 version="${1:-$(git -C "$root_dir" describe --tags --abbrev=0 --match 'tock-*' | sed 's/^tock-//')}"
-kotlin_version="$(sed -n 's:.*<kotlin>\(.*\)</kotlin>.*:\1:p' "$root_dir/pom.xml" | head -1)"
+kotlin_version="$(sed -n 's:.*<kotlin>\(.*\)</kotlin>.*:\1:p' "$root_dir/bom/pom.xml" | head -1)"
 
 if [[ -z "$version" || -z "$kotlin_version" ]]; then
   echo "Unable to determine the Tock or Kotlin version" >&2

@@ -1,10 +1,10 @@
 ---
-title: Custom Metrics
+title: Metrics
 ---
 
-# Le menu _Custom Metrics_
+# Le menu _Metrics_
 
-Le menu _Custom Metrics_ permet de créer et visualiser des statistiques de consultation et d'usage des stories Tock.
+Le menu _Metrics_ permet de créer et visualiser des statistiques de consultation et d'usage des stories Tock.
 Il est destiné à un public métier qui souhaite monitorer la performance des stories (faqs, scénarios...) au sein d'une application Tock.
 
 > Pour accéder à cette page il faut bénéficier du rôle _botUser_.
@@ -71,7 +71,7 @@ Un indicateur doit nécessairement appartenir à au moins une dimension mais un 
 Les actions suivantes sont disponibles pour chaque indicateur :
 
 - _Edit_ : permet de modifier les attributs de l'indicateur (label, description, dimensions, valeurs)
-- _Delete_ : permet de supprimer l'indicateur. A noter que la suppression d'un indicateur interdira la consultation des statistiques enregistrées pour cet indicateur.
+- _Delete_ : permet de supprimer l'indicateur. À noter que la suppression d'un indicateur interdira la consultation des statistiques enregistrées pour cet indicateur.
 
 ### Création d'un indicateur
 
@@ -84,7 +84,7 @@ Vous pouvez créer un nouvel indicateur en cliquant sur le bouton _+ New Indicat
 
 Par exemple, nous pouvons imaginer un indicateur "Satisfaction" qui porte les valeurs "Satisfait" et "Non satisfait".
 
-A noter que le nom de l'indicateur et ses valeurs ne seront pas directement affichés aux utilisateurs. Les phrases de questions et réponses seront définies au niveau des _actions_ de la _Metric story_ que vous serez amenés à créer à l'étape suivante. Vous pouvez donc choisir un label et des valeurs simples qui faciliterons leur manipulation.
+À noter que le nom de l'indicateur et ses valeurs ne seront pas directement affichés aux utilisateurs. Les phrases de questions et réponses seront définies au niveau des _actions_ de la _Metric story_ que vous serez amenés à créer à l'étape suivante. Vous pouvez donc choisir un label et des valeurs simples qui faciliterons leur manipulation.
 
 A titre d'exemple, nous pouvons imaginer une dimension qui réunit les indicateurs et valeurs suivantes :
 
@@ -125,7 +125,7 @@ Dans la section _Answers_ saisissez la réponse à retourner aux utilisateurs lo
 
 Une fois définis, les indicateurs doivent être associés aux _actions_ d'une _story_ pour pouvoir être déclenchés par les utilisateurs et ainsi donner lieu à l'enregistrement d'un _hit_.
 
-### Création d'une _Metrics Story_ de satisfaction
+### Création d'une _Metric story_ de satisfaction
 
 Depuis le menu principal, accédez à _Stories & Answers_ puis à l'onglet _New story_.
 Dans le champ proposé, saisissez le nom de votre _story_ de satisfaction (par exemple `Story satisfaction`) puis validez.
@@ -138,7 +138,7 @@ Indiquez un nom d'_Intent_ pour l'action (par exemple `satisfaction_ok`). Une fe
 Saisissez une réponse à l'aide du champ _Answer_ de l'action (par exemple `Je suis ravi d'avoir pu vous aider`).
 Dans la liste _Indicators_, sélectionnez la valeur de l'indicateur prévu à cet effet (dans notre exemple, `Satisfaction globale : Satisfait`).
 
-![Etape 1 de Metric Story](../../img/metrics_story-1.png "Etape 1 de Metric Story")
+![Étape 1 de Metric story](../../img/metrics_story-1.png "Étape 1 de Metric story")
 
 Répétez l'opération pour l'action "Non satisfait" :
 
@@ -148,7 +148,7 @@ Indiquez un nom d'_Intent_ pour l'action (par exemple `satisfaction_nok`).
 Saississez une réponse à l'aide du champ _Answer_ (par exemple `Pouvez-vous préciser le problème rencontré ?`).
 Dans la liste _Indicators_, sélectionnez la valeur de l'indicateur prévu à cet effet (dans notre exemple, `Satisfaction globale : Non satisfait`).
 
-![Etape 2 de Metric Story](../../img/metrics_story-2.png "Etape 2 de Metric Story")
+![Étape 2 de Metric story](../../img/metrics_story-2.png "Étape 2 de Metric story")
 
 Vous allez maintenant pouvoir définir les _Actions_ à proposer aux utilisateurs qui ont répondu `Non` à la question initiale :
 
@@ -159,31 +159,22 @@ Indiquez un nom d'_Intent_ pour l'action (par exemple `satisfaction_questionmalc
 Saisissez une réponse à l'aide du champ _Answer_ (par exemple `Merci pour votre aide. Souhaitez-vous essayer de reformuler votre question ou être mis en relation avec un conseiller ?`).
 Dans la liste _Indicators_, sélectionnez la valeur de l'indicateur prévu à cet effet (dans notre exemple, `Satisfaction globale : question non comprise`).
 
-![Etape 3 de Metric Story](../../img/metrics_story-3.png "Etape 3 de Metric Story")
+![Étape 3 de Metric story](../../img/metrics_story-3.png "Étape 3 de Metric story")
 
 Poursuivez les opérations décrites ci-dessus jusqu'à avoir entièrement défini votre _story_ de satisfaction en fonction des indicateurs voulus.
 
 Maintenant que vous avez assigné au moins un indicateur à une action, vous avez la possibilité de marquer cette _story_ comme _Metric story_ grâce au commutateur situé en haut à droite de la section _Actions_.
 
-![Etape 4 de Metric Story](../../img/metrics_story-4.png "Etape 4 de Metric Story")
+![Étape 4 de Metric story](../../img/metrics_story-4.png "Étape 4 de Metric story")
 
 Vous pouvez désormais valider la création de la _Metric story_ en cliquant sur le bouton _Create story_ en bas de page.
 
 > Une _story_ marquée comme _Metric story_ permet d'enregistrer la satisfaction pour la _story_ précédemment déclenchée par l'utilisateur. Une _Metric story_ doit donc être définie comme _story_ de redirection de _stories_ métier. Les indicateurs enregistrés suite aux réponses des utilisateurs feront donc référence à la story qui a été exécutée juste avant le déclenchement de la _Metric story_. Si des indicateurs sont associés aux _actions_ d'une _story_ non marquée comme _Metric story_, les statistiques enregistrées ne porteront que sur la story portant ces _actions_.
 
-### Définition d'une _Metric Story_ comme story de redirection
+### Définition d'une _Metric story_ comme story de redirection
 
-Pour définir une _Metric Story_ comme _story_ de redirection de l'ensemble vos Faqs, rendez-vous, à l'aide du menu principal, sur l'entrée _Faq Management_.
-Cliquez sur l'icône `Faq parameters` en haut à droite de la page.
+Pour demander la satisfaction après chaque réponse de FAQ, sélectionnez la _Metric story_ dans les paramètres des FAQ
+(voir [Question de satisfaction](faq.md#question-de-satisfaction)) : elle est alors déclenchée après chaque story de FAQ.
 
-![Le bouton Faq parameters](../../img/metrics_redirection-1.png "Le bouton Faq parameters")
-
-Activez la case à cocher _Ask for satisfaction after answering on FAQ question_ puis sélectionnez la _Metric story_ précédemment créée.
-
-![Story de redirection](../../img/metrics_redirection-2.png "Story de redirection")
-
-Cliquez sur le bouton _Save_.
-
-Désormais, après chaque exécution d'une _story_ de type Faq, la _story_ "Story satisfaction" sera déclenchée et permettra de demander aux utilisateurs un retour d'expérience.
-
-Pour un réglage plus fin des _stories_ donnant lieu à une redirection, rendez-vous sur _Stories & Answers_, onglet _Rules_
+Pour les autres _stories_, rendez-vous sur _Stories & Answers > Rules_ et ajoutez une règle _Ending_ vers la _Metric story_
+(voir [Règles des stories](stories-and-answers.md#story-rules)).

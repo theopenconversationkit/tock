@@ -27,7 +27,7 @@ Choose a **Webhook verify token**, used when registering the webhook in the Meta
 
 1. In _Tock Studio_, create a _WhatsApp Cloud_ connector in _Settings > Configurations_, with these values.
 2. In the webhook settings of the Meta application (with `messages` webhook events enabled), set:
-    * the URL of the connector, for instance `https://<bot-host>/io/<namespace>/<bot>/whatsapp`
+    * the URL of the connector, for instance `https://<bot-host>/io/<namespace>/<bot>/whatsapp_cloud`
       (the connector path is displayed in its configuration),
     * the webhook verify token.
 

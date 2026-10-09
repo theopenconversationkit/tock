@@ -8,6 +8,9 @@ The _Rag prompt context_ menu manages business elements that are injected dynami
 [RAG](rag.md) answering prompt: covered topics, excluded topics and the business lexicon.
 Changes apply to new questions once saved.
 
+> To access this page, you need the **_admin_** role
+> (more details on roles in [security](../operate/security.md#roles)).
+
 ![Rag prompt context](../img/gen-ai/gen-ai-rag-prompt-context.png "Rag prompt context")
 
 ## Covered topics

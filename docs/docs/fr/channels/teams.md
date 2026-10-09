@@ -10,6 +10,12 @@ via l'[API REST du Bot Framework](https://learn.microsoft.com/azure/bot-service/
 * **Type de connecteur** : `teams`
 * **Sources et README** : [connector-teams](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-teams)
 
+## Prérequis
+
+* Un tenant Microsoft 365 dans lequel des applications personnalisées peuvent être chargées dans Teams
+* Un abonnement Azure, pour enregistrer le bot dans Azure Bot Service
+* Une URL HTTPS publique pour le bot
+
 ## Configuration
 
 1. Enregistrez un bot dans le Microsoft Bot Framework / Azure Bot Service, pour obtenir un **App ID** et un **mot de passe**.
@@ -27,7 +33,7 @@ via l'[API REST du Bot Framework](https://learn.microsoft.com/azure/bot-service/
 Pour tester un bot qui tourne en local, exposez-le avec un tunnel sécurisé (par exemple [ngrok](https://ngrok.com/)).
 
 Les délais maximaux des appels à Microsoft sont définis par `tock_microsoft_request_timeout` et
-`tock_whatsapp_request_timeout_ms` (voir [Configuration](../operate/configuration.md#autres-connecteurs)).
+`tock_teams_request_timeout_ms` (voir [Configuration](../operate/configuration.md#autres-connecteurs)).
 
 ## Cartes
 

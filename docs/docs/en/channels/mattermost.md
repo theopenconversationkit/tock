@@ -10,6 +10,11 @@ It answers the messages of a channel (optionally only those starting with a trig
 * **Connector type**: `mattermost`
 * **Sources and README**: [connector-mattermost](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-mattermost)
 
+## Prerequisites
+
+* A Mattermost server, with the system administrator rights to create webhooks and allow the calls to the Tock host
+* A URL of the bot that the Mattermost server can reach
+
 ## Configuration
 
 1. In the Mattermost _System Console_ (_Environment > Developer_), allow Mattermost to call the Tock host

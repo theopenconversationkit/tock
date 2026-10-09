@@ -55,7 +55,7 @@ Ou dans un projet [Gradle](https://gradle.org/) :
 
 ### Aligner les versions des dépendances avec le BOM Tock
 
-Depuis Tock 26.3.5, le _bill of materials_ `tock-bom` liste les artefacts Tock et les versions de leurs
+Depuis Tock 26.9.0, le _bill of materials_ `tock-bom` liste les artefacts Tock et les versions de leurs
 dépendances tierces (Kotlin, coroutines, kotlinx-serialization, Jackson, Netty/Vert.x, OkHttp, AWS SDK, Google...).
 
 Sans lui, votre outil de build résout ces librairies de son côté, et peut se retrouver avec des versions
@@ -243,6 +243,10 @@ Pour le développement de stories complexes, nous avons besoin d'une abstraction
 
 ### Intentions secondaires
 
+> Les exemples de cette section et des suivantes proviennent du
+> [bot Open Data](https://github.com/theopenconversationkit/tock-bot-open-data) : `SearchDef`, `Place`, `PlaceValue`,
+> `Section`... sont des classes de ce bot, pas de l'API Tock.
+
 Voici le début de la définition de la story `search` :
 
 ```kotlin
@@ -410,17 +414,16 @@ Et voici son implémentation pour Messenger :
 class MessengerSearchConnector(context: SearchDef) : SearchConnector(context) {
 
     override fun sendFirstJourney(sections: List<Section>): ConnectorMessage =
-          flexibleListTemplate(
+          genericTemplate(
                 sections.map { section ->
                       with(section) {
-                          listElement(
+                          genericElement(
                                 title(),
                                 content(),
                                 trainImage
                           )
                       }
-                },
-                compact
+                }
           )
 }
 ```

@@ -38,11 +38,13 @@ Une invite apparaît pour vous identifier avec votre compte GitHub. Après cela,
 
 Au premier accès à la plateforme de démonstration, un assistant invite à créer une _application_ :
 
-* Saisissez un nom pour l'application
+* _Choose your language_ : sélectionnez une langue - vous pourrez en ajouter d'autres par la suite - puis _Next_
 
-* Sélectionnez une langue - vous pourrez en ajouter d'autres par la suite
+* _Select a first Channel_ : sélectionnez _slack_, puis _Next_
 
-* Validez pour créer l'application
+* _Create your Assistant_ : _Create_
+
+L'assistant crée une application nommée `new_assistant`, avec un premier connecteur _Slack_.
 
 > Vous pouvez retrouver l'application créée dans le menu : _Settings_ > _Applications_.
 >
@@ -63,17 +65,8 @@ vous pourrez compléter la configuration côté Slack et côté Tock afin que le
 >
 > De même, la section [Configurer Messenger](../channels/messenger.md) vous montrera comment activer le même bot sur la messagerie du réseau social Facebook.
 
-Créez un premier connecteur pour votre application :
-
-* Allez dans _Settings_ > _Configurations_
- 
- * _Create a new Configuration_
- 
- * Sélectionnez le type de connecteur _Slack_
- 
- * Entrez `token` dans les champs _Token_ (pour le moment)
- 
- * _Create_
+L'assistant a déjà créé ce connecteur : vous pouvez le retrouver dans _Settings_ > _Configurations_.
+Ses jetons Slack seront renseignés plus tard, dans [Configurer Slack](../channels/slack.md).
 
 > Notez qu'une _API Key_ a été automatiquement générée pour votre application à la création du premier connecteur. 
 > Celle-ci vous servira à vous connecter à l'API du bot si vous essayez le mode _WebHook_ ou _WebSocket_ dans le guide 

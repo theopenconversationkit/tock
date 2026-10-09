@@ -24,12 +24,19 @@ et sur les entités (_Entity average probability_)
 Les métriques présentées en tableau dans cet page (_Occurrences_ et _Average Diff_) permettent d'identifier les intentions 
 plus ou moins proches dans le modèle, notamment afin d'optimiser la modélisation. 
 
+## L'onglet _Count Stats_
+
+Cet onglet liste les phrases les plus souvent reçues par le bot, avec le nombre d'occurrences de chacune, sa dernière
+utilisation, l'intention détectée (avec sa probabilité et celle des entités) et si la phrase a été validée. Filtrez par
+intention (ou _Unknown_) et fixez un nombre minimum d'occurrences pour trouver les phrases fréquentes qui ne sont pas
+encore qualifiées, ou qui sont mal comprises.
+
 ## L'onglet _Model Builds_
 
 Cet écran présente des statistiques sur les dernières reconstructions du modèle. Il s'agit donc d'indications sur 
 la performance du modèle.
 
-## L'onglet _Tests Trends_
+## L'onglet _Test Trends_
 
 Les _tests partiels de modèle_ constituent un moyen classique de détecter les erreurs de qualification,
 ou les problèmes de proximité des intentions (ou entités) entre elles.
@@ -45,7 +52,7 @@ ou les problèmes de proximité des intentions (ou entités) entre elles.
 Cet onglet donne l'évolution de la pertinence des tests partiels de modèle.
 
 > Par défaut, les tests sont programmés pour être lancés de minuit à 5h du matin, toutes les 10 minutes.
-> Il est possible de configurer ce comportement avec la propriété `tock_test_model_timeframe` (par défaut : `0,5`).
+> Il est possible de configurer ce comportement avec la propriété `tock_test_model_timeframe` : les heures de début et de fin, séparées par une virgule (par défaut : `0,5`).
 
 
 ## L'onglet _Test Intent Errors_

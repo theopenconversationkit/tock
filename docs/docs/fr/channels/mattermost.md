@@ -10,6 +10,11 @@ Il répond aux messages d'un canal (éventuellement seulement à ceux qui commen
 * **Type de connecteur** : `mattermost`
 * **Sources et README** : [connector-mattermost](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-mattermost)
 
+## Prérequis
+
+* Un serveur Mattermost, avec les droits d'administrateur système pour créer des webhooks et autoriser les appels vers l'hôte Tock
+* Une URL du bot que le serveur Mattermost peut atteindre
+
 ## Configuration
 
 1. Dans la _System Console_ de Mattermost (_Environment > Developer_), autorisez Mattermost à appeler l'hôte Tock

@@ -24,7 +24,7 @@ A configuration screen lets Tock connect to a vector database:
 - Please refer to the documentation of each tool to learn how to use it.
 - If no configuration is provided in _Tock Studio_, the default configuration, set with environment variables, is used.
 
-In _Bot Admin_, `tock_gen_ai_orchestrator_vector_store_provider` sets the type of the default vector database
+In the _Tock Studio_ backend (`tock/bot_admin`) and the bots, `tock_gen_ai_orchestrator_vector_store_provider` sets the type of the default vector database
 (`PGVector` by default). It lets Tock build the right search parameters for this database when calling the RAG.
 
 In the Gen AI orchestrator:
@@ -41,5 +41,5 @@ In the Gen AI orchestrator:
 | `tock_gen_ai_orchestrator_vector_store_credentials_secret_name` | | Name of the secret holding the credentials |
 | `tock_gen_ai_orchestrator_vector_store_timeout` | `4` | Request timeout, in seconds |
 
-> The default provider is not the same in _Bot Admin_ (`PGVector`) and in the orchestrator (`OpenSearch`):
+> The default provider is not the same in _Tock Studio_ and the bots (`PGVector`) and in the orchestrator (`OpenSearch`):
 > set the variable to the same value on both sides.

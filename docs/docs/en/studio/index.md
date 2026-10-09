@@ -27,7 +27,7 @@ The _Gen AI_ menus (RAG, vector store, playground, observability...) and the _An
 * [The _Test_ menu](test.md)
 * Monitoring:
     * [The _Analytics_ menu](analytics.md)
-    * [The _Custom Metrics_ menu](custom-metrics.md)
+    * [The _Metrics_ menu](custom-metrics.md)
 * Administration:
     * [The _Settings_ menu](configuration.md)
     * [The _Synchronization_ screen](synchronization.md)

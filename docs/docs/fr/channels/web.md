@@ -17,6 +17,11 @@ ou avec n'importe quel autre client.
 Dans _Tock Studio_, ajoutez un connecteur _Web_ à la configuration du bot (_Settings > Configurations_), avec son chemin
 relatif, par exemple `/web`.
 
+| Champ | Description |
+|-------|-------------|
+| Web Security Mode | (facultatif) mode d'identification des utilisateurs, voir [Modes de sécurité](#modes-de-securite) (défaut : `DEFAULT`) |
+| Public Path (if different from local REST Path) | (facultatif) chemin du connecteur vu par le navigateur, derrière un reverse proxy. Utilisé comme chemin des cookies de sécurité |
+
 ## Utilisation de l'API
 
 Envoyer un message :

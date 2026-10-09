@@ -23,7 +23,7 @@ Tout tourne sur votre machine : la plateforme Tock avec Docker, et les modèles 
 * [Git](https://git-scm.com/), [Python 3](https://www.python.org/) (aucun paquet supplémentaire n'est nécessaire),
   et des versions récentes de [Docker](https://www.docker.com/) et [Docker Compose](https://docs.docker.com/compose/)
 * [Ollama](https://ollama.com/download), et environ 16 Go de RAM pour faire tourner la plateforme et un modèle 7B
-* Tock **26.3.5** ou plus récent : les versions précédentes de l'outil d'indexation échouent au démarrage, et leur
+* Tock **26.9.0** ou plus récent : les versions précédentes de l'outil d'indexation échouent au démarrage, et leur
   schéma PostgreSQL ne permet pas la recherche hybride utilisée plus bas
 
 > **GPU ou pas ?** Avec un GPU (ou un Mac Apple Silicon), une réponse prend de quelques secondes à une trentaine
@@ -418,6 +418,7 @@ dans les réglages RAG : le modèle d'embedding des réglages RAG doit toujours 
 
 ## Aller plus loin
 
+* Prenez en charge les parcours qui ne doivent pas être laissés au LLM avec des stories : [Créer son premier bot avec Tock Studio](first-bot-studio.md).
 * Améliorez les réponses avec le [prompt RAG](../gen-ai/rag-prompt.md) et le [_Rag prompt context_](../gen-ai/rag-prompt-context.md)
   (sujets couverts et exclus, lexique métier).
 * Comprenez pourquoi une section de la documentation est (ou n'est pas) utilisée avec le [diagnostic de recherche](../gen-ai/vector-store-inspection.md).

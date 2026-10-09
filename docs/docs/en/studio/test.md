@@ -43,3 +43,15 @@ _View Nlp Stats_ you can see the details of the model's response: intent, entiti
 ## The _Test Plans_ tab
 
 This tool allows you to create and track the execution of automated conversation tests, in order to automatically and regularly check the non-regression of the bot.
+
+1. Create a test plan with the _Create a new Test Plan_ button, and give it a name.
+2. Add conversations to it from [_Analytics_ > _Dialogs_](analytics.md): the _Add dialog to Test Plan_ button of a
+   dialog adds it to the selected plan. A good practice is to add a dialog once its answers have been checked.
+3. Launch the plan with _Launch_: Tock replays the user sentences of each conversation and compares the bot answers
+   with the recorded ones.
+
+Each execution shows the number of conversations and errors. For a failed conversation, _Display details_ shows the
+expected dialog and the last answer actually received.
+
+Test plans can also be run from [Xray](https://www.getxray.app/) (JIRA): see the `tock_bot_test_xray_url` property and the
+[Xray tests](../operate/configuration.md#xray-tests) module.

@@ -54,7 +54,7 @@ Or in a [Gradle](https://gradle.org/) project:
 
 ### Aligning dependency versions with the Tock BOM
 
-Since Tock 26.3.5, the `tock-bom` _bill of materials_ lists the Tock artifacts and the versions of their
+Since Tock 26.9.0, the `tock-bom` _bill of materials_ lists the Tock artifacts and the versions of their
 third-party dependencies (Kotlin, coroutines, kotlinx-serialization, Jackson, Netty/Vert.x, OkHttp, AWS SDK, Google...).
 
 Without it, your build tool resolves these libraries on its own, and can end up with incompatible versions
@@ -117,8 +117,8 @@ val openBot = bot(
 
 This bot has an identifier (required - "bot_open_data") and a list of paths or _stories_.
 
-A _Story_ is a functional grouping that corresponds to a main intention and, optionally,
-to one or more so-called "secondary" intentions (see [Concepts](../concepts.md)).
+A _Story_ is a functional grouping that corresponds to a main intent and, optionally,
+to one or more so-called "secondary" intents (see [Concepts](../concepts.md)).
 
 Here the bot defines 4 paths: `greetings`, `departures`, `arrivals` and `search`.
 
@@ -142,7 +142,7 @@ Note that in the body of the function, `this` is of type [`BotBus`](https://java
 from which you can interact with the user, and which also allows access
 to all available contextual elements.
 
-Concretely this means that when the `greetings` intention is detected by the NLP model, the function above will be called by the Tock framework.
+Concretely this means that when the `greetings` intent is detected by the NLP model, the function above will be called by the Tock framework.
 
 The bot therefore successively sends a first response sentence (`bus.send()`), then a second indicating that it is
 the last sentence of its response using a `bus.end()`.
@@ -211,7 +211,7 @@ one or more of the following functions can be called from the `main`:
 * `importApplicationDump`: imports an application from an
 [_dump_ of an application](../studio/configuration.md#edit-import-and-export-an-application).
 Note: the import is ignored if the target application already exists.
-* `importNlpDump`: imports an NLP model (intentions, sentences, entities) from an
+* `importNlpDump`: imports an NLP model (intents, sentences, entities) from an
 [_dump_ NLP](../studio/configuration.md#edit-import-and-export-an-application).
 * `importI18nDump`: imports labels (aka _i18n_) from a
  [_dump_ of labels](../studio/stories-and-answers.md#the-answers-screen).
@@ -240,7 +240,11 @@ Of course, the `StoryHandler` of `greetings` is not context-dependent: the answe
 
 For the development of complex stories, we need an additional abstraction.
 
-### Secondary intentions
+### Secondary intents
+
+> The examples of this section and of the following ones come from the
+> [Open Data bot](https://github.com/theopenconversationkit/tock-bot-open-data): `SearchDef`, `Place`, `PlaceValue`,
+> `Section`... are classes of this bot, not of the Tock API.
 
 Here is the beginning of the definition of the `search` story:
 
@@ -256,7 +260,7 @@ The `search` path defines a "start" secondary intent (`indicate_origin`)
 and a simple secondary intent (`indicate_location`).
 
 A "start" secondary intent is similar in every way to a main intent:
-as soon as this intent is detected, the `search` path will be executed,
+as soon as this intent is detected, the `search` story will be executed,
 if the current story does not have this intent as a secondary intent.
 
 For a simple secondary intent, on the other hand, the story will only be executed if the current story of the context
@@ -410,17 +414,16 @@ And here is its implementation for Messenger:
 class MessengerSearchConnector(context: SearchDef) : SearchConnector(context) {
 
     override fun sendFirstJourney(sections: List<Section>): ConnectorMessage =
-          flexibleListTemplate(
+          genericTemplate(
                 sections.map { section ->
                       with(section) {
-                          listElement(
+                          genericElement(
                                 title(),
                                 content(),
                                 trainImage
                           )
                       }
-                },
-                compact
+                }
           )
 }
 ```

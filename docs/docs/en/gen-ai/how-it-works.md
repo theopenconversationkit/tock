@@ -32,7 +32,7 @@ For each user sentence:
 
 1. The NLU model detects the intent of the sentence (see [Language understanding](../studio/nlu.md)).
 2. If a story (or an FAQ) starts with this intent, it answers: the LLM is not called.
-3. If the sentence is qualified with the `ragexcluded` intent, the bot answers with its _RAG excluded_ story
+3. If the sentence is qualified with the `tock:ragexcluded` intent, the bot answers with its _RAG excluded_ story
    (by default: _"Sorry, I can't answer your question (Topic not covered)"_). See [RAG exclusions](#excluding-topics-from-the-rag).
 4. Otherwise, the sentence is unknown or its intent has no story: if the [RAG is activated](rag.md#rag-activation), the
    bot calls the [Gen AI orchestrator](orchestrator-api.md), which condenses the question, retrieves the documents
@@ -53,7 +53,7 @@ Several levers, from the lightest to the strongest, restrict what the LLM answer
 
 ### Excluding topics from the RAG
 
-A [RAG exclusion](rag-exclusion.md) qualifies a sentence with the `ragexcluded` intent. Once the NLU model is trained
+A [RAG exclusion](rag-exclusion.md) qualifies a sentence with the `tock:ragexcluded` intent. Once the NLU model is trained
 with enough such sentences, similar sentences are recognized as excluded and never reach the LLM. This is safer than
 an instruction in the prompt, because the decision is made before the LLM is called.
 
@@ -67,7 +67,7 @@ To train the NLU model on a new FAQ quickly, the training sentences can be
 ### Redirecting from the RAG to a story
 
 The answering LLM can also hand over to a story. When its JSON answer contains a `redirection_intent`
-(see the [prompt output schema](rag-prompt.md#redirection_intent)), the bot sends the generated answer, then switches to the story
+(see the [prompt output schema](rag-prompt-reference.md#redirection_intent)), the bot sends the generated answer, then switches to the story
 started by this intent, for example a handover to a human agent. The intent must have a story, and cannot be `unknown`.
 
 ### Restricting the next intents

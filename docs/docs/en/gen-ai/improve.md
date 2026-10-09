@@ -24,7 +24,7 @@ flowchart LR
   They can be filtered on the RAG answer status, for example to list the questions answered without relevant documents.
   Enable _Dialogs debug_ in the [RAG settings](rag.md#rag-activation) to also record the condensed question and the documents retrieved.
 * The RAG answer status, the topic and the suggested topics returned by the LLM are also recorded as indicators
-  (_RAG Status_, _RAG Topics_, _RAG Suggested Topics_), available in the [_Custom Metrics_](../studio/custom-metrics.md) menu.
+  (_RAG Status_, _RAG Topics_, _RAG Suggested Topics_), available in the [_Metrics_](../studio/custom-metrics.md) menu.
 * With an [observability provider](observability.md) such as Langfuse, each answer links to the trace of its LLM calls:
   exact prompts, documents, token usage and latency.
 * [Evaluations](answers-quality.md#evaluations) let business experts review and grade a sample of real conversations.

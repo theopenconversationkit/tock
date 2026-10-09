@@ -4,11 +4,6 @@ title: Examples
 
 # Tock code examples
 
-## Examples in *Bot Samples*
-
-The [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples) repository contains code examples, including those used in
-[Tock documentation](../getting-started/first-bot-kotlin.md) to program journeys in _WebHook_ or _WebSocket_ modes.
-
 ## The *Open Data* bot
 
 The [tock-bot-open-data](https://github.com/theopenconversationkit/tock-bot-open-data) repository contains an

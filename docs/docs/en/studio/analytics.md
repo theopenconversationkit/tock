@@ -4,7 +4,7 @@ title: Analytics
 
 # The *Analytics* menu
 
-This menu contains a series of tabs to view and analyze the bot's use cases, configurations, stories, and intentions.
+This menu contains a series of tabs to view and analyze the bot's use cases, configurations, stories, and intents.
 
 ## The *Activity* tab
 
@@ -49,13 +49,13 @@ The _Preferences_ tab allows you to compose your own dashboard, choose your indi
 
 ## The *Flow* tab
 
-This screen allows you to analyze the _flow_ of intentions and conversations:
+This screen allows you to analyze the _flow_ of intents and conversations:
 
-* Conversation flow (_Dynamic_ / _User Flow_): dynamic analysis of the paths actually taken by users
+* Conversation flow (_Dynamic_ / _User Flow_): dynamic analysis of the journeys actually taken by users
 
-* Intention flow (_Static_ / _Available Stories_): static analysis of the paths and decision trees proposed by the bot
+* Intent flow (_Static_ / _Available Stories_): static analysis of the journeys and decision trees proposed by the bot
 
-By expanding the interface (arrow to the right of the frame), many filters appear: focus on an intention, incoming/outgoing transitions, all transitions or only the most representative in terms of traffic, etc.
+By expanding the interface (arrow to the right of the frame), many filters appear: focus on an intent, incoming/outgoing transitions, all transitions or only the most representative in terms of traffic, etc.
 
 ## The _Users_ tab
 

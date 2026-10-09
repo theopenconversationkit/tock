@@ -46,8 +46,6 @@ See [Technologies](../index.md#technologies) on the home page.
 - [`tock-mcp-server`](https://github.com/theopenconversationkit/tock-mcp-server): [MCP](https://modelcontextprotocol.io/)
   server, written in Go, that exposes a Tock bot to AI agents and assistants through its [Web connector](../channels/web.md).
 
-- [`tock-bot-samples`](https://github.com/theopenconversationkit/tock-bot-samples): code samples, in particular the _WebHook_ and _WebSocket_ modes examples from
-  [Tock programming guides](../develop/bot-api.md).
 
 - [`tock-bot-demo`](https://github.com/theopenconversationkit/tock-bot-demo): a demo bot written in Kotlin
   with the [Bot API](../develop/bot-api.md), under [AGPL v3 license](https://www.gnu.org/licenses/agpl-3.0.html).
@@ -97,7 +95,7 @@ _Bot API_ mode is `docker-compose-bot.yml`.
 
 Tock is built with [Maven](https://maven.apache.org/), including the Web modules leveraging
 [NPM](https://www.npmjs.com/) and [Angular](https://angular.dev/).
-It requires a JDK 17 or later; Node.js is downloaded by the Maven build for the Web modules:
+It requires a JDK 21 or later; Node.js is downloaded by the Maven build for the Web modules:
 
 `$ mvn package`
 

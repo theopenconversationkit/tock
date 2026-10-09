@@ -21,7 +21,8 @@ booleanProperty...): its value comes from a JVM system property or an environmen
 
 Usage:
   etc/list-doc-properties.py                  # Markdown tables grouped by module
-  etc/list-doc-properties.py --check PAGE...  # properties missing from the given pages (exit code 1 if any)
+  etc/list-doc-properties.py --check PAGE...  # properties missing from the given pages, and properties documented
+                                              # in their tables but no longer read by the code (exit code 1 if any)
 """
 import pathlib
 import re
@@ -34,6 +35,13 @@ HELPERS = (
     '|propertyOrNull|propertyExists'
 )
 CALL = re.compile(r'(?<![\w.])(' + HELPERS + r')\(\s*(?:name\s*=\s*)?"([A-Za-z0-9_.]+)"')
+# Properties of a verticle (WebVerticle.verticleProperty...), read as "<verticle name>_<name>"
+VERTICLE_CALL = re.compile(r'(?<![\w.])verticle(?:Int|Long|Boolean)?Property\(\s*"([A-Za-z0-9_.]+)"')
+# Settings of the Python Gen AI orchestrator (pydantic BaseSettings), read as "<env_prefix><field>"
+PYTHON_SETTINGS = ['gen-ai/orchestrator-server/src/main/python/server/src/gen_ai_orchestrator/'
+                   'configurations/environment/settings.py']
+# A row of a documentation table: | `property` | ...
+DOC_ROW = re.compile(r'^\| `([A-Za-z0-9_.]+)` \|', re.MULTILINE)
 
 
 def split_args(text, start):
@@ -129,15 +137,41 @@ def print_tables(properties):
             print(f"| `{name}` | {default} | {entry['comment']} |")
 
 
+def collect_other_names():
+    """Returns the names read by the verticles and the Python orchestrator, only used to find obsolete properties."""
+    verticle_names, python_names = set(), set()
+    for source in SOURCES:
+        for path in (ROOT / source).rglob('*.kt'):
+            if '/src/main/' in path.as_posix() and '/target/' not in path.as_posix():
+                verticle_names |= set(VERTICLE_CALL.findall(path.read_text(encoding='utf-8')))
+    for settings in PYTHON_SETTINGS:
+        text = (ROOT / settings).read_text(encoding='utf-8')
+        prefix = re.search(r"env_prefix='([^']*)'", text).group(1)
+        python_names |= {prefix + field for field in re.findall(r'^    (\w+):', text, re.MULTILINE)}
+        python_names |= set(re.findall(r"alias='([^']+)'", text))
+    return verticle_names, python_names
+
+
 def check(properties, pages):
-    documented = set()
+    documented, rows = set(), set()
     for page in pages:
-        documented |= set(re.findall(r'`([A-Za-z0-9_.]+)`', pathlib.Path(page).read_text(encoding='utf-8')))
+        text = pathlib.Path(page).read_text(encoding='utf-8')
+        documented |= set(re.findall(r'`([A-Za-z0-9_.]+)`', text))
+        rows |= set(DOC_ROW.findall(text))
     missing = sorted(set(properties) - documented)
     for name in missing:
         print(f"{name}\t{properties[name]['file']}")
     print(f'{len(missing)} of {len(properties)} properties are not documented', file=sys.stderr)
-    return 1 if missing else 0
+
+    verticle_names, python_names = collect_other_names()
+    obsolete = sorted(
+        name for name in rows - set(properties) - python_names
+        if not any(name.endswith('_' + suffix) for suffix in verticle_names)
+    )
+    for name in obsolete:
+        print(f'{name}\tdocumented but not read by the code')
+    print(f'{len(obsolete)} documented properties are not read by the code', file=sys.stderr)
+    return 1 if missing or obsolete else 0
 
 
 if __name__ == '__main__':

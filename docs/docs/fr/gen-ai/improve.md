@@ -25,7 +25,7 @@ flowchart LR
   traitées sans document pertinent. Activez _Dialogs debug_ dans les [réglages RAG](rag.md#activation-du-rag) pour
   enregistrer aussi la question condensée et les documents retrouvés.
 * Le statut de la réponse RAG, le thème et les thèmes suggérés renvoyés par le LLM sont aussi enregistrés comme
-  indicateurs (_RAG Status_, _RAG Topics_, _RAG Suggested Topics_), visibles dans le menu [_Custom Metrics_](../studio/custom-metrics.md).
+  indicateurs (_RAG Status_, _RAG Topics_, _RAG Suggested Topics_), visibles dans le menu [_Metrics_](../studio/custom-metrics.md).
 * Avec un [fournisseur d'observabilité](observability.md) comme Langfuse, chaque réponse renvoie vers la trace de
   ses appels au LLM : prompts exacts, documents, consommation de tokens et latence.
 * Les [évaluations](answers-quality.md#evaluations) permettent aux experts métier de relire et noter un échantillon

@@ -7,50 +7,32 @@ title: Sentence generation settings
 Le menu _Gen AI_ > _Sentence generation settings_ permet de configurer la fonctionnalité de génération de phrases d'entraînement pour les bots FAQ.
 
 > Pour accéder à cette page il faut bénéficier du rôle **_admin_**.
-> <br />( plus de détails sur les rôles dans [securité](../operate/security.md#roles) ).
+> <br />(plus de détails sur les rôles dans [sécurité](../operate/security.md#roles)).
 
 ## Configuration
 
-![Génération des phrases - Configuration](../img/gen-ai/gen-ai-settings-sentence-generation.png "Ecran de configuration")
+![Génération des phrases - Configuration](../img/gen-ai/gen-ai-settings-sentence-generation.png "Écran de configuration")
 
-Pour activer la fonction de génération de phrases, vous devez choisir :
+Pour activer la génération de phrases, renseignez :
 
-**Un provider IA :**
-
-- Voir la [liste des fournisseurs d'IA](providers/llm-embedding.md)
-
-
-**Une température :**
-
-- C’est la température qui apparaîtra par défaut lors de la création des phrases d'entraînement.
-- Elle Permet de définir le degré d’inventivité du modèle utilisé pour générer des phrases.
-- Elle est situé entre 0 et 1.0.
-    - 0 = pas de latitude dans la création des phrases
-    - 1.0 = Plus grande latitude dans la création des phrases.
-
-**Un prompt :**
-
-- Encadré dans lequel inclure le prompt qui permet la génération de nouvelles phrases d'entraînement.
-
-**Le nombre de phrases :**
-
-- Défini le nombre de phrases d'entraînement générées par chaque requête.
-
-**Activation :**
-
-- Permet d'activer ou pas la fonctionnalité.
+* **Provider IA** : le LLM utilisé pour générer les phrases (voir la [liste des fournisseurs de LLM](providers/llm-embedding.md)),
+* **Température** : la température par défaut, entre 0 (aucune latitude dans la création des phrases) et 1
+  (la plus grande latitude) ; elle peut être modifiée au moment de la génération,
+* **Prompt** : le prompt utilisé pour générer les phrases d'entraînement,
+* **Nombre de phrases** : le nombre de phrases générées par chaque requête,
+* **Activation** : active ou désactive la fonctionnalité.
 
 ## Utilisation
 
 Pour utiliser la fonctionnalité de **Generate Sentences**, rendez-vous au menu _Stories & Answers_ > _FAQs stories_ :
 
-![Génération des phrases - Utilisation](../img/gen-ai/gen-ai-feature-sentence-generation-1.png "Ecran d'édition d'une FAQ")
+![Génération des phrases - Utilisation](../img/gen-ai/gen-ai-feature-sentence-generation-1.png "Écran d'édition d'une FAQ")
 
 1. Sélectionner **une ou plusieurs phrases** qui serviront de base d'entraînement.
 2. Cliquer sur Modifier puis sur l'onglet **Question**
 3. Cliquer sur **l’ampoule**, une fenêtre avec de nouveaux paramètres apparaît :
 
-![Génération des phrases - Résultat](../img/gen-ai/gen-ai-feature-sentence-generation-2.png "Ecran de génération de phrases")
+    ![Génération des phrases - Résultat](../img/gen-ai/gen-ai-feature-sentence-generation-2.png "Écran de génération de phrases")
 
 4. Choisir la ou les questions qui serviront de base d'entraînement.
 5. Choisir si l’IA doit inclure des fautes d’orthographe, du langage de type SMS et des abréviations.

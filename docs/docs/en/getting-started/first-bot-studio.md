@@ -35,11 +35,13 @@ your account - only your GitHub account identifier will be read.
 
 When you first access the demo platform, a wizard invites you to create an _application_:
 
-* Enter a name for the application
+* _Choose your language_: select a language - you can add others later - then _Next_
 
-* Select a language - you can add others later
+* _Select a first Channel_: select _slack_, then _Next_
 
-* Validate to create the application
+* _Create your Assistant_: _Create_
+
+The wizard creates an application named `new_assistant`, with a first _Slack_ connector.
 
 > You can find the application created in the menu: _Settings_ > _Applications_.
 >
@@ -58,17 +60,8 @@ you will be able to complete the configuration on the Slack and Tock sides so th
 >
 > Similarly, the section [Configure Messenger](../channels/messenger.md) will show you how to activate the same bot on the Facebook social network messaging.
 
-Create a first connector for your application:
-
-* Go to _Settings_ > _Configurations_
-
-* _Create a new Configuration_
-
-* Select the _Slack_ connector type
-
-* Enter `token` in the _Token_ fields (for now)
-
-* _Create_
+The wizard has already created this connector: you can see it in _Settings_ > _Configurations_.
+Its Slack tokens will be filled in later, in [Configure Slack](../channels/slack.md).
 
 > Note that an _API Key_ was automatically generated for your application when creating the first connector.
 > This will be used to connect to the bot's API if you try the _WebHook_ or _WebSocket_ mode in the
@@ -84,21 +77,21 @@ A conversational bot analyzes users' sentences in natural language, to determine
 possibly _entities_.
 
 > Example: in the sentence "What will the weather be like tomorrow?", Tock's _NLU (Natural Language Understanding)_ engine will
-recognize a "weather" intention and an "tomorrow" entity to specify/configure this intention.
+recognize a "weather" intent and an "tomorrow" entity to specify/configure this intent.
 
-It is still necessary to have declared the possible intentions and entities, then qualified the sentences to teach the bot to
-detect them. Tock's _Language Understanding_ menu allows you to manage intentions and entities, qualify the sentences
+It is still necessary to have declared the possible intents and entities, then qualified the sentences to teach the bot to
+detect them. Tock's _Language Understanding_ menu allows you to manage intents and entities, qualify the sentences
 and thus supervise the bot's learning: **the more sentences you qualify, the more relevant the bot becomes** in its understanding of the language.
 
-But let's leave intentions and entities aside for the moment...
+But let's leave intents and entities aside for the moment...
 
-Tock's _Stories_ mode allows you to automatically create intentions and the answers to provide in just a few clicks. So, without leaving the _Tock Studio_ interface, you will create a first question(s)-answer(s) path.
+Tock's _Stories_ mode allows you to automatically create intents and the answers to provide in just a few clicks. So, without leaving the _Tock Studio_ interface, you will create a first question(s)-answer(s) path.
 
 * Go to _Stories & Answers_ > _New Story_
 
 * Enter a user phrase for example "hello"
 
-A form opens allowing you to configure the creation of the _story_, the intention that will also be created, the
+A form opens allowing you to configure the creation of the _story_, the intent that will also be created, the
 type of response, etc.
 
 * In the _Add new Answer_ field, enter a response for example "what a beautiful day!"
@@ -145,32 +138,32 @@ the algorithms and give increasingly relevant results.
 * Go to _Language Understanding_ > _Inbox_
 
 You see the sentences you entered, and how the bot interpreted them. For each one,
-the recognized intention, the language and the score (which the algorithms give themselves according to their level of confidence on this sentence) are displayed.
+the recognized intent, the language and the score (which the algorithms give themselves according to their level of confidence on this sentence) are displayed.
 
-* Choose a few sentences, for each select the correct intention then _Validate_
+* Choose a few sentences, for each select the correct intent then _Validate_
 
 * Return to _Test_ > _Test_
 
 * Check that the bot understands these sentences better, and even others that are a little different even though you have not
 explicitly qualified them!
 
-## Create other paths (optional)
+## Create other journeys (optional)
 
-To go a little further with Tock _stories_, you can create other paths and test them directly
+To go a little further with Tock _stories_, you can create other journeys and test them directly
 in _Tock Studio_.
-The bot then responds to you according to the triggered intention, with no other form of navigation than the thread that
+The bot then responds to you according to the triggered intent, with no other form of navigation than the thread that
 you give to the conversation. This is the magic of conversational: natural language is the only navigation, and
 the user is removed from the links and menus traditionally imposed by web or mobile interfaces.
 
 > Note: if you took the time to create a large number of _stories_, you might notice
 some undesirable effects specific to the way _NLU_ models and algorithms work.
 >
-> For example, a very large number of intentions and entities can make their detection more difficult.
+> For example, a very large number of intents and entities can make their detection more difficult.
 > It is often recommended to start by creating bots dedicated to a limited functional
 > domain, facilitating its learning by focusing the model on this domain.
 >
 > Qualifying many sentences generally improves understanding, but
-> conversely, qualifying too many sentences (or sentences that are too close) can overtrain the model for an intention, with
+> conversely, qualifying too many sentences (or sentences that are too close) can overtrain the model for an intent, with
 > the effect of reducing the recognition of slightly different sentences.
 >
 > Remember that the design and maintenance of conversational models is a complex subject that requires
@@ -182,7 +175,7 @@ some undesirable effects specific to the way _NLU_ models and algorithms work.
 You have just created your first conversational bot with Tock.
 
 As you may have noticed, a few minutes are enough, without in-depth technical knowledge,
-to create simple conversational paths without writing or deploying code.
+to create simple conversational journeys without writing or deploying code.
 
 ## Continue...
 
@@ -192,7 +185,7 @@ In the following sections you will learn how to:
 
 * [Configure the bot for the Messenger channel](../channels/messenger.md) (requires a Facebook account)
 
-* [Create programmed paths in Kotlin](first-bot-kotlin.md), opening the way to complex behaviors and
+* [Create programmed journeys in Kotlin](first-bot-kotlin.md), opening the way to complex behaviors and
 integrating third-party APIs if needed
 
 * [Deploy a Tock platform](run-platform.md) in minutes with Docker

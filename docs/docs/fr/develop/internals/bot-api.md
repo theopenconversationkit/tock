@@ -16,8 +16,8 @@ Définit le bot dans le mode Api.
 
 ```mermaid
 classDiagram
-BotDefinitionBase <|.. BotDefinition
-BotApiDefinition <|-- BotDefinitionBase
+BotDefinition <|.. BotDefinitionBase
+BotDefinitionBase <|-- BotApiDefinition
 BotDefinition : <<interface>>
 BotApiDefinition : findIntent(String,String)
 ```

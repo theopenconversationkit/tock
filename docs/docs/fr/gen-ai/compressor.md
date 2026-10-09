@@ -22,13 +22,17 @@ les meilleurs, pour que le modèle de réponse reçoive moins de documents, mais
 ![Compressor settings](../img/gen-ai/gen-ai-settings-compressor.png "Compressor settings")
 
 * **Compressor activation** : active ou désactive le compresseur pour le bot.
-* **Provider** : le seul fournisseur disponible est `BloomzRerank`, un modèle de reranking exposé par un service HTTP :
+* **Provider** : le seul fournisseur disponible dans _Tock Studio_ est `BloomzRerank`, un modèle de reranking exposé par un service HTTP :
     * **Endpoint** : URL de base du service. L'orchestrateur envoie la question et les documents à sa route `/score`.
     * **Label** : le label de sortie du modèle utilisé comme score (par ex. `entailment`).
     * **Minimum score** : les documents dont le score (entre 0 et 1) est inférieur à cette valeur sont écartés.
     * **Max documents** : nombre maximum de documents conservés après reranking.
     * **Pad with lower-scoring documents** : si moins de documents que _Max documents_ atteignent le score minimum,
       compléter avec les meilleurs documents restants.
+
+L'orchestrateur Gen AI prend aussi en charge l'[API Rerank de Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/rerank.html)
+(fournisseur `AwsBedrockRerank`, avec l'ARN du modèle de reranking dans `model_arn`), utilisable uniquement
+via son [API](orchestrator-api.md). Il utilise les identifiants AWS décrits pour [AWS Bedrock](providers/llm-embedding.md#aws-bedrock).
 
 Le compresseur est tolérant aux pannes : si le service de reranking échoue ou ne répond pas à temps,
 les documents d'origine sont utilisés tels quels.

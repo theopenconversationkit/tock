@@ -11,6 +11,21 @@ The complete list of changes (pull requests, contributors) is available in the
 Tock versions follow the `YY.M.patch` scheme: `26.3.x` is the release line started in March 2026.
 Artifacts are published on [Maven Central](https://central.sonatype.com/namespace/ai.tock) under the `ai.tock` group.
 
+## 26.9.0 (2026-09-29)
+
+* Java 21 is now the minimum version
+* New `tock-bom` artifact, to align the versions of the Tock dependencies (see [Kotlin bot](../develop/kotlin-bot.md))
+* Gen AI:
+    * [AWS Bedrock](../gen-ai/providers/llm-embedding.md#aws-bedrock) support (LLM, embeddings, guardrails, reranking),
+      see [RAG on AWS](../getting-started/rag-aws.md)
+    * [Vector store inspection](../gen-ai/vector-store-inspection.md) tool
+    * Indexing tool fixes, SQL schema for the PGVector hybrid search
+* _Tock Studio_: bot [dashboard](../studio/dashboard.md), trimmed RAG form values
+* Google Chat: feedback buttons
+* WhatsApp: users identified by their Business-Scoped User ID (BSUID)
+
+See the [release notes](https://github.com/theopenconversationkit/tock/releases/tag/tock-26.9.0).
+
 ## 26.3.4 (2026-09-01)
 
 * _Tock Studio_:

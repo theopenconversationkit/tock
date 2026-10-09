@@ -161,6 +161,10 @@ The MongoDB database must be configured in _replica set_, because Tock takes adv
 
 > A single-node replica set is enough for development. In production, deploy at least 3 _nodes_ to improve resilience.
 
+The Docker images of [`tock-docker`](https://github.com/theopenconversationkit/tock-docker) use the latest MongoDB version.
+Some features need a recent version: for instance, the expiration of the undelivered messages of the
+[Web connector](../channels/web.md#configuration-properties) requires MongoDB 7.1 or later.
+
 Different scenarios are possible for the database:
 
 - Install MongoDB nodes on one or more servers (classic method)
@@ -196,7 +200,7 @@ several components.
 | _\*_ | `tock_user_log_index_ttl_days` | `365` | Log of actions in _Tock Studio_: _Stories_ changes, etc. | `nlp_admin`/`bot_admin` |
 | _Bot_ | `tock_bot_alternative_index_ttl_hours` | `1` | Index on label alternatives (_Answers_). | `bot`/`bot_api` |
 | _Bot_ | `tock_bot_dialog_index_ttl_days` | `7` | Conversations (_Analytics > Users/Search_). | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |
-| _Bot_ | `tock_bot_dialog_max_validity_in_seconds` | `60 * 60 * 24` (24h) | Conversation contexts (current intention, entities on the _bus_, etc.). | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |
+| _Bot_ | `tock_bot_dialog_max_validity_in_seconds` | `60 * 60 * 24` (24h) | Conversation contexts (current intent, entities on the _bus_, etc.). | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |
 | _Bot_ | `tock_bot_flow_stats_index_ttl_days` | `365` | Browsing statistics (_Analytics > Activity/Behavior_). | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |
 | _Bot_ | `tock_bot_timeline_index_ttl_days` | `365` | User profiles/history: preferences, locale, last login, etc. <em>(excluding conversation details)</em> | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |
 
@@ -285,7 +289,7 @@ Of course, the implementation of the bot itself is not provided with Tock (every
 
 ### HTTP Proxies
 
-The [Java System Properties](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/doc-files/net-properties.html)
+The [Java System Properties](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/doc-files/net-properties.html)
 `https.proxyHost`, `http.proxyHost`, and `http.nonProxyHosts` are the recommended way to configure a proxy.
 
 ### Bot Packaging

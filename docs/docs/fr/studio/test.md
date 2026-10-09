@@ -42,5 +42,17 @@ Pour chaque échange de messages avec le bot, la langue détectée est indiquée
 
 ## L'onglet _Test Plans_
 
-Cet outil permet de créer et de suivre l'exécution de tests de conversations automatisés, afin de vérifier 
+Cet outil permet de créer et de suivre l'exécution de tests de conversations automatisés, afin de vérifier
 automatiquement et régulièrement la non-régression du bot.
+
+1. Créez un plan de test avec le bouton _Create a new Test Plan_, et donnez-lui un nom.
+2. Ajoutez-y des conversations depuis [_Analytics_ > _Dialogs_](analytics.md) : le bouton _Add dialog to Test Plan_
+   d'un dialogue l'ajoute au plan sélectionné. Une bonne pratique est d'ajouter un dialogue une fois ses réponses vérifiées.
+3. Lancez le plan avec _Launch_ : Tock rejoue les phrases utilisateur de chaque conversation et compare les réponses
+   du bot à celles enregistrées.
+
+Chaque exécution indique le nombre de conversations et d'erreurs. Pour une conversation en échec, _Display details_
+affiche le dialogue attendu et la dernière réponse effectivement reçue.
+
+Les plans de test peuvent aussi être exécutés depuis [Xray](https://www.getxray.app/) (JIRA) : voir la propriété
+`tock_bot_test_xray_url` et le module [Tests Xray](../operate/configuration.md#tests-xray).

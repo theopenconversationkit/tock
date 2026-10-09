@@ -12,13 +12,11 @@ Dans l'IA, les bases vectorielles sont utilisées pour représenter des données
 Elles sont notamment utilisées dans les modèles d'apprentissage automatique pour traiter et analyser des textes, des images ou d'autres types de données complexes.
 
 > Pour accéder à cette page il faut bénéficier du rôle **_admin_**.
-> <br />( plus de détails sur les rôles dans [securité](../operate/security.md#roles) ).
+> <br />(plus de détails sur les rôles dans [sécurité](../operate/security.md#roles)).
 
+Un écran de configuration permet à Tock de se connecter à une base vectorielle :
 
-## Configuration
-Pour permettre à Tock de se connecter à une base vectorielle, un écran de configuration a été mis en place :
-
-![Vector Store](../img/gen-ai/gen-ai-settings-vector-store.png "Ecran de configuration des bases vectorielles")
+![Vector Store](../img/gen-ai/gen-ai-settings-vector-store.png "Écran de configuration des bases vectorielles")
 
 ## Utilisation
 
@@ -26,7 +24,7 @@ Pour permettre à Tock de se connecter à une base vectorielle, un écran de con
 - Veuillez vous référer à la documentation de chaque outil pour comprendre comment l'utiliser.
 - Si aucune configuration n'a été fournie dans _Tock Studio_, la configuration par défaut, définie par des variables d'environnement, est utilisée.
 
-Dans _Bot Admin_, `tock_gen_ai_orchestrator_vector_store_provider` définit le type de la base vectorielle par défaut
+Dans le backend de _Tock Studio_ (`tock/bot_admin`) et les bots, `tock_gen_ai_orchestrator_vector_store_provider` définit le type de la base vectorielle par défaut
 (`PGVector` par défaut). Cela permet à Tock, lors d'un appel RAG, de construire les bons paramètres de recherche pour cette base.
 
 Dans l'orchestrateur Gen AI :
@@ -43,5 +41,5 @@ Dans l'orchestrateur Gen AI :
 | `tock_gen_ai_orchestrator_vector_store_credentials_secret_name` | | Nom du secret contenant les identifiants |
 | `tock_gen_ai_orchestrator_vector_store_timeout` | `4` | Délai maximal d'une requête, en secondes |
 
-> Le fournisseur par défaut n'est pas le même dans _Bot Admin_ (`PGVector`) et dans l'orchestrateur (`OpenSearch`) :
+> Le fournisseur par défaut n'est pas le même dans _Tock Studio_ et les bots (`PGVector`) et dans l'orchestrateur (`OpenSearch`) :
 > donnez la même valeur à la variable des deux côtés.

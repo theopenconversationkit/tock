@@ -15,6 +15,9 @@ N'importe quel client qui prend en charge cette API, comme [Open WebUI](https://
 Créez un connecteur _OpenAI_ dans _Tock Studio_, puis utilisez son URL comme URL de base de l'API OpenAI dans le client,
 par exemple `http://<hôte-du-bot>/io/<namespace>/<bot>/openai`.
 
+Le champ facultatif _Web Security Mode_ identifie les utilisateurs comme pour le connecteur Web
+(voir [Modes de sécurité](web.md#modes-de-securite)).
+
 Exemple avec Open WebUI :
 
 ```shell

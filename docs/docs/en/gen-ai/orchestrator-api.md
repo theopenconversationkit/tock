@@ -19,6 +19,9 @@ The complete, up-to-date reference of the API (request and response schemas, exa
 open `/docs` (Swagger UI) or `/redoc` on the orchestrator, for instance [http://localhost:8000/docs](http://localhost:8000/docs).
 The OpenAPI descriptor is available on `/openapi.json`.
 
+The environment variables of the orchestrator itself are listed in the
+[configuration reference](../operate/configuration.md#gen-ai-orchestrator).
+
 ## Endpoints
 
 ### Generation
@@ -29,6 +32,13 @@ The OpenAPI descriptor is available on `/openapi.json`.
 | `POST` | `/qa` | Returns the documents of the knowledge base matching a question, without generating an answer |
 | `POST` | `/completion/` | Sends a prompt to an LLM (used by the [playground](playground.md)) |
 | `POST` | `/completion/sentences` | Generates sentences (used by [sentence generation](sentence-generation.md)) |
+
+Some settings of the `/rag` request can only be set through the API, not in _Tock Studio_:
+
+* `guardrail_setting`: checks the toxicity of the generated answer with a self-hosted Bloomz classifier
+  (`{"provider": "BloomzGuardrail", "api_base": "...", "max_score": 0.3}`). If one of the scores returned by the
+  classifier exceeds `max_score`, the answer is rejected with the error `1004`.
+* `compressor_setting` with the `AwsBedrockRerank` provider (see [Compressor settings](compressor.md)).
 
 ### Providers
 

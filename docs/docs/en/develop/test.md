@@ -140,10 +140,10 @@ For example:
     ext.send("Lille", indicate_location, locationEntity setTo lille)
 ```
 
-allows to indicate that the sentence "Lille" is categorized as an intention *indicate_location* and with a value
+allows to indicate that the sentence "Lille" is categorized as an intent *indicate_location* and with a value
 for the entity *location* which will be the location *lille*
 
-Finally it is possible to modify all the values of the mocked bus at initialization. In the following example, we simulate the secondary intention *indicate_location*
+Finally it is possible to modify all the values of the mocked bus at initialization. In the following example, we simulate the secondary intent *indicate_location*
 in order to indicate the origin:
 
 ```kotlin

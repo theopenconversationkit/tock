@@ -113,7 +113,7 @@ without the need to contact a customer advisor.
 > Also, clients have the possibility to be redirected to a Live Chat and talk with an advisor 
 > in case of misunderstanding from the chatbot.
 
-Co-developped with Enedis experts on TOCK solution, this chatbot is available 
+Co-developed with Enedis experts on the Tock solution, this chatbot is available 
 on the company Website [Enedis.fr](https://www.enedis.fr/).
 
 ![Enedis Client Chatbot](../../img/enedis_bot1.png "Enedis Client Chatbot")

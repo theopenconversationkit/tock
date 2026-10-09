@@ -5,7 +5,7 @@ title: Stories et coroutines
 # Utilisation des coroutines dans les stories
 
 !!! warning "Fonctionnalité expérimentale"
-    L'API TOCK Coroutines est expérimentale. Elle peut contenir des bugs, ou changer (*breaking changes*) sans préavis.
+    L'API Coroutines de Tock est expérimentale. Elle peut contenir des bugs, ou changer (*breaking changes*) sans préavis.
 
 Prérequis de lecture : [Bot intégré](kotlin-bot.md)
 
@@ -25,7 +25,7 @@ val openBot = bot(
 
 ## Classes
 
-Les classes relevant de l'API Coroutines de TOCK sont préfixées par `Async`. On retrouve une hiérarchie de classes
+Les classes relevant de l'API Coroutines de Tock sont préfixées par `Async`. On retrouve une hiérarchie de classes
 très similaire à celles de l'API Bot intégré :
 
 ```mermaid
@@ -148,7 +148,7 @@ val search = storyDef(
 }
 
 // Specify dedicated handling for two connectors via the following annotations.
-// Your story can support as many or as few connectors as you want, among all those supported by the TOCK framework.
+// Your story can support as many or as few connectors as you want, among all those supported by the Tock framework.
 @WhatsAppCloudHandler(WhatsAppCloudSearchConnector::class) // Connector-specific handling for WhatsApp
 @MessengerHandler(MessengerSearchConnector::class) // Connector-specific handling for Facebook Messenger
 class SearchHandling(bus: AsyncBus, private val args: SearchArgs) : AsyncStoryHandlingBase<SearchConnector>(bus) {

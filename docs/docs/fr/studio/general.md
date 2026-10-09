@@ -17,7 +17,7 @@ Un navigateur standard suffit pour accéder à _Tock Studio_. L'utilisateur est 
 à son compte - seul l'identifiant du compte GitHub est lu par Tock.
 
 * Sur une plateforme Tock par défaut, les identifiants sont `admin@app.com` / `password`.<br/>Ils sont définis par
-les propriétés `tock_users` et `tock_passwords`, qu'il faut modifier : voir [Sécurité](../operate/security.md#implementation-par-proprietes).
+les propriétés `tock_users` et `tock_passwords`, qu'il faut modifier : voir [Authentification _Tock Studio_](../operate/authentication.md#implementation-par-proprietes).
 
 > Il est aussi possible, en alternative, d'utiliser un mécanisme d'authentification en amont de l'application, par exemple via 
 > un service [Apache HTTPd](https://httpd.apache.org/) ou un service cloud comme [AWS Cognito](https://aws.amazon.com/fr/cognito/) 

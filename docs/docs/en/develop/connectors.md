@@ -55,7 +55,7 @@ class MyChannelConnector(val applicationId: String, val path: String) : Connecto
                 // ConnectorRequest is the business object passed by the frontend app
                 val message: ConnectorRequest = mapper.readValue(context.bodyAsString)
 
-                // transforming the business object into a Tock Event
+                // transforming the business object into a Tock Event (readUserMessage is your own conversion function)
                 val event = readUserMessage(message)
                 // passing the event to the framework
                 val callback = MyChannelConnectorCallback(applicationId, message.userId, context, controller)

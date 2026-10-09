@@ -68,13 +68,13 @@ When the intent and entities are correct, complete the qualification of the sent
 
 ### Qualify other sentences
 
-After two or three sentences for a given intention, it is common for the model to start recognizing
-the following sentences and detecting the intention well (with an increasing score, as long as the
-sentences are relatively close / related to the intention of course):
+After two or three sentences for a given intent, it is common for the model to start recognizing
+the following sentences and detecting the intent well (with an increasing score, as long as the
+sentences are relatively close / related to the intent of course):
 
 ![Detection of a sentence](../img/try-it-5.png "Detection of a sentence")
 
-If a sentence is not well qualified, change the intention / entities then do _Validate_ to apply
+If a sentence is not well qualified, change the intent / entities then do _Validate_ to apply
 the correction. If the sentence was well qualified, do _Validate_ directly.
 
 In both cases, you feed the model, which rebuilds itself, and becomes more relevant for the
@@ -104,8 +104,8 @@ This screen therefore allows you to consult the sentences that are already part 
 and to change the sentence qualifications over time. It is notably possible
 to re-qualify an entire group of sentences.
 
-> For example, you can create a new intention later and decide that all sentences meeting
-> a certain criterion (keyword or other) must now be qualified in this new intention.
+> For example, you can create a new intent later and decide that all sentences meeting
+> a certain criterion (keyword or other) must now be qualified in this new intent.
 
 ## Edit the advanced features of the application
 
@@ -124,10 +124,10 @@ You have the possibility to select the NLU library used by this bot
 
 ![Application configuration](../img/application.png "Application configuration")
 
-This option allows you to reuse pre-built entity templates in your new intentions.
-For example, if you create an intention with a `duckling:datetime` entity,
-dates will be automatically recognized for this intention in all new sentences assigned to this
-intention.
+This option allows you to reuse pre-built entity templates in your new intents.
+For example, if you create an intent with a `duckling:datetime` entity,
+dates will be automatically recognized for this intent in all new sentences assigned to this
+intent.
 
 > Internally, an arbitration is made between the information coming from the pre-built entity models and the
 > information taken from your own model.
@@ -150,6 +150,6 @@ see [Entities](entities.md#predefined-values).
 
 ## Continue...
 
-To learn more about entity management, especially in programmatically created intentions,
+To learn more about entity management, especially in programmatically created intents,
 or simply to continue browsing the Tock user manual,
 you can go to the [Development](../develop/index.md) chapter.

@@ -19,7 +19,7 @@ This page lists common problems and their usual causes. Start by checking the lo
 ## I cannot log in to _Tock Studio_
 
 **The credentials are refused.** By default, the credentials are `admin@app.com` / `password`. If `tock_users`
-and `tock_passwords` are set, they replace this default user (see [Security](security.md#implementation-by-properties)).
+and `tock_passwords` are set, they replace this default user (see [_Tock Studio_ authentication](authentication.md#implementation-by-properties)).
 
 **The login succeeds, but the session is immediately lost.** Outside the dev environment, the session cookie
 is only sent over HTTPS. Serve _Tock Studio_ over HTTPS, or set `tock_https_env=false` if TLS is handled by a
@@ -54,7 +54,7 @@ object (see [Upgrading Tock](upgrade.md#2630)).
 **The answers never cite any document.** Check that an indexing session is selected in the
 [RAG settings](../gen-ai/rag.md#indexing-session), and that the vector store configured in _Tock Studio_ or by the
 environment variables is the one where the documents were indexed: the default vector store is not the same in
-_Bot Admin_ and in the orchestrator (see [Vector DB settings](../gen-ai/vector-store.md)).
+_Tock Studio_ and the bots, and in the orchestrator (see [Vector DB settings](../gen-ai/vector-store.md)).
 The [retrieval diagnostic](../gen-ai/vector-store-inspection.md#retrieval-diagnostic) shows the documents found
 for a question.
 

@@ -8,6 +8,9 @@ Le menu _Rag prompt context_ gère des éléments métier injectés dynamiquemen
 [RAG](rag.md) : thèmes couverts, thèmes exclus et lexique métier. Les modifications s'appliquent aux nouvelles
 questions une fois enregistrées.
 
+> Pour accéder à cette page, il faut le rôle **_admin_**
+> (plus de détails sur les rôles dans [sécurité](../operate/security.md#roles)).
+
 ![Rag prompt context](../img/gen-ai/gen-ai-rag-prompt-context.png "Rag prompt context")
 
 ## Thèmes couverts

@@ -39,7 +39,7 @@ and an existing bot can activate the RAG from _Tock Studio_.
 <a href="https://www.youtube.com/watch?v=UsKkpYL7Hto"
 target="tock_osxp">
 
-![img open source experience](../img/tockosxp2021.png "video Open Source Experience 2021")
+![Open Source Experience 2021 video](img/tockosxp2021.png "Open Source Experience 2021 video")
 </a>
 
 ## Features
@@ -48,7 +48,7 @@ target="tock_osxp">
     * _RAG_ (Retrieval-Augmented Generation) answers based on your documents, with their sources,
       with [PGVector](https://github.com/pgvector/pgvector) or [OpenSearch](https://opensearch.org/) vector stores
     * LLM and embedding providers: [OpenAI](https://openai.com/), [Azure OpenAI](https://azure.microsoft.com/products/ai-services/openai-service),
-      [Ollama](https://ollama.com/) for local models...
+      [AWS Bedrock](https://aws.amazon.com/bedrock/), [Ollama](https://ollama.com/) for local models...
     * Control over the answers: [stories and FAQs combined with the RAG](gen-ai/how-it-works.md), covered and excluded topics,
       structured answering prompt
     * [Continuous improvement](gen-ai/improve.md): retrieval diagnostic, playground, LLM observability with

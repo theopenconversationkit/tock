@@ -22,7 +22,7 @@ However, it is possible to build more complex responses and journeys:
 
 * Implement specific management rules and behaviors
 
-* Optimize the sequences between intentions
+* Optimize the sequences between intents
 
 To build complex journeys, _Tock_ offers several integration modes intended for
 different development languages and frameworks.
@@ -36,7 +36,7 @@ If you want, you can skip this step and [deploy a platform with Docker](run-plat
 
 * A Tock _intention_ developed with the [Kotlin](https://kotlinlang.org/) language
 
-* A program connecting to the bot in _WebSocket_ to enrich it with programmed paths
+* A program connecting to the bot in _WebSocket_ to enrich it with programmed journeys
 
 ## Prerequisites
 
@@ -45,7 +45,7 @@ If you want, you can skip this step and [deploy a platform with Docker](run-plat
 * A functional Tock bot (for example following the [first Tock bot](first-bot-studio.md) guide)
 
 * A development environment (or _IDE_) supporting [Kotlin](https://kotlinlang.org/), for example
-[IntelliJ](https://www.jetbrains.com/idea/) with a [JDK](https://adoptium.net/) 17 or later
+[IntelliJ](https://www.jetbrains.com/idea/) with a [JDK](https://adoptium.net/) 21 or later
 and [Maven](https://maven.apache.org/)
 
 > If you don't want to use an _IDE_, or Maven, no problem. It is quite possible to do the same
@@ -53,7 +53,6 @@ and [Maven](https://maven.apache.org/)
 >
 > It is also possible to use other ways of developing than the _WebSocket_ mode and other
 > languages than Kotlin (see [Bot API](../develop/bot-api.md)).
-
 
 ## Create a Kotlin program with the Tock dependency
 
@@ -75,7 +74,7 @@ the `tock-bot-api-websocket` dependency included:
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>{{ kotlin_version }}</kotlin.version>
-        <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
+        <kotlin.compiler.jvmTarget>21</kotlin.compiler.jvmTarget>
         <lib.tock.version>{{ tock_version }}</lib.tock.version>
     </properties>
 
@@ -116,8 +115,6 @@ the `tock-bot-api-websocket` dependency included:
 </project>
 ```
 
-> You can find this code and other examples in the [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples) repository.
-
 ## Create a function that connects to Tock
 
 * Create a Kotlin file (e.g. in `src/main/kotlin/StartWebSocket.kt`)
@@ -141,8 +138,6 @@ fun main() {
     )
 }
 ```
-
-> You can find this code (and other examples) in the [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples) repository.
 
 * Replace the API key with the one from your own Tock application. To do this, in _Tock Studio_,
 go to _Settings_ > _Configurations_ and report the _API Key_ value in the code.
@@ -194,7 +189,7 @@ built into the Kotlin code (ie. "I am an assistant...").
 You have just configured your first programmatic _story_ in Kotlin.
 
 In this way, you can take full advantage of the possibilities of a programming language to
-build all kinds of simple and complex paths, query third-party APIs, implement
+build all kinds of simple and complex journeys, query third-party APIs, implement
 business rules, etc.
 
 > If you program a _story_ already defined in _Tock Studio_, it is the definition present in _Tock Studio_

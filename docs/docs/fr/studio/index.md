@@ -27,7 +27,7 @@ la section [Gen AI](../gen-ai/index.md). Cette section décrit les autres menus 
 * [Le menu _Test_](test.md)
 * Pilotage :
     * [Le menu _Analytics_](analytics.md)
-    * [Le menu _Custom Metrics_](custom-metrics.md)
+    * [Le menu _Metrics_](custom-metrics.md)
 * Administration :
     * [Le menu _Settings_](configuration.md)
     * [L'écran _Synchronization_](synchronization.md)

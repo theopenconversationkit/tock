@@ -31,7 +31,9 @@ Pour ajouter une application, cliquez sur _Create New Application_ :
 * Sélectionnez un moteur NLU : [Apache OpenNLP](https://opennlp.apache.org/) par défaut, ou
 [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/) si le module optionnel
 [`tock-corenlp`](https://github.com/theopenconversationkit/tock-corenlp) est installé
-(voir [Installation](../operate/installation.md))
+(voir [Installation](../operate/installation.md)). Le moteur _bgem3_ utilise des modèles hébergés sur Amazon SageMaker
+(voir [Configuration](../operate/configuration.md#modeles-amazon-sagemaker)), et le module optionnel `tock-nlp-model-rasa`
+ajoute un moteur [Rasa](https://rasa.com/).
 
 ### Modifier, importer et exporter une application
 
@@ -50,7 +52,6 @@ Pour chaque application déjà créée, vous pouvez par la suite :
         * _Trigger build_ : déclencher/forcer la reconstruction du modèle
         * _NLU Engine configuration_ : paramétrer finement le moteur NLU sous-jacent (les paramètres dépendant du moteur
         utilisé, [Apache OpenNLP](https://opennlp.apache.org/) ou [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/))
-        * _Alexa Export_ : exporter le modèle Tock dans un format utilisable par [Alexa](https://alexa.amazon.com/)
 
 ![Configuration de l'application](../../img/application.png "Configuration de l'application")
 
@@ -83,7 +84,7 @@ _Create a new Configuration_.
 
 Tous les connecteurs possèdent la configuration suivante :
 
-* _Configuration name_ : le nom/identifiant du bot
+* _Configuration name_ : le nom de cette configuration de connecteur, affiché dans _Tock Studio_
 * _Connector type_ : le type de canal (par exemple Messenger, Slack, etc.)
 * _Connector identifier_ : un identifiant pour le connecteur, unique pour le bot
 * _Relative REST path_ : un chemin relatif unique pour la plateforme, pour communiquer avec le bot sur ce canal.

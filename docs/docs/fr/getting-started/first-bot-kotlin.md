@@ -46,8 +46,8 @@ Si vous le souhaitez, vous pouvez sauter cette étape et [déployer un plateform
 * Un bot Tock fonctionnel (par exemple suite au guide [premier bot Tock](first-bot-studio.md))
 
 * Un environnement de développement (ou _IDE_) supportant [Kotlin](https://kotlinlang.org/), par exemple 
-[IntelliJ](https://www.jetbrains.com/idea/) avec des versions récentes du [JDK](https://jdk.java.net/) 
-et de [Maven](https://maven.apache.org/)
+[IntelliJ](https://www.jetbrains.com/idea/) avec un [JDK](https://adoptium.net/) 21 ou plus récent
+et [Maven](https://maven.apache.org/)
 
 > Si vous ne souhaitez pas utiliser d'_IDE_, ou Maven, pas de problème. Il est tout à fait possible de réaliser le même 
 > exercice avec d'autres outils.
@@ -76,7 +76,7 @@ la dépendance `tock-bot-api-websocket` incluse :
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>{{ kotlin_version }}</kotlin.version>
-        <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
+        <kotlin.compiler.jvmTarget>21</kotlin.compiler.jvmTarget>
         <lib.tock.version>{{ tock_version }}</lib.tock.version>
     </properties>
 
@@ -117,8 +117,6 @@ la dépendance `tock-bot-api-websocket` incluse :
 </project>
 ```
 
-> Vous pouvez retrouver ce code et d'autres exemples dans le dépôt [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples).
-
 ## Créer une fonction qui se connecte à Tock
 
 * Créez un fichier Kotlin (par exemple dans `src/main/kotlin/StartWebSocket.kt`)
@@ -142,8 +140,6 @@ fun main() {
     )
 }
 ```
-
-> Vous pouvez retrouver ce code (et d'autres exemples) dans le dépôt [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples).
 
 * Remplacez la clef d'API par celle de votre propre application Tock. Pour cela, dans _Tock Studio_, 
 allez dans _Settings_ > _Configurations_ et reportez la valeur _API Key_ dans le code.
@@ -189,7 +185,6 @@ liste puis confirmez avec _Validate_
 * Retournez dans _Test_ > _Test_. Si vous reposez la question, le bot vous donne désormais la réponse 
 construite dans le code Kotlin (ie. "Je suis un assistant...").
 
-
 ## Félicitations!
 
 Vous venez de configurer votre première _story_ programmatique en Kotlin.
@@ -206,5 +201,4 @@ construire toutes sortes de parcours simples et complexes, interroger des API ti
 Dans la section suivante vous apprendrez à :
 
 * [Déployer une plateforme Tock](run-platform.md) en quelques minutes avec Docker
-
 

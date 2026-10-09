@@ -31,7 +31,9 @@ To add an application, click on _Create New Application_ :
 * Select an NLU engine: [Apache OpenNLP](https://opennlp.apache.org/) by default, or
 [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/) if the optional
 [`tock-corenlp`](https://github.com/theopenconversationkit/tock-corenlp) module is installed
-(see [Installation](../operate/installation.md))
+(see [Installation](../operate/installation.md)). The _bgem3_ engine uses models hosted on Amazon SageMaker
+(see [Configuration](../operate/configuration.md#amazon-sagemaker-models)), and the optional `tock-nlp-model-rasa`
+module adds a [Rasa](https://rasa.com/) engine.
 
 ### Edit, import and export an application
 
@@ -49,7 +51,6 @@ For each application already created, you can then:
         * _Trigger build_: trigger/force model rebuild
         * _NLU Engine configuration_: fine-tune the underlying NLU engine (parameters depend on the engine
         used, [Apache OpenNLP](https://opennlp.apache.org/) or [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/))
-        * _Alexa Export_: export the Tock model in a format usable by [Alexa](https://alexa.amazon.com/)
 
 ![Application configuration](../img/application.png "Application configuration")
 
@@ -68,12 +69,12 @@ the information to connect programmatically.
 The settings to connect to the bot programmatically (ie. via a program / programming language)
 are found in this screen:
 
-* The _API Key_ can be copied and embedded in the client code of the _Bot API_ to connect programmed paths
+* The _API Key_ can be copied and embedded in the client code of the _Bot API_ to connect programmed journeys
 in Kotlin or in another programming language like Javascript/Nodejs or Python
 
 * An address / URL can be configured to use the _WebHook_ mode of _Bot API_
 
-To learn more about these settings and path development, see [Bot API](../develop/bot-api.md)
+To learn more about these settings and journey development, see [Bot API](../develop/bot-api.md)
 
 ### Manage connectors
 
@@ -82,7 +83,7 @@ _Create a new Configuration_.
 
 All connectors have the following configuration:
 
-* _Configuration name_ : the name/identifier of the bot
+* _Configuration name_ : the name of this connector configuration, displayed in _Tock Studio_
 * _Connector type_ : the channel type (e.g. Messenger, Slack, etc.)
 * _Connector identifier_ : an identifier for the connector, unique for the bot
 * _Relative REST path_ : a relative path unique for the platform, to communicate with the bot on this channel.

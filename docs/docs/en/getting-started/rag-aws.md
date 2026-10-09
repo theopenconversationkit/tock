@@ -4,14 +4,14 @@ title: RAG on AWS
 
 # Running RAG on AWS
 
-This guide walks you through setting up a TOCK bot's [RAG](../gen-ai/rag.md)
+This guide walks you through setting up a Tock bot's [RAG](../gen-ai/rag.md)
 (Retrieval-Augmented Generation) feature entirely on AWS, from a fresh account to a working bot answering
 questions from your own documents. It uses:
 
 - **Amazon Bedrock** for both the LLM (answer generation) and the embedding model (document/question vectorization).
 - **Amazon OpenSearch Service** (managed) as the vector store.
 - The [`tock-docker`](https://github.com/theopenconversationkit/tock-docker) Docker images to run the platform.
-- The `tock-llm-indexing-tools` scripts to ingest your documents.
+- The `tock/llm-indexing-tools` Docker image to index your documents.
 
 No other AWS service is required to follow this guide end to end.
 
@@ -19,8 +19,8 @@ No other AWS service is required to follow this guide end to end.
 
 - An AWS account with permission to create IAM policies/roles, enable Bedrock model access, and create an
   OpenSearch domain.
-- Docker and Docker Compose installed locally (or on the host where you run TOCK).
-- Python >= 3.9 and [Poetry](https://python-poetry.org/) installed locally, to run the ingestion tooling.
+- Docker and Docker Compose installed locally (or on the host where you run Tock).
+- The [AWS CLI](https://aws.amazon.com/cli/), to create the AWS profile used by the orchestrator.
 
 ## 2) Enable Bedrock model access
 
@@ -44,7 +44,7 @@ Bedrock model access must be explicitly granted per AWS account and region befor
 The `GenAI Orchestrator` (the service that actually talks to Bedrock) authenticates using the
 [default AWS credential chain](https://docs.aws.amazon.com/sdkref/latest/guide/standardized-credentials.html)
 (shared credentials file, environment variables, EC2 instance profile, ECS task role, or EKS IRSA role). No access
-key/secret is ever stored in TOCK settings - only a profile name (or nothing, if you rely on the default chain).
+key/secret is ever stored in Tock settings - only a profile name (or nothing, if you rely on the default chain).
 
 Create an IAM policy granting invoke rights on the models you enabled above:
 
@@ -84,15 +84,15 @@ Attach this policy to whichever identity will run the orchestrator container:
 
 1. Open the [OpenSearch Service console](https://console.aws.amazon.com/aos/home) and create a new domain.
 2. Choose **Fine-grained access control** with an internal user database, and set a master username/password
-   (TOCK authenticates with plain HTTP basic auth, so this is the simplest option - no IAM SigV4 signing needed).
+   (Tock authenticates with plain HTTP basic auth, so this is the simplest option - no IAM SigV4 signing needed).
    > Amazon OpenSearch **Serverless** is not supported out of the box: it only accepts IAM SigV4-signed requests,
-   > which TOCK's OpenSearch integration does not implement. Use a regular (provisioned) OpenSearch domain.
+   > which Tock's OpenSearch integration does not implement. Use a regular (provisioned) OpenSearch domain.
 3. Under **Network**, choose whatever fits your setup (VPC access is recommended for production; public access
    with an IP-restricted access policy works fine to follow this guide).
 4. Once the domain is `Active`, note its **domain endpoint** (without the `https://` prefix), e.g.
    `search-my-domain-abc123xyz.eu-west-3.es.amazonaws.com`.
 
-## 5) Run the TOCK stack
+## 5) Run the Tock stack
 
 Grab the RAG/OpenSearch Docker Compose stack from `tock-docker` as a starting point:
 
@@ -146,154 +146,124 @@ Then launch the stack:
 docker compose up
 ```
 
-Once everything is up, Bot Admin is reachable at [http://localhost](http://localhost)
+Once everything is up, _Tock Studio_ is reachable at [http://localhost](http://localhost)
 (default login `admin@app.com` / `password`), and the orchestrator itself listens on `http://localhost:8000`.
 
-## 6) Ingest your documents
+## 6) Index your documents
 
-Documents are chunked, embedded, and pushed into OpenSearch using the `index_documents.py` script from
-`gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools` (in the main
-[`tock`](https://github.com/theopenconversationkit/tock) repository).
+Documents are chunked, embedded with Bedrock and stored in OpenSearch by the [indexing tool](../gen-ai/indexing.md),
+available as the `tock/llm-indexing-tools` Docker image.
 
-### 6.1) Install the tooling
+### 6.1) Prepare the CSV file
+
+The indexing tool reads a pipe-delimited (`|`) CSV file with three columns: `title`, `source` (typically the URL
+of the document) and `text`. See [Document indexing](../gen-ai/indexing.md#input-documents) for the format, and the
+[RAG tutorial](rag-tutorial.md#convert-the-documentation-into-a-csv-file) for an example of conversion from Markdown files.
+
+Put the file in an `ingestion` folder, for instance `ingestion/data.csv`.
+
+### 6.2) Write the indexing configuration
+
+Create `ingestion/config.json`:
+
+```json
+{
+  "bot": {
+    "namespace": "app",
+    "bot_id": "new_assistant",
+    "file_location": "/ingestion"
+  },
+  "em_setting": {
+    "provider": "AwsBedrock",
+    "model": "amazon.titan-embed-text-v2:0"
+  },
+  "vector_store_setting": {
+    "provider": "OpenSearch",
+    "host": "search-my-domain-abc123xyz.eu-west-3.es.amazonaws.com",
+    "port": 443,
+    "username": "admin",
+    "password": {
+      "type": "Raw",
+      "secret": "<your master password>"
+    }
+  },
+  "data_csv_file": "data.csv",
+  "document_index_name": null,
+  "chunk_size": 1000,
+  "embedding_bulk_size": 20,
+  "ignore_source": false,
+  "append_doc_title_and_chunk": true
+}
+```
+
+* `bot`: the namespace and the name of the application, as created in _Tock Studio_
+  (`app` and `new_assistant` with the wizard of the Docker platform, see [step 7](#7-configure-the-bot-in-tock-studio)).
+* `document_index_name`: leave it `null`, so that the index is named after the namespace, the bot and the indexing
+  session, as _Tock Studio_ expects.
+
+The other options are described in the [RAG tutorial](rag-tutorial.md#index-the-documentation) and the
+[README](https://github.com/theopenconversationkit/tock/blob/master/gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools/README.md)
+of the indexing tool.
+
+### 6.3) Run the indexing
+
+The indexing tool calls Bedrock with the same code as the orchestrator: mount your AWS configuration and give it
+the AWS profile to use.
 
 ```bash
-git clone https://github.com/theopenconversationkit/tock.git
-cd tock/gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools
-poetry install --no-root
+docker run --rm \
+  -v "$PWD/ingestion:/ingestion" \
+  -v ~/.aws:/root/.aws:ro \
+  -e tock_gen_ai_orchestrator_aws_bedrock_credentials_profile_name=bedrock-rag \
+  tock/llm-indexing-tools:{{ tock_version }} \
+  python tock-llm-indexing-tools/scripts/indexing/vectorisation/run_vectorisation.py \
+  --json-config-file=/ingestion/config.json -v
 ```
 
-### 6.2) Prepare a ready-to-index CSV
+At the end, the tool displays the **index name** (`ns_app_bot_new_assistant_session_<uuid>`) and the
+**index session ID**. Write down the index session ID: you need it in the next step.
 
-The script expects a CSV with three columns: `title`, `source`, `text`. If your content already lives in this
-format, skip to the next step. Otherwise, `smarttribune_formatter.py`/`smarttribune_consumer.py` and
-`webscraper.py` can help produce it from a Smart Tribune export or by scraping web pages - see the
-[tool's README](https://github.com/theopenconversationkit/tock/blob/master/gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools/README.md)
-for details.
+## 7) Configure the bot in Tock Studio
 
-### 6.3) Write the embeddings and vector store JSON configs
+When you first log in, the wizard creates an application named `new_assistant` in the `app` namespace
+(see [Create the application](rag-tutorial.md#create-the-application)).
 
-`embeddings_bedrock.json` (the script runs the orchestrator's embedding factory locally, so make sure your shell
-has the same AWS credentials available, e.g. `export AWS_PROFILE=bedrock-rag AWS_REGION=eu-west-3`):
+Then go to _Gen AI_ > _Rag settings_ (you need the **admin** role):
 
-```json
-{
-  "provider": "AwsBedrock",
-  "model": "amazon.titan-embed-text-v2:0"
-}
-```
+* **Question condensing** and **Question answering**, _Configuration_:
+    * Provider: _AWS Bedrock_
+    * Model id: `amazon.nova-lite-v1:0`
+    * Temperature: `0.7`
+* **Embedding**, _Configuration_:
+    * Provider: _AWS Bedrock_
+    * Model id: `amazon.titan-embed-text-v2:0`, the model used for the indexing
+* **Indexing session**: the **index session ID** displayed by the indexing tool
+* Enable **Rag activated**, then _Save_
 
-`vector_store_opensearch.json`:
-
-```json
-{
-  "provider": "OpenSearch",
-  "host": "search-my-domain-abc123xyz.eu-west-3.es.amazonaws.com",
-  "port": 443,
-  "username": "admin",
-  "password": {
-    "type": "Raw",
-    "secret": "<your master password>"
-  }
-}
-```
-
-### 6.4) Run the indexing script
-
-```bash
-poetry run python scripts/indexing/index_documents.py \
-  --input-csv=data.csv \
-  --namespace=my_namespace \
-  --bot-id=my_bot_id \
-  --embeddings-json-config=embeddings_bedrock.json \
-  --vector-store-json-config=vector_store_opensearch.json \
-  --chunks-size=1000
-```
-
-At the end, the script prints an **indexing session ID** (a UUID) and the generated **index name**
-(`ns-{namespace}-bot-{bot_id}-session-{uuid4}`). Keep the session ID handy - you'll need it in the next step.
-
-## 7) Configure the bot in TOCK Studio
-
-Open your bot in TOCK Studio and go to **Gen AI > Vector Store Settings** first, then **Gen AI > RAG Settings**
-(you need the **botUser** role for both screens).
-
-### 7.1) Vector Store Settings
-
-Configure the connection to your OpenSearch domain:
-
-```json
-{
-  "provider": "OpenSearch",
-  "host": "search-my-domain-abc123xyz.eu-west-3.es.amazonaws.com",
-  "port": "443",
-  "user": "admin",
-  "password": {
-    "type": "Raw",
-    "value": "<your master password>"
-  }
-}
-```
-
-### 7.2) RAG Settings - LLM Engine
-
-Select **AwsBedrock** as the provider and fill in:
-
-```json
-{
-  "provider": "AwsBedrock",
-  "model": "amazon.nova-lite-v1:0",
-  "temperature": "0.7"
-}
-```
-
-Then write your system prompt (see the [RAG prompt guides](../gen-ai/rag-prompt.md)
-for examples).
-
-### 7.3) RAG Settings - Embedding Engine
-
-Select **AwsBedrock** again, matching the model used for ingestion, and paste the **indexing session ID** from
-step 6.4 into the **Indexing session** field:
-
-```json
-{
-  "provider": "AwsBedrock",
-  "model": "amazon.titan-embed-text-v2:0"
-}
-```
+You can adapt the answering prompt (see the [RAG prompt guide](../gen-ai/rag-prompt.md)).
 
 !!! warning
-    The embedding model here **must** match the one used to ingest your documents - mixing embedding models between
-    ingestion and querying silently degrades (or breaks) retrieval quality, since vectors won't be comparable.
+    The embedding model here **must** match the one used to index your documents - mixing embedding models between
+    indexing and querying silently degrades (or breaks) retrieval quality, since vectors won't be comparable.
 
-### 7.4) Configure the "no answer" flow and activate RAG
-
-Fill in the **Conversation Flow** section (what the bot says when it can't find a relevant answer), then toggle
-RAG activation on. Activation is only possible once every required field is filled.
+> There is no need to fill in _Gen AI_ > _Vector DB settings_: the orchestrator already uses your OpenSearch domain,
+> set by environment variables in [step 5](#5-run-the-tock-stack). This screen only overrides that connection for a
+> given bot.
 
 ## 8) Optional: configure guardrails
 
 AWS Bedrock LLM settings support inline [Bedrock Guardrails](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html),
 applied directly on every LLM call with no extra network round trip. Once you've created a guardrail in the
-Bedrock console, add its identifier/version to the **RAG Settings > LLM Engine** configuration:
-
-```json
-{
-  "provider": "AwsBedrock",
-  "model": "amazon.nova-lite-v1:0",
-  "temperature": "0.7",
-  "guardrailId": "arn:aws:bedrock:eu-west-3:123456789012:guardrail/my-guardrail",
-  "guardrailVersion": "1",
-  "guardrailTrace": false
-}
-```
+Bedrock console, fill in the **Guardrail ID** (identifier or ARN) and the **Guardrail Version** (e.g. `DRAFT` or `1`)
+of the _Question answering_ configuration in _Rag settings_. **Enable Guardrail Trace** logs the details of the
+guardrail interventions.
 
 Don't forget to add the guardrail's ARN to the IAM policy from step 3, or Bedrock will reject the call with an
 access-denied error even though the model invocation itself would otherwise succeed.
 
 ## 9) Test it
 
-In TOCK Studio, go to a bot channel and send a question you know is covered by your ingested documents. You
+In _Tock Studio_, go to _Test_ > _Test_ and send a question you know is covered by your indexed documents. You
 should get an answer generated from the retrieved document chunks. If not, see the troubleshooting table below.
 
 ## Troubleshooting
@@ -302,9 +272,9 @@ should get an answer generated from the retrieved document chunks. If not, see t
 |-------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
 | `AccessDeniedException` mentioning `bedrock:InvokeModel`                | Model access not granted, or IAM policy doesn't cover the model/region                              | Re-check step 2 (model access) and step 3 (IAM policy `Resource` ARNs, including region)                     |
 | `MissingCredentialsProfileName` error from the orchestrator             | Neither a profile name nor the default-profile fallback is configured                               | Set `tock_gen_ai_orchestrator_aws_bedrock_credentials_profile_name`, or set `..._allow_default_profile=true` |
-| No documents retrieved / bot always falls back to the "no answer" story | Wrong indexing session ID, or embedding model mismatch between ingestion and RAG settings           | Double-check the session ID from step 6.4, and that both use the same embedding model                        |
+| No documents retrieved / bot always falls back to the "no answer" story | Wrong indexing session ID, or embedding model mismatch between ingestion and RAG settings           | Double-check the session ID from step 6.3, and that both use the same embedding model                        |
 | Connection refused / timeout to OpenSearch                              | Domain network access policy or security group doesn't allow the orchestrator container's egress IP | Adjust the OpenSearch domain's access policy/VPC security group                                              |
-| `401 Unauthorized` from OpenSearch                                      | Wrong master username/password, or fine-grained access control not enabled                          | Re-check step 4 and the credentials used in both the vector store JSON config and TOCK Studio                |
+| `401 Unauthorized` from OpenSearch                                      | Wrong master username/password, or fine-grained access control not enabled                          | Re-check step 4 and the credentials used in both the indexing configuration and the orchestrator                |
 
 ## Reference
 

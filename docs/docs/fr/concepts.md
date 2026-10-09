@@ -23,10 +23,9 @@ Voir [_Tock Studio > Settings > Applications_](studio/configuration.md#gerer-les
 
 ### *Configuration*
 
-Dans une application Tock en mode NLP, une _configuration_ regroupe un ou plusieurs _connecteurs_ pour différents 
-canaux (voir ci-dessous).
+Une _configuration_ regroupe les _connecteurs_ d'un bot pour différents canaux (voir ci-dessous).
 
-En mode conversationnel, **une _configuration_ correspond à un ensemble de réponses et comportements du _bot_** 
+**Une _configuration_ correspond aussi à un ensemble de réponses et comportements du _bot_** 
 sur ces canaux. Par exemple, pour un même scénario (_story_) de l'application il est possible de paramétrer des réponses 
 différentes (_answers_, _story rules_, etc.) selon plusieurs _configurations_.
 
@@ -69,7 +68,7 @@ Ce qu'on appelle une _intention_ est justement cette classification.
 Par exemple, les phrases "Quel temps fait-il?", "Il fait beau demain ?", "J'espère qu'il ne va pas pleuvoir à Paris ?"
 peuvent toutes être catégorisées avec l'intention "météo".
 
-A partir des phrases classifiées manuellement par un utilisateur, 
+À partir des phrases classifiées manuellement par un utilisateur, 
 Tock va automatiquement construire un modèle statistique qui va lui permettre,
 pour une nouvelle phrase, de déterminer quelle est l'intention la plus probable.
 
@@ -152,6 +151,26 @@ Voir [_Tock Studio > Gen AI > Rag settings_](gen-ai/rag.md).
 
 Les instructions données au LLM. Le prompt de réponse du RAG définit le périmètre du bot, son ton et les règles
 qu'il doit respecter (voir [Prompt RAG](gen-ai/rag-prompt.md)).
+
+### *Condensation de la question*
+
+Avant de chercher dans les documents, un LLM réécrit la question de l'utilisateur sous forme de question autonome, à
+partir des derniers messages de la conversation : _« et le dimanche ? »_ devient _« quels sont les horaires d'ouverture le dimanche ? »_.
+
+### *Reranking (compresseur)*
+
+Un modèle de reranking réévalue les morceaux récupérés par rapport à la question, pour ne garder que les plus
+pertinents (voir [Compressor settings](gen-ai/compressor.md)).
+
+### *Exclusion RAG*
+
+Une phrase qualifiée avec l'intention `tock:ragexcluded` : le modèle NLU reconnaît les sujets exclus, et le bot y
+répond sans appeler le LLM (voir [Exclusions RAG](gen-ai/rag-exclusion.md)).
+
+### *Orchestrateur Gen AI*
+
+Le service Python qui exécute les fonctionnalités d'IA générative (RAG, génération de phrases, playground...) et
+appelle les fournisseurs de LLM, d'embeddings, de bases vectorielles et d'observabilité (voir [IA générative](gen-ai/index.md)).
 
 ## Termes & correspondances
 

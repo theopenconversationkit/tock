@@ -44,13 +44,16 @@ mkdocs build --strict
 - `hooks/redirects.py` generates a redirect page, in each language, for every old path listed in `redirects.yml`.
   When you move or rename a page, add its old path there so that external links keep working.
 - `hooks/i18n_parity.py` warns (and fails the strict build) when a page exists in `en/` but not in `fr/`, or the reverse.
+- `hooks/preview.py`, when `DOC_PREVIEW_BRANCH` is set (branch previews), hides the pages from search engines
+  and shows a banner linking to the official documentation.
 - Screenshots go in `docs/img/studio/`, `docs/img/gen-ai/` or `docs/img/channels/`, in PNG, taken with the light theme.
   Retake them when a _Tock Studio_ screen changes significantly, and give each image a descriptive alt text.
   A screenshot showing language-specific content (e.g. a bot conversation) exists in each language:
   the English one keeps the base name and the French one takes the `-fr` suffix
   (`gen-ai-rag-test.png` for `en/`, `gen-ai-rag-test-fr.png` for `fr/`).
 - `etc/list-doc-properties.py --check docs/docs/en/operate/configuration.md` lists the configuration properties
-  missing from the configuration reference.
+  missing from the configuration reference, and the documented properties no longer read by the code.
+- `etc/update-doc-version.sh` updates `tock_version` and `kotlin_version` in `mkdocs.yml` after a release.
 - The CI lints the pages with [markdownlint](https://github.com/DavidAnson/markdownlint) (rules in `.markdownlint-cli2.yaml`):
   `npx markdownlint-cli2 --config docs/.markdownlint-cli2.yaml "docs/docs/**/*.md"` from the repository root.
 - `hooks/i18n_parity.py` also checks, with `TOCK_DOC_CHECK_TRANSLATION_DATES=true mkdocs build` (without `--strict`),
@@ -63,6 +66,8 @@ mkdocs build --strict
 - `.github/workflows/validate-build.yml` (job `doc`) runs `mkdocs build --strict` on every PR touching `docs/`.
 - `.github/workflows/doc-deploy.yml` builds the site and deploys it to GitHub Pages on every push to `master`
   touching `docs/`. The site is published under `/master/`.
+  A push to a `docs/*` branch publishes a preview under `/preview/<branch>/` (`/` replaced by `-`),
+  removed when the branch is deleted; any other branch can be previewed with _Run workflow_.
 
 ## Contributing and releases
 

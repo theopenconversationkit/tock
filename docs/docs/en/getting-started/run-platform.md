@@ -4,8 +4,8 @@ title: Run a Tock platform
 
 # Deploying a platform with Docker
 
-In the previous sections to discover and test Tock, you used the
-[demo platform](https://demo.tock.ai/). This allowed you to discover
+In the guides [Create your first bot with Tock Studio](first-bot-studio.md) and
+[Program journeys in Kotlin](first-bot-kotlin.md), you used the [demo platform](https://demo.tock.ai/). This allowed you to discover
 the construction and configuration of Tock bots without having to install the platform first.
 
 In this guide, you will learn how to deploy a complete Tock platform in a few minutes, thanks
@@ -91,7 +91,7 @@ Once the platform is ready, the _Tock Studio_ interfaces are on port `80` by def
 > It is obviously recommended to change these values when installing a platform intended for long-term use
 > (production, platform shared between teams, etc.).
 
-## Create an application, a connector and an intention
+## Create an application, a connector and an intent
 
 As in the [first bot](first-bot-studio.md) guide using the demo platform, you will create a
 _Tock_ application and a connector to start using the local platform. Feel free to go back to the
@@ -99,21 +99,13 @@ previous guides for more comments.
 
 When you first access the local platform:
 
-* Enter a name for the application
+* _Choose your language_: select a language - you can add others later - then _Next_
 
-* Select a language - you can add others later
+* _Select a first Channel_: select _slack_, then _Next_
 
-* Validate to create the application
+* _Create your Assistant_: _Create_
 
-* Go to _Settings_ > _Configurations_
-
-* _Create a new Configuration_
-
-* Select the _Slack_ connector type
-
-* _Create_
-
-> Note the _API Key_ automatically generated for your application. It will be useful if you try the _WebSocket_ mode
+> Note the _API Key_ automatically generated for your application (_Settings_ > _Configurations_). It will be useful if you try the _WebSocket_ mode
 > later in this guide (optional).
 
 * Go to _Stories & Answers_ > _New Story_
@@ -160,7 +152,6 @@ fun main() {
     ) 
 }
 ```
-> You can find this code (and other examples) in the [tock-bot-samples](https://github.com/theopenconversationkit/tock-bot-samples) repository.
 
 * Replace the API key with the one of your own Tock application. To do this, in _Tock Studio_,
 go to _Settings_ > _Configurations_ and report the _API Key_ value in the code.
@@ -197,7 +188,7 @@ developments, for Tock contributors or if you have to work without Internet acce
 
 You have just completed the Tock quick start guides. From here, you can:
 
-* [Build a RAG bot](rag-tutorial.md) that answers from your documents
+* Add [generated answers](../gen-ai/index.md) to your bot (the [RAG tutorial](rag-tutorial.md) starts a platform with the Gen AI orchestrator)
 * Discover the screens of [_Tock Studio_](../studio/index.md)
 * Connect the bot to a [channel](../channels/index.md)
 * Prepare a [production installation](../operate/installation.md)

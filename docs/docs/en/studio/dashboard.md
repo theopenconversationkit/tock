@@ -7,7 +7,7 @@ title: Dashboard
 The _Dashboard_ is the home page of _Tock Studio_. It gives an overview of the activity and of the knowledge of the
 bot selected in the top bar, and centralizes the information needed by anyone landing on the bot.
 
-The content depends on your role: users with the _nlpUser_ role only have nothing to display here.
+The content depends on your role: users who only have the _nlpUser_ role see no content here.
 
 ## Reporting period
 

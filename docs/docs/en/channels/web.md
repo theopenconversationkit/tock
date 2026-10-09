@@ -16,6 +16,11 @@ mobile apps, with the [React](index.md#react) and [Vue](index.md#vue) kits, or a
 In _Tock Studio_, add a _Web_ connector to the bot configuration (_Settings > Configurations_), with its relative path,
 for instance `/web`.
 
+| Field | Description |
+|-------|-------------|
+| Web Security Mode | (optional) how the users are identified, see [Security modes](#security-modes) (default: `DEFAULT`) |
+| Public Path (if different from local REST Path) | (optional) path of the connector as seen by the browser, behind a reverse proxy. Used as path of the security cookies |
+
 ## API usage
 
 Send a message:

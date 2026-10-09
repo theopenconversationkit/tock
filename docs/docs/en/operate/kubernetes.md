@@ -57,6 +57,9 @@ The chart is published both as an OCI artifact and in a classic Helm repository:
 
 > Each chart version deploys a given Tock version by default (`appVersion` in `helm search repo tock`).
 > To deploy another Tock version, set the `image.tag` of each component in your values file.
+>
+> The latest chart version (0.6.3) deploys Tock 25.10.7 by default, older than the version described in this
+> documentation ({{ tock_version }}): set `image.tag` to `{{ tock_version }}` to use the features described here.
 
 Once the release is installed, Helm displays the URLs of _Tock Studio_ and of the Bot API.
 The default login/password of _Tock Studio_ is `admin@app.com` / `password`: change it before opening

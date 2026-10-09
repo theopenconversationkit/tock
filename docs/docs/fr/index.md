@@ -39,7 +39,7 @@ Des [guides](getting-started/first-bot-studio.md), [supports](project/resources.
 <a href="https://www.youtube.com/watch?v=UsKkpYL7Hto"
 target="tock_osxp">
 
-![logo rest-api](img/tockosxp2021.png "rest api")
+![Vidéo Open Source Experience 2021](img/tockosxp2021.png "Vidéo Open Source Experience 2021")
 </a>
 
 ## Fonctionnalités
@@ -48,7 +48,7 @@ target="tock_osxp">
     * Réponses _RAG_ (Retrieval-Augmented Generation) à partir de vos documents, avec leurs sources,
       avec les bases vectorielles [PGVector](https://github.com/pgvector/pgvector) ou [OpenSearch](https://opensearch.org/)
     * Fournisseurs de LLM et d'embeddings : [OpenAI](https://openai.com/), [Azure OpenAI](https://azure.microsoft.com/products/ai-services/openai-service),
-      [Ollama](https://ollama.com/) pour les modèles locaux...
+      [AWS Bedrock](https://aws.amazon.com/bedrock/), [Ollama](https://ollama.com/) pour les modèles locaux...
     * Maîtrise des réponses : [stories et FAQ combinées au RAG](gen-ai/how-it-works.md), thèmes couverts et exclus,
       prompt de réponse structuré
     * [Amélioration continue](gen-ai/improve.md) : diagnostic de recherche, playground, observabilité des LLM avec
