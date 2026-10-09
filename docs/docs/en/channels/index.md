@@ -1,5 +1,6 @@
 ---
 title: Channels
+description: "The channels a Tock bot can be connected to, with the connectors provided and the web kits."
 ---
 
 # Building a multichannel bot with Tock

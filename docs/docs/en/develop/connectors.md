@@ -1,5 +1,6 @@
 ---
 title: Connectors
+description: "Develop a custom Tock connector to integrate a bot with a new channel."
 ---
 
 # Tock Connectors

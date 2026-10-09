@@ -1,5 +1,6 @@
 ---
 title: Mettre à jour Tock
+description: "Mettre à jour une plateforme Tock et ses bots vers une nouvelle version, et les changements qui demandent une action."
 ---
 
 # Mettre à jour Tock
@@ -36,6 +37,9 @@ aucun script de migration n'est à exécuter, sauf mention contraire dans les no
 (`connector-twitter`), Apple Business Chat (`connector-businesschat`) et Rocket.Chat (`connector-rocketchat`), dont
 les plateformes ont fermé ou ne sont plus utilisées, ne sont plus fournis. Supprimez leurs configurations dans
 _Settings_ > _Configurations_, et leurs dépendances de vos bots.
+
+**Module retiré.** Le module d'analytics Chatbase (`tock-analytics-chatbase`), dont le service a fermé,
+n'est plus fourni : supprimez sa dépendance de vos bots.
 
 **Propriété renommée.** Le délai maximal des appels à l'API Bot Framework du connecteur Teams est désormais défini par
 `tock_teams_request_timeout_ms`. L'ancienne propriété `tock_whatsapp_request_timeout_ms` est encore lue si la nouvelle

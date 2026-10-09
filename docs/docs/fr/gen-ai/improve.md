@@ -1,5 +1,6 @@
 ---
 title: Améliorer les réponses
+description: "La boucle d'amélioration d'un bot RAG, et les outils de Tock Studio utilisés à chaque étape."
 ---
 
 # Améliorer les réponses générées

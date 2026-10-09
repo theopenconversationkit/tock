@@ -1,5 +1,6 @@
 ---
 title: Cloud & High Availability
+description: "Deploy and host Tock platforms and bots on private or public clouds, with high availability."
 ---
 
 # Cloud & High Availability

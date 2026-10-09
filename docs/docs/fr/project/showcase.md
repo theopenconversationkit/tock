@@ -1,5 +1,6 @@
 ---
 title: Vitrine utilisateurs
+description: "Les bots et services construits avec Tock par des équipes et organisations, et les prix qu'ils ont reçus."
 ---
 
 # Vitrine utilisateurs
@@ -302,7 +303,7 @@ Pour en savoir plus, voir aussi _Les Acteurs Du Libre_.
 
 ### *Best Robot Experience 2019* (OUI.sncf)
 
-![logo kotlin](../../img/blog.png "Acteurs du libre")
+![L'équipe OUI.sncf recevant le prix Best Robot Experience 2019](../../img/best-robot-experience-2019.jpg "Best Robot Experience 2019")
 
 En 2019, _OUIbot_ a reçu le prix 
 _[Best Robot Experience](https://blog-cultures-services.com/2019/07/09/ouibot-de-ouisncf-laureat-prix-best-robot-experience-2019/)_
@@ -321,7 +322,7 @@ Voir aussi le blog [Cultures Services](https://blog-cultures-services.com/2019/0
 
 En 2018, _OUIbot_ l'assistant [OUI.sncf](https://www.oui.sncf/) qui accompagne près de 10 000 utilisateurs 
 par jour a été élu _[Best Robot Experience](https://www.sensduclient.com/2018/04/ouibot-ouisncf-est-le-gagnant-de-best.html)_
- par l'[Académie du Service](http://www.academieduservice.com/) / [Sens du client](http://www.sensduclient.com/).
+ par l'[Académie du Service](https://www.academieduservice.com/) / [Sens du client](https://www.sensduclient.com/).
  
 Le prix remis à [Caroline Chupin](https://www.linkedin.com/in/caroline-chupin-2790bb51/) pour OUI.sncf
 a départagé 24 agents virtuels proposés par des organisations prestigieuses (grandes entreprises, GAFAM, ministères)
@@ -333,7 +334,7 @@ Pour en savoir plus, voir le blog [Sens du client](https://www.sensduclient.com/
 ## Et vous ?
 
 D'autres assistants conversationnels développés avec Tock sont utilisés par différentes organisations
-(notamment les membres du [TOSIT](http://tosit.fr/)). 
+(notamment les membres du [TOSIT](https://tosit.fr/)). 
 Ces bots ne sont pas toujours destinés au grand public et leurs organisations ne communiquent pas 
 nécessairement dessus. Nous mentionnons ces projets si l'occasion se présente ;)
 
@@ -367,7 +368,7 @@ Grâce aux nombreux connecteurs Tock, _OUIbot_ répond présent sur de nombreux 
 En 2019, _OUIbot_ accompagne près de 10 000 utilisateurs par jour. Il a été élu _[Best Robot Experience](https://blog-cultures-services.com/2019/07/09/ouibot-de-ouisncf-laureat-prix-best-robot-experience-2019/)_
  pour la deuxième année consécutive.
 
-![img Best robot experience](../../img/blog.png "Best robot experience")
+![L'équipe OUI.sncf recevant le prix Best Robot Experience 2019](../../img/best-robot-experience-2019.jpg "Best Robot Experience 2019")
  
 * **Nom :** _[OUIbot](https://www.oui.sncf/services/assistant)_
 * **Date de naissance :** mis en production en 2016, jusqu'au remplacement de OUI.sncf par [SNCF Connect](#sncf-connect) en 2022

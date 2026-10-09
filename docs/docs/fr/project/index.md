@@ -1,5 +1,6 @@
 ---
 title: Projet
+description: "Le projet open source Tock : licence, historique, communauté, contributions et ressources."
 ---
 
 # Le projet Tock

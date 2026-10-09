@@ -1,5 +1,6 @@
 ---
 title: Gen AI
+description: "Build assistants that answer from your documents with an LLM while keeping control, with the Tock Gen AI features."
 ---
 
 # Gen AI

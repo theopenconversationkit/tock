@@ -1,5 +1,6 @@
 ---
 title: Pourquoi Tock
+description: "Pourquoi Tock a été créé chez OUI.sncf, et pourquoi il reste une plateforme ouverte et indépendante."
 ---
 
 # Pourquoi Tock ?
@@ -32,6 +33,6 @@ mutualiser l'effort des créateurs d'assistants.
 > (voir [vitrine](showcase.md)). 
 >
 > A terme, nous pensons que la solution Tock a vocation à rejoindre une 
-> association comme le [_TOSIT (The Open Source I Trust)_](http://tosit.fr/), 
+> association comme le [_TOSIT (The Open Source I Trust)_](https://tosit.fr/), 
 > une [fondation Open Source](https://opensource.com/resources/organizations) 
 > ou un consortium.

@@ -1,5 +1,6 @@
 ---
 title: Model Quality
+description: "Évaluer et suivre dans le temps la qualité des modèles conversationnels dans Tock Studio."
 ---
 
 # Le menu _Model Quality_

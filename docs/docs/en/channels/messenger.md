@@ -1,5 +1,6 @@
 ---
 title: Messenger
+description: "Connect a Tock bot to a Facebook page to talk with users on Messenger."
 ---
 # Messenger connector
 

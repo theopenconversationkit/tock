@@ -1,5 +1,6 @@
 ---
 title: NLU
+description: "The Language Understanding menu of Tock Studio: declare intents and entities, and qualify sentences."
 ---
 
 # The _Language Understanding_ menu

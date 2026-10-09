@@ -1,5 +1,6 @@
 ---
 title: Classes principales
+description: "Les principales classes du moteur de bot Tock : timeline utilisateur, dialogue, actions et stories."
 ---
 
 # Classes principales

@@ -1,5 +1,6 @@
 ---
 title: Test
+description: "Tester un bot directement dans Tock Studio, et gérer des plans de tests automatiques."
 ---
 
 # Le menu _Test_

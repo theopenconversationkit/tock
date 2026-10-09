@@ -1,5 +1,6 @@
 ---
 title: Playground
+description: "Envoyer des prompts directement à un LLM pour essayer un modèle ou un prompt avant de modifier la configuration du bot."
 ---
 
 # Le menu _Playground_

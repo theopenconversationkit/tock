@@ -1,5 +1,6 @@
 ---
 title: NLP and entity models
+description: "The NLP engines and entity models supported by Tock, and how they are used."
 ---
 
 # NLP and entity models

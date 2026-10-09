@@ -1,5 +1,6 @@
 ---
 title: Dépannage
+description: "Les problèmes courants d'une plateforme Tock et leurs causes habituelles."
 ---
 
 # Dépannage

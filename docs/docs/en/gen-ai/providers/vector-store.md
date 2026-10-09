@@ -1,5 +1,6 @@
 ---
 title: Vector store providers
+description: "The vector store providers supported by the Tock RAG, and how to configure them."
 ---
 
 # Vector store providers

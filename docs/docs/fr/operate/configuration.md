@@ -1,5 +1,6 @@
 ---
 title: Référence de configuration
+description: "Référence des propriétés de configuration des composants Tock."
 ---
 
 # Référence de configuration
@@ -472,7 +473,7 @@ Les variables de la base vectorielle sont décrites dans la page [Vector DB sett
 
 ### Tests Xray
 
-Propriétés du module `tock-bot-xray`, qui exécute les plans de test Xray d'un bot.
+Propriétés du module `tock-xray-plugin`, qui exécute les plans de test Xray d'un bot.
 
 | Propriété | Défaut | Description |
 |-----------|--------|-------------|

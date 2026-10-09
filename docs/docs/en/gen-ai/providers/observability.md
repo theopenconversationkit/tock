@@ -1,5 +1,6 @@
 ---
 title: LLM observability providers
+description: "The LLM observability providers supported by Tock to trace prompts, answers, latency and cost."
 ---
 
 # LLM observability providers

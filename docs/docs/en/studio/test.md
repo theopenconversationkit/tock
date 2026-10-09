@@ -1,5 +1,6 @@
 ---
 title: Test
+description: "Test a bot directly in Tock Studio, and manage automatic test plans."
 ---
 
 # The _Test_ menu

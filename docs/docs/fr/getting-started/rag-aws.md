@@ -1,5 +1,6 @@
 ---
 title: RAG sur AWS
+description: "Mettre en place le RAG d'un bot Tock entièrement sur AWS, avec Amazon Bedrock et Amazon OpenSearch."
 ---
 
 # Faire fonctionner le RAG sur AWS

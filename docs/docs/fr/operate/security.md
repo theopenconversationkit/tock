@@ -1,5 +1,6 @@
 ---
 title: Sécurité
+description: "Sécuriser une plateforme Tock : utilisateurs et rôles de Tock Studio, chiffrement, anonymisation, rétention et suppression des données."
 ---
 
 # Sécurité

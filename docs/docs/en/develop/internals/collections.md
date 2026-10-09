@@ -1,5 +1,6 @@
 ---
 title: MongoDB collections
+description: "The MongoDB databases and collections used by Tock, and what each one stores."
 ---
 
 # MongoDB collections

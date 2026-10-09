@@ -1,5 +1,6 @@
 ---
 title: Slack
+description: "Connect a Tock bot to a Slack channel with the Events API and an incoming webhook."
 ---
 # Slack connector
 

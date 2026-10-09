@@ -1,5 +1,6 @@
 ---
 title: FAQ
+description: "Create and enrich FAQs in Tock Studio: questions with a simple text or Markdown answer."
 ---
 
 # FAQs

@@ -1,5 +1,6 @@
 ---
 title: Modèles conversationnels
+description: "Construire et améliorer le modèle conversationnel d'un bot dans Tock Studio, étape par étape."
 ---
 
 # Construire les modèles conversationnels

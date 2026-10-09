@@ -1,5 +1,6 @@
 ---
 title: Stories et coroutines
+description: "Écrire des stories Kotlin sous forme de coroutines séquentielles qui attendent les réponses de l'utilisateur."
 ---
 
 # Utilisation des coroutines dans les stories

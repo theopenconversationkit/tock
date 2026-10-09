@@ -1,5 +1,6 @@
 ---
 title: Architecture
+description: "The architecture of a Tock platform: components, dependencies, flows and proxy configuration."
 ---
 
 

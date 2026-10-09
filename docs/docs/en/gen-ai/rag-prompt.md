@@ -1,5 +1,6 @@
 ---
 title: RAG prompt
+description: "Write and tune the answering prompt of a Tock RAG bot, step by step."
 ---
 
 # The RAG prompt

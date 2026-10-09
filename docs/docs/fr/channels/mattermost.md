@@ -1,5 +1,6 @@
 ---
 title: Mattermost
+description: "Connecter un bot Tock à Mattermost avec des webhooks, sur un canal ou avec une commande slash."
 ---
 
 # Connecteur Mattermost

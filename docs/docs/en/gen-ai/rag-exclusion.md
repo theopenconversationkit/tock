@@ -1,5 +1,6 @@
 ---
 title: Sentences Rag exclusions
+description: "Exclude topics from the generated answers by qualifying sentences as excluded from the RAG."
 ---
 
 # The _Sentences Rag exclusions_ menu

@@ -1,5 +1,6 @@
 ---
 title: Gen AI Orchestrator API
+description: "The API of the Tock Gen AI orchestrator, the Python service behind the RAG and the other generative AI features."
 ---
 
 # Gen AI Orchestrator API

@@ -1,5 +1,6 @@
 ---
 title: Getting started
+description: "Tutorials to get started with Tock: a RAG bot, a first bot in Tock Studio and in Kotlin, and your own platform."
 ---
 
 # Getting started

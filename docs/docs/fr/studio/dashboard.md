@@ -1,5 +1,6 @@
 ---
 title: Tableau de bord
+description: "Le tableau de bord de Tock Studio : vue d'ensemble de l'activité et des connaissances d'un bot."
 ---
 
 # Le _Dashboard_

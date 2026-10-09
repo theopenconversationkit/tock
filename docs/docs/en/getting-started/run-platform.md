@@ -1,5 +1,6 @@
 ---
 title: Run a Tock platform
+description: "Run your own Tock platform with Docker Compose and connect your bots to it."
 ---
 
 # Deploying a platform with Docker

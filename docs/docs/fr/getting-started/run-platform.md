@@ -1,5 +1,6 @@
 ---
 title: Déployer une plateforme Tock
+description: "Lancer votre propre plateforme Tock avec Docker Compose et y connecter vos bots."
 ---
 
 # Déployer une plateforme avec Docker

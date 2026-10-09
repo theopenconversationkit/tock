@@ -1,5 +1,6 @@
 ---
 title: iAdvize
+description: "Connecter un bot Tock à iAdvize avec son API bot, et transférer la conversation à des agents humains."
 ---
 
 # Connecteur iAdvize

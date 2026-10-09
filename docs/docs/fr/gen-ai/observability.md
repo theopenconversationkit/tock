@@ -1,5 +1,6 @@
 ---
 title: Observability settings
+description: "Tracer les appels LLM de l'orchestrateur IA générative pour comprendre une mauvaise réponse, sa latence et son coût."
 ---
 
 # Le menu _Observability settings_

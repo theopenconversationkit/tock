@@ -1,5 +1,6 @@
 ---
 title: Resources
+description: "Presentations, videos and articles about Tock."
 ---
 
 # Tock Resources

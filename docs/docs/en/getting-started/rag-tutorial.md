@@ -1,5 +1,6 @@
 ---
 title: RAG on the Tock documentation
+description: "Build a bot that answers questions about Tock from its documentation with RAG, in about 30 minutes."
 ---
 
 # Build a RAG bot on the Tock documentation

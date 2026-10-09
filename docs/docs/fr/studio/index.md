@@ -1,5 +1,6 @@
 ---
 title: Tock Studio
+description: "Tock Studio, l'interface pour configurer l'IA générative, écrire stories et réponses, entraîner et suivre les bots."
 ---
 
 # Tock Studio

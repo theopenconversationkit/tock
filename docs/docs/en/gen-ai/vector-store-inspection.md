@@ -1,5 +1,6 @@
 ---
 title: Gen AI - Vector store inspection
+description: "Inspect what the vector store of a bot contains, and why a chunk is or is not given to the LLM."
 ---
 
 # Vector store inspection

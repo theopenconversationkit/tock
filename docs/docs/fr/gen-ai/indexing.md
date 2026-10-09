@@ -1,5 +1,6 @@
 ---
 title: Indexation des documents
+description: "Indexer des documents dans la base vectorielle du RAG avec les outils d'indexation LLM de Tock."
 ---
 
 # Indexation des documents

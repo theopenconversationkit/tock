@@ -1,5 +1,6 @@
 ---
 title: Entities
+description: "Manage and configure the entity types of an application in Tock Studio."
 ---
 
 # The _Language Understanding > Entities_ screen
