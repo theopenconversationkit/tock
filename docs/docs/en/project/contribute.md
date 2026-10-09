@@ -31,8 +31,26 @@ See [Technologies](../index.md#technologies) on the home page.
   and [Docker Compose](https://docs.docker.com/compose/) images/descriptors, for platform hands-on and fast deployment
   of various configurations.
 
+- [`tock-helm-chart`](https://github.com/theopenconversationkit/tock-helm-chart): [Helm](https://helm.sh/) chart
+  to deploy the Tock platform on [Kubernetes](https://kubernetes.io/) (see [Deploy on Kubernetes](../operate/kubernetes.md)).
+
+- [`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit): [React](https://react.dev/) toolkit
+  to integrate a Tock bot into a Web page (see [React](../channels/index.md#react)).
+
+- [`tock-vue-kit`](https://github.com/theopenconversationkit/tock-vue-kit): [Vue](https://vuejs.org/) toolkit
+  to integrate a Tock bot into a Web page (see [Vue](../channels/index.md#vue)).
+
+- [`tock-genai-core`](https://github.com/theopenconversationkit/tock-genai-core): core Python components
+  (models, factories, error management) shared by the Tock [Gen AI](../gen-ai/index.md) components.
+
+- [`tock-mcp-server`](https://github.com/theopenconversationkit/tock-mcp-server): [MCP](https://modelcontextprotocol.io/)
+  server, written in Go, that exposes a Tock bot to AI agents and assistants through its [Web connector](../channels/web.md).
+
 - [`tock-bot-samples`](https://github.com/theopenconversationkit/tock-bot-samples): code samples, in particular the _WebHook_ and _WebSocket_ modes examples from
   [Tock programming guides](../develop/bot-api.md).
+
+- [`tock-bot-demo`](https://github.com/theopenconversationkit/tock-bot-demo): a demo bot written in Kotlin
+  with the [Bot API](../develop/bot-api.md), under [AGPL v3 license](https://www.gnu.org/licenses/agpl-3.0.html).
 
 - [`tock-bot-open-data`](https://github.com/theopenconversationkit/tock-bot-open-data): a bot example, based on
   the [SNCF _Open Data_ API](https://data.sncf.com/), also implementing basic internationalization (_i18n_)
@@ -137,16 +155,6 @@ To submit a feature or bugfix:
    - Recommended format for the commit(s) message(s):
      - `resolves #ISSUEID Component: title` for features
      - `fixes #ISSUEID Component: title` for fixes
-3. To be merged, a _pull request_ must pass the tests and be reviewed by at least two of these developers:
-   - [@vsct-jburet](https://github.com/vsct-jburet),
-     [@francoisno](https://github.com/francoisno),
-     [@NainJaune](https://github.com/NainJaune),
-     [@elebescond](https://github.com/elebescond),
-     [@SarukaUsagi](https://github.com/SarukaUsagi),
-     [@MaximeLeFrancois](https://github.com/MaximeLeFrancois),
-     [@bakic](https://github.com/bakic),
-     [@broxmik](https://github.com/broxmik),
-     [@mrboizo](https://github.com/mrboizo)
 
 ### Code conventions
 

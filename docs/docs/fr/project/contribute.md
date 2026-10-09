@@ -31,8 +31,26 @@ sous licence [GPL](https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A9
 * [`tock-docker`](https://github.com/theopenconversationkit/tock-docker) : des images [Docker](https://www.docker.com/) 
 et [Docker Compose](https://docs.docker.com/compose/), pour faciliter la prise en main et le déploiement de la plateforme dans différentes configurations.
 
+* [`tock-helm-chart`](https://github.com/theopenconversationkit/tock-helm-chart) : un chart [Helm](https://helm.sh/)
+pour déployer la plateforme Tock sur [Kubernetes](https://kubernetes.io/) (voir [Déployer sur Kubernetes](../operate/kubernetes.md)).
+
+* [`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit) : une boîte à outils [React](https://react.dev/)
+pour intégrer un bot Tock dans une page Web (voir [React](../channels/index.md#react)).
+
+* [`tock-vue-kit`](https://github.com/theopenconversationkit/tock-vue-kit) : une boîte à outils [Vue](https://vuejs.org/)
+pour intégrer un bot Tock dans une page Web (voir [Vue](../channels/index.md#vue)).
+
+* [`tock-genai-core`](https://github.com/theopenconversationkit/tock-genai-core) : les composants Python de base
+(modèles, factories, gestion des erreurs) partagés par les composants [IA générative](../gen-ai/index.md) de Tock.
+
+* [`tock-mcp-server`](https://github.com/theopenconversationkit/tock-mcp-server) : un serveur [MCP](https://modelcontextprotocol.io/),
+écrit en Go, qui expose un bot Tock aux agents et assistants IA via son [connecteur Web](../channels/web.md).
+
 * [`tock-bot-samples`](https://github.com/theopenconversationkit/tock-bot-samples) : des exemples de code notamment pour programmer des parcours en mode _WebHook_ ou _WebSocket_ 
 comme dans les [guides Tock](../getting-started/first-bot-kotlin.md).
+
+* [`tock-bot-demo`](https://github.com/theopenconversationkit/tock-bot-demo) : un bot de démonstration écrit en Kotlin
+avec la [Bot API](../develop/bot-api.md), sous licence [AGPL v3](https://www.gnu.org/licenses/agpl-3.0.html).
  
 * [`tock-bot-open-data`](https://github.com/theopenconversationkit/tock-bot-open-data) : un exemple de bot basé 
 sur les [API _Open Data_ de la SNCF](https://data.sncf.com/), implémentant également des bases pour 
@@ -127,16 +145,6 @@ Pour soumettre une évolution ou un correctif :
     - Format recommandé pour le(s) message(s) de commit(s) :
         - `resolves #ISSUEID Component: title` pour les évolutions
         - `fixes #ISSUEID Component: title` pour les correctifs
-3. Avant d'être intégrée, une _pull request_ doit passer les tests et être approuvée par au moins deux de ces développeurs :
-    - [@vsct-jburet](https://github.com/vsct-jburet),
-    [@francoisno](https://github.com/francoisno),
-    [@NainJaune](https://github.com/NainJaune),
-    [@elebescond](https://github.com/elebescond),
-    [@SarukaUsagi](https://github.com/SarukaUsagi),
-    [@MaximeLeFrancois](https://github.com/MaximeLeFrancois),
-    [@bakic](https://github.com/bakic),
-    [@broxmik](https://github.com/broxmik),
-    [@mrboizo](https://github.com/mrboizo)
 
 ### Conventions de code
 

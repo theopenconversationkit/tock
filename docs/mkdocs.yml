@@ -198,6 +198,7 @@ nav:
   - Operate:
       - operate/architecture.md
       - operate/installation.md
+      - operate/kubernetes.md
       - operate/configuration.md
       - operate/upgrade.md
       - operate/security.md

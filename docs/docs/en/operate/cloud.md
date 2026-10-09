@@ -46,7 +46,7 @@ With the RAG, the response time mostly depends on the LLM provider: adjust
 
 ## Kubernetes
 
-The [Helm chart](installation.md#installation-on-kubernetes) deploys Tock on Kubernetes. Whatever the deployment
+The [Helm chart](kubernetes.md) deploys Tock on Kubernetes. Whatever the deployment
 method, apply the recommendations above:
 
 * `tock/build_worker`: 1 replica, with the `Recreate` update strategy so that two instances never run at the same time

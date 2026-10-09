@@ -17,96 +17,26 @@ more and more teams and organizations to build conversational bots and services 
 This page presents various assistants and products built and powered by Tock,
 some of them [awarded](#awards) by the community.
 
-## Healthcare
-
-### *AlloCovid*
-
-The _[AlloCovid](https://www.allocovid.com/)_ conversational service informs and guides French population 
-about the Covid-19.
-
-It results from the collaboration of numerous French experts, tech partners and volunteers.
-To find out more about the project, the team and partners, how the bot works, etc. visit 
-[www.allocovid.com](https://www.allocovid.com/).
-
-Available by phone, on the Web and WhatsApp, _AlloCovid_ builds around a Tock bot and integrates with additional 
-technologies such as [Allo-Media](https://www.allo-media.net/) and [Voxygen](https://www.voxygen.fr/) voice solutions. 
-
-The _AlloCovid_ bot is powered by open source technologies (Tock) and open source itself: its sources are available on 
-repository [`allocovid`](https://github.com/theopenconversationkit/allocovid).
-
-> The source repository also includes the [_Allo-Media connector_](../develop/connectors.md), 
-> technical details about the bot and its [functional specification](https://github.com/Delegation-numerique-en-sante/covid19-algorithme-orientation).
-
-![logo Allo covid](../../img/allocovid.png "Allo covid")
- 
-* **Name:** _[AlloCovid](https://www.allocovid.com/)_
-* **Date of birth:** in production since spring 2020
-* **Field:** health information and guidance
-* **Channels:** text & voice, by phone, on WhatsApp and Website
-
 ## Transport & e-commerce
 
-### *OUIbot*, the OUI.sncf bot
+### *SNCF Connect*
 
-_[OUIbot](https://www.oui.sncf/services/assistant)_ is the conversational assistant from OUI.sncf. Available since 2016 
-on Facebook Messenger, _OUIbot_ was built along with the first versions of Tock.
+_[SNCF Connect](https://www.sncf-connect.com/)_ is the reference Website and application to plan, book and manage
+train journeys and other modes of transport all over France.
 
-> _With OUIbot, booking a train ticket has never been easier!_ It assists you in the preparation of your trips,
-> allows you to make a complete reservation quickly and easily, from research to purchase (payment included),
-> and accompanies you during your trip.
+> _Need help? Ask us your question._
 
-Thanks to the numerous connectors, _OUIbot_ is now available on multiple conversational channels, such as the company 
-Website [www.oui.sncf](https://www.oui.sncf/bot), social networks, voice assistants, smart display and even 
- SmartBrics with JCDecaux
- devices.
+The _SNCF Connect_ conversational assistant, built with Tock, answers travellers' questions
+(ticket exchange and cancellation, discount cards, account login, etc.).
+It also powers the search bar of the Website and mobile applications.
 
-In 2019, _OUIbot_ answers approximately 10.000 users a day. It has been awarded _[Best Robot Experience](https://blog-cultures-services.com/2019/07/09/ouibot-de-ouisncf-laureat-prix-best-robot-experience-2019/)_
- for the second year in a row.
+![SNCF Connect assistant](../../img/sncf-connect-bot.png "SNCF Connect assistant")
 
-![img Best robot experience](../../img/blog.png "Best robot experience")
- 
-* **Name:** _[OUIbot](https://www.oui.sncf/services/assistant)_
-* **Date of birth:** in production since 2016
-* **Field:** e-commerce/travel, transactions (booking, payment), alerts & push notifications, push messages to an agent
-* **Channels:** text & voice, on the company Website, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
-Google Home, Alexa, JCDecaux SmartBrics
+![SNCF Connect search bar](../../img/sncf-connect-search.png "SNCF Connect search bar")
 
-> Business Chat, Google Assistant / Google Home and Alexa have since been shut down or are no longer supported by Tock.
-
-### *L'Assistant SNCF*
-
-_[L' Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_ is
-the mobile application for SNCF passengers on Android and iOS, covering both trains and other modes of transport.
-
-> With _L' Assistant_ (the SNCF Assistant), you can plan your itinerary, stay informed in real time, buy your transport tickets
-> directly or book a taxi ride. More features are yet to come.
-
-Accessible via the "microphone" in the mobile application, le SNCF Assistant's conversational bot is built with Tock
-plus the speech-to-text Android and iOS functions.
-
-![img assistant](../../img/assistantmobile.jpg "assistant mobile")
-
-* **Name:** _[L' Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_
-* **Date of birth:** in production, featuring Tock voice function since 2019
-* **Field:** travel & transport (multi-modal route research, etc.)
-* **Channels:** voice, on the SNCF mobile application for Android and iOS
-
-### *Tilien*, the Transilien chatbot
-
-_[Tilien](https://www.facebook.com/botsncftransilien/)_ is the Transilien chatbot on Messenger.
-
-> Designed as a personal and friendly travel companion, it informs you about upcoming departures, the service status,
-> current and future works, itineraries and much more (route plans, timetables, etc.) on the entire Ile-De-France
-> rail network: Metro, RER, Transilien, Tram.
-
-Powered by Tock, the chatbot is waiting for you on Facebook Messenger.
-
-![img sncf](../../img/sncf.webp)
-
-* **Name:** _[Tilien](https://www.facebook.com/botsncftransilien/)_
-* **Date of birth:** in production, since 2018 with Tock
-* **Field:** transport & assistance (route research, route plans, traffic conditions, etc.)
-* **Channels:** text, on Messenger ([_botsncftransilien_](https://www.facebook.com/botsncftransilien/))
+* **Name:** _[SNCF Connect](https://www.sncf-connect.com/)_
+* **Field:** travel & transport, customer support (FAQ, after-sales, customer account), search
+* **Channels:** text & voice, on the [sncf-connect.com](https://www.sncf-connect.com/) Website and the iOS and Android mobile applications
 
 ### *Mon Assistant TGV INOUI*
 
@@ -403,3 +333,94 @@ Please feel free to [contact us](community.md) in case of doubts or questions ab
 of your own.
 
 _And don't hesitate to share your achievements with the community! 🙂_
+
+## Past projects
+
+These assistants were built with Tock but are no longer in service.
+
+### *OUIbot*, the OUI.sncf bot
+
+_[OUIbot](https://www.oui.sncf/services/assistant)_ is the conversational assistant from OUI.sncf. Available since 2016 
+on Facebook Messenger, _OUIbot_ was built along with the first versions of Tock.
+
+> _With OUIbot, booking a train ticket has never been easier!_ It assists you in the preparation of your trips,
+> allows you to make a complete reservation quickly and easily, from research to purchase (payment included),
+> and accompanies you during your trip.
+
+Thanks to the numerous connectors, _OUIbot_ is now available on multiple conversational channels, such as the company 
+Website [www.oui.sncf](https://www.oui.sncf/bot), social networks, voice assistants, smart display and even 
+ SmartBrics with JCDecaux
+ devices.
+
+In 2019, _OUIbot_ answers approximately 10.000 users a day. It has been awarded _[Best Robot Experience](https://blog-cultures-services.com/2019/07/09/ouibot-de-ouisncf-laureat-prix-best-robot-experience-2019/)_
+ for the second year in a row.
+
+![img Best robot experience](../../img/blog.png "Best robot experience")
+ 
+* **Name:** _[OUIbot](https://www.oui.sncf/services/assistant)_
+* **Date of birth:** launched in 2016, until OUI.sncf was replaced by [SNCF Connect](#sncf-connect) in 2022
+* **Field:** e-commerce/travel, transactions (booking, payment), alerts & push notifications, push messages to an agent
+* **Channels:** text & voice, on the company Website, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
+Google Home, Alexa, JCDecaux SmartBrics
+
+> Business Chat, Google Assistant / Google Home and Alexa have since been shut down or are no longer supported by Tock.
+
+### *AlloCovid*
+
+The _[AlloCovid](https://www.allocovid.com/)_ conversational service informs and guides French population 
+about the Covid-19.
+
+It results from the collaboration of numerous French experts, tech partners and volunteers.
+To find out more about the project, the team and partners, how the bot works, etc. visit 
+[www.allocovid.com](https://www.allocovid.com/).
+
+Available by phone, on the Web and WhatsApp, _AlloCovid_ builds around a Tock bot and integrates with additional 
+technologies such as [Allo-Media](https://www.allo-media.net/) and [Voxygen](https://www.voxygen.fr/) voice solutions. 
+
+The _AlloCovid_ bot is powered by open source technologies (Tock) and open source itself: its sources are available on 
+repository [`allocovid`](https://github.com/theopenconversationkit/allocovid).
+
+> The source repository also includes the [_Allo-Media connector_](../develop/connectors.md), 
+> technical details about the bot and its [functional specification](https://github.com/Delegation-numerique-en-sante/covid19-algorithme-orientation).
+
+![logo Allo covid](../../img/allocovid.png "Allo covid")
+ 
+* **Name:** _[AlloCovid](https://www.allocovid.com/)_
+* **Date of birth:** launched in spring 2020
+* **Field:** health information and guidance
+* **Channels:** text & voice, by phone, on WhatsApp and Website
+
+### *L'Assistant SNCF*
+
+_[L' Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_ is
+the mobile application for SNCF passengers on Android and iOS, covering both trains and other modes of transport.
+
+> With _L' Assistant_ (the SNCF Assistant), you can plan your itinerary, stay informed in real time, buy your transport tickets
+> directly or book a taxi ride. More features are yet to come.
+
+Accessible via the "microphone" in the mobile application, le SNCF Assistant's conversational bot is built with Tock
+plus the speech-to-text Android and iOS functions.
+
+![img assistant](../../img/assistantmobile.jpg "assistant mobile")
+
+* **Name:** _[L' Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_
+* **Date of birth:** featuring Tock voice function from 2019
+* **Field:** travel & transport (multi-modal route research, etc.)
+* **Channels:** voice, on the SNCF mobile application for Android and iOS
+
+### *Tilien*, the Transilien chatbot
+
+_[Tilien](https://www.facebook.com/botsncftransilien/)_ is the Transilien chatbot on Messenger.
+
+> Designed as a personal and friendly travel companion, it informs you about upcoming departures, the service status,
+> current and future works, itineraries and much more (route plans, timetables, etc.) on the entire Ile-De-France
+> rail network: Metro, RER, Transilien, Tram.
+
+Powered by Tock, the chatbot was available on Facebook Messenger.
+
+![img sncf](../../img/sncf.webp)
+
+* **Name:** _[Tilien](https://www.facebook.com/botsncftransilien/)_
+* **Date of birth:** with Tock from 2018
+* **Field:** transport & assistance (route research, route plans, traffic conditions, etc.)
+* **Channels:** text, on Messenger ([_botsncftransilien_](https://www.facebook.com/botsncftransilien/))

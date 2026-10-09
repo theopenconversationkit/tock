@@ -47,7 +47,7 @@ Avec le RAG, le temps de réponse dépend surtout du fournisseur de LLM : ajuste
 
 ## Kubernetes
 
-Le [chart Helm](installation.md#installation-sur-kubernetes) déploie Tock sur Kubernetes. Quelle que soit la méthode
+Le [chart Helm](kubernetes.md) déploie Tock sur Kubernetes. Quelle que soit la méthode
 de déploiement, appliquez les recommandations ci-dessus :
 
 * `tock/build_worker` : 1 réplica, avec la stratégie de mise à jour `Recreate` pour que deux instances ne tournent jamais en même temps

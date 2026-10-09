@@ -73,7 +73,7 @@ and any-language _REST API_ (see [_Bot API_](develop/bot-api.md))
 [Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/),
 [Alcmeon](https://www.alcmeon.com/), OpenAI-compatible clients,
 a Web connector with [React](https://reactjs.org) and [Vue](https://vuejs.org/) kits... (see [channels](channels/index.md))
-* _Cloud_ or _on-premise_ setups, with or without [Docker](https://www.docker.com/), on [Kubernetes](operate/installation.md#installation-on-kubernetes),
+* _Cloud_ or _on-premise_ setups, with or without [Docker](https://www.docker.com/), on [Kubernetes](operate/kubernetes.md),
 _"embedded"_ bots without Internet 
 
 ![RAG answer with its sources, tested in Tock Studio](img/gen-ai/gen-ai-rag-test.png "RAG answer with its sources, tested in Tock Studio")

@@ -74,7 +74,7 @@ et _API_ tous langages (voir [_Bot API_](develop/bot-api.md))
 [Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/),
 [Alcmeon](https://www.alcmeon.com/), clients compatibles OpenAI,
 un connecteur Web avec des kits [React](https://reactjs.org) et [Vue](https://fr.vuejs.org/)... (voir [canaux](channels/index.md))
-* Installation _cloud_ ou _on-premise_, avec ou sans [Docker](https://www.docker.com/), sur [Kubernetes](operate/installation.md#installation-sur-kubernetes),
+* Installation _cloud_ ou _on-premise_, avec ou sans [Docker](https://www.docker.com/), sur [Kubernetes](operate/kubernetes.md),
 même _"embarqué"_ sans Internet 
 
 ![Réponse RAG avec ses sources, testée dans Tock Studio](img/gen-ai/gen-ai-rag-test-fr.png "Réponse RAG avec ses sources, testée dans Tock Studio")

@@ -18,7 +18,7 @@ python --version # Check your python version
 python -m venv .venv # Create a virtual env based on this python version
 source .venv/bin/activate # Activate your virtual env
 pip install -r  requirements.txt # install dependencies
-mkdocs serve # Generate on default port 
+mkdocs serve --livereload # Generate on default port http://127.0.0.1:8000/
 mkdocs serve --dev-addr 127.0.0.1:8182 # To generate the website on the port you want 
 ```
 

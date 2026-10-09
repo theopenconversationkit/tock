@@ -34,8 +34,8 @@ En particulier, la configuration des instances MongoDB doit être revue attentiv
 
 Le dépôt [`tock-helm-chart`](https://github.com/theopenconversationkit/tock-helm-chart) fournit un chart [Helm](https://helm.sh/) qui déploie tous les composants
 Tock sur Kubernetes. Il peut aussi déployer MongoDB, OpenSearch ou PGVector sous forme de sous-charts, ou utiliser des
-bases existantes. Voir son README pour l'installation et les paramètres du chart, et la page [Cloud](cloud.md#kubernetes)
-pour les recommandations sur le nombre d'instances et les sondes.
+bases existantes. Voir [Déployer sur Kubernetes](kubernetes.md) pour l'installation et les principaux paramètres du chart,
+et la page [Cloud](cloud.md#kubernetes) pour les recommandations sur le nombre d'instances et les sondes.
 
 ## Installation sans Docker
 

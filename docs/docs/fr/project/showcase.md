@@ -18,99 +18,26 @@ d'équipes et d'organisations pour créer des bots conversationnels dédiés à 
 Cette page présente différents assistants et produits connus construits avec Tock, 
 dont certains ont été [récompensés](#recompenses) par la communauté.
 
-## Santé
-
-### *AlloCovid*
-
-Le service _[AlloCovid](https://www.allocovid.com/)_ permet d'informer et d'orienter la population sur 
-le Covid-19, reprenant le questionnaire prédéfini par le Ministère de la Santé.
-
-> _IA vocale engagée dans la crise sanitaire_
-
-Ce service conversationnel est le fruit de la collaboration de nombreux experts français, 
-partenaires technologiques et bénévoles. Pour en savoir sur la génèse du projet, l'équipe et les partenaires, le 
-fonctionnement du bot, la presse, etc. 
-rendez-vous sur [www.allocovid.com](https://www.allocovid.com/).
-
-Disponible par téléphone, sur le Web et WhatsApp, _AlloCovid_ est construit autour d'un bot Tock et intègre des solutions complémentaires 
-comme les technologies vocales [Allo-Media](https://www.allo-media.net/) et [Voxygen](https://www.voxygen.fr/). 
-
-Le bot _AlloCovid_ est construit autour de technologies open source (à travers la plateforme Tock), 
-et lui-même open source : les sources du bot sont disponibles sur le dépôt [`allocovid`](https://github.com/theopenconversationkit/allocovid).
-
-> Avec les sources du bot on trouve également celles du [_connecteur Allo-Media_](https://github.com/theopenconversationkit/allocovid), 
-> quelques explications techniques sur le bot et la [spécification fonctionnelle](https://github.com/Delegation-numerique-en-sante/covid19-algorithme-orientation) 
-du questionnaire Covid.
-
-![logo Allo covid](../../img/allocovid.png "Allo covid")
- 
-* **Nom :** _[AlloCovid](https://www.allocovid.com/)_
-* **Date de naissance :** en production au printemps 2020
-* **Domaine :** informations sanitaires et orientation vers les services de santé
-* **Canaux :** texte & voix, par téléphone, sur WhatsApp et site Web
-
 ## Transport & e-commerce
 
-### *OUIbot*, le bot OUI.sncf
+### *SNCF Connect*
 
-_[OUIbot](https://www.oui.sncf/services/assistant)_ est l'assistant conversationnel de OUI.sncf. Disponible depuis 2016 
-sur le réseau social Facebook Messenger, _OUIbot_ s'est construit avec les premières versions de Tock.
+_[SNCF Connect](https://www.sncf-connect.com/)_ est le site et l'application de référence pour organiser, réserver
+et gérer ses trajets en train et dans les autres modes de transport partout en France.
 
-> _Avec OUIbot, réserver un billet de train n'a jamais été aussi simple ! Il vous assiste dans la préparation de vos 
-voyages, permet d'effectuer rapidement et simplement une réservation complète, de la recherche à l'achat (paiement inclus), 
-et vous accompagne durant votre voyage._
+> _Besoin d'aide ? Posez-nous votre question._
 
-Grâce aux nombreux connecteurs Tock, _OUIbot_ répond présent sur de nombreux canaux conversationnels :
- site [www.oui.sncf](https://www.oui.sncf/bot), réseaux sociaux, assistants vocaux, enceintes connectées et même 
- IAffiches avec JCDecaux.
+L'assistant conversationnel de _SNCF Connect_, construit avec Tock, répond aux questions des voyageurs
+(échange et annulation de billets, cartes de réduction, connexion au compte, etc.).
+Il motorise également la barre de recherche du site et des applications.
 
-En 2019, _OUIbot_ accompagne près de 10 000 utilisateurs par jour. Il a été élu _[Best Robot Experience](https://blog-cultures-services.com/2019/07/09/ouibot-de-ouisncf-laureat-prix-best-robot-experience-2019/)_
- pour la deuxième année consécutive.
+![Assistant SNCF Connect](../../img/sncf-connect-bot.png "Assistant SNCF Connect")
 
-![img Best robot experience](../../img/blog.png "Best robot experience")
- 
-* **Nom :** _[OUIbot](https://www.oui.sncf/services/assistant)_
-* **Date de naissance :** en production depuis 2016
-* **Domaine :** distribution, transactionnel (réservations, paiements), alertes & push notifications, relai vers un agent
-* **Canaux :** texte & voix, sur le site Web entreprise, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
-Google Home, Alexa, IAffiches JCDecaux
+![Barre de recherche SNCF Connect](../../img/sncf-connect-search.png "Barre de recherche SNCF Connect")
 
-> Business Chat, Google Assistant / Google Home et Alexa ont depuis été arrêtés ou ne sont plus pris en charge par Tock.
-
-### *L'Assistant SNCF*
-
-_[L'Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_ est
-l'application mobile des voyageurs SNCF sur Android et iOS, couvrant le train mais aussi d'autres modes de transport.
-
-> Avec l’_Assistant SNCF_, vous pouvez calculer votre itinéraire, rester informé en temps réel, acheter directement vos
-> tickets de transport ou encore réserver votre course en VTC. En attendant de nouvelles fonctionnalités à venir.
-
-Accessible via le "microphone" dans l'application mobile, le bot conversationnel de l'_Assistant SNCF_ est construit
-avec Tock et les fonctions _speech-to-text_ Android et iOS.
-
-![img assistant](../../img/assistantmobile.jpg "assistant mobile")
-
-* **Nom :** _[L'Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_
-* **Date de naissance :** en production, fonction vocale Tock depuis 2019
-* **Domaine :** voyage & transport (recherche itinéraires en multi-modal, etc.)
-* **Canaux :** vocal, sur l'application mobile SNCF pour Android et iOS
-
-### *Tilien*, le chatbot Transilien
-
-_[Tilien](https://www.facebook.com/botsncftransilien/)_ est le chatbot Transilien sur Messenger.
-
-> Conçu comme un compagnon de voyage personnel et amical, il informe des prochains départs, l'état du trafic, les travaux
-> en cours et à venir, propose des itinéraires et bien d'autres choses (plans des lignes, fiches horaires, etc.) sur
-> l'ensemble du réseau ferré Ile-De-France : Métro, RER, Transilien, Tram.
-
-Motorisé par Tock, le chatbot vous attend sur Facebook Messenger pour offrir ses services.
-
-![img sncf](../../img/sncf.webp)
-
-* **Nom :** _[Tilien](https://www.facebook.com/botsncftransilien/)_
-* **Date de naissance :** en production, depuis 2018 sur Tock
-* **Domaine :** transport & assistance (recherche itinéraires, plans des lignes, état du trafic, etc.)
-* **Canaux :** texte, sur Messenger ([_botsncftransilien_](https://www.facebook.com/botsncftransilien/))
+* **Nom :** _[SNCF Connect](https://www.sncf-connect.com/)_
+* **Domaine :** voyage & transport, assistance client (FAQ, après-vente, compte client), recherche
+* **Canaux :** texte & voix, sur le site Web [sncf-connect.com](https://www.sncf-connect.com/) et les applications mobiles iOS et Android
 
 ### *Mon Assistant TGV INOUI*
 
@@ -419,3 +346,97 @@ internes ou externes. Si vous avez un doute sur les possibilités de Tock ou la 
 [nous contacter](community.md) pour en parler.
 
 _Quant à vos propres réalisations, n'hésitez pas à les partager ! 🙂_
+
+## Projets passés
+
+Ces assistants ont été construits avec Tock mais ne sont plus en service aujourd'hui.
+
+### *OUIbot*, le bot OUI.sncf
+
+_[OUIbot](https://www.oui.sncf/services/assistant)_ est l'assistant conversationnel de OUI.sncf. Disponible depuis 2016 
+sur le réseau social Facebook Messenger, _OUIbot_ s'est construit avec les premières versions de Tock.
+
+> _Avec OUIbot, réserver un billet de train n'a jamais été aussi simple ! Il vous assiste dans la préparation de vos 
+voyages, permet d'effectuer rapidement et simplement une réservation complète, de la recherche à l'achat (paiement inclus), 
+et vous accompagne durant votre voyage._
+
+Grâce aux nombreux connecteurs Tock, _OUIbot_ répond présent sur de nombreux canaux conversationnels :
+ site [www.oui.sncf](https://www.oui.sncf/bot), réseaux sociaux, assistants vocaux, enceintes connectées et même 
+ IAffiches avec JCDecaux.
+
+En 2019, _OUIbot_ accompagne près de 10 000 utilisateurs par jour. Il a été élu _[Best Robot Experience](https://blog-cultures-services.com/2019/07/09/ouibot-de-ouisncf-laureat-prix-best-robot-experience-2019/)_
+ pour la deuxième année consécutive.
+
+![img Best robot experience](../../img/blog.png "Best robot experience")
+ 
+* **Nom :** _[OUIbot](https://www.oui.sncf/services/assistant)_
+* **Date de naissance :** mis en production en 2016, jusqu'au remplacement de OUI.sncf par [SNCF Connect](#sncf-connect) en 2022
+* **Domaine :** distribution, transactionnel (réservations, paiements), alertes & push notifications, relai vers un agent
+* **Canaux :** texte & voix, sur le site Web entreprise, Messenger, WhatsApp, Business Chat (Messages), Google Assistant, 
+Google Home, Alexa, IAffiches JCDecaux
+
+> Business Chat, Google Assistant / Google Home et Alexa ont depuis été arrêtés ou ne sont plus pris en charge par Tock.
+
+### *AlloCovid*
+
+Le service _[AlloCovid](https://www.allocovid.com/)_ permet d'informer et d'orienter la population sur 
+le Covid-19, reprenant le questionnaire prédéfini par le Ministère de la Santé.
+
+> _IA vocale engagée dans la crise sanitaire_
+
+Ce service conversationnel est le fruit de la collaboration de nombreux experts français, 
+partenaires technologiques et bénévoles. Pour en savoir sur la génèse du projet, l'équipe et les partenaires, le 
+fonctionnement du bot, la presse, etc. 
+rendez-vous sur [www.allocovid.com](https://www.allocovid.com/).
+
+Disponible par téléphone, sur le Web et WhatsApp, _AlloCovid_ est construit autour d'un bot Tock et intègre des solutions complémentaires 
+comme les technologies vocales [Allo-Media](https://www.allo-media.net/) et [Voxygen](https://www.voxygen.fr/). 
+
+Le bot _AlloCovid_ est construit autour de technologies open source (à travers la plateforme Tock), 
+et lui-même open source : les sources du bot sont disponibles sur le dépôt [`allocovid`](https://github.com/theopenconversationkit/allocovid).
+
+> Avec les sources du bot on trouve également celles du [_connecteur Allo-Media_](https://github.com/theopenconversationkit/allocovid), 
+> quelques explications techniques sur le bot et la [spécification fonctionnelle](https://github.com/Delegation-numerique-en-sante/covid19-algorithme-orientation) 
+du questionnaire Covid.
+
+![logo Allo covid](../../img/allocovid.png "Allo covid")
+ 
+* **Nom :** _[AlloCovid](https://www.allocovid.com/)_
+* **Date de naissance :** mis en production au printemps 2020
+* **Domaine :** informations sanitaires et orientation vers les services de santé
+* **Canaux :** texte & voix, par téléphone, sur WhatsApp et site Web
+
+### *L'Assistant SNCF*
+
+_[L'Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_ est
+l'application mobile des voyageurs SNCF sur Android et iOS, couvrant le train mais aussi d'autres modes de transport.
+
+> Avec l’_Assistant SNCF_, vous pouvez calculer votre itinéraire, rester informé en temps réel, acheter directement vos
+> tickets de transport ou encore réserver votre course en VTC. En attendant de nouvelles fonctionnalités à venir.
+
+Accessible via le "microphone" dans l'application mobile, le bot conversationnel de l'_Assistant SNCF_ est construit
+avec Tock et les fonctions _speech-to-text_ Android et iOS.
+
+![img assistant](../../img/assistantmobile.jpg "assistant mobile")
+
+* **Nom :** _[L'Assistant SNCF](https://www.sncf.com/fr/itineraire-reservation/informations-trafic/application-sncf)_
+* **Date de naissance :** fonction vocale Tock à partir de 2019
+* **Domaine :** voyage & transport (recherche itinéraires en multi-modal, etc.)
+* **Canaux :** vocal, sur l'application mobile SNCF pour Android et iOS
+
+### *Tilien*, le chatbot Transilien
+
+_[Tilien](https://www.facebook.com/botsncftransilien/)_ est le chatbot Transilien sur Messenger.
+
+> Conçu comme un compagnon de voyage personnel et amical, il informe des prochains départs, l'état du trafic, les travaux
+> en cours et à venir, propose des itinéraires et bien d'autres choses (plans des lignes, fiches horaires, etc.) sur
+> l'ensemble du réseau ferré Ile-De-France : Métro, RER, Transilien, Tram.
+
+Motorisé par Tock, le chatbot était disponible sur Facebook Messenger.
+
+![img sncf](../../img/sncf.webp)
+
+* **Nom :** _[Tilien](https://www.facebook.com/botsncftransilien/)_
+* **Date de naissance :** sur Tock à partir de 2018
+* **Domaine :** transport & assistance (recherche itinéraires, plans des lignes, état du trafic, etc.)
+* **Canaux :** texte, sur Messenger ([_botsncftransilien_](https://www.facebook.com/botsncftransilien/))
