@@ -1,5 +1,6 @@
 ---
 title: Community
+description: "Join the Tock community: Gitter, news, GitHub, the TOSIT association, the public demo and how to contact us."
 ---
 
 # Community
@@ -72,7 +73,7 @@ an association dedicated to support Open Source and Free Software, as part of it
 
 Several TOSIT members, including SNCF, already use or experiment Tock.
 
-To know more about TOSIT, please visit [http://tosit.fr/](http://tosit.fr/)
+To know more about TOSIT, please visit [http://tosit.fr/](https://tosit.fr/)
 
 ![logo tosit](../../img/tosit.png "tosit"){style="width:100px;"}
 

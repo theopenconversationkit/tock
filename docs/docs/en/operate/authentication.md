@@ -1,5 +1,6 @@
 ---
 title: Tock Studio authentication
+description: "Configure the Tock Studio authentication: properties, OAuth2 (Keycloak, GitHub) or CAS."
 ---
 
 # _Tock Studio_ authentication

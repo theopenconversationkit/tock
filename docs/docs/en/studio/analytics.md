@@ -1,5 +1,6 @@
 ---
 title: Analytics
+description: "Analyze the use of a bot in Tock Studio: activity, behavior, flows, users, dialogs and satisfaction."
 ---
 
 # The *Analytics* menu

@@ -1,5 +1,6 @@
 ---
 title: Troubleshooting
+description: "Common problems of a Tock platform and their usual causes."
 ---
 
 # Troubleshooting

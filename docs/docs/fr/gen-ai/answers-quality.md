@@ -1,5 +1,6 @@
 ---
 title: Qualité des réponses
+description: "Mesurer et améliorer la qualité des réponses du bot, en particulier les réponses générées par le RAG."
 ---
 
 # Le menu _Answers Quality_

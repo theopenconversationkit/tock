@@ -1,5 +1,6 @@
 ---
 title: NLP evaluation
+description: "How the Tock NLP API analyzes a sentence: intent detection, entity evaluation and merge of the results."
 ---
 
 # NLP evaluation

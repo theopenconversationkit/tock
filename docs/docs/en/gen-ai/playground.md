@@ -1,5 +1,6 @@
 ---
 title: Playground
+description: "Send prompts directly to an LLM to try a model or a prompt before changing the bot configuration."
 ---
 
 # The _Playground_ menu

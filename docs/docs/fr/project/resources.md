@@ -1,5 +1,6 @@
 ---
 title: Ressources
+description: "Présentations, vidéos et articles sur Tock."
 ---
 
 # Ressources Tock

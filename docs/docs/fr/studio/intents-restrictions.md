@@ -1,5 +1,6 @@
 ---
 title: Restriction d’intentions
+description: "Restreindre les intentions détectables à une étape donnée d'une conversation."
 ---
 
 # Restreindre la portée des intentions

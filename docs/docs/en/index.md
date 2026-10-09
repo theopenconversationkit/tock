@@ -1,5 +1,6 @@
 ---
 title: Tock
+description: "Tock, The Open Conversation Kit: an open source platform to build conversational assistants with RAG and controlled journeys."
 ---
 
 # Welcome to Tock - open conversational platform, with or without generative AI
@@ -85,7 +86,7 @@ Tock components can run as _containers_ (provided implementation for [Docker](ht
 The application runs on [JVM](https://en.wikipedia.org/wiki/Java_virtual_machine) platforms. 
 The reference language is [Kotlin](https://kotlinlang.org/), but other programming languages can be leveraged through the available APIs.
  
-On the server side, Tock relies on [Vert.x](http://vertx.io/) and [MongoDB](https://www.mongodb.com ) <sup>(alt. [DocumentDB](https://aws.amazon.com/documentdb/))</sup>. 
+On the server side, Tock relies on [Vert.x](https://vertx.io/) and [MongoDB](https://www.mongodb.com ) <sup>(alt. [DocumentDB](https://aws.amazon.com/documentdb/))</sup>. 
 Various _NLU_ libraries and algorithms can be used, but Tock does not depend on them directly.
 
 _Tock Studio_ graphical user interfaces are built with [Angular](https://angular.dev/) in [Typescript](https://www.typescriptlang.org/).

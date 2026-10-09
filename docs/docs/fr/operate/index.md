@@ -1,5 +1,6 @@
 ---
 title: Exploiter
+description: "Installer, configurer et exploiter une plateforme Tock : architecture, déploiement, sécurité et supervision."
 ---
 
 # Exploiter une plateforme Tock

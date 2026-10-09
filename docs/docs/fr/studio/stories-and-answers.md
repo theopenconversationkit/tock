@@ -1,5 +1,6 @@
 ---
 title: Stories & Answers
+description: "Construire les parcours (stories) d'un bot et leurs réponses dans Tock Studio."
 ---
 
 # Le menu _Stories & Answers_

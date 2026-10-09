@@ -1,5 +1,6 @@
 ---
 title: Bot API
+description: "Développer un bot dans n'importe quel langage avec la Bot API de Tock, par webhook ou WebSocket."
 ---
 
 # Développer en mode Tock Bot API

@@ -1,5 +1,6 @@
 ---
 title: Google Chat
+description: "Connecter un bot Tock à Google Chat : configuration, messages pris en charge et boutons de feedback."
 ---
 
 # Connecteur Google Chat

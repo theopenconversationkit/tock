@@ -1,5 +1,6 @@
 ---
 title: Web
+description: "The Web connector HTTP API, to integrate a Tock bot into websites and mobile apps with the React and Vue kits."
 ---
 
 # Web connector

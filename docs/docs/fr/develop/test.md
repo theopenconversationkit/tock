@@ -1,5 +1,6 @@
 ---
 title: Tester
+description: "Tester unitairement les bots et stories Tock avec les extensions de test fournies par Tock."
 ---
 
 # Utiliser le framework de test

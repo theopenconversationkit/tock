@@ -1,5 +1,6 @@
 ---
 title: Alcmeon
+description: "Connect a Tock bot to Alcmeon as a sub-bot, to answer on the messaging channels handled by Alcmeon."
 ---
 
 # Alcmeon connector

@@ -1,5 +1,6 @@
 ---
 title: Stories & Answers
+description: "Build the journeys (stories) of a bot and their answers in Tock Studio."
 ---
 
 # The _Stories & Answers_ menu

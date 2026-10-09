@@ -1,5 +1,6 @@
 ---
 title: Document indexing
+description: "Index documents into the vector store of the RAG with the Tock LLM indexing tools."
 ---
 
 # Document indexing

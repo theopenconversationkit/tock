@@ -1,5 +1,6 @@
 ---
 title: Gen AI
+description: "Construire des assistants qui répondent à partir de vos documents avec un LLM en gardant le contrôle, avec l'IA générative de Tock."
 ---
 
 # Gen AI

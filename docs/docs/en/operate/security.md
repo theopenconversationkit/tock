@@ -1,5 +1,6 @@
 ---
 title: Security
+description: "Secure a Tock platform: Tock Studio users and roles, data encryption, anonymization, retention and deletion of user data."
 ---
 # Security
 

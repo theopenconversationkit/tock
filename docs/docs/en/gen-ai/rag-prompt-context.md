@@ -1,5 +1,6 @@
 ---
 title: Rag prompt context
+description: "Inject covered topics, excluded topics and a business lexicon into the RAG answering prompt."
 ---
 
 # The _Rag prompt context_ menu

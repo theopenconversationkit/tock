@@ -1,5 +1,6 @@
 ---
 title: Configuration
+description: "Créer et configurer des applications et connecteurs Tock, et administrer les bots dans Tock Studio."
 ---
 
 # Le menu *Settings*

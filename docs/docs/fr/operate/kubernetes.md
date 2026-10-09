@@ -1,5 +1,6 @@
 ---
 title: Kubernetes
+description: "Déployer une plateforme Tock complète sur Kubernetes avec le chart Helm de Tock."
 ---
 # Déployer sur Kubernetes
 

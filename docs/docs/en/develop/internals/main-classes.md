@@ -1,5 +1,6 @@
 ---
 title: Main classes
+description: "The main classes of the Tock bot engine: user timeline, dialog, actions and stories."
 ---
 
 # Main classes

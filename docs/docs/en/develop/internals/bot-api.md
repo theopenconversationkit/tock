@@ -1,5 +1,6 @@
 ---
 title: Bot API internals
+description: "How the Tock Bot API works internally, between the bot engine and the bots it calls."
 ---
 
 # BotApi

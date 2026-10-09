@@ -1,5 +1,6 @@
 ---
 title: Packages
+description: "Overview of the Tock source repository: modules of the bot platform, NLU, Gen AI and documentation."
 ---
 
 # Tock packages
@@ -69,7 +70,7 @@ title: Packages
 │   ├── toolkit-base: methods to install a bot from code and base IoC ("Bot Toolkit - to build chatbots with ease"), without connectors
 │   └── xray: Xray automated test plugin, usable with Jira
 ```
-## Docs and dokka: Tock documentation
+## Docs: Tock documentation
 ```
 ├── docs: this documentation (MkDocs)
 │   ├── docs
@@ -77,7 +78,6 @@ title: Packages
 │   │   ├── fr: French pages
 │   │   └── img: images
 │   └── hooks: MkDocs build hooks (API files copy, redirects, variables...)
-├── dokka: KDoc generation of the Kotlin framework with Dokka
 ```
 ## Gen AI (tock-gen-ai): generative AI
 ```

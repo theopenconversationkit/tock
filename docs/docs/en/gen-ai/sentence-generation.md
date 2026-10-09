@@ -1,5 +1,6 @@
 ---
 title: Sentence generation settings
+description: "Generate training sentences with an LLM to enrich the NLU model of FAQ bots."
 ---
 
 # The _Sentence generation settings_ menu

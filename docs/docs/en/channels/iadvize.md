@@ -1,5 +1,6 @@
 ---
 title: iAdvize
+description: "Connect a Tock bot to iAdvize with its bot API, and hand the conversation over to human agents."
 ---
 
 # iAdvize connector

@@ -1,5 +1,6 @@
 ---
 title: Premier bot en Kotlin
+description: "Programmer vos premiers parcours Tock en Kotlin, connectés à une plateforme Tock Studio."
 ---
 
 # Programmer des parcours en Kotlin

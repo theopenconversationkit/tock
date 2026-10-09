@@ -1,5 +1,6 @@
 ---
 title: Tock Studio
+description: "Tock Studio, the interface to configure the Gen AI features, write stories and answers, and train and follow the bots."
 ---
 
 # Tock Studio

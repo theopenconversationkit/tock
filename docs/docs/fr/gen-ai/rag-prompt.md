@@ -1,5 +1,6 @@
 ---
 title: Prompt RAG
+description: "Écrire et ajuster le prompt de réponse d'un bot RAG Tock, étape par étape."
 ---
 
 # Le prompt RAG

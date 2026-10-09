@@ -1,5 +1,6 @@
 ---
 title: Compressor settings
+description: "Configure a document compressor (reranker) to keep only the most relevant documents for the LLM."
 ---
 
 # The _Compressor settings_ menu

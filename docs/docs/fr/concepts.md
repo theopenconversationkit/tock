@@ -1,5 +1,6 @@
 ---
 title: Concepts
+description: "Les principales notions de Tock : applications, connecteurs, intentions, entités, stories, et le vocabulaire de l'IA générative."
 ---
 
 # Concepts conversationnels pour Tock
@@ -174,31 +175,19 @@ appelle les fournisseurs de LLM, d'embeddings, de bases vectorielles et d'observ
 
 ## Termes & correspondances
 
-Les tableaux ci-dessous proposent des correspondances entre les termes utilisés dans Tock et d'autres 
+Le tableau ci-dessous propose des correspondances approximatives entre les termes utilisés dans Tock et d'autres
 solutions conversationnelles :
 
-| Tock             | DialogFlow           | Alexa               | Watson                |
-|------------------|----------------------|---------------------|-----------------------|
-| Intent           | Intent               | Intent              | Intent                |
-| Entity           | Entity               | Entity / Slot Value | Entity                |
-| Sentence         | Query                | Utterance / Slot    | Message               |
-| Story            | Context              |                     | Dialog / Node         |
-| Builtin Story    | Fulfillment          | Request Handler     | Webhook               |
-| Connector        | Integration          |                     | Integration / Channel |
-| Configuration    |                      |                     |                       |
-| Application      | Project / Agent      | Skill               | Skill / Assistant     |
-
-
-| Tock             | RASA                | DYDU _(Do You Dream Up)_ | Clevy               |
-|------------------|---------------------|--------------------------|---------------------|
-| Intent           | Intent              | Reword                   | Question            |
-| Entity           | Entity              | Group                    |                     |
-| Sentence         | User input          | Sentence                 | Reformulation       |
-| Story            | Story               | Knowledge                | Knowledge           |
-| Builtin Story    |                     |                          |                     |
-| Connector        |                     | Channel                  | Channel integration |
-| Configuration    |                     | Space                    |                     |
-| Application      | Domain              | Bot                      |                     |
+| Tock | Dialogflow CX | Amazon Lex V2 | IBM watsonx Assistant | Microsoft Copilot Studio | Rasa |
+|---|---|---|---|---|---|
+| Application | Agent | Bot | Assistant | Agent | Assistant |
+| Connecteur | Integration | Channel integration | Integration / Channel | Channel | Channel connector |
+| Intention | Intent | Intent | Intent | Topic trigger | Intent |
+| Entité | Entity type | Slot type / Slot | Entity | Entity | Entity / Slot |
+| Phrase | Training phrase | Sample utterance | User example | Trigger phrase | Training example |
+| Story | Flow / Page | Intent (avec ses slots) | Action | Topic | Flow / Story |
+| Story programmée en Kotlin | Webhook | Lambda function | Custom extension | Power Automate flow | Custom action |
+| RAG | Data store agent | `AMAZON.QnAIntent` | Conversational search | Knowledge sources | Enterprise Search |
 
 > La documentation des [connecteurs Tock](channels/index.md) donne également la correspondance avec d'autres termes propres à 
 > tel ou tel canal.

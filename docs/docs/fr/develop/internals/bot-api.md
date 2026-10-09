@@ -1,5 +1,6 @@
 ---
 title: Fonctionnement du Bot API
+description: "Le fonctionnement interne de la Bot API de Tock, entre le moteur et les bots qu'il appelle."
 ---
 
 # BotApi

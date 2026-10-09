@@ -1,5 +1,6 @@
 ---
 title: Cloud & Haute disponibilité
+description: "Déployer et héberger des plateformes et bots Tock sur des clouds privés ou publics, en haute disponibilité."
 ---
 
 # Cloud & Haute disponibilité
