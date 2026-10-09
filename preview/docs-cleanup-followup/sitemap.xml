@@ -1,0 +1,1249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>Noneindex.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneindex.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/index.html"/>
+    </url>
+    <url>
+        <loc>Noneconcepts.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneconcepts.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/concepts.html"/>
+    </url>
+    <url>
+        <loc>Nonechannels/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/index.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/index.html"/>
+    </url>
+    <url>
+        <loc>Nonechannels/alcmeon.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/alcmeon.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/alcmeon.html"/>
+    </url>
+    <url>
+        <loc>Nonechannels/google-chat.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/google-chat.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/google-chat.html"/>
+    </url>
+    <url>
+        <loc>Nonechannels/iadvize.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/iadvize.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/iadvize.html"/>
+    </url>
+    <url>
+        <loc>Nonechannels/mattermost.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/mattermost.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/mattermost.html"/>
+    </url>
+    <url>
+        <loc>Nonechannels/messenger.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/messenger.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/messenger.html"/>
+    </url>
+    <url>
+        <loc>Nonechannels/openai.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/openai.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/openai.html"/>
+    </url>
+    <url>
+        <loc>Nonechannels/slack.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/slack.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/slack.html"/>
+    </url>
+    <url>
+        <loc>Nonechannels/teams.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/teams.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/teams.html"/>
+    </url>
+    <url>
+        <loc>Nonechannels/web.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/web.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/web.html"/>
+    </url>
+    <url>
+        <loc>Nonechannels/whatsapp.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/whatsapp.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/whatsapp.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/index.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/index.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/api.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/api.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/api.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/bot-api.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/bot-api.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/bot-api.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/connectors.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/connectors.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/connectors.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/coroutine-stories.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/coroutine-stories.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/coroutine-stories.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/examples.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/examples.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/examples.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/i18n.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/i18n.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/i18n.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/kotlin-bot.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/kotlin-bot.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/kotlin-bot.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/test.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/test.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/test.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/internals/bot-api.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/bot-api.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/bot-api.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/internals/collections.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/collections.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/collections.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/internals/main-classes.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/main-classes.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/main-classes.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/internals/packages.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/packages.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/packages.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/internals/nlp/evaluation.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/nlp/evaluation.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/nlp/evaluation.html"/>
+    </url>
+    <url>
+        <loc>Nonedevelop/internals/nlp/models-and-entity-models.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/nlp/models-and-entity-models.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/nlp/models-and-entity-models.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/index.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/index.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/answers-quality.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/answers-quality.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/answers-quality.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/compressor.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/compressor.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/compressor.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/how-it-works.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/how-it-works.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/how-it-works.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/improve.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/improve.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/improve.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/indexing.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/indexing.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/indexing.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/observability.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/observability.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/observability.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/orchestrator-api.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/orchestrator-api.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/orchestrator-api.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/playground.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/playground.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/playground.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/rag-exclusion.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag-exclusion.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag-exclusion.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/rag-prompt-context.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag-prompt-context.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag-prompt-context.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/rag-prompt-reference.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag-prompt-reference.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag-prompt-reference.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/rag-prompt.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag-prompt.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag-prompt.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/rag.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/sentence-generation.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/sentence-generation.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/sentence-generation.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/vector-store-inspection.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/vector-store-inspection.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/vector-store-inspection.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/vector-store.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/vector-store.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/vector-store.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/providers/llm-embedding.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/providers/llm-embedding.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/providers/llm-embedding.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/providers/observability.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/providers/observability.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/providers/observability.html"/>
+    </url>
+    <url>
+        <loc>Nonegen-ai/providers/vector-store.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/providers/vector-store.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/providers/vector-store.html"/>
+    </url>
+    <url>
+        <loc>Nonegetting-started/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/index.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/index.html"/>
+    </url>
+    <url>
+        <loc>Nonegetting-started/first-bot-kotlin.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/first-bot-kotlin.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/first-bot-kotlin.html"/>
+    </url>
+    <url>
+        <loc>Nonegetting-started/first-bot-studio.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/first-bot-studio.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/first-bot-studio.html"/>
+    </url>
+    <url>
+        <loc>Nonegetting-started/rag-aws.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/rag-aws.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/rag-aws.html"/>
+    </url>
+    <url>
+        <loc>Nonegetting-started/rag-tutorial.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/rag-tutorial.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/rag-tutorial.html"/>
+    </url>
+    <url>
+        <loc>Nonegetting-started/run-platform.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/run-platform.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/run-platform.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/index.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/index.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/architecture.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/architecture.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/architecture.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/authentication.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/authentication.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/authentication.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/cloud.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/cloud.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/cloud.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/configuration.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/configuration.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/configuration.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/installation.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/installation.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/installation.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/kubernetes.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/kubernetes.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/kubernetes.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/security.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/security.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/security.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/supervision.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/supervision.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/supervision.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/troubleshooting.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/troubleshooting.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/troubleshooting.html"/>
+    </url>
+    <url>
+        <loc>Noneoperate/upgrade.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/upgrade.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/upgrade.html"/>
+    </url>
+    <url>
+        <loc>Noneproject/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/index.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/index.html"/>
+    </url>
+    <url>
+        <loc>Noneproject/changelog.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/changelog.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/changelog.html"/>
+    </url>
+    <url>
+        <loc>Noneproject/community.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/community.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/community.html"/>
+    </url>
+    <url>
+        <loc>Noneproject/contribute.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/contribute.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/contribute.html"/>
+    </url>
+    <url>
+        <loc>Noneproject/resources.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/resources.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/resources.html"/>
+    </url>
+    <url>
+        <loc>Noneproject/showcase.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/showcase.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/showcase.html"/>
+    </url>
+    <url>
+        <loc>Noneproject/why.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/why.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/why.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/index.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/index.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/analytics.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/analytics.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/analytics.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/build-model.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/build-model.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/build-model.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/configuration.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/configuration.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/configuration.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/custom-metrics.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/custom-metrics.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/custom-metrics.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/dashboard.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/dashboard.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/dashboard.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/entities.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/entities.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/entities.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/faq.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/faq.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/faq.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/general.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/general.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/general.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/i18n.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/i18n.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/i18n.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/intents-restrictions.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/intents-restrictions.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/intents-restrictions.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/intents.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/intents.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/intents.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/model-quality.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/model-quality.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/model-quality.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/nlu.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/nlu.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/nlu.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/stories-and-answers.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/stories-and-answers.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/stories-and-answers.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/synchronization.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/synchronization.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/synchronization.html"/>
+    </url>
+    <url>
+        <loc>Nonestudio/test.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/test.html"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/test.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneindex.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/concepts.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/concepts.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneconcepts.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/channels/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/index.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/channels/alcmeon.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/alcmeon.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/alcmeon.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/channels/google-chat.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/google-chat.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/google-chat.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/channels/iadvize.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/iadvize.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/iadvize.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/channels/mattermost.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/mattermost.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/mattermost.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/channels/messenger.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/messenger.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/messenger.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/channels/openai.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/openai.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/openai.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/channels/slack.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/slack.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/slack.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/channels/teams.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/teams.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/teams.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/channels/web.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/web.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/web.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/channels/whatsapp.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/channels/whatsapp.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonechannels/whatsapp.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/index.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/api.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/api.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/api.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/bot-api.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/bot-api.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/bot-api.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/connectors.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/connectors.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/connectors.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/coroutine-stories.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/coroutine-stories.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/coroutine-stories.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/examples.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/examples.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/examples.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/i18n.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/i18n.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/i18n.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/kotlin-bot.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/kotlin-bot.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/kotlin-bot.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/test.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/test.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/test.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/internals/bot-api.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/bot-api.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/bot-api.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/internals/collections.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/collections.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/collections.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/internals/main-classes.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/main-classes.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/main-classes.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/internals/packages.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/packages.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/packages.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/internals/nlp/evaluation.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/nlp/evaluation.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/nlp/evaluation.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/develop/internals/nlp/models-and-entity-models.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/develop/internals/nlp/models-and-entity-models.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonedevelop/internals/nlp/models-and-entity-models.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/index.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/answers-quality.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/answers-quality.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/answers-quality.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/compressor.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/compressor.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/compressor.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/how-it-works.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/how-it-works.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/how-it-works.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/improve.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/improve.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/improve.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/indexing.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/indexing.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/indexing.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/observability.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/observability.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/observability.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/orchestrator-api.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/orchestrator-api.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/orchestrator-api.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/playground.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/playground.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/playground.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/rag-exclusion.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag-exclusion.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag-exclusion.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/rag-prompt-context.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag-prompt-context.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag-prompt-context.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/rag-prompt-reference.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag-prompt-reference.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag-prompt-reference.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/rag-prompt.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag-prompt.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag-prompt.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/rag.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/rag.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/rag.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/sentence-generation.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/sentence-generation.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/sentence-generation.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/vector-store-inspection.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/vector-store-inspection.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/vector-store-inspection.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/vector-store.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/vector-store.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/vector-store.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/providers/llm-embedding.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/providers/llm-embedding.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/providers/llm-embedding.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/providers/observability.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/providers/observability.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/providers/observability.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/gen-ai/providers/vector-store.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/gen-ai/providers/vector-store.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegen-ai/providers/vector-store.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/getting-started/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/index.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/getting-started/first-bot-kotlin.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/first-bot-kotlin.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/first-bot-kotlin.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/getting-started/first-bot-studio.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/first-bot-studio.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/first-bot-studio.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/getting-started/rag-aws.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/rag-aws.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/rag-aws.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/getting-started/rag-tutorial.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/rag-tutorial.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/rag-tutorial.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/getting-started/run-platform.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/getting-started/run-platform.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting-started/run-platform.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/index.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/architecture.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/architecture.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/architecture.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/authentication.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/authentication.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/authentication.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/cloud.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/cloud.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/cloud.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/configuration.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/configuration.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/configuration.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/installation.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/installation.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/installation.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/kubernetes.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/kubernetes.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/kubernetes.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/security.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/security.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/security.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/supervision.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/supervision.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/supervision.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/troubleshooting.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/troubleshooting.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/troubleshooting.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/operate/upgrade.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/operate/upgrade.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneoperate/upgrade.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/project/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/index.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/project/changelog.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/changelog.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/changelog.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/project/community.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/community.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/community.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/project/contribute.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/contribute.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/contribute.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/project/resources.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/resources.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/resources.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/project/showcase.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/showcase.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/showcase.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/project/why.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/project/why.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneproject/why.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/index.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/index.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/analytics.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/analytics.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/analytics.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/build-model.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/build-model.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/build-model.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/configuration.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/configuration.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/configuration.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/custom-metrics.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/custom-metrics.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/custom-metrics.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/dashboard.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/dashboard.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/dashboard.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/entities.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/entities.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/entities.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/faq.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/faq.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/faq.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/general.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/general.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/general.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/i18n.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/i18n.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/i18n.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/intents-restrictions.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/intents-restrictions.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/intents-restrictions.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/intents.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/intents.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/intents.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/model-quality.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/model-quality.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/model-quality.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/nlu.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/nlu.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/nlu.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/stories-and-answers.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/stories-and-answers.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/stories-and-answers.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/synchronization.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/synchronization.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/synchronization.html"/>
+    </url>
+    <url>
+        <loc>Nonefr/studio/test.html</loc>
+        <lastmod>2026-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="Nonefr/studio/test.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonestudio/test.html"/>
+    </url>
+</urlset>
