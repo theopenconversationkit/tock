@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="fr" class="no-js">
+<html lang="en" class="no-js">
   <head><meta name="robots" content="noindex, nofollow">
     
       <meta charset="utf-8">
@@ -9,32 +9,32 @@
       
       
       
-        <link rel="prev" href="i18n.html">
+        <link rel="prev" href="installation.html">
       
       
-        <link rel="next" href="intents.html">
+        <link rel="next" href="configuration.html">
       
       
         
-          <link rel="alternate" href="../../studio/nlu.html" hreflang="en">
+          <link rel="alternate" href="kubernetes.html" hreflang="en">
         
-          <link rel="alternate" href="nlu.html" hreflang="fr">
+          <link rel="alternate" href="../fr/operate/kubernetes.html" hreflang="fr">
         
       
       
-      <link rel="icon" href="../../img/favicon.ico">
+      <link rel="icon" href="../img/favicon.ico">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>NLU - Tock Documentation</title>
+        <title>Kubernetes - Tock Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -53,7 +53,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,8 +78,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#le-menu-language-understanding" class="md-skip">
-          Aller au contenu
+        <a href="#deploy-on-kubernetes" class="md-skip">
+          Skip to content
         </a>
       
     </div>
@@ -91,10 +91,10 @@
       
 
 <header class="md-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="En-tête">
+  <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../index.html" title="Tock Documentation" class="md-header__button md-logo" aria-label="Tock Documentation" data-md-component="logo">
       
-  <img src="../../img/logo-white.svg" alt="logo">
+  <img src="../img/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              NLU
+              Kubernetes
             
           </span>
         </div>
@@ -151,20 +151,20 @@
       <div class="md-header__option">
   <div class="md-select">
     
-    <button class="md-header__button md-icon" aria-label="Sélectionner la langue">
+    <button class="md-header__button md-icon" aria-label="Select language">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
     </button>
     <div class="md-select__inner">
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="../../studio/nlu.html" hreflang="en" class="md-select__link">
+            <a href="kubernetes.html" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
         
           <li class="md-select__item">
-            <a href="nlu.html" hreflang="fr" class="md-select__link">
+            <a href="../fr/operate/kubernetes.html" hreflang="fr" class="md-select__link">
               Français
             </a>
           </li>
@@ -185,16 +185,16 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="Recherche">
+      <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -205,7 +205,7 @@
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            Initialisation de la recherche
+            Initializing search
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -217,7 +217,7 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/theopenconversationkit/tock" title="Aller au dépôt" class="md-source" data-md-component="source">
+        <a href="https://github.com/theopenconversationkit/tock" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
@@ -238,7 +238,7 @@
         
           
             
-<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
   <div class="md-grid">
     <ul class="md-tabs__list">
       
@@ -254,7 +254,7 @@
   
     
   
-  Accueil
+  Home
 
       </a>
     </li>
@@ -275,7 +275,7 @@
   
     
   
-  Démarrer
+  Getting started
 
         </a>
       </li>
@@ -297,7 +297,7 @@
   
     
   
-  IA générative
+  Gen AI
 
         </a>
       </li>
@@ -309,13 +309,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="index.html" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../studio/index.html" class="md-tabs__link">
           
   
   
@@ -343,7 +341,7 @@
   
     
   
-  Canaux
+  Channels
 
         </a>
       </li>
@@ -365,7 +363,7 @@
   
     
   
-  Développer
+  Develop
 
         </a>
       </li>
@@ -377,17 +375,19 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../operate/architecture.html" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="architecture.html" class="md-tabs__link">
           
   
   
     
   
-  Exploiter
+  Operate
 
         </a>
       </li>
@@ -409,7 +409,7 @@
   
     
   
-  Projet
+  Project
 
         </a>
       </li>
@@ -441,14 +441,14 @@
   <label class="md-nav__title" for="__drawer">
     <a href="../index.html" title="Tock Documentation" class="md-nav__button md-logo" aria-label="Tock Documentation" data-md-component="logo">
       
-  <img src="../../img/logo-white.svg" alt="logo">
+  <img src="../img/logo-white.svg" alt="logo">
 
     </a>
     Tock Documentation
   </label>
   
     <div class="md-nav__source">
-      <a href="https://github.com/theopenconversationkit/tock" title="Aller au dépôt" class="md-source" data-md-component="source">
+      <a href="https://github.com/theopenconversationkit/tock" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
@@ -475,7 +475,7 @@
   <span class="md-ellipsis">
     
   
-    Accueil
+    Home
   
 
     
@@ -537,7 +537,7 @@
   <span class="md-ellipsis">
     
   
-    Démarrer
+    Getting started
   
 
     
@@ -559,7 +559,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Démarrer
+    Getting started
   
 
           </label>
@@ -581,7 +581,7 @@
   <span class="md-ellipsis">
     
   
-    RAG sur la documentation Tock
+    RAG on the Tock documentation
   
 
     
@@ -609,7 +609,7 @@
   <span class="md-ellipsis">
     
   
-    RAG sur AWS
+    RAG on AWS
   
 
     
@@ -637,7 +637,7 @@
   <span class="md-ellipsis">
     
   
-    Déployer une plateforme Tock
+    Run a Tock platform
   
 
     
@@ -665,7 +665,7 @@
   <span class="md-ellipsis">
     
   
-    Premier bot avec Tock Studio
+    First bot with Tock Studio
   
 
     
@@ -693,7 +693,7 @@
   <span class="md-ellipsis">
     
   
-    Premier bot en Kotlin
+    First bot in Kotlin
   
 
     
@@ -793,7 +793,7 @@
   <span class="md-ellipsis">
     
   
-    IA générative
+    Gen AI
   
 
     
@@ -815,7 +815,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    IA générative
+    Gen AI
   
 
           </label>
@@ -837,7 +837,7 @@
   <span class="md-ellipsis">
     
   
-    Comment le bot répond
+    How the bot answers
   
 
     
@@ -889,7 +889,7 @@
   <span class="md-ellipsis">
     
   
-    Base de connaissances
+    Knowledge base
   
 
     
@@ -905,7 +905,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Base de connaissances
+    Knowledge base
   
 
           </label>
@@ -925,7 +925,7 @@
   <span class="md-ellipsis">
     
   
-    Indexation des documents
+    Document indexing
   
 
     
@@ -981,7 +981,7 @@
   <span class="md-ellipsis">
     
   
-    Gen AI - Inspection de la base vectorielle
+    Gen AI - Vector store inspection
   
 
     
@@ -1045,7 +1045,7 @@
   <span class="md-ellipsis">
     
   
-    Génération des réponses
+    Answer generation
   
 
     
@@ -1061,7 +1061,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Génération des réponses
+    Answer generation
   
 
           </label>
@@ -1109,7 +1109,7 @@
   <span class="md-ellipsis">
     
   
-    Prompt RAG
+    RAG prompt
   
 
     
@@ -1255,7 +1255,7 @@
   <span class="md-ellipsis">
     
   
-    Qualité et amélioration
+    Quality and improvement
   
 
     
@@ -1271,7 +1271,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Qualité et amélioration
+    Quality and improvement
   
 
           </label>
@@ -1291,7 +1291,7 @@
   <span class="md-ellipsis">
     
   
-    Améliorer les réponses
+    Improving the answers
   
 
     
@@ -1375,7 +1375,7 @@
   <span class="md-ellipsis">
     
   
-    Qualité des réponses
+    Answers Quality
   
 
     
@@ -1431,7 +1431,7 @@
   <span class="md-ellipsis">
     
   
-    Enrichir le modèle NLU
+    Enriching the NLU model
   
 
     
@@ -1447,7 +1447,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Enrichir le modèle NLU
+    Enriching the NLU model
   
 
           </label>
@@ -1527,7 +1527,7 @@
   <span class="md-ellipsis">
     
   
-    Fournisseurs
+    Providers
   
 
     
@@ -1543,7 +1543,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Fournisseurs
+    Providers
   
 
           </label>
@@ -1563,7 +1563,7 @@
   <span class="md-ellipsis">
     
   
-    Fournisseurs de LLM et d'embeddings
+    LLM and Embedding model providers
   
 
     
@@ -1591,7 +1591,7 @@
   <span class="md-ellipsis">
     
   
-    Fournisseurs de bases vectorielles
+    Vector store providers
   
 
     
@@ -1619,7 +1619,7 @@
   <span class="md-ellipsis">
     
   
-    Fournisseurs d'observabilité des LLMs
+    LLM observability providers
   
 
     
@@ -1655,7 +1655,7 @@
   <span class="md-ellipsis">
     
   
-    API de l'orchestrateur Gen AI
+    Gen AI Orchestrator API
   
 
     
@@ -1680,8 +1680,6 @@
       
   
   
-    
-  
   
   
     
@@ -1709,23 +1707,20 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="index.html" class="md-nav__link ">
+            <a href="../studio/index.html" class="md-nav__link ">
               
   
   
@@ -1743,13 +1738,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1769,14 +1764,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dashboard.html" class="md-nav__link">
+      <a href="../studio/dashboard.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Tableau de bord
+    Dashboard
   
 
     
@@ -1797,14 +1792,14 @@
   
   
     <li class="md-nav__item">
-      <a href="general.html" class="md-nav__link">
+      <a href="../studio/general.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    L'interface Tock Studio
+    The Tock Studio interface
   
 
     
@@ -1839,27 +1834,24 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Stories et réponses
+    Stories and answers
   
 
     
@@ -1875,7 +1867,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Stories et réponses
+    Stories and answers
   
 
           </label>
@@ -1888,7 +1880,7 @@
   
   
     <li class="md-nav__item">
-      <a href="stories-and-answers.html" class="md-nav__link">
+      <a href="../studio/stories-and-answers.html" class="md-nav__link">
         
   
   
@@ -1916,7 +1908,7 @@
   
   
     <li class="md-nav__item">
-      <a href="faq.html" class="md-nav__link">
+      <a href="../studio/faq.html" class="md-nav__link">
         
   
   
@@ -1944,7 +1936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="i18n.html" class="md-nav__link">
+      <a href="../studio/i18n.html" class="md-nav__link">
         
   
   
@@ -1977,10 +1969,8 @@
                 
   
   
-    
   
   
-  
     
     
       
@@ -2001,28 +1991,25 @@
     
       
       
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
         
           
-          
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Compréhension du langage
+    Language understanding
   
 
     
@@ -2033,12 +2020,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_5">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Compréhension du langage
+    Language understanding
   
 
           </label>
@@ -2048,37 +2035,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    NLU
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="nlu.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../studio/nlu.html" class="md-nav__link">
         
   
   
@@ -2094,103 +2054,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table des matières
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#longlet-new-sentence" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        L'onglet New sentence
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#longlet-inbox-sentences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        L'onglet Inbox sentences
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#longlet-search-sentences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        L'onglet Search sentences
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#longlet-unknown-sentences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        L'onglet Unknown sentences
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#longlet-intents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        L'onglet Intents
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#longlet-entities" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        L'onglet Entities
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#longlet-sentences-logs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        L'onglet Sentences logs
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2203,14 +2066,14 @@
   
   
     <li class="md-nav__item">
-      <a href="intents.html" class="md-nav__link">
+      <a href="../studio/intents.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Intentions
+    Intents
   
 
     
@@ -2231,14 +2094,14 @@
   
   
     <li class="md-nav__item">
-      <a href="entities.html" class="md-nav__link">
+      <a href="../studio/entities.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Entités
+    Entities
   
 
     
@@ -2259,14 +2122,14 @@
   
   
     <li class="md-nav__item">
-      <a href="build-model.html" class="md-nav__link">
+      <a href="../studio/build-model.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Modèles conversationnels
+    Conversational models
   
 
     
@@ -2287,7 +2150,7 @@
   
   
     <li class="md-nav__item">
-      <a href="model-quality.html" class="md-nav__link">
+      <a href="../studio/model-quality.html" class="md-nav__link">
         
   
   
@@ -2315,14 +2178,14 @@
   
   
     <li class="md-nav__item">
-      <a href="intents-restrictions.html" class="md-nav__link">
+      <a href="../studio/intents-restrictions.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Restriction d’intentions
+    Intent Restriction
   
 
     
@@ -2351,7 +2214,7 @@
   
   
     <li class="md-nav__item">
-      <a href="test.html" class="md-nav__link">
+      <a href="../studio/test.html" class="md-nav__link">
         
   
   
@@ -2391,27 +2254,24 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" >
         
           
-          <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Pilotage
+    Monitoring
   
 
     
@@ -2427,7 +2287,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Pilotage
+    Monitoring
   
 
           </label>
@@ -2440,7 +2300,7 @@
   
   
     <li class="md-nav__item">
-      <a href="analytics.html" class="md-nav__link">
+      <a href="../studio/analytics.html" class="md-nav__link">
         
   
   
@@ -2468,7 +2328,7 @@
   
   
     <li class="md-nav__item">
-      <a href="custom-metrics.html" class="md-nav__link">
+      <a href="../studio/custom-metrics.html" class="md-nav__link">
         
   
   
@@ -2516,20 +2376,17 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_8" >
         
           
-          <label class="md-nav__link" for="__nav_4_8" id="__nav_4_8_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4_8" id="__nav_4_8_label" tabindex="0">
             
   
   
@@ -2565,7 +2422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration.html" class="md-nav__link">
+      <a href="../studio/configuration.html" class="md-nav__link">
         
   
   
@@ -2593,14 +2450,14 @@
   
   
     <li class="md-nav__item">
-      <a href="synchronization.html" class="md-nav__link">
+      <a href="../studio/synchronization.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Synchronisation
+    Synchronization
   
 
     
@@ -2686,7 +2543,7 @@
   <span class="md-ellipsis">
     
   
-    Canaux
+    Channels
   
 
     
@@ -2708,7 +2565,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Canaux
+    Channels
   
 
           </label>
@@ -2982,7 +2839,7 @@
   <span class="md-ellipsis">
     
   
-    API OpenAI
+    OpenAI API
   
 
     
@@ -3058,7 +2915,7 @@
   <span class="md-ellipsis">
     
   
-    Développer
+    Develop
   
 
     
@@ -3080,7 +2937,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Développer
+    Develop
   
 
           </label>
@@ -3130,7 +2987,7 @@
   <span class="md-ellipsis">
     
   
-    Bot intégré
+    Integrated bot (Kotlin)
   
 
     
@@ -3158,7 +3015,7 @@
   <span class="md-ellipsis">
     
   
-    Stories et coroutines
+    Coroutine stories
   
 
     
@@ -3186,7 +3043,7 @@
   <span class="md-ellipsis">
     
   
-    i18n - développement
+    i18n - development
   
 
     
@@ -3214,7 +3071,7 @@
   <span class="md-ellipsis">
     
   
-    Tester
+    Testing
   
 
     
@@ -3242,7 +3099,7 @@
   <span class="md-ellipsis">
     
   
-    Connecteurs
+    Connectors
   
 
     
@@ -3298,7 +3155,7 @@
   <span class="md-ellipsis">
     
   
-    Exemples
+    Examples
   
 
     
@@ -3354,7 +3211,7 @@
   <span class="md-ellipsis">
     
   
-    Fonctionnement interne
+    Internals
   
 
     
@@ -3370,7 +3227,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Fonctionnement interne
+    Internals
   
 
           </label>
@@ -3418,7 +3275,7 @@
   <span class="md-ellipsis">
     
   
-    Classes principales
+    Main classes
   
 
     
@@ -3446,7 +3303,7 @@
   <span class="md-ellipsis">
     
   
-    Fonctionnement du Bot API
+    Bot API internals
   
 
     
@@ -3474,7 +3331,7 @@
   <span class="md-ellipsis">
     
   
-    Collections MongoDB
+    MongoDB collections
   
 
     
@@ -3560,7 +3417,7 @@
   <span class="md-ellipsis">
     
   
-    Modèles NLP et d'entités
+    NLP and entity models
   
 
     
@@ -3588,7 +3445,7 @@
   <span class="md-ellipsis">
     
   
-    Évaluation NLP
+    NLP evaluation
   
 
     
@@ -3629,8 +3486,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -3656,26 +3515,29 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Exploiter
+    Operate
   
 
     
@@ -3686,12 +3548,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Exploiter
+    Operate
   
 
           </label>
@@ -3704,7 +3566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../operate/architecture.html" class="md-nav__link">
+      <a href="architecture.html" class="md-nav__link">
         
   
   
@@ -3732,7 +3594,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../operate/installation.html" class="md-nav__link">
+      <a href="installation.html" class="md-nav__link">
         
   
   
@@ -3757,10 +3619,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../operate/kubernetes.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="kubernetes.html" class="md-nav__link md-nav__link--active">
         
   
   
@@ -3776,6 +3665,153 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-deployed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is deployed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main parameters
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Main parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ingress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mongodb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MongoDB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vector-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vector store
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enterprise-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enterprise certificates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-without-internet-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment without Internet access
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#production-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Production recommendations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3788,14 +3824,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../operate/configuration.html" class="md-nav__link">
+      <a href="configuration.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Référence de configuration
+    Configuration reference
   
 
     
@@ -3816,14 +3852,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../operate/upgrade.html" class="md-nav__link">
+      <a href="upgrade.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Mettre à jour Tock
+    Upgrading Tock
   
 
     
@@ -3844,14 +3880,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../operate/security.html" class="md-nav__link">
+      <a href="security.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Sécurité
+    Security
   
 
     
@@ -3872,7 +3908,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../operate/supervision.html" class="md-nav__link">
+      <a href="supervision.html" class="md-nav__link">
         
   
   
@@ -3900,14 +3936,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../operate/cloud.html" class="md-nav__link">
+      <a href="cloud.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Cloud & Haute disponibilité
+    Cloud & High Availability
   
 
     
@@ -3928,14 +3964,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../operate/troubleshooting.html" class="md-nav__link">
+      <a href="troubleshooting.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Dépannage
+    Troubleshooting
   
 
     
@@ -4000,7 +4036,7 @@
   <span class="md-ellipsis">
     
   
-    Projet
+    Project
   
 
     
@@ -4016,7 +4052,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Projet
+    Project
   
 
           </label>
@@ -4036,7 +4072,7 @@
   <span class="md-ellipsis">
     
   
-    Pourquoi Tock
+    Why Tock
   
 
     
@@ -4064,7 +4100,7 @@
   <span class="md-ellipsis">
     
   
-    Vitrine utilisateurs
+    User Showcase
   
 
     
@@ -4092,7 +4128,7 @@
   <span class="md-ellipsis">
     
   
-    Communauté
+    Community
   
 
     
@@ -4120,7 +4156,7 @@
   <span class="md-ellipsis">
     
   
-    Contribuer
+    Contributing
   
 
     
@@ -4148,7 +4184,7 @@
   <span class="md-ellipsis">
     
   
-    Ressources
+    Resources
   
 
     
@@ -4210,7 +4246,7 @@
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
   
@@ -4219,15 +4255,15 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table des matières
+      Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#longlet-new-sentence" class="md-nav__link">
+  <a href="#what-is-deployed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        L'onglet New sentence
+        What is deployed
       
     </span>
   </a>
@@ -4235,10 +4271,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#longlet-inbox-sentences" class="md-nav__link">
+  <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        L'onglet Inbox sentences
+        Installation
       
     </span>
   </a>
@@ -4246,10 +4282,93 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#longlet-search-sentences" class="md-nav__link">
+  <a href="#main-parameters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        L'onglet Search sentences
+        Main parameters
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Main parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ingress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mongodb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MongoDB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vector-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vector store
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enterprise-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enterprise certificates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-without-internet-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment without Internet access
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#production-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Production recommendations
       
     </span>
   </a>
@@ -4257,43 +4376,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#longlet-unknown-sentences" class="md-nav__link">
+  <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       
-        L'onglet Unknown sentences
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#longlet-intents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        L'onglet Intents
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#longlet-entities" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        L'onglet Entities
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#longlet-sentences-logs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        L'onglet Sentences logs
+        Examples
       
     </span>
   </a>
@@ -4328,7 +4414,7 @@
       <a href="../index.html" class="md-path__link">
         
   <span class="md-ellipsis">
-    Accueil
+    Home
   </span>
 
       </a>
@@ -4343,28 +4429,10 @@
     
     
       <li class="md-path__item">
-        <a href="index.html" class="md-path__link">
+        <a href="architecture.html" class="md-path__link">
           
   <span class="md-ellipsis">
-    Studio
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
-        <a href="nlu.html" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    Compréhension du langage
+    Operate
   </span>
 
         </a>
@@ -4383,7 +4451,7 @@
 
 
   
-    <a href="https://github.com/theopenconversationkit/tock/edit/master/docs/docs/fr/studio/nlu.md" title="Editer cette page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/theopenconversationkit/tock/edit/master/docs/docs/en/operate/kubernetes.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
     </a>
@@ -4391,73 +4459,233 @@
   
 
 
-<h1 id="le-menu-language-understanding">Le menu <em>Language Understanding</em></h1>
-<p>Le menu <em>Language Understanding</em> (ou <em>NLU</em>) permet de créer, modifier, enrichir les modèles conversationnels :
- déclarer des <em>intentions</em> et des <em>entités</em>, <em>qualifier</em> des phrases, etc. (voir <a href="../concepts.html">Concepts</a>
- pour en savoir plus).</p>
-<p>Dans cette page, le détail de chaque onglet est présenté. Voir aussi <a href="build-model.html">Construire les modèles conversationnels</a>
-pour une présentation plus guidée par l'usage.</p>
-<h2 id="longlet-new-sentence">L'onglet <em>New sentence</em></h2>
-<p>Cet écran permet d'entrer des phrases et et de vérifier quelle intention/entités sont détectées.</p>
-<p>Saisissez une phrase et validez pour voir la détection résultant du modèle conversationnel (en pratique : comment le bot 
-interprète la phrase). S'affichent alors :</p>
+<h1 id="deploy-on-kubernetes">Deploy on Kubernetes</h1>
+<p>The <a href="https://github.com/theopenconversationkit/tock-helm-chart"><code>tock-helm-chart</code></a> repository provides a
+<a href="https://helm.sh/">Helm</a> chart that deploys a complete Tock platform on <a href="https://kubernetes.io/">Kubernetes</a>.</p>
+<p>This page summarizes how to use the chart. The reference for all the chart parameters is its
+<a href="https://github.com/theopenconversationkit/tock-helm-chart/blob/master/charts/tock/README.md">README</a>.</p>
+<h2 id="what-is-deployed">What is deployed</h2>
+<p>The chart deploys all the Tock components:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Image</th>
+<th>Kubernetes resources</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Tock Studio</em></td>
+<td><code>tock/bot_admin</code></td>
+<td>Deployment, Service, Ingress</td>
+</tr>
+<tr>
+<td>Bot API</td>
+<td><code>tock/bot_api</code></td>
+<td>Deployment, Service, Ingress</td>
+</tr>
+<tr>
+<td>NLP API</td>
+<td><code>tock/nlp_api</code></td>
+<td>Deployment, Service</td>
+</tr>
+<tr>
+<td>Build worker</td>
+<td><code>tock/build_worker</code></td>
+<td>Deployment</td>
+</tr>
+<tr>
+<td>Duckling</td>
+<td><code>tock/duckling</code></td>
+<td>Deployment, Service</td>
+</tr>
+<tr>
+<td>Kotlin compiler</td>
+<td><code>tock/kotlin_compiler</code></td>
+<td>Deployment, Service</td>
+</tr>
+<tr>
+<td>Gen AI orchestrator</td>
+<td><code>tock/gen-ai-orchestrator-server</code></td>
+<td>Deployment, Service</td>
+</tr>
+</tbody>
+</table>
+<p>It can also deploy the databases as sub-charts, or connect to existing ones:</p>
 <ul>
-<li><em>Intent</em> : l'intention reconnue</li>
-<li><em>Language</em> : la langue détectée</li>
-<li>Le(s) score(s) retourné(s) par les algorithmes (selon leur niveau de confiance sur l'intention et 
-sur les éventuelles entités)</li>
-<li>Le cas échéant, chaque entité détectée avec son rôle/type et son score</li>
+<li><a href="https://www.mongodb.com/">MongoDB</a> (Bitnami chart), deployed by default as a 3-node <em>replica set</em></li>
+<li><a href="https://opensearch.org/">OpenSearch</a> (and optionally OpenSearch Dashboards), as the vector store for the <a href="../gen-ai/rag.html">RAG</a></li>
+<li><a href="https://www.postgresql.org/">PostgreSQL</a> with <a href="https://github.com/pgvector/pgvector">PGVector</a>, as an alternative vector store</li>
 </ul>
-<p><img alt="Interface d'admin NLP - qualification de phrase" src="../../img/tock-nlp-admin.png" title="Exemple de qualification de phrase" /></p>
-<p>Il est possible de modifier tous les éléments détectés depuis cet écran :</p>
+<p><img alt="Tock on Kubernetes" src="https://raw.githubusercontent.com/theopenconversationkit/tock-helm-chart/master/tock-24x-on-k8s.png" /></p>
+<p>See the <a href="architecture.html">architecture</a> page for the role of each component.</p>
+<h2 id="installation">Installation</h2>
+<p>The chart is published both as an OCI artifact and in a classic Helm repository:</p>
 <ul>
-<li>Pour modifier l'intention (voire en créer une nouvelle à la volée) ou la langue détectées, utilisez les champs / 
-listes de sélection sous la phrase </li>
-<li>Pour supprimer une entité, utilisez le bouton à côté du score de l'entité</li>
-<li>Pour ajouter une entité, sélectionnez avec la souris un bloc de mots dansla phrase puis précisez son rôle/type.</li>
+<li>OCI artifact: <code>oci://ghcr.io/theopenconversationkit/charts/tock</code></li>
+<li>Helm repository: <code>https://theopenconversationkit.github.io/tock-helm-chart/</code>, chart <code>tock</code></li>
 </ul>
-<p><img alt="Sélection d'une entité" src="../../img/try-it-2.png" title="Sélection d'une entité" /></p>
-<p><img alt="Ajout d'une entité - étape 1" src="../../img/try-it-3.png" title="Ajout d'une entité - étape 1" /></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">OCI</label><label for="__tabbed_1_2">Helm repository</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>mytock<span class="w"> </span>oci://ghcr.io/theopenconversationkit/charts/tock<span class="w"> </span>--version<span class="w"> </span>&lt;chart-version&gt;<span class="w"> </span>-f<span class="w"> </span>values.yaml
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>tock<span class="w"> </span>https://theopenconversationkit.github.io/tock-helm-chart/
+helm<span class="w"> </span>repo<span class="w"> </span>update
+helm<span class="w"> </span>search<span class="w"> </span>repo<span class="w"> </span>tock
+helm<span class="w"> </span>install<span class="w"> </span>mytock<span class="w"> </span>tock/tock<span class="w"> </span>--version<span class="w"> </span>&lt;chart-version&gt;<span class="w"> </span>-f<span class="w"> </span>values.yaml
+</code></pre></div>
+</div>
+</div>
+</div>
 <blockquote>
-<p>Remarque : si vous avez activé cette option au niveau de l'application/bot, il est possible de déclarer des 
-<em>sous-entités</em>. Vous en apprendrez plus dans <a href="build-model.html">Construire les modèles conversationnels</a>.</p>
+<p>Each chart version deploys a given Tock version by default (<code>appVersion</code> in <code>helm search repo tock</code>).
+To deploy another Tock version, set the <code>image.tag</code> of each component in your values file.</p>
 </blockquote>
-<p>Les boutons et commandes suivantes sont disponibles pour la phrase dans sa globalité :</p>
+<p>Once the release is installed, Helm displays the URLs of <em>Tock Studio</em> and of the Bot API.
+The default login/password of <em>Tock Studio</em> is <code>admin@app.com</code> / <code>password</code>: change it before opening
+the platform (see <a href="#authentication">Authentication</a>).</p>
+<h2 id="main-parameters">Main parameters</h2>
+<p>The parameters are grouped by component (<code>adminWeb</code>, <code>botApi</code>, <code>nlpApi</code>, <code>buildWorker</code>, <code>duckling</code>,
+<code>kotlinCompiler</code>, <code>genAiOrchestrator</code>) and in a <code>global</code> section. For each component, you can set the image,
+the number of replicas, the resources, the security contexts, the scheduling constraints and the environment
+variables (<code>environment</code> section, see the <a href="configuration.html">configuration reference</a>).</p>
+<h3 id="ingress">Ingress</h3>
+<p>The <code>adminWeb</code> and <code>botApi</code> components are exposed through an Ingress, on the following hosts:</p>
 <ul>
-<li><em>Delete</em> : supprime la phrase</li>
-<li><em>Unknown</em> : qualifier la phrase en intention inconnue (réponse par défaut)</li>
-<li><em>Validate</em> : confirmer l'intention/entités détectées et enregistrer la phrase dans le modèle 
-(provoquant in fine une reconstruction du modèle, son <em>corpus</em> étant enrichi de cette phrase)</li>
+<li><code>tockstudio-&lt;release&gt;.&lt;global.wildcardDomain&gt;</code> for <em>Tock Studio</em></li>
+<li><code>bot-api-&lt;release&gt;.&lt;global.wildcardDomain&gt;</code> for the Bot API</li>
 </ul>
-<p>D'autres liens sont accessibles pour afficher les conversations contenant cette phrase, copier le contenu de la 
-phrase, créer un parcours à partir de cette phrase.</p>
-<h2 id="longlet-inbox-sentences">L'onglet <em>Inbox sentences</em></h2>
-<p>Cet onglet montre (avec de la pagination et quelques options d'affichage) l'ensemble des phrases reçues par le modèle 
- <em>NLU</em> avec les intentions/entités/langue/scores détectés.</p>
-<p>Ces phrases peuvent provenir de véritables utilisateurs quelques soient les canaux, d'une saisie dans l'onglet <em>New sentence</em> 
-ou encore d'une conversation via la page <em>Test</em> &gt; <em>Test</em> dans <em>Tock Studio</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">global</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">wildcardDomain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tock.mydomain.com</span>
+<span class="w">  </span><span class="nt">ingressClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+
+<span class="nt">adminWeb</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ingress</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">tls</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tock-tls</span>
+<span class="w">        </span><span class="nt">hosts</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tockstudio-mytock.tock.mydomain.com</span>
+
+<span class="nt">botApi</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ingress</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<p>Only the Bot API must be reachable by the external channels (see <a href="installation.html#network-exposure">Network exposure</a>).</p>
+<h3 id="mongodb">MongoDB</h3>
+<p>By default, the chart deploys MongoDB as a <em>replica set</em> (<code>global.deployMongoDb.enabled: true</code>), configured
+with the <code>mongodb</code> section (see the <a href="https://artifacthub.io/packages/helm/bitnami/mongodb">Bitnami chart</a>).
+Persistence is enabled with a 1 GiB volume: increase <code>mongodb.persistence.size</code> for a real use.</p>
+<p>To use an existing database, disable the sub-chart and give the connection string:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">global</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">deployMongoDb</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">mongodbUrls</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mongodb://myuser:mypass@fqdn-node1:27017,fqdn-node2:27017,fqdn-node3:27017/mydb?replicaSet=rs0</span>
+<span class="w">  </span><span class="nt">mongodbcheckfqdn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fqdn-node1</span>
+<span class="w">  </span><span class="nt">mongodbPort</span><span class="p">:</span><span class="w"> </span><span class="s">"27017"</span>
+</code></pre></div>
 <blockquote>
-<p>Lorsque vous faites des tests depuis un canal externe, n'hésitez pas à cliquer sur le bouton <em>Refresh</em> 
-(en haut à gauche de l'écran) pour rafraîchir la liste des phrases.</p>
+<p>The database must be a <em>replica set</em> (see <a href="installation.html#mongodb-database">MongoDB database</a>).</p>
 </blockquote>
-<p>Les boutons et commandes sous chaque phrase sont identiques à ceux de l'onglet <em>New sentence</em> (voir ci-dessus).</p>
-<h2 id="longlet-search-sentences">L'onglet <em>Search sentences</em></h2>
-<p>Cet écran permet de faire des recherches dans l'ensemble des phrases : <em>Inbox sentences</em> mais aussi phrases qualifiées 
-enregistrées dans le modèle.</p>
-<p><img alt="Recherche d'une phrase" src="../../img/search.png" title="Recherche d'une phrase" /></p>
-<h2 id="longlet-unknown-sentences">L'onglet <em>Unknown sentences</em></h2>
-<p>Cet écran permet de parcourir les phrases dont l'intention n'a pas été reconnue (intention <em>unknown</em>).</p>
-<h2 id="longlet-intents">L'onglet <em>Intents</em></h2>
-<p>Cet écran liste et gère les intentions. Voir <a href="intents.html">Intentions</a>.</p>
-<h2 id="longlet-entities">L'onglet <em>Entities</em></h2>
-<p>Cet écran gère les types d'entités : valeurs prédéfinies, sous-entités, masquage... Voir <a href="entities.html">Entités</a>.</p>
-<h2 id="longlet-sentences-logs">L'onglet <em>Sentences logs</em></h2>
-<p>Cet écran présente le journal complet des phrases reçues et permet de remonter aux conversations (ie. l'ensemble des 
-phrases reçues et réponses du bot pour un utilisateur).</p>
+<h3 id="vector-store">Vector store</h3>
+<p>The vector store used by the <a href="../gen-ai/index.html">Gen AI orchestrator</a> is selected from the <code>global</code> section:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">OpenSearch</label><label for="__tabbed_2_2">PGVector</label><label for="__tabbed_2_3">Existing store</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="nt">global</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">deployOpenSearch</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">            </span><span class="c1"># deploy the OpenSearch sub-chart</span>
+<span class="w">    </span><span class="nt">dashboardEnabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w">  </span><span class="c1"># optionally deploy OpenSearch Dashboards</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="nt">global</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">deployPgVector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">            </span><span class="c1"># deploy the PostgreSQL sub-chart with PGVector</span>
+
+<span class="nt">postgresql</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">postgresPassword</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;password&gt;</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="nt">global</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">deployOpenSearch</span><span class="p">:</span><span class="w">          </span><span class="c1"># or deployPgVector with pgVectorHost, pgVectorPort...</span>
+<span class="w">    </span><span class="nt">useExisting</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">openSearchHost</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">opensearch.mydomain.com</span>
+<span class="w">    </span><span class="nt">openSearchPort</span><span class="p">:</span><span class="w"> </span><span class="s">"9200"</span>
+<span class="w">    </span><span class="nt">openSearchUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;user&gt;</span>
+<span class="w">    </span><span class="nt">openSearchPwd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;password&gt;</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p>The connection parameters of the orchestrator are then set by the chart. The LLM and embedding providers are
+configured in <em>Tock Studio</em> (see <a href="../gen-ai/providers/llm-embedding.html">LLM and embedding providers</a>).</p>
+<h3 id="authentication">Authentication</h3>
+<p>The <em>Tock Studio</em> users can be defined in a ConfigMap, referenced by <code>adminWeb.authConfigMap</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin-web-auth-cfg</span>
+<span class="nt">data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">tock_users</span><span class="p">:</span><span class="w"> </span><span class="s">"alice@tock.ai,bob@tock.ai"</span>
+<span class="w">  </span><span class="nt">tock_passwords</span><span class="p">:</span><span class="w"> </span><span class="s">"secret1,secret2"</span>
+<span class="w">  </span><span class="nt">tock_organizations</span><span class="p">:</span><span class="w"> </span><span class="s">"tock,tock"</span>
+<span class="w">  </span><span class="nt">tock_roles</span><span class="p">:</span><span class="w"> </span><span class="s">"botUser,nlpUser|botUser|admin|technicalAdmin"</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nt">adminWeb</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">authConfigMap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin-web-auth-cfg</span>
+</code></pre></div>
+<p>In this example, Alice has the <code>botUser</code> role, and Bob has all the roles. See <a href="security.html#roles">Security</a>
+for the roles, and for the OAuth2 / OpenID Connect authentication.</p>
+<h3 id="enterprise-certificates">Enterprise certificates</h3>
+<p>If your bot or the orchestrator calls services signed by an internal certificate authority, the chart can
+build a truststore from a Secret:</p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>corp-root-cert<span class="w"> </span>--from-file<span class="o">=</span>corp-root-cert.crt
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nt">botApi</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">truststore</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">certSecret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">corp-root-cert</span>
+
+<span class="nt">genAiOrchestrator</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">truststore</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">certSecret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">corp-root-cert</span>
+</code></pre></div>
+<h3 id="deployment-without-internet-access">Deployment without Internet access</h3>
+<p>With OpenAI models, the orchestrator uses <code>tiktoken</code>, which downloads its encodings at startup. Without Internet
+access, provide them in an init container image, enabled with <code>genAiOrchestrator.langchain.tiktokencache</code>.
+The chart <a href="https://github.com/theopenconversationkit/tock-helm-chart/blob/master/charts/tock/README.md#solve-langchain-and-tiktoken-issues-on-on-premise-deployments">README</a>
+describes how to build this image.</p>
+<h2 id="production-recommendations">Production recommendations</h2>
+<ul>
+<li>Keep a single replica for <code>adminWeb</code>, <code>buildWorker</code> and <code>kotlinCompiler</code>, and use several replicas for
+  <code>botApi</code>, <code>nlpApi</code>, <code>duckling</code> and <code>genAiOrchestrator</code> (see <a href="cloud.html#kubernetes">Cloud</a>).</li>
+<li>Set <code>resources</code> for each component, with a memory limit above the maximum JVM heap
+  (see <a href="installation.html#jvm-docker-memory">JVM &amp; Docker memory</a>).</li>
+<li>Enable <code>global.NetworkPolicy.enabled</code> to restrict the traffic between the pods.</li>
+<li>Review the MongoDB configuration (authentication, persistence, backups), or use a managed database.</li>
+<li>Change the default passwords (<em>Tock Studio</em>, OpenSearch, PostgreSQL).</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<p>The <a href="https://github.com/theopenconversationkit/tock-helm-chart/tree/master/samples"><code>samples</code></a> folder of the
+repository contains values files for several environments: <a href="https://rancherdesktop.io/">Rancher Desktop</a> or k3s
+(Intel and ARM), GKE with the native or NGINX ingress, an external MongoDB, local authentication, RAG with
+OpenSearch or PGVector, and a local LLM with <a href="https://ollama.com/">Ollama</a>.</p>
+<p>For example, to test Tock with a RAG on Rancher Desktop:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/theopenconversationkit/tock-helm-chart.git<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>tock-helm-chart
+helm<span class="w"> </span>install<span class="w"> </span>mytock<span class="w"> </span>./charts/tock<span class="w"> </span>-f<span class="w"> </span>samples/values-rancher-arm-with-rag-and-pgvector.yaml
+</code></pre></div>
+<p><em>Tock Studio</em> is then available at <code>http://tockstudio-mytock.rancher.localhost</code>.</p>
 <blockquote>
-<p>Remarque : contrairement à la vue <em>Inbox sentences</em>, les <em>Sentences logs</em> montrent les phrases reçues même lorsqu'elles existent déjà à 
-l'identique dans le modèle (dans ce cas, le modèle et les algorithmes ne sont même pas interrogés, la réponse étant 
-connue).</p>
+<p>On ARM processors, or on processors without AVX instructions, the default MongoDB image does not start:
+the samples use a compatible image (<code>mongodb.image</code>).</p>
 </blockquote>
 <!-- Chat inclusion start -->
 <div>
@@ -4569,14 +4797,14 @@ connue).</p>
 
   <!-- Icône de chat flottant -->
   <div id="chat-icon" onclick="toggleChat()" title="Chat with Tock">
-    <img src="../../img/Logo_Tock_White.svg" />
+    <img src="../img/Logo_Tock_White.svg" />
   </div>
 
   <!-- Fenêtre du chatbot -->
   <div id="chat-wrapped">
     <div class="chat-header">
       <div class="chat-header-title">
-        <img src="../../img/Logo_Tock_White.svg" class="chat-header-title-logo" />
+        <img src="../img/Logo_Tock_White.svg" class="chat-header-title-logo" />
         <span id="chat-header-title-string">Chat with Tock</span>
       </div>
       <span
@@ -4689,7 +4917,7 @@ connue).</p>
             header: {
               avatar: {
                 botImage: {
-                  src: "../../img/favicon.png",
+                  src: "../img/favicon.png",
                   width: "1.5em",
                   height: "1.5em",
                 },
@@ -4747,20 +4975,20 @@ connue).</p>
     
       
   <span class="md-source-file__fact">
-    <span class="md-icon" title="Dernière mise à jour">
+    <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="21 octobre 2021 08:53:05 UTC">21 octobre 2021</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 9, 2026 07:36:06 UTC">October 9, 2026</span>
   </span>
 
     
     
       
   <span class="md-source-file__fact">
-    <span class="md-icon" title="Créé">
+    <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2 août 2019 18:15:35 UTC">2 août 2019</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 9, 2026 07:36:06 UTC">October 9, 2026</span>
   </span>
 
     
@@ -4783,7 +5011,7 @@ connue).</p>
           <button type="button" class="md-top md-icon" data-md-component="top" hidden>
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Retour en haut de la page
+  Back to top
 </button>
         
       </main>
@@ -4815,10 +5043,10 @@ connue).</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.action.edit", "content.code.copy", "navigation.tabs", "navigation.sections", "navigation.indexes", "navigation.path", "navigation.top", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.action.edit", "content.code.copy", "navigation.tabs", "navigation.sections", "navigation.indexes", "navigation.path", "navigation.top", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

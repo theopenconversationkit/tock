@@ -3598,6 +3598,8 @@
       
         
       
+        
+      
     
     
     
@@ -3686,6 +3688,34 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operate/kubernetes.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
   
 
     
@@ -4288,8 +4318,8 @@
 </tr>
 </tbody>
 </table>
-<p>Avec OpenSearch, le type de recherche choisi dans les <a href="../rag.html#session-dindexation">réglages RAG</a> est ignoré :
-une recherche par similarité est toujours utilisée.</p>
+<p>Avec OpenSearch, seule la recherche par similarité est possible : choisir une recherche plein texte ou hybride
+dans les <a href="../rag.html#session-dindexation">réglages RAG</a> fait échouer les requêtes RAG.</p>
 <h2 id="pgvector">PGVector</h2>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">"provider"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PGVector"</span><span class="p">,</span>
@@ -4307,7 +4337,12 @@ une recherche par similarité est toujours utilisée.</p>
 Le schéma est fourni dans
 <a href="https://github.com/theopenconversationkit/tock/blob/master/gen-ai/orchestrator-server/sql/schema.sql"><code>gen-ai/orchestrator-server/sql/schema.sql</code></a> :
 il crée les tables utilisées par les outils d'indexation, et une colonne <code>fts_vector</code> générée à partir du contenu des chunks
-(avec la configuration de recherche plein texte <code>french</code>), avec son index.</p>
+(avec la configuration de recherche plein texte <code>french</code>), avec son index.
+Ce script n'est pas exécuté automatiquement : il faut le lancer sur la base, y compris sur une base déjà indexée
+(la colonne est alors calculée pour les chunks existants).</p>
+<p>La recherche plein texte n'utilise pas la question elle-même, mais les mots-clés (<code>key_words</code>) produits par le
+prompt de condensation de la question (voir les <a href="../rag.html">réglages RAG</a>). Si ce prompt ne renvoie pas de mots-clés,
+la recherche plein texte ne trouve aucun document, et la recherche hybride se limite à la recherche par similarité.</p>
 <h2 id="opensearch">OpenSearch</h2>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">"provider"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OpenSearch"</span><span class="p">,</span>
@@ -4613,7 +4648,7 @@ il crée les tables utilisées par les outils d'indexation, et une colonne <code
     <span class="md-icon" title="Dernière mise à jour">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="28 septembre 2026 20:27:10 UTC">28 septembre 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="8 octobre 2026 14:43:59 UTC">8 octobre 2026</span>
   </span>
 
     
