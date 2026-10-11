@@ -13,15 +13,18 @@
 #   limitations under the License.
 #
 import logging
-from typing import Union
+from typing import Any, Optional, Union
 
 from langchain_core.callbacks import (
     AsyncCallbackManagerForRetrieverRun,
     CallbackManagerForRetrieverRun,
 )
 from langchain_core.documents import Document
+from langchain_postgres import PGVector
+from langchain_postgres.vectorstores import _get_embedding_collection_store
 from pydantic import ConfigDict
-from sqlalchemy import Engine, TextClause, text
+from sqlalchemy import Engine, Select, cast, func, literal_column, select
+from sqlalchemy.dialects.postgresql import REGCONFIG, TSVECTOR
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.full_text_search_retriever import (
@@ -31,29 +34,63 @@ from gen_ai_orchestrator.services.langchain.factories.vector_stores.full_text_se
 logger = logging.getLogger(__name__)
 
 
+class _MetadataFilterBuilder(PGVector):
+    """
+    Translates a metadata filter into an SQL clause exactly like PGVector does
+    for similarity search, without connecting to the database.
+    Relies on langchain-postgres internals: check it when upgrading the library.
+    """
+
+    def __init__(self):
+        self.EmbeddingStore, self.CollectionStore = _get_embedding_collection_store()
+
+    def create_filter_clause(self, metadata_filter: dict) -> Any:
+        return self._create_filter_clause(metadata_filter)
+
+
 def build_docs(rows) -> list[Document]:
     docs = [Document(page_content=row.document, metadata=row.cmetadata) for row in rows]
 
     return docs
 
 
-def build_sql() -> TextClause:
-    return text("""
-        WITH q AS (
-            SELECT websearch_to_tsquery(:language, :query) AS ts_query
+def build_statement(
+    query: str,
+    language: str,
+    table_name: str,
+    k: int,
+    metadata_filter: Optional[dict] = None,
+) -> Select:
+    filter_builder = _MetadataFilterBuilder()
+    embedding_store = filter_builder.EmbeddingStore
+    collection_store = filter_builder.CollectionStore
+
+    # fts_vector is added by the Tock schema, it is not mapped by langchain-postgres
+    fts_vector = literal_column(
+        f'{embedding_store.__tablename__}.fts_vector', type_=TSVECTOR
+    )
+    ts_query = func.websearch_to_tsquery(cast(language, REGCONFIG), query)
+    score = func.ts_rank(fts_vector, ts_query).label('score')
+
+    conditions = [
+        collection_store.name == table_name,
+        fts_vector.op('@@')(ts_query),
+    ]
+    if metadata_filter:
+        filter_clause = filter_builder.create_filter_clause(metadata_filter)
+        if filter_clause is not None:
+            conditions.append(filter_clause)
+
+    return (
+        select(embedding_store.document, embedding_store.cmetadata, score)
+        .join(
+            collection_store,
+            collection_store.uuid == embedding_store.collection_id,
         )
-        SELECT
-            d.document,
-            d.cmetadata,
-            ts_rank(d.fts_vector, q.ts_query) AS score
-        FROM langchain_pg_embedding d
-        JOIN langchain_pg_collection lpc ON lpc.uuid = d.collection_id
-        CROSS JOIN q
-        WHERE lpc.name = :table_name
-          AND d.fts_vector @@ q.ts_query
-        ORDER BY score DESC
-        LIMIT :k
-    """)
+        .where(*conditions)
+        .order_by(score.desc())
+        .limit(k)
+    )
 
 
 class PostgreSQLTextRetriever(FullTextSearchRetriever):
@@ -63,21 +100,23 @@ class PostgreSQLTextRetriever(FullTextSearchRetriever):
     table_name: str
     language: str = 'french'
     k: int = 10
+    metadata_filter: Optional[dict] = None
 
-    def build_params(self, query: str) -> dict:
-        return {
-            'query': query,
-            'language': self.language,
-            'table_name': self.table_name,
-            'k': self.k,
-        }
+    def build_statement(self, query: str) -> Select:
+        return build_statement(
+            query=query,
+            language=self.language,
+            table_name=self.table_name,
+            k=self.k,
+            metadata_filter=self.metadata_filter,
+        )
 
     def _get_relevant_documents(
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
     ) -> list[Document]:
         logger.debug('Query : %s ', query)
         with self.engine.connect() as conn:
-            rows = conn.execute(build_sql(), self.build_params(query)).fetchall()
+            rows = conn.execute(self.build_statement(query)).fetchall()
         return build_docs(rows)
 
     async def _aget_relevant_documents(
@@ -85,7 +124,7 @@ class PostgreSQLTextRetriever(FullTextSearchRetriever):
     ) -> list[Document]:
         logger.debug('Query : %s ', query)
         async with self.engine.connect() as conn:
-            result = await conn.execute(build_sql(), self.build_params(query))
+            result = await conn.execute(self.build_statement(query))
             rows = result.fetchall()
         return build_docs(rows)
 
