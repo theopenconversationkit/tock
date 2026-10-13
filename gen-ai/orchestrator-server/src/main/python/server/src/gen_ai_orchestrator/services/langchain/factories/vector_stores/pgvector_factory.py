@@ -19,6 +19,7 @@ from typing import Optional
 
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_postgres import PGVector
+from sqlalchemy import text
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
@@ -72,6 +73,28 @@ class PGVectorFactory(LangChainVectorStoreFactory):
             async_mode=async_mode,
             collection_metadata=collection_metadata,
         )
+
+    def read_index_metadata(self) -> Optional[dict]:
+        # PGVector reads langchain_pg_collection.cmetadata
+        # Read langchain_pg_collection directly on the sync engine, never through PGVector: going through PGVector
+        # would get_or_create (and thus create) the collection, which must not happen on a read.
+        engine = self.pool.sync_engine
+        with engine.connect() as connection:
+            # Fresh database: the langchain tables are created lazily on first write. Absent table => no collection.
+            if (
+                connection.execute(
+                    text("SELECT to_regclass('langchain_pg_collection')")
+                ).scalar()
+                is None
+            ):
+                return None
+            collection = connection.execute(
+                text('SELECT cmetadata FROM langchain_pg_collection WHERE name = :name'),
+                {'name': self.index_name},
+            ).first()
+        if collection is None:
+            return None
+        return collection.cmetadata or {}
 
     def get_vector_store_retriever(
         self, search_kwargs: dict, async_mode: Optional[bool] = True

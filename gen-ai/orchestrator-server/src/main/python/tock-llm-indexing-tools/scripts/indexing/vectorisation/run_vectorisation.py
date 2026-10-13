@@ -156,6 +156,33 @@ def normalize_opensearch_index_name(
     return normalized
 
 
+def assert_embedding_model_matches_existing_index(
+    index_name: str, existing_metadata: dict, requested_model: Optional[str], logger
+) -> None:
+    """
+    Append mode on an existing index: the chunks we are about to add must be embedded with the same model the
+    index was created with. A different model embeds into an incompatible vector space, so the new vectors are
+    incomparable with the existing ones and semantic search is silently corrupted. Compare the requested model
+    against the index's stamped identity and refuse the run on mismatch.
+
+    Unknown identity is non-blocking: if the index carries no embedding_model stamp
+    or no model is requested, there is nothing to compare, so the run proceeds.
+    """
+    existing_model = existing_metadata.get('embedding_model')
+    if existing_model and requested_model and existing_model != requested_model:
+        raise ValueError(
+            f"Embedding model mismatch on existing index: "
+            f"the index was created with '{existing_model}', but the configuration requests "
+            f"'{requested_model}'. Use the same embedding model, or "
+            f"index into a new index."
+        )
+
+    logger.debug(
+        f"Embedding model check passed for existing index '{index_name}' "
+        f"(index model: {existing_model or 'unknown'}, requested: {requested_model or 'unknown'})."
+    )
+
+
 def main():
     start_time = datetime.now()
     formatted_datetime = start_time.strftime('%Y-%m-%d_%Hh%Mm%S')
@@ -254,29 +281,42 @@ def main():
             embedding_function=em_factory.get_embedding_model(),
         )
 
-        # PGVector creates the collection lazily on construction (get_or_create). Give it the same Tock contract
-        # metadata the admin worker writes, so a collection born from this script is certified too: schema_version
-        # marks it as Tock-managed, and embedding_model is the identity later used to refuse chunks embedded with a
-        # different model. OpenSearch has no collection-level metadata, so this stays PGVector-only. An already
-        # existing collection keeps its original metadata: get_or_create never re-stamps it.
-        if input_config.vector_store_setting.provider == VectorStoreProvider.PGVECTOR:
+        # Read the target index's contract metadata once, BEFORE get_vector_store (which would create the index).
+        # None means the index does not exist yet, i.e. this run creates it.
+        existing_metadata = vector_store_factory.read_index_metadata()
+
+        if existing_metadata is not None:
+            # Append mode: the index already exists with chunks embedded by a given model. Before adding anything,
+            # make sure the requested embedding model is the one the index was stamped with — a mismatch would land
+            # the new vectors in an incompatible space and silently corrupt the index. The index keeps its original
+            # metadata, so nothing is stamped here.
+            assert_embedding_model_matches_existing_index(
+                vector_store_factory.index_name,
+                existing_metadata,
+                input_config.em_setting.model,
+                logger,
+            )
+            vector_store = vector_store_factory.get_vector_store(async_mode=False)
+        else:
+            # Brand-new index: build the Tock contract metadata and hand it to get_vector_store so PGVector stamps it
+            # atomically at creation (via get_or_create). schema_version marks the index as Tock-managed, and
+            # embedding_model is the identity the append-mode check above relies on.
             provider = input_config.em_setting.provider
-            collection_metadata = {
+            contract_metadata = {
                 'schema_version': 1,
                 'created_at': datetime.now(timezone.utc).isoformat(),
                 'origin': 'ingestion_script',
                 'embedding_provider': getattr(provider, 'value', provider),
             }
-            # Omit when unknown (e.g. Azure without an explicit model), as the worker does: an unknown identity is
+            # Omit when unknown (e.g. Azure without an explicit model): an unknown identity is
             # non-blocking at usage, whereas a wrong one would be.
             if input_config.em_setting.model:
-                collection_metadata['embedding_model'] = input_config.em_setting.model
+                contract_metadata['embedding_model'] = input_config.em_setting.model
+
             vector_store = vector_store_factory.get_vector_store(
                 async_mode=False,
-                collection_metadata=collection_metadata,
+                collection_metadata=contract_metadata,
             )
-        else:
-            vector_store = vector_store_factory.get_vector_store(async_mode=False)
 
         # Index all chunks in vector DB
         if input_config.embedding_max_chunks is not None:
