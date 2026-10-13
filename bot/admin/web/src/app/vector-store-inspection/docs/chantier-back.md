@@ -71,7 +71,7 @@ Le service qui orchestre tout. Quatre responsabilités :
   `SimilarityRetriever`, `FTSRetriever`, `add_rank_metadata`, `apply_rrf_ranking`,
   mais en **conservant l'état intermédiaire** (les trois listes de canaux, les
   rangs et scores par étage) que le runtime referme. Applique la compression via
-  `BloomzRerank` en lisant `metadata['retriever_score']` pour reconstruire les
+  `BloomzRerank` en lisant `metadata['reranker_score']` pour reconstruire les
   `outcome`. Gère `fetch_k`/`k` dissociés et l'ordre `before_cut`/`after_cut`.
 - **exact_rank** des chunks épinglés : `COUNT(*)` des chunks mieux classés, une
   requête PGVector par chunk épinglé.
@@ -212,7 +212,7 @@ répété, soit du SQL neuf mais conceptuellement simple.
 L'instrumentation du compresseur, initialement identifiée comme le risque
 principal, est **levée** : `BloomzRerank`
 (`services/langchain/impls/document_compressor/bloomz_rerank.py`) pose déjà
-`metadata['retriever_score']` sur chaque document scoré et gère lui-même la
+`metadata['reranker_score']` sur chaque document scoré et gère lui-même la
 tolérance de panne (`is_fault_tolerant`, `fill_to_max_documents`). Le service
 d'inspection lit ces scores sans modifier le module.
 

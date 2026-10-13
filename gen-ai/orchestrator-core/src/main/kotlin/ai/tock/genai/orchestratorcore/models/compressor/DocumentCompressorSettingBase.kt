@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = BloomzDocumentCompressorSetting::class, name = Constants.BLOOMZ_COMPRESSOR),
+    JsonSubTypes.Type(value = VllmDocumentCompressorSetting::class, name = Constants.VLLM_COMPRESSOR),
 )
 abstract class DocumentCompressorSettingBase(
     val provider: DocumentCompressorProvider,

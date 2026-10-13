@@ -242,6 +242,17 @@ export class DatasetsService {
     return days > 0 ? `${days}d ${time}` : time;
   }
 
+  getAverageDurationPerQuestion(run: DatasetRun): string {
+    const completedQuestions = run.stats?.completedQuestions ?? 0;
+    if (completedQuestions <= 0) {
+      return '-';
+    }
+
+    const start = new Date(run.startTime).getTime();
+    const end = run.endTime ? new Date(run.endTime).getTime() : Date.now();
+    return `${Math.round((end - start) / completedQuestions / 1000)}s`;
+  }
+
   // ---------------------------------------------------------------------------
   // Private helpers
   // ---------------------------------------------------------------------------

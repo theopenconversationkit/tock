@@ -22,8 +22,11 @@ from gen_ai_orchestrator.models.document_compressor.awsbedrock.aws_bedrock_compr
 from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
     BloomzCompressorSetting,
 )
+from gen_ai_orchestrator.models.document_compressor.vllm.vllm_compressor_setting import (
+    VllmCompressorSetting,
+)
 
 DocumentCompressorSetting = Annotated[
-    Union[BloomzCompressorSetting, AwsBedrockCompressorSetting],
+    Union[BloomzCompressorSetting, AwsBedrockCompressorSetting, VllmCompressorSetting],
     Body(discriminator='provider'),
 ]

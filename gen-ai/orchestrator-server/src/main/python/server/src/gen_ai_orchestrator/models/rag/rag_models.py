@@ -175,7 +175,7 @@ class RAGDocumentMetadata(BaseModel):
         default=None,
     )
     chunk: str = Field(description='The document chunk.', examples=['1/3'])
-    retriever_score: Optional[float] = Field(
+    reranker_score: Optional[float] = Field(
         description='The compressor score', examples=[0.9149009585380554], default=None
     )
 
