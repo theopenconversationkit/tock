@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy } from '@angular/core';
-import { Observable, Subject, interval } from 'rxjs';
-import { startWith, switchMap, takeUntil, takeWhile } from 'rxjs/operators';
+import { EMPTY, Observable, Subject, interval } from 'rxjs';
+import { catchError, exhaustMap, finalize, startWith, takeUntil, takeWhile } from 'rxjs/operators';
 import { Dataset, DatasetRun, DatasetRunState } from '../../models';
 import { DatasetsService } from '../../services/datasets.service';
 import { DialogService } from '../../../../core-nlp/dialog.service';
@@ -14,10 +14,10 @@ import { NbToastrService } from '@nebular/theme';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
-    selector: 'tock-datasets-board-entry',
-    templateUrl: './datasets-board-entry.component.html',
-    styleUrl: './datasets-board-entry.component.scss',
-    standalone: false
+  selector: 'tock-datasets-board-entry',
+  templateUrl: './datasets-board-entry.component.html',
+  styleUrl: './datasets-board-entry.component.scss',
+  standalone: false
 })
 export class DatasetsBoardEntryComponent implements OnDestroy {
   destroy$: Subject<void> = new Subject<void>();
@@ -28,11 +28,15 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
   datasetRunState = DatasetRunState;
 
   runDurations$: Record<string, Observable<string>> = {};
+  latestCompletedRun: DatasetRun | null = null;
 
   private _pollingRunIds = new Set<string>();
 
   @Input() set dataset(dataset: Dataset) {
     this._dataset = dataset;
+    this.latestCompletedRun = dataset.runs
+      .filter((run) => run.state === DatasetRunState.COMPLETED)
+      .reduce<DatasetRun | null>((latest, run) => (!latest || new Date(run.startTime) > new Date(latest.startTime) ? run : latest), null);
 
     dataset.runs.forEach((run) => {
       const isActive = run.state === DatasetRunState.QUEUED || run.state === DatasetRunState.RUNNING;
@@ -113,9 +117,10 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
     interval(5_000)
       .pipe(
         startWith(0),
-        switchMap(() => this.datasetsService.getRun(this.dataset.id, run.id)),
+        exhaustMap(() => this.datasetsService.getRun(this.dataset.id, run.id).pipe(catchError(() => EMPTY))),
         takeWhile((r) => r.state === DatasetRunState.QUEUED || r.state === DatasetRunState.RUNNING, true), // stops on COMPLETED or CANCELLED
-        takeUntil(this.destroy$)
+        takeUntil(this.destroy$),
+        finalize(() => this._pollingRunIds.delete(run.id))
       )
       .subscribe({
         next: (updated) => {
@@ -124,9 +129,6 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
             stats: updated.stats,
             ...(updated.endTime ? { endTime: updated.endTime } : {})
           });
-        },
-        complete: () => {
-          this._pollingRunIds.delete(run.id);
         }
       });
   }

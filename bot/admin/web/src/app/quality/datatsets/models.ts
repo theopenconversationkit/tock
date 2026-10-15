@@ -64,9 +64,6 @@ export interface Dataset {
   createdBy: string;
   updatedAt: string | null; // ISO 8601
   updatedBy: string | null;
-  // Front-only flag — true once GET /datasets/:id has been called and settingsSnapshot
-  // fields are populated. Never sent to or expected from the backend.
-  _settingsLoaded?: boolean;
 }
 
 // Front-only — derived from DatasetRunAction.state + action nullability.

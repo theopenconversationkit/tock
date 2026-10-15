@@ -39,6 +39,7 @@ import ai.tock.bot.admin.evaluation.EvaluationSampleDAO
 import ai.tock.bot.admin.model.Valid
 import ai.tock.bot.admin.model.ValidationError
 import ai.tock.bot.admin.model.dataset.DatasetCreateRequest
+import ai.tock.bot.admin.model.dataset.DatasetQuestionRequest
 import ai.tock.bot.admin.model.dataset.DatasetRunActionState
 import ai.tock.bot.admin.model.dataset.DatasetRunCreateRequest
 import ai.tock.bot.admin.model.evaluation.CreateEvaluationSampleRequest
@@ -69,6 +70,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -108,6 +110,11 @@ class DatasetServiceTest : AbstractTest() {
                 },
             )
         }
+    }
+
+    @BeforeEach
+    fun prepareAnswerCache() {
+        every { datasetRunDAO.updateQuestionResultAnswer(any()) } returns Unit
     }
 
     @AfterEach
@@ -363,38 +370,21 @@ class DatasetServiceTest : AbstractTest() {
                 state = DatasetRunQuestionResultState.COMPLETED,
                 userIdModifier = "dataset_${run._id}_${dataset.questions.last().id}",
             )
-        val savedRunSlot = slot<DatasetRun>()
-        val updatedResultsSlot = slot<List<DatasetRunQuestionResult>>()
-
+        val endedAt = Instant.now()
         every { datasetDAO.getDatasetById(any()) } returns dataset
         every { datasetRunDAO.getRunById(any()) } returns run
-        every { datasetRunDAO.saveRun(capture(savedRunSlot)) } answers { savedRunSlot.captured }
-        every { datasetRunDAO.getQuestionResultsByRunId(any()) } returns listOf(pendingResult, completedResult)
-        every { datasetRunDAO.saveQuestionResults(capture(updatedResultsSlot)) } returns Unit
+        every { datasetRunDAO.finishRun(run._id, DatasetRunState.CANCELLED, any()) } returns run.copy(state = DatasetRunState.CANCELLED, endTime = endedAt)
+        every { datasetRunDAO.finishActiveQuestionResults(run._id, DatasetRunQuestionResultState.CANCELLED, any(), isNull()) } returns Unit
+        every { datasetRunDAO.getQuestionResultsByRunId(run._id) } returns listOf(pendingResult.copy(state = DatasetRunQuestionResultState.CANCELLED), completedResult)
 
-        val result =
-            DatasetService.cancelRun(
-                namespace = NAMESPACE,
-                botId = BOT_ID,
-                datasetId = dataset._id.toString(),
-                runId = run._id.toString(),
-            )
+        val result = DatasetService.cancelRun(NAMESPACE, BOT_ID, dataset._id.toString(), run._id.toString())
 
         assertEquals(DatasetRunState.CANCELLED, result.state)
-        assertNotNull(result.endTime)
+        assertEquals(endedAt, result.endTime)
         assertEquals(2, result.stats.totalQuestions)
         assertEquals(1, result.stats.completedQuestions)
-        assertEquals(0, result.stats.failedQuestions)
-
-        val cancelledRun = savedRunSlot.captured
-        assertEquals(DatasetRunState.CANCELLED, cancelledRun.state)
-        assertNotNull(cancelledRun.endTime)
-
-        val updatedResults = updatedResultsSlot.captured
-        assertEquals(DatasetRunQuestionResultState.CANCELLED, updatedResults.first().state)
-        assertEquals(DatasetRunQuestionResultState.COMPLETED, updatedResults.last().state)
-
-        verify(exactly = 1) { datasetRunDAO.saveQuestionResults(any()) }
+        verify(exactly = 1) { datasetRunDAO.finishActiveQuestionResults(run._id, DatasetRunQuestionResultState.CANCELLED, any(), isNull()) }
+        verify(exactly = 0) { datasetRunDAO.saveQuestionResults(any()) }
     }
 
     @Test
@@ -687,7 +677,7 @@ class DatasetServiceTest : AbstractTest() {
         every { datasetRunDAO.getQuestionResultsByRunId(run._id) } returns listOf(questionResult)
         every { dialogReportDAO.findByDialogByIds(emptySet()) } returns emptySet()
         every { dialogReportDAO.search(capture(querySlot)) } returns DialogReportQueryResult(total = 1, dialogs = listOf(dialog))
-        every { datasetRunDAO.saveQuestionResult(capture(updatedQuestionResultSlot)) } answers { updatedQuestionResultSlot.captured }
+        every { datasetRunDAO.updateQuestionResultAnswer(capture(updatedQuestionResultSlot)) } returns Unit
 
         val result =
             DatasetService.getRunActions(
@@ -745,7 +735,7 @@ class DatasetServiceTest : AbstractTest() {
         assertEquals(1, result.size)
         assertEquals(DatasetRunActionState.COMPLETED, result.first().state)
         assertNull(result.first().action)
-        verify(exactly = 0) { datasetRunDAO.saveQuestionResult(any()) }
+        verify(exactly = 0) { datasetRunDAO.updateQuestionResultAnswer(any()) }
     }
 
     @Test
@@ -793,6 +783,49 @@ class DatasetServiceTest : AbstractTest() {
         assertEquals(2, result.first().retryCount)
         assertEquals("RAG execution failed: timeout", result.first().error)
         verify(exactly = 0) { dialogReportDAO.search(any()) }
+    }
+
+    @Test
+    fun `completed run statistics do not load dialogs when answer statuses are persisted`() {
+        val dataset = newDataset()
+        val run = newFinishedRun(dataset, DatasetRunState.COMPLETED)
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getRunById(any()) } returns run
+        val result =
+            DatasetRunQuestionResult(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id,
+                runId = run._id,
+                questionId = "rag",
+                userIdModifier = "test",
+                state = DatasetRunQuestionResultState.COMPLETED,
+                isRagAnswer = true,
+                ragAnswerStatus = "found_in_context",
+            )
+        every { datasetRunDAO.getQuestionResultsByRunId(run._id) } returns
+            listOf(
+                result,
+                result.copy(questionId = "intent", isRagAnswer = false, ragAnswerStatus = null),
+            )
+
+        val response = DatasetService.getRun(NAMESPACE, BOT_ID, dataset._id.toString(), run._id.toString())
+
+        assertEquals(1, response.stats.ragAnswerStatusCounts["found_in_context"])
+        assertEquals(1, response.stats.nonRagAnswers)
+        assertEquals(2, response.stats.completedQuestions)
+        verify(exactly = 0) { dialogReportDAO.findByDialogByIds(any()) }
+        verify(exactly = 0) { dialogReportDAO.search(any()) }
+    }
+
+    @Test
+    fun `dataset request rejects duplicate question IDs after trimming`() {
+        val request =
+            DatasetCreateRequest(
+                name = "Dataset",
+                questions = listOf(DatasetQuestionRequest(id = "same", question = "First"), DatasetQuestionRequest(id = " same ", question = "Second")),
+            )
+        assertTrue(request.validate().contains("Question IDs must be unique"))
     }
 
     private fun newDataset(): Dataset =

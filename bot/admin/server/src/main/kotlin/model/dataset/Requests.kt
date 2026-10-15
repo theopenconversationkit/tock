@@ -83,6 +83,11 @@ private fun validateDatasetRequest(
         errors.add("Dataset must not contain more than $datasetMaxQuestions questions")
     }
 
+    val questionIds = questions.mapNotNull { it.id?.trim()?.takeIf(String::isNotEmpty) }
+    if (questionIds.size != questionIds.distinct().size) {
+        errors.add("Question IDs must be unique")
+    }
+
     questions.forEachIndexed { index, question ->
         val questionLabel = "Question #${index + 1}"
         val trimmedQuestion = question.question.trim()

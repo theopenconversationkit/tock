@@ -26,6 +26,7 @@ import ai.tock.bot.admin.dataset.DatasetRunState
 import ai.tock.bot.admin.test.TestTalkService
 import ai.tock.bot.admin.test.model.BotDialogResponse
 import ai.tock.bot.connector.rest.client.model.ClientDebug
+import ai.tock.bot.connector.rest.client.model.ClientSentenceWithFootnotes
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
@@ -93,7 +94,14 @@ class DatasetRunProcessor(
 
     fun processNextQueuedRun(): Boolean {
         val run = datasetRunDAO.claimNextQueuedRun() ?: return false
-        processRun(run)
+        logger.info { "Starting dataset run ${run._id} for dataset ${run.datasetId}." }
+        try {
+            processRun(run)
+        } catch (e: Exception) {
+            logger.error(e) { "Dataset run ${run._id} failed; marking unfinished questions as failed." }
+            datasetRunDAO.finishActiveQuestionResults(run._id, DatasetRunQuestionResultState.FAILED, now(), e.message ?: "Dataset run execution failed")
+            datasetRunDAO.finishRun(run._id, DatasetRunState.COMPLETED, now())
+        }
         return true
     }
 
@@ -101,7 +109,8 @@ class DatasetRunProcessor(
         val dataset = datasetDAO.getDatasetById(run.datasetId)
         if (dataset == null) {
             logger.warn { "Dataset ${run.datasetId} not found for run ${run._id}. Marking run as cancelled." }
-            datasetRunDAO.saveRun(run.copy(state = DatasetRunState.CANCELLED, endTime = now()))
+            datasetRunDAO.finishRun(run._id, DatasetRunState.CANCELLED, now())
+            datasetRunDAO.finishActiveQuestionResults(run._id, DatasetRunQuestionResultState.CANCELLED, now())
             return
         }
 
@@ -143,12 +152,11 @@ class DatasetRunProcessor(
                 return@forEach
             }
 
-            questionResultsById[question.id] = executeQuestion(refreshedRun, question, questionResult)
+            questionResultsById[question.id] = executeQuestion(refreshedRun, question, questionResult) ?: return
         }
 
-        val finalRun = datasetRunDAO.getRunById(run._id) ?: return
-        if (finalRun.state != DatasetRunState.CANCELLED) {
-            datasetRunDAO.saveRun(finalRun.copy(state = DatasetRunState.COMPLETED, endTime = now()))
+        if (datasetRunDAO.finishRun(run._id, DatasetRunState.COMPLETED, now()) != null) {
+            logger.info { "Completed dataset run ${run._id}." }
         }
     }
 
@@ -156,16 +164,16 @@ class DatasetRunProcessor(
         run: DatasetRun,
         question: DatasetQuestion,
         questionResult: DatasetRunQuestionResult,
-    ): DatasetRunQuestionResult {
+    ): DatasetRunQuestionResult? {
         var currentResult =
-            datasetRunDAO.saveQuestionResult(
+            datasetRunDAO.updateActiveQuestionResult(
                 questionResult.copy(
                     state = DatasetRunQuestionResultState.RUNNING,
                     startedAt = questionResult.startedAt ?: now(),
                     endedAt = null,
                     error = null,
                 ),
-            )
+            ) ?: return null
 
         while (true) {
             val outcome =
@@ -176,19 +184,30 @@ class DatasetRunProcessor(
             val response = outcome.getOrNull()
             val retryableFailureMessage = response?.toRetryableFailureMessage()
             if (response?.userActionId != null && retryableFailureMessage == null) {
-                return datasetRunDAO.saveQuestionResult(
+                return datasetRunDAO.updateActiveQuestionResult(
                     currentResult.copy(
                         state = DatasetRunQuestionResultState.COMPLETED,
                         endedAt = now(),
                         userActionId = response.userActionId,
                         error = null,
+                        isRagAnswer =
+                            when {
+                                response.messages.any { it is ClientDebug && it.text == RAG_DEBUG_MESSAGE_TEXT } -> true
+
+                                // Older REST servers omit RAG debug.
+                                response.messages.any { it is ClientSentenceWithFootnotes } -> null
+
+                                else -> false
+                            },
+                        ragAnswerStatus = response.ragAnswerStatus(),
                     ),
                 )
             }
 
             val errorMessage = outcome.exceptionOrNull()?.message ?: retryableFailureMessage ?: response.toFailureMessage()
             if (currentResult.retryCount >= maxRetries) {
-                return datasetRunDAO.saveQuestionResult(
+                logger.warn { "Dataset run ${run._id}, question ${question.id} failed after ${currentResult.retryCount + 1} attempts." }
+                return datasetRunDAO.updateActiveQuestionResult(
                     currentResult.copy(
                         state = DatasetRunQuestionResultState.FAILED,
                         endedAt = now(),
@@ -198,14 +217,18 @@ class DatasetRunProcessor(
                 )
             }
 
+            if (datasetRunDAO.getRunById(run._id)?.state != DatasetRunState.RUNNING) {
+                return null
+            }
+
             currentResult =
-                datasetRunDAO.saveQuestionResult(
+                datasetRunDAO.updateActiveQuestionResult(
                     currentResult.copy(
                         retryCount = currentResult.retryCount + 1,
                         userActionId = response?.userActionId ?: currentResult.userActionId,
                         error = errorMessage,
                     ),
-                )
+                ) ?: return null
         }
     }
 
@@ -224,6 +247,17 @@ class DatasetRunProcessor(
             .filterIsInstance<ClientDebug>()
             .mapNotNull { it.toRAGTechnicalFailure() }
             .firstOrNull()
+
+    private fun BotDialogResponse.ragAnswerStatus(): String? =
+        messages
+            .filterIsInstance<ClientDebug>()
+            .firstOrNull { it.text == RAG_DEBUG_MESSAGE_TEXT }
+            ?.data
+            .asMap()
+            ?.get("answer")
+            .asMap()
+            ?.stringValue("status")
+            ?.lowercase()
 
     private fun ClientDebug.toRAGTechnicalFailure(): String? {
         if (text != RAG_DEBUG_MESSAGE_TEXT) {

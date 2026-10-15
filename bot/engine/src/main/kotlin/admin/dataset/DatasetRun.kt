@@ -69,4 +69,6 @@ data class DatasetRunQuestionResult(
     val answerActionId: Id<Action>? = null,
     val retryCount: Int = 0,
     val error: String? = null,
+    val isRagAnswer: Boolean? = null,
+    val ragAnswerStatus: String? = null,
 )

@@ -26,10 +26,10 @@ interface ActiveFilters {
 }
 
 @Component({
-    selector: 'tock-dataset-detail',
-    templateUrl: './dataset-detail.component.html',
-    styleUrl: './dataset-detail.component.scss',
-    standalone: false
+  selector: 'tock-dataset-detail',
+  templateUrl: './dataset-detail.component.html',
+  styleUrl: './dataset-detail.component.scss',
+  standalone: false
 })
 export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
@@ -240,16 +240,10 @@ export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     this.comparableRuns = this._buildComparableRuns(dataset);
     this.currentRun = this.comparableRuns[0] ?? null;
 
-    // If a compareRunId query param is present, use it to pre-select Run B —
-    // allows the board entry "compare with latest run" button to deep-link directly
-    // into a specific comparison. Falls back to run -1 if the id is not found
-    // among comparable runs (e.g. run is not COMPLETED).
+    // Run B must be a different completed run, including when opening a direct link.
     const compareRunId = this.route.snapshot.queryParams['compareRunId'];
-    if (compareRunId) {
-      this.comparisonRun = this.comparableRuns.find((r) => r.id === compareRunId) ?? this.comparableRuns[1] ?? null;
-    } else {
-      this.comparisonRun = this.comparableRuns[1] ?? null;
-    }
+    const comparisonCandidates = this.comparableRuns.filter((run) => run.id !== this.currentRun?.id);
+    this.comparisonRun = comparisonCandidates.find((run) => run.id === compareRunId) ?? comparisonCandidates[0] ?? null;
 
     if (this.currentRun) this.fetchRunEntries();
     this.loading = false;

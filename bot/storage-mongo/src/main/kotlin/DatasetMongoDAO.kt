@@ -21,16 +21,20 @@ import ai.tock.bot.admin.dataset.DatasetDAO
 import ai.tock.bot.admin.dataset.DatasetRun
 import ai.tock.bot.admin.dataset.DatasetRunDAO
 import ai.tock.bot.admin.dataset.DatasetRunQuestionResult
+import ai.tock.bot.admin.dataset.DatasetRunQuestionResultState
 import ai.tock.bot.admin.dataset.DatasetRunState
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
+import com.mongodb.client.model.FindOneAndReplaceOptions
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Sorts.ascending
+import com.mongodb.client.model.Updates.combine
 import com.mongodb.client.model.Updates.set
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import org.litote.kmongo.and
 import org.litote.kmongo.ascendingSort
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.deleteOneById
@@ -41,6 +45,7 @@ import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.`in`
 import org.litote.kmongo.save
+import java.time.Instant
 
 internal object DatasetMongoDAO : DatasetDAO, DatasetRunDAO {
     private val logger = KotlinLogging.logger {}
@@ -59,6 +64,7 @@ internal object DatasetMongoDAO : DatasetDAO, DatasetRunDAO {
             datasetRunCol.ensureIndex(DatasetRun::datasetId)
             datasetRunCol.ensureIndex(DatasetRun::datasetId, DatasetRun::state)
             datasetRunCol.ensureIndex(DatasetRun::datasetId, DatasetRun::startTime)
+            datasetRunCol.ensureIndex(DatasetRun::state, DatasetRun::startTime)
 
             datasetRunQuestionResultCol.ensureIndex(DatasetRunQuestionResult::namespace, DatasetRunQuestionResult::botId)
             datasetRunQuestionResultCol.ensureIndex(DatasetRunQuestionResult::datasetId, DatasetRunQuestionResult::runId)
@@ -110,6 +116,20 @@ internal object DatasetMongoDAO : DatasetDAO, DatasetRunDAO {
         return run
     }
 
+    override fun finishRun(
+        id: Id<DatasetRun>,
+        state: DatasetRunState,
+        endTime: Instant,
+    ): DatasetRun? {
+        require(state == DatasetRunState.COMPLETED || state == DatasetRunState.CANCELLED)
+        val previousStates = if (state == DatasetRunState.COMPLETED) listOf(DatasetRunState.RUNNING) else listOf(DatasetRunState.QUEUED, DatasetRunState.RUNNING)
+        return datasetRunCol.findOneAndUpdate(
+            and(DatasetRun::_id eq id, DatasetRun::state `in` previousStates),
+            combine(set(DatasetRun::state.name, state), set(DatasetRun::endTime.name, endTime)),
+            FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER),
+        )
+    }
+
     override fun claimNextQueuedRun(): DatasetRun? =
         datasetRunCol.findOneAndUpdate(
             DatasetRun::state eq DatasetRunState.QUEUED,
@@ -140,33 +160,20 @@ internal object DatasetMongoDAO : DatasetDAO, DatasetRunDAO {
     }
 
     override fun deleteRunsByDatasetId(datasetId: Id<Dataset>) {
-        val runIds = datasetRunCol.find(DatasetRun::datasetId eq datasetId).toList().map { it._id }
         datasetRunCol.deleteMany(DatasetRun::datasetId eq datasetId)
-        if (runIds.isNotEmpty()) {
-            datasetRunQuestionResultCol.deleteMany(DatasetRunQuestionResult::runId `in` runIds)
-        }
+        datasetRunQuestionResultCol.deleteMany(DatasetRunQuestionResult::datasetId eq datasetId)
     }
 
     override fun deleteRunsByNamespaceAndBotId(
         namespace: String,
         botId: String,
     ) {
-        val runIds =
-            datasetRunCol
-                .find(
-                    DatasetRun::namespace eq namespace,
-                    DatasetRun::botId eq botId,
-                ).toList()
-                .map { it._id }
-
         datasetRunCol.deleteMany(
             DatasetRun::namespace eq namespace,
             DatasetRun::botId eq botId,
         )
 
-        if (runIds.isNotEmpty()) {
-            datasetRunQuestionResultCol.deleteMany(DatasetRunQuestionResult::runId `in` runIds)
-        }
+        deleteQuestionResultsByNamespaceAndBotId(namespace, botId)
     }
 
     override fun saveQuestionResult(result: DatasetRunQuestionResult): DatasetRunQuestionResult {
@@ -174,11 +181,53 @@ internal object DatasetMongoDAO : DatasetDAO, DatasetRunDAO {
         return result
     }
 
+    override fun updateActiveQuestionResult(result: DatasetRunQuestionResult): DatasetRunQuestionResult? =
+        datasetRunQuestionResultCol.findOneAndReplace(
+            and(
+                DatasetRunQuestionResult::_id eq result._id,
+                DatasetRunQuestionResult::state `in` listOf(DatasetRunQuestionResultState.PENDING, DatasetRunQuestionResultState.RUNNING),
+            ),
+            result,
+            FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER),
+        )
+
+    override fun finishActiveQuestionResults(
+        runId: Id<DatasetRun>,
+        state: DatasetRunQuestionResultState,
+        endTime: Instant,
+        error: String?,
+    ) {
+        require(state == DatasetRunQuestionResultState.CANCELLED || state == DatasetRunQuestionResultState.FAILED)
+        datasetRunQuestionResultCol.updateMany(
+            and(
+                DatasetRunQuestionResult::runId eq runId,
+                DatasetRunQuestionResult::state `in` listOf(DatasetRunQuestionResultState.PENDING, DatasetRunQuestionResultState.RUNNING),
+            ),
+            combine(
+                set(DatasetRunQuestionResult::state.name, state),
+                set(DatasetRunQuestionResult::endedAt.name, endTime),
+                set(DatasetRunQuestionResult::error.name, error),
+            ),
+        )
+    }
+
+    override fun updateQuestionResultAnswer(result: DatasetRunQuestionResult) {
+        datasetRunQuestionResultCol.updateOne(
+            and(DatasetRunQuestionResult::_id eq result._id, DatasetRunQuestionResult::state eq DatasetRunQuestionResultState.COMPLETED),
+            combine(
+                set(DatasetRunQuestionResult::dialogId.name, result.dialogId),
+                set(DatasetRunQuestionResult::answerActionId.name, result.answerActionId),
+                set(DatasetRunQuestionResult::isRagAnswer.name, result.isRagAnswer),
+                set(DatasetRunQuestionResult::ragAnswerStatus.name, result.ragAnswerStatus),
+            ),
+        )
+    }
+
     override fun saveQuestionResults(results: List<DatasetRunQuestionResult>) {
         if (results.isEmpty()) {
             return
         }
-        results.forEach { datasetRunQuestionResultCol.save(it) }
+        datasetRunQuestionResultCol.insertMany(results)
     }
 
     override fun getQuestionResultsByRunId(runId: Id<DatasetRun>): List<DatasetRunQuestionResult> = datasetRunQuestionResultCol.find(DatasetRunQuestionResult::runId eq runId).toList()

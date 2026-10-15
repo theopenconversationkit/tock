@@ -46,7 +46,6 @@ import ai.tock.bot.admin.model.dataset.DatasetUpdateRequest
 import ai.tock.bot.admin.model.genai.BotRAGConfigurationDTO
 import ai.tock.bot.admin.test.TestTalkService
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.event.EventType
 import ai.tock.bot.engine.user.PlayerId
@@ -269,8 +268,10 @@ object DatasetService {
             throw DatasetError.RunStateConflict(runId, run.state)
         }
 
-        val cancelledRun = datasetRunDAO.saveRun(run.copy(state = DatasetRunState.CANCELLED, endTime = Instant.now()))
-        val updatedQuestionResults = cancelPendingQuestionResults(cancelledRun._id.toString())
+        val cancelledRun =
+            datasetRunDAO.finishRun(run._id, DatasetRunState.CANCELLED, Instant.now())
+                ?: throw DatasetError.RunStateConflict(runId, getRunEntity(namespace, botId, datasetId, runId).state)
+        val updatedQuestionResults = cancelPendingQuestionResults(cancelledRun._id)
 
         return cancelledRun.toDTO(
             includeSettingsSnapshot = false,
@@ -398,7 +399,7 @@ object DatasetService {
         cachedDialog?.let { dialog ->
             val cachedAction = resolveActionFromDialog(dialog, questionResult)
             if (cachedAction != null) {
-                cacheActionReferences(questionResult, dialog.id, cachedAction.id)
+                cacheActionReferences(questionResult, dialog.id, cachedAction)
                 return ResolvedRunAction(DatasetRunActionState.COMPLETED, cachedAction, dialog.id)
             }
 
@@ -418,7 +419,7 @@ object DatasetService {
                 ?: return ResolvedRunAction(DatasetRunActionState.COMPLETED, null)
         val searchedAction = resolveActionFromDialog(searchedDialog, questionResult)
 
-        cacheActionReferences(questionResult, searchedDialog.id, searchedAction?.id)
+        cacheActionReferences(questionResult, searchedDialog.id, searchedAction)
 
         return if (searchedAction != null) {
             ResolvedRunAction(DatasetRunActionState.COMPLETED, searchedAction, searchedDialog.id)
@@ -493,16 +494,23 @@ object DatasetService {
     private fun cacheActionReferences(
         questionResult: DatasetRunQuestionResult,
         dialogId: Id<Dialog>,
-        answerActionId: Id<Action>?,
+        answer: ActionReport?,
     ) {
-        if (questionResult.dialogId == dialogId && questionResult.answerActionId == answerActionId) {
+        val answerActionId = answer?.id ?: questionResult.answerActionId
+        val isRagAnswer = answer?.metadata?.isGenAiRagAnswer ?: questionResult.isRagAnswer
+        val ragAnswerStatus = answer?.ragAnswerStatus() ?: questionResult.ragAnswerStatus
+        if (questionResult.dialogId == dialogId && questionResult.answerActionId == answerActionId &&
+            questionResult.isRagAnswer == isRagAnswer && questionResult.ragAnswerStatus == ragAnswerStatus
+        ) {
             return
         }
 
-        datasetRunDAO.saveQuestionResult(
+        datasetRunDAO.updateQuestionResultAnswer(
             questionResult.copy(
                 dialogId = dialogId,
                 answerActionId = answerActionId,
+                isRagAnswer = isRagAnswer,
+                ragAnswerStatus = ragAnswerStatus,
             ),
         )
     }
@@ -564,21 +572,9 @@ object DatasetService {
             }
         }
 
-    private fun cancelPendingQuestionResults(runId: String): List<DatasetRunQuestionResult> {
-        val results = datasetRunDAO.getQuestionResultsByRunId(runId.toId<DatasetRun>())
-        val updatedResults =
-            results.map { result ->
-                when (result.state) {
-                    DatasetRunQuestionResultState.PENDING,
-                    DatasetRunQuestionResultState.RUNNING,
-                    -> result.copy(state = DatasetRunQuestionResultState.CANCELLED, endedAt = Instant.now())
-
-                    else -> result
-                }
-            }
-
-        datasetRunDAO.saveQuestionResults(updatedResults)
-        return updatedResults
+    private fun cancelPendingQuestionResults(runId: Id<DatasetRun>): List<DatasetRunQuestionResult> {
+        datasetRunDAO.finishActiveQuestionResults(runId, DatasetRunQuestionResultState.CANCELLED, Instant.now())
+        return datasetRunDAO.getQuestionResultsByRunId(runId)
     }
 
     private fun List<DatasetQuestionRequest>.toDomainQuestions(): List<DatasetQuestion> =
@@ -653,19 +649,16 @@ object DatasetService {
     private fun List<DatasetRunQuestionResult>.toAnswerStats(run: DatasetRun): DatasetRunAnswerStats {
         val statusCounts = ragAnswerStatuses.associateWith { 0 }.toMutableMap()
         var nonRagAnswers = 0
-        val dialogsById =
-            dialogReportDAO
-                .findByDialogByIds(mapNotNull { it.dialogId }.toSet())
-                .associateBy { it.id }
+        val legacyResults = filter { it.state == DatasetRunQuestionResultState.COMPLETED && it.isRagAnswer == null }
+        val dialogIds = legacyResults.mapNotNull { it.dialogId }.toSet()
+        val dialogsById = if (dialogIds.isEmpty()) emptyMap() else dialogReportDAO.findByDialogByIds(dialogIds).associateBy { it.id }
 
-        forEach { questionResult ->
-            val action =
-                resolveRunAction(run, questionResult, dialogsById[questionResult.dialogId])
-                    .action
-                    ?: return@forEach
+        filter { it.state == DatasetRunQuestionResultState.COMPLETED }.forEach { questionResult ->
+            val action = if (questionResult.isRagAnswer == null) resolveRunAction(run, questionResult, dialogsById[questionResult.dialogId]).action else null
+            val isRagAnswer = questionResult.isRagAnswer ?: action?.metadata?.isGenAiRagAnswer ?: return@forEach
 
-            if (action.metadata.isGenAiRagAnswer) {
-                action.ragAnswerStatus()?.let { status ->
+            if (isRagAnswer) {
+                (questionResult.ragAnswerStatus ?: action?.ragAnswerStatus())?.let { status ->
                     if (status in statusCounts) {
                         statusCounts[status] = statusCounts.getValue(status) + 1
                     }

@@ -273,9 +273,7 @@
         <div class="runs-grid-entry text-muted">{{ run.stats.ragAnswerStatusCounts.found_in_context }}</div>
         <div class="runs-grid-entry text-muted">
           {{ run.stats.ragAnswerStatusCounts.not_found_in_context }}
-          @if (!run.stats.failedQuestions && !run.stats.ragAnswerStatusCounts.technical_error) {
           <small class="font-small text-warning"> ({{ getPercentageNotFound(run) | number: '1.0-0' }}%) </small>
-          }
         </div>
         <div
           class="runs-grid-entry"
@@ -284,7 +282,7 @@
           {{ run.state }}
         </div>
         <div>
-          @if (run.state === datasetRunState.COMPLETED && run !== getLatestRun()) {
+          @if (run.state === datasetRunState.COMPLETED && run.id !== latestCompletedRun?.id) {
           <button
             nbButton
             size="tiny"

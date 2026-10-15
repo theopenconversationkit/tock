@@ -109,11 +109,21 @@ For each run, the list of runs shows its dates, duration and state, and counts t
 
 A run that ends with some failed questions is still _completed_: failed questions are reported in the run statistics.
 
+The _Not found in context_ percentage is calculated over all questions in the dataset, including failed questions.
+It remains visible when some questions fail; read it alongside the failure count.
+
+For new runs, answer-type and RAG-status counts are stored with each question result, so they remain available after
+the underlying dialogs expire. Older runs acquire these counts when their answers are read, if the dialogs are still available.
+Answer details and evaluation samples still depend on dialog retention.
+
 ### Comparing runs
 
-Open a run to display its answers. The screen compares a _Run A_ with a _Run B_ (by default, the latest run),
+Open a run to display its answers. By default, the screen compares the latest completed run (_Run A_) with the previous completed run (_Run B_),
 question by question: answer text, answer type (RAG or intent) and sources. Sources that were added, modified or removed
 between the two runs are highlighted.
+
+The list's comparison button compares the selected run with the latest completed run, even while another run is in progress.
+Comparison requires two distinct completed runs; when only one is available, the detail view displays that run alone.
 
 The _Show only diffs_ filters display only the questions whose status, sources, answer type or wording changed.
 

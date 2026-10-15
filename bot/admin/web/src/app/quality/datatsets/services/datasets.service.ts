@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, interval, Observable, of } from 'rxjs';
 import { map, startWith, tap } from 'rxjs/operators';
 import { Dataset, DatasetQuestion, DatasetRun, DatasetRunAction, DatasetRunState } from '../models';
-import { deepCopy } from '../../../shared/utils';
 import { StateService } from '../../../core-nlp/state.service';
 import { RestService } from '../../../core-nlp/rest/rest.service';
 import { EvaluationSampleDefinition } from '../../samples/models';
@@ -41,14 +40,9 @@ export class DatasetsService {
   // GET /bots/:botId/datasets/:datasetId
   // ---------------------------------------------------------------------------
   getDataset(datasetId: string): Observable<Dataset> {
-    const cached = this.datasets.find((d) => d.id === datasetId);
-    if (cached?._settingsLoaded) {
-      return of(deepCopy(cached));
-    }
-
     return this.rest
       .get<Dataset>(`${this.apiBase()}/${datasetId}`, (res) => res as Dataset)
-      .pipe(tap((dataset) => this._upsertIntoStore({ ...dataset, _settingsLoaded: true })));
+      .pipe(tap((dataset) => this._upsertIntoStore(dataset)));
   }
 
   // ---------------------------------------------------------------------------
@@ -57,7 +51,7 @@ export class DatasetsService {
   createDataset(payload: { name: string; description: string; questions: Omit<DatasetQuestion, 'id'>[] }): Observable<Dataset> {
     return this.rest
       .post<typeof payload, Dataset>(this.apiBase(), payload, (res) => res as Dataset)
-      .pipe(tap((created) => (this.datasets = [{ ...created, _settingsLoaded: false }, ...this.datasets])));
+      .pipe(tap((created) => (this.datasets = [created, ...this.datasets])));
   }
 
   // ---------------------------------------------------------------------------
@@ -73,7 +67,7 @@ export class DatasetsService {
         tap((updated) => {
           const index = this.datasets.findIndex((d) => d.id === datasetId);
           if (index !== -1) {
-            const merged = { ...updated, runs: this.datasets[index].runs, _settingsLoaded: this.datasets[index]._settingsLoaded };
+            const merged = this._mergeDataset(updated, this.datasets[index]);
             this.datasets = [...this.datasets.slice(0, index), merged, ...this.datasets.slice(index + 1)];
           }
         })
@@ -189,12 +183,7 @@ export class DatasetsService {
     const updatedRun: DatasetRun = { ...dataset.runs[runIndex], ...patch };
     const updatedRuns = [...dataset.runs.slice(0, runIndex), updatedRun, ...dataset.runs.slice(runIndex + 1)];
 
-    // A run with COMPLETED status now has a settingsSnapshot on the server side
-    // that the store does not have — we invalidate to force a reload
-    // on the next opening of the detail view.
-    const settingsLoaded = patch.state === DatasetRunState.COMPLETED ? false : dataset._settingsLoaded;
-
-    const updatedDataset: Dataset = { ...dataset, runs: updatedRuns, _settingsLoaded: settingsLoaded };
+    const updatedDataset: Dataset = { ...dataset, runs: updatedRuns };
     this.datasets = [...datasets.slice(0, datasetIndex), updatedDataset, ...datasets.slice(datasetIndex + 1)];
   }
 
@@ -253,8 +242,17 @@ export class DatasetsService {
     const existing = new Map(this.datasets.map((d) => [d.id, d]));
     this.datasets = fetched.map((d) => {
       const cached = existing.get(d.id);
-      return cached?._settingsLoaded ? cached : d;
+      return this._mergeDataset(d, cached);
     });
+  }
+
+  private _mergeDataset(dataset: Dataset, cached?: Dataset): Dataset {
+    const cachedRuns = new Map(cached?.runs.map((run) => [run.id, run]));
+    const runs = dataset.runs.map((run) => ({
+      ...run,
+      settingsSnapshot: run.settingsSnapshot ?? cachedRuns.get(run.id)?.settingsSnapshot
+    }));
+    return { ...dataset, runs };
   }
 
   private _upsertIntoStore(dataset: Dataset): void {
@@ -271,7 +269,7 @@ export class DatasetsService {
     const index = datasets.findIndex((d) => d.id === datasetId);
     if (index === -1) return;
 
-    const updatedDataset: Dataset = { ...datasets[index], runs, _settingsLoaded: datasets[index]._settingsLoaded };
+    const updatedDataset: Dataset = { ...datasets[index], runs };
     this.datasets = [...datasets.slice(0, index), updatedDataset, ...datasets.slice(index + 1)];
   }
 }
