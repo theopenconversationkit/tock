@@ -75,7 +75,7 @@ internal object ApplicationCodecService : ApplicationCodec {
         applicationId: Id<ApplicationDefinition>,
         dumpType: DumpType,
     ): ApplicationDump {
-        val app = config.getApplicationById(applicationId)!!
+        val app = checkNotNull(config.getApplicationById(applicationId)) { "application $applicationId not found" }
         val entities = config.getEntityTypesByNamespaceAndSharedEntityTypes(app.namespace)
         val intents = config.getIntentsByApplicationId(applicationId)
         val sentences = config.getSentences(intents.map { it._id }.toSet()).sortedBy { it.updateDate }
@@ -121,7 +121,7 @@ internal object ApplicationCodecService : ApplicationCodec {
                 report?.add(newEntity)
                 newEntity
             } else {
-                config.getEntityTypeByName(newName)!!
+                checkNotNull(config.getEntityTypeByName(newName)) { "entity type $newName not found" }
             }
 
         if (subEntities.isNotEmpty()) {
@@ -198,7 +198,10 @@ internal object ApplicationCodecService : ApplicationCodec {
             }
 
             val appName =
-                if (configuration.newApplicationName.isNullOrBlank()) dump.application.name else configuration.newApplicationName!!.lowercase().trim()
+                configuration.newApplicationName
+                    ?.takeUnless { it.isBlank() }
+                    ?.lowercase()
+                    ?.trim() ?: dump.application.name
             val app =
                 config
                     .getApplicationByNamespaceAndName(namespace, appName)
@@ -274,7 +277,7 @@ internal object ApplicationCodecService : ApplicationCodec {
             config.save(
                 app.copy(
                     intents = app.intents + intentsIdsMap.values.toSet(),
-                    intentStatesMap = app.intentStatesMap + dump.application.intentStatesMap.mapKeys { intentsIdsMap[it.key]!! },
+                    intentStatesMap = app.intentStatesMap + dump.application.intentStatesMap.mapKeys { intentsIdsMap.getValue(it.key) },
                     supportedLocales = app.supportedLocales + dump.application.supportedLocales,
                 ),
             )
@@ -301,7 +304,7 @@ internal object ApplicationCodecService : ApplicationCodec {
                             applicationId = appId,
                             classification =
                                 s.classification.copy(
-                                    intentId = intentsIdsMap[s.classification.intentId]!!,
+                                    intentId = intentsIdsMap.getValue(s.classification.intentId),
                                     // ensure that entities are correctly sorted
                                     entities = changeEntityNames(s.classification.entities, namespace).sortedBy { it.start },
                                 ),
@@ -313,7 +316,7 @@ internal object ApplicationCodecService : ApplicationCodec {
 
             dump.faqs.forEach {
                 val intentDump = dump.intents.first { intent -> intent._id == it.intentId }
-                val intentDB = config.getIntentByNamespaceAndName(namespace, intentDump.name)!!
+                val intentDB = checkNotNull(config.getIntentByNamespaceAndName(namespace, intentDump.name)) { "intent ${intentDump.name} not found" }
                 val faq = config.getFaqDefinitionByIntentId(intentDB._id)
                 if (faq == null) {
                     // update i18nId namespace for import current namespace
@@ -511,7 +514,7 @@ internal object ApplicationCodecService : ApplicationCodec {
         // Suppose all queries in the same application/locale/etc.
         val query = queries.first()
         val applicationId = query.applicationId
-        val app = config.getApplicationById(applicationId)!!
+        val app = checkNotNull(config.getApplicationById(applicationId)) { "application $applicationId not found" }
         val filteredIntentId = query.intentId
 
         val intents =

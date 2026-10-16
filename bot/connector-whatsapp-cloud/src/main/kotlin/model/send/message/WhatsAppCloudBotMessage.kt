@@ -75,18 +75,20 @@ abstract class WhatsAppCloudBotMessage(
                 GenericMessage(
                     connectorType = whatsAppCloudConnectorType,
                     choices =
-                        interactive.action?.buttons?.mapNotNull { actionButton ->
-                            actionButton.reply.let {
-                                SendChoice
-                                    .decodeChoiceId(it.id)
-                                    .let { (intent, params) ->
-                                        Choice(
-                                            intent,
-                                            params + (TITLE_PARAMETER to it.title),
-                                        )
-                                    }
-                            }
-                        }!!,
+                        interactive.action
+                            ?.buttons
+                            ?.mapNotNull { actionButton ->
+                                actionButton.reply.let {
+                                    SendChoice
+                                        .decodeChoiceId(it.id)
+                                        .let { (intent, params) ->
+                                            Choice(
+                                                intent,
+                                                params + (TITLE_PARAMETER to it.title),
+                                            )
+                                        }
+                                }
+                            }.orEmpty(),
                 )
             }
 

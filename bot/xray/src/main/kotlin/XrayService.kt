@@ -226,7 +226,7 @@ class XrayService(
                         // no duplicate
                         .run { toSet().size == size }
                 ) {
-                    val firstExecution = plans.map { it.execution.date }.minOrNull()!!
+                    val firstExecution = plans.minOf { it.execution.date }
                     sendXrayExecution(
                         planKey,
                         ofInstant(firstExecution, defaultZoneId),
@@ -710,9 +710,9 @@ class XrayService(
             }
             if (labelTestPlansMap.isNotEmpty()) {
                 labels
-                    .filter { labelTestPlansMap.containsKey(it) }
+                    .mapNotNull { labelTestPlansMap[it] }
                     .forEach {
-                        XrayClient.addTestToTestPlan(jira.key, labelTestPlansMap[it]!!)
+                        XrayClient.addTestToTestPlan(jira.key, it)
                     }
             }
         }

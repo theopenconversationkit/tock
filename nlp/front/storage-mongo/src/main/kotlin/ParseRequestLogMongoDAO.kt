@@ -286,21 +286,22 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 ClassifiedSentenceMongoDAO.updateSentenceState(updatedStat)
             }
 
-            var intent1 = log.result?.intent
+            val result = log.result
+            var intent1 = result?.intent
             val nextIntent =
-                log.result
+                result
                     ?.otherIntentsProbabilities
                     ?.asSequence()
                     ?.firstOrNull()
             var intent2 = nextIntent?.key?.name()
-            if (intent1 != null && intent2 != null && intent2 != intent1) {
+            if (result != null && nextIntent != null && intent1 != null && intent2 != null && intent2 != intent1) {
                 // order by string intent
                 if (intent1 > intent2) {
                     val tmp = intent1
                     intent1 = intent2
                     intent2 = tmp
                 }
-                val diff = log.result!!.intentProbability - nextIntent!!.value
+                val diff = result.intentProbability - nextIntent.value
                 val s =
                     intentStatsCol
                         .findOne(
@@ -331,17 +332,19 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
     override fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult {
         with(query) {
+            val searchText = search
+            val mark = searchMark
             val baseFilter =
                 and(
                     ApplicationId eq applicationId,
                     if (language == null) null else Query.context.language eq language,
                     if (query.displayTests) null else Query.context.test eq false,
                     when {
-                        search.isNullOrBlank() -> null
-                        query.onlyExactMatch -> Text eq search
-                        else -> Text.regex(search!!.trim(), "i")
+                        searchText.isNullOrBlank() -> null
+                        query.onlyExactMatch -> Text eq searchText
+                        else -> Text.regex(searchText.trim(), "i")
                     },
-                    if (searchMark == null) null else Date lte searchMark!!.date,
+                    mark?.let { Date lte it.date },
                     if (sinceDate == null) null else Date gte sinceDate,
                     if (clientDevice.isNullOrBlank()) null else Query.context.clientDevice eq clientDevice,
                     if (clientId.isNullOrBlank()) null else Query.context.clientId eq clientId,

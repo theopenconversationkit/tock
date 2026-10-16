@@ -309,21 +309,20 @@ private class LoggingInterceptor(
         val logHeaders = logBody || level == Level.HEADERS
 
         val requestBody = request.body
-        val hasRequestBody = requestBody != null
 
         val connection = chain.connection()
         val protocol = if (connection != null) connection.protocol() else Protocol.HTTP_1_1
         var requestStartMessage = "--> " + request.method + ' ' + request.url + ' ' + protocol
-        if (!logHeaders && hasRequestBody) {
-            requestStartMessage += " (" + requestBody!!.contentLength() + "-byte body)"
+        if (!logHeaders && requestBody != null) {
+            requestStartMessage += " (" + requestBody.contentLength() + "-byte body)"
         }
         logger.info(requestStartMessage)
 
         if (logHeaders) {
-            if (hasRequestBody) {
+            if (requestBody != null) {
                 // Request body headers are only present when installed as a network interceptor. Force
                 // them to be included (when available) so there values are known.
-                if (requestBody!!.contentType() != null) {
+                if (requestBody.contentType() != null) {
                     logger.info("Content-Type: " + requestBody.contentType())
                 }
                 if (requestBody.contentLength() != -1L) {
@@ -348,13 +347,13 @@ private class LoggingInterceptor(
                 i++
             }
 
-            if (!logBody || !hasRequestBody) {
+            if (!logBody || requestBody == null) {
                 logger.info("--> END " + request.method)
             } else if (bodyEncoded(request.headers)) {
                 logger.info("--> END " + request.method + " (encoded body omitted)")
             } else {
                 val buffer = Buffer()
-                requestBody!!.writeTo(buffer)
+                requestBody.writeTo(buffer)
 
                 var charset = UTF_8
                 val contentType = requestBody.contentType()

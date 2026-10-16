@@ -87,15 +87,13 @@ internal object MediaConverter {
 
     private fun BotBus.toActions(actions: List<MediaAction>): List<Action> =
         actions
-            .filter { it.url != null }
-            .map {
-                Action(translate(it.title).toString(), it.url!!)
+            .mapNotNull { action ->
+                action.url?.let { url -> Action(translate(action.title).toString(), url) }
             }
 
     private fun BotBus.toImage(file: MediaFile?): Image? =
-        if (image.equals(file?.type)) {
-            // if equals true, file cannot be null
-            Image(file!!.url, file.name)
+        if (file != null && image == file.type) {
+            Image(file.url, file.name)
         } else {
             null
         }

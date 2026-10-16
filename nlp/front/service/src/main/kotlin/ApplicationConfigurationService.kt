@@ -131,7 +131,7 @@ object ApplicationConfigurationService :
 
     override fun deleteApplicationById(id: Id<ApplicationDefinition>) {
         sentenceDAO.deleteSentencesByApplicationId(id)
-        val app = applicationDAO.getApplicationById(id)!!
+        val app = checkNotNull(applicationDAO.getApplicationById(id)) { "application $id not found" }
         intentDAO.getIntentsByApplicationId(id).forEach { intent ->
             removeIntentFromApplication(app, intent._id)
         }
@@ -144,7 +144,7 @@ object ApplicationConfigurationService :
         application: ApplicationDefinition,
         intentId: Id<IntentDefinition>,
     ): Boolean {
-        val intent = intentDAO.getIntentById(intentId)!!
+        val intent = checkNotNull(intentDAO.getIntentById(intentId)) { "intent $intentId not found" }
         sentenceDAO.switchSentencesIntent(application._id, intentId, Intent.UNKNOWN_INTENT_NAME.toId())
         applicationDAO.save(application.copy(intents = application.intents - intentId))
         val newIntent = intent.copy(applications = intent.applications - application._id)
@@ -280,7 +280,7 @@ object ApplicationConfigurationService :
         if (targetIntentId.toString() != UNKNOWN_INTENT_NAME &&
             targetIntentId.toString() != RAG_EXCLUDED_INTENT_NAME
         ) {
-            val intent = getIntentById(targetIntentId)!!
+            val intent = checkNotNull(getIntentById(targetIntentId)) { "intent $targetIntentId not found" }
             entities.filterNot { intent.hasEntity(it) }.apply {
                 if (isNotEmpty()) {
                     save(intent.copy(entities = intent.entities + map { EntityDefinition(it) }))
@@ -332,7 +332,7 @@ object ApplicationConfigurationService :
         applicationName: String,
         entity: EntityDefinition,
     ) {
-        val app = getApplicationByNamespaceAndName(namespace, applicationName)!!
+        val app = checkNotNull(getApplicationByNamespaceAndName(namespace, applicationName)) { "application $namespace:$applicationName not found" }
         val intents = getIntentsByApplicationId(app._id)
         intents.forEach {
             it

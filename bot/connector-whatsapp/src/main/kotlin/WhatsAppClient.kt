@@ -220,7 +220,7 @@ internal class WhatsAppClient(
                             api
                                 .sendMedia(
                                     message.image.contentType,
-                                    message.image.byteImages!!.toRequestBody(
+                                    checkNotNull(message.image.byteImages) { "image bytes are not loaded" }.toRequestBody(
                                         message.image.contentType.toMediaType(),
                                     ),
                                 ).execute()

@@ -154,7 +154,7 @@ object AlexaCodecService : AlexaCodec {
         val spaceRegex = "\\s{2,}".toRegex()
         return sentences
             .filter { it.classification.intentId == intent._id }
-            .filter { filter == null || it.classification.entities.all { filteredRoles!!.contains(it.role) } }
+            .filter { filter == null || it.classification.entities.all { e -> filteredRoles.orEmpty().contains(e.role) } }
             .map { sentence ->
                 var t = sentence.text.lowercase()
                 sentence

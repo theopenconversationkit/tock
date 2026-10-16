@@ -267,8 +267,8 @@ class GoogleChatConnector(
 
     private fun ChatCard.sectionFromMediaCard(message: MediaCard) {
         section {
-            if (message.title != null) {
-                keyValue(content = message.title!!, bottomLabel = message.subTitle)
+            message.title?.let { title ->
+                keyValue(content = title, bottomLabel = message.subTitle)
             }
             if (message.actions.isNotEmpty()) {
                 buttons {
@@ -283,8 +283,9 @@ class GoogleChatConnector(
 
     private fun ChatButtons.buttonFromMediaAction(message: MediaAction) {
         textButton(message.title) {
-            if (message.url != null) {
-                link(message.url!!)
+            val url = message.url
+            if (url != null) {
+                link(url)
             } else {
                 nlpAction(message.title)
             }

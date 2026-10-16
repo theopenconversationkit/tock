@@ -424,8 +424,8 @@ class IadvizeConnector internal constructor(
      */
     private fun SendSentenceWithFootnotes.sendByGraphQL(parameters: Map<String, String>) {
         IadvizeGraphQLClient().sendProactiveActionOrMessage(
-            parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]!!,
-            parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]?.toInt()!!,
+            parameters.conversationId(),
+            parameters.chatBotId(),
             actionOrMessage =
                 ChatbotActionOrMessageInput(
                     chatbotMessage =
@@ -470,8 +470,8 @@ class IadvizeConnector internal constructor(
 
         // Send a proactive action or message
         IadvizeGraphQLClient().sendProactiveActionOrMessage(
-            parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]!!,
-            parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]?.toInt()!!,
+            parameters.conversationId(),
+            parameters.chatBotId(),
             actionOrMessage = actionOrMessage,
         )
     }
@@ -556,3 +556,7 @@ data class CustomRequest(
     val body: JsonObject?,
     val headers: Map<String, String>,
 )
+
+private fun Map<String, String>.conversationId(): String = requireNotNull(this[IadvizeConnectorMetadata.CONVERSATION_ID.name]) { "missing iAdvize conversation id" }
+
+private fun Map<String, String>.chatBotId(): Int = requireNotNull(this[IadvizeConnectorMetadata.CHAT_BOT_ID.name]?.toInt()) { "missing iAdvize chat bot id" }

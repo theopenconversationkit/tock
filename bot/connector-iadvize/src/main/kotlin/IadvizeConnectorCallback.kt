@@ -157,8 +157,9 @@ class IadvizeConnectorCallback(
                 if (it.action is SendSentence) {
                     val listIadvizeReply: List<IadvizeReply> = it.action.messages.filterAndEnhanceIadvizeReply()
 
-                    if (it.action.text != null) {
-                        val simpleTextPayload = mapToMessageTextPayload(it.action.text!!)
+                    val text = it.action.text
+                    if (text != null) {
+                        val simpleTextPayload = mapToMessageTextPayload(text)
                         // Combine 1 MessageTextPayload with messages enhanced IadvizeReply
                         listOf(listOf(simpleTextPayload), listIadvizeReply).flatten()
                     } else {

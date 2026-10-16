@@ -21,7 +21,6 @@ import ai.tock.bot.connector.ConnectorIdHandlers
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.BotBus
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
-import ai.tock.shared.mapNotNullValues
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
@@ -38,15 +37,15 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
     private fun getConnectorHandlerMap(contextClass: KClass<*>): Map<String, KClass<*>> =
         connectorHandlerMap.getOrPut(contextClass) {
             getAllAnnotations(contextClass)
-                .filter { it.annotationClass.findAnnotation<ConnectorHandler>() != null }
-                .mapNotNullValues { a: Annotation ->
-                    a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to
+                .mapNotNull { a: Annotation ->
+                    a.annotationClass.findAnnotation<ConnectorHandler>()?.let { connectorHandler ->
                         (
                             a.annotationClass.java
                                 .getDeclaredMethod(
                                     "value",
                                 ).invoke(a) as? Class<*>?
-                        )?.kotlin
+                        )?.kotlin?.let { connectorHandler.connectorTypeId to it }
+                    }
                 }.toMap()
         }
 

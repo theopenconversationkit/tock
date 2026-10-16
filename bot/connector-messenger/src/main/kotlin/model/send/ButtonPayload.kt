@@ -32,5 +32,5 @@ data class ButtonPayload(
             choices = buttons.map { it.toChoice() },
         )
 
-    override fun obfuscate(): Payload = ButtonPayload(TockObfuscatorService.obfuscate(text)!!, buttons)
+    override fun obfuscate(): Payload = ButtonPayload(TockObfuscatorService.obfuscate(text) ?: text, buttons)
 }

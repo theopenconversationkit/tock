@@ -29,16 +29,18 @@ data class MediaAction(
 ) : MediaMessage {
     override fun toGenericMessage(): GenericMessage? = GenericMessage(choices = listOf(toChoice()))
 
-    internal fun toChoice(): Choice =
-        if (url == null) {
+    internal fun toChoice(): Choice {
+        val url = url
+        return if (url == null) {
             Choice.fromText(title.toString())
         } else {
             Choice(
                 SendChoice.EXIT_INTENT,
                 mapOf(
-                    SendChoice.URL_PARAMETER to url!!,
+                    SendChoice.URL_PARAMETER to url,
                     SendChoice.TITLE_PARAMETER to title.toString(),
                 ),
             )
         }
+    }
 }

@@ -252,7 +252,7 @@ object XrayClient {
 
     fun getLabels(key: String): List<String> {
         val response = xray.getIssue(key).execute()
-        val body = Parser().parse(StringBuilder(response.body()!!.string())) as JsonObject
+        val body = Parser().parse(StringBuilder(checkNotNull(response.body()) { "empty Jira response for issue $key" }.string())) as JsonObject
         return body.obj("fields")?.array<String>("labels") ?: emptyList()
     }
 
@@ -261,7 +261,7 @@ object XrayClient {
         linkedField: String,
     ): List<String> {
         val response = xray.getIssue(key).execute()
-        val body = Parser().parse(StringBuilder(response.body()!!.string())) as JsonObject
+        val body = Parser().parse(StringBuilder(checkNotNull(response.body()) { "empty Jira response for issue $key" }.string())) as JsonObject
         return body.obj("fields")?.array<String>(linkedField) ?: emptyList()
     }
 

@@ -39,14 +39,12 @@ data class LogReport(
 ) {
     constructor(log: ParseRequestLog, applicationId: Id<ApplicationDefinition>, intentIdFinder: (String) -> Id<IntentDefinition>?) :
         this(
-            if (log.result == null) {
-                null
-            } else {
+            log.result?.let { result ->
                 SentenceReport(
-                    log.result!!,
+                    result,
                     log.query.context.language,
                     applicationId,
-                    intentIdFinder.invoke(log.result!!.intent),
+                    intentIdFinder.invoke(result.intent),
                 )
             },
             log.result?.intent ?: "",

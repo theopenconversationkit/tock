@@ -72,7 +72,7 @@ import kotlin.reflect.KClass
 private val logger = KotlinLogging.logger {}
 
 internal val collectionBuilder: (KClass<*>) -> String = {
-    it.simpleName!!
+    requireNotNull(it.simpleName) { "a collection class must have a name: $it" }
         .replace("storage", "", true)
         .toCharArray()
         .fold("") { s, t ->

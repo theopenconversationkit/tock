@@ -50,7 +50,7 @@ class TextMessage(
         return true
     }
 
-    override fun obfuscate(): ConnectorMessage = TextMessage(TockObfuscatorService.obfuscate(text)!!, quickReplies)
+    override fun obfuscate(): ConnectorMessage = TextMessage(TockObfuscatorService.obfuscate(text) ?: text, quickReplies)
 
     override fun hashCode(): Int = text.hashCode()
 

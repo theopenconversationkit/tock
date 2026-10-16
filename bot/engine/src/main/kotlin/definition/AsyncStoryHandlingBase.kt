@@ -85,8 +85,8 @@ abstract class AsyncStoryHandlingBase<out T : AsyncConnectorHandling<AsyncStoryH
     }
 
     /**
-     * Provides a not null [connector]. Throws NPE if [connector] is null.
+     * Provides a not null [connector]. Throws [IllegalStateException] if [connector] is null.
      */
     val c: T
-        get() = connector!!
+        get() = checkNotNull(connector) { "unsupported connector type $connectorType/$connectorId for ${this::class}" }
 }

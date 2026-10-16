@@ -234,12 +234,12 @@ object ParserService : Parser {
                     intents,
                 )
 
-            if (isValidClassifiedSentence(data)) {
+            if (validatedSentence != null && isValidClassifiedSentence(data)) {
                 val entityValues =
                     core.evaluateEntities(
                         callContext,
                         q,
-                        validatedSentence!!
+                        validatedSentence
                             .classification
                             .entities
                             .mapNotNull { it.toEntityRecognition(ConfigurationRepository::toEntity) },

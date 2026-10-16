@@ -539,9 +539,9 @@ object FaqAdminService {
                 applicationDefinition.namespace,
                 emptyList(),
                 emptyList(),
-                intent.label!!,
+                intent.label ?: query.title.trim(),
                 FAQ_CATEGORY,
-                intent.description!!,
+                intent.description ?: query.description.trim(),
                 query.utterances.first(),
                 query.answer.defaultLocale,
                 features = features,
@@ -798,8 +798,8 @@ object FaqAdminService {
      */
     private val updatedFaqSearch: FaqDefinitionRequest.(Map<String, StoryDefinitionConfiguration>) -> FaqDefinitionRequest =
         {
-            // intentName is not empty since it is present in the map
-            it[this.intentName]!!.let { story ->
+            // intentName is present in the map since faqs are filtered on its keys
+            it.getValue(this.intentName).let { story ->
                 val footnotes =
                     (story.answers.find { answer -> answer is SimpleAnswerConfiguration } as? SimpleAnswerConfiguration)
                         ?.answers

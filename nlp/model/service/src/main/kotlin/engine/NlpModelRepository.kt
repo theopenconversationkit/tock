@@ -124,7 +124,14 @@ internal object NlpModelRepository {
                 intentModelsCache.get(key) {
                     loadIntentModel(key, provider)
                 }
-            }.let { IntentModelHolder(context.application, it.nativeModel!!, it.configuration, it.lastUpdate) }
+            }.let {
+                IntentModelHolder(
+                    context.application,
+                    checkNotNull(it.nativeModel) { "no intent model for application ${context.application.name}" },
+                    it.configuration,
+                    it.lastUpdate,
+                )
+            }
 
     private fun NlpEngineProvider.configuration(configuration: NlpApplicationConfiguration? = null): NlpApplicationConfiguration = configuration ?: modelBuilder.defaultNlpApplicationConfiguration()
 

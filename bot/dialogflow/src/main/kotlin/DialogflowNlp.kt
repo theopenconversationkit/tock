@@ -297,14 +297,15 @@ internal class DialogflowNlp : NlpController {
         userTimeline: UserTimeline,
         botDefinition: BotDefinition,
     ) {
-        if (sentence.stringText != null) {
+        val text = sentence.stringText
+        if (text != null) {
             executor.executeBlocking {
                 nlpClient.markAsUnknown(
                     MarkAsUnknownQuery(
                         botDefinition.namespace,
                         botDefinition.nlpModelName,
                         userTimeline.userPreferences.locale,
-                        sentence.stringText!!,
+                        text,
                     ),
                 )
             }
