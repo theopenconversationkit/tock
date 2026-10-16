@@ -238,3 +238,14 @@ class RAGDebugData(QADebugData):
         ],
     )
     answer: LLMAnswer = Field(description='The RAG answer.')
+    step_durations: Optional[dict] = Field(
+        description=(
+            'Wall-clock duration in seconds for each tracked RAG step. '
+            'Keys: "rag_question_condensation_llm" (LLM condensation), '
+            '"similarity_retriever_retrieve"/"hybrid_retrieve"/"fts_retrieve" (retrieval), '
+            '"document_compressor" (reranking, optional), '
+            '"rag_answer_generation_llm" (LLM response generation). '
+            'Absent keys = step not activated. None = debug off.'
+        ),
+        default=None,
+    )
