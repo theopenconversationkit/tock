@@ -56,7 +56,7 @@ data class StoryDefinitionConfigurationMandatoryEntityDump(
         StoryDefinitionConfigurationMandatoryEntity(
             role,
             entityType,
-            controller.checkIntent(intent)!!,
+            checkNotNull(controller.checkIntent(intent)) { "intent ${intent.name} rejected" },
             answers.map { it.toAnswer(currentType, controller) },
             currentType,
         )

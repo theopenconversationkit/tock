@@ -124,15 +124,14 @@ class JWKHandler {
         if (devEnvironment) {
             val microsoftOpenidMetadataBotFwkEmulator =
                 microsoftOpenIdMetadataApiForBotFwkEmulator.getMicrosoftOpenIdMetadataForBotFwkEmulator().execute()
-            val nextResponse = microsoftOpenidMetadataBotFwkEmulator.body()
-            tokenIds?.addAll(
-                nextResponse?.idTokenSigningAlgValuesSupported
-                    ?: error("Error : Unable to get OpenidMetadata to validate BotFrameworkEmulatorKeys"),
-            )
+            val nextResponse =
+                microsoftOpenidMetadataBotFwkEmulator.body()
+                    ?: error("Error : Unable to get OpenidMetadata to validate BotFrameworkEmulatorKeys")
+            tokenIds?.addAll(nextResponse.idTokenSigningAlgValuesSupported)
             val keysForBotFwkEmulator =
                 microsoftJwksApi
                     .getJwk(
-                        nextResponse!!.jwksUri,
+                        nextResponse.jwksUri,
                     ).execute()
                     .body()
                     ?: error("Error : Unable to get JWK signatures to validate BotFrameworkEmulatorKeys")

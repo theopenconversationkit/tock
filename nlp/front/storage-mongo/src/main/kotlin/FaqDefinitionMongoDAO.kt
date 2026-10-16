@@ -367,31 +367,25 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     }
 
     private fun FaqQuery.filterTextSearchOnFaqTitle() =
-        if (search == null) {
-            null
-        } else {
+        search?.let {
             (FaqQueryResult::faq / IntentDefinition::label).regex(
-                pattern = search!!,
+                pattern = it,
                 options = "i",
             )
         }
 
     private fun FaqQuery.filterTextSearchOnFaqDescription() =
-        if (search == null) {
-            null
-        } else {
+        search?.let {
             (FaqQueryResult::faq / IntentDefinition::description).regex(
-                pattern = search!!,
+                pattern = it,
                 options = "i",
             )
         }
 
     private fun FaqQuery.filterTextSearchOnClassifiedSentence() =
-        if (search == null) {
-            null
-        } else {
+        search?.let {
             (FaqQueryResult::utterances / ClassifiedSentence::text).regex(
-                pattern = search!!,
+                pattern = it,
                 options = "i",
             )
         }

@@ -65,7 +65,7 @@ internal object WebhookActionConverter {
             is MessageWebhook -> {
                 with(message.message) {
                     if (quickReply != null) {
-                        if (quickReply!!.hasEmailPayloadFromMessenger()) {
+                        if (quickReply?.hasEmailPayloadFromMessenger() == true) {
                             readSentence(message, applicationId)
                         } else {
                             quickReply
@@ -127,7 +127,7 @@ internal object WebhookActionConverter {
                         LoginEvent(
                             message.playerId(PlayerType.user),
                             message.recipientId(PlayerType.bot),
-                            message.accountLinking.authorizationCode!!,
+                            requireNotNull(message.accountLinking.authorizationCode) { "missing authorization code for linked account" },
                             applicationId,
                         )
                     }

@@ -170,7 +170,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // The RAG Story is only handled when RAG and will use Vector Store settings if defined,
             // otherwise it will not send any vector store setting in the RAG Query which will default to
             // Gen AI Orchestrator environment variable vector settings
-            val ragConfiguration = botDefinition.ragConfiguration!!
+            val ragConfiguration = checkNotNull(botDefinition.ragConfiguration) { "RAG configuration is not defined for bot ${botDefinition.botId}" }
             val vectorStoreConfiguration = botDefinition.vectorStoreConfiguration
             val businessRulesConfiguration = botDefinition.businessRulesConfiguration
             val vectorStoreSetting = vectorStoreConfiguration?.takeIf { it.enabled }?.setting
@@ -180,7 +180,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                     namespace = ragConfiguration.namespace,
                     botId = ragConfiguration.botId,
                     // The indexSessionId is mandatory to enable RAG Story
-                    indexSessionId = ragConfiguration.indexSessionId!!,
+                    indexSessionId = checkNotNull(ragConfiguration.indexSessionId) { "RAG index session id is not defined for bot ${botDefinition.botId}" },
                     kNeighborsDocuments = ragConfiguration.maxDocumentsRetrieved,
                     documentSearchType = ragConfiguration.documentSearchType,
                     vectorStoreSetting = vectorStoreSetting,

@@ -60,6 +60,9 @@ import java.nio.file.Path
 internal object EnvironmentManager {
     private val logger = KotlinLogging.logger {}
     var environment: KotlinCoreEnvironment? = null
+
+    val initializedEnvironment: KotlinCoreEnvironment
+        get() = checkNotNull(environment) { "Kotlin compiler environment is not initialized" }
     private val disposable = Disposable { }
 
     fun init(libraries: List<Path>) {
@@ -134,8 +137,8 @@ internal object EnvironmentManager {
         for (library in libraries) {
             classpath.add(library.toFile())
         }
-        if (arguments.classpath != null) {
-            val elements = arguments.classpath!!.split(File.pathSeparatorChar)
+        arguments.classpath?.let { argumentsClasspath ->
+            val elements = argumentsClasspath.split(File.pathSeparatorChar)
             for (element in elements) {
                 classpath.add(File(element))
             }

@@ -133,7 +133,7 @@ data class StoryDefinitionConfigurationDump(
         StoryDefinitionConfiguration(
             storyId = storyId,
             botId = controller.botId,
-            intent = controller.checkIntent(intent)!!,
+            intent = checkNotNull(controller.checkIntent(intent)) { "intent ${intent.name} rejected" },
             currentType = currentType,
             answers = answers.map { it.toAnswer(currentType, controller) },
             version = version,

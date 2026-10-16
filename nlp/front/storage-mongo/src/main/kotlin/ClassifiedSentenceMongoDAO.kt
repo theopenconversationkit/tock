@@ -426,10 +426,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         }
 
     private fun SentencesQuery.filterEntityType(): Bson? =
-        when {
-            entityType == null -> null
-            searchSubEntities -> subEntityTypeQuery(entityType!!)
-            else -> Classification_.entities.type eq entityType
+        entityType?.let {
+            if (searchSubEntities) subEntityTypeQuery(it) else Classification_.entities.type eq it
         }
 
     private fun SentencesQuery.filterStatus() =
@@ -445,12 +443,14 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private fun SentencesQuery.filterIntent() = if (intentId == null) null else Classification_.intentId eq intentId
 
-    private fun SentencesQuery.filterText(): Bson? =
-        when {
-            search.isNullOrBlank() -> null
+    private fun SentencesQuery.filterText(): Bson? {
+        val searchText = search
+        return when {
+            searchText.isNullOrBlank() -> null
             onlyExactMatch -> filterOnlyExactMatchText()
-            else -> FullText.regex(search!!.trim(), "i")
+            else -> FullText.regex(searchText.trim(), "i")
         }
+    }
 
     private fun SentencesQuery.filterOnlyExactMatchText() =
         when {

@@ -128,7 +128,7 @@ abstract class CASAuthProvider(
                     isJoinNamespace,
                 )
         }
-        return user!! // !! is because user is already guaranteed to be not null
+        return checkNotNull(user) { "no namespace to register for user $username" }
     }
 
     /**

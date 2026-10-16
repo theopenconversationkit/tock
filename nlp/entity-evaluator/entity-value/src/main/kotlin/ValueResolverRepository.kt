@@ -60,7 +60,7 @@ object ValueResolverRepository {
      * @kClass the class to register
      */
     fun <T : Value> registerType(kClass: KClass<T>) {
-        kClass.simpleName!!
+        requireNotNull(kClass.simpleName) { "anonymous value classes are not supported: $kClass" }
             .replace("Value", "")
             .replaceFirstChar { it.lowercase(Locale.getDefault()) }
             .apply {
@@ -87,5 +87,5 @@ object ValueResolverRepository {
             UnknownValue::class
         }
 
-    internal fun <T : Value> getId(kClass: KClass<T>): String = classIdMap[kClass] ?: kClass.qualifiedName!!
+    internal fun <T : Value> getId(kClass: KClass<T>): String = classIdMap[kClass] ?: kClass.qualifiedName ?: kClass.java.name
 }

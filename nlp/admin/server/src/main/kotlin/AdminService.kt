@@ -48,6 +48,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UNKNOWN_USER_LOGIN
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
+import ai.tock.shared.vertx.WebVerticle.Companion.notFound
 import ai.tock.shared.withNamespace
 import ai.tock.translator.TranslatorEngine
 import org.litote.kmongo.Id
@@ -62,6 +63,11 @@ import java.time.temporal.ChronoUnit.MINUTES
 object AdminService {
     val front = FrontClient
 
+    private fun getApplication(
+        namespace: String,
+        applicationName: String,
+    ): ApplicationDefinition = front.getApplicationByNamespaceAndName(namespace, applicationName) ?: notFound()
+
     fun parseSentence(query: ParseQuery): SentenceReport {
         val result = front.parse(query.toQuery())
         val intentWithNamespace = result.intent.withNamespace(result.intentNamespace)
@@ -69,20 +75,20 @@ object AdminService {
             when (intentWithNamespace) {
                 UNKNOWN_INTENT_NAME -> UNKNOWN_INTENT_NAME.toId()
                 RAG_EXCLUDED_INTENT_NAME -> RAG_EXCLUDED_INTENT_NAME.toId()
-                else -> front.getIntentIdByQualifiedName(intentWithNamespace)!!
+                else -> checkNotNull(front.getIntentIdByQualifiedName(intentWithNamespace)) { "intent $intentWithNamespace not found" }
             }
-        val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
+        val application = getApplication(query.namespace, query.applicationName)
         return SentenceReport(result, query.currentLanguage, application._id, intentId)
     }
 
     fun searchSentences(query: SearchQuery): SentencesReport {
-        val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
-        val result = front.search(query.toSentencesQuery(application!!._id))
+        val application = getApplication(query.namespace, query.applicationName)
+        val result = front.search(query.toSentencesQuery(application._id))
         return SentencesReport(query.start, result)
     }
 
     fun updateSentences(query: UpdateSentencesQuery): UpdateSentencesReport {
-        val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
+        val application = getApplication(query.namespace, query.applicationName)
         val sentences =
             if (query.searchQuery == null) {
                 query.selectedSentences.filter { it.applicationId == application._id }.map { it.toClassifiedSentence() }
@@ -106,7 +112,7 @@ object AdminService {
     }
 
     fun translateSentences(query: TranslateSentencesQuery): TranslateReport {
-        val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
+        val application = getApplication(query.namespace, query.applicationName)
         val sentences =
             if (query.searchQuery == null) {
                 query.selectedSentences.filter { it.applicationId == application._id }.map { it.toClassifiedSentence() }
@@ -190,7 +196,7 @@ object AdminService {
             if (intentId == null) {
                 front.save(intent)
                 intent.applications.forEach { appId ->
-                    front.save(front.getApplicationById(appId)!!.let { it.copy(intents = it.intents + intent._id) })
+                    front.save(checkNotNull(front.getApplicationById(appId)) { "application $appId not found" }.let { it.copy(intents = it.intents + intent._id) })
                 }
                 intent
             } else {
@@ -213,7 +219,7 @@ object AdminService {
                 if (intentId == null) {
                     intent
                 } else {
-                    front.getIntentById(intentId)!!.run {
+                    checkNotNull(front.getIntentById(intentId)) { "intent $intentId not found" }.run {
                         copy(
                             label = intent.label,
                             description = intent.description,
@@ -239,8 +245,7 @@ object AdminService {
         }
 
     fun searchLogs(query: LogsQuery): LogsReport {
-        val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
-        val applicationId = application!!._id
+        val applicationId = getApplication(query.namespace, query.applicationName)._id
         val result = front.search(query.toParseRequestLogQuery(applicationId))
         return LogsReport(
             query.start,

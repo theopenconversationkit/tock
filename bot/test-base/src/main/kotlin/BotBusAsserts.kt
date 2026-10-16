@@ -36,7 +36,7 @@ import ch.tutteli.atrium.api.fluent.en_GB.toContainExactly
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.fluent.en_GB.toHaveElementsAndAny
 import ch.tutteli.atrium.api.verbs.expect
-import ch.tutteli.atrium.core.Option
+import ch.tutteli.atrium.core.None
 import ch.tutteli.atrium.core.Some
 import ch.tutteli.atrium.creating.Expect
 import ch.tutteli.atrium.logic._logic
@@ -62,12 +62,10 @@ fun Expect<BotBusMockLog>.asGenericMessage(assertionCreator: Expect<GenericMessa
     _logic.subjectChanger.reported(
         _logic,
         Untranslatable("is a"),
-        Text(GenericMessage::class.simpleName!!),
-        {
-            Option.someIf(
-                it.action is SendSentence && it.genericMessage() != null,
-                { it.genericMessage()!! },
-            )
+        Text(GenericMessage::class.java.simpleName),
+        { log ->
+            val genericMessage = log.genericMessage()
+            if (log.action is SendSentence && genericMessage != null) Some(genericMessage) else None
         },
         DefaultFailureHandlerImpl(),
         Some(assertionCreator),

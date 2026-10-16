@@ -75,7 +75,7 @@ internal class TockBotBus(
     override val currentDialog: Dialog get() = userTimeline.currentDialog ?: dialog
 
     override var story: Story
-        get() = currentDialog.currentStory ?: dialog.currentStory!!
+        get() = currentDialog.currentStory ?: checkNotNull(dialog.currentStory) { "no current story in dialog ${dialog.id}" }
         set(value) {
             currentDialog.stories.add(value)
         }
