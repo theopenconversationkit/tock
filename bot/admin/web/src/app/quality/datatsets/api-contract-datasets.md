@@ -41,7 +41,10 @@ interface DatasetRun {
   state: DatasetRunState;
   startTime: string; // ISO 8601
   endTime: string | null; // ISO 8601 — renseigné dès que state = COMPLETED | CANCELLED
-  settingsSnapshot?: Partial<RagSettings>;
+  settingsSnapshot?: Partial<RagSettings> & {
+    // Absent pour les anciennes exécutions ; enabled: false si aucun compresseur n'est configuré.
+    documentCompressor?: { enabled: boolean; setting?: Record<string, unknown> };
+  };
   startedBy: string;
 }
 
@@ -172,7 +175,7 @@ Supprime un dataset et tous ses runs.
 
 ### `POST /bots/:botId/datasets/:datasetId/runs`
 
-Déclenche un nouveau run. Le serveur snapshote les RAG settings courants au moment du lancement.
+Déclenche un nouveau run. Le serveur snapshote les paramètres RAG et de compression courants au moment du lancement.
 
 > Un run ne peut être créé que si aucun run n'est déjà en état `QUEUED` ou `RUNNING`.
 

@@ -38,12 +38,17 @@ export interface DatasetRunStats {
   };
 }
 
+export interface DatasetRunSettingsSnapshot extends Partial<RagSettings> {
+  // Absent on older runs; settings are kept as-is to support every compressor provider.
+  documentCompressor?: { enabled: boolean; setting?: Record<string, unknown> };
+}
+
 export interface DatasetRun {
   id: string;
   state: DatasetRunState;
   startTime: string; // ISO 8601
   endTime: string | null; // ISO 8601
-  settingsSnapshot?: Partial<RagSettings>;
+  settingsSnapshot?: DatasetRunSettingsSnapshot;
   startedBy: string;
   stats: DatasetRunStats;
 }

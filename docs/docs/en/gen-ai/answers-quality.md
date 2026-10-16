@@ -129,6 +129,11 @@ The _Show only diffs_ filters display only the questions whose status, sources, 
 
 The _settings_ and _prompts_ links show the RAG settings and prompts used by each run, and compare them between the two runs.
 
+The _Compression Settings_ tab shows the configuration saved when each run was launched, including whether compression
+was enabled and the provider's parameters, with differences highlighted. Later changes to the bot's configuration do not
+alter this snapshot. Older runs display a message when compression settings were not recorded; this does not mean
+compression was disabled.
+
 ### Creating an evaluation sample from a run
 
 From the list of runs, _Create an evaluation sample based on the results of this run_ creates an

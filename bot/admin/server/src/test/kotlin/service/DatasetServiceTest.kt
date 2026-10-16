@@ -18,6 +18,9 @@ package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.AbstractTest
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfiguration
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
+import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.dataset.Dataset
 import ai.tock.bot.admin.dataset.DatasetDAO
@@ -52,6 +55,10 @@ import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.message.SentenceWithFootnotes
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
+import ai.tock.genai.orchestratorclient.requests.PromptTemplate
+import ai.tock.genai.orchestratorcore.models.compressor.BloomzDocumentCompressorSetting
+import ai.tock.genai.orchestratorcore.models.em.OllamaEMSetting
+import ai.tock.genai.orchestratorcore.models.llm.OllamaLLMSetting
 import ai.tock.shared.exception.rest.UnprocessableEntityException
 import ai.tock.shared.tockInternalInjector
 import ai.tock.translator.UserInterfaceType
@@ -74,6 +81,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
@@ -88,6 +97,7 @@ class DatasetServiceTest : AbstractTest() {
         private val datasetDAO: DatasetDAO = mockk(relaxed = false)
         private val datasetRunDAO: DatasetRunDAO = mockk(relaxed = false)
         private val ragConfigurationDAO: BotRAGConfigurationDAO = mockk(relaxed = true)
+        private val documentCompressorConfigurationDAO: BotDocumentCompressorConfigurationDAO = mockk()
         private val dialogReportDAO: DialogReportDAO = mockk(relaxed = false)
         private val evaluationSampleDAO: EvaluationSampleDAO = mockk(relaxed = false)
         private val evaluationDAO: EvaluationDAO = mockk(relaxed = false)
@@ -99,6 +109,7 @@ class DatasetServiceTest : AbstractTest() {
                     bind<DatasetDAO>() with singleton { datasetDAO }
                     bind<DatasetRunDAO>() with singleton { datasetRunDAO }
                     bind<BotRAGConfigurationDAO>() with singleton { ragConfigurationDAO }
+                    bind<BotDocumentCompressorConfigurationDAO>() with singleton { documentCompressorConfigurationDAO }
                     bind<DialogReportDAO>() with singleton { dialogReportDAO }
                     bind<EvaluationSampleDAO>() with singleton { evaluationSampleDAO }
                     bind<EvaluationDAO>() with singleton { evaluationDAO }
@@ -115,6 +126,7 @@ class DatasetServiceTest : AbstractTest() {
     @BeforeEach
     fun prepareAnswerCache() {
         every { datasetRunDAO.updateQuestionResultAnswer(any()) } returns Unit
+        every { documentCompressorConfigurationDAO.findByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns null
     }
 
     @AfterEach
@@ -123,6 +135,7 @@ class DatasetServiceTest : AbstractTest() {
             datasetDAO,
             datasetRunDAO,
             ragConfigurationDAO,
+            documentCompressorConfigurationDAO,
             dialogReportDAO,
             evaluationSampleDAO,
             evaluationDAO,
@@ -171,7 +184,7 @@ class DatasetServiceTest : AbstractTest() {
         assertEquals(restConfiguration._id, savedRun.botApplicationConfigurationId)
         assertEquals(Locale.forLanguageTag("fr"), savedRun.language)
         assertEquals(USER, savedRun.startedBy)
-        assertTrue(savedRun.settingsSnapshot.isEmpty())
+        assertEquals(mapOf("documentCompressor" to mapOf("enabled" to false)), savedRun.settingsSnapshot)
 
         val savedQuestionResults = questionResultsSlot.captured
         assertEquals(dataset.questions.size, savedQuestionResults.size)
@@ -181,6 +194,70 @@ class DatasetServiceTest : AbstractTest() {
             assertEquals(savedRun._id, resultEntry.runId)
             assertEquals("dataset_${savedRun._id}_${dataset.questions[index].id}", resultEntry.userIdModifier)
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `createRun snapshots all compressor settings even when disabled and retains them after configuration changes`(enabled: Boolean) {
+        val dataset = newDataset()
+        val compressorSetting =
+            BloomzDocumentCompressorSetting(
+                maxDocuments = 4,
+                minScore = 0.5f,
+                fillToMaxDocuments = true,
+                label = "entailment",
+                endpoint = "https://compressor.example.test",
+            )
+        val compressor = BotDocumentCompressorConfiguration(newId(), NAMESPACE, BOT_ID, enabled, compressorSetting)
+        val rag =
+            BotRAGConfiguration(
+                _id = newId(),
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                enabled = true,
+                questionCondensingLlmSetting = OllamaLLMSetting(temperature = "0", model = "condensing", baseUrl = "http://localhost"),
+                questionCondensingPrompt = PromptTemplate(template = "Condense the question"),
+                questionAnsweringLlmSetting = OllamaLLMSetting(temperature = "0", model = "answering", baseUrl = "http://localhost"),
+                questionAnsweringPrompt = PromptTemplate(template = "Answer the question"),
+                emSetting = OllamaEMSetting(model = "embedding", baseUrl = "http://localhost"),
+            )
+        val savedRun = slot<DatasetRun>()
+        val savedResults = slot<List<DatasetRunQuestionResult>>()
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getActiveRunsByDatasetId(dataset._id) } returns emptyList()
+        every { applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns listOf(newRestConfiguration())
+        every { ragConfigurationDAO.findByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns rag
+        every { documentCompressorConfigurationDAO.findByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns compressor
+        every { datasetRunDAO.saveRun(capture(savedRun)) } answers { savedRun.captured }
+        every { datasetRunDAO.saveQuestionResults(capture(savedResults)) } returns Unit
+        every { datasetRunDAO.getQuestionResultsByRunId(any()) } answers { savedResults.captured }
+
+        DatasetService.createRun(NAMESPACE, BOT_ID, dataset._id.toString(), DatasetRunCreateRequest(language = "fr"), USER)
+
+        val snapshot = savedRun.captured.settingsSnapshot
+        val compression = snapshot["documentCompressor"] as Map<*, *>
+        assertEquals(enabled, compression["enabled"])
+        assertEquals(
+            mapOf(
+                "provider" to "BloomzRerank",
+                "maxDocuments" to 4,
+                "minScore" to 0.5f,
+                "fillToMaxDocuments" to true,
+                "label" to "entailment",
+                "endpoint" to compressorSetting.endpoint,
+            ),
+            compression["setting"],
+        )
+        assertEquals("Answer the question", (snapshot["questionAnsweringPrompt"] as Map<*, *>)["template"])
+        assertTrue(!(snapshot["questionAnsweringLlmSetting"] as Map<*, *>).containsKey("apiKey"))
+
+        every { documentCompressorConfigurationDAO.findByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns
+            compressor.copy(setting = compressorSetting.copy(minScore = 0.9f))
+        every { datasetRunDAO.getRunsByDatasetId(dataset._id) } returns listOf(savedRun.captured)
+        val reloaded = DatasetService.getDataset(NAMESPACE, BOT_ID, dataset._id.toString())
+
+        assertEquals(snapshot, reloaded.runs.single().settingsSnapshot)
+        verify(exactly = 1) { documentCompressorConfigurationDAO.findByNamespaceAndBotId(NAMESPACE, BOT_ID) }
     }
 
     @Test

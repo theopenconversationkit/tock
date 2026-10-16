@@ -130,6 +130,11 @@ Les filtres _Show only diffs_ n'affichent que les questions dont l'état, les so
 
 Les liens _settings_ et _prompts_ affichent les réglages RAG et les prompts utilisés par chaque exécution, et les comparent.
 
+L'onglet _Paramètres de compression_ affiche la configuration sauvegardée au lancement de chaque exécution, dont
+l'activation de la compression et les paramètres du fournisseur, avec les différences mises en évidence. Les changements
+ultérieurs de configuration du bot ne modifient pas cette sauvegarde. Pour les anciennes exécutions, un message indique
+que ces paramètres n'ont pas été enregistrés ; cela ne signifie pas que la compression était désactivée.
+
 ### Créer un échantillon à partir d'une exécution
 
 Depuis la liste des exécutions, _Create an evaluation sample based on the results of this run_ crée un

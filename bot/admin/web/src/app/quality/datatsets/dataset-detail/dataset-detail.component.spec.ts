@@ -43,4 +43,20 @@ describe('DatasetDetailComponent comparison selection', () => {
     expect(component.currentRun.id).toBe(latest.id);
     expect(component.comparisonRun.id).toBe(oldest.id);
   });
+
+  it('detects changes to recorded compression settings', () => {
+    open(
+      [
+        { ...latest, settingsSnapshot: { documentCompressor: { enabled: true, setting: { provider: 'VllmRerank', model: 'reranker' } } } },
+        { ...older, settingsSnapshot: { documentCompressor: { enabled: false } } }
+      ],
+      older.id
+    );
+    expect(component.hasSettingsDiff()).toBeTrue();
+  });
+
+  it('does not interpret missing historical compression settings as a change', () => {
+    open([{ ...latest, settingsSnapshot: { documentCompressor: { enabled: false } } }, older], older.id);
+    expect(component.hasSettingsDiff()).toBeFalse();
+  });
 });

@@ -202,6 +202,8 @@
     "answering_prompt_tab": "Prompt de réponse",
     "condensing_prompt_tab": "Prompt de condensation",
     "rag_settings_tab": "Paramètres RAG",
+    "compression_settings_tab": "Paramètres de compression",
+    "compression_settings_unavailable": "Les paramètres de compression n'ont pas été enregistrés pour cette exécution.",
     "run_a_label": "Exécution A",
     "run_b_label": "Exécution B"
   },

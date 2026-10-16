@@ -410,11 +410,13 @@ export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
   hasSettingsDiff(): boolean {
     if (!this.comparisonRun) return false;
-    return hasDiffExcluding(this.currentRun.settingsSnapshot, this.comparisonRun.settingsSnapshot, [
-      'questionAnsweringPrompt',
-      'questionCondensingPrompt',
-      'indexSessionId'
-    ]);
+    const current = this.currentRun.settingsSnapshot ?? {};
+    const comparison = this.comparisonRun.settingsSnapshot ?? {};
+    const excludedKeys = ['questionAnsweringPrompt', 'questionCondensingPrompt', 'indexSessionId'];
+    if (!current.documentCompressor || !comparison.documentCompressor) {
+      excludedKeys.push('documentCompressor');
+    }
+    return hasDiffExcluding(current, comparison, excludedKeys);
   }
 
   hasIndexingSessionDiff(): boolean {

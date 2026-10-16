@@ -18,6 +18,7 @@ package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.dataset.Dataset
 import ai.tock.bot.admin.dataset.DatasetDAO
@@ -43,6 +44,7 @@ import ai.tock.bot.admin.model.dataset.DatasetRunCreateRequest
 import ai.tock.bot.admin.model.dataset.DatasetRunDTO
 import ai.tock.bot.admin.model.dataset.DatasetRunStatsDTO
 import ai.tock.bot.admin.model.dataset.DatasetUpdateRequest
+import ai.tock.bot.admin.model.genai.BotDocumentCompressorConfigurationDTO
 import ai.tock.bot.admin.model.genai.BotRAGConfigurationDTO
 import ai.tock.bot.admin.test.TestTalkService
 import ai.tock.bot.connector.ConnectorType
@@ -70,6 +72,7 @@ object DatasetService {
     private val datasetRunDAO: DatasetRunDAO get() = injector.provide()
     private val applicationConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     private val ragConfigurationDAO: BotRAGConfigurationDAO get() = injector.provide()
+    private val documentCompressorConfigurationDAO: BotDocumentCompressorConfigurationDAO get() = injector.provide()
     private val dialogReportDAO: DialogReportDAO get() = injector.provide()
     private val objectMapper = jacksonObjectMapper()
 
@@ -547,12 +550,22 @@ object DatasetService {
         namespace: String,
         botId: String,
     ): Map<String, Any?> {
-        val ragConfiguration = ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId) ?: return emptyMap()
+        val ragConfiguration = ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
 
         @Suppress("UNCHECKED_CAST")
-        val rawSnapshot = objectMapper.convertValue(BotRAGConfigurationDTO(ragConfiguration), Map::class.java) as Map<String, Any?>
+        val rawSnapshot =
+            if (ragConfiguration == null) {
+                emptyMap()
+            } else {
+                objectMapper.convertValue(BotRAGConfigurationDTO(ragConfiguration), Map::class.java) as Map<String, Any?>
+            }
+        val compressorSnapshot =
+            documentCompressorConfigurationDAO.findByNamespaceAndBotId(namespace, botId)?.let {
+                objectMapper.convertValue(BotDocumentCompressorConfigurationDTO(it), Map::class.java)
+            } ?: mapOf("enabled" to false)
+
         @Suppress("UNCHECKED_CAST")
-        return sanitizeSnapshot(rawSnapshot) as Map<String, Any?>
+        return sanitizeSnapshot(rawSnapshot + ("documentCompressor" to compressorSnapshot)) as Map<String, Any?>
     }
 
     private fun sanitizeSnapshot(value: Any?): Any? =

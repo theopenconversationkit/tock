@@ -202,6 +202,8 @@
     "answering_prompt_tab": "Answering Prompt",
     "condensing_prompt_tab": "Condensing Prompt",
     "rag_settings_tab": "Rag Settings",
+    "compression_settings_tab": "Compression Settings",
+    "compression_settings_unavailable": "Compression settings were not recorded for this run.",
     "run_a_label": "Run A",
     "run_b_label": "Run B"
   },

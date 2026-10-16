@@ -78,6 +78,7 @@ describe('DatasetsBoardEntryComponent run statistics and comparisons', () => {
           useValue: {
             getLatestRun: DatasetsService.prototype.getLatestRun,
             getRunDuration: () => of('00:00:01'),
+            getAverageDurationPerQuestion: () => '1s',
             getRun: () => NEVER
           }
         },
@@ -99,7 +100,7 @@ describe('DatasetsBoardEntryComponent run statistics and comparisons', () => {
 
   it('displays the percentage of all questions even with failed questions and technical errors', () => {
     render([completedRun('finished', '2026-10-14T12:00:00Z')]);
-    expect(fixture.nativeElement.querySelector('.runs-grid small').textContent.trim()).toBe('(20%)');
+    expect(fixture.nativeElement.querySelector('.runs-grid small.text-warning').textContent.trim()).toBe('(20%)');
   });
 
   it('offers comparison with the latest completed run while another run is active', () => {
