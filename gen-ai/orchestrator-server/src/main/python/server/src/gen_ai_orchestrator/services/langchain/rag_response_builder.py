@@ -186,6 +186,7 @@ def build_rag_debug_data(
             records_callback_handler.records.get('rag_chain_output')
         ),
         duration=rag_duration,
+        step_durations=records_callback_handler.records.get('step_durations') or None,
     )
 
 

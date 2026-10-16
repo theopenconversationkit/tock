@@ -563,7 +563,7 @@ def test_compress_documents_should_succeed(mocked_rerank):
                 'ModDate': "D:20231212161411+01'00'",
                 'Producer': 'Microsoft: Print To PDF',
                 'Title': "Microsoft Word - P1 - Département des Risques - Déclaration d'un incident - v5.doc",
-                'retriever_score': 0.8,
+                'reranker_score': 0.8,
             },
         )
     ]

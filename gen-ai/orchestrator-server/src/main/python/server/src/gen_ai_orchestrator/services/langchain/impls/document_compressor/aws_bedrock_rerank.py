@@ -108,25 +108,25 @@ class AwsBedrockRerank(BaseDocumentCompressor):
         scored_docs = []
         for res in results:
             doc = documents[res['index']]
-            doc.metadata['retriever_score'] = res['relevance_score']
+            doc.metadata['reranker_score'] = res['relevance_score']
             scored_docs.append(doc)
 
         scored_docs = sorted(
             scored_docs,
-            key=lambda d: d.metadata.get('retriever_score', 0),
+            key=lambda d: d.metadata.get('reranker_score', 0),
             reverse=True,
         )
 
         above_threshold = [
             d
             for d in scored_docs
-            if d.metadata.get('retriever_score', 0) >= self.min_score
+            if d.metadata.get('reranker_score', 0) >= self.min_score
         ]
 
         below_threshold = [
             d
             for d in scored_docs
-            if d.metadata.get('retriever_score', 0) < self.min_score
+            if d.metadata.get('reranker_score', 0) < self.min_score
         ]
 
         # base result

@@ -55,6 +55,7 @@ from gen_ai_orchestrator.models.vector_stores.vector_store_search_type import (
 )
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    get_compressor_factory,
     get_em_factory,
     get_llm_factory,
     get_vector_store_factory,
@@ -453,6 +454,22 @@ def create_rag_chain(
             'documents': retriever,
         }
     )
+
+    if request.compressor_setting is not None:
+        compressor = get_compressor_factory(setting=request.compressor_setting).get_compressor()
+
+        def apply_compressor(x: dict) -> dict:
+            x['documents'] = list(
+                compressor.compress_documents(
+                    documents=x['documents'],
+                    query=x['question'],
+                )
+            )
+            return x
+
+        rag_inputs = rag_inputs | RunnableLambda(
+            name='document_compressor', func=apply_compressor
+        )
 
     answer_chain = (
         {

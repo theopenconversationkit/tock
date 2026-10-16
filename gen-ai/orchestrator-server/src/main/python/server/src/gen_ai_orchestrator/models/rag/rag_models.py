@@ -175,7 +175,7 @@ class RAGDocumentMetadata(BaseModel):
         default=None,
     )
     chunk: str = Field(description='The document chunk.', examples=['1/3'])
-    retriever_score: Optional[float] = Field(
+    reranker_score: Optional[float] = Field(
         description='The compressor score', examples=[0.9149009585380554], default=None
     )
 
@@ -238,3 +238,14 @@ class RAGDebugData(QADebugData):
         ],
     )
     answer: LLMAnswer = Field(description='The RAG answer.')
+    step_durations: Optional[dict] = Field(
+        description=(
+            'Wall-clock duration in seconds for each tracked RAG step. '
+            'Keys: "rag_question_condensation_llm" (LLM condensation), '
+            '"similarity_retriever_retrieve"/"hybrid_retrieve"/"fts_retrieve" (retrieval), '
+            '"document_compressor" (reranking, optional), '
+            '"rag_answer_generation_llm" (LLM response generation). '
+            'Absent keys = step not activated. None = debug off.'
+        ),
+        default=None,
+    )

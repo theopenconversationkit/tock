@@ -124,7 +124,7 @@ class BloomzRerank(BaseDocumentCompressor):
                 )
 
                 score = doc_entailment.get('score', 0.0)
-                documents[i].metadata['retriever_score'] = score
+                documents[i].metadata['reranker_score'] = score
                 scored_docs.append(documents[i])
 
             except StopIteration:
@@ -146,20 +146,20 @@ class BloomzRerank(BaseDocumentCompressor):
 
         scored_docs = sorted(
             scored_docs,
-            key=lambda d: d.metadata.get('retriever_score', 0),
+            key=lambda d: d.metadata.get('reranker_score', 0),
             reverse=True,
         )
 
         above_threshold = [
             d
             for d in scored_docs
-            if d.metadata.get('retriever_score', 0) >= self.min_score
+            if d.metadata.get('reranker_score', 0) >= self.min_score
         ]
 
         below_threshold = [
             d
             for d in scored_docs
-            if d.metadata.get('retriever_score', 0) < self.min_score
+            if d.metadata.get('reranker_score', 0) < self.min_score
         ]
 
         # base result
