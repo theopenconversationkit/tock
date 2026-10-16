@@ -51,6 +51,7 @@ export interface DatasetRun {
   settingsSnapshot?: DatasetRunSettingsSnapshot;
   startedBy: string;
   stats: DatasetRunStats;
+  note?: string | null;
 }
 
 export interface DatasetQuestion {

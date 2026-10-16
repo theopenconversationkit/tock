@@ -119,6 +119,11 @@ d'évaluation restent soumis à la rétention des dialogues.
 
 ### Comparer des exécutions
 
+Dans la liste des exécutions, la colonne _Note_ après _Durée_ permet d'ajouter une indication comme « Compressor OFF » ou « Compressor ON ».
+Cliquez sur la note pour la modifier, puis sur la coche ou Entrée pour enregistrer ; Échap ou la croix annule la modification.
+La note est facultative, limitée à 200 caractères et modifiable pendant ou après l'exécution. Enregistrez une note vide pour la supprimer.
+Elle apparaît aussi sous _Run A_ et _Run B_ et dans les infobulles du sélecteur d'exécutions lors de la comparaison.
+
 Ouvrez une exécution pour afficher ses réponses. Par défaut, l'écran compare la dernière exécution terminée (_Run A_) à la précédente exécution terminée (_Run B_),
 question par question : texte de la réponse, type de réponse (RAG ou intention) et sources. Les sources ajoutées,
 modifiées ou supprimées entre les deux exécutions sont mises en évidence.

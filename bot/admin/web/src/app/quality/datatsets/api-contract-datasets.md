@@ -46,6 +46,7 @@ interface DatasetRun {
     documentCompressor?: { enabled: boolean; setting?: Record<string, unknown> };
   };
   startedBy: string;
+  note?: string | null; // Note facultative, 200 caractères maximum
 }
 
 interface Dataset {
@@ -213,6 +214,29 @@ DatasetRun; // state: QUEUED, endTime: null, settingsSnapshot absent
   error: string;
 }
 ```
+
+---
+
+### `PUT /bots/:botId/datasets/:datasetId/runs/:runId/note`
+
+Modifie uniquement la note, quel que soit l'état du run. Les espaces en début et fin sont retirés ;
+une chaîne vide ou composée d'espaces supprime la note. Une nouvelle sauvegarde remplace la précédente.
+
+**Request body**
+
+```typescript
+{ note: string } // 200 caractères maximum avant normalisation
+```
+
+**Response `200`**
+
+```typescript
+{ note: string | null } // valeur normalisée ; null si la note a été supprimée
+```
+
+**Response `400`** — note invalide ou trop longue
+
+**Response `404`** — dataset ou run inconnu dans le périmètre du bot
 
 ---
 

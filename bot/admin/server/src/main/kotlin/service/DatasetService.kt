@@ -34,6 +34,7 @@ import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.evaluation.ActionRef
 import ai.tock.bot.admin.model.RAGAnswerStatus
+import ai.tock.bot.admin.model.Valid
 import ai.tock.bot.admin.model.dataset.DatasetCreateRequest
 import ai.tock.bot.admin.model.dataset.DatasetDTO
 import ai.tock.bot.admin.model.dataset.DatasetQuestionDTO
@@ -42,6 +43,8 @@ import ai.tock.bot.admin.model.dataset.DatasetRunActionDTO
 import ai.tock.bot.admin.model.dataset.DatasetRunActionState
 import ai.tock.bot.admin.model.dataset.DatasetRunCreateRequest
 import ai.tock.bot.admin.model.dataset.DatasetRunDTO
+import ai.tock.bot.admin.model.dataset.DatasetRunNoteDTO
+import ai.tock.bot.admin.model.dataset.DatasetRunNoteRequest
 import ai.tock.bot.admin.model.dataset.DatasetRunStatsDTO
 import ai.tock.bot.admin.model.dataset.DatasetUpdateRequest
 import ai.tock.bot.admin.model.genai.BotDocumentCompressorConfigurationDTO
@@ -256,6 +259,22 @@ object DatasetService {
             includeSettingsSnapshot = false,
             stats = questionResults.toStats(run),
         )
+    }
+
+    fun updateRunNote(
+        namespace: String,
+        botId: String,
+        datasetId: String,
+        runId: String,
+        request: DatasetRunNoteRequest,
+    ): DatasetRunNoteDTO {
+        Valid(request)
+        val dataset = getDatasetEntity(namespace, botId, datasetId)
+        val run = getRunEntity(namespace, botId, dataset._id.toString(), runId)
+        val updatedRun =
+            datasetRunDAO.updateRunNote(run._id, request.note.trim().takeIf { it.isNotEmpty() })
+                ?: throw DatasetError.RunNotFound(runId)
+        return DatasetRunNoteDTO(updatedRun.note)
     }
 
     fun cancelRun(
@@ -640,6 +659,7 @@ object DatasetService {
             settingsSnapshot = settingsSnapshot.takeIf { includeSettingsSnapshot },
             startedBy = startedBy,
             stats = stats,
+            note = note,
         )
 
     private fun List<DatasetRunQuestionResult>.toStats(run: DatasetRun): DatasetRunStatsDTO {

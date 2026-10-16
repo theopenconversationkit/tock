@@ -191,6 +191,7 @@
       >
         {{ 'quality.dataset-board-entry.duration_column' | transloco }}
       </div>
+      <div class="ellipsis">{{ 'quality.dataset-board-entry.note_column' | transloco }}</div>
       <div
         class="ellipsis"
         [nbTooltip]="'quality.dataset-board-entry.questions_in_dataset_tooltip' | transloco"
@@ -238,7 +239,7 @@
       <div class="ellipsis"></div>
     </div>
     <div class="details-wrapper scrollbar-narrow">
-      @for (run of dataset.runs; track run) {
+      @for (run of dataset.runs; track run.id) {
       <div class="background-basic-color-1 rounded px-2 py-1 mt-1 font-size-small runs-grid">
         <div
           class="runs-grid-entry text-muted"
@@ -263,6 +264,62 @@
           }"
         >
           {{ runDurations$[run.id] | async }}
+        </div>
+        <div class="run-note">
+          @if (editingNoteRunId === run.id) {
+          <div class="note-editor">
+            <input
+              #noteInput
+              nbInput
+              fieldSize="tiny"
+              type="text"
+              [attr.aria-label]="'quality.dataset-board-entry.note_column' | transloco"
+              [placeholder]="'quality.dataset-board-entry.note_placeholder' | transloco"
+              [maxLength]="noteMaxLength"
+              [value]="noteDraft"
+              (input)="noteDraft = noteInput.value"
+              [disabled]="savingNote"
+              (keydown.enter)="saveRunNote(run, $event)"
+              (keydown.escape)="cancelNoteEdit()"
+            />
+            <button
+              nbButton
+              ghost
+              size="tiny"
+              type="button"
+              class="save-note"
+              [attr.aria-label]="'common.actions.save' | transloco"
+              [nbTooltip]="'common.actions.save' | transloco"
+              [disabled]="savingNote || noteDraft.length > noteMaxLength"
+              (click)="saveRunNote(run)"
+            >
+              <nb-icon icon="check-lg"></nb-icon>
+            </button>
+            <button
+              nbButton
+              ghost
+              size="tiny"
+              type="button"
+              [attr.aria-label]="'common.actions.cancel' | transloco"
+              [nbTooltip]="'common.actions.cancel' | transloco"
+              [disabled]="savingNote"
+              (click)="cancelNoteEdit()"
+            >
+              <nb-icon icon="x-lg"></nb-icon>
+            </button>
+          </div>
+          } @else {
+          <button
+            type="button"
+            class="note-display text-muted"
+            [attr.aria-label]="('quality.dataset-board-entry.edit_note' | transloco) + (run.note ? ': ' + run.note : '')"
+            [nbTooltip]="run.note || ('quality.dataset-board-entry.edit_note' | transloco)"
+            [disabled]="savingNote"
+            (click)="editRunNote(run)"
+          >
+            <span class="ellipsis">{{ run.note || ('quality.dataset-board-entry.add_note' | transloco) }}</span>
+          </button>
+          }
         </div>
         <div class="runs-grid-entry text-muted">{{ run.stats.totalQuestions }}</div>
         <div class="runs-grid-entry text-muted">{{ run.stats.completedQuestions }}</div>

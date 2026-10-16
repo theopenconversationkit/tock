@@ -116,6 +116,16 @@ internal object DatasetMongoDAO : DatasetDAO, DatasetRunDAO {
         return run
     }
 
+    override fun updateRunNote(
+        id: Id<DatasetRun>,
+        note: String?,
+    ): DatasetRun? =
+        datasetRunCol.findOneAndUpdate(
+            DatasetRun::_id eq id,
+            set(DatasetRun::note.name, note),
+            FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER),
+        )
+
     override fun finishRun(
         id: Id<DatasetRun>,
         state: DatasetRunState,

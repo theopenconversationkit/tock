@@ -58,6 +58,31 @@ class DatasetMongoDAOTest : AbstractTest() {
     }
 
     @Test
+    fun `notes survive claiming and concurrent completion and can be cleared`() {
+        val run = run(DatasetRunState.QUEUED)
+        DatasetMongoDAO.updateRunNote(run._id, "Compressor OFF")
+        assertEquals("Compressor OFF", DatasetMongoDAO.claimNextQueuedRun()?.note)
+        val endTime = Instant.parse("2026-10-16T12:00:00Z")
+        val finish = CompletableFuture.runAsync { DatasetMongoDAO.finishRun(run._id, DatasetRunState.COMPLETED, endTime) }
+        val edit = CompletableFuture.runAsync { DatasetMongoDAO.updateRunNote(run._id, "Compressor ON") }
+        CompletableFuture.allOf(finish, edit).get()
+
+        val completed = DatasetMongoDAO.getRunById(run._id)!!
+        assertEquals("Compressor ON", completed.note)
+        assertEquals(DatasetRunState.COMPLETED, completed.state)
+        assertEquals(endTime, completed.endTime)
+        assertEquals(completed.copy(note = null), DatasetMongoDAO.updateRunNote(run._id, null))
+    }
+
+    @Test
+    fun `editing a note cannot recreate a deleted run`() {
+        val run = run()
+        DatasetMongoDAO.deleteRun(run._id)
+        assertNull(DatasetMongoDAO.updateRunNote(run._id, "Compressor OFF"))
+        assertNull(DatasetMongoDAO.getRunById(run._id))
+    }
+
+    @Test
     fun `late answer cannot overwrite cancelled results or recreate deleted results`() {
         val run = run()
         val result = result(run)

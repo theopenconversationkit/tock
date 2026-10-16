@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import { EMPTY, Observable, Subject, interval } from 'rxjs';
 import { catchError, exhaustMap, finalize, startWith, takeUntil, takeWhile } from 'rxjs/operators';
 import { Dataset, DatasetRun, DatasetRunState } from '../../models';
@@ -29,6 +29,15 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
 
   runDurations$: Record<string, Observable<string>> = {};
   latestCompletedRun: DatasetRun | null = null;
+
+  editingNoteRunId: string | null = null;
+  noteDraft = '';
+  savingNote = false;
+  readonly noteMaxLength = 200;
+
+  @ViewChild('noteInput') set noteInput(input: ElementRef<HTMLInputElement> | undefined) {
+    input?.nativeElement.focus();
+  }
 
   private _pollingRunIds = new Set<string>();
 
@@ -108,6 +117,36 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         error: (err) => console.error('Failed to create run', err)
+      });
+  }
+
+  editRunNote(run: DatasetRun): void {
+    if (this.savingNote) return;
+    this.editingNoteRunId = run.id;
+    this.noteDraft = run.note ?? '';
+  }
+
+  cancelNoteEdit(): void {
+    if (!this.savingNote) this.editingNoteRunId = null;
+  }
+
+  saveRunNote(run: DatasetRun, event?: Event): void {
+    if ((event instanceof KeyboardEvent && event.isComposing) || this.savingNote || this.noteDraft.length > this.noteMaxLength) return;
+    const note = this.noteDraft.trim();
+    if (note === (run.note ?? '')) {
+      this.cancelNoteEdit();
+      return;
+    }
+    this.savingNote = true;
+    this.datasetsService
+      .updateRunNote(this.dataset.id, run.id, note)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.savingNote = false))
+      )
+      .subscribe({
+        next: () => (this.editingNoteRunId = null),
+        error: () => this.toastrService.danger(this.transloco.translate('quality.dataset-board-entry.save_note_error'))
       });
   }
 

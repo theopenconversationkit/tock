@@ -290,10 +290,11 @@ export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
   getPrevEntryTooltip(run: DatasetRun) {
     const date = this.datePipe.transform(run.startTime, 'y/MM/dd - HH:mm');
-    return this.transloco.translate('quality.dataset-detail.run_started_by_tooltip', {
+    const description = this.transloco.translate('quality.dataset-detail.run_started_by_tooltip', {
       startedBy: run.startedBy,
       date: date
     });
+    return run.note ? `${run.note} — ${description}` : description;
   }
 
   getRunDuration(run: DatasetRun): string {

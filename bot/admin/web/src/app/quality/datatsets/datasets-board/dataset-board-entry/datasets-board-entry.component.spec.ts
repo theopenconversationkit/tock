@@ -79,12 +79,13 @@ describe('DatasetsBoardEntryComponent run statistics and comparisons', () => {
             getLatestRun: DatasetsService.prototype.getLatestRun,
             getRunDuration: () => of('00:00:01'),
             getAverageDurationPerQuestion: () => '1s',
-            getRun: () => NEVER
+            getRun: () => NEVER,
+            updateRunNote: jasmine.createSpy('updateRunNote').and.returnValue(of({ note: 'Compressor OFF' }))
           }
         },
         { provide: DialogService, useValue: {} },
         { provide: StateService, useValue: {} },
-        { provide: NbToastrService, useValue: {} },
+        { provide: NbToastrService, useValue: { danger: jasmine.createSpy('danger') } },
         { provide: TestDialogService, useValue: {} }
       ],
       schemas: [NO_ERRORS_SCHEMA]
@@ -121,5 +122,78 @@ describe('DatasetsBoardEntryComponent run statistics and comparisons', () => {
       { ...completedRun('active', '2026-10-14T13:00:00Z'), state: DatasetRunState.RUNNING }
     ]);
     expect(fixture.nativeElement.querySelector('[icon="plus-slash-minus"]')).toBeNull();
+  });
+
+  function editNote(value: string): HTMLInputElement {
+    fixture.nativeElement.querySelector('.note-display').click();
+    fixture.detectChanges();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('.note-editor input');
+    input.value = value;
+    input.dispatchEvent(new Event('input'));
+    return input;
+  }
+
+  it('keeps the focused draft when polling replaces the run object', () => {
+    const run = { ...completedRun('active', '2026-10-14T13:00:00Z'), state: DatasetRunState.RUNNING, note: 'Compressor OFF' };
+    render([run]);
+    const input = editNote('Compressor ON');
+    expect(document.activeElement).toBe(input);
+    render([{ ...run, stats: { ...run.stats, completedQuestions: 10 } }]);
+    expect(fixture.nativeElement.querySelector('.note-editor input')).toBe(input);
+    expect(input.value).toBe('Compressor ON');
+    expect(document.activeElement).toBe(input);
+  });
+
+  it('saves a trimmed note with Enter and prevents duplicate saves while waiting', () => {
+    const service = TestBed.inject(DatasetsService);
+    const response = new Subject<{ note: string | null }>();
+    (service.updateRunNote as jasmine.Spy).and.returnValue(response);
+    render([completedRun('finished', '2026-10-14T12:00:00Z')]);
+    const input = editNote('  Compressor OFF  ');
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    fixture.detectChanges();
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    expect(service.updateRunNote).toHaveBeenCalledOnceWith('dataset', 'finished', 'Compressor OFF');
+    expect(input.disabled).toBeTrue();
+    response.next({ note: 'Compressor OFF' });
+    response.complete();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.note-editor')).toBeNull();
+  });
+
+  it('cancels with Escape without changing the saved note', () => {
+    render([{ ...completedRun('finished', '2026-10-14T12:00:00Z'), note: 'Compressor OFF' }]);
+    editNote('Compressor ON').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    fixture.detectChanges();
+    expect(TestBed.inject(DatasetsService).updateRunNote).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('.note-display').textContent).toContain('Compressor OFF');
+  });
+
+  it('keeps the draft and shows an error when saving fails, allowing a retry', () => {
+    const service = TestBed.inject(DatasetsService);
+    (service.updateRunNote as jasmine.Spy).and.returnValues(
+      throwError(() => new Error('503')),
+      of({ note: 'Compressor ON' })
+    );
+    render([completedRun('finished', '2026-10-14T12:00:00Z')]);
+    const input = editNote('Compressor ON');
+    fixture.nativeElement.querySelector('.save-note').click();
+    fixture.detectChanges();
+    expect(TestBed.inject(NbToastrService).danger).toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('.note-editor input')).toBe(input);
+    expect(input.value).toBe('Compressor ON');
+    expect(input.disabled).toBeFalse();
+    fixture.nativeElement.querySelector('.save-note').click();
+    fixture.detectChanges();
+    expect(service.updateRunNote).toHaveBeenCalledTimes(2);
+    expect(fixture.nativeElement.querySelector('.note-editor')).toBeNull();
+  });
+
+  it('allows clearing a note and limits input to 200 characters', () => {
+    render([{ ...completedRun('finished', '2026-10-14T12:00:00Z'), note: 'Compressor OFF' }]);
+    const input = editNote('');
+    expect(input.maxLength).toBe(200);
+    fixture.nativeElement.querySelector('.save-note').click();
+    expect(TestBed.inject(DatasetsService).updateRunNote).toHaveBeenCalledOnceWith('dataset', 'finished', '');
   });
 });

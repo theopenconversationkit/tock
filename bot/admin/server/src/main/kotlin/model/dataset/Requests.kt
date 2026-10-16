@@ -65,6 +65,12 @@ data class DatasetRunCancelRequest(
     val ignored: Boolean? = null,
 )
 
+data class DatasetRunNoteRequest(
+    val note: String,
+) : ToValidate {
+    override fun validate(): List<String> = if (note.length > 200) listOf("Run note must not exceed 200 characters") else emptyList()
+}
+
 private fun validateDatasetRequest(
     name: String,
     questions: List<DatasetQuestionRequest>,

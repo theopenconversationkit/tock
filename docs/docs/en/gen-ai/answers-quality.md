@@ -118,6 +118,11 @@ Answer details and evaluation samples still depend on dialog retention.
 
 ### Comparing runs
 
+In the run list, the _Note_ column after _Duration_ lets you add a short label such as “Compressor OFF” or “Compressor ON”.
+Click the note to edit it, then press Enter or click the check mark to save; Escape or the cross cancels editing.
+Notes are optional, limited to 200 characters, and editable during or after a run. Save an empty note to remove it.
+The note is also displayed under _Run A_ and _Run B_ and in the run selector tooltips during comparison.
+
 Open a run to display its answers. By default, the screen compares the latest completed run (_Run A_) with the previous completed run (_Run B_),
 question by question: answer text, answer type (RAG or intent) and sources. Sources that were added, modified or removed
 between the two runs are highlighted.

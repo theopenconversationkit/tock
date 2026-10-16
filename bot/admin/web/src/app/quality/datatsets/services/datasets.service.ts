@@ -108,6 +108,12 @@ export class DatasetsService {
     return this.rest.get<DatasetRun>(`${this.apiBase()}/${datasetId}/runs/${runId}`, (res) => res as DatasetRun);
   }
 
+  updateRunNote(datasetId: string, runId: string, note: string): Observable<{ note: string | null }> {
+    return this.rest
+      .put<{ note: string }, { note: string | null }>(`${this.apiBase()}/${datasetId}/runs/${runId}/note`, { note }, (res) => res)
+      .pipe(tap((updated) => this._patchRun(datasetId, runId, { note: updated.note })));
+  }
+
   // ---------------------------------------------------------------------------
   // GET /bots/:botId/datasets/:datasetId/runs/:runId/actions
   // ---------------------------------------------------------------------------
@@ -172,6 +178,10 @@ export class DatasetsService {
   // PATCH run state
   // ---------------------------------------------------------------------------
   updateRunState(datasetId: string, runId: string, patch: Partial<Pick<DatasetRun, 'state' | 'endTime' | 'stats'>>): void {
+    this._patchRun(datasetId, runId, patch);
+  }
+
+  private _patchRun(datasetId: string, runId: string, patch: Partial<Pick<DatasetRun, 'state' | 'endTime' | 'stats' | 'note'>>): void {
     const datasets = this.datasets;
     const datasetIndex = datasets.findIndex((d) => d.id === datasetId);
     if (datasetIndex === -1) return;

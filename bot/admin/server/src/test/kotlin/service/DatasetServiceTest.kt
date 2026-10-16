@@ -45,6 +45,7 @@ import ai.tock.bot.admin.model.dataset.DatasetCreateRequest
 import ai.tock.bot.admin.model.dataset.DatasetQuestionRequest
 import ai.tock.bot.admin.model.dataset.DatasetRunActionState
 import ai.tock.bot.admin.model.dataset.DatasetRunCreateRequest
+import ai.tock.bot.admin.model.dataset.DatasetRunNoteRequest
 import ai.tock.bot.admin.model.evaluation.CreateEvaluationSampleRequest
 import ai.tock.bot.admin.model.evaluation.DatasetRunInfo
 import ai.tock.bot.connector.ConnectorType
@@ -82,6 +83,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
@@ -141,6 +143,60 @@ class DatasetServiceTest : AbstractTest() {
             evaluationDAO,
             AbstractTest.applicationConfigurationDAO,
         )
+    }
+
+    @ParameterizedTest
+    @EnumSource(DatasetRunState::class)
+    fun `notes can be edited and cleared in every run state without loading answers`(state: DatasetRunState) {
+        val dataset = newDataset()
+        val run = newFinishedRun(dataset, state)
+        every { datasetDAO.getDatasetById(match { it.toString() == dataset._id.toString() }) } returns dataset
+        every { datasetRunDAO.getRunById(match { it.toString() == run._id.toString() }) } returns run
+        every { datasetRunDAO.updateRunNote(run._id, any()) } answers { run.copy(note = secondArg()) }
+
+        val result = DatasetService.updateRunNote(NAMESPACE, BOT_ID, dataset._id.toString(), run._id.toString(), DatasetRunNoteRequest("  Compressor OFF  "))
+        assertEquals("Compressor OFF", result.note)
+        val cleared = DatasetService.updateRunNote(NAMESPACE, BOT_ID, dataset._id.toString(), run._id.toString(), DatasetRunNoteRequest("   "))
+        assertNull(cleared.note)
+        verify(exactly = 0) { datasetRunDAO.saveRun(any()) }
+        verify(exactly = 0) { datasetRunDAO.getQuestionResultsByRunId(any()) }
+        verify(exactly = 0) { dialogReportDAO.findByDialogByIds(any()) }
+    }
+
+    @Test
+    fun `note length is validated before writing`() {
+        assertDoesNotThrow { Valid(DatasetRunNoteRequest("x".repeat(200))) }
+        assertThrows<ValidationError> {
+            DatasetService.updateRunNote(NAMESPACE, BOT_ID, "dataset", "run", DatasetRunNoteRequest("x".repeat(201)))
+        }
+        verify(exactly = 0) { datasetRunDAO.updateRunNote(any(), any()) }
+    }
+
+    @Test
+    fun `note update rejects runs outside the requested scope`() {
+        val dataset = newDataset()
+        val run = newFinishedRun(dataset, DatasetRunState.COMPLETED)
+        every { datasetDAO.getDatasetById(match { it.toString() == dataset._id.toString() }) } returns dataset
+        listOf(run.copy(namespace = "other"), run.copy(botId = "other"), run.copy(datasetId = newId())).forEach { foreignRun ->
+            every { datasetRunDAO.getRunById(match { it.toString() == run._id.toString() }) } returns foreignRun
+            assertThrows<DatasetError.RunNotFound> {
+                DatasetService.updateRunNote(NAMESPACE, BOT_ID, dataset._id.toString(), run._id.toString(), DatasetRunNoteRequest("note"))
+            }
+        }
+        verify(exactly = 0) { datasetRunDAO.updateRunNote(any(), any()) }
+    }
+
+    @Test
+    fun `note update reports a run deleted between reading and writing`() {
+        val dataset = newDataset()
+        val run = newFinishedRun(dataset, DatasetRunState.COMPLETED)
+        every { datasetDAO.getDatasetById(match { it.toString() == dataset._id.toString() }) } returns dataset
+        every { datasetRunDAO.getRunById(match { it.toString() == run._id.toString() }) } returns run
+        every { datasetRunDAO.updateRunNote(run._id, any()) } returns null
+
+        assertThrows<DatasetError.RunNotFound> {
+            DatasetService.updateRunNote(NAMESPACE, BOT_ID, dataset._id.toString(), run._id.toString(), DatasetRunNoteRequest("note"))
+        }
     }
 
     @Test

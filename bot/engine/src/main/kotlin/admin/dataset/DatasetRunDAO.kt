@@ -22,6 +22,11 @@ import java.time.Instant
 interface DatasetRunDAO {
     fun saveRun(run: DatasetRun): DatasetRun
 
+    fun updateRunNote(
+        id: Id<DatasetRun>,
+        note: String?,
+    ): DatasetRun?
+
     fun finishRun(
         id: Id<DatasetRun>,
         state: DatasetRunState,
