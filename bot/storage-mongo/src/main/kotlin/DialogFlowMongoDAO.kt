@@ -25,7 +25,6 @@ import ai.tock.bot.admin.dialog.DialogFlowStateTransitionData
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotDefinition
-import ai.tock.bot.definition.DialogFlowDefinition
 import ai.tock.bot.definition.DialogFlowStateTransitionType
 import ai.tock.bot.definition.DialogFlowStateTransitionType.attachment
 import ai.tock.bot.definition.DialogFlowStateTransitionType.choice
@@ -121,6 +120,7 @@ import java.time.ZoneId
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.TemporalAccessor
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KProperty
 
@@ -238,18 +238,25 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
 
     private val crawlStats: Boolean = booleanProperty("tock_dialog_flow_crawl_stats", true)
 
+    // shared by the stats crawl tasks, so that each scheduling does not leak a new thread
+    private val statsExecutor: ScheduledExecutorService by lazy {
+        Executors.newScheduledThreadPool(2) { runnable ->
+            Thread(runnable, "tock-dialog-flow-stats").apply { isDaemon = true }
+        }
+    }
+
     private fun schedule(
         delay: Long,
         unit: TimeUnit,
         runnable: Runnable,
-    ) = Executors.newSingleThreadScheduledExecutor().schedule(runnable, delay, unit)
+    ) = statsExecutor.schedule(runnable, delay, unit)
 
     private fun scheduleWithFixedDelay(
         initialDelay: Long,
         delay: Long,
         unit: TimeUnit,
         runnable: Runnable,
-    ) = Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(runnable, initialDelay, delay, unit)
+    ) = statsExecutor.scheduleWithFixedDelay(runnable, initialDelay, delay, unit)
 
     override fun initFlowStatCrawl() {
         if (crawlStats) {
@@ -276,8 +283,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 } catch (e: Throwable) {
                     logger.error(e)
                     logger.error("Waiting for flow state set")
-                    Thread.sleep(1000 * 60 * 60)
-                    initFlowStatCrawl()
+                    schedule(1, TimeUnit.HOURS) { initFlowStatCrawl() }
                     return@schedule
                 }
                 scheduleWithFixedDelay(1, 1, TimeUnit.MINUTES) {
@@ -508,13 +514,6 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         if (userStats.isNotEmpty()) {
             flowTransitionStatsUserAggregationCol.bulkWrite(userStats)
         }
-    }
-
-    override fun saveFlow(
-        bot: BotDefinition,
-        flow: DialogFlowDefinition,
-    ) {
-        TODO("not implemented")
     }
 
     override fun loadApplicationData(
