@@ -73,12 +73,15 @@ class LangfuseCallbackHandlerFactory(LangChainCallbackHandlerFactory):
         """
         Create Langfuse CallbackHandler
         """
-        self._get_langfuse_client()
+        client = self._get_langfuse_client()
 
-        # Langfuse SDK maintains an internal map / pool of clients based on there public key, that why the client isn't passed to the callbackhandler constructor.
-        return LangfuseCallbackHandler(
+        handler = LangfuseCallbackHandler(
             public_key=self.setting.public_key,
         )
+
+        handler._langfuse_client = client
+
+        return handler
 
     def check_observability_setting(self) -> bool:
         """Check if the provided credentials (public and secret key) are valid,
