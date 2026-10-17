@@ -64,25 +64,12 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
 
     private val asyncIntentCol = asyncDatabase.getCollection("fs_intent.files")
 
-    // TODO remove in 3.0
-    private fun ClassifierContextKey.idWithoutNamespace(): String? =
-        id().run {
-            val i = indexOf(":")
-            val i2 = indexOf("-")
-            if (i != -1 && i2 > i) {
-                substring(i + 1)
-            } else {
-                null
-            }
-        }
-
     private fun getGridFSFile(
         bucket: GridFSBucket,
         key: ClassifierContextKey,
     ): GridFSFile? =
         try {
             bucket.find(eq("filename", key.id())).limit(1).first()
-                ?: key.idWithoutNamespace()?.let { bucket.find(eq("filename", it)).limit(1).first() }
         } catch (e: MongoGridFSException) {
             logger.debug(e) { "no model exists for $key" }
             null
@@ -92,10 +79,7 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
         bucket: GridFSBucket,
         key: ClassifierContextKey,
     ): GridFSDownloadStream? =
-        (
-            getGridFSFile(bucket, key)
-                ?: key.idWithoutNamespace()?.let { getGridFSFile(bucket, key) }
-        )?.let {
+        getGridFSFile(bucket, key)?.let {
             bucket.openDownloadStream(it.id)
         }
 
