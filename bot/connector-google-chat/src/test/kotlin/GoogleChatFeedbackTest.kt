@@ -17,8 +17,8 @@ package ai.tock.bot.connector.googlechat
 
 import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.engine.action.FeedbackVote
+import ai.tock.shared.jackson.mapper
 import com.google.api.services.chat.v1.model.Message
-import com.google.gson.JsonParser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -112,8 +112,8 @@ internal class GoogleChatFeedbackTest {
     @Test
     fun `should convert a feedback button event`() {
         val messageEvent =
-            JsonParser
-                .parseString(
+            mapper
+                .readTree(
                     """
                     {
                       "commonEventObject": {
@@ -131,11 +131,11 @@ internal class GoogleChatFeedbackTest {
                       }
                     }
                     """.trimIndent(),
-                ).asJsonObject
+                )
         val request =
             GoogleChatRequestConverter.toFeedbackRequest(
                 messageEvent,
-                messageEvent.getAsJsonObject("chat"),
+                messageEvent.get("chat"),
                 "connector-id",
             )
 
@@ -151,8 +151,8 @@ internal class GoogleChatFeedbackTest {
     @Test
     fun `should ignore an unsupported button event`() {
         val messageEvent =
-            JsonParser
-                .parseString(
+            mapper
+                .readTree(
                     """
                     {
                       "commonEventObject": { "parameters": { "action": "other" } },
@@ -164,12 +164,12 @@ internal class GoogleChatFeedbackTest {
                       }
                     }
                     """.trimIndent(),
-                ).asJsonObject
+                )
 
         assertThat(
             GoogleChatRequestConverter.toFeedbackRequest(
                 messageEvent,
-                messageEvent.getAsJsonObject("chat"),
+                messageEvent.get("chat"),
                 "connector-id",
             ),
         ).isNull()

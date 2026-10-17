@@ -22,20 +22,20 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.FeedbackEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
-import com.google.gson.JsonObject
+import com.fasterxml.jackson.databind.JsonNode
 
 internal object GoogleChatRequestConverter {
     fun toEvent(
-        chatEvent: JsonObject,
+        chatEvent: JsonNode,
         applicationId: String,
     ): Event {
-        val userId = chatEvent.getAsJsonObject("user").get("name").asString
+        val userId = chatEvent.required("user").required("name").asText()
         val text =
             chatEvent
-                .getAsJsonObject("messagePayload")
-                .getAsJsonObject("message")
-                .get("text")
-                .asString
+                .required("messagePayload")
+                .required("message")
+                .required("text")
+                .asText()
 
         val playerId = PlayerId(userId)
         val botId = PlayerId(applicationId, PlayerType.bot)
@@ -43,14 +43,14 @@ internal object GoogleChatRequestConverter {
     }
 
     fun toFeedbackRequest(
-        messageEvent: JsonObject,
-        chatEvent: JsonObject,
+        messageEvent: JsonNode,
+        chatEvent: JsonNode,
         applicationId: String,
     ): GoogleChatFeedbackRequest? {
         val parameters =
             messageEvent
-                .getAsJsonObject("commonEventObject")
-                ?.getAsJsonObject("parameters")
+                .get("commonEventObject")
+                ?.get("parameters")
                 ?: return null
         if (parameters.string(GOOGLE_CHAT_FEEDBACK_ACTION_PARAMETER) != GOOGLE_CHAT_FEEDBACK_ACTION_VALUE) return null
 
@@ -60,11 +60,11 @@ internal object GoogleChatRequestConverter {
                 .string(GOOGLE_CHAT_FEEDBACK_VOTE_PARAMETER)
                 ?.let { value -> FeedbackVote.entries.firstOrNull { it.name == value } }
                 ?: return null
-        val userId = chatEvent.getAsJsonObject("user")?.string("name") ?: return null
+        val userId = chatEvent.get("user")?.string("name") ?: return null
         val messageName =
             chatEvent
-                .getAsJsonObject("buttonClickedPayload")
-                ?.getAsJsonObject("message")
+                .get("buttonClickedPayload")
+                ?.get("message")
                 ?.string("name")
                 ?: return null
 
@@ -80,7 +80,7 @@ internal object GoogleChatRequestConverter {
         return GoogleChatFeedbackRequest(event, messageName, vote)
     }
 
-    private fun JsonObject.string(name: String): String? = get(name)?.takeUnless { it.isJsonNull }?.asString
+    private fun JsonNode.string(name: String): String? = get(name)?.takeUnless { it.isNull }?.asText()
 }
 
 internal data class GoogleChatFeedbackRequest(
