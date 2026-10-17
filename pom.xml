@@ -38,7 +38,7 @@
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
         <junit-jupiter>6.1.3</junit-jupiter>
-        <testcontainer>1.21.4</testcontainer>
+        <testcontainer>2.0.5</testcontainer>
 
         <mockk>1.14.11</mockk>
         <assertj>3.27.7</assertj>
@@ -159,13 +159,13 @@
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
-                <artifactId>junit-jupiter</artifactId>
+                <artifactId>testcontainers-junit-jupiter</artifactId>
                 <version>${testcontainer}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
-                <artifactId>mongodb</artifactId>
+                <artifactId>testcontainers-mongodb</artifactId>
                 <version>${testcontainer}</version>
                 <scope>test</scope>
             </dependency>
