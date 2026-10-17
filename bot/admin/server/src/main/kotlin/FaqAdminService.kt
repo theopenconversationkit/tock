@@ -82,16 +82,6 @@ object FaqAdminService {
     private const val WARN_CANNOT_FIND_UTTERANCE = "Could not found an associated ClassifiedSentence"
 
     /**
-     * Make migration:
-     * add namespace attribute (referred to Intent's _id) by namespace attribute (referred to Intent's namespace)
-     */
-    fun makeMigration() {
-        faqDefinitionDAO.makeMigration {
-            intentDAO.getIntentById(it)?.namespace
-        }
-    }
-
-    /**
      * Save the Frequently asked question into database
      */
     fun saveFAQ(

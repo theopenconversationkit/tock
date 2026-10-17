@@ -182,7 +182,6 @@ in _Integrated bot_ mode.
 |----------|---------|-------------|
 | `tock_configuration_bot_default_base_url` | `http://<local IP>:<botverticle_port>` | Base URL of the bot, proposed by default in the connector configurations of _Tock Studio_ |
 | `tock_bot_protected_paths` | `/admin` | Paths of the bot protected by the authentication |
-| `tock_bot_protected_path` | `/admin` | Deprecated: use `tock_bot_protected_paths` |
 | `tock_restricted_configuration_id` | | Only loads the given bot configurations (development) |
 | `tock_bot_default_breath_ms` | `1000` | Default delay between two messages of the bot |
 | `tock_bot_min_breath_ms` | `50` | Minimum delay between two messages, when a message takes longer than the default delay to prepare |

@@ -547,11 +547,6 @@ class MessengerConnector internal constructor(
 
     private fun getToken(connectorId: String): String =
         connectorIdTokenMap[connectorId]
-            // TODO remove this when backward compatibility is no more assured (20.3)
-            ?: pageIdConnectorIdMap[connectorId]?.takeUnless { it.isEmpty() }?.let {
-                logger.warn { "use pageId as connectorId for $connectorId" }
-                connectorIdTokenMap[it.first()]
-            }
             ?: getAllConnectors().find { it.applicationId == connectorId }?.appToken
             ?: error("$connectorId not found")
 

@@ -22,7 +22,6 @@ import ai.tock.bot.engine.nlp.NlpProxyBotService
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.error
 import ai.tock.shared.listProperty
-import ai.tock.shared.property
 import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.initEncryptor
 import ai.tock.shared.vertx.WebVerticle
@@ -128,11 +127,9 @@ internal class BotVerticle(
     }
 
     override fun protectedPaths(): Set<String> {
-        // TODO remove deprecated tock_bot_protected_path property
-        val path = property("tock_bot_protected_path", "/admin")
         val paths = listProperty("tock_bot_protected_paths", listOf("/admin"))
 
-        return (paths + path).map { it.trim() }.toSet()
+        return paths.map { it.trim() }.toSet()
     }
 
     @Synchronized
