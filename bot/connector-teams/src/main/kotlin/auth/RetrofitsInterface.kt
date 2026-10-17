@@ -16,7 +16,7 @@
 
 package ai.tock.bot.connector.teams.auth
 
-import com.google.gson.Gson
+import ai.tock.shared.jackson.mapper
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Url
@@ -52,7 +52,10 @@ data class MicrosoftValidSigningKey(
     val x5c: List<String>?,
     val endorsements: List<String>?,
 ) : Serializable {
-    override fun toString(): String = Gson().toJson(this)
+    /**
+     * The JWK JSON representation of this key.
+     */
+    fun toJson(): String = mapper.writeValueAsString(this)
 }
 
 internal interface MicrosoftJwksApi {
