@@ -82,15 +82,26 @@ internal object MongoUserLock : UserLock {
      short enough to never expire under normal conditions. */
     private val lockHeartbeatInterval = lockTimeout / 2
 
-    private val lockRetryDelay = longProperty("tock_bot_locked_attempts_wait_in_ms", 500)
+    /**
+     * Delay between two lock acquisition attempts (before adding jitter).
+     * Falls back to the legacy `tock_bot_locked_attempts_wait_in_ms` property (shared with the
+     * deprecated asynchronous mode) if the dedicated property is not set, for backward compatibility.
+     */
+    private val lockRetryDelay =
+        longProperty("tock_bot_lock_retry_delay_in_ms", longProperty("tock_bot_locked_attempts_wait_in_ms", 500))
 
     private val lockRetryJitter = longProperty("tock_bot_lock_retry_jitter_in_ms", 20)
 
     private val lockRetryIntervalFunction =
         IntervalFunction { lockRetryDelay + Random.nextLong(0, lockRetryJitter + 1) }
 
-    /** withLock() fails with an exception past this number of acquisition attempts */
-    private val lockMaxAcquireAttempts = intProperty("tock_bot_max_locked_attempts", 10)
+    /**
+     * withLock() fails with an exception past this number of acquisition attempts.
+     * Falls back to the legacy `tock_bot_max_locked_attempts` property (shared with the
+     * deprecated asynchronous mode) if the dedicated property is not set, for backward compatibility.
+     */
+    private val lockMaxAcquireAttempts =
+        intProperty("tock_bot_lock_max_acquire_attempts", intProperty("tock_bot_max_locked_attempts", 10))
 
     /** Log a single warning once a caller has retried this many times without acquiring
      the lock, to surface potentially stuck locks. */
@@ -225,7 +236,8 @@ internal object MongoUserLock : UserLock {
         }
 
     /**
-     * @throws LockAcquisitionException if the lock could not be acquired after [lockMaxAcquireAttempts] attempts.
+     * @throws LockAcquisitionException if the lock could not be acquired after [lockMaxAcquireAttempts] attempts
+     * (configurable via `tock_bot_lock_max_acquire_attempts`, falling back to `tock_bot_max_locked_attempts`).
      */
     private suspend fun acquireLock(
         userId: String,

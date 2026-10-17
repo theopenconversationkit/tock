@@ -40,23 +40,27 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
+import ai.tock.shared.longProperty
 import ai.tock.shared.provide
 import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
-import io.vertx.kotlin.coroutines.awaitBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.net.URI
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.time.Duration.Companion.milliseconds
 
 @Deprecated("Use coroutine stories to perform asynchronous operations")
-private val synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
+internal var synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
 
 @Deprecated("Use coroutine stories to perform asynchronous operations")
-private val asynchronousMode = booleanProperty("tock_timeline_persistence_asynchronous_mode", false)
+internal var asynchronousMode = booleanProperty("tock_timeline_persistence_asynchronous_mode", false)
 
 /**
  *
@@ -92,6 +96,10 @@ internal class TockConnectorController(
             controller.connector.unregister(controller)
         }
     }
+
+    // Only used by the deprecated asynchronous mode, where the lock is released by send()
+    private val maxLockedAttempts = intProperty("tock_bot_max_locked_attempts", 10)
+    private val lockedAttemptsWait = longProperty("tock_bot_locked_attempts_wait_in_ms", 500L).milliseconds
 
     private val userLock: UserLock by injector.instance()
     private val userTimelineDAO: UserTimelineDAO by injector.instance()
@@ -179,12 +187,7 @@ internal class TockConnectorController(
 
         try {
             logger.debug { "try to lock $playerId" }
-            // Not aborting on lock loss to preserve old behavior
-            userLock.withLock(
-                userId = id,
-                postLockRelease = { callback.userLockReleased(action) },
-                abortOnLockLoss = false,
-            ) {
+            val process: suspend () -> Unit = {
                 try {
                     callback.userLocked(action)
 
@@ -201,27 +204,49 @@ internal class TockConnectorController(
                     callback.initialUserTimelineLoaded(userTimeline)
 
                     val transformedAction =
-                        awaitBlocking {
+                        withContext(Dispatchers.IO) {
                             tryToParseVoiceAudio(action, userTimeline)
                         }
 
                     bot.handleAction(transformedAction, userTimeline, this, data)
 
-                    if (synchronousMode && data.saveTimeline) {
+                    if (!asynchronousMode && synchronousMode && data.saveTimeline) {
                         userTimelineDAO.save(userTimeline, bot.botDefinition)
-                    } else if (asynchronousMode) {
-                        logger.warn { "Deprecated asynchronous timeline saving mode used, late writes will not be protected by the lock" }
                     }
                 } catch (t: Throwable) {
                     send(null, data, action, errorMessage(action.recipientId, action.connectorId, action.playerId))
                     callback.exceptionThrown(action, t)
                 }
             }
+
+            if (asynchronousMode) {
+                logger.warn { "Deprecated asynchronous timeline saving mode used" }
+                // Legacy behavior: the lock is held until the last answer is sent, see send()
+                acquireLockForAsyncMode(id)
+                process()
+            } else {
+                // Not aborting on lock loss to preserve old behavior
+                userLock.withLock(
+                    userId = id,
+                    postLockRelease = { callback.userLockReleased(action) },
+                    abortOnLockLoss = false,
+                ) { process() }
+            }
         } catch (e: LockAcquisitionException) {
             logger.debug(e) { "failed to acquire lock for $playerId - skip $action" }
             callback.eventSkipped(action)
         } catch (t: Throwable) {
             callback.exceptionThrown(action, t)
+        }
+    }
+
+    private suspend fun acquireLockForAsyncMode(userId: String) {
+        var attempts = 0
+        while (!userLock.tryLock(userId)) {
+            if (++attempts >= maxLockedAttempts) {
+                throw LockAcquisitionException("failed to acquire lock for $userId after $attempts attempts")
+            }
+            delay(lockedAttemptsWait)
         }
     }
 
@@ -298,6 +323,12 @@ internal class TockConnectorController(
                     }
                 }
                 data.callback.eventAnswered(userAction)
+                if (asynchronousMode) {
+                    runBlocking {
+                        userLock.releaseLock(userAction.playerId.id)
+                    }
+                    data.callback.userLockReleased(userAction)
+                }
             }
         }
     }
