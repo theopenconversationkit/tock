@@ -109,15 +109,36 @@ Pour chaque exécution, la liste indique ses dates, sa durée et son état, et c
 
 Une exécution qui se termine avec des questions en échec reste _terminée_ : les échecs sont comptés dans ses statistiques.
 
+Le pourcentage _Not found in context_ est calculé sur toutes les questions du dataset, y compris celles en échec.
+Il reste affiché en présence d'échecs et doit être lu avec le nombre de questions en échec.
+
+Pour les nouvelles exécutions, le type de réponse et le statut RAG sont conservés avec chaque résultat de question :
+leurs compteurs restent disponibles après expiration des dialogues. Les anciennes exécutions acquièrent ces informations
+à la lecture des réponses, si les dialogues sont encore disponibles. Le détail des réponses et les échantillons
+d'évaluation restent soumis à la rétention des dialogues.
+
 ### Comparer des exécutions
 
-Ouvrez une exécution pour afficher ses réponses. L'écran compare une _Run A_ et une _Run B_ (par défaut, la dernière exécution),
+Dans la liste des exécutions, la colonne _Note_ après _Durée_ permet d'ajouter une indication comme « Compressor OFF » ou « Compressor ON ».
+Cliquez sur la note pour la modifier, puis sur la coche ou Entrée pour enregistrer ; Échap ou la croix annule la modification.
+La note est facultative, limitée à 200 caractères et modifiable pendant ou après l'exécution. Enregistrez une note vide pour la supprimer.
+Elle apparaît aussi sous _Run A_ et _Run B_ et dans les infobulles du sélecteur d'exécutions lors de la comparaison.
+
+Ouvrez une exécution pour afficher ses réponses. Par défaut, l'écran compare la dernière exécution terminée (_Run A_) à la précédente exécution terminée (_Run B_),
 question par question : texte de la réponse, type de réponse (RAG ou intention) et sources. Les sources ajoutées,
 modifiées ou supprimées entre les deux exécutions sont mises en évidence.
+
+Le bouton de comparaison de la liste compare l'exécution sélectionnée à la dernière exécution terminée, même si une autre est en cours.
+La comparaison nécessite deux exécutions terminées distinctes ; lorsqu'une seule est disponible, le détail affiche uniquement celle-ci.
 
 Les filtres _Show only diffs_ n'affichent que les questions dont l'état, les sources, le type de réponse ou la formulation ont changé.
 
 Les liens _settings_ et _prompts_ affichent les réglages RAG et les prompts utilisés par chaque exécution, et les comparent.
+
+L'onglet _Paramètres de compression_ affiche la configuration sauvegardée au lancement de chaque exécution, dont
+l'activation de la compression et les paramètres du fournisseur, avec les différences mises en évidence. Les changements
+ultérieurs de configuration du bot ne modifient pas cette sauvegarde. Pour les anciennes exécutions, un message indique
+que ces paramètres n'ont pas été enregistrés ; cela ne signifie pas que la compression était désactivée.
 
 ### Créer un échantillon à partir d'une exécution
 

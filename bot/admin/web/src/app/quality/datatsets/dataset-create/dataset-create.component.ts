@@ -11,6 +11,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { questionsToCsv } from '../dataset-csv';
 
 interface QuestionForm {
+  id: FormControl<string | null>;
   question: FormControl<string>;
   groundTruth: FormControl<string>;
 }
@@ -44,9 +45,9 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
 
   /**
    * Snapshot of the original question text for each pre-existing question,
-   * keyed by its index in the FormArray (before the trailing empty row is appended).
+   * keyed by its stable question ID.
    */
-  private _initialQuestionValues: Map<number, string> = new Map();
+  private _initialQuestionValues: Map<string, string> = new Map();
 
   // Injected by the dialog caller when editing an existing dataset
   dataset?: Dataset;
@@ -92,9 +93,10 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
       description: dataset.description
     });
 
-    dataset.questions.forEach((q, i) => {
+    dataset.questions.forEach((q) => {
       this.questions.push(
         new FormGroup<QuestionForm>({
+          id: new FormControl(q.id),
           question: new FormControl(q.question, {
             nonNullable: true,
             validators: [Validators.minLength(question_minLength), Validators.maxLength(question_maxLength)]
@@ -107,7 +109,7 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
       );
 
       // Snapshot the original text so we can detect meaningful edits later.
-      this._initialQuestionValues.set(i, q.question.trim());
+      this._initialQuestionValues.set(q.id, q.question.trim());
     });
 
     // Append the empty trailing row for adding new questions
@@ -140,9 +142,10 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
     }
 
     // Show the one-time warning when a pre-existing question is modified in edit mode.
-    if (this.isEditMode && !this.showQuestionEditWarning && this._initialQuestionValues.has(index)) {
+    const questionId = this.questions.at(index).controls.id.value;
+    if (this.isEditMode && !this.showQuestionEditWarning && this._initialQuestionValues.has(questionId)) {
       const current = this.questions.at(index).controls.question.value.trim();
-      const initial = this._initialQuestionValues.get(index)!;
+      const initial = this._initialQuestionValues.get(questionId)!;
       if (current !== initial) {
         this.showQuestionEditWarning = true;
       }
@@ -154,6 +157,7 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
   private _appendEmptyQuestion(): void {
     this.questions.push(
       new FormGroup<QuestionForm>({
+        id: new FormControl<string | null>(null),
         question: new FormControl('', {
           nonNullable: true,
           validators: [Validators.minLength(question_minLength), Validators.maxLength(question_maxLength)]
@@ -174,9 +178,9 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
   private _getFilledQuestions(omitIds: boolean = false): { id?: string; question: string; groundTruth: string }[] {
     return this.questions.controls
       .filter((g) => g.controls.question.value.trim())
-      .map((g, i) => ({
+      .map((g) => ({
         // Preserve the original question ID when editing so the backend can diff
-        ...(this.isEditMode && !omitIds && this.dataset.questions[i] ? { id: this.dataset.questions[i].id } : {}),
+        ...(!omitIds && g.controls.id.value ? { id: g.controls.id.value } : {}),
         question: g.controls.question.value.trim(),
         groundTruth: g.controls.groundTruth.value.trim()
       }));
@@ -331,6 +335,7 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
       } else {
         this.questions.push(
           new FormGroup<QuestionForm>({
+            id: new FormControl<string | null>(null),
             question: new FormControl(line, [Validators.minLength(question_minLength), Validators.maxLength(question_maxLength)]),
             groundTruth: new FormControl('', [Validators.maxLength(groundtruth_maxLength)])
           })

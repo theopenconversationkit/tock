@@ -41,6 +41,14 @@
         >
           {{ 'quality.settings-diff.rag_settings_tab' | transloco }}
         </button>
+        <button
+          nbButton
+          class="tab-button"
+          [status]="currentTab === currentTabs.CompressionSettings ? 'primary' : 'basic'"
+          (click)="switchCurrentTab(currentTabs.CompressionSettings)"
+        >
+          {{ 'quality.settings-diff.compression_settings_tab' | transloco }}
+        </button>
       </div>
     </div>
   </nb-card-header>
@@ -50,16 +58,18 @@
       <div>
         <h4 class="text-uppercase monospace text-primary">{{ 'quality.settings-diff.run_a_label' | transloco }}</h4>
 
-        @if (currentTab !== currentTabs.RagSettings && htmlRunA) {
+        @if (!isSettingsTab && htmlRunA) {
         <div
           class="chat-ui-message-content-styling"
           [innerHTML]="htmlRunA"
         ></div>
-        } @if (currentTab === currentTabs.RagSettings) {
+        } @if (isSettingsTab) { @if (currentTab === currentTabs.CompressionSettings && !hasCompressionSettings(currentRun)) {
+        <p class="text-muted">{{ 'quality.settings-diff.compression_settings_unavailable' | transloco }}</p>
+        } @else {
         <div class="chat-ui-message-content-styling">
           <pre><code class="lineHeight-1-5" [innerHTML]="getJson('current')"></code></pre>
         </div>
-        }
+        } }
       </div>
 
       @if (comparisonRun) {
@@ -67,16 +77,18 @@
       } @if (comparisonRun) {
       <div>
         <h4 class="text-uppercase monospace text-success">{{ 'quality.settings-diff.run_b_label' | transloco }}</h4>
-        @if (currentTab !== currentTabs.RagSettings && htmlRunB) {
+        @if (!isSettingsTab && htmlRunB) {
         <div
           class="chat-ui-message-content-styling"
           [innerHTML]="htmlRunB"
         ></div>
-        } @if (currentTab === currentTabs.RagSettings) {
+        } @if (isSettingsTab) { @if (currentTab === currentTabs.CompressionSettings && !hasCompressionSettings(comparisonRun)) {
+        <p class="text-muted">{{ 'quality.settings-diff.compression_settings_unavailable' | transloco }}</p>
+        } @else {
         <div class="chat-ui-message-content-styling">
           <pre><code class="lineHeight-1-5" [innerHTML]="getJson('compare')"></code></pre>
         </div>
-        }
+        } }
       </div>
       }
     </div>

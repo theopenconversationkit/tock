@@ -57,11 +57,11 @@ class DatasetRunProcessorTest {
         every { datasetDAO.getDatasetById(any()) } returns dataset
         every { datasetRunDAO.getQuestionResultsByRunId(any()) } returns listOf(firstResult, secondResult)
         every { datasetRunDAO.getRunById(any()) } returns run.copy(state = DatasetRunState.RUNNING)
-        every { datasetRunDAO.saveQuestionResult(any()) } answers {
+        every { datasetRunDAO.updateActiveQuestionResult(any()) } answers {
             firstArg<DatasetRunQuestionResult>().also { savedQuestionResults.add(it) }
         }
-        every { datasetRunDAO.saveRun(any()) } answers {
-            firstArg<DatasetRun>().also { savedRuns.add(it) }
+        every { datasetRunDAO.finishRun(any(), any(), any()) } answers {
+            run.copy(state = secondArg(), endTime = thirdArg()).also { savedRuns.add(it) }
         }
 
         val processor =
@@ -104,11 +104,11 @@ class DatasetRunProcessorTest {
         every { datasetDAO.getDatasetById(any()) } returns dataset
         every { datasetRunDAO.getQuestionResultsByRunId(any()) } returns listOf(questionResult)
         every { datasetRunDAO.getRunById(any()) } returns run.copy(state = DatasetRunState.RUNNING)
-        every { datasetRunDAO.saveQuestionResult(any()) } answers {
+        every { datasetRunDAO.updateActiveQuestionResult(any()) } answers {
             firstArg<DatasetRunQuestionResult>().also { savedQuestionResults.add(it) }
         }
-        every { datasetRunDAO.saveRun(any()) } answers {
-            firstArg<DatasetRun>().also { savedRuns.add(it) }
+        every { datasetRunDAO.finishRun(any(), any(), any()) } answers {
+            run.copy(state = secondArg(), endTime = thirdArg()).also { savedRuns.add(it) }
         }
 
         val processor =
@@ -155,11 +155,11 @@ class DatasetRunProcessorTest {
         every { datasetDAO.getDatasetById(any()) } returns dataset
         every { datasetRunDAO.getQuestionResultsByRunId(any()) } returns listOf(questionResult)
         every { datasetRunDAO.getRunById(any()) } returns run.copy(state = DatasetRunState.RUNNING)
-        every { datasetRunDAO.saveQuestionResult(any()) } answers {
+        every { datasetRunDAO.updateActiveQuestionResult(any()) } answers {
             firstArg<DatasetRunQuestionResult>().also { savedQuestionResults.add(it) }
         }
-        every { datasetRunDAO.saveRun(any()) } answers {
-            firstArg<DatasetRun>().also { savedRuns.add(it) }
+        every { datasetRunDAO.finishRun(any(), any(), any()) } answers {
+            run.copy(state = secondArg(), endTime = thirdArg()).also { savedRuns.add(it) }
         }
 
         val processor =
@@ -202,8 +202,11 @@ class DatasetRunProcessorTest {
         every { datasetRunDAO.saveQuestionResult(any()) } answers {
             firstArg<DatasetRunQuestionResult>().also { savedQuestionResults.add(it) }
         }
-        every { datasetRunDAO.saveRun(any()) } answers {
-            firstArg<DatasetRun>().also { savedRuns.add(it) }
+        every { datasetRunDAO.updateActiveQuestionResult(any()) } answers {
+            firstArg<DatasetRunQuestionResult>().also { savedQuestionResults.add(it) }
+        }
+        every { datasetRunDAO.finishRun(any(), any(), any()) } answers {
+            run.copy(state = secondArg(), endTime = thirdArg()).also { savedRuns.add(it) }
         }
 
         val processor =
@@ -259,8 +262,109 @@ class DatasetRunProcessorTest {
         val processed = processor.processNextQueuedRun()
 
         assertTrue(processed)
+        verify(exactly = 0) { datasetRunDAO.updateActiveQuestionResult(any()) }
+        verify(exactly = 0) { datasetRunDAO.finishRun(any(), any(), any()) }
+    }
+
+    @Test
+    fun `late answer does not complete a cancelled question or run`() {
+        val dataset = newDataset(questionCount = 1)
+        val run = newRun(dataset)
+        val result = newQuestionResult(run, dataset, dataset.questions.single().id)
+        every { datasetRunDAO.claimNextQueuedRun() } returns run
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getQuestionResultsByRunId(any()) } returns listOf(result)
+        every { datasetRunDAO.getRunById(any()) } returns run
+        every { datasetRunDAO.updateActiveQuestionResult(any()) } answers {
+            firstArg<DatasetRunQuestionResult>().takeIf { it.state == DatasetRunQuestionResultState.RUNNING }
+        }
+        val processor =
+            DatasetRunProcessor(
+                datasetDAO,
+                datasetRunDAO,
+                DatasetQuestionExecutor { _, _, _ ->
+                    BotDialogResponse(emptyList(), userActionId = "late-answer")
+                },
+                clock = fixedClock,
+            )
+
+        assertTrue(processor.processNextQueuedRun())
+
+        verify(exactly = 0) { datasetRunDAO.finishRun(any(), any(), any()) }
         verify(exactly = 0) { datasetRunDAO.saveQuestionResult(any()) }
-        verify(exactly = 0) { datasetRunDAO.saveRun(any()) }
+    }
+
+    @Test
+    fun `cancellation during a failed call prevents another attempt`() {
+        val dataset = newDataset(questionCount = 1)
+        val run = newRun(dataset)
+        val result = newQuestionResult(run, dataset, dataset.questions.single().id)
+        every { datasetRunDAO.claimNextQueuedRun() } returns run
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getQuestionResultsByRunId(any()) } returns listOf(result)
+        every { datasetRunDAO.getRunById(any()) } returnsMany listOf(run, run.copy(state = DatasetRunState.CANCELLED))
+        every { datasetRunDAO.updateActiveQuestionResult(any()) } answers { firstArg() }
+        var calls = 0
+        val processor =
+            DatasetRunProcessor(
+                datasetDAO,
+                datasetRunDAO,
+                DatasetQuestionExecutor { _, _, _ ->
+                    calls++
+                    BotDialogResponse(emptyList())
+                },
+                maxRetries = 2,
+                clock = fixedClock,
+            )
+
+        processor.processNextQueuedRun()
+
+        assertEquals(1, calls)
+        verify(exactly = 0) { datasetRunDAO.finishRun(any(), any(), any()) }
+    }
+
+    @Test
+    fun `storage failure marks unfinished questions failed instead of leaving the run running`() {
+        val dataset = newDataset(questionCount = 1)
+        val run = newRun(dataset)
+        every { datasetRunDAO.claimNextQueuedRun() } returns run
+        every { datasetDAO.getDatasetById(any()) } throws IllegalStateException("storage unavailable")
+        every { datasetRunDAO.finishActiveQuestionResults(any(), any(), any(), any()) } returns Unit
+        every { datasetRunDAO.finishRun(any(), any(), any()) } returns run.copy(state = DatasetRunState.COMPLETED)
+        val processor = DatasetRunProcessor(datasetDAO, datasetRunDAO, DatasetQuestionExecutor { _, _, _ -> error("must not execute") }, clock = fixedClock)
+
+        processor.processNextQueuedRun()
+
+        verify { datasetRunDAO.finishActiveQuestionResults(run._id, DatasetRunQuestionResultState.FAILED, fixedClock.instant(), "storage unavailable") }
+        verify { datasetRunDAO.finishRun(run._id, DatasetRunState.COMPLETED, fixedClock.instant()) }
+    }
+
+    @Test
+    fun `successful answer persists its RAG status`() {
+        val dataset = newDataset(questionCount = 1)
+        val run = newRun(dataset)
+        val result = newQuestionResult(run, dataset, dataset.questions.single().id)
+        val saved = mutableListOf<DatasetRunQuestionResult>()
+        every { datasetRunDAO.claimNextQueuedRun() } returns run
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getQuestionResultsByRunId(any()) } returns listOf(result)
+        every { datasetRunDAO.getRunById(any()) } returns run
+        every { datasetRunDAO.updateActiveQuestionResult(any()) } answers { firstArg<DatasetRunQuestionResult>().also { saved.add(it) } }
+        every { datasetRunDAO.finishRun(any(), any(), any()) } returns run.copy(state = DatasetRunState.COMPLETED)
+        val processor =
+            DatasetRunProcessor(
+                datasetDAO,
+                datasetRunDAO,
+                DatasetQuestionExecutor { _, _, _ ->
+                    BotDialogResponse(listOf(ClientDebug("RAG", mapOf("answer" to mapOf("status" to "found_in_context")))), userActionId = "answer")
+                },
+                clock = fixedClock,
+            )
+
+        processor.processNextQueuedRun()
+
+        assertEquals(true, saved.last().isRagAnswer)
+        assertEquals("found_in_context", saved.last().ragAnswerStatus)
     }
 
     private fun newDataset(questionCount: Int = 2): Dataset =
