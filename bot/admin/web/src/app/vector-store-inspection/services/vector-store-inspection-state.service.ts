@@ -92,6 +92,39 @@ export class VectorStoreInspectionStateService {
     );
   }
 
+  /**
+   * Reloads the index list on re-entry into the view, so an index created meanwhile (e.g. from the
+   * knowledge base) shows up without a full page reload. Reconciles the current selection with the
+   * fresh list, and never moves the user onto the new current index on its own:
+   *  - selection still present: keep it, swapping in the fresh object under the same indexName, so the
+   *    currentIndex$ subscription sees no name change and does not refetch;
+   *  - selection gone: fall back to the index flagged isCurrent, else the first — a name change that
+   *    drives the normal reload with pagination reset.
+   *
+   * Emits true when the selection was kept (caller refreshes the page itself), false when it changed
+   * or there is nothing left (the reload is driven by currentIndex$, so the caller must not refetch).
+   */
+  refreshIndexes(): Observable<boolean> {
+    const selectedName = this.currentIndex$$.value?.indexName ?? null;
+
+    return this.inspection.getIndexes().pipe(
+      map((response) => {
+        this.indexes$$.next(response.indexes);
+
+        const stillPresent = selectedName ? (response.indexes.find((index) => index.indexName === selectedName) ?? null) : null;
+
+        if (stillPresent) {
+          this.currentIndex$$.next(stillPresent);
+          return true;
+        }
+
+        const fallback = response.indexes.find((index) => index.isCurrent) ?? response.indexes[0] ?? null;
+        this.currentIndex$$.next(fallback);
+        return false;
+      })
+    );
+  }
+
   loadCapabilities(): Observable<VectorStoreCapabilities> {
     return this.inspection.getCapabilities().pipe(tap((c) => this.capabilities$$.next(c)));
   }

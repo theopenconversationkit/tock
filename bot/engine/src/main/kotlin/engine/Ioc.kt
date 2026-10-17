@@ -23,6 +23,7 @@ import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.genai.orchestratorclient.services.CompletionService
 import ai.tock.genai.orchestratorclient.services.DocumentCompressorProviderService
 import ai.tock.genai.orchestratorclient.services.EMProviderService
+import ai.tock.genai.orchestratorclient.services.KnowledgeBaseIndexingService
 import ai.tock.genai.orchestratorclient.services.LLMProviderService
 import ai.tock.genai.orchestratorclient.services.ObservabilityProviderService
 import ai.tock.genai.orchestratorclient.services.RAGService
@@ -31,6 +32,7 @@ import ai.tock.genai.orchestratorclient.services.VectorStoreProviderService
 import ai.tock.genai.orchestratorclient.services.impl.CompletionServiceImpl
 import ai.tock.genai.orchestratorclient.services.impl.DocumentCompressorProviderServiceImpl
 import ai.tock.genai.orchestratorclient.services.impl.EMProviderServiceImpl
+import ai.tock.genai.orchestratorclient.services.impl.KnowledgeBaseIndexingServiceImpl
 import ai.tock.genai.orchestratorclient.services.impl.LLMProviderServiceImpl
 import ai.tock.genai.orchestratorclient.services.impl.ObservabilityProviderServiceImpl
 import ai.tock.genai.orchestratorclient.services.impl.RAGServiceImpl
@@ -58,6 +60,7 @@ val botModule =
         bind<RAGService>() with singleton { RAGServiceImpl() }
         bind<ObservabilityProviderService>() with singleton { ObservabilityProviderServiceImpl() }
         bind<VectorStoreProviderService>() with singleton { VectorStoreProviderServiceImpl() }
+        bind<KnowledgeBaseIndexingService>() with singleton { KnowledgeBaseIndexingServiceImpl() }
         bind<VectorStoreInspectionService>() with singleton { VectorStoreInspectionServiceImpl() }
         bind<DocumentCompressorProviderService>() with singleton { DocumentCompressorProviderServiceImpl() }
         bind<StoryConfigurationMonitor>() with singleton { StoryConfigurationMonitor(instance()) }
