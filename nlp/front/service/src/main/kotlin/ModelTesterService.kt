@@ -143,7 +143,7 @@ object ModelTesterService : ModelTester {
                         application._id,
                         locale,
                         it.expression.text,
-                        sentencesMap[it.expression.text]!!.classification.intentId,
+                        sentencesMap.getValue(it.expression.text).classification.intentId,
                         it.entities.map { ClassifiedEntity(it.value) },
                         if (it.entities.isEmpty()) 1.0 else it.entities.map { it.probability }.average(),
                         1,

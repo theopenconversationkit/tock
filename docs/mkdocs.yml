@@ -1,14 +1,23 @@
-site_name: My Docs
+site_name: Tock Documentation
 use_directory_urls: false
 
-repo_url: https://github.com/theopenconversationkit/tock/tree/master/
+# Broken links and anchors fail the strict build
+validation:
+  links:
+    anchors: warn
+
+repo_url: https://github.com/theopenconversationkit/tock
+repo_name: theopenconversationkit/tock
+edit_uri: edit/master/docs/docs/
 
 theme:
+  name: material
+  logo: img/logo-white.svg
+  favicon: img/favicon.ico
   icon:
     edit: material/pencil
     view: material/eye
     repo: fontawesome/brands/github
-  name: material
   palette:
     - scheme: default
       primary: blue
@@ -20,25 +29,27 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-
   features:
     - content.action.edit
     - content.code.copy
-    - navigation.expand
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
     - navigation.path
-    - palette.toggle
     - navigation.top
+    - search.highlight
 
 hooks:
-  - material/overrides/hooks/shortcodes.py
+  - hooks/variables.py
   - hooks/copyapiswagger.py
-  - hooks/Rellinkadd.py
+  - hooks/chatbot_widget.py
+  - hooks/redirects.py
+  - hooks/i18n_parity.py
   - hooks/preview.py
 
 plugins:
-  - tags
-
   - search
+  - tags
   - i18n:
       docs_structure: folder
       fallback_to_default: true
@@ -49,32 +60,159 @@ plugins:
           default: true
           name: English
           build: true
-          site_name: "Tock Documentation"
         - locale: fr
           name: Français
           build: true
-          site_name: "Tock Documentation"
+          nav_translations:
+            Home: Accueil
+            Getting started: Démarrer
+            Gen AI: IA générative
+            Knowledge base: Base de connaissances
+            Answer generation: Génération des réponses
+            Quality and improvement: Qualité et amélioration
+            Enriching the NLU model: Enrichir le modèle NLU
+            Stories and answers: Stories et réponses
+            Language understanding: Compréhension du langage
+            Monitoring: Pilotage
+            Providers: Fournisseurs
+            Channels: Canaux
+            Develop: Développer
+            Internals: Fonctionnement interne
+            Operate: Exploiter
+            Project: Projet
   - git-revision-date-localized:
       enable_creation_date: true
+      fallback_to_build_date: true
 
-extra_css:
-  - assets/css/style.css
-  - assets/css/badge.css
+extra:
+  # Replaced in pages by hooks/variables.py, e.g. {{ tock_version }}
+  variables:
+    tock_version: 26.9.0
+    kotlin_version: 2.4.20
 
 markdown_extensions:
   - admonition
-  - codehilite
+  - attr_list
+  - pymdownx.highlight
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.emoji:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
       emoji_index: !!python/name:material.extensions.emoji.twemoji
-  - attr_list
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
 
-exclude_docs: prompt-example-type-* # Exclut les md d'exemple de prompt
+# RAG prompt examples are linked from rag-prompt-system.md on GitHub, not rendered as pages
+exclude_docs: prompt-example-type-*
 
-# Configurer l'édition dynamique
-edit_uri: "https://github.com/theopenconversationkit/tock/tree/master/docs/docs"
+nav:
+  - Home: index.md
+  - Getting started:
+      - getting-started/index.md
+      - getting-started/rag-tutorial.md
+      - getting-started/rag-aws.md
+      - getting-started/first-bot-studio.md
+      - getting-started/first-bot-kotlin.md
+      - getting-started/run-platform.md
+      - concepts.md
+  - Gen AI:
+      - gen-ai/index.md
+      - gen-ai/how-it-works.md
+      - Knowledge base:
+          - gen-ai/indexing.md
+          - gen-ai/vector-store.md
+          - gen-ai/vector-store-inspection.md
+      - Answer generation:
+          - gen-ai/rag.md
+          - gen-ai/rag-prompt.md
+          - gen-ai/rag-prompt-reference.md
+          - gen-ai/rag-prompt-context.md
+          - gen-ai/compressor.md
+          - gen-ai/rag-exclusion.md
+      - Quality and improvement:
+          - gen-ai/improve.md
+          - gen-ai/playground.md
+          - gen-ai/observability.md
+          - gen-ai/answers-quality.md
+      - Enriching the NLU model:
+          - gen-ai/sentence-generation.md
+      - Providers:
+          - gen-ai/providers/llm-embedding.md
+          - gen-ai/providers/vector-store.md
+          - gen-ai/providers/observability.md
+      - gen-ai/orchestrator-api.md
+  - Studio:
+      - studio/index.md
+      - studio/dashboard.md
+      - studio/general.md
+      - Stories and answers:
+          - studio/stories-and-answers.md
+          - studio/faq.md
+          - studio/i18n.md
+      - Language understanding:
+          - studio/nlu.md
+          - studio/intents.md
+          - studio/entities.md
+          - studio/build-model.md
+          - studio/model-quality.md
+          - studio/intents-restrictions.md
+      - studio/test.md
+      - Monitoring:
+          - studio/analytics.md
+          - studio/custom-metrics.md
+      - Administration:
+          - studio/configuration.md
+          - studio/synchronization.md
+  - Channels:
+      - channels/index.md
+      - channels/web.md
+      - channels/whatsapp.md
+      - channels/messenger.md
+      - channels/teams.md
+      - channels/slack.md
+      - channels/google-chat.md
+      - channels/mattermost.md
+      - channels/iadvize.md
+      - channels/alcmeon.md
+      - channels/openai.md
+  - Develop:
+      - develop/index.md
+      - develop/bot-api.md
+      - develop/kotlin-bot.md
+      - develop/coroutine-stories.md
+      - develop/i18n.md
+      - develop/test.md
+      - develop/connectors.md
+      - develop/api.md
+      - develop/examples.md
+      - Internals:
+          - develop/internals/packages.md
+          - develop/internals/main-classes.md
+          - develop/internals/bot-api.md
+          - develop/internals/collections.md
+          - NLP:
+              - develop/internals/nlp/models-and-entity-models.md
+              - develop/internals/nlp/evaluation.md
+  - Operate:
+      - operate/index.md
+      - operate/architecture.md
+      - operate/installation.md
+      - operate/kubernetes.md
+      - operate/configuration.md
+      - operate/upgrade.md
+      - operate/security.md
+      - operate/authentication.md
+      - operate/supervision.md
+      - operate/cloud.md
+      - operate/troubleshooting.md
+  - Project:
+      - project/index.md
+      - project/why.md
+      - project/showcase.md
+      - project/community.md
+      - project/contribute.md
+      - project/resources.md
+      - project/changelog.md

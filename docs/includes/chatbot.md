@@ -1,13 +1,18 @@
 <!-- Chat inclusion start -->
 <div>
-  <script src="https://unpkg.com/vue@3.4/dist/vue.global.prod.js"></script>
+  <script src="https://unpkg.com/vue@3.5/dist/vue.global.prod.js"></script>
   <link
     rel="stylesheet"
-    href="https://unpkg.com/tock-vue-kit@0.3.6/dist/style.css"
+    href="https://unpkg.com/tock-vue-kit@2.2.0/dist/style.css"
+  />
+  <!-- tock-vue-kit 2.x no longer bundles its icons -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
   />
   <script
     crossorigin
-    src="https://unpkg.com/tock-vue-kit@0.3.6/dist/tock-vue-kit.iife.js"
+    src="https://unpkg.com/tock-vue-kit@2.2.0/dist/tock-vue-kit.iife.js"
   ></script>
   <style>
     :root {

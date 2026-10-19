@@ -28,7 +28,7 @@ import {
 } from '../model/application';
 import { RestService } from './rest/rest.service';
 import { StateService } from './state.service';
-import { ApplicationScopedQuery, Entry, PaginatedQuery } from '../model/commons';
+import { Entry, PaginatedQuery } from '../model/commons';
 import { Intent, NlpEngineType } from '../model/nlp';
 import { FileUploader } from 'ng2-file-upload';
 
@@ -231,10 +231,6 @@ export class ApplicationService implements OnDestroy {
       url = `/dump/sentences/`;
     }
     this.rest.setFileUploaderOptions(uploader, url);
-  }
-
-  getAlexaExport(query: ApplicationScopedQuery): Observable<Blob> {
-    return this.rest.post(`/alexa/export`, query, (r) => new Blob([JSON.stringify(r)], { type: 'application/json' }));
   }
 
   getNlpConfiguration(applicationId: string, engineType: NlpEngineType): Observable<NlpApplicationConfiguration> {

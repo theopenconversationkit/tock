@@ -37,7 +37,7 @@ In order to connect your bot with a WhatsApp bot application, you need a Meta ap
     * the url : https://xxxx.share.zrok.io/whatsapp (where `/whatsapp` is the relative path of the connector)
     * the webhook token you set
 
-* The documentation of the whatsapp builders is available in [KDoc format](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector.whatsapp.cloud/index.html)
+* The documentation of the whatsapp builders is available in [KDoc format](https://javadoc.io/doc/ai.tock/tock-bot-connector-whatsapp-cloud/latest/ai/tock/bot/connector/whatsapp/cloud/package-summary.html)
 
 -> The bot is ready !
 

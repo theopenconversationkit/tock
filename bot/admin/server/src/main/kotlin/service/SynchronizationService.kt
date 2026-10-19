@@ -32,7 +32,6 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.TockUserRole
 import ai.tock.translator.I18nDAO
-import chat.rocket.common.util.ifNull
 import com.github.salomonbrys.kodein.instance
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -185,7 +184,7 @@ object SynchronizationService {
                     applicationId = tempApplicationId,
                     botId = tempAppName,
                     namespace = tempNamespaceName,
-                    path = targetBotAppConfig.path!!.removeSuffix("/").plus("$TEMP_POSTFIX/"),
+                    path = targetBotAppConfig.requiredPath().removeSuffix("/").plus("$TEMP_POSTFIX/"),
                     _id = newId(),
                     nlpModel = tempAppName,
                 )
@@ -204,15 +203,15 @@ object SynchronizationService {
         migrateData(
             targetNamespace,
             targetAppName,
-            targetNlpAppDef!!._id,
+            checkNotNull(targetNlpAppDef) { "NLP application $targetAppName not found in namespace $targetNamespace" }._id,
             tempNamespaceName,
             tempAppName,
             withInboxMessages,
         )
         // Exchange paths for blue/green deployment before the main copy process ends
         val updatedBotConfigsMap = mutableMapOf<BotApplicationConfiguration, BotApplicationConfiguration>()
-        botApplicationConfigurationFitMap.keys.forEach {
-            val result = exchangePaths(it, botApplicationConfigurationFitMap[it]!!)
+        botApplicationConfigurationFitMap.forEach { (target, temp) ->
+            val result = exchangePaths(target, temp)
             updatedBotConfigsMap[result.first] = result.second
         }
         return updatedBotConfigsMap
@@ -225,8 +224,8 @@ object SynchronizationService {
         botAppConfMap: Map<BotApplicationConfiguration, BotApplicationConfiguration>,
     ) {
         // restore the original paths
-        botAppConfMap.keys.forEach {
-            exchangePaths(botAppConfMap[it]!!, it)
+        botAppConfMap.forEach { (target, temp) ->
+            exchangePaths(temp, target)
         }
         // delete the temp bot configuration
         val tempAppDef = front.getApplicationByNamespaceAndName(tempNamespace, tempAppName)
@@ -246,27 +245,29 @@ object SynchronizationService {
         first: BotApplicationConfiguration,
         second: BotApplicationConfiguration,
     ): Pair<BotApplicationConfiguration, BotApplicationConfiguration> {
-        val firstPath = first.path!!
+        val firstPath = first.requiredPath()
         val nonConflictingFirstPath =
-            first.path!!
+            firstPath
                 .removeSuffix(TEMP_POSTFIX)
                 .removeSuffix("/")
                 .plus("_")
-        val secondPath = second.path!!.removeSuffix("/").removeSuffix("_")
+        val secondPath = second.requiredPath().removeSuffix("/").removeSuffix("_")
 
         botConfigurationDAO
             .getConfigurationByPath(nonConflictingFirstPath)
-            .ifNull { BotAdminService.saveApplicationConfiguration(first.copy(path = nonConflictingFirstPath)) }
+            ?: BotAdminService.saveApplicationConfiguration(first.copy(path = nonConflictingFirstPath))
         botConfigurationDAO
             .getConfigurationByPath(firstPath)
-            .ifNull { BotAdminService.saveApplicationConfiguration(second.copy(path = firstPath)) }
+            ?: BotAdminService.saveApplicationConfiguration(second.copy(path = firstPath))
         botConfigurationDAO
             .getConfigurationByPath(secondPath)
-            .ifNull { BotAdminService.saveApplicationConfiguration(first.copy(path = secondPath)) }
-        val firstUpdated = BotAdminService.getBotConfigurationById(first._id)
-        val secondUpdated = BotAdminService.getBotConfigurationById(second._id)
-        return firstUpdated!! to secondUpdated!!
+            ?: BotAdminService.saveApplicationConfiguration(first.copy(path = secondPath))
+        val firstUpdated = checkNotNull(BotAdminService.getBotConfigurationById(first._id)) { "Bot configuration ${first._id} not found" }
+        val secondUpdated = checkNotNull(BotAdminService.getBotConfigurationById(second._id)) { "Bot configuration ${second._id} not found" }
+        return firstUpdated to secondUpdated
     }
+
+    private fun BotApplicationConfiguration.requiredPath(): String = checkNotNull(path) { "Bot configuration $_id has no path" }
 
     private fun deleteStories(
         namespace: String,

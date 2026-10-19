@@ -53,7 +53,8 @@ internal class TeamsClient(
 
         connectorApi =
             retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_whatsapp_request_timeout_ms", 30000),
+                // tock_whatsapp_request_timeout_ms: former name of the property, kept for compatibility
+                longProperty("tock_teams_request_timeout_ms", longProperty("tock_whatsapp_request_timeout_ms", 30000)),
                 logger,
                 interceptors = listOf(customInterceptor),
             ).baseUrl("https://smba.trafficmanager.net/emea/")

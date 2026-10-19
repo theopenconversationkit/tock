@@ -47,7 +47,7 @@ class XrayKeywordHandler {
             val labelPlanMap = emptyMap<String, String>()
             val xray =
                 try {
-                    val dialog = dialogReportDAO.getDialog(bus.dialog.id)!!.cleanSurrogates()
+                    val dialog = checkNotNull(dialogReportDAO.getDialog(bus.dialog.id)) { "dialog ${bus.dialog.id} not found" }.cleanSurrogates()
                     val linkedJira = params.getOrNull(1)?.trim()
                     val connectorName = ""
                     val testTitle = { labels: List<String> ->
@@ -100,7 +100,7 @@ class XrayKeywordHandler {
         } else {
             val xray =
                 try {
-                    val dialog = dialogReportDAO.getDialog(bus.dialog.id)!!.cleanSurrogates()
+                    val dialog = checkNotNull(dialogReportDAO.getDialog(bus.dialog.id)) { "dialog ${bus.dialog.id} not found" }.cleanSurrogates()
                     XrayService().updateXrayTest(dialog, testKey)
                 } catch (e: Exception) {
                     logger.error(e)

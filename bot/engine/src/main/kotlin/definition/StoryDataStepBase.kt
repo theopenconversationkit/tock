@@ -79,5 +79,5 @@ abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
             }
         }
 
-    override val name: String get() = this::class.simpleName!!
+    override val name: String get() = this::class.simpleName ?: this::class.java.name
 }

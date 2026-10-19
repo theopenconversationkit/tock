@@ -69,9 +69,11 @@ object RAGValidationService {
                     ).getErrors("Embedding Model setting check failed")
 
             val indexSessionIdErrors = validateIndexSessionId(ragConfig)
+            val indexSessionId = ragConfig.indexSessionId
 
+            // the vector store index can not be computed without an index session id
             val vectorStoreErrors =
-                (indexSessionIdErrors + embeddingErrors).takeIf { it.isEmpty() }?.let {
+                if ((indexSessionIdErrors + embeddingErrors).isEmpty() && indexSessionId != null) {
                     val vectorStoreSetting =
                         VectorStoreService
                             .getVectorStoreConfiguration(
@@ -84,7 +86,7 @@ object RAGValidationService {
                         VectorStoreUtils.getVectorStoreElements(
                             ragConfig.namespace,
                             ragConfig.botId,
-                            indexSessionId = ragConfig.indexSessionId!!,
+                            indexSessionId = indexSessionId,
                             kNeighborsDocuments = ragConfig.maxDocumentsRetrieved,
                             documentSearchType = ragConfig.documentSearchType,
                             vectorStoreSetting = vectorStoreSetting,
@@ -98,7 +100,9 @@ object RAGValidationService {
                                 documentIndexName = indexName,
                             ),
                         ).getErrors("Vector store setting check failed")
-                } ?: emptySet()
+                } else {
+                    emptySet()
+                }
 
             addAll(questionCondensingLlmErrors + questionAnsweringLlmErrors + embeddingErrors + indexSessionIdErrors + vectorStoreErrors)
         }

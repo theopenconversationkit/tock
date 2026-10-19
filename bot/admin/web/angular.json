@@ -34,14 +34,24 @@
               "node_modules/katex/dist/katex.min.css"
             ],
             "scripts": [],
-            "webWorkerTsConfig": "tsconfig.worker.json"
+            "webWorkerTsConfig": "tsconfig.worker.json",
+            "allowedCommonJsDependencies": [
+              "@messageformat/core",
+              "extend",
+              "jsoneditor",
+              "jszip",
+              "moment",
+              "papaparse",
+              "pdfmake/build/pdfmake",
+              "pdfmake/build/vfs_fonts"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
+                  "maximumWarning": "12kb"
                 }
               ],
               "fileReplacements": [
@@ -61,7 +71,7 @@
               "budgets": [
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
+                  "maximumWarning": "12kb"
                 }
               ],
               "buildOptimizer": false,

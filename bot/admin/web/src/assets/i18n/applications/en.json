@@ -70,10 +70,7 @@
     "uploadDumpButton": "Upload Dump",
     "triggerBuildButton": "Trigger Build",
     "nluEngineConfigurationButton": "NLU Engine configuration",
-    "alexaExportButton": "Alexa Export",
-    "selectLocalePlaceholder": "select Locale to export",
     "cancelButton": "Cancel",
-    "exportButton": "Export",
     "tokenizerPropertiesLabel": "Tokenizer properties",
     "tokenizerPropertiesPlaceholder": "Tokenizer properties",
     "intentClassifierPropertiesLabel": "Intent Classifier properties",
@@ -82,9 +79,7 @@
     "entityClassifierPropertiesPlaceholder": "Entity Classifier properties",
     "updateConfigurationButton": "Update Configuration",
     "buildStarted": "Application build started",
-    "buildTitle": "Build",
-    "alexaExportProvided": "Alexa export file provided",
-    "alexaTitle": "Alexa"
+    "buildTitle": "Build"
   },
   "application-upload": {
     "uploadDumpTitle": "Upload a Dump",

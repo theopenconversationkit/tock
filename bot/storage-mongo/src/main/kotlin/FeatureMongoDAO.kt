@@ -77,12 +77,12 @@ internal class FeatureMongoDAO(
 
         val (connectorFeature, globalFeature) = getValues(id, idWithoutApplicationId)
 
-        return if (connectorFeature == null && globalFeature == null) {
+        val feature = connectorFeature ?: globalFeature
+        return if (feature == null) {
             default.also {
                 addFeature(botId, namespace, default, category, name, null, null, null)
             }
         } else {
-            val feature = (connectorFeature ?: globalFeature)!!
             isEnabled(feature, userId)
         }
     }

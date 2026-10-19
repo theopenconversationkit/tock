@@ -32,7 +32,7 @@ import ai.tock.bot.engine.user.UserState
  * A connector connects bots to users via a dedicated interface (like Messenger, Google Assistant, Slack... ).
  *
  * There is one Connector for each user front-end application.
- * See [ai.tock.bot.connector.messenger.MessengerConnector] or [ai.tock.bot.connector.ga.GAConnector] for examples of [Connector] implementations.
+ * See [ai.tock.bot.connector.messenger.MessengerConnector] or [ai.tock.bot.connector.slack.SlackConnector] for examples of [Connector] implementations.
  */
 interface Connector {
     /**

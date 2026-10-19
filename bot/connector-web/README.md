@@ -156,7 +156,7 @@ and attempts to send them if and when the SSE connection is re-established.
 The `tock_web_sse_keepalive_delay` optional property can be used to configure the number of seconds between
 two SSE pings (default: 10).
 
-The `tock_web_sse_messages_ttl_days` optional property can be used to configure the number of days after which
+The `tock_web_sse_message_queue_ttl_days` optional property can be used to configure the number of days after which
 enqueued messages get deleted. Note: this expiration only works on MongoDB v7.1.0 and up. Set to a
 negative value to disable (default: -1).
 
@@ -166,6 +166,19 @@ messages in the database. When a new message is enqueued past this limit, the ol
 The `tock_web_sse_message_queue_max_size_kb` optional property can be used to configure the maximum size in kilobytes
 of the message queue in the database. When a new message is enqueued past this limit, the oldest messages get deleted
 (default: `2 * tock_web_sse_message_queue_max_count`).
+
+#### Direct SSE
+
+Setting the `tock_web_direct_sse` optional property to `true` enables an additional `<connector path>/sse/direct` route:
+the user message is sent in the `message` header (or in the request body), and the bot answers are streamed
+as server-sent events in the response of this same request.
+Note that this route does not go through the `WebSecurityHandler` of the connector.
+
+#### Streamed answers
+
+When a story streams its answer (see `enableStreaming()` in the Bot API), the streamed parts are sent as SSE events
+as they are produced. By default, they are also merged into a single message in the final POST response;
+set the `tock_web_connector_merge_stream_response` optional property to `false` to disable this merge.
 
 #### Push messages
 
@@ -257,7 +270,8 @@ Note that at the current time, only the main text body is rendered - markdown in
 Different security modes are available for the web connector. The selected mode is configured during bot creation :
 
 ### 1. `DEFAULT`
-- If the environment variable `env.tock_web_cookie_auth` is set to `true`, the `COOKIES` mode is applied.
+- If the `tock_web_cookie_auth` property is set to `true` (or `basic`), the `COOKIES` mode is applied.
+- If it is set to `encrypted`, the `COOKIES_ENCRYPTED` mode is applied.
 - Otherwise, the `PASSTHROUGH` mode is used, meaning no authentication is enforced.
 
 ### 2. `COOKIES`

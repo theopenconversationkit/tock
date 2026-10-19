@@ -11,7 +11,7 @@
 * Then go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface,
  and create a new configuration with these parameters. 
 
-For a more detailed guide, refer to https://doc.tock.ai/tock/master/guides/messenger.html
+For a more detailed guide, refer to https://doc.tock.ai/tock/master/channels/messenger.html
  
 ## Bot API 
  
@@ -39,7 +39,7 @@ In order to connect your bot with a messenger bot application, you need a Messen
 
 * A Messenger integration sample is available in the [open data Bot](https://github.com/theopenconversationkit/tock-bot-open-data) source code
 
-* The documentation of the messenger builders is available in [KDoc format](https://theopenconversationkit.github.io/tock/dokka/tock/ai.tock.bot.connector.messenger/index.html)
+* The documentation of the messenger builders is available in [KDoc format](https://javadoc.io/doc/ai.tock/tock-bot-connector-messenger/latest/ai/tock/bot/connector/messenger/package-summary.html)
 
 -> The bot is ready !
 

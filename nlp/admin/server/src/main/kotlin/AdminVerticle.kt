@@ -384,8 +384,8 @@ open class AdminVerticle : WebVerticle() {
                 app?._id
             },
         ) { context, application: ApplicationWithIntents ->
-            val app = front.getApplicationById(application._id!!)
-            if (context.organization == app!!.namespace) {
+            val app = front.getApplicationById(application._id ?: badRequest("missing application id")) ?: notFound()
+            if (context.organization == app.namespace) {
                 front.triggerBuild(ModelBuildTrigger(app._id, true))
             } else {
                 unauthorized()
@@ -503,7 +503,7 @@ open class AdminVerticle : WebVerticle() {
             val intentId: Id<IntentDefinition> = it.pathId("intentId")
             val entityType = it.path("entityType")
             val role = it.path("role")
-            val intent = front.getIntentById(intentId)!!
+            val intent = front.getIntentById(intentId) ?: notFound()
             if (intent.applications.size == 1 && it.organization == app?.namespace && it.organization == intent.namespace) {
                 front.removeEntityFromIntent(app, intent, entityType, role)
             } else {
@@ -529,7 +529,7 @@ open class AdminVerticle : WebVerticle() {
             val app = front.getApplicationById(it.pathId("applicationId"))
             val intentId: Id<IntentDefinition> = it.pathId("intentId")
             val state = it.path("state")
-            val intent = front.getIntentById(intentId)!!
+            val intent = front.getIntentById(intentId) ?: notFound()
             if (intent.applications.size == 1 && it.organization == app?.namespace && it.organization == intent.namespace) {
                 front.save(intent.copy(mandatoryStates = intent.mandatoryStates - state))
                 true
@@ -556,7 +556,7 @@ open class AdminVerticle : WebVerticle() {
             val app = front.getApplicationById(it.pathId("applicationId"))
             val intentId: Id<IntentDefinition> = it.pathId("intentId")
             val sharedIntentId = it.path("sharedIntentId")
-            val intent = front.getIntentById(intentId)!!
+            val intent = front.getIntentById(intentId) ?: notFound()
             if (intent.applications.size == 1 && it.organization == app?.namespace && it.organization == intent.namespace) {
                 front.save(intent.copy(sharedIntents = intent.sharedIntents - sharedIntentId.toId()))
                 true
@@ -578,10 +578,10 @@ open class AdminVerticle : WebVerticle() {
                 },
             ),
         ) {
-            val app = front.getApplicationById(it.pathId("applicationId"))!!
+            val app = front.getApplicationById(it.pathId("applicationId")) ?: notFound()
             val entityTypeName = it.path("entityType")
             val role = it.path("role")
-            val entityType = front.getEntityTypeByName(entityTypeName)!!
+            val entityType = front.getEntityTypeByName(entityTypeName) ?: notFound()
             if (it.organization == app.namespace && it.organization == entityType.name.namespace()) {
                 front.removeSubEntityFromEntity(app, entityType, role)
             } else {
@@ -697,7 +697,7 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingJsonGet("/logs/:applicationId/:locale/export", nlpUser) { context ->
-            val app = front.getApplicationById(context.pathId("applicationId"))!!
+            val app = front.getApplicationById(context.pathId("applicationId")) ?: notFound()
             if (context.organization == app.namespace) {
                 val sb = StringBuilder()
                 val p = newPrinter(sb)
@@ -715,7 +715,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost("/logs/stats", nlpUser) { context, s: LogStatsQuery ->
             if (context.organization == s.namespace) {
-                front.stats(s.toStatQuery(front.getApplicationByNamespaceAndName(s.namespace, s.applicationName)!!))
+                front.stats(s.toStatQuery(front.getApplicationByNamespaceAndName(s.namespace, s.applicationName) ?: notFound()))
             } else {
                 unauthorized()
             }
@@ -728,7 +728,7 @@ open class AdminVerticle : WebVerticle() {
                         front.getApplicationByNamespaceAndName(
                             s.namespace,
                             s.applicationName,
-                        )!!,
+                        ) ?: notFound(),
                     ),
                 )
             } else {
@@ -740,12 +740,12 @@ open class AdminVerticle : WebVerticle() {
             if (context.organization == s.namespace) {
                 front.search(
                     s.toRequestLogStatQuery(
-                        front
-                            .getApplicationByNamespaceAndName(
+                        (
+                            front.getApplicationByNamespaceAndName(
                                 s.namespace,
                                 s.applicationName,
-                            )!!
-                            ._id,
+                            ) ?: notFound()
+                        )._id,
                     ),
                 )
             } else {
@@ -1154,7 +1154,7 @@ open class AdminVerticle : WebVerticle() {
             if (front.hasNamespace(context.userLogin, n)) {
                 front.setCurrentNamespace(context.userLogin, n)
 
-                val updated = context.user!!.copy(namespace = n)
+                val updated = (context.user ?: unauthorized()).copy(namespace = n)
 
                 // Update the user through userContext() and persist in session so next calls see the change.
                 (context.userContext() as UserContextInternal).setUser(updated)

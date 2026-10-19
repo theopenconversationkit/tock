@@ -32,11 +32,11 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.event.Event
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
+import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.databind.JsonNode
 import com.github.salomonbrys.kodein.instance
 import com.google.api.services.chat.v1.HangoutsChat
 import com.google.api.services.chat.v1.model.Message
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import mu.KotlinLogging
 import java.time.Duration
 
@@ -55,7 +55,6 @@ class GoogleChatConnector(
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
-    private val gson: Gson = Gson()
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -73,8 +72,8 @@ class GoogleChatConnector(
                             .putHeader("Content-Type", "application/json; charset=UTF-8")
                             .setStatusCode(200)
                             .end("{}")
-                        val messageEvent: JsonObject = gson.fromJson(body, JsonObject::class.java)
-                        val chatEvent: JsonObject = messageEvent.getAsJsonObject("chat")
+                        val messageEvent: JsonNode = mapper.readTree(body)
+                        val chatEvent: JsonNode = messageEvent.required("chat")
 
                         // https://developers.google.com/workspace/add-ons/concepts/event-objects#chat-payload
                         if (chatEvent.has("messagePayload")) {
@@ -95,12 +94,12 @@ class GoogleChatConnector(
     }
 
     private fun handleMessage(
-        chatEvent: JsonObject,
+        chatEvent: JsonNode,
         controller: ConnectorController,
     ) {
-        val message = chatEvent.getAsJsonObject("messagePayload").getAsJsonObject("message")
-        val spaceName = message.getAsJsonObject("space").get("name").asString
-        val threadName = message.getAsJsonObject("thread").get("name").asString
+        val message = chatEvent.required("messagePayload").required("message")
+        val spaceName = message.required("space").required("name").asText()
+        val threadName = message.required("thread").required("name").asText()
         val event = GoogleChatRequestConverter.toEvent(chatEvent, connectorId)
         executor.executeBlocking {
             val callback =
@@ -121,8 +120,8 @@ class GoogleChatConnector(
     }
 
     private fun handleFeedback(
-        messageEvent: JsonObject,
-        chatEvent: JsonObject,
+        messageEvent: JsonNode,
+        chatEvent: JsonNode,
         controller: ConnectorController,
     ) {
         val request = GoogleChatRequestConverter.toFeedbackRequest(messageEvent, chatEvent, connectorId)
@@ -267,8 +266,8 @@ class GoogleChatConnector(
 
     private fun ChatCard.sectionFromMediaCard(message: MediaCard) {
         section {
-            if (message.title != null) {
-                keyValue(content = message.title!!, bottomLabel = message.subTitle)
+            message.title?.let { title ->
+                keyValue(content = title, bottomLabel = message.subTitle)
             }
             if (message.actions.isNotEmpty()) {
                 buttons {
@@ -283,8 +282,9 @@ class GoogleChatConnector(
 
     private fun ChatButtons.buttonFromMediaAction(message: MediaAction) {
         textButton(message.title) {
-            if (message.url != null) {
-                link(message.url!!)
+            val url = message.url
+            if (url != null) {
+                link(url)
             } else {
                 nlpAction(message.title)
             }

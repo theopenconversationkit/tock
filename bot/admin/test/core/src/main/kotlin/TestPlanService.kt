@@ -79,7 +79,7 @@ object TestPlanService {
         plan: TestPlan,
         dialogId: Id<Dialog>,
     ) {
-        saveTestPlan(plan.copy(dialogs = plan.dialogs + TestDialogReport(dialogDAO.getDialog(dialogId)!!)))
+        saveTestPlan(plan.copy(dialogs = plan.dialogs + TestDialogReport(requireNotNull(dialogDAO.getDialog(dialogId)) { "dialog $dialogId not found" })))
     }
 
     fun removeTestPlan(plan: TestPlan) {
@@ -194,7 +194,7 @@ object TestPlanService {
                     ClientMessageRequest(
                         playerId,
                         botId,
-                        testPlan.startAction!!.toClientMessage(),
+                        checkNotNull(testPlan.startAction) { "test plan ${testPlan._id} has no start action" }.toClientMessage(),
                         testPlan.targetConnectorType.toClientConnectorType(),
                         true,
                     ),

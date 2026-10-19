@@ -49,7 +49,6 @@ import org.litote.kmongo.document
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.excludeId
-import org.litote.kmongo.exists
 import org.litote.kmongo.expr
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
@@ -63,7 +62,6 @@ import org.litote.kmongo.limit
 import org.litote.kmongo.lookup
 import org.litote.kmongo.match
 import org.litote.kmongo.ne
-import org.litote.kmongo.newId
 import org.litote.kmongo.or
 import org.litote.kmongo.project
 import org.litote.kmongo.reactivestreams.getCollection
@@ -73,8 +71,6 @@ import org.litote.kmongo.save
 import org.litote.kmongo.skip
 import org.litote.kmongo.sort
 import org.litote.kmongo.unwind
-import java.time.Instant
-import kotlin.concurrent.thread
 import kotlin.reflect.KProperty
 
 object FaqDefinitionMongoDAO : FaqDefinitionDAO {
@@ -224,55 +220,6 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
             ).map { it.tag }
             .toList()
 
-    /**
-     * @see FaqDefinitionDAO.makeMigration
-     */
-    override fun makeMigration(intentIdSupplier: (Id<IntentDefinition>) -> String?) {
-        // Faq projection represents the old structure of FaqDefinition
-        // May 2023
-        data class FaqProjection(
-            val _id: Id<FaqDefinition> = newId(),
-            val botId: String,
-            val intentId: Id<IntentDefinition>,
-            val i18nId: Id<I18nLabel>,
-            val tags: List<String>,
-            val enabled: Boolean,
-            val creationDate: Instant,
-            val updateDate: Instant,
-        )
-
-        col
-            .aggregate<FaqProjection>(
-                match(
-                    FaqDefinition::namespace exists false,
-                    // to ensure old faq migration if not done (see Tock version 23.3.0)
-                    FaqDefinition::botId exists true,
-                ),
-            ).forEach { projection ->
-                thread(true) {
-                    with(projection) {
-                        val namespace =
-                            intentIdSupplier.invoke(intentId)
-                                ?: throw Exception("Fail to migrate Faq with intent $intentId  due to namespace not found with id $intentId")
-
-                        logger.info { "Migrate FaqDefinition ${projection._id} with namespace $namespace" }
-
-                        FaqDefinition(
-                            _id,
-                            botId,
-                            namespace,
-                            intentId,
-                            i18nId,
-                            tags,
-                            enabled,
-                            creationDate,
-                            updateDate,
-                        )
-                    }.let { faq -> col.save(faq) }
-                }
-            }
-    }
-
     private const val CLASSIFIED_SENTENCE_COLLECTION = "classified_sentence"
 
     private const val INTENT_DEFINITION_COLLECTION = "intent_definition"
@@ -367,31 +314,25 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     }
 
     private fun FaqQuery.filterTextSearchOnFaqTitle() =
-        if (search == null) {
-            null
-        } else {
+        search?.let {
             (FaqQueryResult::faq / IntentDefinition::label).regex(
-                pattern = search!!,
+                pattern = it,
                 options = "i",
             )
         }
 
     private fun FaqQuery.filterTextSearchOnFaqDescription() =
-        if (search == null) {
-            null
-        } else {
+        search?.let {
             (FaqQueryResult::faq / IntentDefinition::description).regex(
-                pattern = search!!,
+                pattern = it,
                 options = "i",
             )
         }
 
     private fun FaqQuery.filterTextSearchOnClassifiedSentence() =
-        if (search == null) {
-            null
-        } else {
+        search?.let {
             (FaqQueryResult::utterances / ClassifiedSentence::text).regex(
-                pattern = search!!,
+                pattern = it,
                 options = "i",
             )
         }

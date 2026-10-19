@@ -261,8 +261,9 @@ class WhatsAppCloudApiService(
 
         try {
             val response = call(request)
-            if (response.isSuccessful && response.body() != null) {
-                val byteArray = response.body()!!.bytes()
+            val body = response.body()
+            if (response.isSuccessful && body != null) {
+                val byteArray = body.bytes()
                 val base64String = Base64.getEncoder().encodeToString(byteArray)
 
                 return "data:$mimeType;base64,$base64String"
@@ -289,15 +290,16 @@ class WhatsAppCloudApiService(
             .filterIsInstance<WhatsappTemplateComponent.Header>()
             .flatMap { it.parameters }
             .filterIsInstance<HeaderParameter.Image>()
-            .filter { it.image.id != null }
-            .map {
-                it to
-                    executor.executeBlockingTask {
-                        sendMedia(
-                            it.image.id!!,
-                            FileType.PNG.type,
-                        )
-                    }
+            .mapNotNull { imageHeader ->
+                imageHeader.image.id?.let { imageId ->
+                    imageHeader to
+                        executor.executeBlockingTask {
+                            sendMedia(
+                                imageId,
+                                FileType.PNG.type,
+                            )
+                        }
+                }
             }
             // exit from sequence
             .toList()

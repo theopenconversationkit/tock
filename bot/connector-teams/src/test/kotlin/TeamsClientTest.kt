@@ -60,7 +60,7 @@ class TeamsClientTest {
 
         tokenHandler.loginApi =
             retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_whatsapp_request_timeout_ms", 30000),
+                longProperty("tock_teams_request_timeout_ms", 30000),
                 logger,
             ).baseUrl("http://${server.hostName}:${server.port}/").addJacksonConverter(tokenHandler.teamsMapper).build().create()
 
@@ -87,7 +87,7 @@ class TeamsClientTest {
 
         tokenHandler.loginApi =
             retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_whatsapp_request_timeout_ms", 30000),
+                longProperty("tock_teams_request_timeout_ms", 30000),
                 logger,
             ).baseUrl("http://${server.hostName}:${server.port}/")
                 .addJacksonConverter(tokenHandler.teamsMapper)
@@ -122,7 +122,7 @@ class TeamsClientTest {
 
         tokenHandler.loginApi =
             retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_whatsapp_request_timeout_ms", 30000),
+                longProperty("tock_teams_request_timeout_ms", 30000),
                 logger,
             ).baseUrl("http://${server.hostName}:${server.port}/")
                 .addJacksonConverter(tokenHandler.teamsMapper)

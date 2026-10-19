@@ -83,7 +83,6 @@ import ai.tock.shared.error
 import ai.tock.shared.intProperty
 import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.longProperty
-import ai.tock.shared.sumByLong
 import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.model.Accumulators.sum
 import com.mongodb.client.model.Aggregates.sample
@@ -303,9 +302,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
 
         val saveProcessing: suspend () -> Unit = {
-            if (userTimeline.playerId.clientId != null) {
+            val clientId = userTimeline.playerId.clientId
+            if (clientId != null) {
                 clientIdCol.updateOneById(
-                    userTimeline.playerId.clientId!!,
+                    clientId,
                     addEachToSet(
                         UserIds,
                         listOf(userTimeline.playerId.id),
@@ -324,8 +324,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                             if (it.messageLoaded && it.messages.isNotEmpty()) {
                                 saveConnectorMessage(it.toActionId(), dialog.id, it.messages)
                             }
-                            if (it.nlpStatsLoaded && it.nlpStats != null) {
-                                saveNlpStats(it.toActionId(), dialog.id, it.nlpStats!!)
+                            if (it.nlpStatsLoaded) {
+                                it.nlpStats?.let { nlpStats -> saveNlpStats(it.toActionId(), dialog.id, nlpStats) }
                             }
                         }
 
@@ -333,9 +333,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                             if (it.messages.isNotEmpty()) {
                                 saveConnectorMessage(it.toActionId(), dialog.id, it.messages)
                             }
-                            if (it.nlpStats != null) {
-                                saveNlpStats(it.toActionId(), dialog.id, it.nlpStats!!)
-                            }
+                            it.nlpStats?.let { nlpStats -> saveNlpStats(it.toActionId(), dialog.id, nlpStats) }
                         }
 
                         else -> {
@@ -407,9 +405,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             )
         dialogCol.updateMany(dialogFilter, addToSet(PlayerIds, newPlayerId))
         dialogCol.updateMany(dialogFilter, pull(PlayerIds, oldPlayerId))
-        if (newPlayerId.clientId != null) {
+        val newClientId = newPlayerId.clientId
+        if (newClientId != null) {
             clientIdCol.updateOneById(
-                newPlayerId.clientId!!,
+                newClientId,
                 addToSet(
                     UserIds,
                     newPlayerId.id,
@@ -706,10 +705,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                         and(
                             ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
                             Namespace eq query.namespace,
-                            if (name.isNullOrBlank()) {
-                                null
-                            } else {
-                                UserTimelineCol_.UserPreferences.lastName.regex(name!!.trim(), "i")
+                            name?.takeUnless { it.isBlank() }?.let {
+                                UserTimelineCol_.UserPreferences.lastName.regex(it.trim(), "i")
                             },
                             if (from == null) null else LastUpdateDate gt from?.toInstant(),
                             if (to == null) null else LastUpdateDate lt to?.toInstant(),
@@ -720,7 +717,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                     .flatMap {
                                         "userState.flags.${it.key}".let { key ->
                                             listOfNotNull(
-                                                if (it.value == null) null else "{'$key.value':${it.value!!.json}}",
+                                                it.value?.let { value -> "{'$key.value':${value.json}}" },
                                                 "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':{$type:10}}]}",
                                             )
                                         }
@@ -782,13 +779,14 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 if (applicationsIds.isEmpty()) {
                     DialogReportQueryResult(0)
                 } else {
-                    if (dialogId != null) {
+                    val requestedDialogId = dialogId
+                    if (requestedDialogId != null) {
                         // When a single dialog is requested, only the applicationId filter is applied
                         val dialog =
                             dialogCol
                                 .findOne(
                                     and(
-                                        DialogCol::_id eq dialogId!!.toId(),
+                                        DialogCol::_id eq requestedDialogId.toId(),
                                         DialogCol::applicationIds `in` applicationsIds,
                                         DialogCol::namespace eq namespace,
                                     ),
@@ -798,19 +796,21 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                             DialogReportQueryResult(1, 0, 1, it)
                         }
                     } else {
+                        val queryDialogIds = query.dialogIds
+                        val queryText = query.text
                         val dialogIds =
                             when {
-                                !query.dialogIds.isNullOrEmpty() -> {
-                                    query.dialogIds!!.map { it.toId<Dialog>() }.toSet()
+                                !queryDialogIds.isNullOrEmpty() -> {
+                                    queryDialogIds.map { it.toId<Dialog>() }.toSet()
                                 }
 
-                                query.text.isNullOrBlank() -> {
+                                queryText.isNullOrBlank() -> {
                                     emptySet()
                                 }
 
                                 query.exactMatch -> {
                                     dialogTextCol
-                                        .find(Text eq textKey(query.text!!.trim()))
+                                        .find(Text eq textKey(queryText.trim()))
                                         .toList()
                                         .map { it.dialogId }
                                         .toSet()
@@ -818,7 +818,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
                                 else -> {
                                     dialogTextCol
-                                        .find(Text.regex(textKey(query.text!!.trim()), "i"))
+                                        .find(Text.regex(textKey(queryText.trim()), "i"))
                                         .toList()
                                         .map { it.dialogId }
                                         .toSet()
@@ -832,9 +832,9 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                     DialogCol_.ApplicationIds `in` applicationsIds,
                                     Namespace eq query.namespace,
                                     if (query.playerId != null || query.displayTests) null else Test eq false,
-                                    if (query.playerId == null) null else PlayerIds.id eq query.playerId!!.id,
+                                    query.playerId?.let { PlayerIds.id eq it.id },
                                     if (dialogIds.isEmpty()) null else _id `in` dialogIds,
-                                    if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
+                                    connectorType?.let { Stories.actions.state.targetConnectorType.id eq it.id },
                                     if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
                                     if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
                                     if (query.applicationId.isNullOrBlank()) {
@@ -964,10 +964,11 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 )
             val dialogColAggregation =
                 dialogCol.aggregate<ParseRequestSatisfactionStatCol>(match(matchConditions), dialogRatingGroup)
-            val dialogRatings = dialogColAggregation.toList().map { DialogRating(it.rating, it.count) }
-            if (dialogRatings.isNotEmpty()) {
-                val nb = dialogRatings.sumByLong { it.nbUsers!!.toLong() }
-                val avg = dialogRatings.sumOf { it.nbUsers!! * it.rating!! } / nb
+            val ratingStats = dialogColAggregation.toList()
+            val dialogRatings = ratingStats.map { DialogRating(it.rating, it.count) }
+            if (ratingStats.isNotEmpty()) {
+                val nb = ratingStats.sumOf { it.count.toLong() }
+                val avg = ratingStats.sumOf { it.count * it.rating } / nb
                 RatingReportQueryResult(avg, nb.toInt(), dialogRatings)
             } else {
                 null

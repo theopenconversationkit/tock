@@ -184,8 +184,8 @@ internal class AuthenticateBotConnectorService(
                 val algo = it.kty
                 val verifier: JWSVerifier =
                     when (algo) {
-                        "RSA" -> RSASSAVerifier(RSAKey.parse(it.toString()))
-                        "EC" -> ECDSAVerifier(ECKey.parse(it.toString()))
+                        "RSA" -> RSASSAVerifier(RSAKey.parse(it.toJson()))
+                        "EC" -> ECDSAVerifier(ECKey.parse(it.toJson()))
                         else -> throw ForbiddenException("$algo is not a supported algorithm")
                     }
                 if (signedJWT.verify(verifier)) {

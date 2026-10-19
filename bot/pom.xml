@@ -36,15 +36,10 @@
         <module>connector-rest-client</module>
         <module>connector-messenger</module>
         <module>connector-alcmeon</module>
-        <module>connector-ga</module>
         <module>connector-slack</module>
-        <module>connector-alexa</module>
-        <module>connector-rocketchat</module>
-        <module>connector-twitter</module>
         <module>connector-whatsapp</module>
         <module>connector-whatsapp-cloud</module>
         <module>connector-teams</module>
-        <module>connector-businesschat</module>
         <module>connector-web</module>
         <module>connector-web-model</module>
         <module>connector-web-sse</module>
@@ -67,8 +62,6 @@
         <module>api</module>
 
         <module>admin</module>
-
-        <module>chatbase</module>
 
     </modules>
 
@@ -116,16 +109,6 @@
             </dependency>
             <dependency>
                 <groupId>ai.tock</groupId>
-                <artifactId>tock-bot-connector-ga</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ai.tock</groupId>
-                <artifactId>tock-bot-connector-alexa</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ai.tock</groupId>
                 <artifactId>tock-bot-connector-rest</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -137,16 +120,6 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-bot-connector-slack</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ai.tock</groupId>
-                <artifactId>tock-bot-connector-twitter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ai.tock</groupId>
-                <artifactId>tock-bot-connector-rocketchat</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -197,11 +170,6 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-bot-storage-mongo</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ai.tock</groupId>
-                <artifactId>tock-bot-connector-businesschat</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

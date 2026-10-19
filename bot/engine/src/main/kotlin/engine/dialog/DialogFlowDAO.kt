@@ -19,8 +19,6 @@ package ai.tock.bot.engine.dialog
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.admin.dialog.DialogFlowAggregateData
-import ai.tock.bot.definition.BotDefinition
-import ai.tock.bot.definition.DialogFlowDefinition
 import org.litote.kmongo.Id
 import java.time.DayOfWeek
 import java.time.LocalDateTime
@@ -30,11 +28,6 @@ interface DialogFlowDAO {
      * Init stat craw - used only in admin by default.
      */
     fun initFlowStatCrawl()
-
-    fun saveFlow(
-        bot: BotDefinition,
-        flow: DialogFlowDefinition,
-    )
 
     fun loadApplicationData(
         namespace: String,

@@ -34,7 +34,7 @@ class SampleCASAuthProvider(vertx: Vertx) : CASAuthProvider(vertx) {
         pacConfig = Config(casCallbackUrl, casClient)
         pacConfig.sessionStore = sessionStore
 
-        val url = this.javaClass.getResource("/generic-error-page.html")!!
+        val url = checkNotNull(this.javaClass.getResource("/generic-error-page.html")) { "generic-error-page.html not found in classpath" }
         logger.debug { "read generic error page: $url" }
         genericErrorPage = url.readText(Charsets.UTF_8)
     }

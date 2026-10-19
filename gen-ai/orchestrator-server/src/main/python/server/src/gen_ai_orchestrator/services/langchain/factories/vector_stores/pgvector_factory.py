@@ -80,6 +80,7 @@ class PGVectorFactory(LangChainVectorStoreFactory):
             engine=engine,
             table_name=self.index_name,
             k=search_kwargs.get('k', 10),
+            metadata_filter=search_kwargs.get('filter'),
         )
 
     async def check_vector_store_connection(self) -> bool:

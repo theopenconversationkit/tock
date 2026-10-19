@@ -1,0 +1,31 @@
+# Configuration of the link checker (https://lychee.cli.rs), used by .github/workflows/doc-links.yml.
+# Run it locally from the repository root: lychee --config docs/lychee.toml 'docs/docs/**/*.md'
+
+# Only external links: the internal links are checked by `mkdocs build --strict`
+scheme = ["https", "http"]
+
+max_concurrency = 16
+timeout = 30
+max_retries = 2
+accept = ["200..=299", "403", "429"]
+
+exclude = [
+  # Local or example addresses
+  '^https?://localhost',
+  '^https?://127\.0\.0\.1',
+  '^https?://[a-z0-9_-]+:[0-9]+',
+  'example\.com',
+  '<[a-z-]+>',
+  # Placeholders replaced at build time (hooks/variables.py)
+  '\{\{',
+  # Sites that block automated requests
+  'linkedin\.com',
+  'twitter\.com',
+  'x\.com',
+  'facebook\.com',
+]
+
+exclude_path = [
+  # Swagger / OpenAPI files copied at build time
+  'docs/docs/api',
+]

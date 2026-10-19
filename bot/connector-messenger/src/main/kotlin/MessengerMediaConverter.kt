@@ -37,11 +37,8 @@ private typealias MessengerAttachmentType = ai.tock.bot.connector.messenger.mode
 
 object MessengerMediaConverter {
     private fun BotBus.toButton(action: MediaAction): Button =
-        if (action.url != null) {
-            urlButton(action.title, action.url!!)
-        } else {
-            nlpPostbackButton(action.title)
-        }
+        action.url?.let { url -> urlButton(action.title, url) }
+            ?: nlpPostbackButton(action.title)
 
     private fun BotBus.toButtons(
         actions: List<MediaAction>,
@@ -114,14 +111,15 @@ object MessengerMediaConverter {
         return if (file != null) {
             when (file.type) {
                 image -> {
+                    val headline = title ?: subTitle
                     listOf(
                         if (title == null && subTitle == null && actions.isNotEmpty()) {
                             mediaTemplate(file.url, actions = toUserActions(actions))
-                        } else if (title != null || subTitle != null) {
+                        } else if (headline != null) {
                             genericTemplate(
                                 listOf(
                                     genericElement(
-                                        title ?: subTitle!!,
+                                        headline,
                                         subTitle.takeIf { title != null },
                                         file.url,
                                         toButtons(actions),
@@ -155,11 +153,7 @@ object MessengerMediaConverter {
                     listOfNotNull(
                         if (subTitle != null) title?.let { text(it) } else null,
                         toAttachment(file.type, file.url),
-                        if (title != null || subTitle != null) {
-                            textWithButtons(subTitle ?: title!!, actions)
-                        } else {
-                            null
-                        },
+                        (subTitle ?: title)?.let { textWithButtons(it, actions) },
                     )
                 }
             }

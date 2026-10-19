@@ -25,12 +25,8 @@ private var internalKeywordServices: List<KeywordService>? = null
 
 internal val keywordServices: List<KeywordService>
     get() =
-        if (internalKeywordServices == null) {
-            internalKeywordServices = Loader.loadServices()
-            internalKeywordServices!!
-        } else {
-            internalKeywordServices!!
-        }
+        internalKeywordServices
+            ?: Loader.loadServices<KeywordService>().also { internalKeywordServices = it }
 
 interface KeywordService {
     /**

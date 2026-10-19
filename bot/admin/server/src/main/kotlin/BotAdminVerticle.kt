@@ -127,10 +127,6 @@ open class BotAdminVerticle : AdminVerticle() {
             if (it.body()) {
                 DatasetRunWorker.start()
 
-                if (booleanProperty(Properties.FAQ_MIGRATION_ENABLED, false)) {
-                    FaqAdminService.makeMigration()
-                }
-
                 if (booleanProperty(Properties.UPDATING_CUSTOM_METRIC_ENABLED, false)) {
                     DataMigrationService.updateIndicatorsType()
                 }

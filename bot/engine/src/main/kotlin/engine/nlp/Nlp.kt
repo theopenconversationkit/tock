@@ -337,14 +337,16 @@ internal class Nlp : NlpController {
                         botDefinition.nlpModelName,
                         toQueryContext(),
                         entity,
-                        newValues.map {
-                            ValueToMerge(
-                                it.value!!,
-                                it.content,
-                                false,
-                                it.start,
-                                it.probability,
-                            )
+                        newValues.mapNotNull { newValue ->
+                            newValue.value?.let { value ->
+                                ValueToMerge(
+                                    value,
+                                    newValue.content,
+                                    false,
+                                    newValue.start,
+                                    newValue.probability,
+                                )
+                            }
                         } +
                             listOfNotNull(
                                 initialValue

@@ -20,9 +20,6 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.messenger.messengerConnectorType
 import ai.tock.bot.connector.messenger.model.MessengerConnectorMessage
 import ai.tock.bot.connector.messenger.withMessenger
-import ai.tock.bot.connector.twitter.model.TwitterConnectorMessage
-import ai.tock.bot.connector.twitter.twitterConnectorType
-import ai.tock.bot.connector.twitter.withTwitter
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryDefinitionBase
@@ -30,9 +27,6 @@ import ai.tock.bot.definition.StoryHandlerBase
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.action.ActionQuote
-import ai.tock.bot.engine.action.ActionReply
-import ai.tock.bot.engine.action.ActionVisibility
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.EventState
@@ -268,44 +262,6 @@ fun provideMockedMessengerBus(bus: BotBus = mockk()): BotBus {
         if (bus.targetConnectorType == messengerConnectorType) {
             @Suppress("UNCHECKED_CAST")
             (args[1] as (() -> MessengerConnectorMessage)).invoke()
-        }
-        bus
-    }
-
-    return bus
-}
-
-/**
- * Execute test with a bus mocked with classic twitter extensions.
- */
-fun mockTwitter(
-    bus: BotBus,
-    test: (BotBus) -> Any?,
-) {
-    try {
-        provideMockedTwitterBus(bus)
-
-        test(bus)
-    } finally {
-        clearAllMocks()
-    }
-}
-
-/**
- * Mock classic twitter extensions.
- */
-fun provideMockedTwitterBus(bus: BotBus): BotBus {
-    provideMockedBusCommon(bus)
-
-    mockkStatic("ai.tock.bot.connector.twitter.TwitterBuildersKt")
-    every { bus.targetConnectorType } returns twitterConnectorType
-    every { bus.action.metadata.visibility } returns ActionVisibility.UNKNOWN
-    every { bus.action.metadata.quoteMessage } returns ActionQuote.UNKNOWN
-    every { bus.action.metadata.replyMessage } returns ActionReply.UNKNOWN
-    every { bus.withTwitter(any()) }.answers {
-        if (bus.targetConnectorType == twitterConnectorType) {
-            @Suppress("UNCHECKED_CAST")
-            (args[1] as (() -> TwitterConnectorMessage)).invoke()
         }
         bus
     }
