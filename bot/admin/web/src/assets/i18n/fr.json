@@ -114,7 +114,7 @@
   "menu-items": {
     "new-sentence": "Nouvelle phrase",
     "inbox-sentences": "Phrases à entrainer",
-    "search-sentences": "Rechercher des phrases",
+    "search-sentences": "Toutes les phrases",
     "unknown-sentences": "Phrases inconnues",
     "intents": "Intentions",
     "entities": "Entités",
@@ -265,6 +265,7 @@
         "ragexcluded-tooltip": "Définir toutes les phrases sélectionnées comme exclues du RAG"
       },
       "sort-by-creation-date": "Trier par date de création",
+      "select-all": "Tout sélectionner",
       "action-titles": {
         "delete": "Supprimer",
         "unknown": "Inconnu",
@@ -355,9 +356,18 @@
     },
     "sentence-training-entry": {
       "review-comment": "Commentaire de révision",
+      "copy": "Copier",
+      "test": "Tester",
       "copy-sentence": "Copier la phrase",
       "test-sentence": "Tester cette phrase dans un dialogue",
       "sentence-status": "Statut de la phrase",
+      "status": {
+        "deleted": "Supprimée",
+        "inbox": "À entraîner",
+        "model": "Incluse dans le modèle",
+        "validated": "Validée",
+        "unknown": "Inconnu"
+      },
       "sentence-configuration": "Configuration de la phrase",
       "qualifier": "Qualificateur",
       "intent-association": "Association d'intention",

@@ -21,7 +21,7 @@ import { EntitiesComponent } from './entities/entities.component';
 import { NgModule } from '@angular/core';
 import { SentencesInboxComponent } from './sentences/sentences-inbox/sentences-inbox.component';
 import { SentencesUnknownComponent } from './sentences/sentences-unknown/sentences-unknown.component';
-import { SentencesSearchComponent } from './sentences/sentences-search/sentences-search.component';
+import { SentencesAllComponent } from './sentences/sentences-all/sentences-all.component';
 import { LanguageUnderstandingTabsComponent } from './language-understanding-tabs.component';
 import { SentenceNewComponent } from './sentences/sentence-new/sentence-new.component';
 import { IntentsLogsComponent } from './intents-logs/intents-logs.component';
@@ -55,7 +55,7 @@ const routes: Routes = [
       },
       {
         path: 'search',
-        component: SentencesSearchComponent
+        component: SentencesAllComponent
       },
       {
         path: 'intents',
