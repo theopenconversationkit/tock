@@ -14,11 +14,24 @@
 #
 """Module for the RAG Service"""
 
+from typing import AsyncGenerator
+
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.routers.responses.responses import RAGResponse
-from gen_ai_orchestrator.services.langchain.rag_chain import execute_rag_chain
+from gen_ai_orchestrator.services.langchain.rag_chain import (
+    execute_rag_chain,
+    execute_rag_chain_stream,
+)
 
 
 async def rag(request: RAGRequest, debug: bool) -> RAGResponse:
     """Launch execution of the RAG chain"""
     return await execute_rag_chain(request, debug)
+
+
+async def rag_stream(
+    request: RAGRequest, debug: bool
+) -> AsyncGenerator[dict, None]:
+    """Launch streaming execution of the RAG chain (Server-Sent Events)"""
+    async for event in execute_rag_chain_stream(request, debug):
+        yield event

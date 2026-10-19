@@ -65,3 +65,44 @@ def test_rag_callback_handler_qa_prompt():
     prompt = 'A custom prompt !'
     handler.on_chain_end(serialized={}, outputs=StringPromptValue(text=prompt))
     assert handler.records['rag_prompt'] == prompt
+
+
+def test_rag_callback_handler_time_to_first_token():
+    """The first streamed token of the answer generation records a TTFT duration."""
+    handler = RAGCallbackHandler()
+    # 1st LLM call = question condensation (ignored by TTFT).
+    handler.on_llm_start(serialized={}, prompts=[], run_id='condense-run')
+    # 2nd LLM call = answer generation (the one measured).
+    handler.on_llm_start(serialized={}, prompts=[], run_id='answer-run')
+
+    assert 'rag_answer_generation_first_token' not in handler.records['step_durations']
+
+    handler.on_llm_new_token(token='Hel', run_id='answer-run')
+
+    ttft = handler.records['step_durations'].get('rag_answer_generation_first_token')
+    assert ttft is not None
+    assert float(ttft) >= 0
+
+
+def test_rag_callback_handler_time_to_first_token_recorded_once():
+    """Only the first token is measured; later tokens do not overwrite the TTFT."""
+    handler = RAGCallbackHandler()
+    handler.on_llm_start(serialized={}, prompts=[], run_id='condense-run')
+    handler.on_llm_start(serialized={}, prompts=[], run_id='answer-run')
+
+    handler.on_llm_new_token(token='Hel', run_id='answer-run')
+    first = handler.records['step_durations']['rag_answer_generation_first_token']
+    handler.on_llm_new_token(token='lo', run_id='answer-run')
+    second = handler.records['step_durations']['rag_answer_generation_first_token']
+
+    assert first == second
+
+
+def test_rag_callback_handler_no_ttft_for_condensation_tokens():
+    """Tokens streamed by the condensation LLM must not produce a TTFT entry."""
+    handler = RAGCallbackHandler()
+    handler.on_llm_start(serialized={}, prompts=[], run_id='condense-run')
+
+    handler.on_llm_new_token(token='rephrased', run_id='condense-run')
+
+    assert 'rag_answer_generation_first_token' not in handler.records['step_durations']

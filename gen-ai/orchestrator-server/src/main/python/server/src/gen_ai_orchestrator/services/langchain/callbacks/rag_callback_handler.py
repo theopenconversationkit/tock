@@ -38,6 +38,8 @@ class RAGCallbackHandler(BaseCallbackHandler):
     def __init__(self):
         self._step_timers: dict = {}
         self._llm_call_count: int = 0
+        # Guards the one-shot time-to-first-token measurement (streaming only).
+        self._first_token_recorded: bool = False
         self.records: Dict[str, Any] = {
             'chat_prompt': None,
             'rag_question_condensation_chain_output': None,
@@ -103,6 +105,23 @@ class RAGCallbackHandler(BaseCallbackHandler):
             return
 
         self._step_timers[run_key] = (step_name, time.time())
+
+    def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
+        """Record the time-to-first-token of the answer generation (streaming only).
+
+        Fires only when the LLM streams (streaming mode); measures the delay between
+        the start of the answer-generation LLM call and its first emitted token, so the
+        pure generation latency is isolated from retrieval/condensation.
+        """
+        if self._first_token_recorded:
+            return
+        run_key = str(kwargs.get('run_id', ''))
+        timer = self._step_timers.get(run_key)
+        if timer and timer[0] == 'rag_answer_generation_llm':
+            self._first_token_recorded = True
+            self.records['step_durations']['rag_answer_generation_first_token'] = (
+                '{:.3f}'.format(time.time() - timer[1])
+            )
 
     def on_llm_end(self, response, **kwargs: Any) -> None:
         """Capture LLM call end and record duration."""

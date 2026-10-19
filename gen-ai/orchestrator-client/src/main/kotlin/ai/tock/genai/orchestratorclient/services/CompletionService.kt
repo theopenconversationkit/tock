@@ -24,4 +24,13 @@ interface CompletionService {
     fun generate(query: CompletionRequest): CompletionResponse?
 
     fun generateSentences(query: CompletionRequest): SentenceCompletionResponse?
+
+    /**
+     * Generate an answer and stream it token by token via Server-Sent Events.
+     * The [listener] is notified as events arrive from the orchestrator server.
+     */
+    fun generateStream(
+        query: CompletionRequest,
+        listener: CompletionStreamListener,
+    )
 }

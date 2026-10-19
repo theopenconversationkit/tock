@@ -572,6 +572,7 @@
       "select_dialog_locale_tooltip": "Select the dialog locale",
       "rag_debug_label": "Rag debug",
       "sources_content_label": "Sources content",
+      "streaming_label": "Streaming",
       "view_nlp_stats_tooltip": "View Nlp Stats",
       "clear_conversation_tooltip": "Clear conversation",
       "user_message_placeholder": "Type some text"

@@ -572,6 +572,7 @@
       "select_dialog_locale_tooltip": "Sélectionnez la locale de la conversation",
       "rag_debug_label": "Débogage RAG",
       "sources_content_label": "Contenu des sources",
+      "streaming_label": "Streaming",
       "view_nlp_stats_tooltip": "Voir les statistiques NLP",
       "clear_conversation_tooltip": "Effacer la conversation",
       "user_message_placeholder": "Saisissez un texte"

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { Observable, Subject, of, take, takeUntil } from 'rxjs';
 import { PaginatedQuery, randomString } from '../../../model/commons';
 import { StateService } from '../../../core-nlp/state.service';
 import { SearchQuery } from '../../../model/nlp';
 import { NlpService } from '../../../core-nlp/nlp.service';
 import { getDialogMessageUserAvatar } from '../../utils';
-import { BotMessage, Sentence } from '../../model/dialog-data';
+import { BotMessage, Sentence, ActionReport, PlayerId, PlayerType } from '../../model/dialog-data';
 import { NbDialogService, NbToastrService, NbWindowRef, NbWindowState } from '@nebular/theme';
 import { BotDialogRequest, BotDialogResponse, TestMessage } from '../../../test/model/test';
 
@@ -34,6 +34,7 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
 import { BotApplicationConfiguration } from '../../../core/model/configuration';
 import { currentConfigurationSelection } from '../bot-configuration-selector/bot-configuration-selector.component';
 import { TextareaAutocompleteDirective } from '../../directives';
+import { TestService } from '../../../test/test.service';
 
 @Component({
     selector: 'tock-test-dialog',
@@ -86,6 +87,19 @@ export class TestDialogComponent implements OnInit, OnDestroy {
     return this._sourceWithContent;
   }
 
+  _streaming: boolean = false;
+
+  set streaming(value: boolean) {
+    this._streaming = value;
+    this.shared.session_storage = {
+      ...this.shared.session_storage,
+      ...{ test: { ...this.shared.session_storage?.test, streaming: value } }
+    };
+  }
+  get streaming() {
+    return this._streaming;
+  }
+
   @ViewChild('chatUi') private chatUi: ChatUiComponent;
 
   @ViewChild(TextareaAutocompleteDirective) textareaAutocompleteDirectiveRef: TextareaAutocompleteDirective<HTMLTextAreaElement>;
@@ -93,6 +107,9 @@ export class TestDialogComponent implements OnInit, OnDestroy {
   @ViewChild('textareaElement') textareaElementRef!: ElementRef<HTMLTextAreaElement>;
 
   private testDialogService = inject(TestDialogService);
+  private testService = inject(TestService);
+  private cd = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
 
   constructor(
     private botConfiguration: BotConfigurationService,
@@ -130,6 +147,10 @@ export class TestDialogComponent implements OnInit, OnDestroy {
 
     if (this.shared.session_storage?.test?.sourceWithContent) {
       this._sourceWithContent = this.shared.session_storage.test.sourceWithContent;
+    }
+
+    if (this.shared.session_storage?.test?.streaming) {
+      this._streaming = this.shared.session_storage.test.streaming;
     }
 
     this.windowRef.stateChange.pipe(takeUntil(this.destroy)).subscribe((change) => {
@@ -292,41 +313,162 @@ export class TestDialogComponent implements OnInit, OnDestroy {
     this.messages.push(userAction);
     this.userMessage = '';
     this.testQueryInProgress = true;
-    this.talkRequest(
-      new BotDialogRequest(
-        this.currentConfigurationId,
-        message,
-        this.state.currentApplication.namespace,
-        this.state.currentApplication.name,
-        this.locale,
-        this.userModifierId
-      ),
-      this.debug,
-      this.sourceWithContent
-    )
-      .pipe(take(1))
+
+    const request = new BotDialogRequest(
+      this.currentConfigurationId,
+      message,
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      this.locale,
+      this.userModifierId
+    );
+
+    if (this.streaming) {
+      this.talkStreaming(request, userAction);
+    } else {
+      this.talkRequest(request, this.debug, this.sourceWithContent)
+        .pipe(take(1))
+        .subscribe({
+          next: (r) => {
+            delete this.testQueryInProgress;
+
+            userAction.locale = r.userLocale;
+            userAction.hasNlpStats = r.hasNlpStats;
+            userAction.actionId = r.userActionId;
+            let ragDebugAttached = false;
+            r.messages.forEach((m) => {
+              const botAction = new ActionReport(
+                new PlayerId('bot', PlayerType.bot),
+                new Date(),
+                m,
+                r.userActionId || randomString(),
+                true,
+                undefined,
+                this.state.currentApplication._id
+              );
+              const hasContent = (m as any).text?.trim().length > 0 || (m as any).messages?.length > 0;
+              if (r.ragDebug && !ragDebugAttached && hasContent) {
+                botAction.ragDebug = r.ragDebug;
+                ragDebugAttached = true;
+              }
+              this.messages.push(new TestMessage(true, m, undefined, undefined, undefined, botAction));
+
+              setTimeout(() => this.chatUi.scrollToBottom());
+            });
+
+            this.testDialogService.replayDialogNext(ReplayDialogActionType.RESULT_SUCCESS);
+          },
+          error: (error) => {
+            delete this.testQueryInProgress;
+
+            const errorMessage = new Sentence(0, undefined, 'An error occured');
+            this.messages.push(new TestMessage(true, errorMessage, undefined, undefined, undefined));
+
+            this.testDialogService.replayDialogNext(ReplayDialogActionType.RESULT_ERROR);
+          }
+        });
+    }
+  }
+
+  private talkStreaming(request: BotDialogRequest, userAction: TestMessage): void {
+    let accumulatedTokens = '';
+    let currentBotMessage: TestMessage | null = null;
+
+    this.testService.talkStream(request, this.debug, this.sourceWithContent)
+      .pipe(takeUntil(this.destroy))
       .subscribe({
-        next: (r) => {
-          delete this.testQueryInProgress;
+        next: (event) => {
+          if (event.event === 'token') {
+            try {
+              const tokenData = JSON.parse(event.data || '{}');
+              accumulatedTokens += tokenData.content || '';
 
-          userAction.locale = r.userLocale;
-          userAction.hasNlpStats = r.hasNlpStats;
-          userAction.actionId = r.userActionId;
-          r.messages.forEach((m) => {
-            this.messages.push(new TestMessage(true, m, undefined, undefined, undefined));
+              // Run inside Angular's zone and force synchronous change detection so each
+              // token is painted as it arrives. Without this the rapid burst of XHR
+              // readystate callbacks is coalesced into a single render ("une phrase puis
+              // la totalité").
+              this.ngZone.run(() => {
+                if (!currentBotMessage) {
+                  currentBotMessage = new TestMessage(true, new Sentence(0, [], accumulatedTokens), undefined, undefined, undefined);
+                  this.messages.push(currentBotMessage);
+                } else {
+                  currentBotMessage.message = new Sentence(0, [], accumulatedTokens);
+                }
+                this.cd.detectChanges();
+              });
 
-            setTimeout(() => this.chatUi.scrollToBottom());
-          });
+              setTimeout(() => this.chatUi.scrollToBottom());
+            } catch (e) {
+              console.error('Error parsing token event', e);
+            }
+          } else if (event.event === 'answer') {
+            try {
+              delete this.testQueryInProgress;
 
-          this.testDialogService.replayDialogNext(ReplayDialogActionType.RESULT_SUCCESS);
+              const answerData = JSON.parse(event.data || '{}');
+              userAction.locale = answerData.userLocale;
+              userAction.hasNlpStats = answerData.hasNlpStats;
+              userAction.actionId = answerData.userActionId;
+
+              if (answerData.messages && answerData.messages.length > 0) {
+                // Remove the temporary progressive-token bubble (if any tokens were received)
+                if (currentBotMessage) {
+                  this.messages.pop();
+                  currentBotMessage = null;
+                }
+                // Deserialize into proper BotMessage instances so template methods
+                // (isDebug(), isSentence(), ...) are available on the bound message.
+                let ragDebugAttached = false;
+                answerData.messages.forEach((m: any) => {
+                  const parsedMessage = BotMessage.fromJSON(m);
+                  const botAction = new ActionReport(
+                    new PlayerId('bot', PlayerType.bot),
+                    new Date(),
+                    parsedMessage,
+                    answerData.userActionId || randomString(),
+                    true,
+                    undefined,
+                    this.state.currentApplication._id
+                  );
+                  const hasContent = (m as any).text?.trim().length > 0 || (m as any).messages?.length > 0;
+                  if (answerData.ragDebug && !ragDebugAttached && hasContent) {
+                    botAction.ragDebug = answerData.ragDebug;
+                    ragDebugAttached = true;
+                  }
+                  this.messages.push(new TestMessage(true, parsedMessage, undefined, undefined, undefined, botAction));
+                });
+              }
+
+              setTimeout(() => this.chatUi.scrollToBottom());
+              this.testDialogService.replayDialogNext(ReplayDialogActionType.RESULT_SUCCESS);
+            } catch (e) {
+              console.error('Error parsing answer event', e);
+            }
+          } else if (event.event === 'error') {
+            delete this.testQueryInProgress;
+
+            try {
+              const errorData = JSON.parse(event.data || '{}');
+              const errorMessage = new Sentence(0, undefined, errorData.error || 'An error occurred');
+              this.messages.push(new TestMessage(true, errorMessage, undefined, undefined, undefined));
+            } catch (e) {
+              const errorMessage = new Sentence(0, undefined, 'An error occurred');
+              this.messages.push(new TestMessage(true, errorMessage, undefined, undefined, undefined));
+            }
+
+            this.testDialogService.replayDialogNext(ReplayDialogActionType.RESULT_ERROR);
+          }
         },
         error: (error) => {
           delete this.testQueryInProgress;
 
-          const errorMessage = new Sentence(0, undefined, 'An error occured');
+          const errorMessage = new Sentence(0, undefined, 'Connection error: ' + (error?.message || 'Unknown error'));
           this.messages.push(new TestMessage(true, errorMessage, undefined, undefined, undefined));
 
           this.testDialogService.replayDialogNext(ReplayDialogActionType.RESULT_ERROR);
+        },
+        complete: () => {
+          delete this.testQueryInProgress;
         }
       });
   }
