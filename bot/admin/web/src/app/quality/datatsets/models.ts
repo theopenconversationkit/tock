@@ -27,6 +27,8 @@ export interface DatasetRunStats {
   completedQuestions: number;
   failedQuestions: number;
   nonRagAnswers: number;
+  averageRagDurationSeconds?: number | null;
+  ragDurationCount?: number;
   ragAnswerStatusCounts: {
     found_in_context: number;
     human_escalation: number;

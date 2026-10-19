@@ -45,6 +45,19 @@
 ></tock-no-data-found>
 } @if (!loading && datasets?.length) {
 <div class="list-grid list-header text-muted">
+  <button
+    type="button"
+    class="state-sort sortable-col"
+    [class.sort-active]="sortField === 'lastRun'"
+    [attr.aria-label]="'quality.datasets-board.sort_by_latest_run' | transloco"
+    [nbTooltip]="'quality.datasets-board.sort_by_latest_run' | transloco"
+    (click)="setSort('lastRun')"
+  >
+    <nb-icon
+      [icon]="sortField === 'lastRun' ? (sortDirection === 'asc' ? 'arrow-up' : 'arrow-down') : 'clock-history'"
+      aria-hidden="true"
+    ></nb-icon>
+  </button>
   <div
     class="ellipsis sortable-col"
     [class.sort-active]="sortField === 'name'"
@@ -81,19 +94,7 @@
       [class.sort-icon--visible]="sortField === 'runs'"
     ></nb-icon>
   </div>
-  <div
-    class="ellipsis sortable-col"
-    [class.sort-active]="sortField === 'lastRun'"
-    (click)="setSort('lastRun')"
-  >
-    {{ 'quality.datasets-board.last_run_state_column' | transloco }}
-    <nb-icon
-      class="sort-icon"
-      [icon]="sortField === 'lastRun' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
-      [class.sort-icon--visible]="sortField === 'lastRun'"
-    ></nb-icon>
-  </div>
-  <div class="ellipsis">{{ 'quality.datasets-board.duration_column' | transloco }}</div>
+  <div class="ellipsis mx-2">{{ 'quality.datasets-board.duration_column' | transloco }}</div>
   <div class="ellipsis"></div>
 </div>
 } @for (dataset of sortedDatasets; track trackById($index, dataset)) {

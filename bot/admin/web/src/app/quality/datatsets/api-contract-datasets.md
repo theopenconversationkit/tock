@@ -47,7 +47,23 @@ interface DatasetRun {
   };
   startedBy: string;
   note?: string | null; // Note facultative, 200 caractères maximum
+  stats: DatasetRunStats;
 }
+
+interface DatasetRunStats {
+  totalQuestions: number;
+  completedQuestions: number;
+  failedQuestions: number;
+  nonRagAnswers: number;
+  ragAnswerStatusCounts: Record<string, number>;
+  averageRagDurationSeconds?: number | null;
+  ragDurationCount: number;
+}
+
+// Moyenne des durées RAG valides des réponses terminées, hors erreurs techniques.
+// Les réponses non trouvées dans le contexte sont incluses. Le dénominateur est ragDurationCount,
+// et non totalQuestions ou completedQuestions. Sans mesure : moyenne absente/null, compteur à 0.
+// Les durées persistées sont prises en compte pendant le polling, même avant la fin du run.
 
 interface Dataset {
   id: string;

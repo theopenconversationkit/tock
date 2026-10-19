@@ -1,5 +1,36 @@
 <nb-card class="shadow-sm hover-lift mb-3">
+  @let latestRun = getLatestRun();
   <nb-card-body class="list-grid">
+    @if (latestRun) { @let latestRunLabel = ('quality.dataset-board-entry.run_states.' + latestRun.state | transloco) + ' · ' +
+    (latestRun.startTime | date: 'y/MM/dd - HH:mm');
+    <span
+      class="run-state"
+      role="img"
+      [attr.aria-label]="latestRunLabel"
+      [nbTooltip]="latestRunLabel"
+      [ngClass]="getStateColor(latestRun.state)"
+    >
+      <nb-icon
+        class="state-icon"
+        [icon]="runStateIcons[latestRun.state]"
+        [class.state-icon--running]="latestRun.state === datasetRunState.RUNNING"
+        aria-hidden="true"
+      ></nb-icon>
+    </span>
+    } @else {
+    <span
+      class="run-state text-muted"
+      role="img"
+      [attr.aria-label]="'quality.dataset-board-entry.no_runs_yet' | transloco"
+      [nbTooltip]="'quality.dataset-board-entry.no_runs_yet' | transloco"
+    >
+      <nb-icon
+        class="state-icon"
+        icon="dash-circle"
+        aria-hidden="true"
+      ></nb-icon>
+    </span>
+    }
     <div>
       <div class="list-entry-name font-weight-bold">{{ dataset.name }}</div>
       <div class="list-entry-desc text-muted">{{ dataset.description }}</div>
@@ -33,23 +64,8 @@
       </div>
     </div>
 
-    <div class="d-flex flex-column justify-content-center">
-      @if (getLatestRun(); as latestRun) {
-      <div
-        class="list-entry-name initial-capitalize"
-        [ngClass]="getStateColor(latestRun.state)"
-      >
-        {{ latestRun.state }}
-      </div>
-      } @if (getLatestRun(); as latestRun) {
-      <div class="list-entry-desc text-muted">
-        {{ latestRun.startTime | date: 'y/MM/dd - HH:mm' }}
-      </div>
-      }
-    </div>
-
-    <div>
-      @if (getLatestRun(); as latestRun) {
+    <div class="mx-2">
+      @if (latestRun) {
       <div
         class="list-entry-desc"
         [ngClass]="{
@@ -60,7 +76,27 @@
       >
         {{ runDurations$[latestRun.id] | async }}
       </div>
-      }
+      @if ([datasetRunState.QUEUED, datasetRunState.RUNNING].includes(latestRun.state) && latestRun.stats.totalQuestions > 0) { @let
+      processedQuestions = latestRun.stats.completedQuestions + latestRun.stats.failedQuestions; @let progressLabel =
+      'quality.dataset-board-entry.run_progress_label' | transloco: { count: processedQuestions, total: latestRun.stats.totalQuestions };
+      <nb-progress-bar
+        class="run-progress"
+        size="tiny"
+        status="info"
+        role="progressbar"
+        aria-valuemin="0"
+        [attr.aria-valuemax]="latestRun.stats.totalQuestions"
+        [attr.aria-valuenow]="processedQuestions"
+        [attr.aria-label]="progressLabel"
+        [value]="(100 * processedQuestions) / latestRun.stats.totalQuestions"
+        [nbTooltip]="progressLabel + '. ' + ('quality.dataset-board-entry.run_progress_tooltip' | transloco)"
+      ></nb-progress-bar>
+      <small
+        class="run-progress-count text-muted ellipsis"
+        [nbTooltip]="progressLabel"
+        >{{ processedQuestions }} / {{ latestRun.stats.totalQuestions }}</small
+      >
+      } }
     </div>
 
     <div>
@@ -86,7 +122,7 @@
           status="warning"
           [nbTooltip]="'quality.dataset-board-entry.cancel_active_run_tooltip' | transloco"
           class="mb-2"
-          (click)="confirmCancelRun(getLatestRun())"
+          (click)="confirmCancelRun(latestRun)"
         >
           <nb-icon icon="stop-circle"></nb-icon>
         </button>
@@ -173,6 +209,7 @@
     </div>
     } @if (dataset.runs?.length) {
     <div class="runs-grid runs-grid-header px-2 mb-2 mr-2">
+      <div></div>
       <div
         class="ellipsis"
         [nbTooltip]="'quality.dataset-board-entry.run_started_at_tooltip' | transloco"
@@ -228,12 +265,6 @@
       >
         {{ 'quality.dataset-board-entry.not_found_in_context_column' | transloco }}
       </div>
-      <div
-        class="ellipsis"
-        [nbTooltip]="'quality.dataset-board-entry.current_run_status_tooltip' | transloco"
-      >
-        {{ 'quality.dataset-board-entry.run_state_column' | transloco }}
-      </div>
       <div class="ellipsis"></div>
       <div class="ellipsis"></div>
       <div class="ellipsis"></div>
@@ -241,6 +272,20 @@
     <div class="details-wrapper scrollbar-narrow">
       @for (run of dataset.runs; track run.id) {
       <div class="background-basic-color-1 rounded px-2 py-1 mt-1 font-size-small runs-grid">
+        <span
+          class="run-state"
+          role="img"
+          [attr.aria-label]="'quality.dataset-board-entry.run_states.' + run.state | transloco"
+          [nbTooltip]="'quality.dataset-board-entry.run_states.' + run.state | transloco"
+          [ngClass]="getStateColor(run.state)"
+        >
+          <nb-icon
+            class="state-icon"
+            [icon]="runStateIcons[run.state]"
+            [class.state-icon--running]="run.state === datasetRunState.RUNNING"
+            aria-hidden="true"
+          ></nb-icon>
+        </span>
         <div
           class="runs-grid-entry text-muted"
           [nbTooltip]="run.startTime | date: 'y/MM/dd - HH:mm'"
@@ -256,14 +301,25 @@
           } @else { - }
         </div>
         <div
-          class="runs-grid-entry"
+          class="runs-grid-entry run-duration"
           [ngClass]="{
             'text-muted': ![datasetRunState.QUEUED, datasetRunState.RUNNING].includes(run.state),
             'text-info': run.state === datasetRunState.RUNNING,
             'text-warning': run.state === datasetRunState.QUEUED
           }"
         >
-          {{ runDurations$[run.id] | async }}
+          <span>{{ runDurations$[run.id] | async }}</span>
+          @if (run.stats.averageRagDurationSeconds != null) {
+          <small
+            class="rag-duration text-muted"
+            [nbTooltip]="
+              'quality.dataset-board-entry.average_rag_duration_tooltip'
+                | transloco: { count: run.stats.ragDurationCount, total: run.stats.totalQuestions }
+            "
+          >
+            ({{ run.stats.averageRagDurationSeconds | number: '1.1-1' }} s/q)
+          </small>
+          }
         </div>
         <div class="run-note">
           @if (editingNoteRunId === run.id) {
@@ -317,7 +373,11 @@
             [disabled]="savingNote"
             (click)="editRunNote(run)"
           >
-            <span class="ellipsis">{{ run.note || ('quality.dataset-board-entry.add_note' | transloco) }}</span>
+            <span
+              class="ellipsis"
+              [class.note-placeholder]="!run.note"
+              >{{ run.note || ('quality.dataset-board-entry.add_note' | transloco) }}</span
+            >
           </button>
           }
         </div>
@@ -331,12 +391,6 @@
         <div class="runs-grid-entry text-muted">
           {{ run.stats.ragAnswerStatusCounts.not_found_in_context }}
           <small class="font-small text-warning"> ({{ getPercentageNotFound(run) | number: '1.0-0' }}%) </small>
-        </div>
-        <div
-          class="runs-grid-entry"
-          [ngClass]="getStateColor(run.state)"
-        >
-          {{ run.state }}
         </div>
         <div>
           @if (run.state === datasetRunState.COMPLETED && run.id !== latestCompletedRun?.id) {

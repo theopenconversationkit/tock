@@ -100,6 +100,11 @@ en arrière-plan : la liste affiche la progression de l'exécution en cours, qui
 Exécuter un dataset nécessite une configuration de test pour le bot. Une seule exécution peut être active par dataset,
 et un dataset ne peut pas être modifié ou supprimé pendant une exécution.
 
+Une icône d'état apparaît à gauche de chaque dataset et exécution ; son survol affiche l'état (et la date de la dernière exécution pour un dataset).
+L'icône de l'état en cours tourne pendant l'exécution, sauf si la réduction des animations est activée dans les paramètres du système.
+Pendant une exécution, la ligne du dataset regroupe la durée, une barre de progression et le compteur de questions traitées (par exemple, `8 / 20`). Le compteur inclut les échecs d'exécution.
+La flèche dans l'en-tête à gauche permet de trier les datasets par date de dernière exécution.
+
 Pour chaque exécution, la liste indique ses dates, sa durée et son état, et compte les questions :
 
 * _Completed_ et _Failed_ (échecs d'exécution ou erreurs techniques),
@@ -108,6 +113,14 @@ Pour chaque exécution, la liste indique ses dates, sa durée et son état, et c
 * _Not found in context_ : traitées par le RAG sans document pertinent.
 
 Une exécution qui se termine avec des questions en échec reste _terminée_ : les échecs sont comptés dans ses statistiques.
+
+La colonne _Durée_ affiche la durée moyenne RAG par réponse mesurée à côté de la durée totale de l'exécution,
+par exemple `00:02:10 (6,4 s/q)`. Survolez la moyenne pour connaître le nombre de questions disposant d'une mesure.
+Cette moyenne utilise le champ `ragDebug.duration` de l'orchestrateur, y compris pour les réponses non trouvées dans le contexte ;
+les échecs, les réponses hors RAG et les mesures absentes ou invalides sont exclus. Elle mesure la chaîne RAG, et pas uniquement l'appel final au LLM.
+Après un retry du dataset, seule la tentative réussie contribue à cette moyenne ; les tentatives précédentes restent comprises dans la durée totale.
+Les durées sont conservées avec les résultats des questions, même après expiration des dialogues. Les anciennes exécutions sans durée enregistrée
+affichent uniquement la durée totale ; ouvrir leurs réponses permet de récupérer les durées disponibles dans les dialogues pour les prochaines consultations de la liste.
 
 Le pourcentage _Not found in context_ est calculé sur toutes les questions du dataset, y compris celles en échec.
 Il reste affiché en présence d'échecs et doit être lu avec le nombre de questions en échec.

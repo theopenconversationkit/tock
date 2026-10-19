@@ -95,13 +95,113 @@ describe('DatasetsBoardEntryComponent run statistics and comparisons', () => {
   });
 
   function render(runs: DatasetRun[]): void {
-    fixture.componentInstance.dataset = { id: 'dataset', name: 'Dataset', questions: [], runs } as Dataset;
+    fixture.componentRef.setInput('dataset', { id: 'dataset', name: 'Dataset', questions: [], runs } as Dataset);
     fixture.detectChanges();
   }
+
+  it('uses distinct leading state icons in dataset summaries and run rows', () => {
+    const run = completedRun('latest', '2026-10-14T12:00:00Z');
+    const states = [
+      { state: DatasetRunState.QUEUED, icon: 'hourglass-split' },
+      { state: DatasetRunState.RUNNING, icon: 'arrow-repeat' },
+      { state: DatasetRunState.COMPLETED, icon: 'check-circle' },
+      { state: DatasetRunState.CANCELLED, icon: 'stop-circle' }
+    ];
+    for (const { state, icon } of states) {
+      render([{ ...run, state }]);
+      const summaryState = fixture.nativeElement.querySelector('.list-grid').firstElementChild;
+      const runState = fixture.nativeElement.querySelector('.runs-grid:not(.runs-grid-header)').firstElementChild;
+      for (const indicator of [summaryState, runState]) {
+        expect(indicator.getAttribute('role')).toBe('img');
+        expect(indicator.getAttribute('aria-label')).toContain('quality.dataset-board-entry.run_states.' + state);
+        expect(indicator.querySelector('nb-icon').icon).toBe(icon);
+        expect(indicator.querySelector('nb-icon').classList.contains('state-icon--running')).toBe(state === DatasetRunState.RUNNING);
+      }
+      expect(summaryState.getAttribute('aria-label')).toContain('2026/10/14');
+    }
+  });
+
+  it('shows a neutral state before the first run and uses the most recent run after that', () => {
+    render([]);
+    expect(fixture.nativeElement.querySelector('.list-grid .state-icon').getAttribute('icon')).toBe('dash-circle');
+    expect(fixture.nativeElement.querySelector('.list-grid .run-state').getAttribute('aria-label')).toContain(
+      'quality.dataset-board-entry.no_runs_yet'
+    );
+    render([
+      completedRun('older', '2026-10-14T11:00:00Z'),
+      { ...completedRun('latest', '2026-10-14T12:00:00Z'), state: DatasetRunState.RUNNING }
+    ]);
+    expect(fixture.nativeElement.querySelector('.list-grid .state-icon').icon).toBe('arrow-repeat');
+  });
+
+  it('updates the summary progress bar and counter including failures without adding a counter to run rows', () => {
+    const run = { ...completedRun('active', '2026-10-14T12:00:00Z'), state: DatasetRunState.RUNNING };
+    for (const [completedQuestions, failedQuestions] of [
+      [2, 1],
+      [5, 2]
+    ]) {
+      render([{ ...run, stats: { ...run.stats, completedQuestions, failedQuestions } }]);
+      const bars = fixture.nativeElement.querySelectorAll('.list-grid nb-progress-bar');
+      expect(bars.length).toBe(1);
+      const bar = bars[0];
+      expect(bar.value).toBe(10 * (completedQuestions + failedQuestions));
+      expect(bar.getAttribute('aria-valuenow')).toBe(String(completedQuestions + failedQuestions));
+      expect(bar.getAttribute('aria-valuemax')).toBe('10');
+      expect(fixture.nativeElement.querySelector('.list-grid .run-progress-count').textContent.trim()).toBe(
+        `${completedQuestions + failedQuestions} / 10`
+      );
+      expect(fixture.nativeElement.querySelector('.runs-grid .run-progress-count')).toBeNull();
+      expect(fixture.nativeElement.querySelector('.run-duration').textContent.trim()).toBe('00:00:01');
+      expect(fixture.nativeElement.querySelector('.runs-grid .run-progress')).toBeNull();
+    }
+    fixture.nativeElement.querySelectorAll('.list-grid .pointer')[1].click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('.run-progress').length).toBe(1);
+    expect(fixture.nativeElement.querySelector('.list-grid nb-progress-bar').value).toBe(70);
+  });
+
+  it('hides progress when a run finishes or is cancelled', () => {
+    const run = completedRun('active', '2026-10-14T12:00:00Z');
+    render([{ ...run, state: DatasetRunState.RUNNING }]);
+    expect(fixture.nativeElement.querySelector('.run-progress')).not.toBeNull();
+    for (const state of [DatasetRunState.COMPLETED, DatasetRunState.CANCELLED]) {
+      render([{ ...run, state }]);
+      expect(fixture.nativeElement.querySelector('.run-progress')).toBeNull();
+      expect(fixture.nativeElement.querySelector('.run-progress-count')).toBeNull();
+    }
+  });
+
+  it('omits progress when the run has no questions', () => {
+    const run = completedRun('empty', '2026-10-14T12:00:00Z');
+    render([{ ...run, state: DatasetRunState.QUEUED, stats: { ...run.stats, totalQuestions: 0 } }]);
+    expect(fixture.nativeElement.querySelector('.run-progress')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.run-progress-count')).toBeNull();
+  });
 
   it('displays the percentage of all questions even with failed questions and technical errors', () => {
     render([completedRun('finished', '2026-10-14T12:00:00Z')]);
     expect(fixture.nativeElement.querySelector('.runs-grid small.text-warning').textContent.trim()).toBe('(20%)');
+  });
+
+  it('displays the measured RAG average immediately after the run duration even with failed questions', () => {
+    const run = completedRun('finished', '2026-10-14T12:00:00Z');
+    run.stats = { ...run.stats, averageRagDurationSeconds: 6.4, ragDurationCount: 8 };
+    render([run]);
+    const duration = fixture.nativeElement.querySelector('.run-duration');
+    expect(duration.textContent.replace(/\s+/g, ' ').trim()).toBe('00:00:01 (6.4 s/q)');
+  });
+
+  it('does not substitute a run duration estimate when RAG measurements are missing', () => {
+    render([completedRun('legacy', '2026-10-14T12:00:00Z')]);
+    expect(fixture.nativeElement.querySelector('.rag-duration')).toBeNull();
+  });
+
+  it('displays zero and refreshes measured averages without relying on the completed question count', () => {
+    const run = completedRun('finished', '2026-10-14T12:00:00Z');
+    render([{ ...run, stats: { ...run.stats, averageRagDurationSeconds: 0, ragDurationCount: 1 } }]);
+    expect(fixture.nativeElement.querySelector('.rag-duration').textContent.trim()).toBe('(0.0 s/q)');
+    render([{ ...run, stats: { ...run.stats, averageRagDurationSeconds: 2, ragDurationCount: 2 } }]);
+    expect(fixture.nativeElement.querySelector('.rag-duration').textContent.trim()).toBe('(2.0 s/q)');
   });
 
   it('offers comparison with the latest completed run while another run is active', () => {

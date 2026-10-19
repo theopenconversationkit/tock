@@ -200,6 +200,7 @@ class DatasetRunProcessor(
                                 else -> false
                             },
                         ragAnswerStatus = response.ragAnswerStatus(),
+                        ragDurationSeconds = extractRagDurationSeconds(response.ragDebugData()),
                     ),
                 )
             }
@@ -249,15 +250,18 @@ class DatasetRunProcessor(
             .firstOrNull()
 
     private fun BotDialogResponse.ragAnswerStatus(): String? =
-        messages
-            .filterIsInstance<ClientDebug>()
-            .firstOrNull { it.text == RAG_DEBUG_MESSAGE_TEXT }
-            ?.data
+        ragDebugData()
             .asMap()
             ?.get("answer")
             .asMap()
             ?.stringValue("status")
             ?.lowercase()
+
+    private fun BotDialogResponse.ragDebugData(): Any? =
+        messages
+            .filterIsInstance<ClientDebug>()
+            .firstOrNull { it.text == RAG_DEBUG_MESSAGE_TEXT }
+            ?.data
 
     private fun ClientDebug.toRAGTechnicalFailure(): String? {
         if (text != RAG_DEBUG_MESSAGE_TEXT) {

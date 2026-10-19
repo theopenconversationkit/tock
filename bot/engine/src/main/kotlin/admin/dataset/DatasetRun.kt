@@ -72,4 +72,5 @@ data class DatasetRunQuestionResult(
     val error: String? = null,
     val isRagAnswer: Boolean? = null,
     val ragAnswerStatus: String? = null,
+    val ragDurationSeconds: Double? = null,
 )

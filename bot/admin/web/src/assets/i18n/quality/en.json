@@ -10,7 +10,7 @@
     "dataset_column": "Dataset",
     "questions_column": "Questions",
     "runs_column": "Runs",
-    "last_run_state_column": "Last run state",
+    "sort_by_latest_run": "Sort by latest run date",
     "duration_column": "Duration",
     "import_dataset_title": "Import Dataset",
     "cancel_tooltip": "Cancel",
@@ -37,6 +37,14 @@
     "csv_error_no_valid_row": "No valid question was found in the file."
   },
   "dataset-board-entry": {
+    "run_states": {
+      "QUEUED": "Queued",
+      "RUNNING": "Running",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "run_progress_label": "{{count}} of {{total}} questions processed",
+    "run_progress_tooltip": "Questions processed, including execution failures. Check the run statistics for errors.",
     "show_questions_tooltip": "Show questions",
     "questions_label": "questions",
     "show_runs_tooltip": "Show runs",
@@ -67,6 +75,7 @@
     "run_started_at_tooltip": "Run started at",
     "run_ended_at_tooltip": "Run ended at",
     "run_duration_tooltip": "Run duration",
+    "average_rag_duration_tooltip": "Average RAG duration per response, based on {{count}} of {{total}} questions. Includes not-found responses. Excludes failures, missing measurements and previous dataset retry attempts.",
     "questions_in_dataset_tooltip": "Number of questions in the dataset at the time the run is executed",
     "successful_questions_tooltip": "Number of successful questions",
     "intent_detection_questions_tooltip": "Number of questions processed by intent detection",

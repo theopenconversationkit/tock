@@ -100,13 +100,23 @@ class DatasetMongoDAOTest : AbstractTest() {
     @Test
     fun `bulk cancellation preserves completed results and persisted answer statistics`() {
         val run = run()
-        val completed = result(run).copy(state = DatasetRunQuestionResultState.COMPLETED, isRagAnswer = true, ragAnswerStatus = "found_in_context")
+        val completed = result(run).copy(state = DatasetRunQuestionResultState.COMPLETED, isRagAnswer = true, ragAnswerStatus = "found_in_context", ragDurationSeconds = 2.375)
         val pending = result(run).copy(questionId = "pending")
         DatasetMongoDAO.saveQuestionResults(listOf(completed, pending))
         DatasetMongoDAO.finishActiveQuestionResults(run._id, DatasetRunQuestionResultState.CANCELLED, Instant.now())
         val results = DatasetMongoDAO.getQuestionResultsByRunId(run._id).associateBy { it._id }
         assertEquals(completed, results[completed._id])
         assertEquals(DatasetRunQuestionResultState.CANCELLED, results[pending._id]?.state)
+    }
+
+    @Test
+    fun `caching answer references cannot clear an already recorded RAG duration`() {
+        val run = run()
+        val completed = result(run).copy(state = DatasetRunQuestionResultState.COMPLETED, isRagAnswer = true)
+        DatasetMongoDAO.saveQuestionResults(listOf(completed))
+        DatasetMongoDAO.updateQuestionResultAnswer(completed.copy(ragDurationSeconds = 2.375))
+        DatasetMongoDAO.updateQuestionResultAnswer(completed)
+        assertEquals(2.375, DatasetMongoDAO.getQuestionResultsByRunId(run._id).single().ragDurationSeconds)
     }
 
     @Test

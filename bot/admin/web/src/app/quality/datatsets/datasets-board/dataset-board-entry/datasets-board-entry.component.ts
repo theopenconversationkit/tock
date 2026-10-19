@@ -26,6 +26,12 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
   displayRunsDetail: boolean = false;
 
   datasetRunState = DatasetRunState;
+  readonly runStateIcons: Record<DatasetRunState, string> = {
+    [DatasetRunState.QUEUED]: 'hourglass-split',
+    [DatasetRunState.RUNNING]: 'arrow-repeat',
+    [DatasetRunState.COMPLETED]: 'check-circle',
+    [DatasetRunState.CANCELLED]: 'stop-circle'
+  };
 
   runDurations$: Record<string, Observable<string>> = {};
   latestCompletedRun: DatasetRun | null = null;

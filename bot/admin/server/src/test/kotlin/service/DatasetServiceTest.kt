@@ -790,7 +790,7 @@ class DatasetServiceTest : AbstractTest() {
                 userIdModifier = "dataset_${run._id}_${dataset.questions.first().id}",
                 userActionId = "user-action-id",
             )
-        val answerAction = botSentenceWithFootnotesAction("answer-action-id")
+        val answerAction = botSentenceWithFootnotesAction("answer-action-id", ragDebug = mapOf("duration" to 3.25, "answer" to mapOf("status" to "found_in_context")))
         val dialog =
             DialogReport(
                 actions =
@@ -832,7 +832,14 @@ class DatasetServiceTest : AbstractTest() {
         )
         assertEquals(dialog.id, updatedQuestionResultSlot.captured.dialogId)
         assertEquals(answerAction.id, updatedQuestionResultSlot.captured.answerActionId)
+        assertEquals(3.25, updatedQuestionResultSlot.captured.ragDurationSeconds)
         assertEquals("test_${run.botApplicationConfigurationId}_${run.language}_${questionResult.userIdModifier}", querySlot.captured.playerId?.id)
+
+        every { datasetRunDAO.getQuestionResultsByRunId(run._id) } returns listOf(updatedQuestionResultSlot.captured)
+        val reloaded = DatasetService.getRun(NAMESPACE, BOT_ID, dataset._id.toString(), run._id.toString())
+        assertEquals(3.25, reloaded.stats.averageRagDurationSeconds)
+        assertEquals(1, reloaded.stats.ragDurationCount)
+        verify(exactly = 1) { dialogReportDAO.search(any()) }
     }
 
     @Test
@@ -947,6 +954,52 @@ class DatasetServiceTest : AbstractTest() {
         assertEquals(1, response.stats.ragAnswerStatusCounts["found_in_context"])
         assertEquals(1, response.stats.nonRagAnswers)
         assertEquals(2, response.stats.completedQuestions)
+        assertNull(response.stats.averageRagDurationSeconds)
+        assertEquals(0, response.stats.ragDurationCount)
+        verify(exactly = 0) { dialogReportDAO.findByDialogByIds(any()) }
+        verify(exactly = 0) { dialogReportDAO.search(any()) }
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = DatasetRunState::class, names = ["RUNNING", "COMPLETED", "CANCELLED"])
+    fun `RAG duration averages only measured successful RAG answers without loading dialogs`(state: DatasetRunState) {
+        val dataset = newDataset()
+        val run = newFinishedRun(dataset, state)
+        val measured =
+            DatasetRunQuestionResult(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id,
+                runId = run._id,
+                questionId = "rag",
+                userIdModifier = "test",
+                state = DatasetRunQuestionResultState.COMPLETED,
+                isRagAnswer = true,
+                ragAnswerStatus = "found_in_context",
+                ragDurationSeconds = 4.0,
+            )
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getRunById(any()) } returns run
+        every { datasetRunDAO.getQuestionResultsByRunId(run._id) } returns
+            listOf(
+                measured,
+                measured.copy(ragAnswerStatus = "not_found_in_context", ragDurationSeconds = 2.0, retryCount = 1),
+                measured.copy(ragDurationSeconds = 0.0),
+                measured.copy(ragDurationSeconds = null),
+                measured.copy(isRagAnswer = false),
+                measured.copy(state = DatasetRunQuestionResultState.FAILED),
+                measured.copy(state = DatasetRunQuestionResultState.CANCELLED),
+                measured.copy(state = DatasetRunQuestionResultState.RUNNING),
+                measured.copy(ragAnswerStatus = "technical_error"),
+                measured.copy(ragDurationSeconds = -1.0),
+                measured.copy(ragDurationSeconds = Double.NaN),
+                measured.copy(ragDurationSeconds = Double.POSITIVE_INFINITY),
+            )
+
+        val response = DatasetService.getRun(NAMESPACE, BOT_ID, dataset._id.toString(), run._id.toString())
+
+        assertEquals(2.0, response.stats.averageRagDurationSeconds)
+        assertEquals(3, response.stats.ragDurationCount)
         verify(exactly = 0) { dialogReportDAO.findByDialogByIds(any()) }
         verify(exactly = 0) { dialogReportDAO.search(any()) }
     }

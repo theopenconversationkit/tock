@@ -225,10 +225,13 @@ internal object DatasetMongoDAO : DatasetDAO, DatasetRunDAO {
         datasetRunQuestionResultCol.updateOne(
             and(DatasetRunQuestionResult::_id eq result._id, DatasetRunQuestionResult::state eq DatasetRunQuestionResultState.COMPLETED),
             combine(
-                set(DatasetRunQuestionResult::dialogId.name, result.dialogId),
-                set(DatasetRunQuestionResult::answerActionId.name, result.answerActionId),
-                set(DatasetRunQuestionResult::isRagAnswer.name, result.isRagAnswer),
-                set(DatasetRunQuestionResult::ragAnswerStatus.name, result.ragAnswerStatus),
+                listOfNotNull(
+                    set(DatasetRunQuestionResult::dialogId.name, result.dialogId),
+                    set(DatasetRunQuestionResult::answerActionId.name, result.answerActionId),
+                    set(DatasetRunQuestionResult::isRagAnswer.name, result.isRagAnswer),
+                    set(DatasetRunQuestionResult::ragAnswerStatus.name, result.ragAnswerStatus),
+                    result.ragDurationSeconds?.let { set(DatasetRunQuestionResult::ragDurationSeconds.name, it) },
+                ),
             ),
         )
     }

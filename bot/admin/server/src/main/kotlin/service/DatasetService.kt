@@ -521,8 +521,10 @@ object DatasetService {
         val answerActionId = answer?.id ?: questionResult.answerActionId
         val isRagAnswer = answer?.metadata?.isGenAiRagAnswer ?: questionResult.isRagAnswer
         val ragAnswerStatus = answer?.ragAnswerStatus() ?: questionResult.ragAnswerStatus
+        val ragDurationSeconds = questionResult.ragDurationSeconds ?: extractRagDurationSeconds(answer?.ragDebug)
         if (questionResult.dialogId == dialogId && questionResult.answerActionId == answerActionId &&
-            questionResult.isRagAnswer == isRagAnswer && questionResult.ragAnswerStatus == ragAnswerStatus
+            questionResult.isRagAnswer == isRagAnswer && questionResult.ragAnswerStatus == ragAnswerStatus &&
+            questionResult.ragDurationSeconds == ragDurationSeconds
         ) {
             return
         }
@@ -533,6 +535,7 @@ object DatasetService {
                 answerActionId = answerActionId,
                 isRagAnswer = isRagAnswer,
                 ragAnswerStatus = ragAnswerStatus,
+                ragDurationSeconds = ragDurationSeconds,
             ),
         )
     }
@@ -663,6 +666,10 @@ object DatasetService {
         )
 
     private fun List<DatasetRunQuestionResult>.toStats(run: DatasetRun): DatasetRunStatsDTO {
+        val ragDurations =
+            filter {
+                it.state == DatasetRunQuestionResultState.COMPLETED && it.isRagAnswer == true && it.ragAnswerStatus != "technical_error"
+            }.mapNotNull { it.ragDurationSeconds?.takeIf { duration -> duration.isFinite() && duration >= 0 } }
         val answerStats =
             if (run.state == DatasetRunState.COMPLETED) {
                 toAnswerStats(run)
@@ -676,6 +683,8 @@ object DatasetService {
             failedQuestions = count { it.state == DatasetRunQuestionResultState.FAILED },
             ragAnswerStatusCounts = answerStats.ragAnswerStatusCounts,
             nonRagAnswers = answerStats.nonRagAnswers,
+            averageRagDurationSeconds = ragDurations.takeIf { it.isNotEmpty() }?.average(),
+            ragDurationCount = ragDurations.size,
         )
     }
 

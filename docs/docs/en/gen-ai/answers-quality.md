@@ -100,6 +100,11 @@ the list shows the progress of the active run, which can be cancelled.
 Running a dataset requires a test configuration for the bot. Only one run can be active for a dataset,
 and a dataset cannot be edited or deleted while a run is active.
 
+A status icon appears at the left of each dataset and run; hover over it to see its state (and the latest run date for a dataset).
+The running icon rotates while a run is active, unless reduced motion is enabled in the system settings.
+While a run is active, the dataset summary groups its duration, a progress bar and the processed-question count (for example, `8 / 20`). The count includes execution failures.
+The arrow in the leading header sorts datasets by latest run date.
+
 For each run, the list of runs shows its dates, duration and state, and counts the questions:
 
 * _Completed_ and _Failed_ (execution failures or technical errors),
@@ -108,6 +113,14 @@ For each run, the list of runs shows its dates, duration and state, and counts t
 * _Not found in context_: handled by the RAG without relevant documents.
 
 A run that ends with some failed questions is still _completed_: failed questions are reported in the run statistics.
+
+The _Duration_ column displays the average RAG duration per measured response next to the total run duration,
+for example `00:02:10 (6.4 s/q)`. Hover over the average to see how many questions have a measurement.
+This average uses the orchestrator's `ragDebug.duration`, including responses not found in context; failures,
+non-RAG responses and missing or invalid measurements are excluded. It measures the RAG chain, not only the final LLM call.
+After a dataset retry, only the successful attempt contributes to this average; earlier attempts remain part of the total run duration.
+Durations are stored with question results and remain available after dialog expiration. Older runs without a recorded duration
+show only the total run duration; opening their answers can recover available durations from dialogs for subsequent visits to the run list.
 
 The _Not found in context_ percentage is calculated over all questions in the dataset, including failed questions.
 It remains visible when some questions fail; read it alongside the failure count.
