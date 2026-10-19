@@ -14,6 +14,7 @@
 #
 """Module of the AWS Bedrock handlers"""
 
+import inspect
 import logging
 
 from botocore.exceptions import (
@@ -63,28 +64,53 @@ def aws_bedrock_exception_handler(provider: str):
     def decorator(func):
         """A decorator of handler function"""
 
+        if inspect.isasyncgenfunction(func):
+
+            async def wrapper(*args, **kwargs):
+                """Exception handling logic for async generators"""
+                try:
+                    async for item in func(*args, **kwargs):
+                        yield item
+                except (
+                    NoCredentialsError,
+                    EndpointConnectionError,
+                    ClientError,
+                ) as exc:
+                    _translate_aws_bedrock_error(exc, provider)
+
+            return wrapper
+
         async def wrapper(*args, **kwargs):
             """Exception handling logic"""
 
             try:
                 return await func(*args, **kwargs)
-            except NoCredentialsError as exc:
-                logger.error(exc)
-                raise GenAIAuthenticationException(
-                    create_error_info_aws_bedrock(exc, provider)
-                )
-            except EndpointConnectionError as exc:
-                logger.error(exc)
-                raise GenAIConnectionErrorException(
-                    create_error_info_aws_bedrock(exc, provider)
-                )
-            except ClientError as exc:
-                logger.error(exc)
-                _manage_client_error(exc, provider)
+            except (
+                NoCredentialsError,
+                EndpointConnectionError,
+                ClientError,
+            ) as exc:
+                _translate_aws_bedrock_error(exc, provider)
 
         return wrapper
 
     return decorator
+
+
+def _translate_aws_bedrock_error(exc: Exception, provider: str):
+    """Map an AWS Bedrock error to the matching GenAI orchestrator exception."""
+    logger.error(exc)
+    if isinstance(exc, NoCredentialsError):
+        raise GenAIAuthenticationException(
+            create_error_info_aws_bedrock(exc, provider)
+        )
+    if isinstance(exc, EndpointConnectionError):
+        raise GenAIConnectionErrorException(
+            create_error_info_aws_bedrock(exc, provider)
+        )
+    if isinstance(exc, ClientError):
+        _manage_client_error(exc, provider)
+    raise exc
 
 
 def create_error_info_aws_bedrock(exc: Exception, provider: str) -> ErrorInfo:

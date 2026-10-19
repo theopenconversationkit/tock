@@ -23,16 +23,20 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.event.hasStreamMetadata
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.vertx.sendSseEvent
 import ai.tock.shared.vertx.sendSseMessage
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.http.HttpHeaders
 import io.vertx.ext.web.RoutingContext
+import mu.KotlinLogging
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 private val mergeStreamResponse: Boolean =
     booleanProperty("tock_web_connector_merge_stream_response", true)
+
+private val logger = KotlinLogging.logger {}
 
 internal class WebConnectorCallback(
     applicationId: String,
@@ -84,6 +88,31 @@ internal class WebConnectorCallback(
         context
             ?.response()
             ?.sendSseMessage(webMapper.writeValueAsString(createResponse(listOf(action))))
+    }
+
+    /**
+     * Forward a partial/progressive text token to the client as an SSE `token` event
+     * while the answer is still being generated (RAG streaming mode).
+     *
+     * Token callbacks run on a foreign thread (the orchestrator SSE background thread);
+     * writing the Vert.x response from a non-event-loop thread does not flush until the
+     * next event-loop activity, which batches all tokens together. Marshalling every write
+     * onto the Vert.x context serializes them in order and flushes each chunk immediately.
+     */
+    override fun sendStreamedToken(content: String) {
+        if (!streamedResponse || content.isEmpty()) return
+        val ctx = context ?: return
+        try {
+            val data = webMapper.writeValueAsString(mapOf("content" to content))
+            ctx.vertx().runOnContext {
+                val response = ctx.response()
+                if (!response.ended()) {
+                    response.sendSseEvent("token", data)
+                }
+            }
+        } catch (e: Exception) {
+            logger.error(e) { "Error writing streamed token" }
+        }
     }
 
     override fun eventSkipped(event: Event) {
