@@ -26,9 +26,10 @@ Responsibilities
 * Return a fully assembled RAGResponse.
 """
 
+import json
 import logging
 import time
-from typing import Optional
+from typing import AsyncGenerator, Optional
 
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.callbacks import BaseCallbackHandler
@@ -62,6 +63,7 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
 )
 from gen_ai_orchestrator.services.langchain.rag_chain_builder import (
     create_rag_chain,
+    create_rag_chain_parts,
 )
 from gen_ai_orchestrator.services.langchain.rag_response_builder import (
     build_rag_response,
@@ -225,6 +227,143 @@ async def execute_rag_chain(
         rag_duration=float(rag_duration),
         debug=debug,
     )
+
+
+@opensearch_exception_handler
+@aws_bedrock_exception_handler(provider='AwsBedrock')
+@openai_exception_handler(provider='OpenAI or AzureOpenAIService')
+async def execute_rag_chain_stream(
+    request: RAGRequest,
+    debug: bool,
+    custom_observability_handler: Optional[BaseCallbackHandler] = None,
+) -> AsyncGenerator[dict, None]:
+    """
+    Execute the RAG pipeline and stream the answer via Server-Sent Events.
+
+    Emits:
+      - one 'token' event per new fragment of the answer text, extracted from
+        the incremental output of the answer JsonOutputParser;
+      - a final 'answer' event carrying the complete RAGResponse (JSON),
+        OR an 'error' event if the post-stream guardrail blocks the answer.
+
+    Guardrail: tokens are streamed as they are produced, so individual tokens
+    cannot be blocked before being sent. The toxicity guardrail is therefore
+    applied once on the fully assembled answer, before the terminal 'answer'
+    event. When it triggers, an 'error' event is emitted instead of 'answer',
+    so the canonical/final answer surfaced to the user is the error rather than
+    the toxic content (same guarantee as the non-streaming POST /rag).
+    """
+    logger.info('RAG chain (stream) - Start of execution...')
+    start_time = time.time()
+
+    # The chain is split in two: retrieval/condensation cannot be streamed token
+    # by token (intermediate RunnableParallel steps would receive partial inputs),
+    # so it runs eagerly; only the answer generation is streamed.
+    rag_inputs, answer_chain = create_rag_chain_parts(request=request)
+
+    message_history = build_message_history(request)
+    session_id, user_id, tags = extract_dialog_metadata(request)
+
+    records_handler = RAGCallbackHandler()
+    callback_handlers, observability_handler = build_callback_handlers(
+        request=request,
+        debug=debug,
+        records_handler=records_handler,
+        custom_handler=custom_observability_handler,
+    )
+    config = RunnableConfig(
+        callbacks=callback_handlers,
+        metadata=build_runnable_metadata(session_id, user_id, tags),
+    )
+
+    # 1. Retrieval + condensation (eager).
+    prepared = await rag_inputs.ainvoke(
+        input={
+            **request.question_answering_prompt.inputs,
+            'chat_history': message_history.messages,
+        },
+        config=config,
+    )
+
+    # 2. Answer generation (streamed token by token).
+    answer_dict = {}
+    previous_answer = ''
+
+    async for event in answer_chain.astream_events(
+        input=prepared, config=config, version='v2'
+    ):
+        kind = event['event']
+
+        # Stream the incremental 'answer' field parsed from the QA JSON output.
+        if kind == 'on_parser_stream' and event.get('name') == 'rag_chain_output':
+            partial = event['data'].get('chunk') or {}
+            current_answer = partial.get('answer') or ''
+            if len(current_answer) > len(previous_answer):
+                delta = current_answer[len(previous_answer):]
+                previous_answer = current_answer
+                yield {
+                    'event': 'token',
+                    'data': json.dumps(
+                        {'type': 'token', 'content': delta}, ensure_ascii=False
+                    ),
+                }
+
+        # The answer chain end carries the fully parsed LLMAnswer dict.
+        elif kind == 'on_chain_end' and not event.get('parent_ids'):
+            answer_dict = event['data']['output']
+
+    chain_output = {**prepared, 'answer': answer_dict}
+    llm_answer = LLMAnswer(**answer_dict)
+
+    # Post-stream guardrail: validate the fully assembled answer. On toxicity, emit an
+    # 'error' event instead of the 'answer' event so the final answer surfaced to the
+    # user is the error, not the toxic content (parity with the non-streaming /rag route).
+    if request.guardrail_setting:
+        guardrail = get_guardrail_factory(
+            setting=request.guardrail_setting
+        ).get_parser()
+        guardrail_output = guardrail.parse(llm_answer.answer)
+        try:
+            check_guardrail_output(guardrail_output)
+        except GenAIGuardCheckException as exc:
+            logger.warning('RAG chain (stream) - Guardrail blocked the answer.')
+            yield {
+                'event': 'error',
+                'data': json.dumps(
+                    {'message': exc.message, 'detail': exc.detail},
+                    ensure_ascii=False,
+                ),
+            }
+            return
+
+    # In streaming mode the answer parser receives incremental chunks, never a full
+    # AIMessage, so RAGCallbackHandler.on_chain_start never records 'rag_chain_output'.
+    # build_rag_debug_data would then parse a None record into a default LLMAnswer
+    # ({"display_answer": false}). Backfill the record with the fully parsed answer so the
+    # debug.answer matches the top-level answer.
+    if debug and not records_handler.records.get('rag_chain_output'):
+        records_handler.records['rag_chain_output'] = json.dumps(
+            answer_dict, ensure_ascii=False
+        )
+
+    rag_duration = float('{:.3f}'.format(time.time() - start_time))
+    logger.info(
+        'RAG chain (stream) - End of execution. (Duration: %s seconds)', rag_duration
+    )
+
+    response = build_rag_response(
+        chain_output=chain_output,
+        llm_answer=llm_answer,
+        request=request,
+        records_callback_handler=records_handler,
+        observability_handler=observability_handler,
+        rag_duration=rag_duration,
+        debug=debug,
+    )
+    yield {
+        'event': 'answer',
+        'data': response.model_dump_json(exclude_none=True),
+    }
 
 
 def check_guardrail_output(guardrail_output: dict) -> bool:

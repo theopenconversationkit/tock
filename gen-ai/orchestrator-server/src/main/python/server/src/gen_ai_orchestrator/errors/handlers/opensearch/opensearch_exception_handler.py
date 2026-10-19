@@ -14,6 +14,7 @@
 #
 """Module of the OpenSearch handlers"""
 
+import inspect
 import logging
 from typing import Union
 
@@ -44,35 +45,59 @@ logger = logging.getLogger(__name__)
 def opensearch_exception_handler(func):
     """A decorator function for managing OpenSearch exceptions"""
 
+    if inspect.isasyncgenfunction(func):
+
+        async def wrapper(*args, **kwargs):
+            """Exception handling logic for async generators"""
+            try:
+                async for item in func(*args, **kwargs):
+                    yield item
+            except (
+                OpenSearchImproperlyConfigured,
+                OpenSearchTransportError,
+            ) as exc:
+                _translate_opensearch_error(exc)
+
+        return wrapper
+
     async def wrapper(*args, **kwargs):
         """Exception handling logic"""
 
         try:
             return await func(*args, **kwargs)
-        except OpenSearchImproperlyConfigured as exc:
-            logger.error(exc)
-            raise GenAIOpenSearchSettingException(create_error_info_opensearch(exc))
-        except OpenSearchConnectionError as exc:
-            logger.error(exc)
-            raise GenAIConnectionErrorException(create_error_info_opensearch(exc))
-        except OpenSearchAuthenticationException as exc:
-            logger.error(exc)
-            raise GenAIAuthenticationException(create_error_info_opensearch(exc))
-        except OpenSearchNotFoundError as exc:
-            logger.error(exc)
-            if 'index_not_found_exception' == exc.error:
-                raise GenAIOpenSearchIndexNotFoundException(
-                    create_error_info_opensearch(exc)
-                )
-            else:
-                raise GenAIOpenSearchResourceNotFoundException(
-                    create_error_info_opensearch(exc)
-                )
-        except OpenSearchTransportError as exc:
-            logger.error(exc)
-            raise GenAIOpenSearchTransportException(create_error_info_opensearch(exc))
+        except (
+            OpenSearchImproperlyConfigured,
+            OpenSearchTransportError,
+        ) as exc:
+            _translate_opensearch_error(exc)
 
     return wrapper
+
+
+def _translate_opensearch_error(exc: Exception):
+    """Map an OpenSearch error to the matching GenAI orchestrator exception.
+
+    Subtype order matters: ConnectionError / AuthenticationException /
+    NotFoundError are all TransportError subclasses and must be tested first.
+    """
+    logger.error(exc)
+    if isinstance(exc, OpenSearchImproperlyConfigured):
+        raise GenAIOpenSearchSettingException(create_error_info_opensearch(exc))
+    if isinstance(exc, OpenSearchConnectionError):
+        raise GenAIConnectionErrorException(create_error_info_opensearch(exc))
+    if isinstance(exc, OpenSearchAuthenticationException):
+        raise GenAIAuthenticationException(create_error_info_opensearch(exc))
+    if isinstance(exc, OpenSearchNotFoundError):
+        if 'index_not_found_exception' == exc.error:
+            raise GenAIOpenSearchIndexNotFoundException(
+                create_error_info_opensearch(exc)
+            )
+        raise GenAIOpenSearchResourceNotFoundException(
+            create_error_info_opensearch(exc)
+        )
+    if isinstance(exc, OpenSearchTransportError):
+        raise GenAIOpenSearchTransportException(create_error_info_opensearch(exc))
+    raise exc
 
 
 def create_error_info_opensearch(

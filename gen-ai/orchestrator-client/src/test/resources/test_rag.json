@@ -1,0 +1,36 @@
+{
+  "dialog": null,
+  "question_condensing_llm_setting": null,
+  "question_condensing_prompt": null,
+  "question_answering_llm_setting": {
+    "provider": "OpenAI",
+    "model": "gpt-4o-mini",
+    "temperature": 0.7,
+    "max_tokens": 500,
+    "top_p": 1.0,
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "reasoning_effort": null
+  },
+  "question_answering_prompt": {
+    "formatter": "jinja2",
+    "template": "You are a helpful assistant. Answer the following question based on the context provided.\n\nContext:\n{{ context }}\n\nQuestion: {{ question }}\n\nProvide a JSON response with the following structure:\n{\"status\": \"found_in_context|not_found|clarification_needed\", \"answer\": \"your answer here\", \"confidence_score\": 0.95, \"display_answer\": true}",
+    "inputs": {
+      "question": "What is the capital of France?"
+    }
+  },
+  "embedding_question_em_setting": {
+    "provider": "OpenAI",
+    "model": "text-embedding-3-small"
+  },
+  "document_index_name": "test_index",
+  "document_search_params": {
+    "provider": "OpenSearch",
+    "search_type": "SIMILARITY_SEARCH",
+    "k": 5
+  },
+  "compressor_setting": null,
+  "vector_store_setting": null,
+  "observability_setting": null,
+  "documents_required": true
+}

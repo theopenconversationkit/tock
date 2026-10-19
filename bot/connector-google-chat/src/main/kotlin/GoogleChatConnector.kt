@@ -52,6 +52,7 @@ class GoogleChatConnector(
     private val sourcesLabel: String,
     private val waitingMessage: String,
     private val feedback: GoogleChatFeedback? = null,
+    private val enableStreaming: Boolean = false,
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
@@ -101,6 +102,9 @@ class GoogleChatConnector(
         val spaceName = message.required("space").required("name").asText()
         val threadName = message.required("thread").required("name").asText()
         val event = GoogleChatRequestConverter.toEvent(chatEvent, connectorId)
+        if (event is Action && enableStreaming) {
+            event.metadata.streamedResponse = true
+        }
         executor.executeBlocking {
             val callback =
                 GoogleChatConnectorCallback(
