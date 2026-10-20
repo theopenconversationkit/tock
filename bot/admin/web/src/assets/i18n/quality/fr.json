@@ -10,7 +10,6 @@
     "dataset_column": "Jeu de données",
     "questions_column": "Questions",
     "runs_column": "Exécutions",
-    "sort_by_latest_run": "Trier par date de dernière exécution",
     "duration_column": "Durée",
     "import_dataset_title": "Importer un jeu de données",
     "cancel_tooltip": "Annuler",

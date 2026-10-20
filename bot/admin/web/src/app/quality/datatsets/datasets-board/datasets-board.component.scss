@@ -52,25 +52,3 @@
 .sortable-col:hover .sort-icon:not(.sort-icon--visible) {
   opacity: 0.4;
 }
-
-.state-sort {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-
-  nb-icon {
-    font-size: 0.875rem;
-    line-height: 1;
-    width: 1em;
-    height: 1em;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--color-primary-default);
-    outline-offset: 2px;
-  }
-}

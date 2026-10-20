@@ -10,7 +10,6 @@
     "dataset_column": "Dataset",
     "questions_column": "Questions",
     "runs_column": "Runs",
-    "sort_by_latest_run": "Sort by latest run date",
     "duration_column": "Duration",
     "import_dataset_title": "Import Dataset",
     "cancel_tooltip": "Cancel",

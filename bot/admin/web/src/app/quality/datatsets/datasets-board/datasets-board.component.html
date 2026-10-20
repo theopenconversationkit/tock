@@ -45,19 +45,7 @@
 ></tock-no-data-found>
 } @if (!loading && datasets?.length) {
 <div class="list-grid list-header text-muted">
-  <button
-    type="button"
-    class="state-sort sortable-col"
-    [class.sort-active]="sortField === 'lastRun'"
-    [attr.aria-label]="'quality.datasets-board.sort_by_latest_run' | transloco"
-    [nbTooltip]="'quality.datasets-board.sort_by_latest_run' | transloco"
-    (click)="setSort('lastRun')"
-  >
-    <nb-icon
-      [icon]="sortField === 'lastRun' ? (sortDirection === 'asc' ? 'arrow-up' : 'arrow-down') : 'clock-history'"
-      aria-hidden="true"
-    ></nb-icon>
-  </button>
+  <div aria-hidden="true"></div>
   <div
     class="ellipsis sortable-col"
     [class.sort-active]="sortField === 'name'"
