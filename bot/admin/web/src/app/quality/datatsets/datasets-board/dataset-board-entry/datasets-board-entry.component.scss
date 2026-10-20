@@ -57,9 +57,13 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
+.state-icon--running {
+  animation: run-state-spin 1.5s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
   .state-icon--running {
-    animation: run-state-spin 1.5s linear infinite;
+    animation: none;
   }
 }
 
