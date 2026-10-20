@@ -82,8 +82,6 @@ class TockConnectorControllerTest {
                 bind<UserTimelineDAO>() with provider { userTimelineDAO }
             },
         )
-        System.setProperty("tock_bot_locked_attempts_wait_in_ms", "1")
-        System.setProperty("tock_bot_max_locked_attempts", "3")
 
         every { bot.configuration } returns mockk()
         every { bot.botDefinition } returns botDefinition
@@ -110,8 +108,6 @@ class TockConnectorControllerTest {
     fun tearDown() {
         synchronousMode = true
         asynchronousMode = false
-        System.clearProperty("tock_bot_locked_attempts_wait_in_ms")
-        System.clearProperty("tock_bot_max_locked_attempts")
         tockInternalInjector = KodeinInjector()
     }
 

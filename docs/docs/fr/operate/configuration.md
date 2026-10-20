@@ -241,9 +241,9 @@ Voir [Installation](installation.md#conservation-des-donnees).
 | `tock_bot_add_namespace_to_timeline_id` | `false` | Préfixe les identifiants utilisateurs par le namespace, pour séparer les utilisateurs de plusieurs namespaces |
 | `tock_bot_encrypted_flags` | | _Flags_ de dialogue dont la valeur est chiffrée |
 | `tock_bot_lock_timeout_in_ms` | `5000` | Durée de vie du verrou d'un utilisateur, pendant le traitement d'un message |
-| `tock_bot_locked_attempts_wait_in_ms` | `500` | Délai entre deux tentatives d'acquisition du verrou |
+| `tock_bot_lock_retry_delay_in_ms` | `500` | Délai entre deux tentatives d'acquisition du verrou |
 | `tock_bot_lock_retry_jitter_in_ms` | `20` | Délai aléatoire ajouté à ce délai |
-| `tock_bot_max_locked_attempts` | `10` | Nombre de tentatives avant abandon |
+| `tock_bot_lock_max_acquire_attempts` | `10` | Nombre de tentatives avant abandon |
 | `tock_bot_warn_after_locked_attempts` | `5` | Nombre de tentatives avant de logger un avertissement |
 | `mongo_user_ttl_hours` | `6` | Conservation des verrous utilisateurs |
 

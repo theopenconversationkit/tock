@@ -52,7 +52,7 @@ internal class PushNotificationsTest : BotEngineTest() {
 
     @BeforeEach
     fun beforeEach() {
-        System.setProperty("tock_bot_locked_attempts_wait_in_ms", "5")
+        System.setProperty("tock_bot_lock_retry_delay_in_ms", "5")
         val connectorType = ConnectorType(CONNECTOR_ID)
         val botId = botDefinition.botId
 
