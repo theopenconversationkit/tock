@@ -113,8 +113,7 @@ class TockConnectorControllerTest {
 
     private fun controller() = TockConnectorController(bot, connector, mockk(relaxed = true), botDefinition, mockk(relaxed = true))
 
-    private fun lastAnswer() =
-        SendSentence(PlayerId("bot", PlayerType.bot), "connector", PlayerId("user"), "answer").apply { metadata.lastAnswer = true }
+    private fun lastAnswer() = SendSentence(PlayerId("bot", PlayerType.bot), "connector", PlayerId("user"), "answer").apply { metadata.lastAnswer = true }
 
     @Test
     fun `handleAction in synchronous mode saves the timeline and releases the lock via withLock`() {

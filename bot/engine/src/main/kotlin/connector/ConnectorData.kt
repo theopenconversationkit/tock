@@ -18,8 +18,8 @@ package ai.tock.bot.connector
 
 import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.engine.user.PlayerId
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CompletableDeferred
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * The connector data that connector sends to the [ConnectorController]
