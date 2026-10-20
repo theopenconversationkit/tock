@@ -312,10 +312,7 @@
           @if (run.stats.averageRagDurationSeconds != null) {
           <small
             class="rag-duration text-muted"
-            [nbTooltip]="
-              'quality.dataset-board-entry.average_rag_duration_tooltip'
-                | transloco: { count: run.stats.ragDurationCount, total: run.stats.totalQuestions }
-            "
+            [nbTooltip]="'quality.dataset-board-entry.average_rag_duration_tooltip' | transloco"
           >
             ({{ run.stats.averageRagDurationSeconds | number: '1.1-1' }} s/q)
           </small>

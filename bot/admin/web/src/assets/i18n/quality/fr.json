@@ -74,7 +74,7 @@
     "run_started_at_tooltip": "Exécution démarrée à",
     "run_ended_at_tooltip": "Exécution terminée à",
     "run_duration_tooltip": "Durée de l'exécution",
-    "average_rag_duration_tooltip": "Durée moyenne RAG par réponse, calculée sur {{count}} questions sur {{total}}. Inclut les réponses non trouvées dans le contexte. Exclut les échecs, les mesures absentes et les tentatives précédentes du dataset.",
+    "average_rag_duration_tooltip": "Durée moyenne RAG par réponse",
     "questions_in_dataset_tooltip": "Nombre de questions dans le jeu de données au moment de l'exécution",
     "successful_questions_tooltip": "Nombre de questions réussies",
     "intent_detection_questions_tooltip": "Nombre de questions traitées par détection d'intention",
