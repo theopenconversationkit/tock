@@ -45,11 +45,18 @@ import io.mockk.verify
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 /**
  *
@@ -118,7 +125,6 @@ class TockConnectorControllerTest {
         runBlocking { controller().handleUserEvent(action, data) }
 
         coVerify(exactly = 1) { userLock.withLock<Any?>("user", false, any(), any()) }
-        coVerify(exactly = 0) { userLock.tryLock(any()) }
         coVerify(exactly = 0) { userLock.releaseLock(any()) }
         coVerify(exactly = 1) { userTimelineDAO.save(userTimeline, botDefinition) }
         verify(exactly = 1) { callback.userLocked(action) }
@@ -139,21 +145,33 @@ class TockConnectorControllerTest {
     fun `handleAction in asynchronous mode keeps the lock until the last answer is sent`() {
         asynchronousMode = true
         synchronousMode = false
-        coEvery { userLock.tryLock("user") } returns true
         val controller = controller()
 
-        runBlocking { controller.handleUserEvent(action, data) }
+        // Unconfined: runs eagerly on this thread up to the first real suspension point, i.e.
+        // completion.await() inside withLock's op, since bot.handleAction() does not itself call
+        // send() here (simulating a bot that defers sending the last answer, e.g. via
+        // TockBotBus.deferMessageSending - see ConnectorData.asyncLockReleaseSignal doc).
+        val job: Job = CoroutineScope(Dispatchers.Unconfined).launch { controller.handleUserEvent(action, data) }
 
         coVerify(exactly = 1) { bot.handleAction(any(), userTimeline, any(), data) }
-        coVerify(exactly = 0) { userLock.withLock<Any?>(any(), any(), any(), any()) }
-        coVerify(exactly = 0) { userLock.releaseLock(any()) }
+        coVerify(exactly = 1) { userLock.withLock<Any?>("user", false, any(), any()) }
         coVerify(exactly = 0) { userTimelineDAO.save(any(), any(), any()) }
         verify(exactly = 0) { callback.userLockReleased(any()) }
+        assertFalse(job.isCompleted)
+        assertFalse(data.asyncLockReleaseSignal!!.isCompleted)
+
+        // simulates the deferred completion of the last answer, possibly from another coroutine
+        controller.send(userTimeline, data, action, lastAnswer())
+
+        runBlocking { withTimeout(1000) { job.join() } }
+        coVerify(exactly = 1) { userTimelineDAO.save(userTimeline, botDefinition) }
+        verify(exactly = 1) { callback.userLockReleased(action) }
     }
 
     @Test
-    fun `send in asynchronous mode saves the timeline then releases the lock on last answer`() {
+    fun `send in asynchronous mode saves the timeline and signals release on last answer`() {
         asynchronousMode = true
+        data.asyncLockReleaseSignal = CompletableDeferred()
         val controller = controller()
 
         controller.send(userTimeline, data, action, lastAnswer())
@@ -161,75 +179,84 @@ class TockConnectorControllerTest {
         coVerifyOrder {
             userTimelineDAO.save(userTimeline, botDefinition)
             callback.eventAnswered(action)
-            userLock.releaseLock("user")
-            callback.userLockReleased(action)
         }
-    }
-
-    @Test
-    fun `send in asynchronous mode does not release the lock when it is not the last answer`() {
-        asynchronousMode = true
-        val notLast = SendSentence(PlayerId("bot", PlayerType.bot), "connector", PlayerId("user"), "partial")
-
-        controller().send(userTimeline, data, action, notLast)
-
-        coVerify(exactly = 0) { userLock.releaseLock(any()) }
-        coVerify(exactly = 0) { userTimelineDAO.save(any(), any(), any()) }
+        assertEquals(true, data.asyncLockReleaseSignal?.isCompleted)
+        // the lock itself is only released by withLock's own cleanup, once the coroutine
+        // suspended on this signal resumes - not directly by send()
         verify(exactly = 0) { callback.userLockReleased(any()) }
     }
 
     @Test
-    fun `send in synchronous mode never releases the lock`() {
+    fun `send in asynchronous mode does not signal release when it is not the last answer`() {
+        asynchronousMode = true
+        data.asyncLockReleaseSignal = CompletableDeferred()
+        val notLast = SendSentence(PlayerId("bot", PlayerType.bot), "connector", PlayerId("user"), "partial")
+
+        controller().send(userTimeline, data, action, notLast)
+
+        coVerify(exactly = 0) { userTimelineDAO.save(any(), any(), any()) }
+        assertFalse(data.asyncLockReleaseSignal!!.isCompleted)
+        verify(exactly = 0) { callback.userLockReleased(any()) }
+    }
+
+    @Test
+    fun `send in synchronous mode never touches the async release signal`() {
         controller().send(userTimeline, data, action, lastAnswer())
 
-        coVerify(exactly = 0) { userLock.releaseLock(any()) }
         coVerify(exactly = 0) { userTimelineDAO.save(any(), any(), any()) }
+        assertEquals(null, data.asyncLockReleaseSignal)
         verify(exactly = 1) { callback.eventAnswered(action) }
     }
 
     @Test
-    fun `handleAction in asynchronous mode retries until the lock is acquired`() {
+    fun `handleAction in asynchronous mode skips the event when the lock cannot be acquired`() {
         asynchronousMode = true
-        coEvery { userLock.tryLock("user") } returnsMany listOf(false, false, true)
+        coEvery { userLock.withLock<Any?>(any(), any(), any(), any()) } throws LockAcquisitionException("busy")
 
         runBlocking { controller().handleUserEvent(action, data) }
 
-        coVerify(exactly = 3) { userLock.tryLock("user") }
-        coVerify(exactly = 1) { bot.handleAction(any(), any(), any(), any()) }
-        verify(exactly = 0) { callback.eventSkipped(any()) }
-    }
-
-    @Test
-    fun `handleAction in asynchronous mode skips the event after max lock attempts`() {
-        asynchronousMode = true
-        coEvery { userLock.tryLock(any()) } returns false
-
-        runBlocking { controller().handleUserEvent(action, data) }
-
-        coVerify(exactly = 3) { userLock.tryLock("user") }
-        coVerify(exactly = 0) { bot.handleAction(any(), any(), any(), any()) }
         verify(exactly = 1) { callback.eventSkipped(action) }
-        coVerify(exactly = 0) { userLock.releaseLock(any()) }
+        coVerify(exactly = 0) { bot.handleAction(any(), any(), any(), any()) }
     }
 
     @Test
     fun `handleAction in asynchronous mode releases the lock through the error answer on failure`() {
         asynchronousMode = true
-        coEvery { userLock.tryLock("user") } returns true
         val error = IllegalStateException("boom")
         coEvery { bot.handleAction(any(), any(), any(), any()) } throws error
 
         runBlocking { controller().handleUserEvent(action, data) }
 
         verify(exactly = 1) { callback.exceptionThrown(action, error) }
-        coVerify(exactly = 1) { userLock.releaseLock("user") }
         verify(exactly = 1) { callback.userLockReleased(action) }
+    }
+
+    @Test
+    fun `handleAction in asynchronous mode releases the lock exactly once when eventAnswered throws on the first attempt`() {
+        // Simulates a connector callback whose eventAnswered() fails while serializing the
+        // response (e.g. RestConnectorCallback). The resulting exception is caught by
+        // handleAction(), which retries through the error-answer fallback - itself calling
+        // send()/eventAnswered() a second time. The lock must still be released exactly once.
+        asynchronousMode = true
+        every { callback.eventAnswered(action) } throws IllegalStateException("serialization failed")
+        val controller = controller()
+        coEvery { bot.handleAction(any(), any(), any(), any()) } coAnswers {
+            controller.send(userTimeline, data, action, lastAnswer())
+        }
+
+        runBlocking { controller.handleUserEvent(action, data) }
+
+        // only the first attempt invokes eventAnswered; the error-answer fallback's second
+        // send() is a no-op since cleanup already ran (and already signaled release) once
+        verify(exactly = 1) { callback.eventAnswered(action) }
+        verify(exactly = 1) { callback.userLockReleased(action) }
+        verify(exactly = 1) { callback.exceptionThrown(action, any()) }
     }
 
     @Test
     fun `handleAction in asynchronous mode does not leak the exception on lock failure`() {
         asynchronousMode = true
-        coEvery { userLock.tryLock(any()) } throws IllegalStateException("db down")
+        coEvery { userLock.withLock<Any?>(any(), any(), any(), any()) } throws IllegalStateException("db down")
 
         runBlocking { controller().handleUserEvent(action, data) }
 
