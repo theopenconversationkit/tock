@@ -707,6 +707,7 @@ class DatasetServiceTest : AbstractTest() {
                 ?.id
                 .toString(),
         )
+        assertEquals(dialog.id.toString(), result.first().dialogId)
         assertEquals(dialog.id, updatedQuestionResultSlot.captured.dialogId)
         assertEquals(answerAction.id, updatedQuestionResultSlot.captured.answerActionId)
         assertEquals("test_${run.botApplicationConfigurationId}_${run.language}_${questionResult.userIdModifier}", querySlot.captured.playerId?.id)

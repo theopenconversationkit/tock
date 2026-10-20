@@ -61,6 +61,7 @@ export * from './test-dialog/test-dialog.component';
 export * from './bot-configuration-selector/bot-configuration-selector.component';
 export * from './annotation/annotation.component';
 export * from './annotation/annotation-comment.component';
+export * from './annotation/annotation-trigger/annotation-trigger.component';
 export * from './chat-ui/chat-ui-dialog-logger/chat-ui-dialog-logger.component';
 export * from './chat-ui/chat-ui-dialog-evaluator/chat-ui-dialog-evaluator.component';
 export * from './json-viewer-dialog/json-viewer-dialog.component';

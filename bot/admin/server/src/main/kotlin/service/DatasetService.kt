@@ -307,6 +307,7 @@ object DatasetService {
                 action = resolvedAction.action,
                 retryCount = questionResult.retryCount,
                 error = resolvedAction.error,
+                dialogId = resolvedAction.dialogId?.toString(),
             )
         }
     }
