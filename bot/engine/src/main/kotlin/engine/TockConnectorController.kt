@@ -210,7 +210,7 @@ internal class TockConnectorController(
 
                     bot.handleAction(transformedAction, userTimeline, this, data)
 
-                    if (!asynchronousMode && synchronousMode && data.saveTimeline) {
+                    if (synchronousMode && data.saveTimeline) {
                         userTimelineDAO.save(userTimeline, bot.botDefinition)
                     }
                 } catch (t: Throwable) {

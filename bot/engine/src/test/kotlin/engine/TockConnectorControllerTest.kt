@@ -138,6 +138,7 @@ class TockConnectorControllerTest {
     @Test
     fun `handleAction in asynchronous mode keeps the lock until the last answer is sent`() {
         asynchronousMode = true
+        synchronousMode = false
         coEvery { userLock.tryLock("user") } returns true
         val controller = controller()
 
