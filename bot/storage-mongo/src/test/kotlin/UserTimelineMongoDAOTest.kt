@@ -16,7 +16,11 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.annotation.BotAnnotation
+import ai.tock.bot.admin.annotation.BotAnnotationReasonType
+import ai.tock.bot.admin.annotation.BotAnnotationState
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.bot.admin.dialog.AnnotationReportQuery
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.user.UserReportQuery
 import ai.tock.bot.connector.ConnectorType
@@ -47,6 +51,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNull
 import org.litote.kmongo.eq
 import org.litote.kmongo.newId
+import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -934,6 +939,288 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                 )
             } finally {
                 BotApplicationConfigurationMongoDAO.delete(botConfig)
+            }
+        }
+
+    @Test
+    fun `searchAnnotations returns flat cross-dialog list of ANOMALY and REVIEW_NEEDED annotations sorted by lastUpdateDate desc`() =
+        runBlocking {
+            val namespace = "ns_annotations_search"
+            val otherNamespace = "ns_other"
+            val botId = "bot_annotations_test"
+            val otherBotId = "bot_other"
+            val appId = "app_test"
+            val otherAppId = "app_other"
+            val userId = PlayerId("user_annot", PlayerType.user)
+            val botPlayerId = PlayerId(botId, PlayerType.bot)
+            val otherBotPlayerId = PlayerId(otherBotId, PlayerType.bot)
+
+            // Save bot configs so getApplicationIds works
+            val botConfig =
+                BotApplicationConfiguration(
+                    applicationId = appId,
+                    botId = botId,
+                    namespace = namespace,
+                    nlpModel = botId,
+                    connectorType = ConnectorType("test"),
+                )
+            val otherBotConfig =
+                BotApplicationConfiguration(
+                    applicationId = otherAppId,
+                    botId = otherBotId,
+                    namespace = otherNamespace,
+                    nlpModel = otherBotId,
+                    connectorType = ConnectorType("test"),
+                )
+            BotApplicationConfigurationMongoDAO.save(botConfig)
+            BotApplicationConfigurationMongoDAO.save(otherBotConfig)
+
+            try {
+                val storyDef =
+                    StoryDefinitionBase(
+                        "test_story",
+                        object : SimpleStoryHandlerBase() {
+                            override fun action(bus: BotBus) {}
+                        },
+                    )
+                // Fixed, whole-second instant: persisted as a millisecond Date, so equality checks
+                // on actionDate are not broken by Instant.now()'s nanosecond precision.
+                val now = Instant.parse("2026-06-01T12:00:00Z")
+                val otherUserId = PlayerId("user_annot_other", PlayerType.user)
+
+                // Dialog 1: action with ANOMALY + RAG debug
+                val dialog1Id = newId<Dialog>()
+                val action1Id = newId<ai.tock.bot.engine.action.Action>()
+                val action1 =
+                    ai.tock.bot.engine.action.SendSentenceWithFootnotes(
+                        userId,
+                        appId,
+                        botPlayerId,
+                        "answer1",
+                        id = action1Id,
+                        date = now.minusSeconds(100),
+                        ragDebug = mapOf("user_question" to "What is AI?"),
+                        annotation =
+                            BotAnnotation(
+                                state = BotAnnotationState.ANOMALY,
+                                reason = BotAnnotationReasonType.INACCURATE_ANSWER,
+                                description = "Wrong info",
+                                groundTruth = null,
+                                events = mutableListOf(),
+                                creationDate = now.minusSeconds(100),
+                                lastUpdateDate = now.minusSeconds(100),
+                            ),
+                    )
+                val dialog1 =
+                    Dialog(
+                        playerIds = setOf(userId, botPlayerId),
+                        id = dialog1Id,
+                        stories = mutableListOf(Story(storyDef, Intent.unknown, actions = mutableListOf(action1))),
+                    )
+
+                // Dialog 2: 2 open annotations on different actions + non-annotated action
+                val dialog2Id = newId<Dialog>()
+                val action2aId = newId<ai.tock.bot.engine.action.Action>()
+                val action2bId = newId<ai.tock.bot.engine.action.Action>()
+                val action2cId = newId<ai.tock.bot.engine.action.Action>()
+                val action2a =
+                    SendSentence(
+                        userId,
+                        appId,
+                        botPlayerId,
+                        "answer2a",
+                        id = action2aId,
+                        date = now.minusSeconds(50),
+                        annotation =
+                            BotAnnotation(
+                                state = BotAnnotationState.REVIEW_NEEDED,
+                                reason = BotAnnotationReasonType.INCOMPLETE_ANSWER,
+                                description = "Incomplete",
+                                groundTruth = null,
+                                events = mutableListOf(),
+                                creationDate = now.minusSeconds(50),
+                                lastUpdateDate = now.minusSeconds(50),
+                            ),
+                    )
+                val action2b =
+                    SendSentence(
+                        userId,
+                        appId,
+                        botPlayerId,
+                        "answer2b",
+                        id = action2bId,
+                        date = now.minusSeconds(30),
+                        annotation =
+                            BotAnnotation(
+                                state = BotAnnotationState.REVIEW_NEEDED,
+                                reason = BotAnnotationReasonType.HALLUCINATION,
+                                description = "Made up",
+                                groundTruth = null,
+                                events = mutableListOf(),
+                                creationDate = now.minusSeconds(30),
+                                lastUpdateDate = now.minusSeconds(30),
+                            ),
+                    )
+                val action2c = SendSentence(userId, appId, botPlayerId, "answer2c", id = action2cId, date = now)
+                val dialog2 =
+                    Dialog(
+                        playerIds = setOf(userId, botPlayerId),
+                        id = dialog2Id,
+                        stories = mutableListOf(Story(storyDef, Intent.unknown, actions = mutableListOf(action2a, action2b, action2c))),
+                    )
+
+                // Dialog 3: resolved annotation (should NOT be returned)
+                val dialog3Id = newId<Dialog>()
+                val action3Id = newId<ai.tock.bot.engine.action.Action>()
+                val action3 =
+                    SendSentence(
+                        userId,
+                        appId,
+                        botPlayerId,
+                        "answer3",
+                        id = action3Id,
+                        date = now.minusSeconds(200),
+                        annotation =
+                            BotAnnotation(
+                                state = BotAnnotationState.RESOLVED,
+                                reason = BotAnnotationReasonType.INACCURATE_ANSWER,
+                                description = "Fixed",
+                                groundTruth = null,
+                                events = mutableListOf(),
+                                creationDate = now.minusSeconds(200),
+                                lastUpdateDate = now.minusSeconds(200),
+                            ),
+                    )
+                val dialog3 =
+                    Dialog(
+                        playerIds = setOf(userId, botPlayerId),
+                        id = dialog3Id,
+                        stories = mutableListOf(Story(storyDef, Intent.unknown, actions = mutableListOf(action3))),
+                    )
+
+                // Dialog 4: open annotation on OTHER bot/namespace (should NOT be returned)
+                val dialog4Id = newId<Dialog>()
+                val action4Id = newId<ai.tock.bot.engine.action.Action>()
+                val action4 =
+                    SendSentence(
+                        userId,
+                        otherAppId,
+                        otherBotPlayerId,
+                        "answer4",
+                        id = action4Id,
+                        date = now.minusSeconds(10),
+                        annotation =
+                            BotAnnotation(
+                                state = BotAnnotationState.ANOMALY,
+                                reason = BotAnnotationReasonType.QUESTION_MISUNDERSTOOD,
+                                description = "Other bot",
+                                groundTruth = null,
+                                events = mutableListOf(),
+                                creationDate = now.minusSeconds(10),
+                                lastUpdateDate = now.minusSeconds(10),
+                            ),
+                    )
+                val dialog4 =
+                    Dialog(
+                        playerIds = setOf(userId, otherBotPlayerId),
+                        id = dialog4Id,
+                        stories = mutableListOf(Story(storyDef, Intent.unknown, actions = mutableListOf(action4))),
+                    )
+
+                // Dialogs 1-3 belong to the tested bot: one timeline, one namespace, one app.
+                // A DialogCol's namespace comes from the save() argument and its applicationIds from
+                // the timeline's last action, so mixing bots/namespaces in a single save is invalid.
+                UserTimelineMongoDAO.save(UserTimeline(userId, dialogs = mutableListOf(dialog1, dialog2, dialog3)), namespace)
+                // Dialog 4 lives in a separate namespace/app via its own timeline, so it is isolated
+                // both by namespace and by applicationIds — it must never surface in the bot's search.
+                UserTimelineMongoDAO.save(UserTimeline(otherUserId, dialogs = mutableListOf(dialog4)), otherNamespace)
+                delay(100)
+
+                // Test: search ANOMALY + REVIEW_NEEDED only
+                val allResult =
+                    UserTimelineMongoDAO.searchAnnotations(
+                        AnnotationReportQuery(
+                            namespace = namespace,
+                            nlpModel = botId,
+                            annotationStates = setOf(BotAnnotationState.ANOMALY, BotAnnotationState.REVIEW_NEEDED),
+                            annotationReasons = emptySet(),
+                            start = 0,
+                            size = 5,
+                        ),
+                    )
+                assertEquals(3, allResult.total, "Expected 3 open annotations (not the RESOLVED one, not the other bot)")
+                assertEquals(3, allResult.annotations.size)
+                assertEquals(0, allResult.start)
+                assertEquals(3, allResult.end)
+
+                // Verify sorting: lastUpdateDate desc (action2b > action2a > action1)
+                assertEquals(action2bId, allResult.annotations[0].actionId)
+                assertEquals(action2aId, allResult.annotations[1].actionId)
+                assertEquals(action1Id, allResult.annotations[2].actionId)
+
+                // Verify fields populated and events empty
+                val firstRow = allResult.annotations[0]
+                assertEquals(dialog2Id, firstRow.dialogId)
+                assertEquals(appId, firstRow.applicationId)
+                assertEquals(now.minusSeconds(30), firstRow.actionDate)
+                assertEquals(0, firstRow.annotation.events.size, "Events should be empty in flat view")
+                assertEquals(BotAnnotationState.REVIEW_NEEDED, firstRow.annotation.state)
+                assertEquals(BotAnnotationReasonType.HALLUCINATION, firstRow.annotation.reason)
+
+                // question: falls back to the answer text when there is no RAG debug (action2b),
+                // and uses ragDebug.user_question when present (action1, a RAG answer).
+                assertEquals("answer2b", firstRow.question, "Should fall back to the answer text")
+                val ragRow = allResult.annotations.single { it.actionId == action1Id }
+                assertEquals("What is AI?", ragRow.question, "Should use ragDebug.user_question")
+
+                // Test pagination: second page beyond total
+                val pageTwoResult =
+                    UserTimelineMongoDAO.searchAnnotations(
+                        AnnotationReportQuery(
+                            namespace = namespace,
+                            nlpModel = botId,
+                            annotationStates = setOf(BotAnnotationState.ANOMALY, BotAnnotationState.REVIEW_NEEDED),
+                            annotationReasons = emptySet(),
+                            start = 10,
+                            size = 5,
+                        ),
+                    )
+                assertEquals(3, pageTwoResult.total)
+                assertEquals(0, pageTwoResult.annotations.size)
+
+                // Test reason filtering: only HALLUCINATION
+                val reasonFilterResult =
+                    UserTimelineMongoDAO.searchAnnotations(
+                        AnnotationReportQuery(
+                            namespace = namespace,
+                            nlpModel = botId,
+                            annotationStates = setOf(BotAnnotationState.ANOMALY, BotAnnotationState.REVIEW_NEEDED),
+                            annotationReasons = setOf(BotAnnotationReasonType.HALLUCINATION),
+                            start = 0,
+                            size = 5,
+                        ),
+                    )
+                assertEquals(1, reasonFilterResult.total)
+                assertEquals(1, reasonFilterResult.annotations.size)
+                assertEquals(action2bId, reasonFilterResult.annotations[0].actionId)
+
+                // Test WONT_FIX state filter
+                val resolvedResult =
+                    UserTimelineMongoDAO.searchAnnotations(
+                        AnnotationReportQuery(
+                            namespace = namespace,
+                            nlpModel = botId,
+                            annotationStates = setOf(BotAnnotationState.RESOLVED),
+                            annotationReasons = emptySet(),
+                            start = 0,
+                            size = 5,
+                        ),
+                    )
+                assertEquals(1, resolvedResult.total)
+                assertEquals(action3Id, resolvedResult.annotations[0].actionId)
+            } finally {
+                BotApplicationConfigurationMongoDAO.delete(botConfig)
+                BotApplicationConfigurationMongoDAO.delete(otherBotConfig)
             }
         }
 }

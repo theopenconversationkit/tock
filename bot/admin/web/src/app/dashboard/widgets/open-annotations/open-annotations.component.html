@@ -11,30 +11,31 @@
       <div class="header">
         {{ 'dashboard.open-annotations.header' | transloco: { count: data.total } }}
       </div>
-      @if (data.rows && data.rows.length > 0) { @for (row of data.rows; track row.actionId) {
-      <div
+      @for (row of rows; track row.actionId) {
+      <a
         class="annotation-row"
-        (click)="navigateToAnnotation(row.dialogId, row.actionId)"
+        [routerLink]="['/analytics/dialogs', namespace, applicationId, row.dialogId]"
+        [fragment]="row.actionId"
       >
         <div class="row-header position-relative">
           <nb-badge
-            [text]="row.annotation.state"
-            [status]="row.annotation.state === AnnotationState.ANOMALY ? 'danger' : 'warning'"
+            [text]="row.stateLabel"
+            [status]="row.stateStatus"
             size="small"
           ></nb-badge>
-          <span class="reason-label">{{ getReasonLabel(row.annotation.reason) }}</span>
+          <span class="reason-label">{{ row.reasonLabel }}</span>
         </div>
         <div
           class="question-text"
           [title]="row.question || ''"
         >
-          {{ row.question || '(no question)' }}
+          {{ row.question || ('dashboard.open-annotations.no-question' | transloco) }}
         </div>
         <div class="row-footer">
           {{ row.actionDate | date: 'short' }}
         </div>
-      </div>
-      } }
+      </a>
+      }
     </div>
   </ng-template>
 

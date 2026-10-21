@@ -238,10 +238,11 @@
   },
   "open-annotations": {
     "title": "Annotations ouvertes",
-    "header": "{{count}} annotation(s) nécessitant attention",
+    "header": "{{count}} annotation(s) à traiter",
     "empty-title": "Tout est à jour",
     "empty-message": "Aucune annotation à l'état anomalie ou révision nécessaire.",
-    "see-all": "Voir tous"
+    "see-all": "Voir tout",
+    "no-question": "Question non disponible"
   },
   "no-connector": "Aucun connecteur n'est déclaré pour ce bot. Les chiffres d'usage resteront vides tant qu'il n'y en aura pas."
 }

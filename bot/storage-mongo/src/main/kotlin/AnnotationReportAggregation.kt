@@ -112,7 +112,13 @@ internal object AnnotationReportAggregation {
     ): List<Bson> =
         basePipeline(namespace, applicationIds, states, reasons) +
             listOf(
-                sort(Document("stories.actions.annotation.lastUpdateDate", -1)),
+                // Tie-breakers after the update date keep pagination deterministic when two
+                // annotations share the same lastUpdateDate.
+                sort(
+                    Document("stories.actions.annotation.lastUpdateDate", -1)
+                        .append("_id", -1)
+                        .append("stories.actions.id", -1),
+                ),
                 skip(start.toInt()),
                 limit(size),
                 project(

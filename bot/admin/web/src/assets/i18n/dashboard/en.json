@@ -241,7 +241,8 @@
     "header": "{{count}} annotation(s) needing attention",
     "empty-title": "All caught up",
     "empty-message": "No annotations in anomaly or review needed state.",
-    "see-all": "See all"
+    "see-all": "See all",
+    "no-question": "No question available"
   },
   "no-connector": "No connector is declared for this bot. Usage figures will stay empty until one is configured."
 }

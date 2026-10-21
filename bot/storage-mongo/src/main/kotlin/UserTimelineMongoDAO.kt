@@ -20,13 +20,13 @@ import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.annotation.BotAnnotationEvent
 import ai.tock.bot.admin.annotation.BotAnnotationEventType
 import ai.tock.bot.admin.annotation.BotAnnotationState
+import ai.tock.bot.admin.dialog.AnnotationReportQuery
+import ai.tock.bot.admin.dialog.AnnotationReportQueryResult
 import ai.tock.bot.admin.dialog.CountByDateResult
 import ai.tock.bot.admin.dialog.CountResult
 import ai.tock.bot.admin.dialog.DialogRating
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.dialog.DialogReportDAO
-import ai.tock.bot.admin.dialog.AnnotationReportQuery
-import ai.tock.bot.admin.dialog.AnnotationReportQueryResult
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.dialog.DialogStatsQuery

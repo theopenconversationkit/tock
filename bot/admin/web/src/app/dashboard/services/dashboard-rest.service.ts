@@ -41,7 +41,8 @@ import {
   GenAiConfigurationCheck,
   IngestionNotes,
   KnowledgeIndex,
-  OpenAnnotations
+  OpenAnnotations,
+  OpenAnnotationRow
 } from '../models/dashboard.model';
 
 /** Indicator emitted by RAGAnswerHandler as "RAG Status". */
@@ -424,18 +425,20 @@ export class DashboardRestService extends DashboardService {
   // ---------------------------------------------------------------------------
 
   getOpenAnnotations(namespace: string, applicationName: string): Observable<OpenAnnotations> {
-    return this.rest.post<unknown, { total: number; annotations: any[] }>(`/bots/${applicationName}/annotations/search`, {
-      namespace,
-      applicationName,
-      start: 0,
-      size: 5,
-      annotationStates: ['ANOMALY', 'REVIEW_NEEDED']
-    }).pipe(
-      map(response => ({
-        total: response.total,
-        rows: response.annotations
-      }))
-    );
+    return this.rest
+      .post<unknown, { total: number; annotations: OpenAnnotationRow[] }>(`/bots/${applicationName}/annotations/search`, {
+        namespace,
+        applicationName,
+        start: 0,
+        size: 5,
+        annotationStates: ['ANOMALY', 'REVIEW_NEEDED']
+      })
+      .pipe(
+        map((response) => ({
+          total: response.total,
+          rows: response.annotations
+        }))
+      );
   }
 
   // ---------------------------------------------------------------------------

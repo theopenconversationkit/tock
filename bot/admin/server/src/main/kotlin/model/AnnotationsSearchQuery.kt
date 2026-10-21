@@ -43,6 +43,7 @@ data class AnnotationsSearchQuery(
             annotationStates = annotationStates,
             annotationReasons = annotationReasons,
             start = start,
-            size = size,
+            // Cap the page size so a crafted request cannot ask for an unbounded $limit.
+            size = size.coerceIn(1, 100),
         )
 }

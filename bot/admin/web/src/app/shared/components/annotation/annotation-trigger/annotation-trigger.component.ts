@@ -21,10 +21,10 @@ import { AnnotationState } from '../annotations';
  * match its surrounding control cluster.
  */
 @Component({
-    selector: 'tock-annotation-trigger',
-    templateUrl: './annotation-trigger.component.html',
-    styleUrl: './annotation-trigger.component.scss',
-    standalone: false
+  selector: 'tock-annotation-trigger',
+  templateUrl: './annotation-trigger.component.html',
+  styleUrl: './annotation-trigger.component.scss',
+  standalone: false
 })
 export class AnnotationTriggerComponent {
   @Input() dialogReport: DialogReport;
@@ -48,7 +48,7 @@ export class AnnotationTriggerComponent {
   }
 
   get buttonStatus(): NbComponentStatus {
-    if (!this.hasAnnotation) return 'success';
+    if (!this.hasAnnotation) return 'primary';
     return this.isOpenAnnotation ? 'warning' : 'basic';
   }
 
@@ -57,9 +57,7 @@ export class AnnotationTriggerComponent {
   }
 
   get buttonTooltip(): string {
-    return this.hasAnnotation
-      ? 'shared.chat-ui-dialog-logger.display-annotation'
-      : 'shared.chat-ui-dialog-logger.annotate-exchange';
+    return this.hasAnnotation ? 'shared.chat-ui-dialog-logger.display-annotation' : 'shared.chat-ui-dialog-logger.annotate-exchange';
   }
 
   open(): void {

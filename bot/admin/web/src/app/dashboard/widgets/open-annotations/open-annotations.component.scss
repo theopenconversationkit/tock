@@ -20,15 +20,20 @@
     border-bottom: 1px solid var(--card-divider-color);
     cursor: pointer;
     transition: background-color 0.15s;
+    color: inherit;
+    text-decoration: none;
 
     &:last-child {
       border-bottom: none;
     }
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       background-color: var(--background-basic-color-2);
       padding-left: 0.25rem;
       padding-right: 0.25rem;
+      text-decoration: none;
+      color: inherit;
     }
 
     .row-header {
