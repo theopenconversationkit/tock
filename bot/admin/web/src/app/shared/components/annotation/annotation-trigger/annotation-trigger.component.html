@@ -1,25 +1,11 @@
-@if (hasAnnotation) {
 <button
   nbButton
   [ghost]="ghost"
   [size]="size"
   [shape]="shape"
-  status="warning"
-  [nbTooltip]="'shared.chat-ui-dialog-logger.display-annotation' | transloco"
+  [status]="buttonStatus"
+  [nbTooltip]="buttonTooltip | transloco"
   (click)="open()"
 >
-  <nb-icon icon="exclamation-triangle-fill"></nb-icon>
+  <nb-icon [icon]="buttonIcon"></nb-icon>
 </button>
-} @else {
-<button
-  nbButton
-  [ghost]="ghost"
-  [size]="size"
-  [shape]="shape"
-  status="success"
-  [nbTooltip]="'shared.chat-ui-dialog-logger.annotate-exchange' | transloco"
-  (click)="open()"
->
-  <nb-icon icon="exclamation-triangle"></nb-icon>
-</button>
-}

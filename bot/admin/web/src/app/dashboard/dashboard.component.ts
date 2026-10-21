@@ -40,6 +40,7 @@ import {
   GenAiConfiguration,
   IngestionNotes,
   KnowledgeIndex,
+  OpenAnnotations,
   WidgetState
 } from './models/dashboard.model';
 import { DashboardService } from './services/dashboard.service';
@@ -104,6 +105,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   genAiConfiguration: GenAiConfiguration;
   genAiConfigurationState: WidgetState = WidgetState.loading;
 
+  openAnnotations: OpenAnnotations;
+  openAnnotationsState: WidgetState = WidgetState.loading;
+
   readonly state = inject(StateService);
   private readonly botConfiguration = inject(BotConfigurationService);
   private readonly dashboardService = inject(DashboardService);
@@ -166,6 +170,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.state.currentApplication.name;
   }
 
+  /** The application ObjectId, as the dialogs route expects it in its second segment. */
+  get applicationId(): string {
+    return this.state.currentApplication._id;
+  }
+
   setPeriod(period: DashboardPeriod): void {
     if (period === this.period) return;
     this.dashboardState.setPeriod(period);
@@ -188,6 +197,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loadPeriodDependentWidgets();
     this.loadKnowledgeIndex();
     this.loadContacts();
+    this.loadOpenAnnotations();
     this.loadIdentity();
     this.loadHistory();
     this.loadEvaluation();
@@ -288,6 +298,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.contactsState = contacts.length ? WidgetState.ready : WidgetState.empty;
         },
         error: () => (this.contactsState = WidgetState.error)
+      });
+  }
+
+  private loadOpenAnnotations(): void {
+    this.openAnnotationsState = WidgetState.loading;
+    this.dashboardService
+      .getOpenAnnotations(this.namespace, this.applicationName)
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
+      .subscribe({
+        next: (annotations) => {
+          this.openAnnotations = annotations;
+          this.openAnnotationsState = annotations.total ? WidgetState.ready : WidgetState.empty;
+        },
+        error: () => (this.openAnnotationsState = WidgetState.error)
       });
   }
 

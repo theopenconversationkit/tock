@@ -52,6 +52,7 @@ import ai.tock.bot.admin.dialog.CountByDateResult
 import ai.tock.bot.admin.dialog.CountResult
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.dialog.DialogReportDAO
+import ai.tock.bot.admin.dialog.AnnotationReportQueryResult
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.dialog.DialogStatsQuery
 import ai.tock.bot.admin.dialog.DialogStatsQueryResult
@@ -75,6 +76,7 @@ import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationStep
 import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.bot.admin.model.DialogFlowRequest
+import ai.tock.bot.admin.model.AnnotationsSearchQuery
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.admin.model.Feature
 import ai.tock.bot.admin.model.StorySearchRequest
@@ -507,6 +509,17 @@ object BotAdminService {
                     nlpStats = dialogReportDAO.getNlpStats(searchResult.dialogs.map { it.id }, query.namespace),
                 )
             }
+
+    /**
+     * Flat, cross-dialog search of the bot's open annotations. The namespace and bot are passed in
+     * by the route (resolved from the session and the path), not taken from the request body.
+     * No comment-rights post-processing: events are not returned for this read-only listing.
+     */
+    fun searchAnnotations(
+        query: AnnotationsSearchQuery,
+        namespace: String,
+        botId: String,
+    ): AnnotationReportQueryResult = dialogReportDAO.searchAnnotations(query.toAnnotationReportQuery(namespace, botId))
 
     fun searchWithCommentRights(
         query: DialogsSearchQuery,

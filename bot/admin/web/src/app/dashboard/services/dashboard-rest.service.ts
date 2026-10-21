@@ -40,7 +40,8 @@ import {
   GenAiConfiguration,
   GenAiConfigurationCheck,
   IngestionNotes,
-  KnowledgeIndex
+  KnowledgeIndex,
+  OpenAnnotations
 } from '../models/dashboard.model';
 
 /** Indicator emitted by RAGAnswerHandler as "RAG Status". */
@@ -416,6 +417,25 @@ export class DashboardRestService extends DashboardService {
   getBotHistory(namespace: string, applicationName: string, before?: string): Observable<BotHistoryPage> {
     const query = before ? `?before=${encodeURIComponent(before)}` : '';
     return this.rest.get<BotHistoryPage>(`/bots/${applicationName}/history${query}`, (response) => response);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Open annotations — POST /bots/{botId}/annotations/search
+  // ---------------------------------------------------------------------------
+
+  getOpenAnnotations(namespace: string, applicationName: string): Observable<OpenAnnotations> {
+    return this.rest.post<unknown, { total: number; annotations: any[] }>(`/bots/${applicationName}/annotations/search`, {
+      namespace,
+      applicationName,
+      start: 0,
+      size: 5,
+      annotationStates: ['ANOMALY', 'REVIEW_NEEDED']
+    }).pipe(
+      map(response => ({
+        total: response.total,
+        rows: response.annotations
+      }))
+    );
   }
 
   // ---------------------------------------------------------------------------

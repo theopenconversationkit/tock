@@ -19,6 +19,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   NbAlertModule,
   NbAutocompleteModule,
+  NbBadgeModule,
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
@@ -55,6 +56,7 @@ import { BotIdentityComponent } from './widgets/bot-identity/bot-identity.compon
 import { BotHistoryComponent } from './widgets/bot-history/bot-history.component';
 import { BotIdentityEditComponent } from './modals/bot-identity-edit/bot-identity-edit.component';
 import { HistorySnapshotComponent } from './modals/history-snapshot/history-snapshot.component';
+import { OpenAnnotationsComponent } from './widgets/open-annotations/open-annotations.component';
 
 @NgModule({
   declarations: [
@@ -75,7 +77,8 @@ import { HistorySnapshotComponent } from './modals/history-snapshot/history-snap
     ContactEditComponent,
     BotIdentityEditComponent,
     IngestionNotesComponent,
-    HistorySnapshotComponent
+    HistorySnapshotComponent,
+    OpenAnnotationsComponent
   ],
   imports: [
     CommonModule,
@@ -93,6 +96,7 @@ import { HistorySnapshotComponent } from './modals/history-snapshot/history-snap
     NbTooltipModule,
     NbSpinnerModule,
     NbAlertModule,
+    NbBadgeModule,
     TranslocoModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')

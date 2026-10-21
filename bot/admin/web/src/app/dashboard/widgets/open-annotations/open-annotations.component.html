@@ -1,0 +1,51 @@
+<tock-dashboard-widget
+  [title]="'dashboard.open-annotations.title' | transloco"
+  icon="exclamation-triangle"
+  [state]="state"
+  [skeletonLines]="5"
+  [emptyTitle]="'dashboard.open-annotations.empty-title' | transloco"
+  [emptyMessage]="'dashboard.open-annotations.empty-message' | transloco"
+>
+  <ng-template #widgetBody>
+    <div class="open-annotations-body">
+      <div class="header">
+        {{ 'dashboard.open-annotations.header' | transloco: { count: data.total } }}
+      </div>
+      @if (data.rows && data.rows.length > 0) { @for (row of data.rows; track row.actionId) {
+      <div
+        class="annotation-row"
+        (click)="navigateToAnnotation(row.dialogId, row.actionId)"
+      >
+        <div class="row-header position-relative">
+          <nb-badge
+            [text]="row.annotation.state"
+            [status]="row.annotation.state === AnnotationState.ANOMALY ? 'danger' : 'warning'"
+            size="small"
+          ></nb-badge>
+          <span class="reason-label">{{ getReasonLabel(row.annotation.reason) }}</span>
+        </div>
+        <div
+          class="question-text"
+          [title]="row.question || ''"
+        >
+          {{ row.question || '(no question)' }}
+        </div>
+        <div class="row-footer">
+          {{ row.actionDate | date: 'short' }}
+        </div>
+      </div>
+      } }
+    </div>
+  </ng-template>
+
+  <ng-template #widgetFooter>
+    <span class="metric-label">
+      <a
+        [routerLink]="['/analytics/dialogs']"
+        [queryParams]="{ annotationStates: 'ANOMALY,REVIEW_NEEDED' }"
+      >
+        {{ 'dashboard.open-annotations.see-all' | transloco }}
+      </a>
+    </span>
+  </ng-template>
+</tock-dashboard-widget>

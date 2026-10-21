@@ -1,0 +1,59 @@
+.open-annotations-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  .header {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-hint-color);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--card-divider-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .annotation-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--card-divider-color);
+    cursor: pointer;
+    transition: background-color 0.15s;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: var(--background-basic-color-2);
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
+    }
+
+    .row-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .reason-label {
+        font-size: 0.8125rem;
+        color: var(--text-hint-color);
+      }
+    }
+
+    .question-text {
+      font-size: 0.875rem;
+      color: var(--text-basic-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .row-footer {
+      font-size: 0.75rem;
+      color: var(--text-hint-color);
+    }
+  }
+}

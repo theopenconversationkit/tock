@@ -236,5 +236,12 @@
     "load-more": "Load more",
     "page-error": "Could not load this page. Try again."
   },
+  "open-annotations": {
+    "title": "Open annotations",
+    "header": "{{count}} annotation(s) needing attention",
+    "empty-title": "All caught up",
+    "empty-message": "No annotations in anomaly or review needed state.",
+    "see-all": "See all"
+  },
   "no-connector": "No connector is declared for this bot. Usage figures will stay empty until one is configured."
 }
