@@ -47,12 +47,12 @@ import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.dataset.DatasetDAO
+import ai.tock.bot.admin.dialog.AnnotationReportQueryResult
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.admin.dialog.CountByDateResult
 import ai.tock.bot.admin.dialog.CountResult
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.dialog.DialogReportDAO
-import ai.tock.bot.admin.dialog.AnnotationReportQueryResult
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.dialog.DialogStatsQuery
 import ai.tock.bot.admin.dialog.DialogStatsQueryResult
@@ -64,6 +64,7 @@ import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import ai.tock.bot.admin.model.APP_CONFIG_PROD_TYPE
 import ai.tock.bot.admin.model.APP_CONFIG_TEST_TYPE
+import ai.tock.bot.admin.model.AnnotationsSearchQuery
 import ai.tock.bot.admin.model.BotAnswerConfiguration
 import ai.tock.bot.admin.model.BotBuiltinAnswerConfiguration
 import ai.tock.bot.admin.model.BotConfiguredAnswer
@@ -76,7 +77,6 @@ import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationStep
 import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.AnnotationsSearchQuery
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.admin.model.Feature
 import ai.tock.bot.admin.model.StorySearchRequest

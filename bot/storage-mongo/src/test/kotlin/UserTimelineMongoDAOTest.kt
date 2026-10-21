@@ -17,6 +17,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.annotation.BotAnnotation
+import ai.tock.bot.admin.annotation.BotAnnotationEventComment
 import ai.tock.bot.admin.annotation.BotAnnotationReasonType
 import ai.tock.bot.admin.annotation.BotAnnotationState
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
@@ -1056,7 +1057,19 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                                 reason = BotAnnotationReasonType.HALLUCINATION,
                                 description = "Made up",
                                 groundTruth = null,
-                                events = mutableListOf(),
+                                // A real, polymorphic event (serialized/read back by "type"): proves the
+                                // aggregation deserializes events AND that toReport() actually empties a
+                                // non-empty list — an all-empty fixture would pass either way.
+                                events =
+                                    mutableListOf(
+                                        BotAnnotationEventComment(
+                                            eventId = newId(),
+                                            creationDate = now.minusSeconds(30),
+                                            lastUpdateDate = now.minusSeconds(30),
+                                            user = "reviewer",
+                                            comment = "please double-check this answer",
+                                        ),
+                                    ),
                                 creationDate = now.minusSeconds(30),
                                 lastUpdateDate = now.minusSeconds(30),
                             ),
@@ -1069,9 +1082,12 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                         stories = mutableListOf(Story(storyDef, Intent.unknown, actions = mutableListOf(action2a, action2b, action2c))),
                     )
 
-                // Dialog 3: resolved annotation (should NOT be returned)
+                // Dialog 3: two closed annotations (RESOLVED + WONT_FIX) — neither is "open",
+                // so the four states are all represented across the fixture and none of these surface
+                // in the open-states search.
                 val dialog3Id = newId<Dialog>()
                 val action3Id = newId<ai.tock.bot.engine.action.Action>()
+                val action3bId = newId<ai.tock.bot.engine.action.Action>()
                 val action3 =
                     SendSentence(
                         userId,
@@ -1091,11 +1107,30 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                                 lastUpdateDate = now.minusSeconds(200),
                             ),
                     )
+                val action3b =
+                    SendSentence(
+                        userId,
+                        appId,
+                        botPlayerId,
+                        "answer3b",
+                        id = action3bId,
+                        date = now.minusSeconds(210),
+                        annotation =
+                            BotAnnotation(
+                                state = BotAnnotationState.WONT_FIX,
+                                reason = BotAnnotationReasonType.OTHER,
+                                description = "Not actionable",
+                                groundTruth = null,
+                                events = mutableListOf(),
+                                creationDate = now.minusSeconds(210),
+                                lastUpdateDate = now.minusSeconds(210),
+                            ),
+                    )
                 val dialog3 =
                     Dialog(
                         playerIds = setOf(userId, botPlayerId),
                         id = dialog3Id,
-                        stories = mutableListOf(Story(storyDef, Intent.unknown, actions = mutableListOf(action3))),
+                        stories = mutableListOf(Story(storyDef, Intent.unknown, actions = mutableListOf(action3, action3b))),
                     )
 
                 // Dialog 4: open annotation on OTHER bot/namespace (should NOT be returned)
@@ -1163,7 +1198,9 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                 assertEquals(dialog2Id, firstRow.dialogId)
                 assertEquals(appId, firstRow.applicationId)
                 assertEquals(now.minusSeconds(30), firstRow.actionDate)
-                assertEquals(0, firstRow.annotation.events.size, "Events should be empty in flat view")
+                // action2b was seeded with a real COMMENT event: a non-zero count here would mean
+                // toReport() failed to strip it (the stored annotation does carry one event).
+                assertEquals(0, firstRow.annotation.events.size, "toReport() must strip the (non-empty) events")
                 assertEquals(BotAnnotationState.REVIEW_NEEDED, firstRow.annotation.state)
                 assertEquals(BotAnnotationReasonType.HALLUCINATION, firstRow.annotation.reason)
 
@@ -1173,8 +1210,27 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                 val ragRow = allResult.annotations.single { it.actionId == action1Id }
                 assertEquals("What is AI?", ragRow.question, "Should use ragDebug.user_question")
 
-                // Test pagination: second page beyond total
-                val pageTwoResult =
+                // Pagination, intermediate page: start=1 size=1 exercises $skip + $limit and the
+                // stable sort — it must land on the middle row (action2a).
+                val middlePage =
+                    UserTimelineMongoDAO.searchAnnotations(
+                        AnnotationReportQuery(
+                            namespace = namespace,
+                            nlpModel = botId,
+                            annotationStates = setOf(BotAnnotationState.ANOMALY, BotAnnotationState.REVIEW_NEEDED),
+                            annotationReasons = emptySet(),
+                            start = 1,
+                            size = 1,
+                        ),
+                    )
+                assertEquals(3, middlePage.total)
+                assertEquals(1, middlePage.annotations.size)
+                assertEquals(action2aId, middlePage.annotations[0].actionId)
+                assertEquals(1, middlePage.start)
+                assertEquals(2, middlePage.end)
+
+                // Pagination, page beyond total: no rows, but the total is still reported.
+                val pageBeyondTotal =
                     UserTimelineMongoDAO.searchAnnotations(
                         AnnotationReportQuery(
                             namespace = namespace,
@@ -1185,8 +1241,8 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                             size = 5,
                         ),
                     )
-                assertEquals(3, pageTwoResult.total)
-                assertEquals(0, pageTwoResult.annotations.size)
+                assertEquals(3, pageBeyondTotal.total)
+                assertEquals(0, pageBeyondTotal.annotations.size)
 
                 // Test reason filtering: only HALLUCINATION
                 val reasonFilterResult =
@@ -1204,7 +1260,8 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                 assertEquals(1, reasonFilterResult.annotations.size)
                 assertEquals(action2bId, reasonFilterResult.annotations[0].actionId)
 
-                // Test WONT_FIX state filter
+                // Closed-state filters: each closed state returns only its own annotation, proving the
+                // search is not hard-wired to the open states.
                 val resolvedResult =
                     UserTimelineMongoDAO.searchAnnotations(
                         AnnotationReportQuery(
@@ -1218,6 +1275,20 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                     )
                 assertEquals(1, resolvedResult.total)
                 assertEquals(action3Id, resolvedResult.annotations[0].actionId)
+
+                val wontFixResult =
+                    UserTimelineMongoDAO.searchAnnotations(
+                        AnnotationReportQuery(
+                            namespace = namespace,
+                            nlpModel = botId,
+                            annotationStates = setOf(BotAnnotationState.WONT_FIX),
+                            annotationReasons = emptySet(),
+                            start = 0,
+                            size = 5,
+                        ),
+                    )
+                assertEquals(1, wontFixResult.total)
+                assertEquals(action3bId, wontFixResult.annotations[0].actionId)
             } finally {
                 BotApplicationConfigurationMongoDAO.delete(botConfig)
                 BotApplicationConfigurationMongoDAO.delete(otherBotConfig)
