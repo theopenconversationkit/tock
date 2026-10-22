@@ -33,6 +33,13 @@ ALTER TABLE langchain_pg_embedding
     to_tsvector('french', COALESCE(document, ''))
 ) STORED;
 
-CREATE INDEX IF NOT EXISTS idx_fts_vector
+-- Replace single-column FTS index with composite index (scoped by collection)
+DROP INDEX IF EXISTS idx_fts_vector;
+
+CREATE INDEX IF NOT EXISTS idx_fts_vector_composite
     ON langchain_pg_embedding
-    USING GIN (fts_vector);
+    USING GIN (collection_id, fts_vector);
+
+-- Single-column B-tree index on collection_id for vector similarity search joins
+CREATE INDEX IF NOT EXISTS idx_embedding_collection_id
+    ON langchain_pg_embedding (collection_id);
