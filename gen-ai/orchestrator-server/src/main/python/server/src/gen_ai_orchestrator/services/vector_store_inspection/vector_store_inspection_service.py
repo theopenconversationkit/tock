@@ -509,7 +509,7 @@ async def _fts_documents(factory: PGVectorFactory, query: str, k: int):
             JOIN langchain_pg_collection c ON c.uuid = e.collection_id
             CROSS JOIN q
             WHERE c.name = :index_name AND e.fts_vector @@ q.ts_query
-            ORDER BY score DESC, e.id
+            ORDER BY score DESC, char_length(e.document) DESC, e.id
             LIMIT :k
         """),
         {'query': query, 'index_name': factory.index_name, 'k': k},
