@@ -17,6 +17,9 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.AbstractTest
+import ai.tock.bot.admin.annotation.BotAnnotation
+import ai.tock.bot.admin.annotation.BotAnnotationEventComment
+import ai.tock.bot.admin.annotation.BotAnnotationState
 import ai.tock.bot.admin.dashboard.BotDashboardDAO
 import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.admin.dialog.DialogReport
@@ -64,6 +67,7 @@ import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -101,6 +105,22 @@ class EvaluationServiceTest : AbstractTest() {
     fun setup() {
         clearMocks(evaluationSampleDAO, evaluationDAO, dialogReportDAO, dashboardDAO)
     }
+
+    private fun annotationWithComments(
+        author: String,
+        other: String,
+    ): BotAnnotation =
+        BotAnnotation(
+            state = BotAnnotationState.ANOMALY,
+            reason = null,
+            description = "description",
+            groundTruth = null,
+            events =
+                mutableListOf(
+                    BotAnnotationEventComment(newId(), Instant.now(), Instant.now(), author, "mine"),
+                    BotAnnotationEventComment(newId(), Instant.now(), Instant.now(), other, "theirs"),
+                ),
+        )
 
     private fun createDialogReport(
         dialogId: String,
@@ -1047,9 +1067,19 @@ class EvaluationServiceTest : AbstractTest() {
                 ),
             )
 
+        // The first bot answer of dialog1 carries two comments: one by the requesting user, one by someone else.
+        val dialog1 =
+            createDialogReport("dialog1", 2).let { dialog ->
+                dialog.copy(
+                    actions =
+                        dialog.actions.mapIndexed { index, action ->
+                            if (index == 1) action.copy(annotation = annotationWithComments(author = USER, other = "someone-else")) else action
+                        },
+                )
+            }
         val dialogs =
             setOf(
-                createDialogReport("dialog1", 2),
+                dialog1,
                 createDialogReport("dialog2", 2),
             )
 
@@ -1076,6 +1106,7 @@ class EvaluationServiceTest : AbstractTest() {
                 sampleId = sampleId.toString(),
                 start = 0,
                 size = 2,
+                userLogin = USER,
             )
 
         assertEquals(0, result.start)
@@ -1090,6 +1121,20 @@ class EvaluationServiceTest : AbstractTest() {
 
         assertEquals("dialog2", result.dialogs[1].dialogId)
         assertNotNull(result.dialogs[1].dialog)
+
+        // canEdit is not persisted: it must be recomputed for the requesting user.
+        val comments =
+            result.dialogs[0]
+                .dialog
+                ?.actions
+                ?.get(1)
+                ?.annotation
+                ?.events
+                .orEmpty()
+                .filterIsInstance<BotAnnotationEventComment>()
+        assertEquals(2, comments.size)
+        assertTrue(comments.single { it.user == USER }.canEdit, "the requesting user's own comment must be editable")
+        assertFalse(comments.single { it.user == "someone-else" }.canEdit, "another user's comment must not be editable")
     }
 
     @Test
@@ -1101,6 +1146,7 @@ class EvaluationServiceTest : AbstractTest() {
                 sampleId = "507f1f77bcf86cd799439011",
                 start = 0,
                 size = 10,
+                userLogin = USER,
             )
         }
     }
@@ -1148,6 +1194,7 @@ class EvaluationServiceTest : AbstractTest() {
                 sampleId = sampleId.toString(),
                 start = 0,
                 size = 10,
+                userLogin = USER,
             )
 
         assertEquals(0, result.start)
@@ -1232,6 +1279,7 @@ class EvaluationServiceTest : AbstractTest() {
                 sampleId = sampleId.toString(),
                 start = 0,
                 size = 10,
+                userLogin = USER,
             )
 
         // ✅ 2 dialogues paginés

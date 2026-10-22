@@ -34,6 +34,9 @@ export class AnnotationComponent implements OnInit, OnDestroy {
 
   @Input() dialogReport: DialogReport;
   @Input() actionReport: ActionReport;
+  // The question actually sent, provided by callers (e.g. datasets) whose minimal dialogReport does
+  // not contain the preceding user action. Lower priority than ragDebug.user_question.
+  @Input() exchangeQuestion?: string | null;
 
   isSubmitted: boolean = false;
 
@@ -92,39 +95,37 @@ export class AnnotationComponent implements OnInit, OnDestroy {
 
   setExchangeInfos() {
     this.answer = (this.actionReport.message as unknown as Sentence).text;
-    if (this.actionReport.ragDebug) {
-      // The response is of the Rag type, and Rag debugging is enabled on this bot; we have ragDebug
 
-      if (this.actionReport.ragDebug.condensed_question) {
-        this.condensedQuestion = this.actionReport.ragDebug.condensed_question;
-      }
-      if (this.actionReport.ragDebug.user_question) {
-        this.question = this.actionReport.ragDebug.user_question;
-      }
-    } else {
-      // The response isn't a Rag response, or Rag debugging isn't enabled on this bot; we need to find the question in the previous message.
-
-      const actionsStack = this.dialogReport.actions;
-      let actionIndex = actionsStack.findIndex((act) => act === this.actionReport);
-
-      if (actionIndex > 0) {
-        actionIndex--;
-        let questionAction = actionsStack[actionIndex];
-        let question;
-
-        while (!question && questionAction) {
-          if (questionAction.message.isDebug()) {
-            actionIndex--;
-            questionAction = actionsStack[actionIndex];
-          } else if (!questionAction.isBot()) {
-            const questionSentence = questionAction.message as unknown as Sentence;
-            question = questionSentence.text;
-          }
-        }
-
-        if (question) this.question = question;
-      }
+    // condensed_question only ever comes from ragDebug.
+    if (this.actionReport.ragDebug?.condensed_question) {
+      this.condensedQuestion = this.actionReport.ragDebug.condensed_question;
     }
+
+    // Question precedence: ragDebug.user_question (the question as the RAG received it), else the
+    // caller-provided exchangeQuestion, else a lookup in the dialog's preceding actions.
+    if (this.actionReport.ragDebug?.user_question) {
+      this.question = this.actionReport.ragDebug.user_question;
+    } else if (this.exchangeQuestion) {
+      this.question = this.exchangeQuestion;
+    } else {
+      const question = this.findPrecedingQuestion();
+      if (question) this.question = question;
+    }
+  }
+
+  // Bounded backward scan for the question: the closest preceding user action's text. Bot actions
+  // (debug or not) are skipped; the scan stops at the first non-bot action, taking its text if any.
+  private findPrecedingQuestion(): string | undefined {
+    const actions = this.dialogReport.actions;
+    const answerIndex = actions.findIndex((act) => act === this.actionReport);
+
+    for (let i = answerIndex - 1; i >= 0; i--) {
+      const action = actions[i];
+      if (action.isBot()) continue;
+      return (action.message as unknown as Sentence).text;
+    }
+
+    return undefined;
   }
 
   hideChangeEvents: boolean = false;

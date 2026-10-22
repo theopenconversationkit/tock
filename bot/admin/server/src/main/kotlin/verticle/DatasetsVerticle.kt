@@ -151,6 +151,7 @@ class DatasetsVerticle {
                             botId = app.name,
                             datasetId = context.pathParam(PATH_PARAM_DATASET_ID),
                             runId = context.pathParam(PATH_PARAM_RUN_ID),
+                            userLogin = context.userLogin,
                         )
                     }
                 }

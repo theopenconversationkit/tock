@@ -21,6 +21,7 @@ export interface DatasetRunAction {
   retryCount: number;
   error?: string | null;
   dialogId?: string | null;
+  question?: string | null;
 }
 
 export interface DatasetRunStats {

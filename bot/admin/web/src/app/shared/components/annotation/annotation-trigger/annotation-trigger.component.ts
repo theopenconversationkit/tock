@@ -29,6 +29,8 @@ import { AnnotationState } from '../annotations';
 export class AnnotationTriggerComponent {
   @Input() dialogReport: DialogReport;
   @Input() actionReport: ActionReport;
+  // Optional question to display, for callers whose dialogReport lacks the preceding user action.
+  @Input() question?: string | null;
 
   @Input() ghost = true;
   @Input() size: NbComponentSize = 'small';
@@ -64,7 +66,8 @@ export class AnnotationTriggerComponent {
     this.nbDialogService.open(AnnotationComponent, {
       context: {
         dialogReport: this.dialogReport,
-        actionReport: this.actionReport
+        actionReport: this.actionReport,
+        exchangeQuestion: this.question
       }
     });
   }

@@ -45,10 +45,12 @@ import ai.tock.bot.admin.model.dataset.DatasetRunStatsDTO
 import ai.tock.bot.admin.model.dataset.DatasetUpdateRequest
 import ai.tock.bot.admin.model.genai.BotRAGConfigurationDTO
 import ai.tock.bot.admin.test.TestTalkService
+import ai.tock.bot.admin.withCommentRights
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.event.EventType
+import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.shared.Dice
@@ -283,6 +285,7 @@ object DatasetService {
         botId: String,
         datasetId: String,
         runId: String,
+        userLogin: String,
     ): List<DatasetRunActionDTO> {
         val dataset = getDatasetEntity(namespace, botId, datasetId)
         val run = getRunEntity(namespace, botId, dataset._id.toString(), runId)
@@ -304,10 +307,11 @@ object DatasetService {
                 runId = run._id.toString(),
                 questionId = questionResult.questionId,
                 state = resolvedAction.state,
-                action = resolvedAction.action,
+                action = resolvedAction.action?.withCommentRights(userLogin),
                 retryCount = questionResult.retryCount,
                 error = resolvedAction.error,
                 dialogId = resolvedAction.dialogId?.toString(),
+                question = resolvedAction.question,
             )
         }
     }
@@ -400,7 +404,12 @@ object DatasetService {
             val cachedAction = resolveActionFromDialog(dialog, questionResult)
             if (cachedAction != null) {
                 cacheActionReferences(questionResult, dialog.id, cachedAction.id)
-                return ResolvedRunAction(DatasetRunActionState.COMPLETED, cachedAction, dialog.id)
+                return ResolvedRunAction(
+                    DatasetRunActionState.COMPLETED,
+                    cachedAction,
+                    dialog.id,
+                    question = questionTextOf(dialog, questionResult),
+                )
             }
 
             if (questionResult.answerActionId != null) {
@@ -422,7 +431,12 @@ object DatasetService {
         cacheActionReferences(questionResult, searchedDialog.id, searchedAction?.id)
 
         return if (searchedAction != null) {
-            ResolvedRunAction(DatasetRunActionState.COMPLETED, searchedAction, searchedDialog.id)
+            ResolvedRunAction(
+                DatasetRunActionState.COMPLETED,
+                searchedAction,
+                searchedDialog.id,
+                question = questionTextOf(searchedDialog, questionResult),
+            )
         } else {
             ResolvedRunAction(
                 state = DatasetRunActionState.FAILED,
@@ -436,6 +450,20 @@ object DatasetService {
         questionResult: DatasetRunQuestionResult,
         dialogId: String,
     ): String = "Unable to resolve a bot answer for userActionId ${questionResult.userActionId} in dialog $dialogId."
+
+    /**
+     * The question actually sent: the text of the user action identified by
+     * [DatasetRunQuestionResult.userActionId] in the resolved dialog, or null if it is absent or not
+     * a sentence. The modal cannot recover it from the minimal dataset dialog it builds, so it is
+     * provided from here.
+     */
+    private fun questionTextOf(
+        dialog: DialogReport,
+        questionResult: DatasetRunQuestionResult,
+    ): String? =
+        dialog.actions
+            .firstOrNull { it.id.toString() == questionResult.userActionId }
+            ?.let { (it.message as? Sentence)?.text }
 
     private fun resolveActionFromDialog(
         dialog: DialogReport,
@@ -698,6 +726,7 @@ private data class ResolvedRunAction(
     val action: ActionReport?,
     val dialogId: Id<Dialog>? = null,
     val error: String? = null,
+    val question: String? = null,
 )
 
 private data class DatasetRunAnswerStats(

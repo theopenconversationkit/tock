@@ -296,9 +296,10 @@ export class DatasetDetailEntryComponent implements OnChanges {
 
   /**
    * Builds a minimal DialogReport wrapping a run action's single answer so the
-   * annotation modal can be opened for it. The modal only reads `.id` and `.actions`,
-   * and dataset answers are RAG (the question comes from `ragDebug`), so no sibling
-   * actions are needed. Returns null when the side carries no annotatable answer.
+   * annotation modal can be opened for it. The modal only reads `.id` and `.actions`.
+   * Dataset answers may be RAG or not: the question comes from `ragDebug` when present,
+   * otherwise from the run action's backend-provided `question` (passed to the trigger),
+   * so no sibling actions are needed. Returns null when the side carries no annotatable answer.
    */
   private _buildAnnotationDialog(runAction: DatasetRunAction | null): DialogReport | null {
     if (!runAction?.dialogId || !runAction.action) return null;

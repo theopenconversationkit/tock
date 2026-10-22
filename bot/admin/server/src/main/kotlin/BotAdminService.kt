@@ -527,46 +527,14 @@ object BotAdminService {
     ): DialogReportQueryResult {
         val result = search(query)
         return result.copy(
-            dialogs =
-                result.dialogs.map { dialog ->
-                    processAnnotationsForUser(dialog, userLogin)
-                },
+            dialogs = result.dialogs.map { it.withCommentRights(userLogin) },
         )
     }
 
     fun getDialogWithCommentRights(
         id: Id<Dialog>,
         userLogin: String,
-    ): DialogReport? =
-        dialogReportDAO.getDialog(id)?.let { dialog ->
-            processAnnotationsForUser(dialog, userLogin)
-        }
-
-    private fun processAnnotationsForUser(
-        dialog: DialogReport,
-        userLogin: String,
-    ): DialogReport =
-        dialog.copy(
-            actions =
-                dialog.actions.map { action ->
-                    action.copy(
-                        annotation =
-                            action.annotation?.let { annotation ->
-                                annotation.copy(
-                                    events =
-                                        annotation.events
-                                            .map { event ->
-                                                if (event is BotAnnotationEventComment) {
-                                                    event.copy(canEdit = event.user == userLogin)
-                                                } else {
-                                                    event
-                                                }
-                                            }.toMutableList(),
-                                )
-                            },
-                    )
-                },
-        )
+    ): DialogReport? = dialogReportDAO.getDialog(id)?.withCommentRights(userLogin)
 
     fun getIntentsInDialogs(
         namespace: String,

@@ -75,4 +75,6 @@ data class DatasetRunActionDTO(
     val error: String? = null,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     val dialogId: String? = null,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val question: String? = null,
 )
