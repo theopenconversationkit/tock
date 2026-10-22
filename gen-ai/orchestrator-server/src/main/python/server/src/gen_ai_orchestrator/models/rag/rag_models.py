@@ -238,7 +238,7 @@ class RAGDebugData(QADebugData):
         ],
     )
     answer: LLMAnswer = Field(description='The RAG answer.')
-    step_durations: Optional[dict] = Field(
+    step_durations: Optional[dict[str, float]] = Field(
         description=(
             'Wall-clock duration in seconds for each tracked RAG step. '
             'Keys: "rag_question_condensation_llm" (LLM condensation), '

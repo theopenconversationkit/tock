@@ -30,7 +30,6 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
   runDurations$: Record<string, Observable<string>> = {};
 
   private _pollingRunIds = new Set<string>();
-  private _averageDurationCache: Record<string, { completedQuestions: number; value: string }> = {};
 
   @Input() set dataset(dataset: Dataset) {
     this._dataset = dataset;
@@ -277,20 +276,6 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
   getPercentageNotFound(run: DatasetRun): number {
     const { totalQuestions, ragAnswerStatusCounts } = run.stats;
     return totalQuestions > 0 ? (ragAnswerStatusCounts.not_found_in_context / totalQuestions) * 100 : 0;
-  }
-
-  getAverageDurationPerQuestion(run: DatasetRun): string {
-    const completedQuestions = run.stats?.completedQuestions ?? 0;
-    const cached = this._averageDurationCache[run.id];
-
-    if (!cached || cached.completedQuestions !== completedQuestions) {
-      this._averageDurationCache[run.id] = {
-        completedQuestions,
-        value: this.datasetsService.getAverageDurationPerQuestion(run)
-      };
-    }
-
-    return this._averageDurationCache[run.id].value;
   }
 
   ngOnDestroy(): void {

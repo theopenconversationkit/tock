@@ -14,7 +14,6 @@
 #
 import logging
 from typing import Sequence
-from urllib.parse import urljoin
 
 import requests
 from langchain_core.callbacks import Callbacks
@@ -54,7 +53,7 @@ class VllmRerank(BaseDocumentCompressor):
         if len(documents) == 0:
             return []
 
-        url = urljoin(self.endpoint, '/v1/rerank')
+        url = f"{self.endpoint.rstrip('/')}/v1/rerank"
         try:
             response = requests.post(
                 url=url,

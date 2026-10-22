@@ -458,17 +458,16 @@ def create_rag_chain(
     if request.compressor_setting is not None:
         compressor = get_compressor_factory(setting=request.compressor_setting).get_compressor()
 
-        def apply_compressor(x: dict) -> dict:
-            x['documents'] = list(
-                compressor.compress_documents(
-                    documents=x['documents'],
-                    query=x['question'],
-                )
+        rag_inputs = rag_inputs | RunnablePassthrough.assign(
+            documents=RunnableLambda(
+                lambda x: list(
+                    compressor.compress_documents(
+                        documents=x['documents'],
+                        query=x['question'],
+                    )
+                ),
+                name='document_compressor',
             )
-            return x
-
-        rag_inputs = rag_inputs | RunnableLambda(
-            name='document_compressor', func=apply_compressor
         )
 
     answer_chain = (

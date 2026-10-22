@@ -106,7 +106,7 @@ export const ProvidersConfigurations: CompressorProvidersConfiguration[] = [
         max: 1,
         step: 0.05,
         information:
-          'Minimum score threshold for documents. Documents below this score are excluded unless `Pad with lower-scoring documents` is enabled'
+          'Minimum score threshold for documents. Documents below this score are excluded unless `Pad with lower-scoring documents` is enabled. Note: score scale depends on the reranking model used (e.g., sigmoid for bge-reranker models)'
       }
     ]
   }

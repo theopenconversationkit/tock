@@ -263,9 +263,6 @@
           }"
         >
           {{ runDurations$[run.id] | async }}
-          @if (run.stats.completedQuestions > 0) {
-          <small class="font-small text-muted"> ({{ getAverageDurationPerQuestion(run) }}/Q) </small>
-          }
         </div>
         <div class="runs-grid-entry text-muted">{{ run.stats.totalQuestions }}</div>
         <div class="runs-grid-entry text-muted">{{ run.stats.completedQuestions }}</div>

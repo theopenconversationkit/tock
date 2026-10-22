@@ -86,7 +86,7 @@ class RAGCallbackHandler(BaseCallbackHandler):
         run_key = str(kwargs.get('run_id', ''))
         if run_key in self._step_timers:
             step_name, start = self._step_timers.pop(run_key)
-            self.records['step_durations'][step_name] = '{:.3f}'.format(time.time() - start)
+            self.records['step_durations'][step_name] = round(time.time() - start, 3)
 
     def on_llm_start(
         self, serialized: Dict[str, Any], prompts: list[str], **kwargs: Any
@@ -109,4 +109,4 @@ class RAGCallbackHandler(BaseCallbackHandler):
         run_key = str(kwargs.get('run_id', ''))
         if run_key in self._step_timers:
             step_name, start = self._step_timers.pop(run_key)
-            self.records['step_durations'][step_name] = '{:.3f}'.format(time.time() - start)
+            self.records['step_durations'][step_name] = round(time.time() - start, 3)

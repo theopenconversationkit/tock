@@ -31,9 +31,15 @@ les meilleurs, pour que le modèle de réponse reçoive moins de documents, mais
     * **Pad with lower-scoring documents** : si moins de documents que _Max documents_ atteignent le score minimum,
       compléter avec les meilleurs documents restants.
 
-L'orchestrateur Gen AI prend aussi en charge l'[API Rerank de Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/rerank.html)
-(fournisseur `AwsBedrockRerank`, avec l'ARN du modèle de reranking dans `model_arn`), utilisable uniquement
-via son [API](orchestrator-api.md). Il utilise les identifiants AWS décrits pour [AWS Bedrock](providers/llm-embedding.md#aws-bedrock).
+L'orchestrateur Gen AI prend aussi en charge :
+
+* L'**[API Rerank de Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/rerank.html)** (fournisseur `AwsBedrockRerank`, avec l'ARN du modèle de reranking dans `model_arn`), utilisable uniquement via son [API](orchestrator-api.md). Il utilise les identifiants AWS décrits pour [AWS Bedrock](providers/llm-embedding.md#aws-bedrock).
+
+* L'**[API Rerank de vLLM](https://github.com/vllm-project/vllm)** (fournisseur `VllmRerank`) : permet le reranking auto-hébergé en utilisant n'importe quel modèle supporté par vLLM (par ex. `BAAI/bge-reranker-v2-m3`).
+    * **Endpoint** : URL de base du service vLLM (par ex. `http://localhost:8000` ou une URL derrière une passerelle).
+    * **Model** : nom du modèle de reranking servi par vLLM.
+    * **Minimum score**, **Max documents** et **Pad with lower-scoring documents** : identiques à `BloomzRerank`.
+    * Remarque : l'échelle des scores dépend du modèle (par ex. sigmoïde pour les modèles BGE, linéaire pour les autres) ; ajustez le seuil de score minimum en conséquence.
 
 Le compresseur est tolérant aux pannes : si le service de reranking échoue ou ne répond pas à temps,
 les documents d'origine sont utilisés tels quels.
