@@ -56,6 +56,8 @@ class AwsBedrockRerank(BaseDocumentCompressor):
     """If True, the treatment is fault-tolerant."""
 
     _client: Any = PrivateAttr(default=None)
+    last_fallback_info: Optional[dict] = None
+    """Information about the last fallback, if any."""
 
     def _get_client(self) -> BedrockRerank:
         if self._client is None:
@@ -102,31 +104,43 @@ class AwsBedrockRerank(BaseDocumentCompressor):
                     )
                 )
 
-            logger.warning('[Compressor] Fallback to original documents')
-            return documents
+            returned_count = min(len(documents), self.max_documents)
+            logger.warning(
+                '[Compressor] Fallback to original documents - returning first %d/%d documents',
+                returned_count,
+                len(documents),
+            )
+            self.last_fallback_info = {
+                'reason': 'exception',
+                'error_type': exc.__class__.__name__,
+                'error_message': str(exc)[:200],
+                'returned_documents': returned_count,
+                'total_documents': len(documents),
+            }
+            return list(documents)[: self.max_documents]
 
         scored_docs = []
         for res in results:
             doc = documents[res['index']]
-            doc.metadata['retriever_score'] = res['relevance_score']
+            doc.metadata['reranker_score'] = res['relevance_score']
             scored_docs.append(doc)
 
         scored_docs = sorted(
             scored_docs,
-            key=lambda d: d.metadata.get('retriever_score', 0),
+            key=lambda d: d.metadata.get('reranker_score', 0),
             reverse=True,
         )
 
         above_threshold = [
             d
             for d in scored_docs
-            if d.metadata.get('retriever_score', 0) >= self.min_score
+            if d.metadata.get('reranker_score', 0) >= self.min_score
         ]
 
         below_threshold = [
             d
             for d in scored_docs
-            if d.metadata.get('retriever_score', 0) < self.min_score
+            if d.metadata.get('reranker_score', 0) < self.min_score
         ]
 
         # base result

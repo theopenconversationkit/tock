@@ -55,8 +55,11 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
     setting: OpenSearchVectorStoreSetting
 
     def get_vector_store(
-        self, async_mode: Optional[bool] = True
+        self,
+        async_mode: Optional[bool] = True,
+        collection_metadata: Optional[dict] = None,
     ) -> OpenSearchVectorSearch:
+        # collection_metadata is accepted for interface symmetry with PGVector but ignored here.
         password = fetch_secret_key_value(self.setting.password)
         logger.info(
             'OpenSearch user credentials: %s:%s',

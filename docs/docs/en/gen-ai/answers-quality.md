@@ -100,6 +100,11 @@ the list shows the progress of the active run, which can be cancelled.
 Running a dataset requires a test configuration for the bot. Only one run can be active for a dataset,
 and a dataset cannot be edited or deleted while a run is active.
 
+A status icon appears at the left of each dataset and run; hover over it to see its state (and the latest run date for a dataset).
+The running icon rotates while a run is active, unless reduced motion is enabled in the system settings.
+While a run is active, the dataset summary groups its duration, a progress bar and the processed-question count (for example, `8 / 20`). The count includes execution failures.
+The arrow in the leading header sorts datasets by latest run date.
+
 For each run, the list of runs shows its dates, duration and state, and counts the questions:
 
 * _Completed_ and _Failed_ (execution failures or technical errors),
@@ -109,15 +114,43 @@ For each run, the list of runs shows its dates, duration and state, and counts t
 
 A run that ends with some failed questions is still _completed_: failed questions are reported in the run statistics.
 
+The _Duration_ column displays the average RAG duration per measured response next to the total run duration,
+for example `00:02:10 (6.4 s/q)`. Hover over the average to see how many questions have a measurement.
+This average uses the orchestrator's `ragDebug.duration`, including responses not found in context; failures,
+non-RAG responses and missing or invalid measurements are excluded. It measures the RAG chain, not only the final LLM call.
+After a dataset retry, only the successful attempt contributes to this average; earlier attempts remain part of the total run duration.
+Durations are stored with question results and remain available after dialog expiration. Older runs without a recorded duration
+show only the total run duration; opening their answers can recover available durations from dialogs for subsequent visits to the run list.
+
+The _Not found in context_ percentage is calculated over all questions in the dataset, including failed questions.
+It remains visible when some questions fail; read it alongside the failure count.
+
+For new runs, answer-type and RAG-status counts are stored with each question result, so they remain available after
+the underlying dialogs expire. Older runs acquire these counts when their answers are read, if the dialogs are still available.
+Answer details and evaluation samples still depend on dialog retention.
+
 ### Comparing runs
 
-Open a run to display its answers. The screen compares a _Run A_ with a _Run B_ (by default, the latest run),
+In the run list, the _Note_ column after _Duration_ lets you add a short label such as “Compressor OFF” or “Compressor ON”.
+Click the note to edit it, then press Enter or click the check mark to save; Escape or the cross cancels editing.
+Notes are optional, limited to 200 characters, and editable during or after a run. Save an empty note to remove it.
+The note is also displayed under _Run A_ and _Run B_ and in the run selector tooltips during comparison.
+
+Open a run to display its answers. By default, the screen compares the latest completed run (_Run A_) with the previous completed run (_Run B_),
 question by question: answer text, answer type (RAG or intent) and sources. Sources that were added, modified or removed
 between the two runs are highlighted.
+
+The list's comparison button compares the selected run with the latest completed run, even while another run is in progress.
+Comparison requires two distinct completed runs; when only one is available, the detail view displays that run alone.
 
 The _Show only diffs_ filters display only the questions whose status, sources, answer type or wording changed.
 
 The _settings_ and _prompts_ links show the RAG settings and prompts used by each run, and compare them between the two runs.
+
+The _Compression Settings_ tab shows the configuration saved when each run was launched, including whether compression
+was enabled and the provider's parameters, with differences highlighted. Later changes to the bot's configuration do not
+alter this snapshot. Older runs display a message when compression settings were not recorded; this does not mean
+compression was disabled.
 
 ### Creating an evaluation sample from a run
 

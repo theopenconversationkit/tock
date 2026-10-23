@@ -33,6 +33,8 @@ data class DatasetRunStatsDTO(
     val failedQuestions: Int,
     val ragAnswerStatusCounts: Map<String, Int> = emptyMap(),
     val nonRagAnswers: Int = 0,
+    val averageRagDurationSeconds: Double? = null,
+    val ragDurationCount: Int = 0,
 )
 
 data class DatasetRunDTO(
@@ -44,6 +46,12 @@ data class DatasetRunDTO(
     val settingsSnapshot: Map<String, Any?>? = null,
     val startedBy: String,
     val stats: DatasetRunStatsDTO,
+    val note: String? = null,
+)
+
+data class DatasetRunNoteDTO(
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    val note: String?,
 )
 
 data class DatasetDTO(

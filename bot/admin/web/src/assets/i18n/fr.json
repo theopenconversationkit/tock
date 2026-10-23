@@ -158,7 +158,8 @@
     "configurations": "Configurations",
     "namespaces": "Namespaces",
     "log": "Journal",
-    "synchronization": "Synchronisation"
+    "synchronization": "Synchronisation",
+    "knowledge-base": "Base de connaissances"
   },
   "shared": {
     "pagination": {

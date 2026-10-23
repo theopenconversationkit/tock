@@ -41,9 +41,29 @@ interface DatasetRun {
   state: DatasetRunState;
   startTime: string; // ISO 8601
   endTime: string | null; // ISO 8601 — renseigné dès que state = COMPLETED | CANCELLED
-  settingsSnapshot?: Partial<RagSettings>;
+  settingsSnapshot?: Partial<RagSettings> & {
+    // Absent pour les anciennes exécutions ; enabled: false si aucun compresseur n'est configuré.
+    documentCompressor?: { enabled: boolean; setting?: Record<string, unknown> };
+  };
   startedBy: string;
+  note?: string | null; // Note facultative, 200 caractères maximum
+  stats: DatasetRunStats;
 }
+
+interface DatasetRunStats {
+  totalQuestions: number;
+  completedQuestions: number;
+  failedQuestions: number;
+  nonRagAnswers: number;
+  ragAnswerStatusCounts: Record<string, number>;
+  averageRagDurationSeconds?: number | null;
+  ragDurationCount: number;
+}
+
+// Moyenne des durées RAG valides des réponses terminées, hors erreurs techniques.
+// Les réponses non trouvées dans le contexte sont incluses. Le dénominateur est ragDurationCount,
+// et non totalQuestions ou completedQuestions. Sans mesure : moyenne absente/null, compteur à 0.
+// Les durées persistées sont prises en compte pendant le polling, même avant la fin du run.
 
 interface Dataset {
   id: string;
@@ -172,7 +192,7 @@ Supprime un dataset et tous ses runs.
 
 ### `POST /bots/:botId/datasets/:datasetId/runs`
 
-Déclenche un nouveau run. Le serveur snapshote les RAG settings courants au moment du lancement.
+Déclenche un nouveau run. Le serveur snapshote les paramètres RAG et de compression courants au moment du lancement.
 
 > Un run ne peut être créé que si aucun run n'est déjà en état `QUEUED` ou `RUNNING`.
 
@@ -210,6 +230,29 @@ DatasetRun; // state: QUEUED, endTime: null, settingsSnapshot absent
   error: string;
 }
 ```
+
+---
+
+### `PUT /bots/:botId/datasets/:datasetId/runs/:runId/note`
+
+Modifie uniquement la note, quel que soit l'état du run. Les espaces en début et fin sont retirés ;
+une chaîne vide ou composée d'espaces supprime la note. Une nouvelle sauvegarde remplace la précédente.
+
+**Request body**
+
+```typescript
+{ note: string } // 200 caractères maximum avant normalisation
+```
+
+**Response `200`**
+
+```typescript
+{ note: string | null } // valeur normalisée ; null si la note a été supprimée
+```
+
+**Response `400`** — note invalide ou trop longue
+
+**Response `404`** — dataset ou run inconnu dans le périmètre du bot
 
 ---
 

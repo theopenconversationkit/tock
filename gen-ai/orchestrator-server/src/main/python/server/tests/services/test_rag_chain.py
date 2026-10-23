@@ -202,7 +202,7 @@ async def test_execute_rag_chain_matches_footnotes_with_composite_chunk_id(
     'gen_ai_orchestrator.services.langchain.impls.document_compressor.bloomz_rerank.requests.post'
 )
 @patch(
-    'gen_ai_orchestrator.services.langchain.factories.langchain_factory.get_compressor_factory'
+    'gen_ai_orchestrator.services.langchain.rag_chain_builder.get_compressor_factory'
 )
 @patch(
     'gen_ai_orchestrator.services.langchain.factories.langchain_factory.get_callback_handler_factory'
@@ -563,7 +563,7 @@ def test_compress_documents_should_succeed(mocked_rerank):
                 'ModDate': "D:20231212161411+01'00'",
                 'Producer': 'Microsoft: Print To PDF',
                 'Title': "Microsoft Word - P1 - Département des Risques - Déclaration d'un incident - v5.doc",
-                'retriever_score': 0.8,
+                'reranker_score': 0.8,
             },
         )
     ]
@@ -660,3 +660,40 @@ def test_get_condensing_llm_answer_from_raw_with_text_around_json():
 
     assert llm_answer.condensed_question == 'How to deploy Tock?'
     assert llm_answer.key_words == ['deploy']
+
+
+def test_rag_chain_with_compressor_applies_compression_to_documents():
+    """Test that RunnablePassthrough.assign correctly applies compressor to documents."""
+    from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+
+    # Mock compressor that filters documents by threshold
+    def mock_compress_documents(documents, query):
+        return [d for d in documents if d.metadata.get('score', 0) >= 0.5]
+
+    # Simulate the compressor integration in rag_chain_builder
+    compress_step = RunnablePassthrough.assign(
+        documents=RunnableLambda(
+            lambda x: mock_compress_documents(x['documents'], x['question']),
+            name='document_compressor',
+        )
+    )
+
+    # Test input: retriever returns 3 documents with different scores
+    input_data = {
+        'documents': [
+            Document(page_content='low relevance', metadata={'score': 0.2}),
+            Document(page_content='high relevance', metadata={'score': 0.9}),
+            Document(page_content='medium relevance', metadata={'score': 0.4}),
+        ],
+        'question': 'test question',
+        'chat_history': [],
+    }
+
+    result = compress_step.invoke(input_data)
+
+    # Verify that compressor filtered documents correctly
+    assert len(result['documents']) == 1
+    assert result['documents'][0].page_content == 'high relevance'
+    # Verify other fields are preserved
+    assert result['question'] == 'test question'
+    assert result['chat_history'] == []

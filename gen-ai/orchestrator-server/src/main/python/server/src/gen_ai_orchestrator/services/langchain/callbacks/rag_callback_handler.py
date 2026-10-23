@@ -15,6 +15,7 @@
 """Retriever callback handler for LangChain."""
 
 import logging
+import time
 from typing import Any, Dict
 
 from langchain_core.callbacks import BaseCallbackHandler
@@ -23,17 +24,27 @@ from langchain_core.prompt_values import ChatPromptValue, StringPromptValue
 
 logger = logging.getLogger(__name__)
 
+TRACKED_STEPS: frozenset = frozenset({
+    'document_compressor',
+    'similarity_retriever_retrieve',
+    'hybrid_retrieve',
+    'fts_retrieve',
+})
+
 
 class RAGCallbackHandler(BaseCallbackHandler):
     """Customized RAG callback handler that retrieves data from the chain execution."""
 
     def __init__(self):
+        self._step_timers: dict = {}
+        self._llm_call_count: int = 0
         self.records: Dict[str, Any] = {
             'chat_prompt': None,
             'rag_question_condensation_chain_output': None,
             'rag_prompt': None,
             'rag_chain_output': None,
             'documents': None,
+            'step_durations': {},
         }
 
     def on_chain_start(
@@ -52,6 +63,10 @@ class RAGCallbackHandler(BaseCallbackHandler):
         if kwargs['name'] == 'RunnableAssign<answer>' and 'documents' in inputs:
             self.records['documents'] = inputs['documents']
 
+        name = kwargs.get('name', '')
+        if name in TRACKED_STEPS:
+            self._step_timers[str(kwargs['run_id'])] = (name, time.time())
+
     def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
         """Print out that we finished a chain."""  # if outputs is instance of StringPromptValue
 
@@ -67,3 +82,31 @@ class RAGCallbackHandler(BaseCallbackHandler):
 
         if isinstance(outputs, StringPromptValue):
             self.records['rag_prompt'] = outputs.text
+
+        run_key = str(kwargs.get('run_id', ''))
+        if run_key in self._step_timers:
+            step_name, start = self._step_timers.pop(run_key)
+            self.records['step_durations'][step_name] = round(time.time() - start, 3)
+
+    def on_llm_start(
+        self, serialized: Dict[str, Any], prompts: list[str], **kwargs: Any
+    ) -> None:
+        """Capture LLM call start to measure actual LLM execution time."""
+        self._llm_call_count += 1
+        run_key = str(kwargs.get('run_id', ''))
+
+        if self._llm_call_count == 1:
+            step_name = 'rag_question_condensation_llm'
+        elif self._llm_call_count == 2:
+            step_name = 'rag_answer_generation_llm'
+        else:
+            return
+
+        self._step_timers[run_key] = (step_name, time.time())
+
+    def on_llm_end(self, response, **kwargs: Any) -> None:
+        """Capture LLM call end and record duration."""
+        run_key = str(kwargs.get('run_id', ''))
+        if run_key in self._step_timers:
+            step_name, start = self._step_timers.pop(run_key)
+            self.records['step_durations'][step_name] = round(time.time() - start, 3)

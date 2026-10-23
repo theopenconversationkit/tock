@@ -51,6 +51,7 @@ data class DatasetRun(
     val language: Locale? = null,
     val botApplicationConfigurationId: Id<BotApplicationConfiguration>? = null,
     val settingsSnapshot: Map<String, Any?> = emptyMap(),
+    val note: String? = null,
 )
 
 data class DatasetRunQuestionResult(
@@ -69,4 +70,7 @@ data class DatasetRunQuestionResult(
     val answerActionId: Id<Action>? = null,
     val retryCount: Int = 0,
     val error: String? = null,
+    val isRagAnswer: Boolean? = null,
+    val ragAnswerStatus: String? = null,
+    val ragDurationSeconds: Double? = null,
 )

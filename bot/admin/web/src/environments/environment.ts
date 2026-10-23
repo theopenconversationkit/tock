@@ -25,7 +25,7 @@ export const environment = {
   production: false,
   autologin: true,
   ssologin: false,
-  default_user: 'techadmin@app.com',
+  default_user: 'admin@app.com',
   default_password: 'password',
   serverUrl: '/rest',
   envBanner: { label: 'LOCAL', color: '#f2a900' } as EnvBannerConfig | null

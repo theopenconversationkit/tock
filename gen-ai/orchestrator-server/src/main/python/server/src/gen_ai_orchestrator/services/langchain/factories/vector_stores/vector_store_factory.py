@@ -55,11 +55,16 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @abstractmethod
-    def get_vector_store(self, async_mode: Optional[bool] = True) -> VectorStore:
+    def get_vector_store(
+        self,
+        async_mode: Optional[bool] = True,
+        collection_metadata: Optional[dict] = None,
+    ) -> VectorStore:
         """
         Fabric the Vector Store.
         Args:
             async_mode: enable/disable the async_mode for vector DB client (if supported). Default to True.
+            collection_metadata: contract metadata to stamp on the index at creation.
         :return: VectorStore the interface for Vector Database.
         """
         pass
@@ -81,6 +86,16 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
     def get_text_store_retriever(
         self, search_kwargs: dict, async_mode: bool = True
     ) -> FullTextSearchRetriever:
+        pass
+
+    @abstractmethod
+    def read_index_metadata(self) -> Optional[dict]:
+        """
+        Read the Tock contract metadata stamped on the index backing this factory, WITHOUT ever creating it.
+
+        Returns:
+            The metadata dict (possibly empty) when the index exists, or None when it does not.
+        """
         pass
 
     @opensearch_exception_handler

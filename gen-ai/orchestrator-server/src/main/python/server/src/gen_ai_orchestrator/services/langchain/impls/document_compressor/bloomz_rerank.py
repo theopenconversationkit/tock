@@ -46,6 +46,8 @@ class BloomzRerank(BaseDocumentCompressor):
     timeout: int = 5
     is_fault_tolerant: bool = True
     """If True, the treatment is fault-tolerant."""
+    last_fallback_info: dict | None = None
+    """Information about the last fallback, if any."""
 
     def compress_documents(
         self,
@@ -95,8 +97,20 @@ class BloomzRerank(BaseDocumentCompressor):
                         )
                     )
 
-                logger.warning('[Compressor] Fallback to original documents')
-                return documents
+                returned_count = min(len(documents), self.max_documents)
+                logger.warning(
+                    '[Compressor] Fallback to original documents - returning first %d/%d documents',
+                    returned_count,
+                    len(documents),
+                )
+                self.last_fallback_info = {
+                    'reason': 'bad_response',
+                    'status_code': response.status_code,
+                    'returned_documents': returned_count,
+                    'total_documents': len(documents),
+                    'error': response.text[:200],
+                }
+                return list(documents)[: self.max_documents]
 
             results = response.json().get('response', [])
 
@@ -112,8 +126,20 @@ class BloomzRerank(BaseDocumentCompressor):
                     )
                 )
 
-            logger.warning('[Compressor] Fallback to original documents')
-            return documents
+            returned_count = min(len(documents), self.max_documents)
+            logger.warning(
+                '[Compressor] Fallback to original documents - returning first %d/%d documents',
+                returned_count,
+                len(documents),
+            )
+            self.last_fallback_info = {
+                'reason': 'exception',
+                'error_type': exc.__class__.__name__,
+                'error_message': str(exc)[:200],
+                'returned_documents': returned_count,
+                'total_documents': len(documents),
+            }
+            return list(documents)[: self.max_documents]
 
         scored_docs = []
 
@@ -124,7 +150,7 @@ class BloomzRerank(BaseDocumentCompressor):
                 )
 
                 score = doc_entailment.get('score', 0.0)
-                documents[i].metadata['retriever_score'] = score
+                documents[i].metadata['reranker_score'] = score
                 scored_docs.append(documents[i])
 
             except StopIteration:
@@ -146,20 +172,20 @@ class BloomzRerank(BaseDocumentCompressor):
 
         scored_docs = sorted(
             scored_docs,
-            key=lambda d: d.metadata.get('retriever_score', 0),
+            key=lambda d: d.metadata.get('reranker_score', 0),
             reverse=True,
         )
 
         above_threshold = [
             d
             for d in scored_docs
-            if d.metadata.get('retriever_score', 0) >= self.min_score
+            if d.metadata.get('reranker_score', 0) >= self.min_score
         ]
 
         below_threshold = [
             d
             for d in scored_docs
-            if d.metadata.get('retriever_score', 0) < self.min_score
+            if d.metadata.get('reranker_score', 0) < self.min_score
         ]
 
         # base result

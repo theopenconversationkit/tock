@@ -66,7 +66,7 @@ en être informé. Hybride et FTS n'existent que sur PGVector.
 `get_vector_store_retriever()` passe par `as_retriever()` → `similarity_search`,
 qui ne renvoie pas de score. `PostgreSQLTextRetriever.build_docs()` calcule
 `ts_rank(...) AS score` dans son SQL puis ne conserve que `row.document` et
-`row.cmetadata`. Par ailleurs, `RAGDocumentMetadata.retriever_score` porte en
+`row.cmetadata`. Par ailleurs, `RAGDocumentMetadata.reranker_score` porte en
 réalité le score du **compresseur**, pas du retriever — nommage trompeur.
 
 ### 2.4 Repli silencieux du HybridRetriever
@@ -278,7 +278,7 @@ sémantique des sorts) fait l'objet du document
 1. **Dissociation de fetchK au runtime** (§4.3) — proposer un `fetchK` distinct
    de `k` sur `BaseVectorStoreSearchParams` ? C'est la proposition de fond que
    l'outil sert à démontrer.
-2. **Renommage de `retriever_score`** — il porte en réalité le score du
+2. **Renommage de `reranker_score`** — il porte en réalité le score du
    compresseur. Renommer (breaking) ou ajouter des champs distincts par étage ?
 3. **Seuil `near_empty_chunk`** — à fixer, idéalement relatif au `chunk_size`
    d'ingestion plutôt qu'en valeur absolue.

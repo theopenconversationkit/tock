@@ -52,6 +52,9 @@ from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_set
 from gen_ai_orchestrator.models.document_compressor.document_compressor_setting import (
     BaseDocumentCompressorSetting,
 )
+from gen_ai_orchestrator.models.document_compressor.vllm.vllm_compressor_setting import (
+    VllmCompressorSetting,
+)
 from gen_ai_orchestrator.models.em.awsbedrock.aws_bedrock_em_setting import (
     AwsBedrockEMSetting,
 )
@@ -131,6 +134,9 @@ from gen_ai_orchestrator.services.langchain.factories.document_compressor.bloomz
 )
 from gen_ai_orchestrator.services.langchain.factories.document_compressor.document_compressor_factory import (
     DocumentCompressorFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.document_compressor.vllm_compressor_factory import (
+    VllmCompressorFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.em.aws_bedrock_em_factory import (
     AwsBedrockEMFactory,
@@ -425,6 +431,11 @@ def get_compressor_factory(
     elif isinstance(setting, AwsBedrockCompressorSetting):
         logger.debug('Document Compressor Factory - AwsBedrockCompressorFactory')
         return AwsBedrockCompressorFactory(
+            setting=setting, is_fault_tolerant=is_fault_tolerant
+        )
+    elif isinstance(setting, VllmCompressorSetting):
+        logger.debug('Document Compressor Factory - VllmCompressorFactory')
+        return VllmCompressorFactory(
             setting=setting, is_fault_tolerant=is_fault_tolerant
         )
     else:

@@ -10,7 +10,6 @@
     "ingested_on": "Ingéré le",
     "documents_stat": "Documents",
     "chunks_stat": "Chunks",
-
     "filter_placeholder": "Filtrer par titre, identifiant ou contenu",
     "filter_button": "Filtrer",
     "clear_filter_tooltip": "Effacer le filtre",
@@ -51,7 +50,9 @@
     },
     "capability_notes": {
       "hybrid_and_fts_not_implemented": "Ce fournisseur ne prend en charge que la recherche vectorielle. Les modes plein texte et hybride ne sont pas implémentés.",
-      "inspection_not_implemented": "L’inspection de la base vectorielle n’est pas implémentée pour ce fournisseur."
+      "inspection_not_implemented": "L’inspection de la base vectorielle n’est pas implémentée pour ce fournisseur.",
+      "document_exploration_not_implemented": "L'exploration détaillée des documents OpenSearch n'est pas encore disponible.",
+      "pinned_exact_rank_not_implemented": "Le rang exact des chunks épinglés hors résultats n'est pas disponible avec OpenSearch."
     },
     "step_question": "1 · Question",
     "step_retrieval": "2 · Recherche",
