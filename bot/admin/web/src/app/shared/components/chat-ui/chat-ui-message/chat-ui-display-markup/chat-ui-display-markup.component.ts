@@ -43,7 +43,11 @@ export class ChatUiDisplayMarkupComponent implements OnChanges {
   constructor(private sanitizer: DomSanitizer) {}
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.formatting && changes.formatting.currentValue) {
+    // Recompute whenever the text (sentence) changes, not only when `formatting` toggles.
+    // During streaming, each new token replaces `sentence` with a fresh reference while
+    // `formatting` stays unchanged; recomputing only on `formatting` froze the bubble on its
+    // first rendered chunk ("une phrase puis la totalité d'un coup").
+    if (this.formatting && (changes.sentence || changes.formatting)) {
       this.markup = this.sanitizer.bypassSecurityTrustHtml(this.getMarkup(this.sentence.text));
     }
   }

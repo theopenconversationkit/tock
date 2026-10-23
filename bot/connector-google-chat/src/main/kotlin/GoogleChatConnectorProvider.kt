@@ -51,6 +51,7 @@ private const val USE_THREAD_PARAMETER = "useThread"
 private const val SOURCES_LABEL_PARAMETER = "sourcesLabel"
 private const val WAITING_MESSAGE_PARAMETER = "waitingMessage"
 private const val ENABLE_FEEDBACK_PARAMETER = "enableFeedback"
+private const val ENABLE_STREAMING_PARAMETER = "enableStreaming"
 
 // Lifetime (in seconds) of each impersonated access token.
 // This is the TTL of a single token, not a hard limit on the connector:
@@ -145,6 +146,9 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                     null
                 }
 
+            val enableStreaming =
+                connectorConfiguration.parameters[ENABLE_STREAMING_PARAMETER] == "1"
+
             return GoogleChatConnector(
                 connectorId,
                 path,
@@ -157,6 +161,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 sourcesLabel,
                 waitingMessage,
                 feedback,
+                enableStreaming,
             )
         }
     }
@@ -270,6 +275,11 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Enable feedback buttons (true = 1, false = 0)",
                     ENABLE_FEEDBACK_PARAMETER,
+                    false,
+                ),
+                ConnectorTypeConfigurationField(
+                    "Enable RAG streaming (token-by-token message updates, true = 1, false = 0)",
+                    ENABLE_STREAMING_PARAMETER,
                     false,
                 ),
             ),

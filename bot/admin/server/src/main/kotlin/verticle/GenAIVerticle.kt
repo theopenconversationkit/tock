@@ -38,6 +38,10 @@ import ai.tock.bot.admin.service.RAGService
 import ai.tock.bot.admin.service.SentenceGenerationService
 import ai.tock.bot.admin.service.VectorStoreInspectionAdminService
 import ai.tock.bot.admin.service.VectorStoreService
+import ai.tock.genai.orchestratorclient.responses.CompletionResponse
+import ai.tock.genai.orchestratorclient.responses.TokenEvent
+import ai.tock.genai.orchestratorclient.services.CompletionStreamListener
+import ai.tock.shared.jackson.mapper
 import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.security.TockUserRole.nlpUser
@@ -70,6 +74,7 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
         // Completion
         private const val PATH_COMPLETION_SENTENCE_GENERATION = "/gen-ai/bots/:botId/completion/sentence-generation"
         private const val PATH_COMPLETION_PLAYGROUND = "/gen-ai/bots/:botId/completion/playground"
+        private const val PATH_COMPLETION_PLAYGROUND_STREAM = "$PATH_COMPLETION_PLAYGROUND/stream"
     }
 
     fun configure(webVerticle: WebVerticle) {
@@ -363,6 +368,64 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
                 return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "GEN AI - Playground..." }
                     CompletionService.generate(request, app.namespace, app.name)
+                }
+            }
+
+            // ------------------------- Generation - Playground (streaming SSE) --------------------
+            blockingJsonPost(
+                PATH_COMPLETION_PLAYGROUND_STREAM,
+                admin,
+            ) { context: RoutingContext, request: PlaygroundRequest ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    logger.info { "GEN AI - Playground (stream)..." }
+
+                    // Configure response as Server-Sent Events.
+                    // setChunked(true) flushes each write() immediately (progressive streaming).
+                    context
+                        .response()
+                        .setChunked(true)
+                        .putHeader("Content-Type", "text/event-stream")
+                        .putHeader("Cache-Control", "no-cache")
+                        .putHeader("Connection", "keep-alive")
+
+                    // Listener callbacks run on the EventSource background thread; writing a Vert.x
+                    // response from a non event-loop thread is not flushed until the next event-loop
+                    // activity, which batches all events. Marshal each write onto the context so each
+                    // SSE chunk is flushed to the browser immediately, at the rhythm tokens arrive.
+                    fun writeChunk(chunk: String) {
+                        context.vertx().runOnContext {
+                            if (!context.response().ended()) {
+                                context.response().write(chunk)
+                            }
+                        }
+                    }
+
+                    val listener =
+                        object : CompletionStreamListener {
+                            override fun onToken(token: TokenEvent) {
+                                writeChunk("event: token\ndata: ${mapper.writeValueAsString(token)}\n\n")
+                            }
+
+                            override fun onAnswer(response: CompletionResponse) {
+                                writeChunk("event: answer\ndata: ${mapper.writeValueAsString(response)}\n\n")
+                            }
+
+                            override fun onError(error: Throwable) {
+                                logger.error(error) { "GEN AI - Playground (stream) error" }
+                                val detail = error.message?.replace("\"", "\\\"") ?: "Unknown error"
+                                writeChunk("event: error\ndata: {\"message\": \"$detail\"}\n\n")
+                            }
+
+                            override fun onComplete() {
+                                context.vertx().runOnContext {
+                                    if (!context.response().ended()) {
+                                        context.response().end()
+                                    }
+                                }
+                            }
+                        }
+
+                    CompletionService.generateStream(request, app.namespace, app.name, listener)
                 }
             }
         }

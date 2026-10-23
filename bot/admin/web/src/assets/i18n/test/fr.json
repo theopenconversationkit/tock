@@ -6,6 +6,8 @@
     "debugTooltip": "Obtenir des infos de débogage",
     "sourcesContentTooltip": "Obtenir le contenu textuel des sources RAG",
     "sourcesContent": "Contenu des sources",
+    "streamingTooltip": "Streamer les réponses en temps réel",
+    "streaming": "Streaming",
     "viewNlpStatsTooltip": "Voir les statistiques NLP",
     "userMessagePlaceholder": "Saisir un texte",
     "goButton": "OK",

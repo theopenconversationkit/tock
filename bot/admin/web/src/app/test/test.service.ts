@@ -15,6 +15,7 @@
  */
 
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { RestService } from '../core-nlp/rest/rest.service';
 import { StateService } from '../core-nlp/state.service';
 import {
@@ -26,17 +27,93 @@ import {
   XRayPlanExecutionResult,
   XRayTestPlan
 } from './model/test';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+
+export interface SSEEvent {
+  event?: string;
+  data?: string;
+}
 
 @Injectable()
 export class TestService {
-  constructor(private rest: RestService, private state: StateService) {}
+  constructor(private rest: RestService, private state: StateService, private http: HttpClient) {}
 
   talk(query: BotDialogRequest, debug = false, sourceWithContent = false): Observable<BotDialogResponse> {
     let params: { debug?: boolean; sourceWithContent?: boolean } = {};
     if (debug) params.debug = true;
     if (sourceWithContent) params.sourceWithContent = true;
     return this.rest.post('/test/talk', query, BotDialogResponse.fromJSON, null, false, params);
+  }
+
+  talkStream(query: BotDialogRequest, debug = false, sourceWithContent = false): Observable<SSEEvent> {
+    return new Observable(observer => {
+      let params = new URLSearchParams();
+      if (debug) params.set('debug', 'true');
+      if (sourceWithContent) params.set('sourceWithContent', 'true');
+
+      const url = this.rest.url + '/test/talk/stream' + (params.toString() ? '?' + params : '');
+      const postData = JSON.stringify(query);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.withCredentials = true;
+
+      // [SSE-DEBUG] timestamped tracing of stream reception in the browser.
+      // Remove once streaming fluidity is confirmed.
+      const t0 = performance.now();
+      const ts = () => `+${(performance.now() - t0).toFixed(0)}ms`;
+      console.debug(`[SSE-DEBUG] ${ts()} request sent`);
+
+      let lastProcessedIndex = 0;
+
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState >= 3 && xhr.responseText.length > lastProcessedIndex) {
+          console.debug(
+            `[SSE-DEBUG] ${ts()} onreadystatechange readyState=${xhr.readyState} ` +
+              `+${xhr.responseText.length - lastProcessedIndex} chars (total=${xhr.responseText.length})`
+          );
+          const newData = xhr.responseText.substring(lastProcessedIndex);
+          const lines = newData.split('\n');
+
+          for (let i = 0; i < lines.length - 1; i++) {
+            const line = lines[i];
+            if (line.startsWith('event:')) {
+              const eventType = line.substring(6).trim();
+              const nextLineIndex = i + 1;
+              if (nextLineIndex < lines.length) {
+                const dataLine = lines[nextLineIndex];
+                if (dataLine.startsWith('data:')) {
+                  const eventData = dataLine.substring(5).trim();
+                  console.debug(`[SSE-DEBUG] ${ts()} emit event=${eventType} data=${eventData.substring(0, 60)}`);
+                  observer.next({ event: eventType, data: eventData });
+                }
+              }
+            }
+          }
+
+          lastProcessedIndex = xhr.responseText.length;
+        }
+
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            observer.complete();
+          } else {
+            observer.error(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
+          }
+        }
+      };
+
+      xhr.onerror = () => {
+        observer.error(new Error('Network error'));
+      };
+
+      xhr.send(postData);
+
+      return () => {
+        xhr.abort();
+      };
+    });
   }
 
   getTestPlans(): Observable<TestPlan[]> {

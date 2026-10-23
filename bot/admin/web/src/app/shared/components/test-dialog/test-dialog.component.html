@@ -58,6 +58,11 @@
           [nbTooltip]="'shared.test-dialog.sources_content_label' | transloco"
           >{{ 'shared.test-dialog.sources_content_label' | transloco }}</nb-checkbox
         >
+        <nb-checkbox
+          [(ngModel)]="streaming"
+          [nbTooltip]="'shared.test-dialog.streaming_label' | transloco"
+          >{{ 'shared.test-dialog.streaming_label' | transloco }}</nb-checkbox
+        >
       </div>
     </div>
     }
@@ -73,6 +78,7 @@
     >
       @for (message of messages; track message) {
       <tock-chat-ui-message
+        [action]="message.action"
         [message]="message.message"
         [reply]="message.bot"
         [avatar]="getUserAvatar(message.bot)"

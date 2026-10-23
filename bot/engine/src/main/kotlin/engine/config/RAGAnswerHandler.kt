@@ -39,10 +39,12 @@ import ai.tock.genai.orchestratorclient.requests.RAGRequest
 import ai.tock.genai.orchestratorclient.responses.LLMAnswer
 import ai.tock.genai.orchestratorclient.responses.ObservabilityInfo
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
+import ai.tock.genai.orchestratorclient.responses.TokenEvent
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorParsingError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorValidationError
 import ai.tock.genai.orchestratorclient.services.RAGService
+import ai.tock.genai.orchestratorclient.services.RAGStreamListener
 import ai.tock.genai.orchestratorcore.models.observability.LangfuseObservabilitySetting
 import ai.tock.genai.orchestratorcore.utils.VectorStoreUtils
 import ai.tock.shared.injector
@@ -158,7 +160,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
         }
 
     /**
-     * Call RAG API
+     * Call RAG API - Route to classic or streaming mode based on configuration
      * @param botBus
      *
      * @return RAGResult. The answer is given if it needs to be handled, null otherwise
@@ -166,6 +168,25 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      */
     private fun rag(botBus: BotBus): RAGResult {
         logger.info { "Call Generative AI Orchestrator - RAG API" }
+
+        // Streaming is opt-in by the incoming request only (SSE streaming route / connector).
+        // Any other entry point keeps the classic buffered behavior (backward compatible).
+        return if (botBus.action.metadata.streamedResponse) {
+            logger.info { "RAG streaming mode enabled" }
+            ragStream(botBus)
+        } else {
+            logger.info { "RAG classic mode (non-streaming)" }
+            ragClassic(botBus)
+        }
+    }
+
+    /**
+     * Classic (non-streaming) RAG execution
+     * @param botBus
+     * @return RAGResult
+     */
+    private fun ragClassic(botBus: BotBus): RAGResult {
+        logger.info { "Call Generative AI Orchestrator - RAG API (classic)" }
         with(botBus) {
             // The RAG Story is only handled when RAG and will use Vector Store settings if defined,
             // otherwise it will not send any vector store setting in the RAG Query which will default to
@@ -191,45 +212,11 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 val response =
                     ragService.rag(
                         query =
-                            RAGRequest(
-                                dialog =
-                                    DialogDetails(
-                                        dialogId = dialog.id.toString(),
-                                        userId = dialog.playerIds.firstOrNull { PlayerType.user == it.type }?.id,
-                                        history = getDialogHistory(dialog, ragConfiguration.maxMessagesFromHistory),
-                                        tags =
-                                            listOf(
-                                                "connector:${underlyingConnector.connectorType.id}",
-                                            ),
-                                    ),
-                                questionCondensingLlmSetting = ragConfiguration.questionCondensingLlmSetting,
-                                questionCondensingPrompt =
-                                    ragConfiguration.questionCondensingPrompt.copy(
-                                        inputs =
-                                            mapOf(
-                                                "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty().map { it.terms },
-                                            ),
-                                    ),
-                                questionAnsweringLlmSetting = ragConfiguration.questionAnsweringLlmSetting,
-                                questionAnsweringPrompt =
-                                    ragConfiguration.questionAnsweringPrompt.copy(
-                                        inputs =
-                                            mapOf(
-                                                "question" to action.toString(),
-                                                "locale" to userPreferences.locale.displayLanguage,
-                                                "covered_topics" to businessRulesConfiguration?.coveredTopics.orEmpty(),
-                                                "excluded_topics" to businessRulesConfiguration?.excludedTopics.orEmpty(),
-                                                "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty().map { it.terms },
-                                                "explainability" to ragConfiguration.explainabilityEnabled,
-                                            ),
-                                    ),
-                                embeddingQuestionEmSetting = ragConfiguration.emSetting,
-                                documentIndexName = indexName,
-                                documentSearchParams = documentSearchParams,
-                                compressorSetting = botDefinition.documentCompressorConfiguration?.setting,
+                            buildRAGRequest(
+                                ragConfiguration = ragConfiguration,
                                 vectorStoreSetting = vectorStoreSetting,
-                                observabilitySetting = botDefinition.observabilityConfiguration?.setting,
-                                documentsRequired = ragConfiguration.documentsRequired,
+                                documentSearchParams = documentSearchParams,
+                                indexName = indexName,
                             ),
                         debug = action.metadata.debugEnabled || ragConfiguration.debugEnabled,
                     )
@@ -243,7 +230,6 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                     }
                 }
 
-                // Handle RAG response
                 debug = response?.debug
                 return RAGResult(
                     answer = response?.answer,
@@ -254,7 +240,6 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 )
             } catch (exc: Exception) {
                 logger.error { exc }
-                // Save error metric
                 saveRagIndicator(
                     indicatorLabel = "RAG Status",
                     indicatorValueTag = "technical_error",
@@ -284,6 +269,183 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 )
             }
         }
+    }
+
+    /**
+     * Streaming RAG execution
+     * Collects tokens from SSE stream but returns complete answer to match classic behavior
+     * @param botBus
+     * @return RAGResult
+     */
+    private fun ragStream(botBus: BotBus): RAGResult {
+        logger.info { "Call Generative AI Orchestrator - RAG API (streaming)" }
+        with(botBus) {
+            val ragConfiguration = botDefinition.ragConfiguration!!
+            val vectorStoreConfiguration = botDefinition.vectorStoreConfiguration
+            val businessRulesConfiguration = botDefinition.businessRulesConfiguration
+            val vectorStoreSetting = vectorStoreConfiguration?.takeIf { it.enabled }?.setting
+
+            val (documentSearchParams, indexName) =
+                VectorStoreUtils.getVectorStoreElements(
+                    namespace = ragConfiguration.namespace,
+                    botId = ragConfiguration.botId,
+                    indexSessionId = ragConfiguration.indexSessionId!!,
+                    kNeighborsDocuments = ragConfiguration.maxDocumentsRetrieved,
+                    documentSearchType = ragConfiguration.documentSearchType,
+                    vectorStoreSetting = vectorStoreSetting,
+                )
+
+            var debug: Any? = null
+            try {
+                var finalResponse: RAGResponse? = null
+                // Captured from the eventsource background thread; rethrown below on THIS
+                // (handler) thread so the surrounding catch builds the technical error answer.
+                var streamError: Throwable? = null
+                val tokenBuilder = StringBuilder()
+
+                ragService.ragStream(
+                    query =
+                        buildRAGRequest(
+                            ragConfiguration = ragConfiguration,
+                            vectorStoreSetting = vectorStoreSetting,
+                            documentSearchParams = documentSearchParams,
+                            indexName = indexName,
+                        ),
+                    debug = action.metadata.debugEnabled || ragConfiguration.debugEnabled,
+                    listener =
+                        object : RAGStreamListener {
+                            override fun onToken(token: TokenEvent) {
+                                logger.debug { "Received token: ${token.content}" }
+                                tokenBuilder.append(token.content)
+                                // Forward the token to the client immediately (SSE streaming connectors).
+                                // No-op for connectors that do not support streaming.
+                                botBus.connectorData.callback.sendStreamedToken(token.content)
+                            }
+
+                            override fun onAnswer(response: RAGResponse) {
+                                logger.debug { "Received complete answer" }
+                                finalResponse = response
+                            }
+
+                            override fun onError(error: Throwable) {
+                                logger.error(error) { "Error during RAG streaming" }
+                                // Do NOT throw here: this runs on the eventsource background
+                                // thread and would never reach the handler's catch block.
+                                // Capture it and rethrow on the handler thread below.
+                                streamError = error
+                            }
+
+                            override fun onComplete() {
+                                logger.debug { "RAG stream completed" }
+                            }
+                        },
+                )
+
+                // Surface any streaming error on the handler thread so it is turned into a
+                // technical error answer by the surrounding catch (same as classic mode).
+                streamError?.let { throw it }
+
+                // Save RAG metrics
+                finalResponse?.answer?.let { answer ->
+                    answer.status?.let { saveRagIndicator("RAG Status", it) }
+                    answer.topic?.let { saveRagIndicator("RAG Topics", it) }
+                    answer.suggestedTopics?.forEach {
+                        saveRagIndicator("RAG Suggested Topics", it)
+                    }
+                }
+
+                debug = finalResponse?.debug
+                return RAGResult(
+                    answer = finalResponse?.answer,
+                    footnotes = finalResponse?.footnotes,
+                    debug = debug,
+                    redirectStory = ragStoryRedirection(this.botDefinition, finalResponse),
+                    observabilityInfo = finalResponse?.observabilityInfo,
+                )
+            } catch (exc: Exception) {
+                logger.error(exc) { "Error in RAG streaming" }
+                saveRagIndicator(
+                    indicatorLabel = "RAG Status",
+                    indicatorValueTag = "technical_error",
+                )
+
+                val ragError =
+                    when (exc) {
+                        is GenAIOrchestratorBusinessError -> RAGError(exc.message, exc.error)
+                        is GenAIOrchestratorValidationError -> RAGError(exc.message, exc.detail)
+                        is GenAIOrchestratorParsingError -> RAGError(exc.message, exc.detail)
+                        else -> RAGError(errorMessage = exc.message)
+                    }
+
+                val errorAnswer = LLMAnswer(status = "technical_error", answer = technicalErrorMessage)
+
+                debug =
+                    (debug as? MutableMap<String, Any?> ?: mutableMapOf())
+                        .apply {
+                            this["error"] = ragError
+                        }.apply {
+                            this["answer"] = errorAnswer
+                        }
+
+                return RAGResult(
+                    answer = errorAnswer,
+                    debug = debug,
+                )
+            }
+        }
+    }
+
+    /**
+     * Build RAGRequest from bot configuration and context
+     */
+    private fun BotBus.buildRAGRequest(
+        ragConfiguration: ai.tock.bot.admin.bot.rag.BotRAGConfiguration,
+        vectorStoreSetting: ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting?,
+        documentSearchParams: ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchParamsBase,
+        indexName: String,
+    ): RAGRequest {
+        val businessRulesConfiguration = botDefinition.businessRulesConfiguration
+
+        return RAGRequest(
+            dialog =
+                DialogDetails(
+                    dialogId = dialog.id.toString(),
+                    userId = dialog.playerIds.firstOrNull { PlayerType.user == it.type }?.id,
+                    history = getDialogHistory(dialog, ragConfiguration.maxMessagesFromHistory),
+                    tags =
+                        listOf(
+                            "connector:${underlyingConnector.connectorType.id}",
+                        ),
+                ),
+            questionCondensingLlmSetting = ragConfiguration.questionCondensingLlmSetting,
+            questionCondensingPrompt =
+                ragConfiguration.questionCondensingPrompt.copy(
+                    inputs =
+                        mapOf(
+                            "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty().map { it.terms },
+                        ),
+                ),
+            questionAnsweringLlmSetting = ragConfiguration.questionAnsweringLlmSetting,
+            questionAnsweringPrompt =
+                ragConfiguration.questionAnsweringPrompt.copy(
+                    inputs =
+                        mapOf(
+                            "question" to action.toString(),
+                            "locale" to userPreferences.locale.displayLanguage,
+                            "covered_topics" to businessRulesConfiguration?.coveredTopics.orEmpty(),
+                            "excluded_topics" to businessRulesConfiguration?.excludedTopics.orEmpty(),
+                            "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty().map { it.terms },
+                            "explainability" to ragConfiguration.explainabilityEnabled,
+                        ),
+                ),
+            embeddingQuestionEmSetting = ragConfiguration.emSetting,
+            documentIndexName = indexName,
+            documentSearchParams = documentSearchParams,
+            compressorSetting = botDefinition.documentCompressorConfiguration?.setting,
+            vectorStoreSetting = vectorStoreSetting,
+            observabilitySetting = botDefinition.observabilityConfiguration?.setting,
+            documentsRequired = ragConfiguration.documentsRequired,
+        )
     }
 
     /**

@@ -30,6 +30,7 @@
 import logging
 
 from fastapi import APIRouter
+from sse_starlette.sse import EventSourceResponse
 
 from gen_ai_orchestrator.routers.requests.requests import CompletionRequest
 from gen_ai_orchestrator.routers.responses.responses import (
@@ -39,6 +40,7 @@ from gen_ai_orchestrator.routers.responses.responses import (
 from gen_ai_orchestrator.services.completion.completion_service import (
     generate,
     generate_sentences,
+    generate_stream,
 )
 
 logger = logging.getLogger(__name__)
@@ -66,6 +68,29 @@ async def completion(request: CompletionRequest) -> PlaygroundResponse:
 
     logger.info('Completion')
     return await generate(request)
+
+
+@completion_router.post('/stream')
+async def completion_stream(request: CompletionRequest) -> EventSourceResponse:
+    """
+    Playground API with streaming
+
+    Stream the LLM answer via Server-Sent Events: one `token` event per fragment
+    of the answer, then a final `answer` event carrying the complete
+    PlaygroundResponse (including the time-to-first-token).
+
+    Args:
+        request: The completion request
+
+    Returns:
+        A Server-Sent Events stream.
+
+    Raises:
+        GenAIPromptTemplateException: if the prompt template is incorrect
+    """
+
+    logger.info('Completion (stream)')
+    return EventSourceResponse(generate_stream(request))
 
 
 @completion_router.post('/sentences')

@@ -164,3 +164,8 @@ class PlaygroundResponse(BaseModel):
     observability_info: Optional[ObservabilityInfo] = Field(
         description='The observability info.', default=None
     )
+    ttft: Optional[float] = Field(
+        description='Time-to-first-token of the answer generation, in seconds '
+        '(streaming mode only).',
+        default=None,
+    )

@@ -12,6 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import json
 import os
 from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
@@ -697,3 +698,69 @@ def test_rag_chain_with_compressor_applies_compression_to_documents():
     # Verify other fields are preserved
     assert result['question'] == 'test question'
     assert result['chat_history'] == []
+
+
+async def _fake_astream_events(*_args, **_kwargs):
+    """Mimic LangChain astream_events(v2): incremental parser dicts then root chain end."""
+    partials = [
+        {},
+        {'status': 'found_in_context'},
+        {'status': 'found_in_context', 'answer': 'Bonjour'},
+        {'status': 'found_in_context', 'answer': 'Bonjour, voici'},
+        {'status': 'found_in_context', 'answer': 'Bonjour, voici la reponse.'},
+    ]
+    for partial in partials:
+        yield {
+            'event': 'on_parser_stream',
+            'name': 'rag_chain_output',
+            'data': {'chunk': partial},
+        }
+    # The answer chain end carries the fully parsed LLMAnswer dict.
+    yield {
+        'event': 'on_chain_end',
+        'name': 'RunnableSequence',
+        'parent_ids': [],
+        'data': {
+            'output': {
+                'status': 'found_in_context',
+                'answer': 'Bonjour, voici la reponse.',
+                'display_answer': True,
+            }
+        },
+    }
+
+
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.create_rag_chain_parts')
+@pytest.mark.asyncio
+async def test_execute_rag_chain_stream_emits_token_deltas_then_answer(
+    mocked_create_rag_chain_parts,
+):
+    from gen_ai_orchestrator.services.langchain.rag_chain import (
+        execute_rag_chain_stream,
+    )
+
+    # rag_inputs runs eagerly (ainvoke); answer_chain is streamed.
+    mocked_rag_inputs = MagicMock()
+    mocked_rag_inputs.ainvoke = AsyncMock(
+        return_value={'documents': [], 'chat_history': []}
+    )
+    mocked_answer_chain = MagicMock()
+    mocked_answer_chain.astream_events = _fake_astream_events
+    mocked_create_rag_chain_parts.return_value = (
+        mocked_rag_inputs,
+        mocked_answer_chain,
+    )
+
+    events = [event async for event in execute_rag_chain_stream(_rag_request(), debug=False)]
+
+    token_events = [e for e in events if e['event'] == 'token']
+    answer_events = [e for e in events if e['event'] == 'answer']
+
+    # Only non-empty incremental deltas are streamed, concatenating to the full answer.
+    contents = [json.loads(e['data'])['content'] for e in token_events]
+    assert ''.join(contents) == 'Bonjour, voici la reponse.'
+
+    # Exactly one final answer event carrying the assembled RAGResponse.
+    assert len(answer_events) == 1
+    final = json.loads(answer_events[0]['data'])
+    assert final['answer']['answer'] == 'Bonjour, voici la reponse.'

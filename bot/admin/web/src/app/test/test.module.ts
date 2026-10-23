@@ -18,7 +18,6 @@ import { NgModule } from '@angular/core';
 import { TestTabsComponent } from './test-tabs.component';
 import { BotDialogComponent } from './dialog/bot-dialog.component';
 import { CommonModule } from '@angular/common';
-import { TestService } from './test.service';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { TestPlanComponent } from './plan/test-plan.component';
 import { MomentModule } from 'ngx-moment';
@@ -69,7 +68,6 @@ import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
   declarations: [TestTabsComponent, BotDialogComponent, TestPlanComponent, NlpStatsDisplayComponent],
   exports: [],
   providers: [
-    TestService,
     NlpService,
     provideTranslocoScope({
       scope: 'test'

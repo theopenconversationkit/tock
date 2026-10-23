@@ -26,6 +26,7 @@ import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
 import io.vertx.ext.web.RoutingContext
+import kotlinx.coroutines.runBlocking
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
@@ -119,6 +120,39 @@ class TestCoreService : TestService {
                     val debugEnabled = context.queryParams()["debug"]?.toBoolean() ?: false
                     val sourceWithContent = context.queryParams()["sourceWithContent"]?.toBoolean() ?: false
                     TestTalkService.talk(query, debugEnabled, sourceWithContent)
+                } else {
+                    Companion.unauthorized()
+                }
+            }
+
+            // Streaming version of /test/talk using Server-Sent Events
+            blockingJsonPost("/test/talk/stream", setOf(botUser)) { context, query: BotDialogRequest ->
+                if (context.organization == query.namespace) {
+                    val debugEnabled = context.queryParams()["debug"]?.toBoolean() ?: false
+                    val sourceWithContent = context.queryParams()["sourceWithContent"]?.toBoolean() ?: false
+
+                    // Configure response as Server-Sent Events.
+                    // setChunked(true) flushes each write() immediately (progressive streaming).
+                    context
+                        .response()
+                        .setChunked(true)
+                        .putHeader("Content-Type", "text/event-stream")
+                        .putHeader("Cache-Control", "no-cache")
+                        .putHeader("Connection", "keep-alive")
+
+                    try {
+                        runBlocking {
+                            TestTalkStreamService.talkStream(
+                                query,
+                                debugEnabled,
+                                sourceWithContent,
+                                context,
+                            )
+                        }
+                    } catch (t: Throwable) {
+                        context.response().write("event: error\ndata: {\"error\": \"${t.message}\"}\n\n")
+                        context.response().end()
+                    }
                 } else {
                     Companion.unauthorized()
                 }
