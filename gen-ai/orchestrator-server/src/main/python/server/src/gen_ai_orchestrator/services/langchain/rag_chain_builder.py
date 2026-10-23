@@ -458,16 +458,24 @@ def create_rag_chain(
     if request.compressor_setting is not None:
         compressor = get_compressor_factory(setting=request.compressor_setting).get_compressor()
 
-        rag_inputs = rag_inputs | RunnablePassthrough.assign(
-            documents=RunnableLambda(
-                lambda x: list(
-                    compressor.compress_documents(
-                        documents=x['documents'],
-                        query=x['question'],
-                    )
-                ),
-                name='document_compressor',
+        def compress_and_capture_fallback(x):
+            docs = list(
+                compressor.compress_documents(
+                    documents=x['documents'],
+                    query=x['question'],
+                )
             )
+            fallback_info = getattr(compressor, 'last_fallback_info', None)
+            if fallback_info:
+                logger.warning('[Compressor] Fallback occurred: %s', fallback_info)
+
+            x['documents'] = docs
+            x['compressor_fallback_info'] = fallback_info
+            return x
+
+        rag_inputs = rag_inputs | RunnableLambda(
+            compress_and_capture_fallback,
+            name='document_compressor',
         )
 
     answer_chain = (

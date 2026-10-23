@@ -56,6 +56,8 @@ class AwsBedrockRerank(BaseDocumentCompressor):
     """If True, the treatment is fault-tolerant."""
 
     _client: Any = PrivateAttr(default=None)
+    last_fallback_info: Optional[dict] = None
+    """Information about the last fallback, if any."""
 
     def _get_client(self) -> BedrockRerank:
         if self._client is None:
@@ -102,8 +104,20 @@ class AwsBedrockRerank(BaseDocumentCompressor):
                     )
                 )
 
-            logger.warning('[Compressor] Fallback to original documents')
-            return documents
+            returned_count = min(len(documents), self.max_documents)
+            logger.warning(
+                '[Compressor] Fallback to original documents - returning first %d/%d documents',
+                returned_count,
+                len(documents),
+            )
+            self.last_fallback_info = {
+                'reason': 'exception',
+                'error_type': exc.__class__.__name__,
+                'error_message': str(exc)[:200],
+                'returned_documents': returned_count,
+                'total_documents': len(documents),
+            }
+            return list(documents)[: self.max_documents]
 
         scored_docs = []
         for res in results:

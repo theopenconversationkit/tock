@@ -249,3 +249,10 @@ class RAGDebugData(QADebugData):
         ),
         default=None,
     )
+    compressor_fallback_info: Optional[dict[str, Any]] = Field(
+        description=(
+            'Information about a document compressor fallback event. '
+            'Contains reason, error details, and document counts if a fallback occurred.'
+        ),
+        default=None,
+    )

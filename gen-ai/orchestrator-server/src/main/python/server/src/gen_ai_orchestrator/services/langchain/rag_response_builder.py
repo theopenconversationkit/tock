@@ -166,8 +166,13 @@ def build_rag_debug_data(
     request: RAGRequest,
     records_callback_handler: RAGCallbackHandler,
     rag_duration: float,
+    chain_output: dict | None = None,
 ) -> RAGDebugData:
     history = request.dialog.history if request.dialog else []
+    compressor_fallback = None
+
+    if chain_output and chain_output.get('compressor_fallback_info'):
+        compressor_fallback = chain_output['compressor_fallback_info']
 
     return RAGDebugData(
         user_question=request.question_answering_prompt.inputs['question'],
@@ -187,6 +192,7 @@ def build_rag_debug_data(
         ),
         duration=rag_duration,
         step_durations=records_callback_handler.records.get('step_durations') or None,
+        compressor_fallback_info=compressor_fallback,
     )
 
 
@@ -212,7 +218,7 @@ def build_rag_response(
             observability_handler,
             ObservabilityTrace.RAG.value,
         ),
-        debug=build_rag_debug_data(request, records_callback_handler, rag_duration)
+        debug=build_rag_debug_data(request, records_callback_handler, rag_duration, chain_output)
         if debug
         else None,
     )
