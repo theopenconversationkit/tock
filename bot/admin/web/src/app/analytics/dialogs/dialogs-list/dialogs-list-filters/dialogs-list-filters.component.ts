@@ -165,6 +165,25 @@ export class DialogsListFiltersComponent implements OnInit, OnDestroy {
       this.submitFiltersChange();
       this.persisteDisplayTests();
     });
+
+    // Unchecking "with annotations" must clear the annotation sub-filters it gates,
+    // otherwise the list stays silently narrowed to states no longer visible.
+    this.getFormControl('withAnnotations')
+      .valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((checked) => {
+        if (!checked) {
+          this.form.patchValue(
+            {
+              annotationStates: [],
+              annotationReasons: [],
+              annotationSort: null,
+              annotationCreationDateFrom: null,
+              annotationCreationDateTo: null
+            },
+            { emitEvent: false }
+          );
+        }
+      });
   }
 
   form = new FormGroup<DialogListFiltersForm>({

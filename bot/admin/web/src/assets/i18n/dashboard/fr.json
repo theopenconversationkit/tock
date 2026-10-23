@@ -236,5 +236,13 @@
     "load-more": "Charger la suite",
     "page-error": "Chargement impossible. Réessayez."
   },
+  "open-annotations": {
+    "title": "Annotations ouvertes",
+    "header": "{{count}} annotation(s) à traiter",
+    "empty-title": "Tout est à jour",
+    "empty-message": "Aucune annotation à l'état anomalie ou révision nécessaire.",
+    "see-all": "Voir tout",
+    "no-question": "Question non disponible"
+  },
   "no-connector": "Aucun connecteur n'est déclaré pour ce bot. Les chiffres d'usage resteront vides tant qu'il n'y en aura pas."
 }

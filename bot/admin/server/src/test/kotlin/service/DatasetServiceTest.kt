@@ -17,6 +17,9 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.AbstractTest
+import ai.tock.bot.admin.annotation.BotAnnotation
+import ai.tock.bot.admin.annotation.BotAnnotationEventComment
+import ai.tock.bot.admin.annotation.BotAnnotationState
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfiguration
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
@@ -75,6 +78,7 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -790,12 +794,16 @@ class DatasetServiceTest : AbstractTest() {
                 userIdModifier = "dataset_${run._id}_${dataset.questions.first().id}",
                 userActionId = "user-action-id",
             )
-        val answerAction = botSentenceWithFootnotesAction("answer-action-id", ragDebug = mapOf("duration" to 3.25, "answer" to mapOf("status" to "found_in_context")))
+        val answerAction =
+            botSentenceWithFootnotesAction(
+                "answer-action-id",
+                ragDebug = mapOf("duration" to 3.25, "answer" to mapOf("status" to "found_in_context")),
+            ).copy(annotation = annotationWithComments(author = USER, other = "someone-else"))
         val dialog =
             DialogReport(
                 actions =
                     listOf(
-                        userSentenceAction("user-action-id"),
+                        userSentenceAction("user-action-id", text = "What is the refund policy?"),
                         botDebugAction("debug-action-id"),
                         answerAction,
                     ),
@@ -818,6 +826,7 @@ class DatasetServiceTest : AbstractTest() {
                 botId = BOT_ID,
                 datasetId = dataset._id.toString(),
                 runId = run._id.toString(),
+                userLogin = USER,
             )
 
         assertEquals(1, result.size)
@@ -830,6 +839,9 @@ class DatasetServiceTest : AbstractTest() {
                 ?.id
                 .toString(),
         )
+        assertEquals(dialog.id.toString(), result.first().dialogId)
+        assertEquals("What is the refund policy?", result.first().question)
+        assertCommentRights(result.first().action, author = USER, other = "someone-else")
         assertEquals(dialog.id, updatedQuestionResultSlot.captured.dialogId)
         assertEquals(answerAction.id, updatedQuestionResultSlot.captured.answerActionId)
         assertEquals(3.25, updatedQuestionResultSlot.captured.ragDurationSeconds)
@@ -840,6 +852,52 @@ class DatasetServiceTest : AbstractTest() {
         assertEquals(3.25, reloaded.stats.averageRagDurationSeconds)
         assertEquals(1, reloaded.stats.ragDurationCount)
         verify(exactly = 1) { dialogReportDAO.search(any()) }
+    }
+
+    @Test
+    fun `getRunActions returns a null question when the user action is absent from the resolved dialog`() {
+        val dataset = newDataset()
+        val run = newFinishedRun(dataset, DatasetRunState.COMPLETED)
+        val answerAction = botSentenceAction("answer-action-id")
+        // Cached references resolve the answer by answerActionId, without needing the user action.
+        val dialog =
+            DialogReport(
+                actions = listOf(answerAction),
+                userInterface = UserInterfaceType.textChat,
+                id = newId<Dialog>(),
+            )
+        val questionResult =
+            DatasetRunQuestionResult(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id,
+                runId = run._id,
+                questionId = dataset.questions.first().id,
+                state = DatasetRunQuestionResultState.COMPLETED,
+                userIdModifier = "dataset_${run._id}_${dataset.questions.first().id}",
+                userActionId = "user-action-id",
+                dialogId = dialog.id,
+                answerActionId = answerAction.id,
+            )
+
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getRunById(any()) } returns run
+        every { datasetRunDAO.getQuestionResultsByRunId(run._id) } returns listOf(questionResult)
+        every { dialogReportDAO.findByDialogByIds(setOf(dialog.id)) } returns setOf(dialog)
+
+        val result =
+            DatasetService.getRunActions(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id.toString(),
+                runId = run._id.toString(),
+                userLogin = USER,
+            )
+
+        assertEquals(1, result.size)
+        assertEquals(DatasetRunActionState.COMPLETED, result.first().state)
+        assertEquals(answerAction.id, result.first().action?.id)
+        assertNull(result.first().question)
     }
 
     @Test
@@ -870,6 +928,7 @@ class DatasetServiceTest : AbstractTest() {
                 botId = BOT_ID,
                 datasetId = dataset._id.toString(),
                 runId = run._id.toString(),
+                userLogin = USER,
             )
 
         assertEquals(1, result.size)
@@ -916,6 +975,7 @@ class DatasetServiceTest : AbstractTest() {
                 botId = BOT_ID,
                 datasetId = dataset._id.toString(),
                 runId = run._id.toString(),
+                userLogin = USER,
             )
 
         assertEquals(2, result.size)
@@ -1056,12 +1116,15 @@ class DatasetServiceTest : AbstractTest() {
             targetConfigurationId = newId(),
         )
 
-    private fun userSentenceAction(id: String): ActionReport =
+    private fun userSentenceAction(
+        id: String,
+        text: String = "question",
+    ): ActionReport =
         ActionReport(
             playerId = PlayerId("user", PlayerType.user),
             recipientId = PlayerId(BOT_ID, PlayerType.bot),
             date = Instant.now(),
-            message = Sentence("question"),
+            message = Sentence(text),
             connectorType = null,
             userInterfaceType = UserInterfaceType.textChat,
             id = id.toId(),
@@ -1115,4 +1178,48 @@ class DatasetServiceTest : AbstractTest() {
             metadata = ActionMetadata(isGenAiRagAnswer = true),
             ragDebug = ragDebug,
         )
+
+    private fun annotationWithComments(
+        author: String,
+        other: String,
+    ): BotAnnotation =
+        BotAnnotation(
+            state = BotAnnotationState.ANOMALY,
+            reason = null,
+            description = "description",
+            groundTruth = null,
+            events =
+                mutableListOf(
+                    comment(author, "mine"),
+                    comment(other, "theirs"),
+                ),
+        )
+
+    private fun comment(
+        user: String,
+        text: String,
+    ): BotAnnotationEventComment =
+        BotAnnotationEventComment(
+            eventId = newId(),
+            creationDate = Instant.now(),
+            lastUpdateDate = Instant.now(),
+            user = user,
+            comment = text,
+        )
+
+    private fun assertCommentRights(
+        action: ActionReport?,
+        author: String,
+        other: String,
+    ) {
+        val comments =
+            action
+                ?.annotation
+                ?.events
+                .orEmpty()
+                .filterIsInstance<BotAnnotationEventComment>()
+        assertEquals(2, comments.size)
+        assertTrue(comments.single { it.user == author }.canEdit, "the requesting user's own comment must be editable")
+        assertFalse(comments.single { it.user == other }.canEdit, "another user's comment must not be editable")
+    }
 }

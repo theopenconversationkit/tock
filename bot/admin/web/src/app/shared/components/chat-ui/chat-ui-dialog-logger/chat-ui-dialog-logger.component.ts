@@ -26,7 +26,6 @@ import { NlpStatsDisplayComponent } from '../../../../test/dialog/nlp-stats-disp
 import { BotApplicationConfiguration } from '../../../../core/model/configuration';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
 import { RagAnswerToFaqAnswerInfos } from '../../../../faq/faq-management/faq-management.component';
-import { AnnotationComponent } from 'src/app/shared/components';
 import { FeedbackVote } from '../../../../analytics/dialogs/dialogs';
 import { UserRole } from '../../../../model/auth';
 import { TranslocoService } from '@jsverse/transloco';
@@ -199,19 +198,6 @@ export class ChatUiDialogLoggerComponent implements OnInit, OnDestroy {
 
   openObservabilityTrace(action: ActionReport) {
     window.open(action.metadata.observabilityInfo.traceUrl, '_blank');
-  }
-
-  containsAnnotation(action: ActionReport): boolean {
-    return !!action.annotation;
-  }
-
-  openAnnotation(action: ActionReport) {
-    this.nbDialogService.open(AnnotationComponent, {
-      context: {
-        dialogReport: this.dialog,
-        actionReport: action
-      }
-    });
   }
 
   isAdmin(): boolean {

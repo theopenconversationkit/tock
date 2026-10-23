@@ -81,4 +81,8 @@ data class DatasetRunActionDTO(
     val retryCount: Int,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     val error: String? = null,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val dialogId: String? = null,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val question: String? = null,
 )

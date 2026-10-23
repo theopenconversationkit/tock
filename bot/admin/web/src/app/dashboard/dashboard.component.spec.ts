@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import { TestBed } from '@angular/core/testing';
+import { NbToastrService } from '@nebular/theme';
+import { TranslocoService } from '@jsverse/transloco';
 import { StateService } from '../core-nlp/state.service';
 import { DialogService } from '../core-nlp/dialog.service';
 import { BotConfigurationService } from '../core/bot-configuration.service';
@@ -35,13 +37,16 @@ describe('Dashboard history pagination', () => {
       'getAnswerOutcome',
       'getTopics',
       'getContacts',
+      'getOpenAnnotations',
       'getBotIdentity',
       'getEvaluationSamples',
       'getBotHistory'
     ]);
-    ['getUsage', 'getAnswerOutcome', 'getTopics', 'getContacts', 'getBotIdentity', 'getEvaluationSamples'].forEach((method) => {
-      service[method].and.returnValue(NEVER);
-    });
+    ['getUsage', 'getAnswerOutcome', 'getTopics', 'getContacts', 'getOpenAnnotations', 'getBotIdentity', 'getEvaluationSamples'].forEach(
+      (method) => {
+        service[method].and.returnValue(NEVER);
+      }
+    );
     service.getBotHistory.and.callFake((_namespace: string, bot: string, before?: string) =>
       bot === 'other' ? other : before ? more : initial
     );
@@ -52,7 +57,9 @@ describe('Dashboard history pagination', () => {
         { provide: BotConfigurationService, useValue: { configurations } },
         { provide: DashboardService, useValue: service },
         { provide: DashboardStateService, useValue: dashboardState },
-        { provide: DialogService, useValue: {} }
+        { provide: DialogService, useValue: {} },
+        { provide: NbToastrService, useValue: {} },
+        { provide: TranslocoService, useValue: {} }
       ]
     });
     const component = TestBed.runInInjectionContext(() => new DashboardComponent());

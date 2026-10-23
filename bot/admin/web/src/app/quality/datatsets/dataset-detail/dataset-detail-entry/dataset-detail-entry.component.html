@@ -131,6 +131,13 @@
               <nb-icon icon="code-square"></nb-icon>
               }
             </button>
+            @if (currentActionDisplayState === DatasetRunActionDisplayState.SUCCESS && currentAnnotationDialog) {
+            <tock-annotation-trigger
+              [dialogReport]="currentAnnotationDialog"
+              [actionReport]="currentAction.action"
+              [question]="currentAction.question"
+            ></tock-annotation-trigger>
+            }
           </div>
         </div>
         @if (comparisonAction) {
@@ -165,6 +172,13 @@
               <nb-icon icon="code-square"></nb-icon>
               }
             </button>
+            @if (comparisonActionDisplayState === DatasetRunActionDisplayState.SUCCESS && comparisonAnnotationDialog) {
+            <tock-annotation-trigger
+              [dialogReport]="comparisonAnnotationDialog"
+              [actionReport]="comparisonAction.action"
+              [question]="comparisonAction.question"
+            ></tock-annotation-trigger>
+            }
           </div>
         </div>
         }

@@ -30,6 +30,12 @@ import org.litote.kmongo.Id
 interface DialogReportDAO {
     fun search(query: DialogReportQuery): DialogReportQueryResult
 
+    /**
+     * Flat, cross-dialog search of the annotations matching [query] (states / reasons), paginated
+     * and sorted by annotation last update date descending. One [AnnotationReport] per annotation.
+     */
+    fun searchAnnotations(query: AnnotationReportQuery): AnnotationReportQueryResult
+
     fun intents(
         namespace: String,
         nlpModel: String,

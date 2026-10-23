@@ -29,6 +29,7 @@ import { Pagination } from '../../../shared/components';
 import { DialogListFilters } from './dialogs-list-filters/dialogs-list-filters.component';
 import { SortOrder } from '../../../shared/model/misc';
 import { RagAnswerStatus } from '../../../shared/utils';
+import { AnnotationState } from '../../../shared/components/annotation/annotations';
 
 @Component({
   selector: 'tock-dialogs-list',
@@ -100,6 +101,19 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
     // Ignore an unknown value rather than sending it to the backend.
     if (ragAnswerStatus && (Object.values(RagAnswerStatus) as string[]).includes(ragAnswerStatus)) {
       this.filters.ragAnswerStatus = ragAnswerStatus;
+    }
+
+    const annotationStatesParam = this.route.snapshot.queryParamMap.get('annotationStates');
+    if (annotationStatesParam) {
+      const validStates = annotationStatesParam
+        .split(',')
+        .map((s) => s.trim())
+        .filter((s) => (Object.values(AnnotationState) as string[]).includes(s)) as AnnotationState[];
+      if (validStates.length > 0) {
+        // withAnnotations gates the annotation sub-filters in the panel, so seed it too.
+        this.filters.withAnnotations = true;
+        this.filters.annotationStates = validStates;
+      }
     }
   }
 

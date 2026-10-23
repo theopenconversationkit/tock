@@ -89,6 +89,7 @@ import {
   ChatUiDisplayMarkupComponent,
   AnnotationComponent,
   AnnotationCommentComponent,
+  AnnotationTriggerComponent,
   JsonViewerDialogComponent,
   IntentDialogComponent
 } from './components';
@@ -184,6 +185,7 @@ import { TranslocoModule } from '@jsverse/transloco';
     TextareaAutocompleteDirective,
     AnnotationComponent,
     AnnotationCommentComponent,
+    AnnotationTriggerComponent,
     SortByOrderPipe,
     ResilientDatePipe,
     JsonViewerDialogComponent,
@@ -222,6 +224,7 @@ import { TranslocoModule } from '@jsverse/transloco';
     DataExportComponent,
     WysiwygEditorComponent,
     TextareaAutocompleteDirective,
+    AnnotationTriggerComponent,
     SortByOrderPipe,
     ResilientDatePipe,
     JsonViewerDialogComponent,

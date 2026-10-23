@@ -173,30 +173,13 @@
         >
           <nb-icon icon="link"></nb-icon>
         </a>
-        @if (containsAnnotation(action)) {
-        <div>
-          <button
-            nbButton
-            size="small"
-            status="warning"
-            ghost
-            [nbTooltip]="'shared.chat-ui-dialog-logger.display-annotation' | transloco"
-            (click)="openAnnotation(action)"
-          >
-            <nb-icon icon="exclamation-triangle-fill"></nb-icon>
-          </button>
-        </div>
-        } @else {
-        <button
-          nbButton
-          size="small"
-          ghost
-          [nbTooltip]="'shared.chat-ui-dialog-logger.annotate-exchange' | transloco"
-          (click)="openAnnotation(action)"
-        >
-          <nb-icon icon="exclamation-triangle"></nb-icon>
-        </button>
-        } @if (isAdmin() && action.metadata?.isGenAiRagAnswer && $any(action).ragDebug?.question_answering_prompt) {
+        <tock-annotation-trigger
+          [dialogReport]="dialog"
+          [actionReport]="action"
+          [ghost]="false"
+          shape="round"
+        ></tock-annotation-trigger>
+        @if (isAdmin() && action.metadata?.isGenAiRagAnswer && $any(action).ragDebug?.question_answering_prompt) {
         <button
           nbButton
           ghost

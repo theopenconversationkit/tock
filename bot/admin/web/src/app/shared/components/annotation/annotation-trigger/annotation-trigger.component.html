@@ -1,0 +1,11 @@
+<button
+  nbButton
+  [ghost]="ghost"
+  [size]="size"
+  [shape]="shape"
+  [status]="buttonStatus"
+  [nbTooltip]="buttonTooltip | transloco"
+  (click)="open()"
+>
+  <nb-icon [icon]="buttonIcon"></nb-icon>
+</button>

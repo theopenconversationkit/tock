@@ -27,7 +27,8 @@ import {
   DashboardUsage,
   GenAiConfiguration,
   IngestionNotes,
-  KnowledgeIndex
+  KnowledgeIndex,
+  OpenAnnotations
 } from '../models/dashboard.model';
 
 /**
@@ -82,4 +83,7 @@ export abstract class DashboardService {
 
   // --- history (GET /bots/{botId}/history) ---
   abstract getBotHistory(namespace: string, applicationName: string, before?: string): Observable<BotHistoryPage>;
+
+  // --- open annotations (POST /bots/{botId}/annotations/search) ---
+  abstract getOpenAnnotations(namespace: string, applicationName: string): Observable<OpenAnnotations>;
 }

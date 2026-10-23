@@ -15,6 +15,7 @@
  */
 import { RagAnswerStatus } from '../../shared/utils/dialog.utils';
 import { VectorDbProvider } from '../../configuration/vector-db-settings/models/providers-configuration';
+import { Annotation } from '../../shared/components/annotation/annotations';
 
 /**
  * Reporting window, in days. Shared by every time-based widget of the dashboard.
@@ -239,4 +240,20 @@ export interface BotHistoryPage {
   events: BotHistoryEvent[];
   hasMore: boolean;
   nextCursor: string | null;
+}
+
+/** One open annotation, flattened from its dialog action. POST /bots/{botId}/annotations/search. */
+export interface OpenAnnotationRow {
+  dialogId: string;
+  actionId: string;
+  applicationId: string;
+  actionDate: string;
+  question?: string | null;
+  annotation: Annotation;
+}
+
+/** Backlog of the bot's open annotations (ANOMALY + REVIEW_NEEDED), most recently updated first. */
+export interface OpenAnnotations {
+  total: number;
+  rows: OpenAnnotationRow[];
 }

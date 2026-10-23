@@ -21,6 +21,7 @@ import ai.tock.bot.admin.annotation.BotAnnotationDTO
 import ai.tock.bot.admin.annotation.BotAnnotationEventDTO
 import ai.tock.bot.admin.dialog.DialogStatsQuery
 import ai.tock.bot.admin.dialog.DialogWithNlpStats
+import ai.tock.bot.admin.model.AnnotationsSearchQuery
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.nlp.admin.CsvCodec
@@ -49,6 +50,7 @@ class DialogVerticle {
         private const val PATH_DIALOGS_INTENTS = "/dialogs/intents/:applicationId"
 
         // ANNOTATION ENDPOINTS
+        private const val PATH_ANNOTATIONS_SEARCH = "/bots/:botId/annotations/search"
         private const val PATH_ANNOTATION = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation"
         private const val PATH_ANNOTATION_EVENTS = "$PATH_ANNOTATION/events"
         private const val PATH_ANNOTATION_EVENT = "$PATH_ANNOTATION_EVENTS/:eventId"
@@ -187,6 +189,14 @@ class DialogVerticle {
             }
 
             // --------------------------------- Annotation Routes ----------------------------------
+
+            // SEARCH OPEN ANNOTATIONS (flat, cross-dialog list for the current bot)
+            blockingJsonPost(PATH_ANNOTATIONS_SEARCH, setOf(TockUserRole.botUser)) { context, query: AnnotationsSearchQuery ->
+                val botId = context.path("botId")
+                context.checkBotId(botId)
+                // Namespace comes from the session (checkBotId), the bot from the path — never the body.
+                BotAdminService.searchAnnotations(query, context.organization, botId)
+            }
 
             // CREATE/UPDATE ANNOTATION
             blockingJsonPost(PATH_ANNOTATION, setOf(TockUserRole.botUser)) { context, annotationDTO: BotAnnotationDTO ->

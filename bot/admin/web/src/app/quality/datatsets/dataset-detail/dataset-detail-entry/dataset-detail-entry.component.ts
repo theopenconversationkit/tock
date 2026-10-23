@@ -7,6 +7,7 @@ import {
   SourcesDiffResult,
   SourceInfos
 } from '../../models';
+import { DialogReport } from '../../../../shared/model/dialog-data';
 import { MarkdownDiffService } from '../../services/markdown-diff.service';
 import { markedParserForDiff } from '../../../../shared/utils/markup.utils';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -39,6 +40,12 @@ export class DatasetDetailEntryComponent implements OnChanges {
 
   currentActionAnswer: SafeHtml | null = null;
   comparisonActionAnswer: SafeHtml | null = null;
+
+  // Minimal DialogReport built once per side so the annotation modal context is a
+  // stable reference across change detection cycles. Null when the side has no
+  // annotatable answer (no dialogId or no action report).
+  currentAnnotationDialog: DialogReport | null = null;
+  comparisonAnnotationDialog: DialogReport | null = null;
 
   // Computed once per ngOnChanges — null when no comparison or sources are not RAG
   sourceDiff: SourcesDiffResult | null = null;
@@ -76,6 +83,9 @@ export class DatasetDetailEntryComponent implements OnChanges {
 
     this.currentActionDisplayState = this._computeDisplayState(this.currentAction);
     this.comparisonActionDisplayState = this._computeDisplayState(this.comparisonAction);
+
+    this.currentAnnotationDialog = this._buildAnnotationDialog(this.currentAction);
+    this.comparisonAnnotationDialog = this._buildAnnotationDialog(this.comparisonAction);
 
     // Compute source diff synchronously — exposed as a property so the template
     // never triggers recalculation on its own during change detection cycles.
@@ -282,6 +292,18 @@ export class DatasetDetailEntryComponent implements OnChanges {
     if (labelA === labelB || labelA === '-' || labelB === '-') return null;
 
     return `${labelA} < ${labelB}`;
+  }
+
+  /**
+   * Builds a minimal DialogReport wrapping a run action's single answer so the
+   * annotation modal can be opened for it. The modal only reads `.id` and `.actions`.
+   * Dataset answers may be RAG or not: the question comes from `ragDebug` when present,
+   * otherwise from the run action's backend-provided `question` (passed to the trigger),
+   * so no sibling actions are needed. Returns null when the side carries no annotatable answer.
+   */
+  private _buildAnnotationDialog(runAction: DatasetRunAction | null): DialogReport | null {
+    if (!runAction?.dialogId || !runAction.action) return null;
+    return { id: runAction.dialogId, actions: [runAction.action] } as unknown as DialogReport;
   }
 
   private _computeDisplayState(action: DatasetRunAction | null): DatasetRunActionDisplayState | null {

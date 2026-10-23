@@ -1,0 +1,52 @@
+<tock-dashboard-widget
+  [title]="'dashboard.open-annotations.title' | transloco"
+  icon="exclamation-triangle"
+  [state]="state"
+  [skeletonLines]="5"
+  [emptyTitle]="'dashboard.open-annotations.empty-title' | transloco"
+  [emptyMessage]="'dashboard.open-annotations.empty-message' | transloco"
+>
+  <ng-template #widgetBody>
+    <div class="open-annotations-body">
+      <div class="header">
+        {{ 'dashboard.open-annotations.header' | transloco: { count: data.total } }}
+      </div>
+      @for (row of rows; track row.actionId) {
+      <a
+        class="annotation-row"
+        [routerLink]="['/analytics/dialogs', namespace, applicationId, row.dialogId]"
+        [fragment]="row.actionId"
+      >
+        <div class="row-header position-relative">
+          <nb-badge
+            [text]="row.stateLabel"
+            [status]="row.stateStatus"
+            size="small"
+          ></nb-badge>
+          <span class="reason-label">{{ row.reasonLabel }}</span>
+        </div>
+        <div
+          class="question-text"
+          [title]="row.question || ''"
+        >
+          {{ row.question || ('dashboard.open-annotations.no-question' | transloco) }}
+        </div>
+        <div class="row-footer">
+          {{ row.actionDate | date: 'short' }}
+        </div>
+      </a>
+      }
+    </div>
+  </ng-template>
+
+  <ng-template #widgetFooter>
+    <span class="metric-label">
+      <a
+        [routerLink]="['/analytics/dialogs']"
+        [queryParams]="{ annotationStates: 'ANOMALY,REVIEW_NEEDED' }"
+      >
+        {{ 'dashboard.open-annotations.see-all' | transloco }}
+      </a>
+    </span>
+  </ng-template>
+</tock-dashboard-widget>

@@ -36,6 +36,7 @@ import ai.tock.bot.admin.model.evaluation.DialogEntry
 import ai.tock.bot.admin.model.evaluation.DialogInfo
 import ai.tock.bot.admin.model.evaluation.EvaluationDialogsResponse
 import ai.tock.bot.admin.model.evaluation.EvaluationSampleDTO
+import ai.tock.bot.admin.withCommentRights
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.exception.rest.UnprocessableEntityException
 import ai.tock.shared.injector
@@ -269,6 +270,7 @@ object EvaluationService {
         sampleId: String,
         start: Int,
         size: Int,
+        userLogin: String,
     ): EvaluationDialogsResponse {
         val sample =
             evaluationSampleDAO.findById(sampleId.toId())
@@ -285,7 +287,8 @@ object EvaluationService {
 
         val pageDialogIds = groupedEvaluations.map { it._id }
         val foundDialogs = dialogReportDAO.findByDialogByIds(pageDialogIds.toSet())
-        val dialogsById = foundDialogs.associateBy { it.id }
+        // Recompute per-user comment edit rights: the DAO does not know the caller (see withCommentRights).
+        val dialogsById = foundDialogs.associate { it.id to it.withCommentRights(userLogin) }
         val evaluations = groupedEvaluations.flatMap { it.evaluations }
         val actionRefsWithEvaluation =
             evaluations.map { eval ->

@@ -90,7 +90,7 @@ class EvaluationVerticle : AbstractNamespaceRetriever() {
             blockingJsonPost(PATH_ACTION_REFS, botUser) { context, query: EvaluationDialogsQuery ->
                 return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     val sampleId = context.pathParam("sampleId")
-                    EvaluationService.getEvaluationDialogs(sampleId, query.start, query.size)
+                    EvaluationService.getEvaluationDialogs(sampleId, query.start, query.size, context.userLogin)
                 }
             }
 

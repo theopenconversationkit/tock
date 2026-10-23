@@ -20,6 +20,8 @@ import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.annotation.BotAnnotationEvent
 import ai.tock.bot.admin.annotation.BotAnnotationEventType
 import ai.tock.bot.admin.annotation.BotAnnotationState
+import ai.tock.bot.admin.dialog.AnnotationReportQuery
+import ai.tock.bot.admin.dialog.AnnotationReportQueryResult
 import ai.tock.bot.admin.dialog.CountByDateResult
 import ai.tock.bot.admin.dialog.CountResult
 import ai.tock.bot.admin.dialog.DialogRating
@@ -928,6 +930,51 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                         }
                     }
                 }
+            }
+        }
+
+    override fun searchAnnotations(query: AnnotationReportQuery): AnnotationReportQueryResult =
+        runBlocking {
+            val applicationIds = getApplicationIds(query.namespace, query.nlpModel).filter { it.isNotEmpty() }.toSet()
+            if (applicationIds.isEmpty() || query.annotationStates.isEmpty()) {
+                AnnotationReportQueryResult(total = 0, start = query.start, end = query.start)
+            } else {
+                val c = dialogCol.withReadPreference(secondaryPreferred())
+                val total =
+                    c
+                        .aggregate<Document>(
+                            AnnotationReportAggregation.countPipeline(
+                                query.namespace,
+                                applicationIds,
+                                query.annotationStates,
+                                query.annotationReasons,
+                            ),
+                        ).first()
+                        ?.getInteger("total")
+                        ?.toLong() ?: 0L
+                val annotations =
+                    if (total > query.start) {
+                        c
+                            .aggregate<AnnotationReportAggregation.AnnotationReportCol>(
+                                AnnotationReportAggregation.pagePipeline(
+                                    query.namespace,
+                                    applicationIds,
+                                    query.annotationStates,
+                                    query.annotationReasons,
+                                    query.start,
+                                    query.size,
+                                ),
+                            ).toList()
+                            .map { it.toReport() }
+                    } else {
+                        emptyList()
+                    }
+                AnnotationReportQueryResult(
+                    total = total,
+                    start = query.start,
+                    end = query.start + annotations.size,
+                    annotations = annotations,
+                )
             }
         }
 

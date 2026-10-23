@@ -47,6 +47,7 @@ import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.dataset.DatasetDAO
+import ai.tock.bot.admin.dialog.AnnotationReportQueryResult
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.admin.dialog.CountByDateResult
 import ai.tock.bot.admin.dialog.CountResult
@@ -63,6 +64,7 @@ import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import ai.tock.bot.admin.model.APP_CONFIG_PROD_TYPE
 import ai.tock.bot.admin.model.APP_CONFIG_TEST_TYPE
+import ai.tock.bot.admin.model.AnnotationsSearchQuery
 import ai.tock.bot.admin.model.BotAnswerConfiguration
 import ai.tock.bot.admin.model.BotBuiltinAnswerConfiguration
 import ai.tock.bot.admin.model.BotConfiguredAnswer
@@ -508,52 +510,31 @@ object BotAdminService {
                 )
             }
 
+    /**
+     * Flat, cross-dialog search of the bot's open annotations. The namespace and bot are passed in
+     * by the route (resolved from the session and the path), not taken from the request body.
+     * No comment-rights post-processing: events are not returned for this read-only listing.
+     */
+    fun searchAnnotations(
+        query: AnnotationsSearchQuery,
+        namespace: String,
+        botId: String,
+    ): AnnotationReportQueryResult = dialogReportDAO.searchAnnotations(query.toAnnotationReportQuery(namespace, botId))
+
     fun searchWithCommentRights(
         query: DialogsSearchQuery,
         userLogin: String,
     ): DialogReportQueryResult {
         val result = search(query)
         return result.copy(
-            dialogs =
-                result.dialogs.map { dialog ->
-                    processAnnotationsForUser(dialog, userLogin)
-                },
+            dialogs = result.dialogs.map { it.withCommentRights(userLogin) },
         )
     }
 
     fun getDialogWithCommentRights(
         id: Id<Dialog>,
         userLogin: String,
-    ): DialogReport? =
-        dialogReportDAO.getDialog(id)?.let { dialog ->
-            processAnnotationsForUser(dialog, userLogin)
-        }
-
-    private fun processAnnotationsForUser(
-        dialog: DialogReport,
-        userLogin: String,
-    ): DialogReport =
-        dialog.copy(
-            actions =
-                dialog.actions.map { action ->
-                    action.copy(
-                        annotation =
-                            action.annotation?.let { annotation ->
-                                annotation.copy(
-                                    events =
-                                        annotation.events
-                                            .map { event ->
-                                                if (event is BotAnnotationEventComment) {
-                                                    event.copy(canEdit = event.user == userLogin)
-                                                } else {
-                                                    event
-                                                }
-                                            }.toMutableList(),
-                                )
-                            },
-                    )
-                },
-        )
+    ): DialogReport? = dialogReportDAO.getDialog(id)?.withCommentRights(userLogin)
 
     fun getIntentsInDialogs(
         namespace: String,

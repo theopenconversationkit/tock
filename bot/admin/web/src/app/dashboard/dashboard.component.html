@@ -121,6 +121,15 @@
       [state]="evaluationState"
     ></tock-last-evaluation>
   </div>
+  } @if (state.hasRole(UserRole.botUser)) {
+  <div class="grid-span-4">
+    <tock-open-annotations
+      [data]="openAnnotations"
+      [state]="openAnnotationsState"
+      [namespace]="namespace"
+      [applicationId]="applicationId"
+    ></tock-open-annotations>
+  </div>
   }
 
   <div class="grid-span-8">
