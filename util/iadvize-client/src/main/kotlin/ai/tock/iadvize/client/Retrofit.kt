@@ -103,7 +103,7 @@ private class LoggingInterceptor(
         val responseHeaders = response.headers.onEach { logger.debug { "${it.first} : ${it.second}" } }
 
         when {
-            !response.promisesBody() -> {
+            !response.promisesBody() || responseBody == null -> {
                 logger.info("<-- END HTTP")
             }
 
@@ -112,7 +112,7 @@ private class LoggingInterceptor(
             }
 
             else -> {
-                with(responseBody!!) {
+                with(responseBody) {
                     val buffer =
                         source()
                             .apply { request(java.lang.Long.MAX_VALUE) }

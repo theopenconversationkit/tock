@@ -189,9 +189,9 @@ async def get_capabilities(
             provider=VectorStoreProvider.OPEN_SEARCH,
             search_types=[DocumentSearchType.SIMILARITY_SEARCH],
             supports_scores=True,
-            supports_index_listing=False,
+            supports_index_listing=True,
             supports_metadata_filter=True,
-            notes=['hybrid_and_fts_not_implemented', 'inspection_not_implemented'],
+            notes=['hybrid_and_fts_not_implemented', 'document_exploration_not_implemented', 'pinned_exact_rank_not_implemented'],
         )
     raise HTTPException(status_code=501, detail='Unsupported vector store provider')
 
@@ -199,6 +199,22 @@ async def get_capabilities(
 async def get_indexes(
     request: VectorStoreInspectionIndexesRequest,
 ) -> IndexListResponse:
+    provider = (
+        request.vector_store_setting.provider
+        if request.vector_store_setting
+        else application_settings.vector_store_provider
+    )
+    if provider == VectorStoreProvider.OPEN_SEARCH:
+        from gen_ai_orchestrator.services.vector_store_inspection.opensearch_inspection_service import (
+            indexes,
+        )
+
+        factory = get_vector_store_factory(
+            setting=request.vector_store_setting,
+            index_name=request.index_name_prefix,
+            embedding_function=FakeEmbeddings(size=1),
+        )
+        return await indexes(factory, request.index_name_prefix)
     factory = _pg_factory(
         request.vector_store_setting,
         request.index_name_prefix,
@@ -509,7 +525,7 @@ async def _fts_documents(factory: PGVectorFactory, query: str, k: int):
             JOIN langchain_pg_collection c ON c.uuid = e.collection_id
             CROSS JOIN q
             WHERE c.name = :index_name AND e.fts_vector @@ q.ts_query
-            ORDER BY score DESC, e.id
+            ORDER BY score DESC, char_length(e.document) DESC, e.id
             LIMIT :k
         """),
         {'query': query, 'index_name': factory.index_name, 'k': k},
@@ -720,9 +736,9 @@ async def _compress(
     compressed_ids = [get_chunk_identifier(doc) for doc in compressed]
     compressed_set = set(compressed_ids)
     scores = {
-        chunk_id: float(document.metadata['retriever_score'])
+        chunk_id: float(document.metadata['reranker_score'])
         for chunk_id, document in documents_by_id.items()
-        if document.metadata.get('retriever_score') is not None
+        if document.metadata.get('reranker_score') is not None
     }
     min_score = float(setting.min_score or 0)
     outcomes = {}
@@ -755,6 +771,22 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
     embedding_model = get_em_factory(
         request.embedding_question_em_setting
     ).get_embedding_model()
+    provider = (
+        request.vector_store_setting.provider
+        if request.vector_store_setting
+        else application_settings.vector_store_provider
+    )
+    if provider == VectorStoreProvider.OPEN_SEARCH:
+        from gen_ai_orchestrator.services.vector_store_inspection.opensearch_inspection_service import (
+            search as opensearch_search,
+        )
+
+        factory = get_vector_store_factory(
+            setting=request.vector_store_setting,
+            index_name=request.index_name,
+            embedding_function=embedding_model,
+        )
+        return await opensearch_search(request, factory)
     factory = _pg_factory(
         request.vector_store_setting, request.index_name, embedding_model
     )

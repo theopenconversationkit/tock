@@ -90,10 +90,4 @@ interface FaqDefinitionDAO {
         botId: String,
         namespace: String,
     ): List<String>
-
-    /**
-     * Make migration
-     * @param intentIdSupplier : function that return a namespace with a given Id<>
-     */
-    fun makeMigration(intentIdSupplier: (Id<IntentDefinition>) -> String?)
 }

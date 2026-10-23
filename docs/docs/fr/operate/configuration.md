@@ -182,7 +182,6 @@ en mode _Bot intégré_.
 |-----------|--------|-------------|
 | `tock_configuration_bot_default_base_url` | `http://<IP locale>:<botverticle_port>` | URL de base du bot, proposée par défaut dans les configurations de connecteurs de _Tock Studio_ |
 | `tock_bot_protected_paths` | `/admin` | Chemins du bot protégés par l'authentification |
-| `tock_bot_protected_path` | `/admin` | Obsolète : utiliser `tock_bot_protected_paths` |
 | `tock_restricted_configuration_id` | | Ne charge que les configurations de bot indiquées (développement) |
 | `tock_bot_default_breath_ms` | `1000` | Délai par défaut entre deux messages du bot |
 | `tock_bot_min_breath_ms` | `50` | Délai minimal entre deux messages, quand un message met plus longtemps que le délai par défaut à être préparé |
@@ -457,6 +456,7 @@ Les variables de la base vectorielle sont décrites dans la page [Vector DB sett
 | `tock_gen_ai_orchestrator_llm_rate_limits` | `true` | Active la limitation de débit des appels aux LLM |
 | `tock_gen_ai_orchestrator_em_provider_timeout` | `4` | Délai maximal des appels d'embedding, en secondes |
 | `tock_gen_ai_orchestrator_compressor_provider_timeout` | `7` | Délai maximal des appels au compresseur de documents, en secondes |
+| `tock_gen_ai_orchestrator_compressor_vllm_max_input_tokens` | `8192` | Longueur d'entrée maximale (question + document) en tokens acceptée par le modèle de reranking vLLM ; doit correspondre au `--max-model-len` du serveur ; les documents trop longs sont découpés en fenêtres scorées séparément |
 | `tock_gen_ai_orchestrator_observability_provider_timeout` | `3` | Délai maximal des appels d'observabilité, en secondes |
 | `tock_gen_ai_orchestrator_observability_provider_max_retries` | `0` | Nombre de nouvelles tentatives d'un appel d'observabilité en échec |
 | `tock_gen_ai_orchestrator_db_pool_size` | `10` | Taille du pool de connexions PGVector |

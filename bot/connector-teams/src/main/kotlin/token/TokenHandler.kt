@@ -96,8 +96,9 @@ class TokenHandler(
                     clientId = appId,
                     clientSecret = password,
                 ).execute()
-        token = response.body()?.accessToken ?: error("empty access token")
-        tokenExpiration = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
+        val body = response.body() ?: error("empty access token")
+        token = body.accessToken
+        tokenExpiration = Instant.now().plus(body.expiresIn, ChronoUnit.SECONDS)
     }
 
     fun launchTokenCollector(

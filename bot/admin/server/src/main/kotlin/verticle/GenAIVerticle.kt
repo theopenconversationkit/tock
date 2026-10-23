@@ -32,6 +32,7 @@ import ai.tock.bot.admin.model.genai.VectorStoreInspectionSearchRequestDTO
 import ai.tock.bot.admin.service.BusinessRulesService
 import ai.tock.bot.admin.service.CompletionService
 import ai.tock.bot.admin.service.DocumentCompressorService
+import ai.tock.bot.admin.service.KnowledgeBaseService
 import ai.tock.bot.admin.service.ObservabilityService
 import ai.tock.bot.admin.service.RAGService
 import ai.tock.bot.admin.service.SentenceGenerationService
@@ -50,6 +51,7 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
     companion object {
         // Configuration
         private const val PATH_CONFIG_RAG = "/gen-ai/bots/:botId/configuration/rag"
+        private const val PATH_CONFIG_RAG_INDEX_STATUS = "$PATH_CONFIG_RAG/index-status"
         private const val PATH_CONFIG_SENTENCE_GENERATION = "/gen-ai/bots/:botId/configuration/sentence-generation"
         private const val PATH_CONFIG_SENTENCE_GENERATION_INFO = "$PATH_CONFIG_SENTENCE_GENERATION/info"
         private const val PATH_CONFIG_VECTOR_STORE = "/gen-ai/bots/:botId/configuration/vector-store"
@@ -102,6 +104,20 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
                 checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Deleting 'RAG' configuration..." }
                     RAGService.deleteConfig(app.namespace, app.name)
+                }
+            }
+
+            // Embedding coherence of a candidate RAG config against the collection its indexSessionId resolves to.
+            blockingJsonPost(
+                PATH_CONFIG_RAG_INDEX_STATUS,
+                admin,
+            ) { context: RoutingContext, request: BotRAGConfigurationDTO ->
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    logger.info { "Checking 'RAG' index embedding coherence..." }
+                    // Use the DTO's emSetting directly; resolving the entity would create/update a secret, which a
+                    // read-only status check must never do.
+                    val candidate = request.copy(namespace = app.namespace, botId = app.name)
+                    KnowledgeBaseService.default.indexStatusFor(app.namespace, app.name, candidate.indexSessionId, candidate.emSetting)
                 }
             }
 

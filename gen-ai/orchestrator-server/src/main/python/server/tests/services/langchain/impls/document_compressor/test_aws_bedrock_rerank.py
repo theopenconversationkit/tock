@@ -60,7 +60,7 @@ def test_compress_documents_filters_by_min_score_and_sorts(mocked_bedrock_rerank
         'high relevance',
         'medium relevance',
     ]
-    assert result[0].metadata['retriever_score'] == 0.9
+    assert result[0].metadata['reranker_score'] == 0.9
     mocked_client.rerank.assert_called_once_with(
         documents=documents, query='question', top_n=len(documents)
     )

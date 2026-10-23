@@ -247,8 +247,8 @@ class MessengerConnector internal constructor(
                         val url = firstElement.attachmentId
                         val attachmentId =
                             getAttachmentId(event.applicationId, url)
-                                .let {
-                                    it ?: client
+                                ?: checkNotNull(
+                                    client
                                         .sendAttachment(
                                             token,
                                             AttachmentRequest(
@@ -266,11 +266,9 @@ class MessengerConnector internal constructor(
                                                 ),
                                                 personaId,
                                             ),
-                                        )!!
-                                        .apply {
-                                            setAttachmentId(event.applicationId, url, attachmentId!!)
-                                        }.attachmentId!!
-                                }
+                                        )?.attachmentId,
+                                ) { "no attachment id returned by Messenger for $url" }
+                                    .also { setAttachmentId(event.applicationId, url, it) }
                         message =
                             message.copy(
                                 message =
@@ -549,11 +547,6 @@ class MessengerConnector internal constructor(
 
     private fun getToken(connectorId: String): String =
         connectorIdTokenMap[connectorId]
-            // TODO remove this when backward compatibility is no more assured (20.3)
-            ?: pageIdConnectorIdMap[connectorId]?.takeUnless { it.isEmpty() }?.let {
-                logger.warn { "use pageId as connectorId for $connectorId" }
-                connectorIdTokenMap[it.first()]
-            }
             ?: getAllConnectors().find { it.applicationId == connectorId }?.appToken
             ?: error("$connectorId not found")
 

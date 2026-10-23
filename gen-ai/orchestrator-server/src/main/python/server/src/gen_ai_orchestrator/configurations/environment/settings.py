@@ -62,15 +62,20 @@ class _Settings(BaseSettings):
     llm_rate_limits: bool = True
     em_provider_timeout: int = 4
     compressor_provider_timeout: int = 7
+    compressor_vllm_max_input_tokens: int = 8192
+    """Maximum input length (query + document) in tokens accepted by the vLLM
+    reranking model. Must match the --max-model-len actually used by the vLLM
+    server (8192 is the limit of Alibaba-NLP/gte-multilingual-reranker-base).
+    Oversized documents are split into windows scored separately."""
 
     vector_store_provider: Optional[VectorStoreProvider] = (
-        VectorStoreProvider.OPEN_SEARCH
+        VectorStoreProvider.PGVECTOR
     )
     vector_store_host: Optional[str] = 'localhost'
-    vector_store_port: Optional[str] = '9200'
-    vector_store_user: Optional[str] = 'admin'
-    vector_store_pwd: Optional[str] = 'admin'
-    vector_store_database: Optional[str] = None  # Only if necessary. Example: PGVector
+    vector_store_port: Optional[str] = '5432'
+    vector_store_user: Optional[str] = 'postgres'
+    vector_store_pwd: Optional[str] = 'ChangeMe'
+    vector_store_database: Optional[str] = 'postgres'  # Only if necessary. Example: PGVector
     vector_store_secret_manager_provider: Optional[SecretManagerProvider] = None
     vector_store_credentials_secret_name: Optional[str] = None
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""

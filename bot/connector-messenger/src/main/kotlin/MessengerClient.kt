@@ -302,7 +302,7 @@ internal class MessengerClient(
         val requestTimerData = requestTimer.start("messenger_user_profile")
         return try {
             graphApi
-                .getUserProfile(recipient.id!!, token, getProfileFields(extendedProfileFields))
+                .getUserProfile(requireNotNull(recipient.id) { "missing recipient id" }, token, getProfileFields(extendedProfileFields))
                 .execute()
                 .body() ?: defaultUserProfile()
         } catch (e: Exception) {

@@ -76,12 +76,11 @@ data class ConstrainedValueWrapper<T : Any>(
             if (fieldName != null) {
                 val classValue: Class<*>? =
                     try {
-                        // TODO remove replace in 20.3
-                        val replace = jp.text.replace("fr.vsct.tock", "ai.tock")
-                        if (constrainedTypes.contains(replace)) {
-                            Class.forName(replace)
+                        val className = jp.text
+                        if (constrainedTypes.contains(className)) {
+                            Class.forName(className)
                         } else {
-                            throw AssertionError("unregister class: $replace")
+                            throw AssertionError("unregister class: $className")
                         }
                     } catch (e: Exception) {
                         logger.warn("deserialization error for class ${e.message}")

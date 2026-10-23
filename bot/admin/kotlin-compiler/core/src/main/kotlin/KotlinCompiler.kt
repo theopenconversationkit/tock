@@ -16,7 +16,7 @@
 
 package ai.tock.bot.admin.kotlin.compiler
 
-import ai.tock.bot.admin.kotlin.compiler.EnvironmentManager.environment
+import ai.tock.bot.admin.kotlin.compiler.EnvironmentManager.initializedEnvironment
 import ai.tock.shared.error
 import ai.tock.shared.listProperty
 import com.intellij.openapi.editor.Document
@@ -119,7 +119,7 @@ internal object KotlinCompiler {
 
     fun getErrors(files: Map<String, String>): Map<String, List<CompileError>> {
         val psiFiles = createPsiFiles(files)
-        val analyzer = ErrorAnalyzer(psiFiles, EnvironmentManager.environment!!.project)
+        val analyzer = ErrorAnalyzer(psiFiles, initializedEnvironment.project)
         return analyzer.getAllErrors()
     }
 
@@ -129,7 +129,8 @@ internal object KotlinCompiler {
         searchForMain: Boolean,
     ): CompilationResult {
         val files = createPsiFiles(projectFiles)
-        return compile(files, environment!!.project, environment!!.configuration, fileName, searchForMain)
+        val environment = initializedEnvironment
+        return compile(files, environment.project, environment.configuration, fileName, searchForMain)
     }
 
     private fun compile(
@@ -207,7 +208,7 @@ internal object KotlinCompiler {
 
     private fun createPsiFiles(files: Map<String, String>): List<KtFile> =
         files.entries.mapNotNull {
-            createFile(EnvironmentManager.environment!!.project, it.key, it.value)
+            createFile(initializedEnvironment.project, it.key, it.value)
         }
 
     fun createFile(
@@ -244,7 +245,7 @@ internal object KotlinCompiler {
         files: List<KtFile>,
         project: Project,
     ): Pair<AnalysisResult, ComponentProvider> {
-        val environment = EnvironmentManager.environment!!
+        val environment = initializedEnvironment
         val trace = CliBindingTrace(project)
 
         val configuration = environment.configuration
@@ -324,9 +325,9 @@ internal object KotlinCompiler {
                             getInterval(
                                 firstRange.startOffset,
                                 firstRange.endOffset,
-                                diagnostic.psiFile.viewProvider.document!!,
+                                checkNotNull(diagnostic.psiFile.viewProvider.document) { "no document for ${diagnostic.psiFile.name}" },
                             )
-                        errors[diagnostic.psiFile.name]!!.add(
+                        errors.getValue(diagnostic.psiFile.name).add(
                             CompileError(
                                 interval,
                                 render,
@@ -381,7 +382,7 @@ internal object KotlinCompiler {
             for (errorElement in errorElements) {
                 val start = errorElement.textRange.startOffset
                 val end = errorElement.textRange.endOffset
-                val interval = getInterval(start, end, psiFile.viewProvider.document!!)
+                val interval = getInterval(start, end, checkNotNull(psiFile.viewProvider.document) { "no document for ${psiFile.name}" })
                 errors.add(
                     CompileError(
                         interval,

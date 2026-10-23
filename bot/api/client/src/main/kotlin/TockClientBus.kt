@@ -59,7 +59,7 @@ class TockClientBus(
     val sendAnswer: (BotResponse) -> Unit,
 ) : ClientBus {
     constructor(botDefinition: ClientBotDefinition, data: RequestData, sendAnswer: (BotResponse) -> Unit) :
-        this(botDefinition, data.requestId, data.botRequest!!, sendAnswer)
+        this(botDefinition, data.requestId, requireNotNull(data.botRequest) { "missing bot request in request ${data.requestId}" }, sendAnswer)
 
     override val connectorId: String = request.context.applicationId
     override val userId: PlayerId = request.context.userId

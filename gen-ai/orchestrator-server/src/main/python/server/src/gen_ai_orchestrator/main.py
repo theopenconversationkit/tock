@@ -34,6 +34,9 @@ from gen_ai_orchestrator.routers.document_compressor_providers_router import (
     document_compressor_providers_router,
 )
 from gen_ai_orchestrator.routers.em_providers_router import em_providers_router
+from gen_ai_orchestrator.routers.knowledge_base_router import (
+    knowledge_base_router,
+)
 from gen_ai_orchestrator.routers.llm_providers_router import (
     llm_providers_router,
 )
@@ -71,6 +74,7 @@ app.include_router(vector_store_inspection_router)
 app.include_router(observability_providers_router)
 app.include_router(document_compressor_providers_router)
 app.include_router(rag_router)
+app.include_router(knowledge_base_router)
 app.include_router(qa_router)
 app.include_router(completion_router)
 

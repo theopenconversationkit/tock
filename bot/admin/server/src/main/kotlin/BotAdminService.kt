@@ -176,7 +176,7 @@ object BotAdminService {
     ) : StoryDefinitionConfigurationDumpController {
         override fun keepFeature(feature: StoryDefinitionConfigurationFeatureDump): Boolean =
             feature.botApplicationConfigurationId == null ||
-                getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
+                feature.botApplicationConfigurationId?.let { getBotConfigurationById(it) }?.namespace == targetNamespace
 
         override fun buildScript(
             script: ScriptAnswerVersionedConfigurationDump,
@@ -185,10 +185,10 @@ object BotAdminService {
             if (compile && !KotlinCompilerClient.compilerDisabled) {
                 val fileName = "T${Dice.newId()}.kt"
                 val result = KotlinCompilerClient.compile(KotlinFile(script.script, fileName))
-                if (result?.compilationResult == null) {
+                val c = result?.compilationResult
+                if (c == null) {
                     badRequest("Compilation error: ${result?.errors?.joinToString()}")
                 } else {
-                    val c = result.compilationResult!!
                     ScriptAnswerVersionedConfiguration(
                         script = script.script,
                         compiledCode = c.files.map { it.key.substring(0, it.key.length - ".class".length) to it.value },
@@ -311,7 +311,7 @@ object BotAdminService {
             throw IllegalArgumentException("Event type must be COMMENT")
         }
 
-        require(eventDTO.comment != null) { "Comment must be provided" }
+        val comment = requireNotNull(eventDTO.comment) { "Comment must be provided" }
 
         val annotation =
             dialogReportDAO.findAnnotation(dialogId, actionId)
@@ -320,7 +320,7 @@ object BotAdminService {
         val existingCommentEvent = existingEvent as BotAnnotationEventComment
         val updatedEvent =
             existingCommentEvent.copy(
-                comment = eventDTO.comment!!,
+                comment = comment,
                 lastUpdateDate = Instant.now(),
             )
 
@@ -447,7 +447,7 @@ object BotAdminService {
                 emptySet(),
                 category = intentCategory,
             ),
-        )!!
+        ) ?: error("Unable to create or get intent $intentName in namespace $namespace")
 
     fun getBots(
         namespace: String,
@@ -832,7 +832,9 @@ object BotAdminService {
         if (botConf == null) {
             badRequest("No bot configuration is defined yet")
         } else {
-            val application = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
+            val application =
+                front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)
+                    ?: badRequest("NLP application ${botConf.nlpModel} not found")
             val ragConfiguration = ragConfigurationDAO.findByNamespaceAndBotId(namespace, botConf.botId)
 
             dump.stories.forEach {
@@ -1002,7 +1004,9 @@ object BotAdminService {
         val botConf =
             getBotConfigurationsByNamespaceAndBotId(namespace, request.story.botId).firstOrNull()
         return if (botConf != null) {
-            val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
+            val nlpApplication =
+                front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)
+                    ?: badRequest("NLP application ${botConf.nlpModel} not found")
             val intentDefinition =
                 createOrGetIntent(
                     namespace,
@@ -1042,10 +1046,10 @@ object BotAdminService {
         if (!KotlinCompilerClient.compilerDisabled && oldScript != this) {
             val fileName = "T${Dice.newId()}.kt"
             val result = KotlinCompilerClient.compile(KotlinFile(this, fileName))
-            if (result?.compilationResult == null) {
+            val c = result?.compilationResult
+            if (c == null) {
                 badRequest("Compilation error: ${result?.errors?.joinToString()}")
             } else {
-                val c = result.compilationResult!!
                 val newScript =
                     ScriptAnswerVersionedConfiguration(
                         this,
@@ -1275,7 +1279,9 @@ object BotAdminService {
 
         val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
         return if (botConf != null) {
-            val application = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
+            val application =
+                front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)
+                    ?: badRequest("NLP application ${botConf.nlpModel} not found")
             val storyWithSameNsBotAndName =
                 storyDefinitionDAO
                     .getStoryDefinitionByNamespaceAndBotIdAndStoryId(
@@ -1481,13 +1487,14 @@ object BotAdminService {
         user: UserLogin,
     ) {
         val label = step.userSentenceLabel?.let { Translator.getLabel(it.key) }
-        if (label != null && step.intent != null) {
+        val stepIntent = step.intent
+        if (label != null && stepIntent != null) {
             application.supportedLocales.forEach { locale ->
                 val text =
                     label.findLabel(locale)?.label
                         ?: label.findLabel(defaultLocale)?.label
                 if (text != null) {
-                    val intent = front.getIntentByNamespaceAndName(application.namespace, step.intent!!.name)
+                    val intent = front.getIntentByNamespaceAndName(application.namespace, stepIntent.name)
                     if (intent != null) {
                         saveSentence(text, locale, application._id, intent._id, user)
                     }
@@ -1634,6 +1641,9 @@ object BotAdminService {
     }
 
     fun deleteApplication(app: ApplicationDefinition) {
+        // Acquire the KB worker barrier before deleting settings needed by in-flight jobs.
+        ai.tock.bot.admin.service.KnowledgeBaseService.default
+            .purge(app.namespace, app.name)
         applicationConfigurationDAO
             .getConfigurationsByNamespaceAndNlpModel(
                 app.namespace,

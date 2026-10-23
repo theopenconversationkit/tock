@@ -28,6 +28,7 @@ object Constants {
     const val PG_VECTOR = "PGVector"
 
     const val BLOOMZ_COMPRESSOR = "BloomzRerank"
+    const val VLLM_COMPRESSOR = "VllmRerank"
 
     private const val GEN_AI = "GenAI"
     private const val GEN_AI_RAG = "$GEN_AI/RAG"

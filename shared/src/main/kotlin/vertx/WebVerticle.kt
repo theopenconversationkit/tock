@@ -148,7 +148,7 @@ abstract class WebVerticle : CoroutineVerticle() {
 
     open val logoutPath: String get() = "$basePath/logout"
 
-    private val verticleName: String = this::class.simpleName!!
+    private val verticleName: String = this::class.simpleName ?: this::class.java.name
 
     /**
      * If not null, add a [healthcheck()] for this verticle.
@@ -306,7 +306,7 @@ abstract class WebVerticle : CoroutineVerticle() {
     /**
      * The default roles of a service.
      */
-    open fun defaultRoles(): Set<TockUserRole>? = defaultRole()?.let { setOf(defaultRole()!!) }
+    open fun defaultRoles(): Set<TockUserRole>? = defaultRole()?.let { setOf(it) }
 
     /**
      * The default port of the verticle

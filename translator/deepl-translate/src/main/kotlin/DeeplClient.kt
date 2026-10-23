@@ -123,8 +123,8 @@ class OkHttpDeeplClient(
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
-            val responseBody = response.body?.string()
-            val translationResponse = mapper.readValue<TranslationResponse>(responseBody!!)
+            val responseBody = response.body?.string() ?: throw IOException("Empty response body")
+            val translationResponse = mapper.readValue<TranslationResponse>(responseBody)
 
             val translatedText = translationResponse.translations.firstOrNull()?.text
             return translatedText?.let { revertSpecificPlaceholders(it, originalPlaceholders) }

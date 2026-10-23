@@ -63,11 +63,11 @@ data class ArtifactVersion(
                             mutableListOf(u + 1),
                             { row, v ->
                                 row.add(
-                                    listOf(
+                                    minOf(
                                         row.last() + 1,
                                         previous[v + 1] + 1,
                                         previous[v] + charScore(s[u], t[v]),
-                                    ).minOrNull()!!,
+                                    ),
                                 )
                                 row
                             },

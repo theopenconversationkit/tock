@@ -49,5 +49,5 @@ internal class MongoCacheData(
             }
     }
 
-    fun toValue(): Any = s ?: b ?: a!!.value!!
+    fun toValue(): Any = s ?: b ?: checkNotNull(a?.value) { "no value in cache data $id" }
 }

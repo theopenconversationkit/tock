@@ -540,9 +540,9 @@ object Translator {
                         } else {
                             val baseValue =
                                 i.findExistingLabelForOtherLocale(label.locale, label.interfaceType, label.connectorId)
-                            if (!baseValue?.label.isNullOrBlank()) {
+                            if (baseValue != null && baseValue.label.isNotBlank()) {
                                 count++
-                                label.copy(label = translate(baseValue!!.label, baseValue.locale, label.locale))
+                                label.copy(label = translate(baseValue.label, baseValue.locale, label.locale))
                             } else {
                                 label
                             }

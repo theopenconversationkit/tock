@@ -123,9 +123,9 @@ internal object DatesMerge {
                                 referenceDateTime,
                                 sortedBy { it.position }.map { it.content }.joinToString(" "),
                             )
-                                ?: maxByOrNull { it.probability }!!
+                                ?: maxBy { it.probability }
                         } else {
-                            maxByOrNull { it.probability }!!
+                            maxBy { it.probability }
                         }
                     }
                 }
@@ -139,8 +139,8 @@ internal object DatesMerge {
     ): ValueDescriptor {
         try {
             val zoneId = referenceDateTime.zone
-            if (hasToChangeDayInMonth(language, newValue)) {
-                val newValueContent = normalize(newValue.content!!)
+            val newValueContent = newValue.content?.let { normalize(it) }
+            if (newValueContent != null && hasToChangeDayInMonth(language, newValueContent)) {
                 oldValue.start(zoneId).apply {
                     val newResult =
                         ValueDescriptor(
@@ -164,8 +164,7 @@ internal object DatesMerge {
                     }
                 }
             }
-            if (hasToChangeDayInWeek(language, newValue)) {
-                val newValueContent = normalize(newValue.content!!)
+            if (newValueContent != null && hasToChangeDayInWeek(language, newValueContent)) {
                 oldValue.start(zoneId).apply {
                     val oldDayOfWeek = dayOfWeek.value
                     val newDayOfWeek =
@@ -251,19 +250,13 @@ internal object DatesMerge {
 
     private fun hasToChangeDayInMonth(
         language: Locale,
-        newValue: ValueDescriptor,
-    ): Boolean =
-        language.language == "fr" &&
-            newValue.content != null &&
-            frenchChangeDayInMonth.matches(normalize(newValue.content!!))
+        normalizedContent: String,
+    ): Boolean = language.language == "fr" && frenchChangeDayInMonth.matches(normalizedContent)
 
     private fun hasToChangeDayInWeek(
         language: Locale,
-        newValue: ValueDescriptor,
-    ): Boolean =
-        language.language == "fr" &&
-            newValue.content != null &&
-            frenchChangeDayInWeek.matches(normalize(newValue.content!!))
+        normalizedContent: String,
+    ): Boolean = language.language == "fr" && frenchChangeDayInWeek.matches(normalizedContent)
 
     private fun hasToAdd(
         language: Locale,
@@ -276,7 +269,7 @@ internal object DatesMerge {
             } else {
                 true
             }
-        return if (basicSupport && newValue.content != null && frenchAddRegex.matches(normalize(newValue.content!!))) {
+        return if (basicSupport && newValue.content?.let { frenchAddRegex.matches(normalize(it)) } == true) {
             MergeGrain(true, newValue.grain())
         } else {
             null

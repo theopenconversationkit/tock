@@ -17,7 +17,8 @@
 import { ProvidersConfigurationParam } from '../../../shared/model/ai-settings';
 
 export enum CompressorProvider {
-  BloomzRerank = 'BloomzRerank'
+  BloomzRerank = 'BloomzRerank',
+  VllmRerank = 'VllmRerank'
 }
 
 export interface CompressorProvidersConfiguration {
@@ -65,6 +66,47 @@ export const ProvidersConfigurations: CompressorProvidersConfiguration[] = [
         step: 0.05,
         information:
           'Minimum score threshold for documents. Documents below this score are excluded unless `Pad with lower-scoring documents` is enabled'
+      }
+    ]
+  },
+  {
+    label: 'VllmRerank',
+    key: CompressorProvider.VllmRerank,
+    params: [
+      { key: 'endpoint', label: 'Endpoint', type: 'obfuscated' },
+      {
+        key: 'model',
+        label: 'Model',
+        type: 'text',
+        information: 'Name of the reranking model served by vLLM (e.g. BAAI/bge-reranker-v2-m3)'
+      },
+      {
+        key: 'maxDocuments',
+        label: 'Max documents',
+        type: 'number',
+        min: 1,
+        max: 20,
+        step: 1,
+        information: 'Maximum number of documents to return as sources for the answer'
+      },
+      {
+        key: 'fillToMaxDocuments',
+        label: 'Pad with lower-scoring documents',
+        type: 'boolean',
+        defaultValue: false,
+        required: false,
+        information:
+          'If enabled, fill the result set with the best available documents (even if their score is below `Minimum score`) to reach `Max documents`'
+      },
+      {
+        key: 'minScore',
+        label: 'Minimum score',
+        type: 'number',
+        min: 0,
+        max: 1,
+        step: 0.05,
+        information:
+          'Minimum score threshold for documents. Documents below this score are excluded unless `Pad with lower-scoring documents` is enabled. Note: score scale depends on the reranking model used (e.g., sigmoid for bge-reranker models)'
       }
     ]
   }

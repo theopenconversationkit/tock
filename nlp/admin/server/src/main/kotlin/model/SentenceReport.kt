@@ -118,7 +118,7 @@ data class SentenceReport(
 
     fun toClassifiedSentence(): ClassifiedSentence =
         ClassifiedSentence(
-            if (key == null) text else decrypt(key!!),
+            key?.let { decrypt(it) } ?: text,
             language,
             applicationId,
             creationDate,

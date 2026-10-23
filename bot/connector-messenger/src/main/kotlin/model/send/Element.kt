@@ -57,5 +57,5 @@ data class Element(
                     ?: emptyList(),
         )
 
-    fun obfuscate(): Element = Element(obfuscate(title)!!, imageUrl, obfuscate(subtitle), buttons)
+    fun obfuscate(): Element = Element(obfuscate(title) ?: title, imageUrl, obfuscate(subtitle), buttons)
 }

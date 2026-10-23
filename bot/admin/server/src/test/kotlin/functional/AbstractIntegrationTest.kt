@@ -34,8 +34,8 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.extension.ExtendWith
 import org.litote.kmongo.id.ObjectIdToStringGenerator
 import org.litote.kmongo.id.StringId
-import org.testcontainers.containers.MongoDBContainer
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.mongodb.MongoDBContainer
 import org.testcontainers.utility.DockerImageName
 
 @Testcontainers

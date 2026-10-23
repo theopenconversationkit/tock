@@ -27,7 +27,7 @@ data class TestBuildQuery(
     fun toTestErrorQuery(app: ApplicationDefinition): TestErrorQuery =
         TestErrorQuery(
             app._id,
-            language!!,
+            requireNotNull(language) { "language is required" },
             intentName,
             after?.toInstant(),
             start,

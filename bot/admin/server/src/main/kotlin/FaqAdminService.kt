@@ -82,16 +82,6 @@ object FaqAdminService {
     private const val WARN_CANNOT_FIND_UTTERANCE = "Could not found an associated ClassifiedSentence"
 
     /**
-     * Make migration:
-     * add namespace attribute (referred to Intent's _id) by namespace attribute (referred to Intent's namespace)
-     */
-    fun makeMigration() {
-        faqDefinitionDAO.makeMigration {
-            intentDAO.getIntentById(it)?.namespace
-        }
-    }
-
-    /**
      * Save the Frequently asked question into database
      */
     fun saveFAQ(
@@ -539,9 +529,9 @@ object FaqAdminService {
                 applicationDefinition.namespace,
                 emptyList(),
                 emptyList(),
-                intent.label!!,
+                intent.label ?: query.title.trim(),
                 FAQ_CATEGORY,
-                intent.description!!,
+                intent.description ?: query.description.trim(),
                 query.utterances.first(),
                 query.answer.defaultLocale,
                 features = features,
@@ -798,8 +788,8 @@ object FaqAdminService {
      */
     private val updatedFaqSearch: FaqDefinitionRequest.(Map<String, StoryDefinitionConfiguration>) -> FaqDefinitionRequest =
         {
-            // intentName is not empty since it is present in the map
-            it[this.intentName]!!.let { story ->
+            // intentName is present in the map since faqs are filtered on its keys
+            it.getValue(this.intentName).let { story ->
                 val footnotes =
                     (story.answers.find { answer -> answer is SimpleAnswerConfiguration } as? SimpleAnswerConfiguration)
                         ?.answers

@@ -23,7 +23,7 @@ import java.util.Enumeration
 /**
  * Return a map with only not null values.
  */
-fun <K, V> mapNotNullValues(vararg pairs: Pair<K, V?>): Map<K, V> = mapOf(*pairs).filterValues { it != null }.mapValues { it.value!! }
+fun <K, V> mapNotNullValues(vararg pairs: Pair<K, V?>): Map<K, V> = mapOf(*pairs).mapNotNull { (key, value) -> value?.let { key to it } }.toMap()
 
 /**
  * Map not null values of the [Pair] results of the specified transformation.

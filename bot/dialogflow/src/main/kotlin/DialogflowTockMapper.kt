@@ -33,7 +33,7 @@ internal class DialogflowTockMapper {
     private fun dialogflowEntityToTockEntity(
         parameterName: String,
         namespace: String,
-    ): Entity? = Entity(EntityType("$namespace:$parameterName"), parameterName)
+    ): Entity = Entity(EntityType("$namespace:$parameterName"), parameterName)
 
     /**
      * Returns a Tock [NlpEntityValue] from a Dialogflow Value.
@@ -42,7 +42,7 @@ internal class DialogflowTockMapper {
         parameter: Map.Entry<String, Value>,
         namespace: String,
     ): NlpEntityValue? {
-        val entity = dialogflowEntityToTockEntity(parameter.key, namespace)!!
+        val entity = dialogflowEntityToTockEntity(parameter.key, namespace)
         val value: ai.tock.nlp.entity.Value? =
             when (parameter.value.kindCase) {
                 Value.KindCase.NUMBER_VALUE -> {
