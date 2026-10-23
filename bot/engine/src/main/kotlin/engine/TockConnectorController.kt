@@ -35,6 +35,7 @@ import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.error
@@ -45,9 +46,10 @@ import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
-import io.vertx.kotlin.coroutines.awaitBlocking
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.net.URI
 import java.util.concurrent.CopyOnWriteArrayList
@@ -93,6 +95,7 @@ internal class TockConnectorController(
         }
     }
 
+    private val executor: Executor by injector.instance()
     private val userLock: UserLock by injector.instance()
     private val userTimelineDAO: UserTimelineDAO by injector.instance()
 
@@ -103,7 +106,7 @@ internal class TockConnectorController(
     /**
      * Handles an event sent by the connector.
      *
-     * The actual processing is done asynchronously on the vertx event loop,
+     * The actual processing is done asynchronously (see [handleUserEvent]),
      * with this method returning immediately.
      *
      * @param event the event to handle
@@ -119,8 +122,25 @@ internal class TockConnectorController(
         }
     }
 
+    /**
+     * Handles an event received by the connector.
+     *
+     * This method may be called from a vert.x event loop (connector routes, [handle]),
+     * but the processing calls blocking code (NLP client, profile loading, synchronous stories and listeners).
+     * So the whole processing is dispatched on the [Executor] worker pool.
+     * Suspending (coroutine) stories do not hold a worker thread while they are suspended.
+     */
     @OptIn(ExperimentalTockCoroutines::class)
     override suspend fun handleUserEvent(
+        event: Event,
+        data: ConnectorData,
+    ): Unit =
+        withContext(executor.asCoroutineDispatcher()) {
+            processUserEvent(event, data)
+        }
+
+    @OptIn(ExperimentalTockCoroutines::class)
+    private suspend fun processUserEvent(
         event: Event,
         data: ConnectorData,
     ) {
@@ -200,10 +220,7 @@ internal class TockConnectorController(
                     // Notify callback that timeline has been loaded
                     callback.initialUserTimelineLoaded(userTimeline)
 
-                    val transformedAction =
-                        awaitBlocking {
-                            tryToParseVoiceAudio(action, userTimeline)
-                        }
+                    val transformedAction = tryToParseVoiceAudio(action, userTimeline)
 
                     bot.handleAction(transformedAction, userTimeline, this, data)
 
