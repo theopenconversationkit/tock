@@ -36,6 +36,8 @@ ALTER TABLE langchain_pg_embedding
 -- Replace single-column FTS index with composite index (scoped by collection)
 DROP INDEX IF EXISTS idx_fts_vector;
 
+CREATE EXTENSION IF NOT EXISTS btree_gin;
+
 CREATE INDEX IF NOT EXISTS idx_fts_vector_composite
     ON langchain_pg_embedding
     USING GIN (collection_id, fts_vector);
