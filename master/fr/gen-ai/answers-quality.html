@@ -4653,6 +4653,10 @@ saisie dans le menu <em>Test</em>, avec le mode debug et le contenu des sources 
 en arrière-plan : la liste affiche la progression de l'exécution en cours, qui peut être annulée.</p>
 <p>Exécuter un dataset nécessite une configuration de test pour le bot. Une seule exécution peut être active par dataset,
 et un dataset ne peut pas être modifié ou supprimé pendant une exécution.</p>
+<p>Une icône d'état apparaît à gauche de chaque dataset et exécution ; son survol affiche l'état (et la date de la dernière exécution pour un dataset).
+L'icône de l'état en cours tourne pendant l'exécution, sauf si la réduction des animations est activée dans les paramètres du système.
+Pendant une exécution, la ligne du dataset regroupe la durée, une barre de progression et le compteur de questions traitées (par exemple, <code>8 / 20</code>). Le compteur inclut les échecs d'exécution.
+La flèche dans l'en-tête à gauche permet de trier les datasets par date de dernière exécution.</p>
 <p>Pour chaque exécution, la liste indique ses dates, sa durée et son état, et compte les questions :</p>
 <ul>
 <li><em>Completed</em> et <em>Failed</em> (échecs d'exécution ou erreurs techniques),</li>
@@ -4661,12 +4665,35 @@ et un dataset ne peut pas être modifié ou supprimé pendant une exécution.</p
 <li><em>Not found in context</em> : traitées par le RAG sans document pertinent.</li>
 </ul>
 <p>Une exécution qui se termine avec des questions en échec reste <em>terminée</em> : les échecs sont comptés dans ses statistiques.</p>
+<p>La colonne <em>Durée</em> affiche la durée moyenne RAG par réponse mesurée à côté de la durée totale de l'exécution,
+par exemple <code>00:02:10 (6,4 s/q)</code>. Survolez la moyenne pour connaître le nombre de questions disposant d'une mesure.
+Cette moyenne utilise le champ <code>ragDebug.duration</code> de l'orchestrateur, y compris pour les réponses non trouvées dans le contexte ;
+les échecs, les réponses hors RAG et les mesures absentes ou invalides sont exclus. Elle mesure la chaîne RAG, et pas uniquement l'appel final au LLM.
+Après un retry du dataset, seule la tentative réussie contribue à cette moyenne ; les tentatives précédentes restent comprises dans la durée totale.
+Les durées sont conservées avec les résultats des questions, même après expiration des dialogues. Les anciennes exécutions sans durée enregistrée
+affichent uniquement la durée totale ; ouvrir leurs réponses permet de récupérer les durées disponibles dans les dialogues pour les prochaines consultations de la liste.</p>
+<p>Le pourcentage <em>Not found in context</em> est calculé sur toutes les questions du dataset, y compris celles en échec.
+Il reste affiché en présence d'échecs et doit être lu avec le nombre de questions en échec.</p>
+<p>Pour les nouvelles exécutions, le type de réponse et le statut RAG sont conservés avec chaque résultat de question :
+leurs compteurs restent disponibles après expiration des dialogues. Les anciennes exécutions acquièrent ces informations
+à la lecture des réponses, si les dialogues sont encore disponibles. Le détail des réponses et les échantillons
+d'évaluation restent soumis à la rétention des dialogues.</p>
 <h3 id="comparer-des-executions">Comparer des exécutions</h3>
-<p>Ouvrez une exécution pour afficher ses réponses. L'écran compare une <em>Run A</em> et une <em>Run B</em> (par défaut, la dernière exécution),
+<p>Dans la liste des exécutions, la colonne <em>Note</em> après <em>Durée</em> permet d'ajouter une indication comme « Compressor OFF » ou « Compressor ON ».
+Cliquez sur la note pour la modifier, puis sur la coche ou Entrée pour enregistrer ; Échap ou la croix annule la modification.
+La note est facultative, limitée à 200 caractères et modifiable pendant ou après l'exécution. Enregistrez une note vide pour la supprimer.
+Elle apparaît aussi sous <em>Run A</em> et <em>Run B</em> et dans les infobulles du sélecteur d'exécutions lors de la comparaison.</p>
+<p>Ouvrez une exécution pour afficher ses réponses. Par défaut, l'écran compare la dernière exécution terminée (<em>Run A</em>) à la précédente exécution terminée (<em>Run B</em>),
 question par question : texte de la réponse, type de réponse (RAG ou intention) et sources. Les sources ajoutées,
 modifiées ou supprimées entre les deux exécutions sont mises en évidence.</p>
+<p>Le bouton de comparaison de la liste compare l'exécution sélectionnée à la dernière exécution terminée, même si une autre est en cours.
+La comparaison nécessite deux exécutions terminées distinctes ; lorsqu'une seule est disponible, le détail affiche uniquement celle-ci.</p>
 <p>Les filtres <em>Show only diffs</em> n'affichent que les questions dont l'état, les sources, le type de réponse ou la formulation ont changé.</p>
 <p>Les liens <em>settings</em> et <em>prompts</em> affichent les réglages RAG et les prompts utilisés par chaque exécution, et les comparent.</p>
+<p>L'onglet <em>Paramètres de compression</em> affiche la configuration sauvegardée au lancement de chaque exécution, dont
+l'activation de la compression et les paramètres du fournisseur, avec les différences mises en évidence. Les changements
+ultérieurs de configuration du bot ne modifient pas cette sauvegarde. Pour les anciennes exécutions, un message indique
+que ces paramètres n'ont pas été enregistrés ; cela ne signifie pas que la compression était désactivée.</p>
 <h3 id="creer-un-echantillon-a-partir-dune-execution">Créer un échantillon à partir d'une exécution</h3>
 <p>Depuis la liste des exécutions, <em>Create an evaluation sample based on the results of this run</em> crée un
 <a href="#evaluations">échantillon d'évaluation</a> contenant les réponses de l'exécution, pour qu'elles soient notées par des personnes.</p>
@@ -4989,7 +5016,7 @@ modifiées ou supprimées entre les deux exécutions sont mises en évidence.</p
     <span class="md-icon" title="Dernière mise à jour">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="9 octobre 2026 16:17:42 UTC">9 octobre 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="23 octobre 2026 15:20:10 UTC">23 octobre 2026</span>
   </span>
 
     

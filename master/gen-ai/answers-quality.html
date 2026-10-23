@@ -4653,6 +4653,10 @@ makes runs compare different things: in that case, delete the question and add a
 the list shows the progress of the active run, which can be cancelled.</p>
 <p>Running a dataset requires a test configuration for the bot. Only one run can be active for a dataset,
 and a dataset cannot be edited or deleted while a run is active.</p>
+<p>A status icon appears at the left of each dataset and run; hover over it to see its state (and the latest run date for a dataset).
+The running icon rotates while a run is active, unless reduced motion is enabled in the system settings.
+While a run is active, the dataset summary groups its duration, a progress bar and the processed-question count (for example, <code>8 / 20</code>). The count includes execution failures.
+The arrow in the leading header sorts datasets by latest run date.</p>
 <p>For each run, the list of runs shows its dates, duration and state, and counts the questions:</p>
 <ul>
 <li><em>Completed</em> and <em>Failed</em> (execution failures or technical errors),</li>
@@ -4661,12 +4665,34 @@ and a dataset cannot be edited or deleted while a run is active.</p>
 <li><em>Not found in context</em>: handled by the RAG without relevant documents.</li>
 </ul>
 <p>A run that ends with some failed questions is still <em>completed</em>: failed questions are reported in the run statistics.</p>
+<p>The <em>Duration</em> column displays the average RAG duration per measured response next to the total run duration,
+for example <code>00:02:10 (6.4 s/q)</code>. Hover over the average to see how many questions have a measurement.
+This average uses the orchestrator's <code>ragDebug.duration</code>, including responses not found in context; failures,
+non-RAG responses and missing or invalid measurements are excluded. It measures the RAG chain, not only the final LLM call.
+After a dataset retry, only the successful attempt contributes to this average; earlier attempts remain part of the total run duration.
+Durations are stored with question results and remain available after dialog expiration. Older runs without a recorded duration
+show only the total run duration; opening their answers can recover available durations from dialogs for subsequent visits to the run list.</p>
+<p>The <em>Not found in context</em> percentage is calculated over all questions in the dataset, including failed questions.
+It remains visible when some questions fail; read it alongside the failure count.</p>
+<p>For new runs, answer-type and RAG-status counts are stored with each question result, so they remain available after
+the underlying dialogs expire. Older runs acquire these counts when their answers are read, if the dialogs are still available.
+Answer details and evaluation samples still depend on dialog retention.</p>
 <h3 id="comparing-runs">Comparing runs</h3>
-<p>Open a run to display its answers. The screen compares a <em>Run A</em> with a <em>Run B</em> (by default, the latest run),
+<p>In the run list, the <em>Note</em> column after <em>Duration</em> lets you add a short label such as “Compressor OFF” or “Compressor ON”.
+Click the note to edit it, then press Enter or click the check mark to save; Escape or the cross cancels editing.
+Notes are optional, limited to 200 characters, and editable during or after a run. Save an empty note to remove it.
+The note is also displayed under <em>Run A</em> and <em>Run B</em> and in the run selector tooltips during comparison.</p>
+<p>Open a run to display its answers. By default, the screen compares the latest completed run (<em>Run A</em>) with the previous completed run (<em>Run B</em>),
 question by question: answer text, answer type (RAG or intent) and sources. Sources that were added, modified or removed
 between the two runs are highlighted.</p>
+<p>The list's comparison button compares the selected run with the latest completed run, even while another run is in progress.
+Comparison requires two distinct completed runs; when only one is available, the detail view displays that run alone.</p>
 <p>The <em>Show only diffs</em> filters display only the questions whose status, sources, answer type or wording changed.</p>
 <p>The <em>settings</em> and <em>prompts</em> links show the RAG settings and prompts used by each run, and compare them between the two runs.</p>
+<p>The <em>Compression Settings</em> tab shows the configuration saved when each run was launched, including whether compression
+was enabled and the provider's parameters, with differences highlighted. Later changes to the bot's configuration do not
+alter this snapshot. Older runs display a message when compression settings were not recorded; this does not mean
+compression was disabled.</p>
 <h3 id="creating-an-evaluation-sample-from-a-run">Creating an evaluation sample from a run</h3>
 <p>From the list of runs, <em>Create an evaluation sample based on the results of this run</em> creates an
 <a href="#evaluations">evaluation sample</a> containing the answers of the run, so that they can be graded by humans.</p>
@@ -4989,7 +5015,7 @@ between the two runs are highlighted.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 9, 2026 16:17:42 UTC">October 9, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 23, 2026 15:20:10 UTC">October 23, 2026</span>
   </span>
 
     
