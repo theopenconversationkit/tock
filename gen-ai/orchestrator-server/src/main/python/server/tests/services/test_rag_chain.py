@@ -664,7 +664,7 @@ def test_get_condensing_llm_answer_from_raw_with_text_around_json():
 
 def test_rag_chain_with_compressor_applies_compression_to_documents():
     """Test that RunnablePassthrough.assign correctly applies compressor to documents."""
-    from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+    from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 
     # Mock compressor that filters documents by threshold
     def mock_compress_documents(documents, query):
