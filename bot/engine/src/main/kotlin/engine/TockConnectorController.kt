@@ -45,18 +45,20 @@ import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
-import io.vertx.kotlin.coroutines.awaitBlocking
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.net.URI
 import java.util.concurrent.CopyOnWriteArrayList
 
 @Deprecated("Use coroutine stories to perform asynchronous operations")
-private val synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
+internal var synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
 
 @Deprecated("Use coroutine stories to perform asynchronous operations")
-private val asynchronousMode = booleanProperty("tock_timeline_persistence_asynchronous_mode", false)
+internal var asynchronousMode = booleanProperty("tock_timeline_persistence_asynchronous_mode", false)
 
 /**
  *
@@ -179,12 +181,7 @@ internal class TockConnectorController(
 
         try {
             logger.debug { "try to lock $playerId" }
-            // Not aborting on lock loss to preserve old behavior
-            userLock.withLock(
-                userId = id,
-                postLockRelease = { callback.userLockReleased(action) },
-                abortOnLockLoss = false,
-            ) {
+            val process: suspend () -> Unit = {
                 try {
                     callback.userLocked(action)
 
@@ -201,7 +198,7 @@ internal class TockConnectorController(
                     callback.initialUserTimelineLoaded(userTimeline)
 
                     val transformedAction =
-                        awaitBlocking {
+                        withContext(Dispatchers.IO) {
                             tryToParseVoiceAudio(action, userTimeline)
                         }
 
@@ -209,13 +206,29 @@ internal class TockConnectorController(
 
                     if (synchronousMode && data.saveTimeline) {
                         userTimelineDAO.save(userTimeline, bot.botDefinition)
-                    } else if (asynchronousMode) {
-                        logger.warn { "Deprecated asynchronous timeline saving mode used, late writes will not be protected by the lock" }
                     }
                 } catch (t: Throwable) {
                     send(null, data, action, errorMessage(action.recipientId, action.connectorId, action.playerId))
                     callback.exceptionThrown(action, t)
                 }
+            }
+
+            val completion =
+                if (asynchronousMode) {
+                    logger.warn { "Deprecated asynchronous timeline saving mode used" }
+                    CompletableDeferred<Unit>().also { data.asyncLockReleaseSignal = it }
+                } else {
+                    null
+                }
+
+            // Not aborting on lock loss to preserve old behavior
+            userLock.withLock(
+                userId = id,
+                postLockRelease = { callback.userLockReleased(action) },
+                abortOnLockLoss = false,
+            ) {
+                process()
+                completion?.await()
             }
         } catch (e: LockAcquisitionException) {
             logger.debug(e) { "failed to acquire lock for $playerId - skip $action" }
@@ -292,13 +305,42 @@ internal class TockConnectorController(
             logger.error(t)
         } finally {
             if (action.metadata.lastAnswer) {
-                if (asynchronousMode && data.saveTimeline && userTimeline != null) {
-                    runBlocking {
-                        userTimelineDAO.save(userTimeline, bot.botDefinition)
-                    }
-                }
-                data.callback.eventAnswered(userAction)
+                completeLastAnswer(userTimeline, data, userAction)
             }
+        }
+    }
+
+    /**
+     * Completes the processing of the last answer for a single lock acquisition: saves the
+     * timeline (deprecated asynchronous mode only) and notifies [ConnectorCallback.eventAnswered],
+     * then - even if that notification throws (e.g. a connector callback that fails while
+     * serializing the response) - signals [ConnectorData.asyncLockReleaseSignal] so that, in the
+     * deprecated asynchronous mode, the coroutine still suspended in [handleAction] can resume and
+     * let [UserLock.withLock] release the lock (and invoke [ConnectorCallback.userLockReleased])
+     * through its own, already battle-tested cleanup path.
+     *
+     * Guarded by [ConnectorData.lastAnswerCompleted] so this runs at most once per acquisition:
+     * [send] can be invoked a second time through the error-answer fallback in [handleAction]
+     * (itself possibly triggered by a failure in this very method), and without this guard a
+     * repeated call could complete a signal already consumed by a later event for the same user.
+     */
+    private fun completeLastAnswer(
+        userTimeline: UserTimeline?,
+        data: ConnectorData,
+        userAction: Action,
+    ) {
+        if (!data.lastAnswerCompleted.compareAndSet(false, true)) {
+            return
+        }
+        try {
+            if (asynchronousMode && data.saveTimeline && userTimeline != null) {
+                runBlocking {
+                    userTimelineDAO.save(userTimeline, bot.botDefinition)
+                }
+            }
+            data.callback.eventAnswered(userAction)
+        } finally {
+            data.asyncLockReleaseSignal?.complete(Unit)
         }
     }
 

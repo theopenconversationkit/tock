@@ -240,9 +240,9 @@ See [Installation](installation.md#data-retention).
 | `tock_bot_add_namespace_to_timeline_id` | `false` | Prefixes the user identifiers with the namespace, to separate the users of several namespaces |
 | `tock_bot_encrypted_flags` | | Dialog flags whose value is encrypted |
 | `tock_bot_lock_timeout_in_ms` | `5000` | Lifetime of the lock of a user, while a message is processed |
-| `tock_bot_locked_attempts_wait_in_ms` | `500` | Delay between two attempts to acquire the lock |
+| `tock_bot_lock_retry_delay_in_ms` | `500` | Delay between two attempts to acquire the lock |
 | `tock_bot_lock_retry_jitter_in_ms` | `20` | Random delay added to this delay |
-| `tock_bot_max_locked_attempts` | `10` | Number of attempts before giving up |
+| `tock_bot_lock_max_acquire_attempts` | `10` | Number of attempts before giving up |
 | `tock_bot_warn_after_locked_attempts` | `5` | Number of attempts before logging a warning |
 | `mongo_user_ttl_hours` | `6` | Retention of the user locks |
 
