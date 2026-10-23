@@ -24,7 +24,10 @@ import ai.tock.bot.definition.TestBehaviour
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendDebug
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.message.DebugMessage
+import ai.tock.bot.engine.message.Message
 import ai.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
@@ -73,10 +76,7 @@ internal class RestConnectorCallback(
             val r =
                 mapper.writeValueAsString(
                     MessageResponse(
-                        actions
-                            .filter {
-                                if (!userAction.metadata.debugEnabled) it !is SendDebug else true
-                            }.map { it.toMessage() },
+                        actions.flatMap { it.toRestMessages(userAction.metadata.debugEnabled) },
                         applicationId,
                         userAction.id.toString(),
                         nlpStats?.locale ?: locale,
@@ -88,3 +88,19 @@ internal class RestConnectorCallback(
         }
     }
 }
+
+internal fun Action.toRestMessages(debugEnabled: Boolean): List<Message> =
+    when {
+        this is SendDebug && !debugEnabled -> {
+            emptyList()
+        }
+
+        // RAG debug is stored on the action, but REST test clients consume debug messages.
+        this is SendSentenceWithFootnotes && debugEnabled && ragDebug != null -> {
+            listOf(DebugMessage("RAG", ragDebug), toMessage())
+        }
+
+        else -> {
+            listOf(toMessage())
+        }
+    }

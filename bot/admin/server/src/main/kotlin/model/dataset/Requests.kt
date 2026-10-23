@@ -65,6 +65,12 @@ data class DatasetRunCancelRequest(
     val ignored: Boolean? = null,
 )
 
+data class DatasetRunNoteRequest(
+    val note: String,
+) : ToValidate {
+    override fun validate(): List<String> = if (note.length > 200) listOf("Run note must not exceed 200 characters") else emptyList()
+}
+
 private fun validateDatasetRequest(
     name: String,
     questions: List<DatasetQuestionRequest>,
@@ -81,6 +87,11 @@ private fun validateDatasetRequest(
 
     if (questions.size > datasetMaxQuestions) {
         errors.add("Dataset must not contain more than $datasetMaxQuestions questions")
+    }
+
+    val questionIds = questions.mapNotNull { it.id?.trim()?.takeIf(String::isNotEmpty) }
+    if (questionIds.size != questionIds.distinct().size) {
+        errors.add("Question IDs must be unique")
     }
 
     questions.forEachIndexed { index, question ->

@@ -17,9 +17,21 @@
 package ai.tock.bot.admin.dataset
 
 import org.litote.kmongo.Id
+import java.time.Instant
 
 interface DatasetRunDAO {
     fun saveRun(run: DatasetRun): DatasetRun
+
+    fun updateRunNote(
+        id: Id<DatasetRun>,
+        note: String?,
+    ): DatasetRun?
+
+    fun finishRun(
+        id: Id<DatasetRun>,
+        state: DatasetRunState,
+        endTime: Instant,
+    ): DatasetRun?
 
     fun claimNextQueuedRun(): DatasetRun?
 
@@ -40,6 +52,18 @@ interface DatasetRunDAO {
 
     fun saveQuestionResult(result: DatasetRunQuestionResult): DatasetRunQuestionResult
 
+    fun updateActiveQuestionResult(result: DatasetRunQuestionResult): DatasetRunQuestionResult?
+
+    fun finishActiveQuestionResults(
+        runId: Id<DatasetRun>,
+        state: DatasetRunQuestionResultState,
+        endTime: Instant,
+        error: String? = null,
+    )
+
+    fun updateQuestionResultAnswer(result: DatasetRunQuestionResult)
+
+    /** Inserts the initial question results before publishing a new run. */
     fun saveQuestionResults(results: List<DatasetRunQuestionResult>)
 
     fun getQuestionResultsByRunId(runId: Id<DatasetRun>): List<DatasetRunQuestionResult>

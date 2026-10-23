@@ -100,6 +100,11 @@ en arrière-plan : la liste affiche la progression de l'exécution en cours, qui
 Exécuter un dataset nécessite une configuration de test pour le bot. Une seule exécution peut être active par dataset,
 et un dataset ne peut pas être modifié ou supprimé pendant une exécution.
 
+Une icône d'état apparaît à gauche de chaque dataset et exécution ; son survol affiche l'état (et la date de la dernière exécution pour un dataset).
+L'icône de l'état en cours tourne pendant l'exécution, sauf si la réduction des animations est activée dans les paramètres du système.
+Pendant une exécution, la ligne du dataset regroupe la durée, une barre de progression et le compteur de questions traitées (par exemple, `8 / 20`). Le compteur inclut les échecs d'exécution.
+La flèche dans l'en-tête à gauche permet de trier les datasets par date de dernière exécution.
+
 Pour chaque exécution, la liste indique ses dates, sa durée et son état, et compte les questions :
 
 * _Completed_ et _Failed_ (échecs d'exécution ou erreurs techniques),
@@ -109,15 +114,44 @@ Pour chaque exécution, la liste indique ses dates, sa durée et son état, et c
 
 Une exécution qui se termine avec des questions en échec reste _terminée_ : les échecs sont comptés dans ses statistiques.
 
+La colonne _Durée_ affiche la durée moyenne RAG par réponse mesurée à côté de la durée totale de l'exécution,
+par exemple `00:02:10 (6,4 s/q)`. Survolez la moyenne pour connaître le nombre de questions disposant d'une mesure.
+Cette moyenne utilise le champ `ragDebug.duration` de l'orchestrateur, y compris pour les réponses non trouvées dans le contexte ;
+les échecs, les réponses hors RAG et les mesures absentes ou invalides sont exclus. Elle mesure la chaîne RAG, et pas uniquement l'appel final au LLM.
+Après un retry du dataset, seule la tentative réussie contribue à cette moyenne ; les tentatives précédentes restent comprises dans la durée totale.
+Les durées sont conservées avec les résultats des questions, même après expiration des dialogues. Les anciennes exécutions sans durée enregistrée
+affichent uniquement la durée totale ; ouvrir leurs réponses permet de récupérer les durées disponibles dans les dialogues pour les prochaines consultations de la liste.
+
+Le pourcentage _Not found in context_ est calculé sur toutes les questions du dataset, y compris celles en échec.
+Il reste affiché en présence d'échecs et doit être lu avec le nombre de questions en échec.
+
+Pour les nouvelles exécutions, le type de réponse et le statut RAG sont conservés avec chaque résultat de question :
+leurs compteurs restent disponibles après expiration des dialogues. Les anciennes exécutions acquièrent ces informations
+à la lecture des réponses, si les dialogues sont encore disponibles. Le détail des réponses et les échantillons
+d'évaluation restent soumis à la rétention des dialogues.
+
 ### Comparer des exécutions
 
-Ouvrez une exécution pour afficher ses réponses. L'écran compare une _Run A_ et une _Run B_ (par défaut, la dernière exécution),
+Dans la liste des exécutions, la colonne _Note_ après _Durée_ permet d'ajouter une indication comme « Compressor OFF » ou « Compressor ON ».
+Cliquez sur la note pour la modifier, puis sur la coche ou Entrée pour enregistrer ; Échap ou la croix annule la modification.
+La note est facultative, limitée à 200 caractères et modifiable pendant ou après l'exécution. Enregistrez une note vide pour la supprimer.
+Elle apparaît aussi sous _Run A_ et _Run B_ et dans les infobulles du sélecteur d'exécutions lors de la comparaison.
+
+Ouvrez une exécution pour afficher ses réponses. Par défaut, l'écran compare la dernière exécution terminée (_Run A_) à la précédente exécution terminée (_Run B_),
 question par question : texte de la réponse, type de réponse (RAG ou intention) et sources. Les sources ajoutées,
 modifiées ou supprimées entre les deux exécutions sont mises en évidence.
+
+Le bouton de comparaison de la liste compare l'exécution sélectionnée à la dernière exécution terminée, même si une autre est en cours.
+La comparaison nécessite deux exécutions terminées distinctes ; lorsqu'une seule est disponible, le détail affiche uniquement celle-ci.
 
 Les filtres _Show only diffs_ n'affichent que les questions dont l'état, les sources, le type de réponse ou la formulation ont changé.
 
 Les liens _settings_ et _prompts_ affichent les réglages RAG et les prompts utilisés par chaque exécution, et les comparent.
+
+L'onglet _Paramètres de compression_ affiche la configuration sauvegardée au lancement de chaque exécution, dont
+l'activation de la compression et les paramètres du fournisseur, avec les différences mises en évidence. Les changements
+ultérieurs de configuration du bot ne modifient pas cette sauvegarde. Pour les anciennes exécutions, un message indique
+que ces paramètres n'ont pas été enregistrés ; cela ne signifie pas que la compression était désactivée.
 
 ### Créer un échantillon à partir d'une exécution
 

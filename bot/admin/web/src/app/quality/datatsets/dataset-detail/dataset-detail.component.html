@@ -19,6 +19,9 @@
           </span>
           <span class="text-muted font-size-small ellipsis"> {{ currentRun.id }} </span>
         </div>
+        @if (currentRun.note) {
+        <div class="run-note font-size-small mt-1">{{ currentRun.note }}</div>
+        }
         <div class="d-flex flex-wrap column-gap-1 justify-content-between text-muted font-size-small mt-1">
           <span class="text-nowrap">{{ currentRun.startTime | date: 'y/MM/dd - HH:mm' }}</span>
           <i class="bi bi-chevron-bar-left"></i>
@@ -196,6 +199,9 @@
           </span>
           <span class="text-muted font-size-small ellipsis"> {{ comparisonRun.id }} </span>
         </div>
+        @if (comparisonRun.note) {
+        <div class="run-note font-size-small mt-1">{{ comparisonRun.note }}</div>
+        }
         <div class="d-flex flex-wrap column-gap-1 justify-content-between text-muted font-size-small mt-1">
           <span class="text-nowrap">{{ comparisonRun.startTime | date: 'y/MM/dd - HH:mm' }}</span>
           <i class="bi bi-chevron-bar-left"></i>

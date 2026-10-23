@@ -27,6 +27,8 @@ export interface DatasetRunStats {
   completedQuestions: number;
   failedQuestions: number;
   nonRagAnswers: number;
+  averageRagDurationSeconds?: number | null;
+  ragDurationCount?: number;
   ragAnswerStatusCounts: {
     found_in_context: number;
     human_escalation: number;
@@ -38,14 +40,20 @@ export interface DatasetRunStats {
   };
 }
 
+export interface DatasetRunSettingsSnapshot extends Partial<RagSettings> {
+  // Absent on older runs; settings are kept as-is to support every compressor provider.
+  documentCompressor?: { enabled: boolean; setting?: Record<string, unknown> };
+}
+
 export interface DatasetRun {
   id: string;
   state: DatasetRunState;
   startTime: string; // ISO 8601
   endTime: string | null; // ISO 8601
-  settingsSnapshot?: Partial<RagSettings>;
+  settingsSnapshot?: DatasetRunSettingsSnapshot;
   startedBy: string;
   stats: DatasetRunStats;
+  note?: string | null;
 }
 
 export interface DatasetQuestion {
@@ -64,9 +72,6 @@ export interface Dataset {
   createdBy: string;
   updatedAt: string | null; // ISO 8601
   updatedBy: string | null;
-  // Front-only flag — true once GET /datasets/:id has been called and settingsSnapshot
-  // fields are populated. Never sent to or expected from the backend.
-  _settingsLoaded?: boolean;
 }
 
 // Front-only — derived from DatasetRunAction.state + action nullability.
