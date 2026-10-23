@@ -19,6 +19,7 @@ from typing import Optional
 
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_postgres import PGVector
+from sqlalchemy import text
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
@@ -55,15 +56,45 @@ class PGVectorFactory(LangChainVectorStoreFactory):
 
     setting: PGVectorStoreSetting
 
-    def get_vector_store(self, async_mode: Optional[bool] = True) -> PGVector:
+    def get_vector_store(
+        self,
+        async_mode: Optional[bool] = True,
+        collection_metadata: Optional[dict] = None,
+    ) -> PGVector:
         engine = self.pool.async_engine if async_mode else self.pool.sync_engine
+        # PGVector's constructor calls get_or_create: if the collection is absent it is created, born with this
+        # collection_metadata (set once, never overwritten on later opens). Callers that must not create a collection
+        # (existence probes) never go through here — they read langchain_pg_collection directly.
         return PGVector(
             embeddings=self.embedding_function,
             collection_name=self.index_name,
             connection=engine,
             use_jsonb=True,
             async_mode=async_mode,
+            collection_metadata=collection_metadata,
         )
+
+    def read_index_metadata(self) -> Optional[dict]:
+        # PGVector reads langchain_pg_collection.cmetadata
+        # Read langchain_pg_collection directly on the sync engine, never through PGVector: going through PGVector
+        # would get_or_create (and thus create) the collection, which must not happen on a read.
+        engine = self.pool.sync_engine
+        with engine.connect() as connection:
+            # Fresh database: the langchain tables are created lazily on first write. Absent table => no collection.
+            if (
+                connection.execute(
+                    text("SELECT to_regclass('langchain_pg_collection')")
+                ).scalar()
+                is None
+            ):
+                return None
+            collection = connection.execute(
+                text('SELECT cmetadata FROM langchain_pg_collection WHERE name = :name'),
+                {'name': self.index_name},
+            ).first()
+        if collection is None:
+            return None
+        return collection.cmetadata or {}
 
     def get_vector_store_retriever(
         self, search_kwargs: dict, async_mode: Optional[bool] = True

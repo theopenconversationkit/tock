@@ -89,9 +89,21 @@ export class ExplorationComponent implements OnInit, OnDestroy {
         this.documents = [];
         this.fetchIndexes();
       } else if (this.currentIndex) {
-        // Coming back to the view with the same bot: the index list is already
-        // cached, only the page needs refreshing.
-        this.fetchDocuments();
+        // Coming back to the view with the same bot: reload the list so an index created
+        // meanwhile (e.g. from the knowledge base) is visible, then reconcile the selection.
+        // Selection kept: currentIndex$ sees no name change and does not refetch, so refresh the
+        // page here. Selection changed: currentIndex$ drives the reload. Never both, so no double fetch.
+        this.loading = true;
+        this.state
+          .refreshIndexes()
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (selectionKept) => {
+              if (selectionKept) this.fetchDocuments();
+              else if (!this.currentIndex) this.loading = false;
+            },
+            error: () => (this.loading = false)
+          });
       } else {
         this.fetchIndexes();
       }
