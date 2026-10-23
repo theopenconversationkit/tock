@@ -145,7 +145,7 @@ async def test_compression_reports_threshold_and_fill_outcomes():
     def compress_documents(documents, _query):
         scores = {'first': 0.2, 'second': 0.9, 'third': 0.1}
         for document in documents:
-            document.metadata['retriever_score'] = scores[document.metadata['id']]
+            document.metadata['reranker_score'] = scores[document.metadata['id']]
         return [documents[1], documents[0]]
 
     compressor.compress_documents.side_effect = compress_documents

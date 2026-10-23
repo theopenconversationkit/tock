@@ -55,6 +55,7 @@ from gen_ai_orchestrator.models.vector_stores.vector_store_search_type import (
 )
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    get_compressor_factory,
     get_em_factory,
     get_llm_factory,
     get_vector_store_factory,
@@ -453,6 +454,29 @@ def create_rag_chain(
             'documents': retriever,
         }
     )
+
+    if request.compressor_setting is not None:
+        compressor = get_compressor_factory(setting=request.compressor_setting).get_compressor()
+
+        def compress_and_capture_fallback(x):
+            docs = list(
+                compressor.compress_documents(
+                    documents=x['documents'],
+                    query=x['question'],
+                )
+            )
+            fallback_info = getattr(compressor, 'last_fallback_info', None)
+            if fallback_info:
+                logger.warning('[Compressor] Fallback occurred: %s', fallback_info)
+
+            x['documents'] = docs
+            x['compressor_fallback_info'] = fallback_info
+            return x
+
+        rag_inputs = rag_inputs | RunnableLambda(
+            compress_and_capture_fallback,
+            name='document_compressor',
+        )
 
     answer_chain = (
         {

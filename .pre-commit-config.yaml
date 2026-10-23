@@ -50,4 +50,5 @@ repos:
         additional_dependencies:
           - "pip>=26.2"
           - "filelock>=3.20.3"
-          - "urllib3>=2.6.3"
+          - "urllib3>=2.8.0"
+          - "certifi>=2026.10.19"

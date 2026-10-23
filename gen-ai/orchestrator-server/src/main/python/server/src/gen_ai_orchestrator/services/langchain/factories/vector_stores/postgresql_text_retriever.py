@@ -88,7 +88,11 @@ def build_statement(
             collection_store.uuid == embedding_store.collection_id,
         )
         .where(*conditions)
-        .order_by(score.desc())
+        .order_by(
+            score.desc(),
+            func.char_length(embedding_store.document).desc(),
+            embedding_store.id,
+        )
         .limit(k)
     )
 

@@ -61,7 +61,7 @@
     "run_state_column": "Run State",
     "run_started_at_tooltip": "Run started at",
     "run_ended_at_tooltip": "Run ended at",
-    "run_duration_tooltip": "Run duration",
+    "run_duration_tooltip": "Run duration (and average duration per completed question)",
     "questions_in_dataset_tooltip": "Number of questions in the dataset at the time the run is executed",
     "successful_questions_tooltip": "Number of successful questions",
     "intent_detection_questions_tooltip": "Number of questions processed by intent detection",

@@ -525,7 +525,7 @@ async def _fts_documents(factory: PGVectorFactory, query: str, k: int):
             JOIN langchain_pg_collection c ON c.uuid = e.collection_id
             CROSS JOIN q
             WHERE c.name = :index_name AND e.fts_vector @@ q.ts_query
-            ORDER BY score DESC, e.id
+            ORDER BY score DESC, char_length(e.document) DESC, e.id
             LIMIT :k
         """),
         {'query': query, 'index_name': factory.index_name, 'k': k},
@@ -736,9 +736,9 @@ async def _compress(
     compressed_ids = [get_chunk_identifier(doc) for doc in compressed]
     compressed_set = set(compressed_ids)
     scores = {
-        chunk_id: float(document.metadata['retriever_score'])
+        chunk_id: float(document.metadata['reranker_score'])
         for chunk_id, document in documents_by_id.items()
-        if document.metadata.get('retriever_score') is not None
+        if document.metadata.get('reranker_score') is not None
     }
     min_score = float(setting.min_score or 0)
     outcomes = {}

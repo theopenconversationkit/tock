@@ -31,9 +31,15 @@ and keeps the best ones, so that the answering model receives fewer, more releva
     * **Pad with lower-scoring documents**: if fewer documents than _Max documents_ reach the minimum score,
       complete with the best remaining ones.
 
-The Gen AI orchestrator also supports the [Bedrock Rerank API](https://docs.aws.amazon.com/bedrock/latest/userguide/rerank.html)
-(provider `AwsBedrockRerank`, with the ARN of the rerank model in `model_arn`), usable through its
-[API](orchestrator-api.md) only. It uses the AWS credentials described for [AWS Bedrock](providers/llm-embedding.md#aws-bedrock).
+The Gen AI orchestrator also supports:
+
+* **[Bedrock Rerank API](https://docs.aws.amazon.com/bedrock/latest/userguide/rerank.html)** (provider `AwsBedrockRerank`, with the ARN of the rerank model in `model_arn`), usable through its [API](orchestrator-api.md) only. It uses the AWS credentials described for [AWS Bedrock](providers/llm-embedding.md#aws-bedrock).
+
+* **[vLLM Rerank API](https://github.com/vllm-project/vllm)** (provider `VllmRerank`): allows self-hosted reranking using any model supported by vLLM (e.g., `BAAI/bge-reranker-v2-m3`).
+    * **Endpoint**: base URL of the vLLM service (e.g., `http://localhost:8000` or a URL behind a gateway).
+    * **Model**: name of the reranking model served by vLLM.
+    * **Minimum score**, **Max documents**, and **Pad with lower-scoring documents**: same as for `BloomzRerank`.
+    * Note: the score scale depends on the model (e.g., sigmoid for BGE models, linear for others); adjust the minimum score threshold accordingly.
 
 The compressor is fault-tolerant: if the reranking service fails or does not answer in time,
 the original documents are used unchanged.

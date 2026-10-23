@@ -18,6 +18,7 @@ package ai.tock.genai.orchestratorcore.models.compressor
 
 enum class DocumentCompressorProvider {
     BloomzRerank,
+    VllmRerank,
     ;
 
     companion object {
