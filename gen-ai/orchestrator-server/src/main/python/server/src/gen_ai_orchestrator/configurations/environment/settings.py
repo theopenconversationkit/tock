@@ -62,6 +62,11 @@ class _Settings(BaseSettings):
     llm_rate_limits: bool = True
     em_provider_timeout: int = 4
     compressor_provider_timeout: int = 7
+    compressor_vllm_max_input_tokens: int = 8192
+    """Maximum input length (query + document) in tokens accepted by the vLLM
+    reranking model. Must match the --max-model-len actually used by the vLLM
+    server (8192 is the limit of Alibaba-NLP/gte-multilingual-reranker-base).
+    Oversized documents are split into windows scored separately."""
 
     vector_store_provider: Optional[VectorStoreProvider] = (
         VectorStoreProvider.PGVECTOR

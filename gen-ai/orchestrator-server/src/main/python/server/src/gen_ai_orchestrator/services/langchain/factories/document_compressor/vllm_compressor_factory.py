@@ -40,6 +40,7 @@ class VllmCompressorFactory(DocumentCompressorFactory):
             max_documents=self.setting.max_documents,
             fill_to_max_documents=self.setting.fill_to_max_documents,
             timeout=application_settings.compressor_provider_timeout,
+            max_input_tokens=application_settings.compressor_vllm_max_input_tokens,
             is_fault_tolerant=self.is_fault_tolerant,
         )
 

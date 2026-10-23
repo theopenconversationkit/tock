@@ -212,3 +212,137 @@ def test_endpoint_with_trailing_slash_is_handled_correctly(mocked_post):
 
     call_kwargs = mocked_post.call_args[1]
     assert call_kwargs['url'] == 'http://localhost:8000/v1/rerank'
+
+
+def _ok_response(results):
+    response = MagicMock()
+    response.status_code = 200
+    response.json.return_value = {'results': results}
+    return response
+
+
+# ---------------------------------------------------------------------------
+# Windowing integration
+# ---------------------------------------------------------------------------
+
+_OVERSIZED = '\n'.join(f'row {i} some data column value' for i in range(300))
+
+
+@patch('gen_ai_orchestrator.services.langchain.impls.document_compressor.vllm_rerank.requests.post')
+def test_payload_is_plain_page_contents_when_no_oversized_doc(mocked_post):
+    documents = [Document(page_content='a'), Document(page_content='b')]
+    mocked_post.return_value = _ok_response(
+        [{'index': 0, 'relevance_score': 0.9}, {'index': 1, 'relevance_score': 0.8}]
+    )
+
+    rerank = _make_rerank()
+    rerank.compress_documents(documents=documents, query='question')
+
+    payload = mocked_post.call_args[1]['json']['documents']
+    assert payload == ['a', 'b']
+
+
+@patch('gen_ai_orchestrator.services.langchain.impls.document_compressor.vllm_rerank.requests.post')
+def test_oversized_doc_is_windowed_and_scored_by_max(mocked_post):
+    documents = [Document(page_content='short'), Document(page_content=_OVERSIZED)]
+
+    def side_effect(**kwargs):
+        docs = kwargs['json']['documents']
+        n = len(docs)
+        results = []
+        for i in range(n):
+            score = 0.6 if i == 0 else (0.95 if i == n - 1 else 0.55)
+            results.append({'index': i, 'relevance_score': score})
+        return _ok_response(results)
+
+    mocked_post.side_effect = side_effect
+
+    rerank = _make_rerank(max_input_tokens=1100, min_score=0.5, max_documents=50)
+    result = rerank.compress_documents(documents=documents, query='q')
+
+    payload = mocked_post.call_args[1]['json']['documents']
+    budget = 1100 - len('q') - 32
+    # short doc stays one text, oversized is split into several windows
+    assert len(payload) > 2
+    assert all(len(text) <= budget for text in payload)
+
+    oversized = documents[1]
+    windows = len(payload) - 1
+    assert oversized.metadata['reranker_windows'] == windows
+    assert oversized.metadata['reranker_score'] == 0.95  # max over its windows
+    assert documents[0].metadata['reranker_score'] == 0.6
+    assert 'reranker_windows' not in documents[0].metadata
+    assert oversized in result and documents[0] in result
+
+
+@patch('gen_ai_orchestrator.services.langchain.impls.document_compressor.vllm_rerank.requests.post')
+def test_mapping_is_correct_when_results_out_of_order(mocked_post):
+    documents = [Document(page_content='a'), Document(page_content='b')]
+    mocked_post.return_value = _ok_response(
+        [{'index': 1, 'relevance_score': 0.9}, {'index': 0, 'relevance_score': 0.2}]
+    )
+
+    rerank = _make_rerank(min_score=0.0)
+    rerank.compress_documents(documents=documents, query='q')
+
+    assert documents[0].metadata['reranker_score'] == 0.2
+    assert documents[1].metadata['reranker_score'] == 0.9
+
+
+@patch('gen_ai_orchestrator.services.langchain.impls.document_compressor.vllm_rerank.requests.post')
+def test_max_documents_applies_on_parents_not_windows(mocked_post):
+    documents = [
+        Document(page_content=_OVERSIZED),
+        Document(page_content='short one'),
+        Document(page_content='short two'),
+    ]
+    mocked_post.side_effect = lambda **kwargs: _ok_response(
+        [
+            {'index': i, 'relevance_score': 0.9}
+            for i in range(len(kwargs['json']['documents']))
+        ]
+    )
+
+    rerank = _make_rerank(max_input_tokens=1100, min_score=0.5, max_documents=2)
+    result = rerank.compress_documents(documents=documents, query='q')
+
+    # Oversized yields many windows but still counts as a single parent.
+    assert len(result) == 2
+    assert all(doc in documents for doc in result)
+    assert len({id(doc) for doc in result}) == 2
+
+
+@patch('gen_ai_orchestrator.services.langchain.impls.document_compressor.vllm_rerank.logger')
+@patch('gen_ai_orchestrator.services.langchain.impls.document_compressor.vllm_rerank.requests.post')
+def test_query_too_long_skips_request(mocked_post, mocked_logger):
+    documents = [Document(page_content=f'doc {i}') for i in range(5)]
+
+    rerank = _make_rerank(max_input_tokens=500, max_documents=3)
+    result = rerank.compress_documents(documents=documents, query='q')
+
+    mocked_post.assert_not_called()
+    assert [doc.page_content for doc in result] == ['doc 0', 'doc 1', 'doc 2']
+    assert rerank.last_fallback_info['reason'] == 'query_too_long'
+    assert rerank.last_fallback_info['returned_documents'] == 3
+    assert rerank.last_fallback_info['total_documents'] == 5
+    assert 'budget' in rerank.last_fallback_info
+    mocked_logger.warning.assert_called_once()
+
+
+@patch('gen_ai_orchestrator.services.langchain.impls.document_compressor.vllm_rerank.requests.post')
+def test_successful_call_resets_previous_fallback_info(mocked_post):
+    documents = [Document(page_content='doc')]
+
+    error_response = MagicMock()
+    error_response.status_code = 500
+    error_response.reason = 'Internal Server Error'
+    error_response.text = 'Server error'
+    mocked_post.return_value = error_response
+
+    rerank = _make_rerank(is_fault_tolerant=True)
+    rerank.compress_documents(documents=documents, query='q')
+    assert rerank.last_fallback_info is not None
+
+    mocked_post.return_value = _ok_response([{'index': 0, 'relevance_score': 0.9}])
+    rerank.compress_documents(documents=documents, query='q')
+    assert rerank.last_fallback_info is None

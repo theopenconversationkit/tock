@@ -23,8 +23,18 @@ from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compress
     GenAIDocumentCompressorErrorException,
 )
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
+from gen_ai_orchestrator.services.langchain.impls.document_compressor.rerank_windowing import (
+    make_windows,
+)
 
 logger = logging.getLogger(__name__)
+
+# Characters reserved on top of the query to keep a safe distance from the
+# model's hard token limit (see compress_documents for the budget rationale).
+SAFETY_MARGIN = 32
+# Below this character budget the condensed query is abnormally long: we skip
+# reranking entirely rather than send a request that could exceed the limit.
+MIN_BUDGET_CHARS = 1000
 
 
 class VllmRerank(BaseDocumentCompressor):
@@ -41,6 +51,10 @@ class VllmRerank(BaseDocumentCompressor):
     fill_to_max_documents: bool = False
     """If True, pad the result with the best sub-threshold documents up to max_documents."""
     timeout: int = 5
+    max_input_tokens: int = 8192
+    """Maximum input length (query + document) in tokens accepted by the vLLM
+    model. Must match the server's --max-model-len. Documents longer than the
+    derived character budget are split into windows scored separately."""
     is_fault_tolerant: bool = True
     """If True, fall back to the original documents on any error."""
     last_fallback_info: dict | None = None
@@ -52,8 +66,35 @@ class VllmRerank(BaseDocumentCompressor):
         query: str,
         callbacks: Callbacks | None = None,
     ) -> Sequence[Document]:
+        self.last_fallback_info = None
+
         if len(documents) == 0:
             return []
+
+        # One token always covers at least one character with the GTE tokenizer,
+        # so a character budget is a safe upper bound on the token count: reserve
+        # the query length (in chars) plus a safety margin and the request can
+        # never exceed max_input_tokens.
+        budget = self.max_input_tokens - len(query) - SAFETY_MARGIN
+
+        if budget < MIN_BUDGET_CHARS:
+            returned_count = min(len(documents), self.max_documents)
+            logger.warning(
+                '[Compressor] Query too long (budget=%d chars) - skipping rerank, '
+                'returning first %d/%d documents',
+                budget,
+                returned_count,
+                len(documents),
+            )
+            self.last_fallback_info = {
+                'reason': 'query_too_long',
+                'budget': budget,
+                'returned_documents': returned_count,
+                'total_documents': len(documents),
+            }
+            return list(documents)[: self.max_documents]
+
+        texts, owners = self._build_windows(documents, budget)
 
         url = f"{self.endpoint.rstrip('/')}/v1/rerank"
         try:
@@ -62,7 +103,7 @@ class VllmRerank(BaseDocumentCompressor):
                 json={
                     'model': self.model,
                     'query': query,
-                    'documents': [doc.page_content for doc in documents],
+                    'documents': texts,
                 },
                 timeout=self.timeout,
             )
@@ -130,14 +171,27 @@ class VllmRerank(BaseDocumentCompressor):
             }
             return list(documents)[: self.max_documents]
 
-        scored_docs = []
+        window_counts: dict[int, int] = {}
+        for owner in owners:
+            window_counts[owner] = window_counts.get(owner, 0) + 1
+
+        # Aggregate window scores back to each parent document using max.
+        best_scores: dict[int, float] = {}
         for res in results:
             idx = res.get('index')
             score = res.get('relevance_score', 0.0)
-            if idx is None or idx >= len(documents):
+            if idx is None or idx >= len(owners):
                 continue
-            doc = documents[idx]
+            parent = owners[idx]
+            if parent not in best_scores or score > best_scores[parent]:
+                best_scores[parent] = score
+
+        scored_docs = []
+        for parent, score in best_scores.items():
+            doc = documents[parent]
             doc.metadata['reranker_score'] = score
+            if window_counts[parent] > 1:
+                doc.metadata['reranker_windows'] = window_counts[parent]
             scored_docs.append(doc)
 
         scored_docs = sorted(
@@ -160,3 +214,32 @@ class VllmRerank(BaseDocumentCompressor):
             result.extend(below_threshold[:remaining_slots])
 
         return result
+
+    def _build_windows(
+        self, documents: Sequence[Document], budget: int
+    ) -> tuple[list[str], list[int]]:
+        """Build the texts sent to vLLM and the parent index for each one.
+
+        Documents within budget are sent unchanged (one text, current
+        behavior). Oversized documents are split into several windows, each
+        mapped back to its parent via the returned owners list.
+        """
+        texts: list[str] = []
+        owners: list[int] = []
+        for i, doc in enumerate(documents):
+            content = doc.page_content
+            if len(content) <= budget:
+                windows = [content]
+            else:
+                windows = make_windows(content, budget)
+                logger.info(
+                    '[Compressor] Windowed document %s (%d chars) into %d windows',
+                    doc.metadata.get('id') or doc.metadata.get('chunk'),
+                    len(content),
+                    len(windows),
+                )
+            for window in windows:
+                # Final hard guarantee, whatever happened before.
+                texts.append(window if len(window) <= budget else window[:budget])
+                owners.append(i)
+        return texts, owners
