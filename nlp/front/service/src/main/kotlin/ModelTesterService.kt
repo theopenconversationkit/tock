@@ -80,6 +80,7 @@ object ModelTesterService : ModelTester {
                             toApplication(application),
                             locale,
                             application.nlpEngineType,
+                            application.effectiveEntityNlpEngineType,
                             EntityEvaluationContext(mergeEntityTypes = application.mergeEngineTypes),
                         ),
                         0.9F,
