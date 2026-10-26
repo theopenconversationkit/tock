@@ -16,7 +16,7 @@
     "empty-query-error": "Please enter a non-empty query"
   },
   "sentences-search": {
-    "title": "Search sentences",
+    "title": "All sentences",
     "download-tooltip": "Download a dump of the matching sentences",
     "refresh-tooltip": "Refresh sentences"
   },
