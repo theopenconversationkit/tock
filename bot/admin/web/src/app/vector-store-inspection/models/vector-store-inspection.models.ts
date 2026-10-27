@@ -136,17 +136,6 @@ export interface CondenseResponse {
 // ---------------------------------------------------------------------------
 
 /**
- * Where the compression stage sits relative to the top-k cut.
- *
- * `afterCut` mirrors the runtime, where the compressor wraps an
- * already-truncated retriever and can therefore only remove documents.
- * `beforeCut` lets the reranker sort the whole fetched window, which is what it
- * would do if the runtime dissociated fetchK from k. The UI labels the latter
- * as not matching production.
- */
-export type CompressionStage = 'afterCut' | 'beforeCut';
-
-/**
  * Compressor thresholds as overridden for a single diagnostic run.
  *
  * Not a duplicate of CompressorSetting: that one describes the bot's stored
@@ -231,13 +220,10 @@ export interface SearchRequest {
   query: string;
   /** Required for FULL_TEXT_SEARCH and HYBRID_SEARCH */
   keyWords?: string[];
-  /** Candidates pulled from the store */
-  fetchK: number;
-  /** Survivors after the cut */
+  /** Max documents retrieved per channel, and the top-k cut before compression */
   k: number;
   /** False disables the compression stage entirely */
   compressionEnabled: boolean;
-  compressionStage: CompressionStage;
   compressionOverride?: CompressionOverride;
   pinnedChunkIds?: ChunkId[];
   pinnedRankStrategy?: PinnedRankStrategy;
@@ -245,7 +231,6 @@ export interface SearchRequest {
 
 export interface SearchResponse {
   funnel: SearchFunnel;
-  compressionStage: CompressionStage;
   results: SearchResultChunk[];
   duration: number;
 }
@@ -264,14 +249,14 @@ export interface SearchRun {
 }
 
 /** Which parameters differ between the reference run and the current one. */
-export type RunDiffField = 'index' | 'searchType' | 'query' | 'keyWords' | 'fetchK' | 'k' | 'compression';
+export type RunDiffField = 'index' | 'searchType' | 'query' | 'keyWords' | 'k' | 'compression';
 
 /**
  * Why a chunk present in the reference run is missing from the current one.
  * An ingestion problem must only be reported when the current index was
  * explicitly checked. Otherwise the cause remains unknown.
  */
-export type AbsenceReason = 'absent_from_index' | 'outside_fetch_k' | 'unknown';
+export type AbsenceReason = 'absent_from_index' | 'outside_k' | 'unknown';
 
 export type RunDelta = 'gained' | 'lost' | 'moved' | 'stable';
 

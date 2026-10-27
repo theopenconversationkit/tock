@@ -19,7 +19,6 @@ from langchain_core.documents import Document
 from pydantic import ValidationError
 
 from gen_ai_orchestrator.routers.requests.vector_store_inspection_requests import (
-    CompressionStage,
     VectorStoreInspectionSearchRequest,
 )
 from gen_ai_orchestrator.routers.responses.vector_store_inspection_responses import (
@@ -50,10 +49,8 @@ def _search_request(**updates) -> VectorStoreInspectionSearchRequest:
         'search_type': 'HYBRID_SEARCH',
         'query': 'cancel a contract',
         'key_words': ['cancel', 'contract'],
-        'fetch_k': 10,
         'k': 1,
         'compression_enabled': False,
-        'compression_stage': 'before_cut',
     }
     values.update(updates)
     return VectorStoreInspectionSearchRequest.model_validate(values)
@@ -184,4 +181,3 @@ async def test_compression_reports_threshold_and_fill_outcomes():
     assert stage.count == 2
     compressor_factory.get_compressor.assert_called_once_with()
     assert request.compressor_setting.min_score == 0.5
-    assert request.compression_stage == CompressionStage.BEFORE_CUT

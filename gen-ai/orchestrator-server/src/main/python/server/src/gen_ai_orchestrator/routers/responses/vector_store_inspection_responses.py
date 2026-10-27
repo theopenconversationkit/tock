@@ -27,7 +27,6 @@ from gen_ai_orchestrator.models.vector_stores.vector_store_search_type import (
 )
 from gen_ai_orchestrator.routers.requests.vector_store_inspection_requests import (
     AnomalyCode,
-    CompressionStage,
 )
 
 
@@ -158,6 +157,5 @@ class SearchResultChunk(BaseModel):
 
 class SearchResponse(BaseModel):
     funnel: SearchFunnel
-    compression_stage: CompressionStage
     results: list[SearchResultChunk]
     duration: float

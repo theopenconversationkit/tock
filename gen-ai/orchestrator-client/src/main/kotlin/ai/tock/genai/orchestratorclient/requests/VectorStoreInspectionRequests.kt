@@ -70,11 +70,8 @@ data class VectorStoreInspectionSearchRequest(
     val searchType: DocumentSearchType,
     val query: String,
     val keyWords: List<String> = emptyList(),
-    val fetchK: Int,
     val k: Int,
     val compressionEnabled: Boolean,
-    /** Internal orchestrator value: before_cut or after_cut. */
-    val compressionStage: String,
     val compressionOverride: VectorStoreInspectionCompressionOverride? = null,
     val pinnedChunkIds: List<String> = emptyList(),
     val pinnedRankStrategy: String = "score_only",

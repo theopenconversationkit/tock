@@ -42,7 +42,6 @@ class VectorStoreInspectionSerializationTest {
                     "top_k_cut": {"status": "applied", "count": 3},
                     "compression": {"status": "disabled", "count": null}
                   },
-                  "compression_stage": "before_cut",
                   "results": [],
                   "duration": 0.1
                 }
@@ -67,7 +66,6 @@ class VectorStoreInspectionSerializationTest {
                         topKCut = VectorStoreInspectionFunnelStage(status = "applied", count = 1),
                         compression = VectorStoreInspectionFunnelStage(status = "disabled", count = null),
                     ),
-                compressionStage = "beforeCut",
                 results =
                     listOf(
                         VectorStoreInspectionSearchResultChunk(

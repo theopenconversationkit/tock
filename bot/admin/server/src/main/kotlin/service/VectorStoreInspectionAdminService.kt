@@ -157,10 +157,8 @@ object VectorStoreInspectionAdminService {
                     searchType = request.searchType,
                     query = request.query,
                     keyWords = request.keyWords,
-                    fetchK = request.fetchK,
                     k = request.k,
                     compressionEnabled = request.compressionEnabled,
-                    compressionStage = request.compressionStage.toInternalCompressionStage(),
                     compressionOverride =
                         request.compressionOverride?.let {
                             VectorStoreInspectionCompressionOverride(
@@ -175,7 +173,6 @@ object VectorStoreInspectionAdminService {
             ) ?: return null
         return VectorStoreInspectionSearchResponseDTO(
             funnel = response.funnel,
-            compressionStage = response.compressionStage.toPublicCompressionStage(),
             results = response.results,
             duration = response.duration,
         )
@@ -210,17 +207,3 @@ object VectorStoreInspectionAdminService {
                 "No RAG configuration is defined yet [namespace: $namespace, botId: $botId]",
             )
 }
-
-private fun String.toInternalCompressionStage(): String =
-    when (this) {
-        "beforeCut" -> "before_cut"
-        "afterCut" -> "after_cut"
-        else -> WebVerticle.badRequest("Unsupported compression stage [$this]")
-    }
-
-private fun String.toPublicCompressionStage(): String =
-    when (this) {
-        "before_cut" -> "beforeCut"
-        "after_cut" -> "afterCut"
-        else -> throw IllegalStateException("Unsupported orchestrator compression stage [$this]")
-    }

@@ -39,12 +39,8 @@ export function diffRequests(reference: SearchRequest, current: SearchRequest): 
   if (reference.searchType !== current.searchType) changed.push('searchType');
   if (reference.query.trim() !== current.query.trim()) changed.push('query');
   if (!sameKeyWords(reference.keyWords, current.keyWords)) changed.push('keyWords');
-  if (reference.fetchK !== current.fetchK) changed.push('fetchK');
   if (reference.k !== current.k) changed.push('k');
-  if (
-    reference.compressionEnabled !== current.compressionEnabled ||
-    (current.compressionEnabled && reference.compressionStage !== current.compressionStage)
-  ) {
+  if (reference.compressionEnabled !== current.compressionEnabled) {
     changed.push('compression');
   }
 
@@ -100,12 +96,12 @@ export function buildRunComparison(reference: SearchRun, current: SearchRun): Ru
       const wasCheckedInCurrentIndex = current.request.pinnedChunkIds?.includes(chunkId);
       absenceReason =
         currentChunk?.outcome === 'not_retrieved'
-          ? 'outside_fetch_k'
+          ? 'outside_k'
           : indexChanged
           ? wasCheckedInCurrentIndex
             ? 'absent_from_index'
             : 'unknown'
-          : 'outside_fetch_k';
+          : 'outside_k';
     } else if (rankReference === null && rankCurrent !== null) {
       delta = 'gained';
       gained++;

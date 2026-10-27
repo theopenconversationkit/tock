@@ -42,7 +42,6 @@ from gen_ai_orchestrator.models.vector_stores.vector_store_search_type import (
 )
 from gen_ai_orchestrator.routers.requests.vector_store_inspection_requests import (
     AnomalyCode,
-    CompressionStage,
     PinnedRankStrategy,
     VectorStoreInspectionCapabilitiesRequest,
     VectorStoreInspectionCondenseRequest,
@@ -802,14 +801,14 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
     embedding = await embedding_model.aembed_query(request.query) if use_vector else []
     vector_task = (
         factory.get_vector_store().asimilarity_search_with_score_by_vector(
-            embedding=embedding, k=request.fetch_k
+            embedding=embedding, k=request.k
         )
         if use_vector
         else asyncio.sleep(0, result=[])
     )
     fts_query = _keywords_query(request.key_words)
     fts_task = (
-        _fts_documents(factory, fts_query, request.fetch_k)
+        _fts_documents(factory, fts_query, request.k)
         if use_fts
         else asyncio.sleep(0, result=[])
     )
@@ -868,7 +867,7 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
             count=len(final),
             discarded=len(retrieved) - len(final),
         )
-    elif request.compression_stage == CompressionStage.AFTER_CUT:
+    else:
         cut = retrieved[: request.k]
         outcomes.update(
             {
@@ -877,7 +876,7 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
             }
         )
         (
-            compressed_ids,
+            _compressed_ids,
             compression_outcomes,
             compressor_scores,
             compression_stage,
@@ -887,22 +886,6 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
             status=FunnelStageStatus.APPLIED,
             count=len(cut),
             discarded=len(retrieved) - len(cut),
-        )
-    else:
-        (
-            compressed_ids,
-            compression_outcomes,
-            compressor_scores,
-            compression_stage,
-        ) = await _compress(request, retrieved)
-        outcomes.update(compression_outcomes)
-        final_ids = set(compressed_ids[: request.k])
-        for chunk_id in compressed_ids[request.k :]:
-            outcomes[chunk_id] = ChunkOutcome.CUT_BY_TOP_K
-        top_k_stage = FunnelStage(
-            status=FunnelStageStatus.APPLIED,
-            count=len(final_ids),
-            discarded=max(0, len(compressed_ids) - len(final_ids)),
         )
 
     for candidate in retrieved:
@@ -978,7 +961,6 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
             top_k_cut=top_k_stage,
             compression=compression_stage,
         ),
-        compression_stage=request.compression_stage,
         results=results,
         duration=time.perf_counter() - started,
     )

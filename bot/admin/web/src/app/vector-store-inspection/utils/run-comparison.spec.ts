@@ -22,10 +22,8 @@ function run(indexName: string, results: SearchResultChunk[], pinnedChunkIds: st
       indexName,
       searchType: DocumentSearchType.SIMILARITY_SEARCH,
       query: 'query',
-      fetchK: 10,
       k: 4,
       compressionEnabled: false,
-      compressionStage: 'beforeCut',
       pinnedChunkIds
     } as SearchRequest,
     response: { results } as SearchResponse,
@@ -52,6 +50,6 @@ describe('buildRunComparison', () => {
   it('reports a ranking issue when a pinned chunk exists outside the fetched window', () => {
     const comparison = buildRunComparison(reference, run('index-b', [chunk(null, 'not_retrieved')], ['document:1/1']));
 
-    expect(comparison.rows[0].absenceReason).toBe('outside_fetch_k');
+    expect(comparison.rows[0].absenceReason).toBe('outside_k');
   });
 });

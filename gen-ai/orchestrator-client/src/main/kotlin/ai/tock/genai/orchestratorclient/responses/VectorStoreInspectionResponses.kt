@@ -142,8 +142,6 @@ data class VectorStoreInspectionSearchResultChunk(
 
 data class VectorStoreInspectionSearchResponse(
     val funnel: VectorStoreInspectionSearchFunnel,
-    /** Internal orchestrator value: before_cut or after_cut. */
-    val compressionStage: String,
     val results: List<VectorStoreInspectionSearchResultChunk>,
     val duration: Double,
 )

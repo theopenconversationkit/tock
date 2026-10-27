@@ -10,7 +10,6 @@ import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { CompressorSettings } from '../../configuration/compressor-settings/models/compressor-settings';
 import { DocumentSearchType } from '../../rag/rag-settings/models/engines-configurations';
 import {
-  CompressionStage,
   RunComparison,
   SearchFunnel,
   SearchRequest,
@@ -23,9 +22,6 @@ import {
 import { VectorStoreInspectionService } from '../services/vector-store-inspection.service';
 import { VectorStoreInspectionStateService } from '../services/vector-store-inspection-state.service';
 import { buildRunComparison } from '../utils/run-comparison';
-
-/** Default retrieval width. Deliberately larger than k so the funnel has something to show. */
-const DEFAULT_FETCH_K = 50;
 
 /** Matches the runtime default of maxDocumentsRetrieved. */
 const DEFAULT_K = 4;
@@ -103,7 +99,6 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   condensedQuestion: string = '';
   keyWordsInput: string = '';
 
-  fetchK: number = DEFAULT_FETCH_K;
   k: number = DEFAULT_K;
 
   compressorSettings: CompressorSettings | null = null;
@@ -111,16 +106,6 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   minScore: number = DEFAULT_MIN_SCORE;
   maxDocuments: number = DEFAULT_MAX_DOCUMENTS;
   fillToMaxDocuments: boolean = false;
-
-  /**
-   * Opt-in reproduction of the current runtime ordering, where k truncates
-   * before compression. Off by default: the tool presents the intended
-   * pipeline, and this exists to demonstrate the gap.
-   *
-   * Once the runtime dissociates fetchK from k, this flag and the
-   * compressionStage parameter it drives can both be dropped.
-   */
-  reproduceRuntimeOrder: boolean = false;
 
   funnel: SearchFunnel | null = null;
   results: SearchResultChunk[] = [];
@@ -260,7 +245,6 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
     if (navigationState.k && navigationState.k > 0) {
       this.k = navigationState.k;
-      this.fetchK = navigationState.k;
     }
 
     if (navigationState.condensed_question) {
@@ -345,27 +329,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     return this.searchType === DocumentSearchType.HYBRID_SEARCH;
   }
 
-  // -- Pipeline ordering -------------------------------------------------
-
-  /**
-   * beforeCut is the intended pipeline: the compressor arbitrates everything
-   * that was fetched, then k protects the prompt. afterCut reproduces what the
-   * runtime does today.
-   */
-  get compressionStage(): CompressionStage {
-    return this.reproduceRuntimeOrder ? 'afterCut' : 'beforeCut';
-  }
-
   // -- Divergences from the running chain --------------------------------
-
-  /**
-   * The runtime uses a single k for both the retrieval width and the final
-   * cut, so any fetchK different from k describes something production does
-   * not do.
-   */
-  get fetchKDiverges(): boolean {
-    return this.fetchK !== this.k;
-  }
 
   get compressionDiverges(): boolean {
     return this.compressionEnabled !== !!this.compressorSettings?.enabled;
@@ -383,15 +347,13 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   }
 
   get hasDivergence(): boolean {
-    return this.fetchKDiverges || this.compressionDiverges || this.thresholdsDiverge;
+    return this.compressionDiverges || this.thresholdsDiverge;
   }
 
   /**
-   * The compressor would keep more documents than the final cut allows, so k
-   * would truncate work the reranker just did — with no criterion beyond rank.
-   * A k above maxDocuments is healthy, though: it acts as the safety margin
-   * that catches a compressor failure, where the untouched candidates fall
-   * through and only k stands between them and the prompt.
+   * The compressor runs after the top-k cut, on the k retrieved documents, so a
+   * Max documents above k can never widen the result — it is ineffective and the
+   * form blocks the search until it is brought back within k.
    */
   get maxDocumentsExceedsK(): boolean {
     return this.compressionEnabled && this.maxDocuments > this.k;
@@ -403,6 +365,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     if (!this.currentIndex || this.loading) return false;
     if (!this.effectiveQuery) return false;
     if (this.needsKeyWords && !this.keyWords.length) return false;
+    if (this.maxDocumentsExceedsK) return false;
     return true;
   }
 
@@ -422,10 +385,8 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
       searchType: this.searchType,
       query: this.effectiveQuery,
       keyWords: this.needsKeyWords ? this.keyWords : undefined,
-      fetchK: this.fetchK,
       k: this.k,
       compressionEnabled: this.compressionEnabled,
-      compressionStage: this.compressionStage,
       compressionOverride: {
         minScore: this.minScore,
         maxDocuments: this.maxDocuments,
@@ -503,26 +464,14 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   get funnelStages(): { key: string; stage: SearchFunnel[keyof SearchFunnel] }[] {
     if (!this.funnel) return [];
 
-    // Compression sits before the cut unless the runtime ordering is being
-    // reproduced, and the funnel must read in the order things happened.
-    const compressionFirst = this.compressionEnabled && !this.reproduceRuntimeOrder;
-
-    const tail = compressionFirst
-      ? [
-          { key: 'compression', stage: this.funnel.compression },
-          { key: 'topKCut', stage: this.funnel.topKCut }
-        ]
-      : [
-          { key: 'topKCut', stage: this.funnel.topKCut },
-          { key: 'compression', stage: this.funnel.compression }
-        ];
-
+    // The runtime order: retrieve, fuse, cut to k, then compress.
     return (
       [
         { key: 'vector', stage: this.funnel.vector },
         { key: 'fts', stage: this.funnel.fts },
         { key: 'rrf', stage: this.funnel.rrf },
-        ...tail
+        { key: 'topKCut', stage: this.funnel.topKCut },
+        { key: 'compression', stage: this.funnel.compression }
       ] as { key: string; stage: SearchFunnel[keyof SearchFunnel] }[]
     ).filter((entry) => entry.stage.status !== 'skipped');
   }

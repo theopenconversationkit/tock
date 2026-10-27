@@ -488,9 +488,7 @@ async def test_opensearch_real_creation_upsert_inspection_pins_and_owned_deletio
                     embedding_question_em_setting=req.em_setting,
                     query=documentary.page_content,
                     search_type='SIMILARITY_SEARCH',
-                    fetch_k=1,
                     k=1,
-                    compression_stage='after_cut',
                     pinned_chunk_ids=['entry:1/1'],
                 )
             )
@@ -572,9 +570,7 @@ async def test_opensearch_pinned_chunk_outside_results_has_no_rank_and_is_not_re
             embedding_question_em_setting=request().em_setting,
             query='real question',
             search_type='SIMILARITY_SEARCH',
-            fetch_k=1,
             k=1,
-            compression_stage='after_cut',
             pinned_chunk_ids=['entry:1/1'],
         )
     )

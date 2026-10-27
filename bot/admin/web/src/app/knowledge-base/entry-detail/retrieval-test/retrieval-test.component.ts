@@ -35,7 +35,7 @@ import { KnowledgeBaseService } from '../../services/knowledge-base.service';
  * Runs the vector store search with the entry chunk pinned, so the response carries
  * the entry either with its rank or with the `not_retrieved` outcome. No dedicated
  * endpoint, and no reimplementation of the diagnostic view: for anything finer
- * (varying k, fetchK, search mode, compression, comparing runs) the user is handed
+ * (varying k, search mode, compression, comparing runs) the user is handed
  * over to the diagnostic with the chunk already pinned.
  */
 @Component({

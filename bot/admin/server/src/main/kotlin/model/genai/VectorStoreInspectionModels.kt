@@ -63,11 +63,8 @@ data class VectorStoreInspectionSearchRequestDTO(
     val searchType: DocumentSearchType,
     val query: String,
     val keyWords: List<String> = emptyList(),
-    val fetchK: Int,
     val k: Int,
     val compressionEnabled: Boolean,
-    /** Public Studio value: beforeCut or afterCut. */
-    val compressionStage: String,
     val compressionOverride: VectorStoreInspectionCompressionOverrideDTO? = null,
     val pinnedChunkIds: List<String> = emptyList(),
     val pinnedRankStrategy: String = "score_only",
@@ -75,8 +72,6 @@ data class VectorStoreInspectionSearchRequestDTO(
 
 data class VectorStoreInspectionSearchResponseDTO(
     val funnel: VectorStoreInspectionSearchFunnel,
-    /** Public Studio value: beforeCut or afterCut. */
-    val compressionStage: String,
     val results: List<VectorStoreInspectionSearchResultChunk>,
     val duration: Double,
 )
