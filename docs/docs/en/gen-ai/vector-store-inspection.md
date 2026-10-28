@@ -35,27 +35,31 @@ even when no search channel returns them. The _Diagnose_ button opens the diagno
 
 ## Retrieval diagnostic
 
-The diagnostic screen follows the retrieval chain, from top to bottom:
+The diagnostic screen follows the runtime retrieval chain, from top to bottom:
 
 1. **Question**: the question as a user would ask it. It can be condensed (the condensed question and the keywords
    are filled by the condensing LLM, and can be edited). Condensation is not deterministic: the search uses the displayed
    values as they are, so a search can be replayed identically.
-2. **Retrieval**: the index, the search mode (_Vector_, _Full text_ or _Hybrid_; full text and hybrid modes require
-   keywords) and _fetch k_, the number of candidates pulled from the store.
-3. **Compression**: whether to apply the [document compressor](compressor.md), with its minimum score
-   and maximum number of documents. The default values are the ones configured for the bot.
-4. **Final context**: _k_, the number of chunks finally handed to the answering model.
+2. **Retrieval**: the index and the search mode (_Vector_, _Full text_ or _Hybrid_; full text and hybrid modes require
+   keywords). The search mode is taken from the bot configuration and shown read-only.
+3. **Context**: _Max documents retrieved_ (`k`), the number of candidates each channel returns and the pool handed to the compressor.
+4. **Compression**: whether to apply the [document compressor](compressor.md), with its minimum score
+   and maximum number of documents.
 
-> In the runtime chain, _fetch k_ and _k_ are always equal. The diagnostic lets you set them independently
-> to see what a wider search would bring. A warning is displayed when the configuration differs from the production chain.
+> The form starts from the bot's actual retrieval settings; a banner lists any setting you changed and offers to reset
+> it to the bot's. The compressor runs on the retrieved documents, so its _maximum number of documents_ cannot exceed
+> _Max documents retrieved_. Changing the minimum score or the maximum number of documents is recomputed instantly in the
+> browser, without a new search: every candidate's reranker score is shown with the threshold marker, so the minimum can
+> be chosen by eye (the score scale depends on the reranker model).
 
 ### Funnel and results
 
 The funnel shows each stage with its number of chunks: vector and full text channels (in hybrid mode), RRF fusion,
-compression, then the top-k cut.
+the top-k cut, then compression (with its duration). When the compressor fails, it falls back and the stage is shown as
+_failed, fell back_ with the reason.
 
-The results table shows one chunk per line, with its rank and score for each channel (vector, full text, RRF, rerank)
-and its outcome:
+The results table shows one chunk per line, with its rank and score for each channel (vector, full text, RRF, rerank),
+the number of windows an oversized chunk was scored across, and its outcome:
 
 | Outcome          | Meaning                                                                         |
 |------------------|---------------------------------------------------------------------------------|
@@ -69,10 +73,11 @@ and its outcome:
 ### Comparing searches
 
 _Set as reference_ freezes a search as the baseline for the next ones. The following searches are then compared with it:
-the parameters that changed (index, search mode, question, keywords, fetch k, k, compression) and the chunks that
-were lost, gained or moved. Two kinds of absence are distinguished:
+the parameters that changed (index, search mode, question, keywords, max documents retrieved, compression — including the
+minimum score and maximum number of documents) and the chunks that were lost, gained or moved. A client-side threshold
+change produces a new comparable search without a backend call. Two kinds of absence are distinguished:
 
 * _absent from index_: the two searches target different indexes and the chunk does not exist in the current one (an ingestion problem),
-* _outside top fetch k_: the chunk still exists, but no longer surfaces within the fetched window (a ranking problem).
+* _outside top k_: the chunk still exists, but no longer surfaces within the retrieved window (a ranking problem).
 
 Comparisons are computed in the browser and are not saved.

@@ -280,10 +280,8 @@ Le cœur. Exécute une recherche et renvoie l'entonnoir complet.
   "search_type": "HYBRID_SEARCH",
   "query": "Conditions de résiliation anticipée d'un contrat d'assurance habitation",
   "key_words": ["résiliation", "assurance habitation", "anticipée"],
-  "fetch_k": 150,
   "k": 8,
   "compression_enabled": true,
-  "compression_stage": "before_cut",
   "compression_override": {
     "min_score": 0.4,
     "max_documents": 4,
@@ -299,30 +297,17 @@ Le cœur. Exécute une recherche et renvoie l'entonnoir complet.
 | `search_type`          | enum          | `SIMILARITY_SEARCH` \| `FULL_TEXT_SEARCH` \| `HYBRID_SEARCH`  |
 | `query`                | string        | Question brute ou condensée — jamais recalculée côté serveur  |
 | `key_words`            | string[]      | Requis pour FTS et hybride                                    |
-| `fetch_k`              | int           | Candidats ramenés du stock                                    |
-| `k`                    | int           | Survivants après la coupe                                     |
+| `k`                    | int           | Documents remontés par canal, et coupe top-k avant compression |
 | `compression_enabled`  | bool          | `false` désactive l'étage compression                         |
-| `compression_stage`    | enum          | `before_cut` (cible) \| `after_cut` (reproduction du runtime) |
 | `compression_override` | objet \| null | Seuils du compresseur pour cette exécution (§3.4.1)           |
 | `pinned_chunk_ids`     | string[]      | Chunks toujours présents dans la réponse                      |
 | `pinned_rank_strategy` | enum          | `truncated` \| `score_only` \| `exact_rank`                   |
 
-**`fetch_k` et `k` sont dissociés.** `fetch_k` gouverne combien de candidats sont
-ramenés, `k` combien survivent à la coupe. Le runtime utilise un seul `k` pour
-les deux, que l'outil sait reproduire (`fetch_k = k`) comme dépasser. Quand
-`fetch_k != k`, l'UI signale que la configuration ne reflète pas le runtime.
-
-**`compression_stage`** :
-
-| valeur       | comportement                                                                                                         |
-| ------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `before_cut` | ramène `fetch_k` → compresse → coupe à `k`. **Ordre cible.** Le compresseur arbitre l'ensemble du vivier             |
-| `after_cut`  | ramène `fetch_k` → coupe à `k` → compresse. Fidèle au runtime, où le compresseur enveloppe un retriever déjà tronqué |
-
-L'UI présente `before_cut` comme le défaut et expose `after_cut` via une case
-« reproduire l'ordre du runtime ». Une fois la dissociation `fetch_k` adoptée au
-runtime, `compression_stage` disparaît et `before_cut` devient le seul
-comportement.
+**Un seul `k`.** Chaque canal remonte `k`, RRF garde le top `k`, puis le
+compresseur rescroe ces `k` documents et coupe à `max_documents` (le vrai coupe
+finale). L'ordre est celui du runtime depuis la PR #2114 — il n'y a plus de
+`fetch_k` ni d'ordre alternatif. Le formulaire interdit `max_documents > k` : le
+compresseur ne peut que filtrer ou réordonner, jamais élargir.
 
 `query` et `key_words` sont toujours fournis par l'appelant et jamais recalculés.
 C'est ce qui rend la condensation optionnelle et la comparaison possible. En
@@ -346,13 +331,12 @@ divergence introduite par l'utilisateur.
 ```json
 {
   "funnel": {
-    "vector": { "status": "applied", "count": 150 },
-    "fts": { "status": "applied", "count": 88, "reason": null },
-    "rrf": { "status": "applied", "count": 191 },
-    "compression": { "status": "applied", "count": 4, "reason": null },
-    "top_k_cut": { "status": "applied", "count": 4, "discarded": 0 }
+    "vector": { "status": "applied", "count": 8 },
+    "fts": { "status": "applied", "count": 8, "reason": null },
+    "rrf": { "status": "applied", "count": 13 },
+    "top_k_cut": { "status": "applied", "count": 8, "discarded": 5 },
+    "compression": { "status": "applied", "count": 4, "reason": null, "duration": 0.231 }
   },
-  "compression_stage": "before_cut",
   "results": [
     {
       "chunk_id": "a3f1...:2/7",
@@ -363,7 +347,8 @@ divergence introduite par l'utilisateur.
       "ranks": { "vector": 1, "fts": 3, "rrf": 1 },
       "scores": { "vector": 0.891, "fts": 0.42, "rrf": 0.0304, "compressor": 0.77 },
       "outcome": "kept",
-      "pinned": false
+      "pinned": false,
+      "reranker_windows": null
     }
   ],
   "duration": 0.412
@@ -371,10 +356,12 @@ divergence introduite par l'utilisateur.
 ```
 
 **`funnel[].status`** : `applied` \| `skipped` \| `disabled` \| `failed_fallback`.
-La distinction est essentielle sur `compression` : `BloomzRerank` est
-`is_fault_tolerant` par défaut et renvoie les documents inchangés sur timeout ou
-erreur HTTP — sans ce statut, « le compresseur a tout gardé » et « le compresseur
-a planté » sont indistinguables. `reason` porte la cause sur `failed_fallback`.
+La distinction est essentielle sur `compression` : le compresseur est
+`is_fault_tolerant` par défaut et renvoie les premiers `max_documents` documents
+(ordre de récupération) sur timeout ou erreur — sans ce statut, « le compresseur a
+tout gardé » et « le compresseur a planté » sont indistinguables. `reason` porte
+la cause sur `failed_fallback` (`bad_response`, `exception`, `query_too_long`).
+L'étage `compression` porte aussi `duration` (secondes).
 
 `skipped` : étage non utilisé par le mode courant (FTS et RRF en vectoriel pur).
 `disabled` : compression désactivée par l'utilisateur.
@@ -399,13 +386,18 @@ Les trois du milieu ne surviennent que si la compression a tourné.
 survécu malgré un score insuffisant, ce qui n'est pas la même chose que d'être
 retenu au mérite.
 
+**`reranker_windows`** : nombre de fenêtres dans lesquelles un chunk surdimensionné
+a été scoré (`null` sinon). Les changements de `min_score` / `max_documents` sont
+recalculés côté client à partir des scores déjà renvoyés — aucun nouvel appel
+serveur.
+
 **Épinglage.** Les chunks de `pinned_chunk_ids` apparaissent toujours dans
 `results`, même absents de tous les canaux. `pinned_rank_strategy` gouverne le
 coût :
 
 | stratégie    | comportement                                                      | coût                       |
 | ------------ | ----------------------------------------------------------------- | -------------------------- |
-| `truncated`  | cherché uniquement dans le `fetch_k` ramené ; `rank = null` sinon | nul                        |
+| `truncated`  | cherché uniquement dans les `k` remontés ; `rank = null` sinon    | nul                        |
 | `score_only` | score calculé contre la requête, rang non résolu                  | 1 requête ciblée par chunk |
 | `exact_rank` | `COUNT(*)` des chunks mieux classés                               | scan de collection         |
 
@@ -433,13 +425,14 @@ qu'implicitement depuis la recherche précédente, pour qu'on puisse essayer
 plusieurs variantes contre une base stable.
 
 Un descripteur de diff nomme ce qui a changé (`index`, `search_type`, `query`,
-`key_words`, `fetch_k`, `k`, `compression`), affiché en bandeau. Deux libellés
-d'absence distincts :
+`key_words`, `k`, `compression` — y compris `min_score` et `max_documents`),
+affiché en bandeau. Un changement de seuil côté client produit une exécution
+comparable sans appel serveur. Deux libellés d'absence distincts :
 
 - `absent_from_index` — index différents et le chunk n'existe pas dans l'index
   courant. Problème d'ingestion.
-- `outside_fetch_k` — même index, le chunk est simplement sorti de la fenêtre
-  ramenée. Problème de classement.
+- `outside_k` — même index, le chunk est simplement sorti de la fenêtre remontée.
+  Problème de classement.
 
 Les fusionner masquerait les deux diagnostics que l'outil existe pour séparer.
 

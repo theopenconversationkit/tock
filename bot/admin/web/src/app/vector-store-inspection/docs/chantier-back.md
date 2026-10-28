@@ -67,22 +67,21 @@ Le service qui orchestre tout. Quatre responsabilités :
   anomalies à chaque page ou cache par index.
 - **condense** : réutilise `build_question_condensation_chain()` tel quel, capture
   la sortie et l'`effective_prompt`.
-- **search** : reconstruit le déroulé de retrieval en réutilisant
-  `SimilarityRetriever`, `FTSRetriever`, `add_rank_metadata`, `apply_rrf_ranking`,
-  mais en **conservant l'état intermédiaire** (les trois listes de canaux, les
-  rangs et scores par étage) que le runtime referme. Applique la compression via
-  `BloomzRerank` en lisant `metadata['reranker_score']` pour reconstruire les
-  `outcome`. Gère `fetch_k`/`k` dissociés et l'ordre `before_cut`/`after_cut`.
+- **search** : passe par le **pipeline partagé** (mêmes `SimilarityRetriever`,
+  `FTSRetriever`, `HybridRetriever`, `apply_rrf_ranking` que le runtime) avec un
+  `RetrievalTrace` optionnel qui **conserve l'état intermédiaire** (listes par
+  canal, rangs et scores par étage) que le runtime referme. Applique la compression
+  via la fonction partagée en lisant `metadata['reranker_score']` pour reconstruire
+  les `outcome`, et mappe le repli tolérant aux fautes au stage `failed_fallback`.
+  L'ordre est celui du runtime : récupération → RRF → coupe à `k` → compression.
 - **exact_rank** des chunks épinglés : `COUNT(*)` des chunks mieux classés, une
   requête PGVector par chunk épinglé.
 
-**[N]** `services/vector_store_inspection/vector_store_inspection_scores.py`
-(optionnel, si on veut isoler la mécanique de scoring)
-Variante de `build_docs()` du `PostgreSQLTextRetriever` qui **conserve**
-`row.score` (le `ts_rank` aujourd'hui jeté), et wrapper autour de
-`asimilarity_search_with_score()` côté vectoriel. C'est le seul endroit qui touche
-à la logique de scoring ; il vit à part pour ne rien changer aux retrievers
-runtime.
+**Scoring partagé** (implémenté dans les retrievers, pas isolé) :
+`get_vector_store_retriever()` renvoie une sous-classe de `VectorStoreRetriever`
+qui conserve `1 - distance` dans `metadata['retrieval_score']`, et `build_docs()`
+du `PostgreSQLTextRetriever` conserve le `ts_rank`. Mêmes documents, même ordre au
+runtime ; seul le score est ajouté (non injecté dans le contexte LLM).
 
 ### Capabilities
 

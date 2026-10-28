@@ -36,27 +36,32 @@ avec les chunks épinglés.
 
 ## Diagnostic de recherche
 
-L'écran de diagnostic suit la chaîne de recherche, de haut en bas :
+L'écran de diagnostic suit la chaîne de recherche de production, de haut en bas :
 
 1. **Question** : la question telle qu'un utilisateur la poserait. Elle peut être condensée (la question condensée et les
    mots-clés sont remplis par le LLM de condensation, et peuvent être modifiés). La condensation n'est pas déterministe :
    la recherche utilise les valeurs affichées telles quelles, pour qu'une recherche puisse être rejouée à l'identique.
-2. **Recherche** : l'index, le mode de recherche (_Vector_, _Full text_ ou _Hybrid_ ; les modes plein texte et hybride
-   nécessitent des mots-clés) et _fetch k_, le nombre de candidats ramenés de la base.
-3. **Compression** : appliquer ou non le [compresseur de documents](compressor.md), avec son score minimum et son nombre
-   maximum de documents. Les valeurs par défaut sont celles configurées pour le bot.
-4. **Contexte final** : _k_, le nombre de chunks finalement transmis au modèle de réponse.
+2. **Recherche** : l'index et le mode de recherche (_Vector_, _Full text_ ou _Hybrid_ ; les modes plein texte et hybride
+   nécessitent des mots-clés). Le mode de recherche provient de la configuration du bot et est affiché en lecture seule.
+3. **Contexte** : _Nombre de documents remontés_ (`k`), le nombre de candidats que chaque canal remonte et le vivier
+   transmis au compresseur.
+4. **Compression** : appliquer ou non le [compresseur de documents](compressor.md), avec son score minimum et son nombre
+   maximum de documents.
 
-> Dans la chaîne de production, _fetch k_ et _k_ sont toujours égaux. Le diagnostic permet de les régler séparément
-> pour voir ce qu'une recherche plus large apporterait. Un avertissement s'affiche quand la configuration diffère de la chaîne de production.
+> Le formulaire part des réglages réels du bot ; un bandeau liste tout réglage modifié et propose de revenir à celui du
+> bot. Le compresseur s'applique aux documents remontés : son _nombre maximum de documents_ ne peut donc pas dépasser le
+> _nombre de documents remontés_. Modifier le score minimum ou le nombre maximum de documents est recalculé
+> instantanément dans le navigateur, sans nouvelle recherche : le score reranker de chaque candidat est affiché avec le
+> marqueur de seuil, pour choisir le minimum à l'œil (l'échelle dépend du modèle de reranking).
 
 ### Entonnoir et résultats
 
 L'entonnoir affiche chaque étape avec son nombre de chunks : canaux vectoriel et plein texte (en mode hybride),
-fusion RRF, compression, puis coupe top-k.
+fusion RRF, coupe top-k, puis compression (avec sa durée). Quand le compresseur échoue, il passe en repli et l'étape est
+affichée comme _échec, repli_ avec la raison.
 
 Le tableau de résultats affiche un chunk par ligne, avec son rang et son score pour chaque canal (vectoriel, plein texte,
-RRF, rerank) et son sort :
+RRF, rerank), le nombre de fenêtres dans lesquelles un chunk surdimensionné a été scoré, et son sort :
 
 | Sort             | Signification                                                                    |
 |------------------|----------------------------------------------------------------------------------|
@@ -70,10 +75,11 @@ RRF, rerank) et son sort :
 ### Comparer des recherches
 
 _Set as reference_ fige une recherche comme référence pour les suivantes. Les recherches suivantes lui sont alors comparées :
-les paramètres qui ont changé (index, mode de recherche, question, mots-clés, fetch k, k, compression) et les chunks
-perdus, gagnés ou déplacés. Deux types d'absence sont distingués :
+les paramètres qui ont changé (index, mode de recherche, question, mots-clés, nombre de documents remontés, compression —
+y compris le score minimum et le nombre maximum de documents) et les chunks perdus, gagnés ou déplacés. Un changement de
+seuil côté client produit une recherche comparable sans appel serveur. Deux types d'absence sont distingués :
 
 * _absent from index_ : les deux recherches visent des index différents et le chunk n'existe pas dans l'index courant (un problème d'ingestion),
-* _outside top fetch k_ : le chunk existe toujours, mais ne remonte plus dans la fenêtre ramenée (un problème de classement).
+* _outside top k_ : le chunk existe toujours, mais ne remonte plus dans la fenêtre remontée (un problème de classement).
 
 Les comparaisons sont calculées dans le navigateur et ne sont pas enregistrées.

@@ -35,25 +35,14 @@ Le périmètre exclut volontairement l'étage de génération (déjà outillé v
 ## 2. Ce que la maquette a mis en évidence
 
 En reconstituant la chaîne RAG pour la maquetter fidèlement, plusieurs défauts
-du code actuel sont apparus. Ils sont **indépendants de cette fonctionnalité** et
-relèvent de tickets séparés, mais l'outil est précisément conçu pour les rendre
-visibles.
+du code actuel sont apparus. Deux sont désormais traités : le compresseur était
+débranché (il ne tournait pas au runtime) — rétabli par la PR #2114, qui le place
+après le retriever ; et les scores de récupération étaient calculés puis jetés —
+désormais conservés par le pipeline partagé (voir §5). Les deux défauts ci-dessous
+restent ouverts et **indépendants de cette fonctionnalité** ; l'outil est conçu
+pour les rendre visibles.
 
-### 2.1 Le compresseur est débranché (régression RAG v3)
-
-`create_rag_chain()` ne lit jamais `request.compressor_setting`. Le seul appelant
-de `get_compressor_factory()` est l'endpoint de vérification de configuration.
-Aucune trace de `ContextualCompressionRetriever` dans le package Python.
-
-Avant le refactor `d92e72aa` (PR #2057, RAG v3), `rag_chain.py` faisait bien
-`if request.compressor_setting: retriever = add_document_compressor(...)`. Le
-découpage en trois retrievers n'a reporté cette enveloppe sur aucun d'eux.
-
-Conséquence : **activer ou désactiver le compresseur dans le studio n'a aucun
-effet à l'exécution.** Le champ `enabled` est correctement propagé jusqu'au
-client Kotlin, mais rien ne le lit côté Python. À investiguer séparément.
-
-### 2.2 Asymétrie OpenSearch silencieuse
+### 2.1 Asymétrie OpenSearch silencieuse
 
 `OpenSearchVectorStoreSetting.getDocumentSearchParams()` écrase le
 `documentSearchType` demandé et force `SIMILARITY_SEARCH`.
@@ -61,15 +50,7 @@ client Kotlin, mais rien ne le lit côté Python. À investiguer séparément.
 utilisateur qui sélectionne « hybride » sur OpenSearch obtient du vectoriel sans
 en être informé. Hybride et FTS n'existent que sur PGVector.
 
-### 2.3 Les scores sont calculés puis jetés
-
-`get_vector_store_retriever()` passe par `as_retriever()` → `similarity_search`,
-qui ne renvoie pas de score. `PostgreSQLTextRetriever.build_docs()` calcule
-`ts_rank(...) AS score` dans son SQL puis ne conserve que `row.document` et
-`row.cmetadata`. Par ailleurs, `RAGDocumentMetadata.reranker_score` porte en
-réalité le score du **compresseur**, pas du retriever — nommage trompeur.
-
-### 2.4 Repli silencieux du HybridRetriever
+### 2.2 Repli silencieux du HybridRetriever
 
 Si le LLM de condensation ne renvoie pas de `key_words`, le `HybridRetriever`
 saute FTS et RRF et retombe en vectoriel pur, sans rien signaler. Acceptable en
@@ -102,21 +83,25 @@ index par session d'indexation rend le cas structurellement impossible.
 
 ### 3.2 Vue Diagnostic
 
-L'écran est disposé selon la **chaîne cible**, du haut vers le bas, avec des
+L'écran est disposé selon la **chaîne runtime**, du haut vers le bas, avec des
 flèches entre les étapes :
 
 ```
 1 · Question    →  brute, puis condensée (optionnel, éditable)
       ↓
-2 · Recherche   →  index, mode, fetchK
+2 · Recherche   →  index, mode (verrouillé sur le bot)
       ↓
-3 · Compression →  seuils modifiables, débrayable
+3 · Contexte    →  k (= nombre de documents remontés)
       ↓
-4 · Contexte    →  k
+4 · Compression →  seuils modifiables, débrayable, recalcul instantané
       ↓
-   Entonnoir    →  vectoriel + FTS → RRF → compression → coupe
+   Entonnoir    →  vectoriel + FTS → RRF → coupe à k → compression
    Résultats    →  un chunk par ligne, rangs et scores par canal, sort
 ```
+
+Les réglages partent de la configuration réelle du bot (mode de recherche,
+nombre de documents remontés, état et seuils du compresseur). Un bandeau signale
+tout écart introduit et propose de revenir aux réglages du bot.
 
 **L'entonnoir** affiche chaque étage avec son compte et son statut. Les canaux
 vectoriel et FTS sont présentés en parallèle (séparateur `+`), convergeant sur la
@@ -131,10 +116,12 @@ une donnée manquante.
 
 **La comparaison d'exécutions** permet d'épingler une exécution comme référence
 puis de lancer d'autres recherches ; un bandeau nomme ce qui a changé entre les
-deux (index, mode, question, mots-clés, fetchK, k, compression) et un tableau
-montre les chunks gagnés, perdus, ou déplacés. Deux libellés d'absence distincts :
+deux (index, mode, question, mots-clés, nombre de documents remontés, compression
+— y compris score minimum et nombre max de documents) et un tableau montre les
+chunks gagnés, perdus, ou déplacés. Un changement de seuil côté client produit une
+exécution comparable sans appel serveur. Deux libellés d'absence distincts :
 **absent de l'index** (index différents — problème d'ingestion) et **hors du top
-fetchK** (même index — problème de classement). Tout est côté client, rien n'est
+k** (même index — problème de classement). Tout est côté client, rien n'est
 persisté.
 
 ### 3.3 Raccourci depuis les dialogues
@@ -147,27 +134,21 @@ condensation, non déterministe, change les entrées analysées.
 
 ---
 
-## 4. Le point central : fetchK, k et compresseur
+## 4. Le point central : k, Max documents et compresseur
 
-C'est l'apport le plus important de l'outil, et il porte une proposition
-d'évolution du runtime.
+C'est l'apport le plus important de l'outil : régler le compresseur sur des
+scores réels, pas à l'aveugle.
 
-### 4.1 Trois troncatures, trois rôles
+### 4.1 Deux paramètres, deux rôles
 
-| Paramètre                        | Rôle                                                   | Coût                         |
-| -------------------------------- | ------------------------------------------------------ | ---------------------------- |
-| **fetchK**                       | combien de candidats ramener de la base                | une requête SQL, aucun token |
-| **compresseur** (`maxDocuments`) | combien de chunks le reranker conserve après rescoring | un appel au reranker         |
-| **k**                            | combien de chunks partent au modèle de réponse         | des tokens, de la latence    |
+| Paramètre                        | Rôle                                                     | Coût                         |
+| -------------------------------- | ------------------------------------------------------- | ---------------------------- |
+| **k** (`maxDocumentsRetrieved`)  | combien de candidats chaque canal remonte, puis le vivier remis au compresseur | une requête SQL, aucun token |
+| **compresseur** (`maxDocuments`) | combien de chunks le reranker conserve après rescoring  | un appel au reranker         |
 
-`fetchK` répond à « combien de candidats vaut-il la peine d'examiner ? » — la
-réponse veut être large. `k` répond à « combien de texte le LLM peut-il
-digérer ? » — la réponse veut être petite. Ce sont deux contraintes de nature
-différente.
-
-**Le runtime actuel les confond en une seule valeur.** Pour ne pas noyer le LLM,
-on met `k = 4`, et l'on se prive de 46 candidats que personne n'a jamais
-examinés, alors que les ramener n'aurait rien coûté.
+Depuis la PR #2114, le runtime enchaîne : chaque canal remonte `k`, RRF garde le
+top `k`, puis le compresseur rescroe ces `k` documents et coupe à `maxDocuments`.
+Le **vrai coupe finale** est donc `maxDocuments`, pas `k`.
 
 ### 4.2 k n'est pas un critère de pertinence
 
@@ -176,63 +157,64 @@ quel. Le compresseur, lui, **rescore** avec un cross-encoder qui lit la question
 et le chunk ensemble, et peut remonter en tête un document que le vectoriel
 classait 30ᵉ.
 
-D'où une formulation qui tient dans tous les cas : **k est le contrat avec le
-LLM**, une garantie de taille de prompt, pas un réglage de pertinence. En régime
-nominal, il ne fait rien — le reranker a déjà tranché — et c'est le signe que la
-chaîne fonctionne. Il ne reprend la main que dans trois cas : compresseur
-désactivé, `maxDocuments > k`, ou échec du compresseur (`is_fault_tolerant`
-renvoie les documents inchangés, `k` évite alors d'injecter 150 chunks au LLM).
+Comme le compresseur s'applique aux `k` documents remontés, **`maxDocuments` ne
+peut pas dépasser `k`** : au-delà, il ne pourrait rien élargir. Le formulaire
+bloque ce cas. Un `k` supérieur à `maxDocuments` est en revanche une marge utile :
+si le compresseur échoue (repli tolérant aux fautes), les premiers `maxDocuments`
+documents dans l'ordre de récupération sont tout de même transmis.
 
-Règle de configuration saine : **`maxDocuments ≤ k`**. Un `k` légèrement
-supérieur (par exemple 4 / 8) est même une marge utile : si le compresseur
-échoue, on transmet un peu plus de documents moins bien qualifiés, en espérant
-qu'un chunk pertinent figure dans les 8 premiers. À l'inverse, `maxDocuments > k`
-fait que `k` tronque le travail que le reranker vient de faire — l'outil le
-signale.
+### 4.3 Réglage instantané
 
-### 4.3 L'ordre des étages
+La réponse de recherche porte le score reranker de chaque candidat. Changer le
+**score minimum** ou le **nombre max de documents** ne relance donc pas de
+recherche : la sélection (et les sorts, et le compteur de compression) est
+recalculée côté client, instantanément, par une fonction qui reproduit à
+l'identique la sélection du back (voir §5). L'outil affiche tous les scores avec
+le marqueur de seuil, pour choisir le minimum à l'œil plutôt qu'en valeur
+absolue — l'échelle dépend du modèle de reranking.
 
-Dans le runtime, le compresseur enveloppe un retriever déjà tronqué à `k` : il ne
-voit que `k` documents et ne peut que retrancher. Son `maxDocuments` par défaut
-(50) est donc inerte.
-
-La chaîne cible inverse : ramener 150 candidats, **compresser sur les 150**, puis
-couper à `k`. Là, le reranker fait son travail — il arbitre un vivier large.
-
-L'outil maquette la cible et permet de constater l'écart via une case à cocher
-« reproduire l'ordre actuel du runtime ». Combinée à la comparaison d'exécutions,
-elle démontre concrètement, chunk à l'appui, ce qu'un `fetchK` runtime
-apporterait — plutôt qu'un paragraphe d'explication.
-
-**Proposition à débattre** : dissocier `fetchK` de `k` sur
-`BaseVectorStoreSearchParams` au runtime, pour que le compresseur puisse enfin
-arbitrer un vivier large.
+Seuls le nombre de documents remontés, la question, les mots-clés, l'index et le
+débrayage de la compression déclenchent une nouvelle recherche.
 
 ---
 
 ## 5. Modifications côté serveur
 
 C'est le vrai poids du chantier. L'API elle-même est légère ; ce sont ces
-déverrouillages qui font le travail. Chacun est conçu **sans impact sur le
-chemin runtime**.
+déverrouillages qui font le travail.
 
-### 5.1 Exposer les scores
+### 5.1 Un pipeline « recherche → RRF → compression » partagé
 
-Le service d'inspection appelle `asimilarity_search_with_score()` directement sur
-le `VectorStore`, et une variante de `build_docs()` qui conserve `row.score`. Les
-retrievers de production ne sont pas touchés.
+Le runtime et le diagnostic passent par **la même** implémentation, pour qu'ils
+observent exactement les mêmes documents, le même ordre et le même comportement de
+compression :
 
-### 5.2 Exposer les canaux hybrides séparément
+- `get_vector_store_retriever()` renvoie une sous-classe de `VectorStoreRetriever`
+  qui appelle `*_with_score` et conserve `1 - distance` dans
+  `metadata['retrieval_score']`. Comme `similarity_search` de PGVector délègue
+  déjà à `similarity_search_with_score` puis jette le score, les documents et leur
+  ordre sont inchangés — seul le score est ajouté. OpenSearch n'est pas touché.
+- `build_docs()` conserve le `ts_rank` déjà calculé (côté FTS).
+- Un `RetrievalTrace` optionnel (coût nul quand absent, comportement runtime
+  identique) et une fonction de compression partagée exposent l'état
+  intermédiaire au seul diagnostic.
 
-`HybridRetriever.retrieve()` produit `docs_vector` et `docs_fts` puis ne renvoie
-que la fusion. Le service d'inspection rejoue la séquence en appelant les mêmes
-fonctions (`add_rank_metadata`, `apply_rrf_ranking`) et conserve les trois
-listes. `HybridRetriever` reste inchangé.
+Les noms des runnables et la capture `RunnableAssign<answer>` sont inchangés, donc
+`RAGCallbackHandler` et les spans Langfuse sont préservés. Le score n'entre ni
+dans le contexte du LLM ni dans `RAGDocumentMetadata`.
 
 **Attention à l'ordre** : `apply_rrf_ranking()` écrit `doc.metadata['rank']['rrf']`
 en supposant que la clé `rank` existe déjà — elle est créée par
 `add_rank_metadata()`. Appeler le RRF sans avoir posé les rangs lève un
 `KeyError`. L'ordre est load-bearing.
+
+### 5.2 Sélection du compresseur factorisée
+
+Les trois compresseurs (`VllmRerank`, `BloomzRerank`, `AwsBedrockRerank`)
+partagent une unique fonction de sélection (`select_reranked_documents`), que le
+front reproduit à l'identique pour le recalcul instantané des seuils. Toute
+modification de l'une impose de mettre l'autre à jour (commentaires « MIRROR »
+réciproques et cas de test partagés).
 
 ### 5.3 Listing, comptage et pagination
 
@@ -250,17 +232,19 @@ Routeur dédié `vector_store_inspection_router`, chemin runtime intact. Cinq
 endpoints orchestrateur, plus les routes admin correspondantes dans
 `GenAIVerticle` (rôle `admin`, comme le reste de la configuration RAG).
 
-| #   | Endpoint                                        | Écran                      |
-| --- | ----------------------------------------------- | -------------------------- |
-| 1   | `GET /vector-store-inspection/indexes`          | sélecteur d'index          |
-| 2   | `POST /vector-store-inspection/documents`       | Exploration                |
-| 3   | `POST /vector-store-inspection/condense`        | bandeau de condensation    |
-| 4   | `POST /vector-store-inspection/search`          | Diagnostic + comparaison   |
-| 5   | `GET /vector-store-providers/{id}/capabilities` | construction des contrôles |
+| #   | Endpoint                                          | Écran                         |
+| --- | ------------------------------------------------- | ----------------------------- |
+| 1   | `GET /vector-store/indexes`                        | sélecteur d'index             |
+| 2   | `POST /vector-store/documents`                     | Exploration                   |
+| 3   | `POST /vector-store/condense`                      | bandeau de condensation       |
+| 4   | `POST /vector-store/search`                        | Diagnostic + comparaison      |
+| 5   | `GET /vector-store/capabilities`                   | construction des contrôles    |
+| 6   | `GET /vector-store/retrieval-settings`            | préremplissage + divergences  |
 
-Aucun endpoint n'est nécessaire pour la configuration du compresseur : le studio
-lit la route admin existante
-`GET /rest/admin/gen-ai/bots/{botId}/configuration/document-compressor`.
+Les réglages effectifs du bot (mode de recherche, nombre de documents remontés,
+état/seuils/fournisseur/modèle du compresseur) sont assemblés côté admin et
+exposés par `retrieval-settings`. L'**endpoint du compresseur n'est jamais
+exposé**.
 
 Le principe des **capabilities** évite de coder en dur les conditions par
 provider dans l'UI. L'interface interroge les capacités déclarées du provider et
@@ -275,20 +259,14 @@ sémantique des sorts) fait l'objet du document
 
 ## 7. Points ouverts à trancher en équipe
 
-1. **Dissociation de fetchK au runtime** (§4.3) — proposer un `fetchK` distinct
-   de `k` sur `BaseVectorStoreSearchParams` ? C'est la proposition de fond que
-   l'outil sert à démontrer.
-2. **Renommage de `reranker_score`** — il porte en réalité le score du
-   compresseur. Renommer (breaking) ou ajouter des champs distincts par étage ?
-3. **Seuil `near_empty_chunk`** — à fixer, idéalement relatif au `chunk_size`
+1. **Seuil `near_empty_chunk`** — à fixer, idéalement relatif au `chunk_size`
    d'ingestion plutôt qu'en valeur absolue.
-4. **Filtre texte à grande échelle** — un `ILIKE '%…%'` sur le champ document
+2. **Filtre texte à grande échelle** — un `ILIKE '%…%'` sur le champ document
    d'un index de 40 000 chunks fait un scan complet. S'appuyer sur le
    `fts_vector` déjà présent (change la sémantique en recherche par mots) ou
    ajouter un index trigramme (`pg_trgm`) ?
-5. **Ouverture aux `botUser`** — l'outil est réservé aux admins ; l'ouvrir serait
+3. **Ouverture aux `botUser`** — l'outil est réservé aux admins ; l'ouvrir serait
    un chantier séparé (accès en lecture aux configurations, notamment).
-6. **Régression du compresseur** (§2.1) — ticket dédié.
 
 ---
 
@@ -298,17 +276,13 @@ Fonctionnelle et démontrable :
 
 - Exploration complète : chargement, changement de bot, changement d'index,
   filtres, pagination, épinglage, pont vers le Diagnostic.
-- Diagnostic complet : contrôles pilotés par les capabilities, condensation
-  optionnelle et éditable, seuils du compresseur modifiables, entonnoir à cinq
-  étages avec flèches, tableau à colonnes variables, comparaison d'exécutions.
+- Diagnostic complet : préremplissage depuis les réglages réels du bot (mode
+  verrouillé), condensation optionnelle et éditable, seuils du compresseur
+  modifiables avec recalcul instantané et graphe des scores, entonnoir à cinq
+  étages avec flèches, tableau à colonnes variables, comparaison d'exécutions,
+  fidélité du repli et du fenêtrage.
 - Données déterministes seedées par le couple namespace/bot : chaque bot a son
   corpus stable, de quelques centaines à ~40 000 chunks selon le bot. Les noms
   d'index sont produits par la même normalisation que `PGVectorUtils`.
-- Deux cas pédagogiques scénarisés : une reformulation qui fait disparaître un
-  chunk (démonstration de la comparaison d'exécutions), et un chunk que le
-  reranker rattrape et que la coupe top-k écarterait (démonstration de l'ordre
-  des étages).
-
-Reste à faire avant PR : un composant partagé de sélection d'index, les tests
-Karma (surtout la logique pure de comparaison), et la mise à jour du document de
-contrat.
+- Un cas pédagogique scénarisé : une reformulation qui fait disparaître un chunk
+  (démonstration de la comparaison d'exécutions).
