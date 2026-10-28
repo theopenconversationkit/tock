@@ -57,12 +57,12 @@
     "step_question": "1 · Question",
     "step_retrieval": "2 · Retrieval",
     "step_compression": "3 · Compression",
-    "step_final_cut": "4 · Final context",
-    "k_hint": "Number of chunks finally handed to the answering model. This is what protects the prompt: every kept chunk costs tokens, latency, and dilutes the model's attention.",
+    "step_run": "4 · Run",
+    "k_hint": "Number of chunks each channel retrieves, then kept by the RRF fusion in hybrid mode. This is the pool handed to the compressor, or to the answering model when compression is off.",
     "parallel_channels_tooltip": "Both channels run in parallel from the same question and converge on the fusion",
     "max_documents_exceeds_k": "Max documents ({{maxDocuments}}) cannot exceed Max documents retrieved ({{k}}): the compressor runs on the {{k}} retrieved chunks and can only filter or reorder them, never widen the result. Lower Max documents to run the search.",
     "compressor_only_reorders": "With Max documents equal to the number of retrieved documents ({{k}}), no minimum score and no padding, the compressor keeps every chunk and only reorders them.",
-    "k_label": "k",
+    "k_label": "Max documents retrieved",
     "question_label": "Question",
     "question_placeholder": "The question as a user would ask it",
     "use_condensation": "Condense the question",
@@ -87,7 +87,7 @@
     "fill_to_max_label": "Fill to maximum",
     "fill_to_max_tooltip": "Pulls back below-threshold chunks to reach the maximum document count",
     "search_type_locked_tooltip": "The search mode is taken from the bot configuration and cannot be changed here.",
-    "compression_fell_back": "The compressor fell back and returned no scores, so the thresholds cannot be retuned without a new search.",
+    "compression_fell_back": "The compressor fell back or failed and returned no scores, so the thresholds cannot be retuned without a new search.",
     "score_chart_title": "Reranker scores (threshold marked)",
     "compression_duration": "compressed in {{ms}} ms",
     "divergence_title": "This configuration does not mirror the production chain",
@@ -110,12 +110,14 @@
       "applied": "applied",
       "skipped": "not used",
       "disabled": "disabled",
-      "failed_fallback": "failed, fell back"
+      "failed_fallback": "failed, fell back",
+      "failed": "failed"
     },
     "fallback_reason": {
       "bad_response": "reranker returned an error",
       "exception": "reranker call failed",
-      "query_too_long": "query too long for the reranker"
+      "query_too_long": "query too long for the reranker",
+      "error": "compression failed: in production, the request would fail"
     },
     "reranker_windows_tooltip": "Oversized chunk scored across {{count}} windows",
     "compressor_timeout_hint": "The reranker uses the runtime timeout (compressor_provider_timeout): a larger Max documents retrieved can make it time out and fall back.",
@@ -146,6 +148,8 @@
       "filled_below_threshold_tooltip": "Scored below the threshold but pulled back to fill the document count",
       "cut_by_fallback": "cut by fallback",
       "cut_by_fallback_tooltip": "The compressor fell back: only the first documents, in retrieval order and unscored, were passed on",
+      "compression_failed": "not passed on",
+      "compression_failed_tooltip": "Compression failed outside its fault tolerance: in production the request would fail and no chunk would be passed on",
       "not_retrieved": "absent",
       "not_retrieved_tooltip": "Returned by no search channel at all"
     },
@@ -160,8 +164,7 @@
       "searchType": "Search mode",
       "query": "Question",
       "keyWords": "Keywords",
-      "fetchK": "fetch k",
-      "k": "k",
+      "k": "Max documents retrieved",
       "compression": "Compression"
     },
     "reference_label": "Reference",

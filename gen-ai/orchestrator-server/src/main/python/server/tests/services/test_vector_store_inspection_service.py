@@ -276,3 +276,36 @@ def test_fallback_reason_is_always_translatable(
 ):
     assert _fallback_reason(fallback_info) == expected_reason
     assert _fallback_detail(fallback_info) == expected_detail
+
+
+@pytest.mark.asyncio
+async def test_compression_error_is_a_failure_not_a_fallback():
+    candidates = [Candidate(_document(name)) for name in ['first', 'second']]
+    compressor_factory = MagicMock()
+    compressor_factory.get_compressor.side_effect = ValueError('bad compressor setting')
+    request = _search_request(
+        compression_enabled=True,
+        compressor_setting={
+            'provider': 'BloomzRerank',
+            'endpoint': 'http://compressor.test',
+            'min_score': 0.5,
+            'max_documents': 2,
+            'fill_to_max_documents': False,
+        },
+    )
+
+    with patch(
+        'gen_ai_orchestrator.services.vector_store_inspection.vector_store_inspection_service.get_compressor_factory',
+        return_value=compressor_factory,
+    ):
+        compressed_ids, outcomes, scores, windows, stage = await _compress(
+            request, candidates
+        )
+
+    # The runtime would fail the request: nothing is passed on.
+    assert compressed_ids == []
+    assert set(outcomes.values()) == {ChunkOutcome.COMPRESSION_FAILED}
+    assert stage.status == FunnelStageStatus.FAILED
+    assert stage.reason == 'error'
+    assert stage.detail == 'bad compressor setting'
+    assert stage.count == 0

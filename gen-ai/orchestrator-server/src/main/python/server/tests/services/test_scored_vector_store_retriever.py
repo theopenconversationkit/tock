@@ -14,6 +14,8 @@
 #
 """The scored retriever must return exactly what the default retriever returns."""
 
+from unittest.mock import MagicMock
+
 import pytest
 from langchain_core.documents import Document
 from langchain_core.embeddings import DeterministicFakeEmbedding
@@ -21,7 +23,14 @@ from langchain_core.vectorstores import InMemoryVectorStore
 
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_factory import (
     VECTOR_SCORE_METADATA_KEY,
+    PGVectorFactory,
     ScoredVectorStoreRetriever,
+)
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.postgresql_text_retriever import (
+    FTS_SCORE_METADATA_KEY,
+)
+from gen_ai_orchestrator.services.langchain.rag_response_builder import (
+    _footnote_metadata,
 )
 
 
@@ -72,5 +81,40 @@ async def test_async_path_matches_sync_path_and_scores_follow_order():
     # InMemoryVectorStore returns a similarity (higher is closer) where PGVector
     # returns a distance, so 1 - score increases along the order here: only the
     # monotonic relation with the order is asserted.
-    scores = [document.metadata[VECTOR_SCORE_METADATA_KEY] for document in sync_documents]
+    scores = [
+        document.metadata[VECTOR_SCORE_METADATA_KEY] for document in sync_documents
+    ]
     assert scores == sorted(scores)
+
+
+def test_factory_retriever_keeps_the_default_run_name():
+    factory = MagicMock(spec=PGVectorFactory)
+    factory.get_vector_store.return_value = _store()
+    retriever = PGVectorFactory.get_vector_store_retriever(
+        factory, search_kwargs={'k': 2}
+    )
+
+    assert isinstance(retriever, ScoredVectorStoreRetriever)
+    # Same span name as the default retriever in Langfuse traces.
+    assert retriever.get_name() == 'VectorStoreRetriever'
+
+
+def test_footnotes_do_not_carry_the_inspection_scores():
+    document = Document(
+        page_content='text',
+        metadata={
+            'id': 'doc',
+            'title': 'Doc',
+            'reranker_score': 0.8,
+            VECTOR_SCORE_METADATA_KEY: 0.9,
+            FTS_SCORE_METADATA_KEY: 0.3,
+        },
+    )
+
+    assert _footnote_metadata(document) == {
+        'id': 'doc',
+        'title': 'Doc',
+        'reranker_score': 0.8,
+    }
+    # The document itself keeps them for the inspection.
+    assert VECTOR_SCORE_METADATA_KEY in document.metadata

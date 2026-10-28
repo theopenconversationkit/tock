@@ -52,6 +52,7 @@ export class ResultEntryComponent {
         // colour so it is not read as a plain success.
         return 'info';
       case 'not_retrieved':
+      case 'compression_failed':
         return 'danger';
       default:
         return 'warning';

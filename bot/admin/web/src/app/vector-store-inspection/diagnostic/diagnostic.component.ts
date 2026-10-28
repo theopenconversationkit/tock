@@ -3,7 +3,7 @@ import { Location } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { NbTooltipDirective, NbToastrService } from '@nebular/theme';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
@@ -45,16 +45,13 @@ interface DiagnosticNavigationState {
  * candidates pulled out of the store down to the chunks actually handed to the
  * answering model.
  *
- * The screen is laid out along the intended pipeline, not the current one:
- * search, then compression, then the final cut. That ordering is what makes
- * the compressor useful — it gets to arbitrate the whole fetched set, and k
- * only protects the prompt afterwards.
- *
- * The runtime does it the other way round: k truncates before the compressor
- * ever sees anything, which leaves it four already-selected documents to work
- * with. That behaviour is reachable through an explicit opt-in, so the gap can
- * be demonstrated side by side, but it is not what this tool presents as
- * normal.
+ * The screen follows the runtime pipeline, through the same code: each channel
+ * retrieves k chunks (Max documents retrieved), the RRF fusion keeps k in
+ * hybrid mode, then the compressor rescores those k and keeps at most its Max
+ * documents. The form starts from the bot's settings; only k, Max documents and
+ * Minimum score can be changed, and every change is flagged as a divergence.
+ * Minimum score and Max documents are recomputed client-side from the returned
+ * reranker scores, without a new search.
  *
  * Condensation is optional and explicit. What is sent to the search is always
  * what the user sees in the form: the condensed question and keywords are
@@ -118,6 +115,8 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   private readonly toastrService = inject(NbToastrService);
   private readonly translocoService = inject(TranslocoService);
   private navigationIndexName: string | null = null;
+  /** The in-flight search, cancelled when its results would no longer apply (index or bot change). */
+  private searchSubscription: Subscription | null = null;
   private navigationIndexRefreshed = false;
   /** True when the dialog logger hand-off supplied k, so bot settings must not override it. */
   private navigationKProvided = false;
@@ -273,6 +272,9 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
         if (settings.minScore != null) this.minScore = settings.minScore;
         if (settings.maxDocuments != null) this.maxDocuments = settings.maxDocuments;
         if (settings.fillToMaxDocuments != null) this.fillToMaxDocuments = settings.fillToMaxDocuments;
+        // Settings may land after a search already ran: keep its outcomes in
+        // line with the thresholds now shown (no-op when there are no results).
+        this.onThresholdChange();
       });
   }
 
@@ -312,6 +314,8 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     if (settings.minScore != null) this.minScore = settings.minScore;
     if (settings.maxDocuments != null) this.maxDocuments = settings.maxDocuments;
     if (settings.fillToMaxDocuments != null) this.fillToMaxDocuments = settings.fillToMaxDocuments;
+    // The displayed outcomes must follow the thresholds now shown in the form.
+    this.onThresholdChange();
   }
 
   // -- Condensation ------------------------------------------------------
@@ -414,12 +418,13 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * The compressor fell back, as reported by the compression funnel stage: no
-   * reranker scores came back, so the thresholds cannot be recomputed until a
+   * The compressor fell back or failed, as reported by the compression funnel
+   * stage: no reranker scores came back, so the thresholds cannot be recomputed until a
    * new search and the two inputs are disabled.
    */
   get compressionFellBack(): boolean {
-    return this.funnel?.compression.status === 'failed_fallback';
+    const status = this.funnel?.compression.status;
+    return status === 'failed_fallback' || status === 'failed';
   }
 
   /** Candidates that entered the compressor, in retrieval order, with their score. */
@@ -449,6 +454,8 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   onThresholdChange(): void {
     const run = this.currentRun;
     if (!this.funnel || !run || !run.request.compressionEnabled || !this.compressionScored) return;
+    // An invalid value being typed (empty field, score above 1) must not wipe the results.
+    if (this.thresholdsInvalid) return;
 
     const outcomes = recomputeCompressionOutcomes(this.compressionCandidates, this.minScore, this.maxDocuments, this.fillToMaxDocuments);
 
@@ -479,10 +486,24 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
   // -- Search ------------------------------------------------------------
 
+  /** Max documents retrieved must be a positive integer. */
+  get kInvalid(): boolean {
+    return !Number.isInteger(this.k) || this.k < 1;
+  }
+
+  /** Minimum score in [0, 1], Max documents a positive integer: what the orchestrator accepts. */
+  get thresholdsInvalid(): boolean {
+    if (!this.compressionEnabled) return false;
+    const minScoreValid = typeof this.minScore === 'number' && this.minScore >= 0 && this.minScore <= 1;
+    const maxDocumentsValid = Number.isInteger(this.maxDocuments) && this.maxDocuments >= 1;
+    return !minScoreValid || !maxDocumentsValid;
+  }
+
   get canSearch(): boolean {
     if (!this.currentIndex || this.loading) return false;
     if (!this.effectiveQuery) return false;
     if (this.needsKeyWords && !this.keyWords.length) return false;
+    if (this.kInvalid || this.thresholdsInvalid) return false;
     if (this.maxDocumentsExceedsK) return false;
     return true;
   }
@@ -520,7 +541,8 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
     this.loading = true;
 
-    this.inspection
+    this.searchSubscription?.unsubscribe();
+    this.searchSubscription = this.inspection
       .search(request)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -547,6 +569,13 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   }
 
   clearResults(): void {
+    // A search still in flight belongs to the previous index or bot: drop it
+    // rather than let it repopulate the results under the new context.
+    if (this.searchSubscription && !this.searchSubscription.closed) {
+      this.searchSubscription.unsubscribe();
+      this.loading = false;
+    }
+    this.searchSubscription = null;
     this.funnel = null;
     this.results = [];
     this.duration = null;

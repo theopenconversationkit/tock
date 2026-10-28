@@ -103,6 +103,9 @@ class FunnelStageStatus(str, Enum):
     SKIPPED = 'skipped'
     DISABLED = 'disabled'
     FAILED_FALLBACK = 'failed_fallback'
+    # The stage raised outside the compressor's own fault tolerance: the runtime
+    # would fail the whole request, nothing would reach the answering model.
+    FAILED = 'failed'
 
 
 class FunnelStage(BaseModel):
@@ -148,6 +151,9 @@ class ChunkOutcome(str, Enum):
     # The compressor fell back and returned the first max_documents documents in
     # retrieval order, unscored: the others were cut by that truncation.
     CUT_BY_FALLBACK = 'cut_by_fallback'
+    # Compression failed outright (FunnelStageStatus.FAILED): the runtime would
+    # not answer, so no chunk is passed on.
+    COMPRESSION_FAILED = 'compression_failed'
     NOT_RETRIEVED = 'not_retrieved'
 
 

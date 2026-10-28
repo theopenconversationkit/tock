@@ -41,6 +41,12 @@ from gen_ai_orchestrator.routers.responses.responses import RAGResponse
 from gen_ai_orchestrator.services.langchain.callbacks.rag_callback_handler import (
     RAGCallbackHandler,
 )
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_factory import (
+    VECTOR_SCORE_METADATA_KEY,
+)
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.postgresql_text_retriever import (
+    FTS_SCORE_METADATA_KEY,
+)
 from gen_ai_orchestrator.services.langchain.rag_chain_builder import (
     get_chunk_identifier,
 )
@@ -73,6 +79,21 @@ def extract_rank(value: str | None) -> int:
         return 999999
 
     return int(value.split('/')[0])
+
+
+# Retrieval channel scores kept on the documents for the vector store inspection.
+# They are not part of what the bot receives: footnotes stay as they were.
+_INSPECTION_ONLY_METADATA_KEYS = frozenset(
+    {VECTOR_SCORE_METADATA_KEY, FTS_SCORE_METADATA_KEY}
+)
+
+
+def _footnote_metadata(doc: Document) -> dict:
+    return {
+        key: value
+        for key, value in doc.metadata.items()
+        if key not in _INSPECTION_ONLY_METADATA_KEYS
+    }
 
 
 def footnote_sort_key(doc: Document) -> tuple[int, int]:
@@ -117,7 +138,7 @@ def build_footnotes(
             title=doc.metadata['title'],
             url=doc.metadata['source'] or None,
             content=get_source_content(doc),
-            metadata=doc.metadata.copy(),
+            metadata=_footnote_metadata(doc),
         )
         for doc in sorted_docs
     ]

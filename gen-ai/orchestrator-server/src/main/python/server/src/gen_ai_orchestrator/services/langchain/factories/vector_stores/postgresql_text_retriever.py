@@ -58,9 +58,9 @@ def build_docs(rows) -> list[Document]:
     docs = []
     for row in rows:
         metadata = dict(row.cmetadata or {})
-        # Keep the ts_rank score the query already computes. Harmless for the
-        # runtime (not injected in the LLM context nor in RAGDocumentMetadata),
-        # and read back by the vector store inspection as the FTS channel score.
+        # Keep the ts_rank score the query already computes, read back by the
+        # vector store inspection as the FTS channel score. It reaches neither
+        # the LLM context, RAGDocumentMetadata nor the footnotes.
         metadata[FTS_SCORE_METADATA_KEY] = float(row.score)
         docs.append(Document(page_content=row.document, metadata=metadata))
 

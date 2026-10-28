@@ -42,12 +42,13 @@ L'écran de diagnostic suit la chaîne de recherche de production, de haut en ba
 1. **Question** : la question telle qu'un utilisateur la poserait. Elle peut être condensée (la question condensée et les
    mots-clés sont remplis par le LLM de condensation, et peuvent être modifiés). La condensation n'est pas déterministe :
    la recherche utilise les valeurs affichées telles quelles, pour qu'une recherche puisse être rejouée à l'identique.
-2. **Recherche** : l'index et le mode de recherche (_Vector_, _Full text_ ou _Hybrid_ ; les modes plein texte et hybride
-   nécessitent des mots-clés). Le mode de recherche provient de la configuration du bot et est affiché en lecture seule.
-3. **Contexte** : _Nombre de documents remontés_ (`k`), le nombre de candidats que chaque canal remonte et le vivier
-   transmis au compresseur.
-4. **Compression** : appliquer ou non le [compresseur de documents](compressor.md), avec son score minimum et son nombre
-   maximum de documents.
+2. **Recherche** : l'index, le mode de recherche (_Vector_, _Full text_ ou _Hybrid_ ; les modes plein texte et hybride
+   nécessitent des mots-clés) et le _nombre maximal de documents récupérés_ (`k`) : le nombre de chunks que chaque canal
+   remonte, que la fusion RRF garde en hybride, et qui forme le vivier transmis au compresseur. Le mode de recherche
+   provient de la configuration du bot et est affiché en lecture seule.
+3. **Compression** : appliquer ou non le [compresseur de documents](compressor.md), avec son score minimum et son nombre
+   maximum de documents. C'est ce nombre maximum qui fixe combien de chunks sont transmis au modèle de réponse.
+4. **Lancement** : les avertissements et le bandeau de divergence, puis la recherche.
 
 > Le formulaire part des réglages réels du bot ; un bandeau liste tout réglage modifié et propose de revenir à celui du
 > bot. Le compresseur s'applique aux documents remontés : son _nombre maximum de documents_ ne peut donc pas dépasser le
@@ -67,7 +68,9 @@ L'entonnoir affiche chaque étape avec son nombre de chunks : canaux vectoriel e
 fusion RRF, coupe top-k, puis compression (avec sa durée). Quand le compresseur échoue, il passe en repli comme en
 production : il transmet les premiers documents dans l'ordre de la recherche, sans score, jusqu'à son nombre maximum de
 documents. L'étape est alors affichée comme _échec, repli_ avec la raison (erreur du reranker, appel en échec, ou
-question trop longue pour le reranker) ; le message d'erreur est disponible en infobulle. Les seuils ne peuvent pas être
+question trop longue pour le reranker) ; le message d'erreur est disponible en infobulle. Si la compression échoue
+hors de cette tolérance aux pannes (par exemple une configuration du compresseur invalide), l'étape est affichée comme
+_échec_ et aucun chunk n'est transmis : en production, la requête échouerait. Les seuils ne peuvent pas être
 réajustés tant qu'une nouvelle recherche n'a pas renvoyé de scores.
 
 Le tableau de résultats affiche un chunk par ligne, avec son rang et son score pour chaque canal (vectoriel, plein texte,
@@ -81,6 +84,7 @@ RRF, rerank), le nombre de fenêtres dans lesquelles un chunk surdimensionné a 
 | ranked out       | Au-dessus du seuil, mais classé au-delà du nombre maximum de documents           |
 | padded in        | Sous le seuil, mais repêché pour compléter le nombre de documents                |
 | cut by fallback  | Compresseur en repli : au-delà des premiers documents transmis sans score        |
+| not passed on    | La compression a échoué : en production, aucun chunk ne serait transmis          |
 | absent           | Renvoyé par aucun canal de recherche                                             |
 
 ### Comparer des recherches

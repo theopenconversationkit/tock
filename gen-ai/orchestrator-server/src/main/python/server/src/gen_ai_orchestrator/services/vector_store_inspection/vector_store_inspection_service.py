@@ -521,10 +521,6 @@ async def condense(
     )
 
 
-def _keywords_query(keywords: list[str]) -> str:
-    return ' OR '.join(keyword.strip() for keyword in keywords if keyword.strip())
-
-
 async def _pinned_documents(
     factory: PGVectorFactory, pinned_ids: list[str]
 ) -> dict[str, Document]:
@@ -680,6 +676,8 @@ def _result(
 
 
 FALLBACK_REASON_EXCEPTION = 'exception'
+# Reason of a FAILED (not fallback) compression stage.
+COMPRESSION_ERROR_REASON = 'error'
 KNOWN_FALLBACK_REASONS = frozenset({'bad_response', 'exception', 'query_too_long'})
 
 
@@ -720,28 +718,31 @@ async def _compress(
             'fill_to_max_documents': override.fill_to_max_documents,
         }
     setting = request.compressor_setting.model_copy(update=updates)
-    # Build the compressor exactly as the runtime does (default fault tolerance),
-    # so the diagnostic experiences the same fallback behaviour it would in prod.
-    compressor = get_compressor_factory(setting=setting).get_compressor()
     documents = [copy.deepcopy(candidate.document) for candidate in candidates]
     compression_started = time.perf_counter()
     try:
+        # Built exactly as the runtime does (default fault tolerance), so the
+        # diagnostic experiences the same fallback behaviour it would in prod.
+        compressor = get_compressor_factory(setting=setting).get_compressor()
         compressed, fallback_info = await asyncio.to_thread(
             compress_documents_with_fallback, compressor, documents, request.query
         )
     except Exception as exception:
         # The compressor is fault tolerant, so this is not a reranker fallback:
-        # something failed around it (and the runtime would fail the request).
-        # Keep the retrieved candidates visible so the retrieval stays inspectable.
+        # something failed around it, and the runtime would fail the whole
+        # request. Say so: no chunk is passed on, the retrieval stays visible.
         return (
-            [candidate.chunk_id for candidate in candidates],
-            {candidate.chunk_id: ChunkOutcome.KEPT for candidate in candidates},
+            [],
+            {
+                candidate.chunk_id: ChunkOutcome.COMPRESSION_FAILED
+                for candidate in candidates
+            },
             {},
             {},
             FunnelStage(
-                status=FunnelStageStatus.FAILED_FALLBACK,
-                count=len(candidates),
-                reason=FALLBACK_REASON_EXCEPTION,
+                status=FunnelStageStatus.FAILED,
+                count=0,
+                reason=COMPRESSION_ERROR_REASON,
                 detail=str(exception),
                 duration=time.perf_counter() - compression_started,
             ),
@@ -993,7 +994,11 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
         embedding = (
             await embedding_model.aembed_query(request.query) if use_vector else []
         )
-        fts_query = _keywords_query(request.key_words)
+        # Built exactly as the retrieval built it, so a pin is ranked against
+        # the same FTS query as the retrieved chunks.
+        fts_query = (
+            fts_retriever.prepare_query(request.key_words) if use_fts else ''
+        )
         metric_tasks = []
         if use_vector:
             metric_tasks.append(

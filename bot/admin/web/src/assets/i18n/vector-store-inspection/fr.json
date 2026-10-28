@@ -57,12 +57,12 @@
     "step_question": "1 · Question",
     "step_retrieval": "2 · Recherche",
     "step_compression": "3 · Compression",
-    "step_final_cut": "4 · Contexte final",
-    "k_hint": "Nombre de chunks finalement transmis au modèle de réponse. C'est ce qui protège le prompt : chaque chunk retenu coûte des tokens, de la latence, et dilue l'attention du modèle.",
+    "step_run": "4 · Lancement",
+    "k_hint": "Nombre de chunks que chaque canal remonte, puis que la fusion RRF garde en hybride. C'est le vivier transmis au compresseur, ou au modèle de réponse quand la compression est désactivée.",
     "parallel_channels_tooltip": "Les deux canaux partent de la même question en parallèle et convergent sur la fusion",
     "max_documents_exceeds_k": "Le nombre max. de documents ({{maxDocuments}}) ne peut pas dépasser le nombre de documents remontés ({{k}}) : le compresseur s'applique aux {{k}} chunks remontés et ne peut que les filtrer ou les réordonner, jamais élargir le résultat. Baissez le nombre max. de documents pour lancer la recherche.",
     "compressor_only_reorders": "Avec un nombre max. de documents égal au nombre de documents remontés ({{k}}), sans score minimum ni complément, le compresseur garde tous les chunks et ne fait que les réordonner.",
-    "k_label": "k",
+    "k_label": "Nombre maximal de documents récupérés",
     "question_label": "Question",
     "question_placeholder": "La question telle qu'un utilisateur la poserait",
     "use_condensation": "Condenser la question",
@@ -87,7 +87,7 @@
     "fill_to_max_label": "Compléter jusqu'au maximum",
     "fill_to_max_tooltip": "Réintroduit des chunks sous le seuil pour atteindre le nombre maximum de documents",
     "search_type_locked_tooltip": "Le mode de recherche provient de la configuration du bot et ne peut pas être modifié ici.",
-    "compression_fell_back": "Le compresseur est passé en repli et n'a renvoyé aucun score : les seuils ne peuvent pas être réajustés sans relancer une recherche.",
+    "compression_fell_back": "Le compresseur est passé en repli ou a échoué, et n'a renvoyé aucun score : les seuils ne peuvent pas être réajustés sans relancer une recherche.",
     "score_chart_title": "Scores du reranker (seuil marqué)",
     "compression_duration": "compressé en {{ms}} ms",
     "divergence_title": "Cette configuration ne reflète pas la chaîne en production",
@@ -110,12 +110,14 @@
       "applied": "appliqué",
       "skipped": "non utilisé",
       "disabled": "désactivé",
-      "failed_fallback": "échec, repli"
+      "failed_fallback": "échec, repli",
+      "failed": "échec"
     },
     "fallback_reason": {
       "bad_response": "le reranker a renvoyé une erreur",
       "exception": "l'appel au reranker a échoué",
-      "query_too_long": "requête trop longue pour le reranker"
+      "query_too_long": "requête trop longue pour le reranker",
+      "error": "la compression a échoué : en production, la requête échouerait"
     },
     "reranker_windows_tooltip": "Chunk surdimensionné scoré sur {{count}} fenêtres",
     "compressor_timeout_hint": "Le reranker utilise le timeout du runtime (compressor_provider_timeout) : un nombre de documents remontés plus élevé peut le faire expirer et basculer en repli.",
@@ -146,6 +148,8 @@
       "filled_below_threshold_tooltip": "Scoré sous le seuil mais réintroduit pour compléter le nombre de documents",
       "cut_by_fallback": "coupé par le repli",
       "cut_by_fallback_tooltip": "Le compresseur est passé en repli : seuls les premiers documents, dans l'ordre de la recherche et sans score, ont été transmis",
+      "compression_failed": "non transmis",
+      "compression_failed_tooltip": "La compression a échoué hors de sa tolérance aux pannes : en production, la requête échouerait et aucun chunk ne serait transmis",
       "not_retrieved": "absent",
       "not_retrieved_tooltip": "Remonté par aucun canal de recherche"
     },
@@ -160,8 +164,7 @@
       "searchType": "Mode de recherche",
       "query": "Question",
       "keyWords": "Mots-clés",
-      "fetchK": "fetch k",
-      "k": "k",
+      "k": "Nombre maximal de documents récupérés",
       "compression": "Compression"
     },
     "reference_label": "Référence",

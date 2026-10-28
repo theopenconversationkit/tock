@@ -171,7 +171,11 @@ export interface CompressionOverride {
 // Search / diagnostic
 // ---------------------------------------------------------------------------
 
-export type FunnelStageStatus = 'applied' | 'skipped' | 'disabled' | 'failed_fallback';
+/**
+ * `failed_fallback`: the compressor fell back as it would at runtime (chunks still passed on).
+ * `failed`: the stage raised outside that fault tolerance; the runtime would fail the request.
+ */
+export type FunnelStageStatus = 'applied' | 'skipped' | 'disabled' | 'failed_fallback' | 'failed';
 
 export interface FunnelStage {
   status: FunnelStageStatus;
@@ -218,6 +222,9 @@ export interface ChannelScores {
  *
  * `cut_by_fallback`: the compressor fell back and returned the first
  * max_documents chunks in retrieval order, unscored; this chunk was past them.
+ *
+ * `compression_failed`: compression failed outright; the runtime would not
+ * answer, so no chunk is passed on.
  */
 export type ChunkOutcome =
   | 'kept'
@@ -226,6 +233,7 @@ export type ChunkOutcome =
   | 'reranked_out'
   | 'filled_below_threshold'
   | 'cut_by_fallback'
+  | 'compression_failed'
   | 'not_retrieved';
 
 export interface SearchResultChunk {

@@ -357,7 +357,7 @@ divergence introduite par l'utilisateur.
 }
 ```
 
-**`funnel[].status`** : `applied` \| `skipped` \| `disabled` \| `failed_fallback`.
+**`funnel[].status`** : `applied` \| `skipped` \| `disabled` \| `failed_fallback` \| `failed`.
 La distinction est essentielle sur `compression` : le compresseur est
 `is_fault_tolerant` par défaut et renvoie les premiers `max_documents` documents
 (ordre de récupération) sur timeout ou erreur — sans ce statut, « le compresseur a
@@ -366,6 +366,11 @@ la cause sur `failed_fallback`, toujours parmi `bad_response`, `exception` et
 `query_too_long` (toute autre cause est ramenée à `exception`), et `detail` le
 message d'erreur ou le budget restant, affiché en infobulle. L'étage
 `compression` porte aussi `duration` (secondes).
+
+`failed` : la compression a échoué hors de sa tolérance aux pannes (construction
+du compresseur, configuration invalide…). Le runtime ferait échouer la requête :
+`reason` vaut `error`, `detail` porte le message, aucun chunk n'est transmis
+(`count` à 0, chunks en `compression_failed`).
 
 `skipped` : étage non utilisé par le mode courant (FTS et RRF en vectoriel pur).
 `disabled` : compression désactivée par l'utilisateur.
@@ -384,10 +389,11 @@ chunk, ce qui est souvent l'explication recherchée.
 | `reranked_out`           | au-dessus de `min_score` mais classé au-delà de `max_documents` |
 | `filled_below_threshold` | scoré sous `min_score` mais repêché par `fill_to_max_documents` |
 | `cut_by_fallback`        | compresseur en repli : au-delà des `max_documents` premiers     |
+| `compression_failed`     | compression en échec (`failed`) : aucun chunk transmis          |
 | `not_retrieved`          | remonté par aucun canal                                         |
 
-`below_min_score`, `reranked_out`, `filled_below_threshold` et `cut_by_fallback`
-ne surviennent que si la compression a tourné. En repli, les documents transmis
+`below_min_score`, `reranked_out`, `filled_below_threshold`, `cut_by_fallback` et
+`compression_failed` ne surviennent que si la compression a tourné. En repli, les documents transmis
 sont `kept` (non scorés) et les suivants `cut_by_fallback`.
 `filled_below_threshold` mérite un traitement distinct dans l'UI : le chunk a
 survécu malgré un score insuffisant, ce qui n'est pas la même chose que d'être
@@ -504,7 +510,9 @@ ordre et le même comportement du compresseur.
 
 Deux clés distinctes : la fusion RRF ne recopie que les clés absentes, une clé
 commune perdrait le score FTS d'un chunk trouvé par les deux canaux. Ces scores
-ne sont injectés ni dans le contexte du LLM ni dans `RAGDocumentMetadata`.
+n'atteignent ni le contexte du LLM, ni `RAGDocumentMetadata`, ni les footnotes
+renvoyées au bot (`rag_response_builder` les retire). Le retriever garde le nom de
+run `VectorStoreRetriever`, donc le même span Langfuse qu'avant.
 
 ### 6.2 Trace optionnelle des étapes
 

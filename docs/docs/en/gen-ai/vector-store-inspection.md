@@ -41,11 +41,13 @@ The diagnostic screen follows the runtime retrieval chain, from top to bottom:
 1. **Question**: the question as a user would ask it. It can be condensed (the condensed question and the keywords
    are filled by the condensing LLM, and can be edited). Condensation is not deterministic: the search uses the displayed
    values as they are, so a search can be replayed identically.
-2. **Retrieval**: the index and the search mode (_Vector_, _Full text_ or _Hybrid_; full text and hybrid modes require
-   keywords). The search mode is taken from the bot configuration and shown read-only.
-3. **Context**: _Max documents retrieved_ (`k`), the number of candidates each channel returns and the pool handed to the compressor.
-4. **Compression**: whether to apply the [document compressor](compressor.md), with its minimum score
-   and maximum number of documents.
+2. **Retrieval**: the index, the search mode (_Vector_, _Full text_ or _Hybrid_; full text and hybrid modes require
+   keywords) and _Max documents retrieved_ (`k`): the number of chunks each channel returns, kept by the RRF fusion in
+   hybrid mode, and forming the pool handed to the compressor. The search mode is taken from the bot configuration and
+   shown read-only.
+3. **Compression**: whether to apply the [document compressor](compressor.md), with its minimum score and maximum
+   number of documents. That maximum is what sets how many chunks reach the answering model.
+4. **Run**: the warnings and the divergence banner, then the search.
 
 > The form starts from the bot's actual retrieval settings; a banner lists any setting you changed and offers to reset
 > it to the bot's. The compressor runs on the retrieved documents, so its _maximum number of documents_ cannot exceed
@@ -65,7 +67,9 @@ The funnel shows each stage with its number of chunks: vector and full text chan
 the top-k cut, then compression (with its duration). When the compressor fails, it falls back as in production: it
 passes on the first documents in retrieval order, unscored, up to its maximum number of documents. The stage is then
 shown as _failed, fell back_ with the reason (reranker error, failed call, or question too long for the reranker); the
-error message is available as a tooltip. The thresholds cannot be retuned until a new search returns scores.
+error message is available as a tooltip. If compression fails outside that fault tolerance (an invalid compressor
+configuration, for instance), the stage is shown as _failed_ and no chunk is passed on: in production, the request
+would fail. The thresholds cannot be retuned until a new search returns scores.
 
 The results table shows one chunk per line, with its rank and score for each channel (vector, full text, RRF, rerank),
 the number of windows an oversized chunk was scored across, and its outcome:
@@ -78,6 +82,7 @@ the number of windows an oversized chunk was scored across, and its outcome:
 | ranked out       | Above the threshold, but ranked past the maximum number of documents           |
 | padded in        | Scored below the threshold, but pulled back to fill the document count          |
 | cut by fallback  | Compressor fell back: past the first documents passed on unscored               |
+| not passed on    | Compression failed: in production, no chunk would be passed on                  |
 | absent           | Returned by no search channel at all                                            |
 
 ### Comparing searches

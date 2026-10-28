@@ -67,10 +67,11 @@ class ScoredVectorStoreRetriever(VectorStoreRetriever):
     Behaves exactly like the default similarity retriever — PGVector's
     similarity_search already delegates to similarity_search_with_score and drops
     the score, so this returns the same documents in the same order — but records
-    it under metadata['vector_score'] (1 - distance) for the vector store inspection. The
-    score is not injected in the LLM context nor in RAGDocumentMetadata. Only the
-    default search_type='similarity' is supported: Tock never sets the LangChain
-    mmr / similarity_score_threshold strategies.
+    it under metadata['vector_score'] (1 - distance) for the vector store
+    inspection. The score reaches neither the LLM context, RAGDocumentMetadata nor
+    the footnotes returned to the bot (see rag_response_builder). Only the default
+    search_type='similarity' is supported: Tock never sets the LangChain mmr /
+    similarity_score_threshold strategies.
     """
 
     def _get_relevant_documents(
@@ -155,6 +156,9 @@ class PGVectorFactory(LangChainVectorStoreFactory):
             vectorstore=vector_store,
             search_kwargs=search_kwargs,
             tags=vector_store._get_retriever_tags(),
+            # Keep the run name of the default retriever, so Langfuse traces and
+            # any dashboard keyed on it see the same span as before.
+            name='VectorStoreRetriever',
         )
 
     def get_text_store_retriever(

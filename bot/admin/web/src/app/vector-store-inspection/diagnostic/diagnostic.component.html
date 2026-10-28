@@ -130,6 +130,21 @@
           [nbTooltip]="'vsi.diagnostic.search_type_locked_tooltip' | transloco"
         />
       </tock-form-control>
+
+      <tock-form-control
+        [label]="'vsi.diagnostic.k_label' | transloco"
+        name="k"
+      >
+        <input
+          nbInput
+          fullWidth
+          type="number"
+          min="1"
+          [(ngModel)]="k"
+          [status]="kInvalid ? 'danger' : 'basic'"
+          [nbTooltip]="'vsi.diagnostic.k_hint' | transloco"
+        />
+      </tock-form-control>
     </div>
 
     @if (currentIndex) {
@@ -204,7 +219,8 @@
           step="0.05"
           [(ngModel)]="minScore"
           (ngModelChange)="onThresholdChange()"
-          [disabled]="compressionFellBack"
+          [disabled]="compressionFellBack || loading"
+          [status]="thresholdsInvalid ? 'danger' : 'basic'"
           [nbTooltip]="'vsi.diagnostic.min_score_tooltip' | transloco"
         />
       </tock-form-control>
@@ -222,7 +238,8 @@
           [max]="k"
           [(ngModel)]="maxDocuments"
           (ngModelChange)="onThresholdChange()"
-          [disabled]="compressionFellBack"
+          [disabled]="compressionFellBack || loading"
+          [status]="thresholdsInvalid ? 'danger' : 'basic'"
           [nbTooltip]="'vsi.diagnostic.max_documents_tooltip' | transloco"
         />
       </tock-form-control>
@@ -284,27 +301,9 @@
   ></nb-icon>
 </div>
 
-<!-- 4. Final cut -->
+<!-- 4. Run -->
 <nb-card class="shadow-sm mb-0">
-  <nb-card-header>{{ 'vsi.diagnostic.step_final_cut' | transloco }}</nb-card-header>
-  <nb-card-body class="d-flex align-items-center gap-3">
-    <tock-form-control
-      class="k-field"
-      [label]="'vsi.diagnostic.k_label' | transloco"
-      name="k"
-    >
-      <input
-        nbInput
-        fullWidth
-        fieldSize="small"
-        type="number"
-        min="1"
-        [(ngModel)]="k"
-      />
-    </tock-form-control>
-
-    <div class="font-size-small text-muted flex-grow-1 pb-1">{{ 'vsi.diagnostic.k_hint' | transloco }}</div>
-  </nb-card-body>
+  <nb-card-header>{{ 'vsi.diagnostic.step_run' | transloco }}</nb-card-header>
 
   @if (maxDocumentsExceedsK) {
   <nb-card-body class="pt-0">
@@ -409,7 +408,8 @@
       <div
         class="list-entry-desc"
         [class.text-warning]="entry.stage.status === 'failed_fallback'"
-        [class.text-muted]="entry.stage.status !== 'failed_fallback'"
+        [class.text-danger]="entry.stage.status === 'failed'"
+        [class.text-muted]="entry.stage.status !== 'failed_fallback' && entry.stage.status !== 'failed'"
       >
         {{ 'vsi.diagnostic.stage_status.' + entry.stage.status | transloco }}
       </div>
