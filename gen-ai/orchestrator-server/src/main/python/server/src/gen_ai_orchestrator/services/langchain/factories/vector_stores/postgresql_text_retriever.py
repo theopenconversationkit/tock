@@ -49,7 +49,14 @@ class _MetadataFilterBuilder(PGVector):
 
 
 def build_docs(rows) -> list[Document]:
-    docs = [Document(page_content=row.document, metadata=row.cmetadata) for row in rows]
+    docs = []
+    for row in rows:
+        metadata = dict(row.cmetadata or {})
+        # Keep the ts_rank score the query already computes. Harmless for the
+        # runtime (not injected in the LLM context nor in RAGDocumentMetadata),
+        # and read back by the vector store inspection as the FTS channel score.
+        metadata['retrieval_score'] = float(row.score)
+        docs.append(Document(page_content=row.document, metadata=metadata))
 
     return docs
 

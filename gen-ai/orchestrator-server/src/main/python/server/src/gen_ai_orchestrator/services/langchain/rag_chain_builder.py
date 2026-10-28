@@ -25,6 +25,7 @@ Responsible for assembling the LangChain pipeline:
 import asyncio
 import json
 import logging
+from dataclasses import dataclass, field
 from operator import itemgetter
 from typing import Any, List, Optional
 from urllib.parse import urlparse
@@ -65,6 +66,53 @@ from gen_ai_orchestrator.services.utils.prompt_utility import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Shared retrieval / compression pipeline
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class RetrievalTrace:
+    """Optional sink for the intermediate retrieval/compression state.
+
+    Passed down the shared pipeline by callers that need to observe it (the
+    vector store inspection). When left unset the runtime pays no cost and
+    behaves identically — nothing is recorded.
+    """
+
+    vector_results: list[Document] = field(default_factory=list)
+    fts_results: list[Document] = field(default_factory=list)
+    rrf_results: list[Document] = field(default_factory=list)
+    rrf_scores: dict[tuple, float] = field(default_factory=dict)
+    # Hybrid search ran without keywords: FTS and RRF were skipped, vector only.
+    hybrid_vector_only_fallback: bool = False
+    compressor_input: list[Document] = field(default_factory=list)
+    compressor_output: list[Document] = field(default_factory=list)
+    fallback_info: Optional[dict] = None
+
+
+def compress_documents_with_fallback(
+    compressor,
+    documents: list[Document],
+    query: str,
+    trace: Optional[RetrievalTrace] = None,
+) -> tuple[list[Document], Optional[dict]]:
+    """Run the compressor, surfacing the fault-tolerant fallback it recorded.
+
+    Single implementation shared by the runtime chain and the inspection, so
+    both observe exactly the same documents, order and fallback behaviour.
+    """
+    docs = list(compressor.compress_documents(documents=documents, query=query))
+    fallback_info = getattr(compressor, 'last_fallback_info', None)
+    if fallback_info:
+        logger.warning('[Compressor] Fallback occurred: %s', fallback_info)
+    if trace is not None:
+        trace.compressor_input = list(documents)
+        trace.compressor_output = docs
+        trace.fallback_info = fallback_info
+    return docs, fallback_info
 
 
 # ---------------------------------------------------------------------------
@@ -208,12 +256,18 @@ class HybridRetriever:
     """
 
     def __init__(
-        self, vector_retriever, fts_retriever, rrf_k: int = 60, rrf_top_n: int = 10
+        self,
+        vector_retriever,
+        fts_retriever,
+        rrf_k: int = 60,
+        rrf_top_n: int = 10,
+        trace: Optional[RetrievalTrace] = None,
     ):
         self.vector_retriever = vector_retriever
         self.fts_retriever = fts_retriever
         self.rrf_k = rrf_k
         self.rrf_top_n = rrf_top_n
+        self.trace = trace
 
     async def retrieve(self, inputs: dict) -> list[Document]:
         condensed_question = inputs['chat_chain_result']['condensed_question']
@@ -233,6 +287,10 @@ class HybridRetriever:
             # Preserve similarity rank metadata even when FTS and RRF are skipped.
             add_rank_metadata(docs=docs_vector, metadata_key='similarity')
 
+            if self.trace is not None:
+                self.trace.vector_results = docs_vector
+                self.trace.hybrid_vector_only_fallback = True
+
             return docs_vector
 
         docs_vector, docs_fts = await asyncio.gather(
@@ -245,11 +303,21 @@ class HybridRetriever:
         add_rank_metadata(docs=docs_vector, metadata_key='similarity')
         add_rank_metadata(docs=docs_fts, metadata_key='fts')
 
+        if self.trace is not None:
+            self.trace.vector_results = docs_vector
+            self.trace.fts_results = docs_fts
+            self.trace.rrf_scores = calculate_rrf_scores(
+                [docs_vector, docs_fts], self.rrf_k
+            )
+
         result = apply_rrf_ranking(
             [docs_vector, docs_fts],
             k=self.rrf_k,
             top_n=self.rrf_top_n,
         )
+
+        if self.trace is not None:
+            self.trace.rrf_results = result
 
         return result
 
@@ -260,17 +328,20 @@ class HybridRetriever:
 
 
 class SimilarityRetriever:
-    def __init__(self, vector_retriever):
+    def __init__(self, vector_retriever, trace: Optional[RetrievalTrace] = None):
         self.vector_retriever = vector_retriever
+        self.trace = trace
 
     async def retrieve(self, inputs: dict) -> list[Document]:
         condensed_question = inputs['chat_chain_result']['condensed_question']
         ranked_docs = await self.vector_retriever.ainvoke(input=condensed_question)
 
-        return add_rank_metadata(
-            docs=ranked_docs,
-            metadata_key='similarity',
-        )
+        add_rank_metadata(docs=ranked_docs, metadata_key='similarity')
+
+        if self.trace is not None:
+            self.trace.vector_results = ranked_docs
+
+        return ranked_docs
 
 
 # ---------------------------------------------------------------------------
@@ -282,8 +353,10 @@ class FTSRetriever:
     def __init__(
         self,
         fts_retriever,
+        trace: Optional[RetrievalTrace] = None,
     ):
         self.fts_retriever = fts_retriever
+        self.trace = trace
 
     async def retrieve(self, inputs: dict) -> list[Document]:
         key_words = inputs['chat_chain_result']['key_words']
@@ -292,10 +365,12 @@ class FTSRetriever:
             input=self.fts_retriever.prepare_query(key_words)
         )
 
-        return add_rank_metadata(
-            docs=ranked_docs,
-            metadata_key='fts',
-        )
+        add_rank_metadata(docs=ranked_docs, metadata_key='fts')
+
+        if self.trace is not None:
+            self.trace.fts_results = ranked_docs
+
+        return ranked_docs
 
 
 def add_rank_metadata(
@@ -459,16 +534,9 @@ def create_rag_chain(
         compressor = get_compressor_factory(setting=request.compressor_setting).get_compressor()
 
         def compress_and_capture_fallback(x):
-            docs = list(
-                compressor.compress_documents(
-                    documents=x['documents'],
-                    query=x['question'],
-                )
+            docs, fallback_info = compress_documents_with_fallback(
+                compressor, x['documents'], x['question']
             )
-            fallback_info = getattr(compressor, 'last_fallback_info', None)
-            if fallback_info:
-                logger.warning('[Compressor] Fallback occurred: %s', fallback_info)
-
             x['documents'] = docs
             x['compressor_fallback_info'] = fallback_info
             return x

@@ -86,18 +86,30 @@ def test_calculate_rrf_scores_fuses_ranks_by_chunk_identifier():
 
 @pytest.mark.asyncio
 async def test_search_exposes_channel_scores_ranks_and_top_k_outcomes():
-    first = _document('first')
-    second = _document('second')
+    def _scored(name: str, score: float) -> Document:
+        document = _document(name)
+        document.metadata['retrieval_score'] = score
+        return document
+
     embedding_model = MagicMock()
     embedding_model.aembed_query = AsyncMock(return_value=[0.1, 0.2])
     em_factory = MagicMock()
     em_factory.get_embedding_model.return_value = embedding_model
-    vector_store = MagicMock()
-    vector_store.asimilarity_search_with_score_by_vector = AsyncMock(
-        return_value=[(first, 0.1), (second, 0.3)]
+
+    # The shared (scored) retrievers already expose 1 - distance / ts_rank in
+    # metadata['retrieval_score']; the inspection reads it back per channel.
+    vector_retriever = MagicMock()
+    vector_retriever.ainvoke = AsyncMock(
+        return_value=[_scored('first', 0.9), _scored('second', 0.7)]
+    )
+    fts_retriever = MagicMock()
+    fts_retriever.prepare_query = MagicMock(return_value='cancel OR contract')
+    fts_retriever.ainvoke = AsyncMock(
+        return_value=[_scored('second', 0.8), _scored('first', 0.4)]
     )
     pg_factory = MagicMock()
-    pg_factory.get_vector_store.return_value = vector_store
+    pg_factory.get_vector_store_retriever.return_value = vector_retriever
+    pg_factory.get_text_store_retriever.return_value = fts_retriever
 
     with (
         patch(
@@ -107,10 +119,6 @@ async def test_search_exposes_channel_scores_ranks_and_top_k_outcomes():
         patch(
             'gen_ai_orchestrator.services.vector_store_inspection.vector_store_inspection_service._pg_factory',
             return_value=pg_factory,
-        ),
-        patch(
-            'gen_ai_orchestrator.services.vector_store_inspection.vector_store_inspection_service._fts_documents',
-            AsyncMock(return_value=[(second, 0.8), (first, 0.4)]),
         ),
     ):
         response = await search(_search_request())
@@ -139,13 +147,14 @@ async def test_compression_reports_threshold_and_fill_outcomes():
     candidates = [Candidate(_document(name)) for name in ['first', 'second', 'third']]
     compressor = MagicMock()
 
-    def compress_documents(documents, _query):
+    def compress_documents(documents, query):
         scores = {'first': 0.2, 'second': 0.9, 'third': 0.1}
         for document in documents:
             document.metadata['reranker_score'] = scores[document.metadata['id']]
         return [documents[1], documents[0]]
 
     compressor.compress_documents.side_effect = compress_documents
+    compressor.last_fallback_info = None
     compressor_factory = MagicMock()
     compressor_factory.get_compressor.return_value = compressor
     request = _search_request(

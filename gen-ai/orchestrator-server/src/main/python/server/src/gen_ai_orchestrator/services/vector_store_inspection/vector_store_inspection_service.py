@@ -78,8 +78,12 @@ from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_fac
     PGVectorFactory,
 )
 from gen_ai_orchestrator.services.langchain.rag_chain_builder import (
+    FTSRetriever,
+    HybridRetriever,
+    RetrievalTrace,
+    SimilarityRetriever,
     build_question_condensation_chain,
-    calculate_rrf_scores,
+    compress_documents_with_fallback,
     get_chunk_identifier,
     get_document_key,
 )
@@ -512,35 +516,6 @@ async def condense(
     )
 
 
-async def _fts_documents(factory: PGVectorFactory, query: str, k: int):
-    rows = await _fetch_all(
-        factory.pool.async_engine,
-        text("""
-            WITH q AS (
-                SELECT websearch_to_tsquery('french', :query) AS ts_query
-            )
-            SELECT e.document, e.cmetadata, ts_rank(e.fts_vector, q.ts_query) AS score
-            FROM langchain_pg_embedding e
-            JOIN langchain_pg_collection c ON c.uuid = e.collection_id
-            CROSS JOIN q
-            WHERE c.name = :index_name AND e.fts_vector @@ q.ts_query
-            ORDER BY score DESC, char_length(e.document) DESC, e.id
-            LIMIT :k
-        """),
-        {'query': query, 'index_name': factory.index_name, 'k': k},
-    )
-    return [
-        (
-            Document(
-                page_content=row['document'] or '',
-                metadata=dict(row['cmetadata'] or {}),
-            ),
-            float(row['score']),
-        )
-        for row in rows
-    ]
-
-
 def _keywords_query(keywords: list[str]) -> str:
     return ' OR '.join(keyword.strip() for keyword in keywords if keyword.strip())
 
@@ -711,13 +686,13 @@ async def _compress(
             'fill_to_max_documents': override.fill_to_max_documents,
         }
     setting = request.compressor_setting.model_copy(update=updates)
-    compressor = get_compressor_factory(
-        setting=setting, is_fault_tolerant=False
-    ).get_compressor()
+    # Build the compressor exactly as the runtime does (default fault tolerance),
+    # so the diagnostic experiences the same fallback behaviour it would in prod.
+    compressor = get_compressor_factory(setting=setting).get_compressor()
     documents = [copy.deepcopy(candidate.document) for candidate in candidates]
     try:
-        compressed = await asyncio.to_thread(
-            compressor.compress_documents, documents, request.query
+        compressed, _fallback_info = await asyncio.to_thread(
+            compress_documents_with_fallback, compressor, documents, request.query
         )
     except Exception as exception:
         return (
@@ -798,41 +773,63 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
         DocumentSearchType.HYBRID_SEARCH,
     }
 
-    embedding = await embedding_model.aembed_query(request.query) if use_vector else []
-    vector_task = (
-        factory.get_vector_store().asimilarity_search_with_score_by_vector(
-            embedding=embedding, k=request.k
-        )
+    # Reuse the runtime retrieval pipeline so the diagnostic reproduces exactly
+    # what the chain would do: same (scored) retrievers, same RRF, same order.
+    search_kwargs = {'k': request.k, 'filter': None}
+    vector_retriever = (
+        factory.get_vector_store_retriever(search_kwargs=search_kwargs)
         if use_vector
-        else asyncio.sleep(0, result=[])
+        else None
     )
-    fts_query = _keywords_query(request.key_words)
-    fts_task = (
-        _fts_documents(factory, fts_query, request.k)
+    fts_retriever = (
+        factory.get_text_store_retriever(search_kwargs=search_kwargs)
         if use_fts
-        else asyncio.sleep(0, result=[])
+        else None
     )
-    vector_rows, fts_rows = await asyncio.gather(vector_task, fts_task)
 
-    vector_docs = [document for document, _ in vector_rows]
-    fts_docs = [document for document, _ in fts_rows]
+    trace = RetrievalTrace()
+    retrieve_inputs = {
+        'chat_chain_result': {
+            'condensed_question': request.query,
+            'key_words': list(request.key_words),
+        }
+    }
+    is_hybrid = use_vector and use_fts
+    if is_hybrid:
+        await HybridRetriever(
+            vector_retriever=vector_retriever,
+            fts_retriever=fts_retriever,
+            rrf_k=RRF_K,
+            rrf_top_n=request.k,
+            trace=trace,
+        ).retrieve(retrieve_inputs)
+    elif use_vector:
+        await SimilarityRetriever(vector_retriever, trace=trace).retrieve(
+            retrieve_inputs
+        )
+    else:
+        await FTSRetriever(fts_retriever, trace=trace).retrieve(retrieve_inputs)
+
+    # Kept only for the pinned exact-rank SQL metrics below.
+    embedding = await embedding_model.aembed_query(request.query) if use_vector else []
+    fts_query = _keywords_query(request.key_words)
+
     candidates: dict[str, Candidate] = {}
-    for rank, (document, distance) in enumerate(vector_rows, start=1):
+    for rank, document in enumerate(trace.vector_results, start=1):
         candidate = candidates.setdefault(
             get_chunk_identifier(document), Candidate(document=document)
         )
         candidate.ranks['vector'] = rank
-        candidate.scores['vector'] = 1.0 - float(distance)
-    for rank, (document, score) in enumerate(fts_rows, start=1):
+        candidate.scores['vector'] = document.metadata.get('retrieval_score')
+    for rank, document in enumerate(trace.fts_results, start=1):
         candidate = candidates.setdefault(
             get_chunk_identifier(document), Candidate(document=document)
         )
         candidate.ranks['fts'] = rank
-        candidate.scores['fts'] = float(score)
+        candidate.scores['fts'] = document.metadata.get('retrieval_score')
 
-    is_hybrid = use_vector and use_fts
-    if is_hybrid:
-        rrf_by_key = calculate_rrf_scores([vector_docs, fts_docs], RRF_K)
+    if is_hybrid and not trace.hybrid_vector_only_fallback:
+        rrf_by_key = trace.rrf_scores
         retrieved = sorted(
             candidates.values(),
             key=lambda candidate: rrf_by_key[get_document_key(candidate.document)],
@@ -842,9 +839,11 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
             candidate.ranks['rrf'] = rank
             candidate.scores['rrf'] = rrf_by_key[get_document_key(candidate.document)]
     elif use_vector:
-        retrieved = [candidates[get_chunk_identifier(doc)] for doc in vector_docs]
+        retrieved = [
+            candidates[get_chunk_identifier(doc)] for doc in trace.vector_results
+        ]
     else:
-        retrieved = [candidates[get_chunk_identifier(doc)] for doc in fts_docs]
+        retrieved = [candidates[get_chunk_identifier(doc)] for doc in trace.fts_results]
 
     outcomes: dict[str, ChunkOutcome] = {}
     compressor_scores: dict[str, float] = {}
@@ -942,13 +941,13 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
                     if use_vector
                     else FunnelStageStatus.SKIPPED
                 ),
-                count=len(vector_rows) if use_vector else None,
+                count=len(trace.vector_results) if use_vector else None,
             ),
             fts=FunnelStage(
                 status=(
                     FunnelStageStatus.APPLIED if use_fts else FunnelStageStatus.SKIPPED
                 ),
-                count=len(fts_rows) if use_fts else None,
+                count=len(trace.fts_results) if use_fts else None,
             ),
             rrf=FunnelStage(
                 status=(
