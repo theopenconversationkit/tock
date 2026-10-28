@@ -108,7 +108,11 @@ class FunnelStageStatus(str, Enum):
 class FunnelStage(BaseModel):
     status: FunnelStageStatus
     count: Optional[int]
+    # Machine-readable cause, notably on failed_fallback (bad_response,
+    # exception, query_too_long): the front translates it.
     reason: Optional[str] = None
+    # Free-text detail behind the reason (error message), shown as a tooltip.
+    detail: Optional[str] = None
     discarded: Optional[int] = None
     """Wall-clock duration of the stage in seconds (compression only)."""
     duration: Optional[float] = None
@@ -141,6 +145,9 @@ class ChunkOutcome(str, Enum):
     BELOW_MIN_SCORE = 'below_min_score'
     RERANKED_OUT = 'reranked_out'
     FILLED_BELOW_THRESHOLD = 'filled_below_threshold'
+    # The compressor fell back and returned the first max_documents documents in
+    # retrieval order, unscored: the others were cut by that truncation.
+    CUT_BY_FALLBACK = 'cut_by_fallback'
     NOT_RETRIEVED = 'not_retrieved'
 
 

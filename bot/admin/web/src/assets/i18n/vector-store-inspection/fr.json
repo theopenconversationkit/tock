@@ -61,6 +61,7 @@
     "k_hint": "Nombre de chunks finalement transmis au modèle de réponse. C'est ce qui protège le prompt : chaque chunk retenu coûte des tokens, de la latence, et dilue l'attention du modèle.",
     "parallel_channels_tooltip": "Les deux canaux partent de la même question en parallèle et convergent sur la fusion",
     "max_documents_exceeds_k": "Le nombre max. de documents ({{maxDocuments}}) ne peut pas dépasser le nombre de documents remontés ({{k}}) : le compresseur s'applique aux {{k}} chunks remontés et ne peut que les filtrer ou les réordonner, jamais élargir le résultat. Baissez le nombre max. de documents pour lancer la recherche.",
+    "compressor_only_reorders": "Avec un nombre max. de documents égal au nombre de documents remontés ({{k}}), sans score minimum ni complément, le compresseur garde tous les chunks et ne fait que les réordonner.",
     "k_label": "k",
     "question_label": "Question",
     "question_placeholder": "La question telle qu'un utilisateur la poserait",
@@ -143,6 +144,8 @@
       "reranked_out_tooltip": "Au-dessus du seuil, mais classé au-delà du nombre maximum de documents",
       "filled_below_threshold": "repêché",
       "filled_below_threshold_tooltip": "Scoré sous le seuil mais réintroduit pour compléter le nombre de documents",
+      "cut_by_fallback": "coupé par le repli",
+      "cut_by_fallback_tooltip": "Le compresseur est passé en repli : seuls les premiers documents, dans l'ordre de la recherche et sans score, ont été transmis",
       "not_retrieved": "absent",
       "not_retrieved_tooltip": "Remonté par aucun canal de recherche"
     },

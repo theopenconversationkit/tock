@@ -95,6 +95,7 @@ data class VectorStoreInspectionFunnelStage(
     @JsonInclude(JsonInclude.Include.ALWAYS)
     val count: Int?,
     val reason: String? = null,
+    val detail: String? = null,
     val discarded: Int? = null,
     val duration: Double? = null,
 )

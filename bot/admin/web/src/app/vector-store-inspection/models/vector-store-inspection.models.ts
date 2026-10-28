@@ -176,8 +176,10 @@ export type FunnelStageStatus = 'applied' | 'skipped' | 'disabled' | 'failed_fal
 export interface FunnelStage {
   status: FunnelStageStatus;
   count: number | null;
-  /** Populated notably on failed_fallback */
+  /** Machine-readable cause, notably on failed_fallback (bad_response, exception, query_too_long) */
   reason?: string | null;
+  /** Free-text detail behind the reason (error message), shown as a tooltip */
+  detail?: string | null;
   /** topKCut only */
   discarded?: number;
   /** Wall-clock duration in seconds (compression stage only) */
@@ -207,13 +209,24 @@ export interface ChannelScores {
 }
 
 /**
- * The middle three only occur when compression ran.
+ * below_min_score, reranked_out, filled_below_threshold and cut_by_fallback
+ * only occur when compression ran.
  *
  * `filled_below_threshold` deserves distinct treatment in the UI: such a chunk
  * survived despite an insufficient score, courtesy of fill_to_max_documents,
  * which is not the same as being kept on merit.
+ *
+ * `cut_by_fallback`: the compressor fell back and returned the first
+ * max_documents chunks in retrieval order, unscored; this chunk was past them.
  */
-export type ChunkOutcome = 'kept' | 'cut_by_top_k' | 'below_min_score' | 'reranked_out' | 'filled_below_threshold' | 'not_retrieved';
+export type ChunkOutcome =
+  | 'kept'
+  | 'cut_by_top_k'
+  | 'below_min_score'
+  | 'reranked_out'
+  | 'filled_below_threshold'
+  | 'cut_by_fallback'
+  | 'not_retrieved';
 
 export interface SearchResultChunk {
   chunkId: ChunkId;

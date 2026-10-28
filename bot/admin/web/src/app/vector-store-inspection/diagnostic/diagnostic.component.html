@@ -315,6 +315,15 @@
       {{ 'vsi.diagnostic.max_documents_exceeds_k' | transloco: { maxDocuments: maxDocuments, k: k } }}
     </nb-alert>
   </nb-card-body>
+  } @if (compressorOnlyReorders) {
+  <nb-card-body class="pt-0">
+    <nb-alert
+      status="info"
+      class="mb-0 py-2 font-size-small"
+    >
+      {{ 'vsi.diagnostic.compressor_only_reorders' | transloco: { k: k } }}
+    </nb-alert>
+  </nb-card-body>
   } @if (hasDivergence) {
   <nb-card-body class="pt-0">
     <nb-alert
@@ -407,7 +416,7 @@
       @if (entry.stage.reason) {
       <div
         class="list-entry-desc text-danger"
-        [nbTooltip]="entry.stage.reason"
+        [nbTooltip]="entry.stage.detail || ('vsi.diagnostic.fallback_reason.' + entry.stage.reason | transloco)"
       >
         {{ 'vsi.diagnostic.fallback_reason.' + entry.stage.reason | transloco }}
       </div>

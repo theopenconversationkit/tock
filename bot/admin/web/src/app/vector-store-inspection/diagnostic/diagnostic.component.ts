@@ -145,9 +145,8 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     });
 
     this.state.capabilities$.pipe(takeUntil(this.destroy$)).subscribe((capabilities) => {
-      // Kept for the capability notes; the search type is locked to the bot's
-      // configuration (see loadRetrievalSettings), not chosen here.
       this.capabilities = capabilities;
+      this.applyEffectiveSearchType();
     });
 
     this.state.pinnedChunkIds$.pipe(takeUntil(this.destroy$)).subscribe((ids) => {
@@ -266,8 +265,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
         // Start from what the running chain actually does, so any divergence the
         // user introduces is a deliberate one.
-        this.searchType = settings.searchType;
-        this.state.setSearchType(settings.searchType);
+        this.applyEffectiveSearchType();
         // The dialog logger hand-off, when present, owns k; otherwise take the bot's.
         if (!this.navigationKProvided) this.k = settings.maxDocumentsRetrieved;
 
@@ -276,6 +274,29 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
         if (settings.maxDocuments != null) this.maxDocuments = settings.maxDocuments;
         if (settings.fillToMaxDocuments != null) this.fillToMaxDocuments = settings.fillToMaxDocuments;
       });
+  }
+
+  /**
+   * The search type is locked to the bot's configuration, as the runtime uses
+   * it — except where the provider cannot run it: the runtime then falls back
+   * to similarity search (OpenSearch forces it), so the diagnostic does too.
+   * Called from both the settings and the capabilities subscriptions, so the
+   * result does not depend on which response arrives first.
+   */
+  private applyEffectiveSearchType(): void {
+    const configured = this.botSettings?.searchType;
+    if (!configured) return;
+
+    const supported = this.capabilities?.searchTypes;
+    const effective =
+      !supported?.length || supported.includes(configured)
+        ? configured
+        : supported.includes(DocumentSearchType.SIMILARITY_SEARCH)
+        ? DocumentSearchType.SIMILARITY_SEARCH
+        : supported[0];
+
+    this.searchType = effective;
+    this.state.setSearchType(effective);
   }
 
   /** A compressor is configured for the bot (regardless of whether it is enabled). */
@@ -376,6 +397,15 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     return this.compressionEnabled && this.maxDocuments > this.k;
   }
 
+  /**
+   * Max documents equal to k with no threshold and no fill: the compressor
+   * keeps every retrieved chunk and only reorders them. Legitimate, but worth
+   * knowing — as soon as Minimum score is above 0 it filters again.
+   */
+  get compressorOnlyReorders(): boolean {
+    return this.compressionEnabled && this.maxDocuments === this.k && !this.minScore && !this.fillToMaxDocuments;
+  }
+
   // -- Compressor tuning: instant client-side recompute ------------------
 
   /** Reranker scores came back, so thresholds can be retuned without a search. */
@@ -384,12 +414,12 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Compression ran but produced no reranker scores: the compressor fell back
-   * (see the compression funnel stage). The thresholds cannot be recomputed
-   * until a new search, so the two inputs are disabled.
+   * The compressor fell back, as reported by the compression funnel stage: no
+   * reranker scores came back, so the thresholds cannot be recomputed until a
+   * new search and the two inputs are disabled.
    */
   get compressionFellBack(): boolean {
-    return !!this.funnel && this.compressionEnabled && this.results.length > 0 && !this.compressionScored;
+    return this.funnel?.compression.status === 'failed_fallback';
   }
 
   /** Candidates that entered the compressor, in retrieval order, with their score. */
@@ -417,7 +447,8 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
    * comparison banner reflects the change.
    */
   onThresholdChange(): void {
-    if (!this.funnel || !this.compressionEnabled || !this.compressionScored) return;
+    const run = this.currentRun;
+    if (!this.funnel || !run || !run.request.compressionEnabled || !this.compressionScored) return;
 
     const outcomes = recomputeCompressionOutcomes(this.compressionCandidates, this.minScore, this.maxDocuments, this.fillToMaxDocuments);
 
@@ -428,14 +459,22 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     const keptCount = [...outcomes.values()].filter((outcome) => outcome === 'kept' || outcome === 'filled_below_threshold').length;
     this.funnel = { ...this.funnel, compression: { ...this.funnel.compression, count: keptCount } };
 
-    if (this.currentRun) {
-      this.currentRun = {
-        ...this.currentRun,
-        request: this.buildRequest(),
-        response: { ...this.currentRun.response, funnel: this.funnel, results: this.results }
-      };
-      this.refreshComparison();
-    }
+    // Start from the request that produced these results, not from the form:
+    // other fields (k, question, keywords…) may have been edited since without a
+    // new search, and the run must only claim the thresholds it was recomputed with.
+    this.currentRun = {
+      ...run,
+      request: {
+        ...run.request,
+        compressionOverride: {
+          minScore: this.minScore,
+          maxDocuments: this.maxDocuments,
+          fillToMaxDocuments: this.fillToMaxDocuments
+        }
+      },
+      response: { ...run.response, funnel: this.funnel, results: this.results }
+    };
+    this.refreshComparison();
   }
 
   // -- Search ------------------------------------------------------------

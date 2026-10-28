@@ -61,6 +61,7 @@
     "k_hint": "Number of chunks finally handed to the answering model. This is what protects the prompt: every kept chunk costs tokens, latency, and dilutes the model's attention.",
     "parallel_channels_tooltip": "Both channels run in parallel from the same question and converge on the fusion",
     "max_documents_exceeds_k": "Max documents ({{maxDocuments}}) cannot exceed Max documents retrieved ({{k}}): the compressor runs on the {{k}} retrieved chunks and can only filter or reorder them, never widen the result. Lower Max documents to run the search.",
+    "compressor_only_reorders": "With Max documents equal to the number of retrieved documents ({{k}}), no minimum score and no padding, the compressor keeps every chunk and only reorders them.",
     "k_label": "k",
     "question_label": "Question",
     "question_placeholder": "The question as a user would ask it",
@@ -143,6 +144,8 @@
       "reranked_out_tooltip": "Above the threshold, but ranked past the maximum number of documents",
       "filled_below_threshold": "padded in",
       "filled_below_threshold_tooltip": "Scored below the threshold but pulled back to fill the document count",
+      "cut_by_fallback": "cut by fallback",
+      "cut_by_fallback_tooltip": "The compressor fell back: only the first documents, in retrieval order and unscored, were passed on",
       "not_retrieved": "absent",
       "not_retrieved_tooltip": "Returned by no search channel at all"
     },

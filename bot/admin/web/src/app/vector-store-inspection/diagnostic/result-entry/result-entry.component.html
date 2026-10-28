@@ -56,8 +56,7 @@
         {{ result.scores.compressor | number: '1.3-3' }}
         @if (result.rerankerWindows) {
         <nb-icon
-          icon="grid-outline"
-          pack="eva"
+          icon="grid-3x3"
           class="font-size-small text-muted"
           [nbTooltip]="'vsi.diagnostic.reranker_windows_tooltip' | transloco: { count: result.rerankerWindows }"
         ></nb-icon>

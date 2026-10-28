@@ -31,6 +31,8 @@ from gen_ai_orchestrator.services.langchain.rag_chain_builder import (
 from gen_ai_orchestrator.services.vector_store_inspection.vector_store_inspection_service import (
     Candidate,
     _compress,
+    _fallback_detail,
+    _fallback_reason,
     search,
 )
 
@@ -86,9 +88,9 @@ def test_calculate_rrf_scores_fuses_ranks_by_chunk_identifier():
 
 @pytest.mark.asyncio
 async def test_search_exposes_channel_scores_ranks_and_top_k_outcomes():
-    def _scored(name: str, score: float) -> Document:
+    def _scored(name: str, key: str, score: float) -> Document:
         document = _document(name)
-        document.metadata['retrieval_score'] = score
+        document.metadata[key] = score
         return document
 
     embedding_model = MagicMock()
@@ -97,15 +99,22 @@ async def test_search_exposes_channel_scores_ranks_and_top_k_outcomes():
     em_factory.get_embedding_model.return_value = embedding_model
 
     # The shared (scored) retrievers already expose 1 - distance / ts_rank in
-    # metadata['retrieval_score']; the inspection reads it back per channel.
+    # metadata['vector_score'] / metadata['fts_score']; the inspection reads
+    # them back per channel.
     vector_retriever = MagicMock()
     vector_retriever.ainvoke = AsyncMock(
-        return_value=[_scored('first', 0.9), _scored('second', 0.7)]
+        return_value=[
+            _scored('first', 'vector_score', 0.9),
+            _scored('second', 'vector_score', 0.7),
+        ]
     )
     fts_retriever = MagicMock()
     fts_retriever.prepare_query = MagicMock(return_value='cancel OR contract')
     fts_retriever.ainvoke = AsyncMock(
-        return_value=[_scored('second', 0.8), _scored('first', 0.4)]
+        return_value=[
+            _scored('second', 'fts_score', 0.8),
+            _scored('first', 'fts_score', 0.4),
+        ]
     )
     pg_factory = MagicMock()
     pg_factory.get_vector_store_retriever.return_value = vector_retriever
@@ -192,3 +201,78 @@ async def test_compression_reports_threshold_and_fill_outcomes():
     assert stage.count == 2
     compressor_factory.get_compressor.assert_called_once_with()
     assert request.compressor_setting.min_score == 0.5
+
+
+@pytest.mark.asyncio
+async def test_compression_fallback_keeps_runtime_truncation_and_labels_the_rest():
+    candidates = [Candidate(_document(name)) for name in ['first', 'second', 'third']]
+    compressor = MagicMock()
+
+    def compress_documents(documents, query):
+        compressor.last_fallback_info = {
+            'reason': 'bad_response',
+            'status_code': 503,
+            'error': 'Service Unavailable',
+            'returned_documents': 2,
+            'total_documents': 3,
+        }
+        return list(documents)[:2]
+
+    compressor.compress_documents.side_effect = compress_documents
+    compressor.last_fallback_info = None
+    compressor_factory = MagicMock()
+    compressor_factory.get_compressor.return_value = compressor
+    request = _search_request(
+        compression_enabled=True,
+        compressor_setting={
+            'provider': 'BloomzRerank',
+            'endpoint': 'http://compressor.test',
+            'min_score': 0.5,
+            'max_documents': 2,
+            'fill_to_max_documents': False,
+        },
+    )
+
+    with patch(
+        'gen_ai_orchestrator.services.vector_store_inspection.vector_store_inspection_service.get_compressor_factory',
+        return_value=compressor_factory,
+    ):
+        compressed_ids, outcomes, scores, windows, stage = await _compress(
+            request, candidates
+        )
+
+    assert compressed_ids == ['first:1/1', 'second:1/1']
+    assert outcomes == {
+        'first:1/1': ChunkOutcome.KEPT,
+        'second:1/1': ChunkOutcome.KEPT,
+        'third:1/1': ChunkOutcome.CUT_BY_FALLBACK,
+    }
+    assert scores == {}
+    assert windows == {}
+    assert stage.status == FunnelStageStatus.FAILED_FALLBACK
+    assert stage.reason == 'bad_response'
+    assert stage.detail == 'Service Unavailable'
+    assert stage.count == 2
+
+
+@pytest.mark.parametrize(
+    'fallback_info, expected_reason, expected_detail',
+    [
+        (
+            {'reason': 'query_too_long', 'budget': 420},
+            'query_too_long',
+            'budget=420 chars',
+        ),
+        (
+            {'reason': 'exception', 'error_message': 'timed out'},
+            'exception',
+            'timed out',
+        ),
+        ({'reason': 'something_new'}, 'exception', None),
+    ],
+)
+def test_fallback_reason_is_always_translatable(
+    fallback_info, expected_reason, expected_detail
+):
+    assert _fallback_reason(fallback_info) == expected_reason
+    assert _fallback_detail(fallback_info) == expected_detail

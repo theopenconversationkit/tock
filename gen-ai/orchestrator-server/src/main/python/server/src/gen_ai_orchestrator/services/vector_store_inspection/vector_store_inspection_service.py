@@ -75,7 +75,11 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_vector_store_factory,
 )
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_factory import (
+    VECTOR_SCORE_METADATA_KEY,
     PGVectorFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.postgresql_text_retriever import (
+    FTS_SCORE_METADATA_KEY,
 )
 from gen_ai_orchestrator.services.langchain.rag_chain_builder import (
     FTSRetriever,
@@ -675,6 +679,28 @@ def _result(
     )
 
 
+FALLBACK_REASON_EXCEPTION = 'exception'
+KNOWN_FALLBACK_REASONS = frozenset({'bad_response', 'exception', 'query_too_long'})
+
+
+def _fallback_reason(fallback_info: dict) -> str:
+    """Machine-readable fallback reason, always one the front can translate."""
+    reason = fallback_info.get('reason')
+    return reason if reason in KNOWN_FALLBACK_REASONS else FALLBACK_REASON_EXCEPTION
+
+
+def _fallback_detail(fallback_info: dict) -> Optional[str]:
+    """Human-readable detail behind a fallback, for the funnel tooltip."""
+    if fallback_info.get('reason') == 'query_too_long':
+        return f"budget={fallback_info.get('budget')} chars"
+    detail = (
+        fallback_info.get('error_message')
+        or fallback_info.get('error')
+        or fallback_info.get('status_code')
+    )
+    return str(detail) if detail is not None else None
+
+
 async def _compress(
     request: VectorStoreInspectionSearchRequest,
     candidates: list[Candidate],
@@ -704,6 +730,9 @@ async def _compress(
             compress_documents_with_fallback, compressor, documents, request.query
         )
     except Exception as exception:
+        # The compressor is fault tolerant, so this is not a reranker fallback:
+        # something failed around it (and the runtime would fail the request).
+        # Keep the retrieved candidates visible so the retrieval stays inspectable.
         return (
             [candidate.chunk_id for candidate in candidates],
             {candidate.chunk_id: ChunkOutcome.KEPT for candidate in candidates},
@@ -712,14 +741,37 @@ async def _compress(
             FunnelStage(
                 status=FunnelStageStatus.FAILED_FALLBACK,
                 count=len(candidates),
-                reason=str(exception),
+                reason=FALLBACK_REASON_EXCEPTION,
+                detail=str(exception),
                 duration=time.perf_counter() - compression_started,
             ),
         )
     compression_duration = time.perf_counter() - compression_started
 
-    documents_by_id = {get_chunk_identifier(doc): doc for doc in documents}
     compressed_ids = [get_chunk_identifier(doc) for doc in compressed]
+
+    # A fault-tolerant fallback returns the first max_documents documents in
+    # retrieval order, unscored: reflect it as the runtime experiences it.
+    if fallback_info:
+        compressed_set = set(compressed_ids)
+        outcomes = {
+            candidate.chunk_id: (
+                ChunkOutcome.KEPT
+                if candidate.chunk_id in compressed_set
+                else ChunkOutcome.CUT_BY_FALLBACK
+            )
+            for candidate in candidates
+        }
+        stage = FunnelStage(
+            status=FunnelStageStatus.FAILED_FALLBACK,
+            count=len(compressed_ids),
+            reason=_fallback_reason(fallback_info),
+            detail=_fallback_detail(fallback_info),
+            duration=compression_duration,
+        )
+        return compressed_ids, outcomes, {}, {}, stage
+
+    documents_by_id = {get_chunk_identifier(doc): doc for doc in documents}
     compressed_set = set(compressed_ids)
     scores = {
         chunk_id: float(document.metadata['reranker_score'])
@@ -746,22 +798,11 @@ async def _compress(
         else:
             outcomes[candidate.chunk_id] = ChunkOutcome.RERANKED_OUT
 
-    # A fault-tolerant fallback returns the first max_documents documents in
-    # retrieval order without scores: reflect it as the runtime experiences it.
-    if fallback_info:
-        stage = FunnelStage(
-            status=FunnelStageStatus.FAILED_FALLBACK,
-            count=len(compressed_ids),
-            reason=fallback_info.get('reason'),
-            duration=compression_duration,
-        )
-    else:
-        stage = FunnelStage(
-            status=FunnelStageStatus.APPLIED,
-            count=len(compressed_ids),
-            duration=compression_duration,
-        )
-
+    stage = FunnelStage(
+        status=FunnelStageStatus.APPLIED,
+        count=len(compressed_ids),
+        duration=compression_duration,
+    )
     return compressed_ids, outcomes, scores, windows, stage
 
 
@@ -836,28 +877,36 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
     else:
         await FTSRetriever(fts_retriever, trace=trace).retrieve(retrieve_inputs)
 
-    # Kept only for the pinned exact-rank SQL metrics below.
-    embedding = await embedding_model.aembed_query(request.query) if use_vector else []
-    fts_query = _keywords_query(request.key_words)
-
     candidates: dict[str, Candidate] = {}
     for rank, document in enumerate(trace.vector_results, start=1):
         candidate = candidates.setdefault(
             get_chunk_identifier(document), Candidate(document=document)
         )
         candidate.ranks['vector'] = rank
-        candidate.scores['vector'] = document.metadata.get('retrieval_score')
+        candidate.scores['vector'] = document.metadata.get(VECTOR_SCORE_METADATA_KEY)
     for rank, document in enumerate(trace.fts_results, start=1):
         candidate = candidates.setdefault(
             get_chunk_identifier(document), Candidate(document=document)
         )
         candidate.ranks['fts'] = rank
-        candidate.scores['fts'] = document.metadata.get('retrieval_score')
+        candidate.scores['fts'] = document.metadata.get(FTS_SCORE_METADATA_KEY)
 
     if is_hybrid and not trace.hybrid_vector_only_fallback:
+        # The fused list the runtime actually produced (already cut to k) is
+        # taken as is, so its order is the runtime's by construction. The
+        # channel results that did not make the fused top k follow, in RRF
+        # order, so the diagnostic still shows them as cut.
         rrf_by_key = trace.rrf_scores
-        retrieved = sorted(
-            candidates.values(),
+        retrieved = [
+            candidates[get_chunk_identifier(doc)] for doc in trace.rrf_results
+        ]
+        fused_ids = {candidate.chunk_id for candidate in retrieved}
+        retrieved += sorted(
+            (
+                candidate
+                for candidate in candidates.values()
+                if candidate.chunk_id not in fused_ids
+            ),
             key=lambda candidate: rrf_by_key[get_document_key(candidate.document)],
             reverse=True,
         )
@@ -934,8 +983,17 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
     existing_missing_pins = [pin for pin in missing_pins if pin in stored_pins]
     vector_metrics = {}
     fts_metrics = {}
-    if request.pinned_rank_strategy != PinnedRankStrategy.TRUNCATED:
+    if (
+        existing_missing_pins
+        and request.pinned_rank_strategy != PinnedRankStrategy.TRUNCATED
+    ):
         exact = request.pinned_rank_strategy == PinnedRankStrategy.EXACT_RANK
+        # Only needed for the pinned exact-rank SQL metrics: the retrieval itself
+        # already embedded the query inside the shared retriever.
+        embedding = (
+            await embedding_model.aembed_query(request.query) if use_vector else []
+        )
+        fts_query = _keywords_query(request.key_words)
         metric_tasks = []
         if use_vector:
             metric_tasks.append(

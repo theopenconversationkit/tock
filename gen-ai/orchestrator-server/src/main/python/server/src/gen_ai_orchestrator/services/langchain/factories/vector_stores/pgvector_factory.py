@@ -48,10 +48,16 @@ from gen_ai_orchestrator.services.langchain.factories.vector_stores.vector_store
 logger = logging.getLogger(__name__)
 
 
-def _attach_retrieval_score(doc: Document, distance: float) -> Document:
+# Metadata key holding the vector channel score. Distinct from the FTS one
+# (postgresql_text_retriever.FTS_SCORE_METADATA_KEY) so both survive the RRF
+# metadata merge of a document found by the two channels.
+VECTOR_SCORE_METADATA_KEY = 'vector_score'
+
+
+def _attach_vector_score(doc: Document, distance: float) -> Document:
     # PGVector returns a distance (smaller is closer); expose it on the same
     # 1 - distance scale the inspection already uses for pinned chunks.
-    doc.metadata['retrieval_score'] = 1.0 - float(distance)
+    doc.metadata[VECTOR_SCORE_METADATA_KEY] = 1.0 - float(distance)
     return doc
 
 
@@ -61,7 +67,7 @@ class ScoredVectorStoreRetriever(VectorStoreRetriever):
     Behaves exactly like the default similarity retriever — PGVector's
     similarity_search already delegates to similarity_search_with_score and drops
     the score, so this returns the same documents in the same order — but records
-    it under metadata['retrieval_score'] for the vector store inspection. The
+    it under metadata['vector_score'] (1 - distance) for the vector store inspection. The
     score is not injected in the LLM context nor in RAGDocumentMetadata. Only the
     default search_type='similarity' is supported: Tock never sets the LangChain
     mmr / similarity_score_threshold strategies.
@@ -71,7 +77,7 @@ class ScoredVectorStoreRetriever(VectorStoreRetriever):
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
     ) -> list[Document]:
         return [
-            _attach_retrieval_score(doc, distance)
+            _attach_vector_score(doc, distance)
             for doc, distance in self.vectorstore.similarity_search_with_score(
                 query, **self.search_kwargs
             )
@@ -81,7 +87,7 @@ class ScoredVectorStoreRetriever(VectorStoreRetriever):
         self, query: str, *, run_manager: AsyncCallbackManagerForRetrieverRun
     ) -> list[Document]:
         return [
-            _attach_retrieval_score(doc, distance)
+            _attach_vector_score(doc, distance)
             for doc, distance in await self.vectorstore.asimilarity_search_with_score(
                 query, **self.search_kwargs
             )

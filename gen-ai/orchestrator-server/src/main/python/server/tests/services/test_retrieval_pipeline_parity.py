@@ -39,6 +39,9 @@ from gen_ai_orchestrator.routers.requests.vector_store_inspection_requests impor
 from gen_ai_orchestrator.routers.responses.vector_store_inspection_responses import (
     ChunkOutcome,
 )
+from gen_ai_orchestrator.services.langchain.impls.document_compressor.rerank_selection import (
+    select_reranked_documents,
+)
 from gen_ai_orchestrator.services.langchain.rag_chain_builder import (
     create_rag_chain,
     get_chunk_identifier,
@@ -61,14 +64,14 @@ VECTOR_DOCS = [('a', 0.90), ('b', 0.80), ('c', 0.70)]
 FTS_DOCS = [('c', 0.85), ('d', 0.60), ('e', 0.55)]
 
 
-def _doc(name: str, retrieval_score: float) -> Document:
+def _doc(name: str, score_key: str, score: float) -> Document:
     return Document(
         page_content=f'content {name}',
         metadata={
             'id': name,
             'chunk': '1/1',
             'title': name,
-            'retrieval_score': retrieval_score,
+            score_key: score,
         },
     )
 
@@ -76,18 +79,19 @@ def _doc(name: str, retrieval_score: float) -> Document:
 class _FakeRetriever:
     """Stands in for the scored retrievers: returns fresh scored copies."""
 
-    def __init__(self, docs: list[tuple[str, float]]):
+    def __init__(self, docs: list[tuple[str, float]], score_key: str):
         self._docs = docs
+        self._score_key = score_key
 
     async def ainvoke(self, input=None, **kwargs) -> list[Document]:
-        return [_doc(name, score) for name, score in self._docs]
+        return [_doc(name, self._score_key, score) for name, score in self._docs]
 
     def prepare_query(self, keywords: list[str]) -> str:
         return ' OR '.join(keywords)
 
 
 class _FakeCompressor:
-    """Reproduces the shared compressor selection (and its fallback)."""
+    """Scores with fixed values, then applies the real shared selection."""
 
     def __init__(self, fill: bool, fallback: bool = False):
         self.fill = fill
@@ -106,15 +110,12 @@ class _FakeCompressor:
             document.metadata['reranker_score'] = RERANKER_SCORES[
                 get_chunk_identifier(document)
             ]
-        ranked = sorted(
-            documents, key=lambda d: d.metadata['reranker_score'], reverse=True
+        return select_reranked_documents(
+            documents,
+            min_score=MIN_SCORE,
+            max_documents=K,
+            fill_to_max_documents=self.fill,
         )
-        above = [d for d in ranked if d.metadata['reranker_score'] >= MIN_SCORE]
-        below = [d for d in ranked if d.metadata['reranker_score'] < MIN_SCORE]
-        result = above[:K]
-        if self.fill and len(result) < K:
-            result.extend(below[: K - len(result)])
-        return result
 
 
 def _compressor_setting(fill: bool) -> dict:
@@ -213,8 +214,12 @@ def _inspection_request(
 
 def _fake_factory() -> MagicMock:
     factory = MagicMock()
-    factory.get_vector_store_retriever.return_value = _FakeRetriever(VECTOR_DOCS)
-    factory.get_text_store_retriever.return_value = _FakeRetriever(FTS_DOCS)
+    factory.get_vector_store_retriever.return_value = _FakeRetriever(
+        VECTOR_DOCS, 'vector_score'
+    )
+    factory.get_text_store_retriever.return_value = _FakeRetriever(
+        FTS_DOCS, 'fts_score'
+    )
     return factory
 
 
@@ -347,3 +352,31 @@ async def test_runtime_and_diagnostic_agree_on_compressor_fallback():
     )
 
     assert runtime_ids == diagnostic_ids
+
+
+@pytest.mark.asyncio
+async def test_diagnostic_shows_channel_results_cut_by_the_fused_top_k():
+    request = _inspection_request(
+        DocumentSearchType.HYBRID_SEARCH, with_compressor=False, fill=False
+    )
+    service = (
+        'gen_ai_orchestrator.services.vector_store_inspection'
+        '.vector_store_inspection_service'
+    )
+    with (
+        patch(f'{service}.get_em_factory', return_value=_em_factory()),
+        patch(f'{service}._pg_factory', return_value=_fake_factory()),
+    ):
+        response = await inspection_search(request)
+
+    # 5 distinct chunks across the two channels, the fused list keeps K = 3:
+    # the 2 others must still be listed, as cut, after the fused ones.
+    outcomes = [result.outcome for result in response.results]
+    assert len(response.results) == 5
+    assert outcomes[:K] == [ChunkOutcome.KEPT] * K
+    assert outcomes[K:] == [ChunkOutcome.CUT_BY_TOP_K] * 2
+    assert [result.ranks.rrf for result in response.results] == [1, 2, 3, 4, 5]
+    # Both channel scores survive for a chunk found by the two channels.
+    shared = next(result for result in response.results if result.chunk_id == 'c:1/1')
+    assert shared.scores.vector == pytest.approx(0.70)
+    assert shared.scores.fts == pytest.approx(0.85)
