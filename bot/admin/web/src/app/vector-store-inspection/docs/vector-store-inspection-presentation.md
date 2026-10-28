@@ -191,10 +191,12 @@ compression :
 
 - `get_vector_store_retriever()` renvoie une sous-classe de `VectorStoreRetriever`
   qui appelle `*_with_score` et conserve `1 - distance` dans
-  `metadata['retrieval_score']`. Comme `similarity_search` de PGVector délègue
+  `metadata['vector_score']`. Comme `similarity_search` de PGVector délègue
   déjà à `similarity_search_with_score` puis jette le score, les documents et leur
   ordre sont inchangés — seul le score est ajouté. OpenSearch n'est pas touché.
-- `build_docs()` conserve le `ts_rank` déjà calculé (côté FTS).
+- `build_docs()` conserve le `ts_rank` déjà calculé dans `metadata['fts_score']`.
+  Deux clés distinctes, pour que les deux scores survivent à la fusion RRF d'un
+  chunk trouvé par les deux canaux (la fusion ne recopie que les clés absentes).
 - Un `RetrievalTrace` optionnel (coût nul quand absent, comportement runtime
   identique) et une fonction de compression partagée exposent l'état
   intermédiaire au seul diagnostic.

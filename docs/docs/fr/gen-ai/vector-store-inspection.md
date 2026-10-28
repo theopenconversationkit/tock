@@ -17,7 +17,8 @@ Ils sont disponibles dans le menu _Gen AI_ :
 > (plus de détails sur les rôles dans [sécurité](../operate/security.md#roles)).
 >
 > L'inspection est disponible pour le fournisseur [PGVector](providers/vector-store.md). Avec OpenSearch, seul le mode de
-> recherche vectorielle est disponible : les modes plein texte et hybride ne sont pas implémentés pour ce fournisseur.
+> recherche vectorielle est disponible : les modes plein texte et hybride ne sont pas implémentés pour ce fournisseur, et
+> le diagnostic utilise la recherche vectorielle quel que soit le mode configuré pour le bot (comme le fait le runtime).
 
 ## Exploration de la base vectorielle
 
@@ -53,12 +54,21 @@ L'écran de diagnostic suit la chaîne de recherche de production, de haut en ba
 > _nombre de documents remontés_. Modifier le score minimum ou le nombre maximum de documents est recalculé
 > instantanément dans le navigateur, sans nouvelle recherche : le score reranker de chaque candidat est affiché avec le
 > marqueur de seuil, pour choisir le minimum à l'œil (l'échelle dépend du modèle de reranking).
+>
+> Avec un nombre maximum de documents égal au nombre de documents remontés, sans score minimum ni complément, le
+> compresseur garde tous les chunks et ne fait que les réordonner : un message le signale.
+>
+> Le reranker est appelé avec le même délai d'expiration qu'en production : augmenter le nombre de documents remontés
+> augmente le temps de reranking et peut provoquer un repli, comme il le ferait en production.
 
 ### Entonnoir et résultats
 
 L'entonnoir affiche chaque étape avec son nombre de chunks : canaux vectoriel et plein texte (en mode hybride),
-fusion RRF, coupe top-k, puis compression (avec sa durée). Quand le compresseur échoue, il passe en repli et l'étape est
-affichée comme _échec, repli_ avec la raison.
+fusion RRF, coupe top-k, puis compression (avec sa durée). Quand le compresseur échoue, il passe en repli comme en
+production : il transmet les premiers documents dans l'ordre de la recherche, sans score, jusqu'à son nombre maximum de
+documents. L'étape est alors affichée comme _échec, repli_ avec la raison (erreur du reranker, appel en échec, ou
+question trop longue pour le reranker) ; le message d'erreur est disponible en infobulle. Les seuils ne peuvent pas être
+réajustés tant qu'une nouvelle recherche n'a pas renvoyé de scores.
 
 Le tableau de résultats affiche un chunk par ligne, avec son rang et son score pour chaque canal (vectoriel, plein texte,
 RRF, rerank), le nombre de fenêtres dans lesquelles un chunk surdimensionné a été scoré, et son sort :
@@ -70,6 +80,7 @@ RRF, rerank), le nombre de fenêtres dans lesquelles un chunk surdimensionné a 
 | below threshold  | Arrivé au compresseur, mais avec un score inférieur au minimum                   |
 | ranked out       | Au-dessus du seuil, mais classé au-delà du nombre maximum de documents           |
 | padded in        | Sous le seuil, mais repêché pour compléter le nombre de documents                |
+| cut by fallback  | Compresseur en repli : au-delà des premiers documents transmis sans score        |
 | absent           | Renvoyé par aucun canal de recherche                                             |
 
 ### Comparer des recherches

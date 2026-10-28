@@ -17,7 +17,8 @@ They are available in the _Gen AI_ menu:
 > (more details on roles in [security](../operate/security.md#roles)).
 >
 > The inspection is available for the [PGVector](providers/vector-store.md) provider. With OpenSearch, only the vector
-> search mode is available: full text and hybrid modes are not implemented for this provider.
+> search mode is available: full text and hybrid modes are not implemented for this provider, and the diagnostic uses
+> vector search whatever mode the bot is configured with (as the runtime does).
 
 ## Vector store exploration
 
@@ -51,12 +52,20 @@ The diagnostic screen follows the runtime retrieval chain, from top to bottom:
 > _Max documents retrieved_. Changing the minimum score or the maximum number of documents is recomputed instantly in the
 > browser, without a new search: every candidate's reranker score is shown with the threshold marker, so the minimum can
 > be chosen by eye (the score scale depends on the reranker model).
+>
+> With the maximum number of documents equal to _Max documents retrieved_, no minimum score and no padding, the
+> compressor keeps every chunk and only reorders them: a message points it out.
+>
+> The reranker is called with the same timeout as in production: retrieving more documents increases the reranking time
+> and may trigger a fallback, as it would in production.
 
 ### Funnel and results
 
 The funnel shows each stage with its number of chunks: vector and full text channels (in hybrid mode), RRF fusion,
-the top-k cut, then compression (with its duration). When the compressor fails, it falls back and the stage is shown as
-_failed, fell back_ with the reason.
+the top-k cut, then compression (with its duration). When the compressor fails, it falls back as in production: it
+passes on the first documents in retrieval order, unscored, up to its maximum number of documents. The stage is then
+shown as _failed, fell back_ with the reason (reranker error, failed call, or question too long for the reranker); the
+error message is available as a tooltip. The thresholds cannot be retuned until a new search returns scores.
 
 The results table shows one chunk per line, with its rank and score for each channel (vector, full text, RRF, rerank),
 the number of windows an oversized chunk was scored across, and its outcome:
@@ -68,6 +77,7 @@ the number of windows an oversized chunk was scored across, and its outcome:
 | below threshold  | Reached the compressor but scored below the minimum                             |
 | ranked out       | Above the threshold, but ranked past the maximum number of documents           |
 | padded in        | Scored below the threshold, but pulled back to fill the document count          |
+| cut by fallback  | Compressor fell back: past the first documents passed on unscored               |
 | absent           | Returned by no search channel at all                                            |
 
 ### Comparing searches

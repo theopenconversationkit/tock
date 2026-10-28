@@ -79,8 +79,8 @@ Le service qui orchestre tout. Quatre responsabilités :
 
 **Scoring partagé** (implémenté dans les retrievers, pas isolé) :
 `get_vector_store_retriever()` renvoie une sous-classe de `VectorStoreRetriever`
-qui conserve `1 - distance` dans `metadata['retrieval_score']`, et `build_docs()`
-du `PostgreSQLTextRetriever` conserve le `ts_rank`. Mêmes documents, même ordre au
+qui conserve `1 - distance` dans `metadata['vector_score']`, et `build_docs()`
+du `PostgreSQLTextRetriever` conserve le `ts_rank` dans `metadata['fts_score']`. Mêmes documents, même ordre au
 runtime ; seul le score est ajouté (non injecté dans le contexte LLM).
 
 ### Capabilities
