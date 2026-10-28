@@ -96,6 +96,7 @@ data class VectorStoreInspectionFunnelStage(
     val count: Int?,
     val reason: String? = null,
     val discarded: Int? = null,
+    val duration: Double? = null,
 )
 
 data class VectorStoreInspectionSearchFunnel(

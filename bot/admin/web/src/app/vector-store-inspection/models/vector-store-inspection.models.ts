@@ -180,6 +180,8 @@ export interface FunnelStage {
   reason?: string | null;
   /** topKCut only */
   discarded?: number;
+  /** Wall-clock duration in seconds (compression stage only) */
+  duration?: number | null;
 }
 
 export interface SearchFunnel {

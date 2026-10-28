@@ -40,7 +40,12 @@ export function diffRequests(reference: SearchRequest, current: SearchRequest): 
   if (reference.query.trim() !== current.query.trim()) changed.push('query');
   if (!sameKeyWords(reference.keyWords, current.keyWords)) changed.push('keyWords');
   if (reference.k !== current.k) changed.push('k');
-  if (reference.compressionEnabled !== current.compressionEnabled) {
+  if (
+    reference.compressionEnabled !== current.compressionEnabled ||
+    (current.compressionEnabled &&
+      (reference.compressionOverride?.minScore !== current.compressionOverride?.minScore ||
+        reference.compressionOverride?.maxDocuments !== current.compressionOverride?.maxDocuments))
+  ) {
     changed.push('compression');
   }
 

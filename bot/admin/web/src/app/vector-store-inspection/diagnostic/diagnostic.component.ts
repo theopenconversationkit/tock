@@ -22,6 +22,7 @@ import {
 import { VectorStoreInspectionService } from '../services/vector-store-inspection.service';
 import { VectorStoreInspectionStateService } from '../services/vector-store-inspection-state.service';
 import { buildRunComparison } from '../utils/run-comparison';
+import { recomputeCompressionOutcomes, ScoredCandidate } from '../utils/rerank-selection';
 
 /** Matches the runtime default of maxDocumentsRetrieved. */
 const DEFAULT_K = 4;
@@ -375,6 +376,68 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     return this.compressionEnabled && this.maxDocuments > this.k;
   }
 
+  // -- Compressor tuning: instant client-side recompute ------------------
+
+  /** Reranker scores came back, so thresholds can be retuned without a search. */
+  get compressionScored(): boolean {
+    return this.results.some((result) => result.scores.compressor != null);
+  }
+
+  /**
+   * Compression ran but produced no reranker scores: the compressor fell back
+   * (see the compression funnel stage). The thresholds cannot be recomputed
+   * until a new search, so the two inputs are disabled.
+   */
+  get compressionFellBack(): boolean {
+    return !!this.funnel && this.compressionEnabled && this.results.length > 0 && !this.compressionScored;
+  }
+
+  /** Candidates that entered the compressor, in retrieval order, with their score. */
+  private get compressionCandidates(): ScoredCandidate[] {
+    return this.results
+      .filter((result) => result.scores.compressor != null)
+      .map((result) => ({ chunkId: result.chunkId, score: result.scores.compressor }));
+  }
+
+  /** Every reranked candidate's score, sorted descending, for the threshold chart. */
+  get compressionScores(): { chunkId: string; score: number }[] {
+    return this.compressionCandidates
+      .map((candidate) => ({ chunkId: candidate.chunkId, score: candidate.score as number }))
+      .sort((a, b) => b.score - a.score);
+  }
+
+  get compressionDuration(): number | null {
+    return this.funnel?.compression.duration ?? null;
+  }
+
+  /**
+   * Minimum score / Max documents only re-select among the already-retrieved
+   * candidates, so recompute outcomes and the compression count client-side —
+   * no backend call (decision 7). A new comparable run is produced so the
+   * comparison banner reflects the change.
+   */
+  onThresholdChange(): void {
+    if (!this.funnel || !this.compressionEnabled || !this.compressionScored) return;
+
+    const outcomes = recomputeCompressionOutcomes(this.compressionCandidates, this.minScore, this.maxDocuments, this.fillToMaxDocuments);
+
+    this.results = this.results.map((result) =>
+      outcomes.has(result.chunkId) ? { ...result, outcome: outcomes.get(result.chunkId)! } : result
+    );
+
+    const keptCount = [...outcomes.values()].filter((outcome) => outcome === 'kept' || outcome === 'filled_below_threshold').length;
+    this.funnel = { ...this.funnel, compression: { ...this.funnel.compression, count: keptCount } };
+
+    if (this.currentRun) {
+      this.currentRun = {
+        ...this.currentRun,
+        request: this.buildRequest(),
+        response: { ...this.currentRun.response, funnel: this.funnel, results: this.results }
+      };
+      this.refreshComparison();
+    }
+  }
+
   // -- Search ------------------------------------------------------------
 
   get canSearch(): boolean {
@@ -385,19 +448,9 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  search(): void {
-    if (!this.currentIndex || this.loading || !this.effectiveQuery) return;
-
-    // The backend falls back to vector search when hybrid runs without
-    // keywords, silently. Acceptable at runtime, misleading in a diagnostic
-    // tool, so it is refused here instead.
-    if (this.needsKeyWords && !this.keyWords.length) {
-      this.toastrService.warning('', this.translocoService.translate('vsi.diagnostic.keywords_required'));
-      return;
-    }
-
-    const request: SearchRequest = {
-      indexName: this.currentIndex.indexName,
+  private buildRequest(): SearchRequest {
+    return {
+      indexName: this.currentIndex!.indexName,
       searchType: this.searchType,
       query: this.effectiveQuery,
       keyWords: this.needsKeyWords ? this.keyWords : undefined,
@@ -411,6 +464,20 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
       pinnedChunkIds: this.pinnedChunkIds,
       pinnedRankStrategy: 'exact_rank'
     };
+  }
+
+  search(): void {
+    if (!this.currentIndex || this.loading || !this.effectiveQuery) return;
+
+    // The backend falls back to vector search when hybrid runs without
+    // keywords, silently. Acceptable at runtime, misleading in a diagnostic
+    // tool, so it is refused here instead.
+    if (this.needsKeyWords && !this.keyWords.length) {
+      this.toastrService.warning('', this.translocoService.translate('vsi.diagnostic.keywords_required'));
+      return;
+    }
+
+    const request = this.buildRequest();
 
     this.loading = true;
 

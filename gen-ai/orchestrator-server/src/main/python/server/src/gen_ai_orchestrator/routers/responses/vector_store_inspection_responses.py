@@ -110,6 +110,8 @@ class FunnelStage(BaseModel):
     count: Optional[int]
     reason: Optional[str] = None
     discarded: Optional[int] = None
+    """Wall-clock duration of the stage in seconds (compression only)."""
+    duration: Optional[float] = None
 
 
 class SearchFunnel(BaseModel):

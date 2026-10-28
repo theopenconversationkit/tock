@@ -203,6 +203,8 @@
           max="1"
           step="0.05"
           [(ngModel)]="minScore"
+          (ngModelChange)="onThresholdChange()"
+          [disabled]="compressionFellBack"
           [nbTooltip]="'vsi.diagnostic.min_score_tooltip' | transloco"
         />
       </tock-form-control>
@@ -219,17 +221,56 @@
           min="1"
           [max]="k"
           [(ngModel)]="maxDocuments"
+          (ngModelChange)="onThresholdChange()"
+          [disabled]="compressionFellBack"
           [nbTooltip]="'vsi.diagnostic.max_documents_tooltip' | transloco"
         />
       </tock-form-control>
 
       <nb-checkbox
         [(ngModel)]="fillToMaxDocuments"
+        disabled
         [nbTooltip]="'vsi.diagnostic.fill_to_max_tooltip' | transloco"
       >
         {{ 'vsi.diagnostic.fill_to_max_label' | transloco }}
       </nb-checkbox>
     </div>
+
+    @if (compressionFellBack) {
+    <nb-alert
+      status="info"
+      class="mt-2 mb-0 py-2 font-size-small"
+    >
+      {{ 'vsi.diagnostic.compression_fell_back' | transloco }}
+    </nb-alert>
+    }
+
+    @if (compressionScores.length) {
+    <div class="score-chart mt-3">
+      <div class="font-size-small text-muted mb-1">
+        {{ 'vsi.diagnostic.score_chart_title' | transloco }}
+        @if (compressionDuration != null) {
+        &middot; {{ 'vsi.diagnostic.compression_duration' | transloco: { ms: (compressionDuration * 1000 | number: '1.0-0') } }}
+        }
+      </div>
+      @for (candidate of compressionScores; track candidate.chunkId) {
+      <div class="score-row d-flex align-items-center gap-2">
+        <div class="score-bar-track flex-grow-1">
+          <div
+            class="score-bar"
+            [style.width.%]="candidate.score * 100"
+            [class.below]="candidate.score < minScore"
+          ></div>
+          <div
+            class="score-threshold"
+            [style.left.%]="minScore * 100"
+          ></div>
+        </div>
+        <span class="score-value font-size-small text-muted">{{ candidate.score | number: '1.2-2' }}</span>
+      </div>
+      }
+    </div>
+    }
     }
   </nb-card-body>
 </nb-card>

@@ -690,6 +690,7 @@ async def _compress(
     # so the diagnostic experiences the same fallback behaviour it would in prod.
     compressor = get_compressor_factory(setting=setting).get_compressor()
     documents = [copy.deepcopy(candidate.document) for candidate in candidates]
+    compression_started = time.perf_counter()
     try:
         compressed, _fallback_info = await asyncio.to_thread(
             compress_documents_with_fallback, compressor, documents, request.query
@@ -703,8 +704,10 @@ async def _compress(
                 status=FunnelStageStatus.FAILED_FALLBACK,
                 count=len(candidates),
                 reason=str(exception),
+                duration=time.perf_counter() - compression_started,
             ),
         )
+    compression_duration = time.perf_counter() - compression_started
 
     documents_by_id = {get_chunk_identifier(doc): doc for doc in documents}
     compressed_ids = [get_chunk_identifier(doc) for doc in compressed]
@@ -735,6 +738,7 @@ async def _compress(
         FunnelStage(
             status=FunnelStageStatus.APPLIED,
             count=len(compressed_ids),
+            duration=compression_duration,
         ),
     )
 
