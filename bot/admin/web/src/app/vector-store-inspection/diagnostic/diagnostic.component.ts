@@ -7,9 +7,9 @@ import { Subject, takeUntil } from 'rxjs';
 
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
-import { CompressorSettings } from '../../configuration/compressor-settings/models/compressor-settings';
 import { DocumentSearchType } from '../../rag/rag-settings/models/engines-configurations';
 import {
+  RetrievalSettings,
   RunComparison,
   SearchFunnel,
   SearchRequest,
@@ -37,13 +37,6 @@ interface DiagnosticNavigationState {
   key_words?: string[];
   indexName?: string;
   k?: number;
-}
-
-/** Shape of the compressor setting fields this view tweaks. */
-interface CompressorThresholds {
-  minScore?: number;
-  maxDocuments?: number;
-  fillToMaxDocuments?: boolean;
 }
 
 /**
@@ -101,7 +94,8 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
   k: number = DEFAULT_K;
 
-  compressorSettings: CompressorSettings | null = null;
+  /** The bot's effective retrieval settings, prefilled and used for divergences. */
+  botSettings: RetrievalSettings | null = null;
   compressionEnabled: boolean = false;
   minScore: number = DEFAULT_MIN_SCORE;
   maxDocuments: number = DEFAULT_MAX_DOCUMENTS;
@@ -124,6 +118,8 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   private readonly translocoService = inject(TranslocoService);
   private navigationIndexName: string | null = null;
   private navigationIndexRefreshed = false;
+  /** True when the dialog logger hand-off supplied k, so bot settings must not override it. */
+  private navigationKProvided = false;
   public readonly state = inject(VectorStoreInspectionStateService);
 
   ngOnInit(): void {
@@ -148,13 +144,9 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     });
 
     this.state.capabilities$.pipe(takeUntil(this.destroy$)).subscribe((capabilities) => {
+      // Kept for the capability notes; the search type is locked to the bot's
+      // configuration (see loadRetrievalSettings), not chosen here.
       this.capabilities = capabilities;
-
-      // Never assume a mode is available: a provider may support none of them
-      // beyond plain similarity search.
-      if (capabilities?.searchTypes.length && !capabilities.searchTypes.includes(this.searchType)) {
-        this.searchType = capabilities.searchTypes[0];
-      }
     });
 
     this.state.pinnedChunkIds$.pipe(takeUntil(this.destroy$)).subscribe((ids) => {
@@ -189,7 +181,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
       if (botChanged) {
         this.clearResults();
-        this.compressorSettings = null;
+        this.botSettings = null;
       }
 
       // loadIndexes uses its cache unless forced, so re-entering the view with
@@ -197,7 +189,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
       this.state.loadIndexes(botChanged).pipe(takeUntil(this.destroy$)).subscribe();
 
       if (!this.capabilities) this.state.loadCapabilities().pipe(takeUntil(this.destroy$)).subscribe();
-      if (!this.compressorSettings) this.loadCompressorSettings();
+      if (!this.botSettings) this.loadRetrievalSettings();
     });
   }
 
@@ -245,6 +237,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
     if (navigationState.k && navigationState.k > 0) {
       this.k = navigationState.k;
+      this.navigationKProvided = true;
     }
 
     if (navigationState.condensed_question) {
@@ -262,23 +255,41 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     return `${confs[0].namespace}/${confs[0].botId}`;
   }
 
-  loadCompressorSettings(): void {
+  loadRetrievalSettings(): void {
     this.inspection
-      .getCompressorSettings()
+      .getRetrievalSettings()
       .pipe(takeUntil(this.destroy$))
       .subscribe((settings) => {
-        this.compressorSettings = settings;
-        // Start from what the running chain actually does, so any divergence
-        // the user introduces is a deliberate one.
-        this.compressionEnabled = !!settings?.enabled;
+        this.botSettings = settings;
+        if (!settings) return;
 
-        const thresholds = settings?.setting as CompressorThresholds | undefined;
-        if (thresholds) {
-          this.minScore = thresholds.minScore ?? DEFAULT_MIN_SCORE;
-          this.maxDocuments = thresholds.maxDocuments ?? DEFAULT_MAX_DOCUMENTS;
-          this.fillToMaxDocuments = !!thresholds.fillToMaxDocuments;
-        }
+        // Start from what the running chain actually does, so any divergence the
+        // user introduces is a deliberate one.
+        this.searchType = settings.searchType;
+        this.state.setSearchType(settings.searchType);
+        // The dialog logger hand-off, when present, owns k; otherwise take the bot's.
+        if (!this.navigationKProvided) this.k = settings.maxDocumentsRetrieved;
+
+        this.compressionEnabled = settings.compressionEnabled;
+        if (settings.minScore != null) this.minScore = settings.minScore;
+        if (settings.maxDocuments != null) this.maxDocuments = settings.maxDocuments;
+        if (settings.fillToMaxDocuments != null) this.fillToMaxDocuments = settings.fillToMaxDocuments;
       });
+  }
+
+  /** A compressor is configured for the bot (regardless of whether it is enabled). */
+  get compressorConfigured(): boolean {
+    return !!this.botSettings?.provider;
+  }
+
+  resetToBotSettings(): void {
+    const settings = this.botSettings;
+    if (!settings) return;
+    this.k = settings.maxDocumentsRetrieved;
+    this.compressionEnabled = settings.compressionEnabled;
+    if (settings.minScore != null) this.minScore = settings.minScore;
+    if (settings.maxDocuments != null) this.maxDocuments = settings.maxDocuments;
+    if (settings.fillToMaxDocuments != null) this.fillToMaxDocuments = settings.fillToMaxDocuments;
   }
 
   // -- Condensation ------------------------------------------------------
@@ -331,23 +342,28 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
   // -- Divergences from the running chain --------------------------------
 
-  get compressionDiverges(): boolean {
-    return this.compressionEnabled !== !!this.compressorSettings?.enabled;
+  get kDiverges(): boolean {
+    return !!this.botSettings && this.k !== this.botSettings.maxDocumentsRetrieved;
   }
 
-  get thresholdsDiverge(): boolean {
-    const thresholds = this.compressorSettings?.setting as CompressorThresholds | undefined;
-    if (!thresholds || !this.compressionEnabled) return false;
+  get compressionDiverges(): boolean {
+    return !!this.botSettings && this.compressionEnabled !== this.botSettings.compressionEnabled;
+  }
 
-    return (
-      this.minScore !== thresholds.minScore ||
-      this.maxDocuments !== thresholds.maxDocuments ||
-      this.fillToMaxDocuments !== !!thresholds.fillToMaxDocuments
-    );
+  get maxDocumentsDiverges(): boolean {
+    const bot = this.botSettings;
+    if (!bot || !this.compressionEnabled || bot.maxDocuments == null) return false;
+    return this.maxDocuments !== bot.maxDocuments;
+  }
+
+  get minScoreDiverges(): boolean {
+    const bot = this.botSettings;
+    if (!bot || !this.compressionEnabled || bot.minScore == null) return false;
+    return this.minScore !== bot.minScore;
   }
 
   get hasDivergence(): boolean {
-    return this.compressionDiverges || this.thresholdsDiverge;
+    return this.kDiverges || this.compressionDiverges || this.maxDocumentsDiverges || this.minScoreDiverges;
   }
 
   /**
@@ -517,12 +533,6 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   selectIndex(index: VectorStoreIndex): void {
     this.hideTooltips();
     this.state.selectIndex(index);
-  }
-
-  selectSearchType(searchType: DocumentSearchType): void {
-    this.hideTooltips();
-    this.searchType = searchType;
-    this.state.setSearchType(searchType);
   }
 
   ngOnDestroy(): void {

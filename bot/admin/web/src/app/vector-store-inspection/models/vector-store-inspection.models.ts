@@ -27,6 +27,21 @@ export interface VectorStoreCapabilities {
   notes: string[];
 }
 
+/**
+ * The bot's effective retrieval settings, used to pre-fill the form and to flag
+ * what the user changed. The compressor endpoint is never exposed by the API.
+ */
+export interface RetrievalSettings {
+  searchType: DocumentSearchType;
+  maxDocumentsRetrieved: number;
+  compressionEnabled: boolean;
+  minScore: number | null;
+  maxDocuments: number | null;
+  fillToMaxDocuments: boolean | null;
+  provider: string | null;
+  model: string | null;
+}
+
 // ---------------------------------------------------------------------------
 // Index listing
 // ---------------------------------------------------------------------------

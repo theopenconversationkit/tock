@@ -21,6 +21,7 @@ import ai.tock.bot.admin.model.genai.VectorStoreIndexDTO
 import ai.tock.bot.admin.model.genai.VectorStoreIndexListDTO
 import ai.tock.bot.admin.model.genai.VectorStoreInspectionCondenseRequestDTO
 import ai.tock.bot.admin.model.genai.VectorStoreInspectionDocumentsRequestDTO
+import ai.tock.bot.admin.model.genai.VectorStoreInspectionRetrievalSettingsDTO
 import ai.tock.bot.admin.model.genai.VectorStoreInspectionSearchRequestDTO
 import ai.tock.bot.admin.model.genai.VectorStoreInspectionSearchResponseDTO
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionCapabilitiesRequest
@@ -34,6 +35,7 @@ import ai.tock.genai.orchestratorclient.responses.VectorStoreCapabilitiesRespons
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionCondenseResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionDocumentsResponse
 import ai.tock.genai.orchestratorclient.services.VectorStoreInspectionService
+import ai.tock.genai.orchestratorcore.models.compressor.VllmDocumentCompressorSetting
 import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchType
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 import ai.tock.genai.orchestratorcore.utils.VectorStoreUtils
@@ -52,6 +54,27 @@ object VectorStoreInspectionAdminService {
         inspectionService.getCapabilities(
             VectorStoreInspectionCapabilitiesRequest(vectorStoreSetting(namespace, botId)),
         )
+
+    /** The bot's effective retrieval settings used to pre-fill the diagnostic form. */
+    fun getRetrievalSettings(
+        namespace: String,
+        botId: String,
+    ): VectorStoreInspectionRetrievalSettingsDTO? {
+        val rag = RAGService.getRAGConfiguration(namespace, botId) ?: return null
+        val compressor = DocumentCompressorService.getDocumentCompressorConfiguration(namespace, botId)
+        val setting = compressor?.setting
+        return VectorStoreInspectionRetrievalSettingsDTO(
+            searchType = rag.documentSearchType,
+            maxDocumentsRetrieved = rag.maxDocumentsRetrieved,
+            compressionEnabled = compressor?.enabled ?: false,
+            minScore = setting?.minScore,
+            maxDocuments = setting?.maxDocuments,
+            fillToMaxDocuments = setting?.fillToMaxDocuments,
+            provider = setting?.provider,
+            // Only the endpoint is withheld; the model name is safe and useful read-only.
+            model = (setting as? VllmDocumentCompressorSetting)?.model,
+        )
+    }
 
     fun getIndexes(
         namespace: String,

@@ -122,16 +122,13 @@
         [label]="'vsi.diagnostic.search_type_label' | transloco"
         name="searchType"
       >
-        <nb-select
+        <input
+          nbInput
           fullWidth
-          [selected]="searchType"
-          (selectedChange)="selectSearchType($event)"
-          (blur)="hideTooltips()"
-        >
-          @for (type of capabilities?.searchTypes; track type) {
-          <nb-option [value]="type">{{ 'vsi.diagnostic.search_types.' + type | transloco }}</nb-option>
-          }
-        </nb-select>
+          readonly
+          [value]="'vsi.diagnostic.search_types.' + searchType | transloco"
+          [nbTooltip]="'vsi.diagnostic.search_type_locked_tooltip' | transloco"
+        />
       </tock-form-control>
     </div>
 
@@ -169,17 +166,29 @@
     <div class="d-flex align-items-center flex-wrap gap-3">
       <nb-checkbox
         [(ngModel)]="compressionEnabled"
-        [disabled]="!compressorSettings"
+        [disabled]="!compressorConfigured"
       >
         {{ 'vsi.diagnostic.use_compression' | transloco }}
       </nb-checkbox>
 
-      @if (!compressorSettings) {
+      @if (!compressorConfigured) {
       <span class="font-size-small text-muted">{{ 'vsi.diagnostic.no_compressor_configured' | transloco }}</span>
       }
     </div>
 
-    @if (compressionEnabled && compressorSettings) {
+    @if (compressorConfigured && botSettings?.provider) {
+    <div class="font-size-small text-muted mt-2">
+      {{ 'vsi.diagnostic.compressor_provider_label' | transloco }}
+      <span class="font-weight-bold">{{ botSettings.provider }}</span>
+      @if (botSettings.model) {
+      &middot; {{ 'vsi.diagnostic.compressor_model_label' | transloco }}
+      <span class="font-weight-bold">{{ botSettings.model }}</span>
+      }
+      <div>{{ 'vsi.diagnostic.score_scale_hint' | transloco }}</div>
+    </div>
+    }
+
+    @if (compressionEnabled && compressorConfigured) {
     <div class="compressor-grid mt-2">
       <tock-form-control
         [label]="'vsi.diagnostic.min_score_label' | transloco"
@@ -270,11 +279,25 @@
       class="mb-0 py-2 font-size-small"
     >
       <div class="font-weight-bold">{{ 'vsi.diagnostic.divergence_title' | transloco }}</div>
-      @if (compressionDiverges) {
+      @if (kDiverges) {
+      <div>{{ 'vsi.diagnostic.divergence_k' | transloco }}</div>
+      } @if (compressionDiverges) {
       <div>{{ 'vsi.diagnostic.divergence_compression' | transloco }}</div>
-      } @if (thresholdsDiverge) {
-      <div>{{ 'vsi.diagnostic.divergence_thresholds' | transloco }}</div>
+      } @if (maxDocumentsDiverges) {
+      <div>{{ 'vsi.diagnostic.divergence_max_documents' | transloco }}</div>
+      } @if (minScoreDiverges) {
+      <div>{{ 'vsi.diagnostic.divergence_min_score' | transloco }}</div>
       }
+      <button
+        nbButton
+        ghost
+        size="tiny"
+        status="warning"
+        class="mt-1"
+        (click)="resetToBotSettings()"
+      >
+        {{ 'vsi.diagnostic.reset_to_bot' | transloco }}
+      </button>
     </nb-alert>
   </nb-card-body>
   }
