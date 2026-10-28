@@ -154,6 +154,8 @@ class SearchResultChunk(BaseModel):
     scores: ChannelScores
     outcome: ChunkOutcome
     pinned: bool
+    # Number of windows an oversized chunk was split into and scored across.
+    reranker_windows: Optional[int] = None
     metadata: Optional[dict[str, Any]] = None
 
 

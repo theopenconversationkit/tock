@@ -225,6 +225,8 @@ export interface SearchResultChunk {
   scores: ChannelScores;
   outcome: ChunkOutcome;
   pinned: boolean;
+  /** Number of windows an oversized chunk was split into and scored across. */
+  rerankerWindows?: number | null;
   metadata?: Record<string, unknown>;
 }
 

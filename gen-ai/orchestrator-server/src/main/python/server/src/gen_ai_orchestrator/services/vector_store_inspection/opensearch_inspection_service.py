@@ -117,13 +117,17 @@ async def search(request, factory):
     cut_count = len(cut)
     discarded = max(0, len(candidates) - cut_count)
     if request.compression_enabled:
-        _compressed_ids, compressed_outcomes, scores, compression = await _compress(
-            request,
-            cut,
-        )
+        (
+            _compressed_ids,
+            compressed_outcomes,
+            scores,
+            windows,
+            compression,
+        ) = await _compress(request, cut)
         outcomes.update(compressed_outcomes)
         for candidate in candidates:
             candidate.scores['compressor'] = scores.get(candidate.chunk_id)
+            candidate.reranker_windows = windows.get(candidate.chunk_id)
     else:
         outcomes.update({c.chunk_id: ChunkOutcome.KEPT for c in cut})
     pins = set(request.pinned_chunk_ids)

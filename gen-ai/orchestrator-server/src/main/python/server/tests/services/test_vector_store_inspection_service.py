@@ -177,7 +177,9 @@ async def test_compression_reports_threshold_and_fill_outcomes():
         'gen_ai_orchestrator.services.vector_store_inspection.vector_store_inspection_service.get_compressor_factory',
         return_value=compressor_factory,
     ):
-        compressed_ids, outcomes, scores, stage = await _compress(request, candidates)
+        compressed_ids, outcomes, scores, windows, stage = await _compress(
+            request, candidates
+        )
 
     assert compressed_ids == ['second:1/1', 'first:1/1']
     assert outcomes == {

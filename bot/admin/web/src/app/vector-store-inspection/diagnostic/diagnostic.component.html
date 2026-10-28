@@ -236,6 +236,8 @@
       </nb-checkbox>
     </div>
 
+    <div class="font-size-small text-muted mt-2">{{ 'vsi.diagnostic.compressor_timeout_hint' | transloco }}</div>
+
     @if (compressionFellBack) {
     <nb-alert
       status="info"
@@ -407,7 +409,7 @@
         class="list-entry-desc text-danger"
         [nbTooltip]="entry.stage.reason"
       >
-        {{ entry.stage.reason }}
+        {{ 'vsi.diagnostic.fallback_reason.' + entry.stage.reason | transloco }}
       </div>
       }
     </nb-card-body>

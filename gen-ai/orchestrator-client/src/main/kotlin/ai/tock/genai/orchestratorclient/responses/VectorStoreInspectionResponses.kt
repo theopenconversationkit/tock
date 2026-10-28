@@ -138,6 +138,7 @@ data class VectorStoreInspectionSearchResultChunk(
     val scores: VectorStoreInspectionChannelScores,
     val outcome: String,
     val pinned: Boolean,
+    val rerankerWindows: Int? = null,
     val metadata: Map<String, Any?>? = null,
 )
 

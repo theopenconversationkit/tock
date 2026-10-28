@@ -69,6 +69,10 @@ class BloomzRerank(BaseDocumentCompressor):
         Returns:
             A sequence of compressed documents.
         """
+        # Reset the fallback marker so a previous call's fallback is never read
+        # as this call's (the compressor instance is reused).
+        self.last_fallback_info = None
+
         if len(documents) == 0:  # to avoid empty api call
             return []
 

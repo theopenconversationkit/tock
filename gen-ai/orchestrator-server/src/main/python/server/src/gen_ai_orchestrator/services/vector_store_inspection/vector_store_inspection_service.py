@@ -109,6 +109,7 @@ class Candidate:
     document: Document
     ranks: dict[str, Optional[int]] = field(default_factory=dict)
     scores: dict[str, Optional[float]] = field(default_factory=dict)
+    reranker_windows: Optional[int] = None
 
     @property
     def chunk_id(self) -> str:
@@ -669,6 +670,7 @@ def _result(
         scores=ChannelScores(**candidate.scores),
         outcome=outcome,
         pinned=pinned,
+        reranker_windows=candidate.reranker_windows,
         metadata=document.metadata,
     )
 
@@ -676,7 +678,13 @@ def _result(
 async def _compress(
     request: VectorStoreInspectionSearchRequest,
     candidates: list[Candidate],
-) -> tuple[list[str], dict[str, ChunkOutcome], dict[str, float], FunnelStage]:
+) -> tuple[
+    list[str],
+    dict[str, ChunkOutcome],
+    dict[str, float],
+    dict[str, int],
+    FunnelStage,
+]:
     override = request.compression_override
     updates = {}
     if override:
@@ -692,13 +700,14 @@ async def _compress(
     documents = [copy.deepcopy(candidate.document) for candidate in candidates]
     compression_started = time.perf_counter()
     try:
-        compressed, _fallback_info = await asyncio.to_thread(
+        compressed, fallback_info = await asyncio.to_thread(
             compress_documents_with_fallback, compressor, documents, request.query
         )
     except Exception as exception:
         return (
             [candidate.chunk_id for candidate in candidates],
             {candidate.chunk_id: ChunkOutcome.KEPT for candidate in candidates},
+            {},
             {},
             FunnelStage(
                 status=FunnelStageStatus.FAILED_FALLBACK,
@@ -717,6 +726,11 @@ async def _compress(
         for chunk_id, document in documents_by_id.items()
         if document.metadata.get('reranker_score') is not None
     }
+    windows = {
+        chunk_id: int(document.metadata['reranker_windows'])
+        for chunk_id, document in documents_by_id.items()
+        if document.metadata.get('reranker_windows') is not None
+    }
     min_score = float(setting.min_score or 0)
     outcomes = {}
     for candidate in candidates:
@@ -731,16 +745,24 @@ async def _compress(
             outcomes[candidate.chunk_id] = ChunkOutcome.BELOW_MIN_SCORE
         else:
             outcomes[candidate.chunk_id] = ChunkOutcome.RERANKED_OUT
-    return (
-        compressed_ids,
-        outcomes,
-        scores,
-        FunnelStage(
+
+    # A fault-tolerant fallback returns the first max_documents documents in
+    # retrieval order without scores: reflect it as the runtime experiences it.
+    if fallback_info:
+        stage = FunnelStage(
+            status=FunnelStageStatus.FAILED_FALLBACK,
+            count=len(compressed_ids),
+            reason=fallback_info.get('reason'),
+            duration=compression_duration,
+        )
+    else:
+        stage = FunnelStage(
             status=FunnelStageStatus.APPLIED,
             count=len(compressed_ids),
             duration=compression_duration,
-        ),
-    )
+        )
+
+    return compressed_ids, outcomes, scores, windows, stage
 
 
 async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
@@ -851,6 +873,7 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
 
     outcomes: dict[str, ChunkOutcome] = {}
     compressor_scores: dict[str, float] = {}
+    compressor_windows: dict[str, int] = {}
     if not request.compression_enabled:
         final = retrieved[: request.k]
         final_ids = {candidate.chunk_id for candidate in final}
@@ -882,6 +905,7 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
             _compressed_ids,
             compression_outcomes,
             compressor_scores,
+            compressor_windows,
             compression_stage,
         ) = await _compress(request, cut)
         outcomes.update(compression_outcomes)
@@ -893,6 +917,7 @@ async def search(request: VectorStoreInspectionSearchRequest) -> SearchResponse:
 
     for candidate in retrieved:
         candidate.scores['compressor'] = compressor_scores.get(candidate.chunk_id)
+        candidate.reranker_windows = compressor_windows.get(candidate.chunk_id)
 
     pinned_set = set(request.pinned_chunk_ids)
     results = [

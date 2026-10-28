@@ -111,6 +111,13 @@
       "disabled": "désactivé",
       "failed_fallback": "échec, repli"
     },
+    "fallback_reason": {
+      "bad_response": "le reranker a renvoyé une erreur",
+      "exception": "l'appel au reranker a échoué",
+      "query_too_long": "requête trop longue pour le reranker"
+    },
+    "reranker_windows_tooltip": "Chunk surdimensionné scoré sur {{count}} fenêtres",
+    "compressor_timeout_hint": "Le reranker utilise le timeout du runtime (compressor_provider_timeout) : un nombre de documents remontés plus élevé peut le faire expirer et basculer en repli.",
     "discarded": "{{count}} écarté(s)",
     "kept_summary": "{{kept}} chunk(s) transmis au modèle sur {{total}} examiné(s)",
     "duration": "{{duration}} s",
