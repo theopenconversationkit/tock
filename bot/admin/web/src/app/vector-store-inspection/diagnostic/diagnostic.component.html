@@ -219,7 +219,7 @@
           step="0.05"
           [(ngModel)]="minScore"
           (ngModelChange)="onThresholdChange()"
-          [disabled]="compressionFellBack || loading"
+          [disabled]="loading"
           [status]="thresholdsInvalid ? 'danger' : 'basic'"
           [nbTooltip]="'vsi.diagnostic.min_score_tooltip' | transloco"
         />
@@ -238,7 +238,7 @@
           [max]="k"
           [(ngModel)]="maxDocuments"
           (ngModelChange)="onThresholdChange()"
-          [disabled]="compressionFellBack || loading"
+          [disabled]="loading"
           [status]="thresholdsInvalid ? 'danger' : 'basic'"
           [nbTooltip]="'vsi.diagnostic.max_documents_tooltip' | transloco"
         />
@@ -277,7 +277,7 @@
         <div class="score-bar-track flex-grow-1">
           <div
             class="score-bar"
-            [style.width.%]="candidate.score * 100"
+            [style.width.%]="scoreBarWidth(candidate.score)"
             [class.below]="candidate.score < minScore"
           ></div>
           <div
@@ -304,6 +304,35 @@
 <!-- 4. Run -->
 <nb-card class="shadow-sm mb-0">
   <nb-card-header>{{ 'vsi.diagnostic.step_run' | transloco }}</nb-card-header>
+
+  @if (settingsFailed) {
+  <nb-card-body class="pb-0">
+    <nb-alert
+      status="warning"
+      class="mb-0 py-2 font-size-small"
+    >
+      {{ 'vsi.diagnostic.settings_failed' | transloco }}
+    </nb-alert>
+  </nb-card-body>
+  } @else if (settingsLoaded && !botSettings) {
+  <nb-card-body class="pb-0">
+    <nb-alert
+      status="warning"
+      class="mb-0 py-2 font-size-small"
+    >
+      {{ 'vsi.diagnostic.no_rag_configuration' | transloco }}
+    </nb-alert>
+  </nb-card-body>
+  } @else if (botSettings && !botSettings.ragEnabled) {
+  <nb-card-body class="pb-0">
+    <nb-alert
+      status="warning"
+      class="mb-0 py-2 font-size-small"
+    >
+      {{ 'vsi.diagnostic.rag_disabled' | transloco }}
+    </nb-alert>
+  </nb-card-body>
+  }
 
   @if (maxDocumentsExceedsK) {
   <nb-card-body class="pt-0">
@@ -372,6 +401,10 @@
       <nb-icon icon="bookmark"></nb-icon>
       {{ 'vsi.comparison.pin_reference_button' | transloco }}
     </button>
+    }
+
+    @if (!settingsLoaded) {
+    <span class="font-size-small text-muted">{{ 'vsi.diagnostic.settings_loading' | transloco }}</span>
     }
 
     <button
@@ -466,7 +499,7 @@
   <div class="text-right">{{ 'vsi.diagnostic.fts_column' | transloco }}</div>
   } @if (isHybrid) {
   <div class="text-right">{{ 'vsi.diagnostic.rrf_column' | transloco }}</div>
-  } @if (compressionEnabled) {
+  } @if (resultsCompressed) {
   <div class="text-right">{{ 'vsi.diagnostic.compressor_column' | transloco }}</div>
   }
   <div class="text-right">{{ 'vsi.diagnostic.outcome_column' | transloco }}</div>
@@ -479,7 +512,7 @@
   [usesVector]="usesVector"
   [usesFts]="usesFts"
   [isHybrid]="isHybrid"
-  [showCompressor]="compressionEnabled"
+  [showCompressor]="resultsCompressed"
 ></tock-vector-store-result-entry>
 } } @else if (!loading) {
 <tock-no-data-found

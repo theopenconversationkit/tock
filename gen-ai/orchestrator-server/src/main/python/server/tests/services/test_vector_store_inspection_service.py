@@ -143,6 +143,10 @@ async def test_search_exposes_channel_scores_ranks_and_top_k_outcomes():
     assert response.results[0].scores.fts == pytest.approx(0.4)
     assert response.results[0].outcome == ChunkOutcome.KEPT
     assert response.results[1].outcome == ChunkOutcome.CUT_BY_TOP_K
+    # The metadata panel shows the stored metadata only: channel scores and
+    # ranks added by the retrieval are exposed in ranks/scores, not here.
+    for result in response.results:
+        assert not {'vector_score', 'fts_score', 'rank'} & set(result.metadata)
     assert response.funnel.vector.count == 2
     assert response.funnel.fts.count == 2
     assert response.funnel.rrf.count == 2

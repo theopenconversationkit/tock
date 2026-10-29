@@ -57,6 +57,10 @@
     "step_question": "1 · Question",
     "step_retrieval": "2 · Retrieval",
     "step_compression": "3 · Compression",
+    "no_rag_configuration": "No RAG configuration is defined for this bot: the form starts from defaults, which reflect nothing the bot does.",
+    "rag_disabled": "RAG is disabled for this bot: these are its saved settings, but the runtime does not apply them.",
+    "settings_failed": "The bot settings could not be loaded: the form starts from defaults, which may differ from what the bot does.",
+    "settings_loading": "Loading the bot settings…",
     "step_run": "4 · Run",
     "k_hint": "Number of chunks each channel retrieves, then kept by the RRF fusion in hybrid mode. This is the pool handed to the compressor, or to the answering model when compression is off.",
     "parallel_channels_tooltip": "Both channels run in parallel from the same question and converge on the fusion",
@@ -169,7 +173,8 @@
     },
     "reference_label": "Reference",
     "current_label": "Current run",
-    "common_in_top_k": "Common in top-k",
+    "common_in_top_k": "Passed on in both",
+    "passed_on_changes": "Passed on to the model",
     "lost": "Lost",
     "gained": "New",
     "divergences": "Differences",
@@ -181,6 +186,12 @@
       "gained": "new",
       "moved": "{{movement}} ranks",
       "stable": "stable"
+    },
+    "passed_on": {
+      "now_passed_on": "now passed on",
+      "now_passed_on_tooltip": "This chunk reaches the answering model in the current run, not in the reference",
+      "no_longer_passed_on": "no longer passed on",
+      "no_longer_passed_on_tooltip": "This chunk reached the answering model in the reference, it no longer does in the current run"
     },
     "absence": {
       "absent_from_index": "absent from index",

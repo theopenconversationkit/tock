@@ -9,6 +9,7 @@ import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DocumentSearchType } from '../../rag/rag-settings/models/engines-configurations';
 import {
+  isPassedOn,
   RetrievalSettings,
   RunComparison,
   SearchFunnel,
@@ -27,9 +28,15 @@ import { recomputeCompressionOutcomes, ScoredCandidate } from '../utils/rerank-s
 /** Matches the runtime default of maxDocumentsRetrieved. */
 const DEFAULT_K = 4;
 
+/** Search type used when the bot's settings are unavailable. */
+const DEFAULT_SEARCH_TYPE = DocumentSearchType.HYBRID_SEARCH;
+
 /** Compressor thresholds, overridden as soon as the bot configuration arrives. */
 const DEFAULT_MIN_SCORE = 0.4;
 const DEFAULT_MAX_DOCUMENTS = 4;
+
+/** Upper bound the orchestrator accepts for k and for the compressor's max documents. */
+const MAX_DOCUMENTS_BOUND = 500;
 
 /** Navigation state handed over by the dialog logger. */
 interface DiagnosticNavigationState {
@@ -81,7 +88,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   capabilities: VectorStoreCapabilities | null = null;
 
   searchTypes = DocumentSearchType;
-  searchType: DocumentSearchType = DocumentSearchType.HYBRID_SEARCH;
+  searchType: DocumentSearchType = DEFAULT_SEARCH_TYPE;
 
   question: string = '';
 
@@ -94,6 +101,14 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
   /** The bot's effective retrieval settings, prefilled and used for divergences. */
   botSettings: RetrievalSettings | null = null;
+  /**
+   * The settings request has answered (or failed), for the current bot. Until
+   * then the form shows defaults, so a search would contradict the form once
+   * the settings land: searching waits for it.
+   */
+  settingsLoaded: boolean = false;
+  /** The settings request failed: the form shows defaults, not the bot's settings. */
+  settingsFailed: boolean = false;
   compressionEnabled: boolean = false;
   minScore: number = DEFAULT_MIN_SCORE;
   maxDocuments: number = DEFAULT_MAX_DOCUMENTS;
@@ -120,6 +135,10 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   private navigationIndexRefreshed = false;
   /** True when the dialog logger hand-off supplied k, so bot settings must not override it. */
   private navigationKProvided = false;
+  /** The settings request in flight, dropped on bot change so a late answer cannot overwrite the new bot's. */
+  private settingsSubscription: Subscription | null = null;
+  /** Bot this view last showed, to tell an actual bot switch from the first load. */
+  private lastBotKey: string | null = null;
   public readonly state = inject(VectorStoreInspectionStateService);
 
   ngOnInit(): void {
@@ -160,7 +179,12 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs) => {
       this.configurations = confs;
 
-      const botChanged = this.state.applyBotContext(this.botKey(confs));
+      const botKey = this.botKey(confs);
+      const botChanged = this.state.applyBotContext(botKey);
+      // A hand-off (dialog logger k) is about the bot it came from: once the user
+      // switches bots, the new bot's settings take over.
+      if (this.lastBotKey !== null && botKey !== this.lastBotKey) this.navigationKProvided = false;
+      this.lastBotKey = botKey;
 
       if (!confs.length) return;
       if (!this.kbPinApplied) {
@@ -180,7 +204,11 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
       if (botChanged) {
         this.clearResults();
+        this.settingsSubscription?.unsubscribe();
+        this.settingsSubscription = null;
         this.botSettings = null;
+        this.settingsLoaded = false;
+        this.settingsFailed = false;
       }
 
       // loadIndexes uses its cache unless forced, so re-entering the view with
@@ -188,7 +216,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
       this.state.loadIndexes(botChanged).pipe(takeUntil(this.destroy$)).subscribe();
 
       if (!this.capabilities) this.state.loadCapabilities().pipe(takeUntil(this.destroy$)).subscribe();
-      if (!this.botSettings) this.loadRetrievalSettings();
+      if (!this.settingsLoaded && !this.settingsSubscription) this.loadRetrievalSettings();
     });
   }
 
@@ -255,27 +283,57 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   }
 
   loadRetrievalSettings(): void {
-    this.inspection
+    this.settingsSubscription = this.inspection
       .getRetrievalSettings()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((settings) => {
-        this.botSettings = settings;
-        if (!settings) return;
-
-        // Start from what the running chain actually does, so any divergence the
-        // user introduces is a deliberate one.
-        this.applyEffectiveSearchType();
-        // The dialog logger hand-off, when present, owns k; otherwise take the bot's.
-        if (!this.navigationKProvided) this.k = settings.maxDocumentsRetrieved;
-
-        this.compressionEnabled = settings.compressionEnabled;
-        if (settings.minScore != null) this.minScore = settings.minScore;
-        if (settings.maxDocuments != null) this.maxDocuments = settings.maxDocuments;
-        if (settings.fillToMaxDocuments != null) this.fillToMaxDocuments = settings.fillToMaxDocuments;
-        // Settings may land after a search already ran: keep its outcomes in
-        // line with the thresholds now shown (no-op when there are no results).
-        this.onThresholdChange();
+      .subscribe({
+        next: (settings) => this.applyRetrievalSettings(settings),
+        error: () => {
+          // The settings are unknown, not absent: say so, and start from the
+          // defaults rather than from whatever the previous bot left in the form.
+          // Searching stays allowed so the view remains usable.
+          this.settingsLoaded = true;
+          this.settingsFailed = true;
+          this.settingsSubscription = null;
+          this.botSettings = null;
+          this.resetFormToDefaults();
+        }
       });
+  }
+
+  private applyRetrievalSettings(settings: RetrievalSettings | null): void {
+    this.settingsLoaded = true;
+    this.settingsFailed = false;
+    this.settingsSubscription = null;
+    this.botSettings = settings;
+
+    if (!settings) {
+      // No RAG configuration for this bot: nothing the runtime would do to start
+      // from, and no state inherited from the previous bot either.
+      this.resetFormToDefaults();
+      return;
+    }
+
+    // Start from what the running chain actually does, so any divergence the
+    // user introduces is a deliberate one.
+    this.applyEffectiveSearchType();
+    // The dialog logger hand-off, when present, owns k; otherwise take the bot's.
+    if (!this.navigationKProvided) this.k = settings.maxDocumentsRetrieved;
+
+    this.compressionEnabled = settings.compressionEnabled;
+    if (settings.minScore != null) this.minScore = settings.minScore;
+    if (settings.maxDocuments != null) this.maxDocuments = settings.maxDocuments;
+    if (settings.fillToMaxDocuments != null) this.fillToMaxDocuments = settings.fillToMaxDocuments;
+  }
+
+  /** Form defaults, used when the bot's settings are absent or could not be loaded. */
+  private resetFormToDefaults(): void {
+    if (!this.navigationKProvided) this.k = DEFAULT_K;
+    this.compressionEnabled = false;
+    this.minScore = DEFAULT_MIN_SCORE;
+    this.maxDocuments = DEFAULT_MAX_DOCUMENTS;
+    this.fillToMaxDocuments = false;
+    this.applyEffectiveSearchType();
   }
 
   /**
@@ -286,7 +344,9 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
    * result does not depend on which response arrives first.
    */
   private applyEffectiveSearchType(): void {
-    const configured = this.botSettings?.searchType;
+    // Without bot settings (none, or not loadable), the default search type,
+    // still subject to the provider's capabilities.
+    const configured = this.botSettings?.searchType ?? (this.settingsLoaded ? DEFAULT_SEARCH_TYPE : null);
     if (!configured) return;
 
     const supported = this.capabilities?.searchTypes;
@@ -419,8 +479,8 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
   /**
    * The compressor fell back or failed, as reported by the compression funnel
-   * stage: no reranker scores came back, so the thresholds cannot be recomputed until a
-   * new search and the two inputs are disabled.
+   * stage: no reranker scores came back, so changing the thresholds recomputes
+   * nothing until a new search (the inputs stay editable for that search).
    */
   get compressionFellBack(): boolean {
     const status = this.funnel?.compression.status;
@@ -439,6 +499,11 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     return this.compressionCandidates
       .map((candidate) => ({ chunkId: candidate.chunkId, score: candidate.score as number }))
       .sort((a, b) => b.score - a.score);
+  }
+
+  /** Bar width in percent; score scales depend on the model, so keep it within the track. */
+  scoreBarWidth(score: number): number {
+    return Math.min(100, Math.max(0, score * 100));
   }
 
   get compressionDuration(): number | null {
@@ -463,7 +528,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
       outcomes.has(result.chunkId) ? { ...result, outcome: outcomes.get(result.chunkId)! } : result
     );
 
-    const keptCount = [...outcomes.values()].filter((outcome) => outcome === 'kept' || outcome === 'filled_below_threshold').length;
+    const keptCount = [...outcomes.values()].filter(isPassedOn).length;
     this.funnel = { ...this.funnel, compression: { ...this.funnel.compression, count: keptCount } };
 
     // Start from the request that produced these results, not from the form:
@@ -488,19 +553,19 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
   /** Max documents retrieved must be a positive integer. */
   get kInvalid(): boolean {
-    return !Number.isInteger(this.k) || this.k < 1;
+    return !Number.isInteger(this.k) || this.k < 1 || this.k > MAX_DOCUMENTS_BOUND;
   }
 
   /** Minimum score in [0, 1], Max documents a positive integer: what the orchestrator accepts. */
   get thresholdsInvalid(): boolean {
     if (!this.compressionEnabled) return false;
     const minScoreValid = typeof this.minScore === 'number' && this.minScore >= 0 && this.minScore <= 1;
-    const maxDocumentsValid = Number.isInteger(this.maxDocuments) && this.maxDocuments >= 1;
+    const maxDocumentsValid = Number.isInteger(this.maxDocuments) && this.maxDocuments >= 1 && this.maxDocuments <= MAX_DOCUMENTS_BOUND;
     return !minScoreValid || !maxDocumentsValid;
   }
 
   get canSearch(): boolean {
-    if (!this.currentIndex || this.loading) return false;
+    if (!this.currentIndex || this.loading || !this.settingsLoaded) return false;
     if (!this.effectiveQuery) return false;
     if (this.needsKeyWords && !this.keyWords.length) return false;
     if (this.kInvalid || this.thresholdsInvalid) return false;
@@ -516,11 +581,14 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
       keyWords: this.needsKeyWords ? this.keyWords : undefined,
       k: this.k,
       compressionEnabled: this.compressionEnabled,
-      compressionOverride: {
-        minScore: this.minScore,
-        maxDocuments: this.maxDocuments,
-        fillToMaxDocuments: this.fillToMaxDocuments
-      },
+      // Only meaningful, and only validated, when compression runs.
+      compressionOverride: this.compressionEnabled
+        ? {
+            minScore: this.minScore,
+            maxDocuments: this.maxDocuments,
+            fillToMaxDocuments: this.fillToMaxDocuments
+          }
+        : undefined,
       pinnedChunkIds: this.pinnedChunkIds,
       pinnedRankStrategy: 'exact_rank'
     };
@@ -649,8 +717,18 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     return to < from ? from - to : null;
   }
 
+  /** Chunks handed to the answering model, padded ones included. */
   get keptCount(): number {
-    return this.results.filter((result) => result.outcome === 'kept').length;
+    return this.results.filter((result) => isPassedOn(result.outcome)).length;
+  }
+
+  /**
+   * Whether the displayed results went through the compressor. Follows the run,
+   * not the checkbox, so toggling compression before re-searching does not
+   * hide or empty the compressor column of the results on screen.
+   */
+  get resultsCompressed(): boolean {
+    return !!this.currentRun?.request.compressionEnabled;
   }
 
   // -- Misc --------------------------------------------------------------

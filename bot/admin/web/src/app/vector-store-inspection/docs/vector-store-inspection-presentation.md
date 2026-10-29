@@ -89,19 +89,23 @@ flèches entre les étapes :
 ```
 1 · Question    →  brute, puis condensée (optionnel, éditable)
       ↓
-2 · Recherche   →  index, mode (verrouillé sur le bot)
+2 · Recherche   →  index, mode (verrouillé sur le bot), k (nombre maximal
+                   de documents récupérés)
       ↓
-3 · Contexte    →  k (= nombre de documents remontés)
+3 · Compression →  seuils modifiables, débrayable, recalcul instantané
       ↓
-4 · Compression →  seuils modifiables, débrayable, recalcul instantané
+4 · Lancement   →  avertissements, bandeau de divergence, recherche
       ↓
    Entonnoir    →  vectoriel + FTS → RRF → coupe à k → compression
    Résultats    →  un chunk par ligne, rangs et scores par canal, sort
 ```
 
 Les réglages partent de la configuration réelle du bot (mode de recherche,
-nombre de documents remontés, état et seuils du compresseur). Un bandeau signale
-tout écart introduit et propose de revenir aux réglages du bot.
+nombre de documents remontés, état et seuils du compresseur). La recherche
+attend que ces réglages soient chargés ; s'ils ne peuvent pas l'être, le
+formulaire repart de valeurs par défaut et un message le signale. Un bandeau signale tout écart introduit et propose de revenir aux
+réglages du bot ; un message prévient si le bot n'a pas de configuration RAG, ou
+si son RAG est désactivé (le runtime n'applique alors pas ces réglages).
 
 **L'entonnoir** affiche chaque étage avec son compte et son statut. Les canaux
 vectoriel et FTS sont présentés en parallèle (séparateur `+`), convergeant sur la
@@ -110,7 +114,8 @@ de chunks perdus.
 
 **Le tableau de résultats** a des colonnes variables selon le mode : rang et
 score vectoriel, FTS, RRF, score du compresseur, et un « sort » par chunk
-(`transmis`, `coupé`, `sous le seuil`, `déclassé`, `repêché`, `absent`). Un rang
+(`transmis`, `coupé`, `sous le seuil`, `déclassé`, `repêché`, `coupé par le
+repli`, `non transmis`, `absent`). Un rang
 `null` sur un canal signifie « non remonté par ce canal » — une information, pas
 une donnée manquante.
 
@@ -118,8 +123,10 @@ une donnée manquante.
 puis de lancer d'autres recherches ; un bandeau nomme ce qui a changé entre les
 deux (index, mode, question, mots-clés, nombre de documents remontés, compression
 — y compris score minimum et nombre max de documents) et un tableau montre les
-chunks gagnés, perdus, ou déplacés. Un changement de seuil côté client produit une
-exécution comparable sans appel serveur. Deux libellés d'absence distincts :
+chunks gagnés, perdus, ou déplacés, ainsi que ceux qui sont désormais transmis
+au modèle ou ne le sont plus. Un changement de seuil côté client produit une
+exécution comparable sans appel serveur : il ne déplace aucun rang, mais change
+les chunks transmis, et c'est ce que la comparaison montre alors. Deux libellés d'absence distincts :
 **absent de l'index** (index différents — problème d'ingestion) et **hors du top
 k** (même index — problème de classement). Tout est côté client, rien n'est
 persisté.
@@ -231,8 +238,9 @@ hiérarchie document → chunks n'existe pas dans le stock.
 ## 6. Contrat d'API
 
 Routeur dédié `vector_store_inspection_router`, chemin runtime intact. Cinq
-endpoints orchestrateur, plus les routes admin correspondantes dans
-`GenAIVerticle` (rôle `admin`, comme le reste de la configuration RAG).
+routes admin relaient les endpoints orchestrateur ; la sixième,
+`retrieval-settings`, est propre à l'admin. Toutes vivent dans `GenAIVerticle`
+(rôle `admin`, comme le reste de la configuration RAG).
 
 | #   | Endpoint                                          | Écran                         |
 | --- | ------------------------------------------------- | ----------------------------- |
@@ -243,8 +251,9 @@ endpoints orchestrateur, plus les routes admin correspondantes dans
 | 5   | `GET /vector-store/capabilities`                   | construction des contrôles    |
 | 6   | `GET /vector-store/retrieval-settings`            | préremplissage + divergences  |
 
-Les réglages effectifs du bot (mode de recherche, nombre de documents remontés,
-état/seuils/fournisseur/modèle du compresseur) sont assemblés côté admin et
+Les réglages effectifs du bot (activation du RAG, mode de recherche, nombre de
+documents remontés, état/seuils/fournisseur/modèle du compresseur) sont assemblés
+côté admin et
 exposés par `retrieval-settings`. L'**endpoint du compresseur n'est jamais
 exposé**.
 

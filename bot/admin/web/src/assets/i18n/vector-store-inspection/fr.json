@@ -57,6 +57,10 @@
     "step_question": "1 · Question",
     "step_retrieval": "2 · Recherche",
     "step_compression": "3 · Compression",
+    "no_rag_configuration": "Aucune configuration RAG n'est définie pour ce bot : le formulaire part de valeurs par défaut, qui ne reflètent rien de ce que fait le bot.",
+    "rag_disabled": "Le RAG est désactivé pour ce bot : ces réglages sont ceux de sa configuration enregistrée, mais le runtime ne les applique pas.",
+    "settings_failed": "Les réglages du bot n'ont pas pu être chargés : le formulaire part de valeurs par défaut, qui peuvent différer de ce que fait le bot.",
+    "settings_loading": "Chargement des réglages du bot…",
     "step_run": "4 · Lancement",
     "k_hint": "Nombre de chunks que chaque canal remonte, puis que la fusion RRF garde en hybride. C'est le vivier transmis au compresseur, ou au modèle de réponse quand la compression est désactivée.",
     "parallel_channels_tooltip": "Les deux canaux partent de la même question en parallèle et convergent sur la fusion",
@@ -169,7 +173,8 @@
     },
     "reference_label": "Référence",
     "current_label": "Exécution courante",
-    "common_in_top_k": "Communs au top-k",
+    "common_in_top_k": "Transmis dans les deux",
+    "passed_on_changes": "Transmission au modèle",
     "lost": "Disparus",
     "gained": "Nouveaux",
     "divergences": "Écarts",
@@ -181,6 +186,12 @@
       "gained": "nouveau",
       "moved": "{{movement}} rangs",
       "stable": "stable"
+    },
+    "passed_on": {
+      "now_passed_on": "désormais transmis",
+      "now_passed_on_tooltip": "Ce chunk est transmis au modèle de réponse dans l'exécution courante, pas dans la référence",
+      "no_longer_passed_on": "n'est plus transmis",
+      "no_longer_passed_on_tooltip": "Ce chunk était transmis au modèle de réponse dans la référence, il ne l'est plus dans l'exécution courante"
     },
     "absence": {
       "absent_from_index": "absent de l'index",

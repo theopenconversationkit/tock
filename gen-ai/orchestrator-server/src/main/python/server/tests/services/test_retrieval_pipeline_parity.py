@@ -244,7 +244,7 @@ def _compressor_factory(compressor) -> MagicMock:
 
 
 async def _runtime_documents(
-    search_type: DocumentSearchType, compressor
+    search_type: DocumentSearchType, compressor, factory: MagicMock | None = None
 ) -> list[str]:
     request = _rag_request(search_type, with_compressor=compressor is not None)
     condensation = _llm_factory(
@@ -255,7 +255,10 @@ async def _runtime_documents(
     with (
         patch(f'{builder}.get_llm_factory', side_effect=[condensation, answer]),
         patch(f'{builder}.get_em_factory', return_value=_em_factory()),
-        patch(f'{builder}.get_vector_store_factory', return_value=_fake_factory()),
+        patch(
+            f'{builder}.get_vector_store_factory',
+            return_value=factory or _fake_factory(),
+        ),
         patch(
             f'{builder}.get_compressor_factory',
             return_value=_compressor_factory(compressor),
@@ -267,7 +270,12 @@ async def _runtime_documents(
 
 
 async def _diagnostic_survivors(
-    search_type: DocumentSearchType, with_compressor: bool, fill: bool, compressor
+    search_type: DocumentSearchType,
+    with_compressor: bool,
+    fill: bool,
+    compressor,
+    factory: MagicMock | None = None,
+    compressor_factory: MagicMock | None = None,
 ) -> list[str]:
     request = _inspection_request(search_type, with_compressor, fill)
     service = (
@@ -276,13 +284,20 @@ async def _diagnostic_survivors(
     )
     with (
         patch(f'{service}.get_em_factory', return_value=_em_factory()),
-        patch(f'{service}._pg_factory', return_value=_fake_factory()),
+        patch(f'{service}._pg_factory', return_value=factory or _fake_factory()),
         patch(
             f'{service}.get_compressor_factory',
-            return_value=_compressor_factory(compressor),
-        ),
+            return_value=compressor_factory or _compressor_factory(compressor),
+        ) as get_compressor_factory,
     ):
         response = await inspection_search(request)
+
+    if with_compressor:
+        # Built as the runtime builds it: only the setting, the factory's
+        # default fault tolerance (no is_fault_tolerant override).
+        assert get_compressor_factory.call_count == 1
+        assert set(get_compressor_factory.call_args.kwargs) == {'setting'}
+        assert not get_compressor_factory.call_args.args
 
     survivors = [
         result
@@ -380,3 +395,35 @@ async def test_diagnostic_shows_channel_results_cut_by_the_fused_top_k():
     shared = next(result for result in response.results if result.chunk_id == 'c:1/1')
     assert shared.scores.vector == pytest.approx(0.70)
     assert shared.scores.fts == pytest.approx(0.85)
+
+
+@pytest.mark.parametrize(
+    'search_type',
+    [
+        DocumentSearchType.SIMILARITY_SEARCH,
+        DocumentSearchType.FULL_TEXT_SEARCH,
+        DocumentSearchType.HYBRID_SEARCH,
+    ],
+)
+@pytest.mark.asyncio
+async def test_runtime_and_diagnostic_ask_the_retrievers_for_the_same_search(
+    search_type,
+):
+    runtime_factory = _fake_factory()
+    diagnostic_factory = _fake_factory()
+
+    await _runtime_documents(search_type, None, factory=runtime_factory)
+    await _diagnostic_survivors(
+        search_type,
+        with_compressor=False,
+        fill=False,
+        compressor=None,
+        factory=diagnostic_factory,
+    )
+
+    for method in ('get_vector_store_retriever', 'get_text_store_retriever'):
+        runtime_calls = getattr(runtime_factory, method).call_args_list
+        diagnostic_calls = getattr(diagnostic_factory, method).call_args_list
+        assert [c.kwargs['search_kwargs'] for c in diagnostic_calls] == [
+            c.kwargs['search_kwargs'] for c in runtime_calls
+        ], method

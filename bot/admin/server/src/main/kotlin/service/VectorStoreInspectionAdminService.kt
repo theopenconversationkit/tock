@@ -64,6 +64,7 @@ object VectorStoreInspectionAdminService {
         val compressor = DocumentCompressorService.getDocumentCompressorConfiguration(namespace, botId)
         val setting = compressor?.setting
         return VectorStoreInspectionRetrievalSettingsDTO(
+            ragEnabled = rag.enabled,
             searchType = rag.documentSearchType,
             maxDocumentsRetrieved = rag.maxDocumentsRetrieved,
             compressionEnabled = compressor?.enabled ?: false,

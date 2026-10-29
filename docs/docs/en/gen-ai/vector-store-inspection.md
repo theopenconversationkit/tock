@@ -49,8 +49,10 @@ The diagnostic screen follows the runtime retrieval chain, from top to bottom:
    number of documents. That maximum is what sets how many chunks reach the answering model.
 4. **Run**: the warnings and the divergence banner, then the search.
 
-> The form starts from the bot's actual retrieval settings; a banner lists any setting you changed and offers to reset
-> it to the bot's. The compressor runs on the retrieved documents, so its _maximum number of documents_ cannot exceed
+> The form starts from the bot's actual retrieval settings, and the search waits until they are loaded; a banner lists any
+> setting you changed and offers to reset it to the bot's. A message warns when the bot has no RAG configuration, when its
+> RAG is disabled (the runtime then does not apply these settings), or when the settings could not be loaded (the form
+> then starts from defaults). The compressor runs on the retrieved documents, so its _maximum number of documents_ cannot exceed
 > _Max documents retrieved_. Changing the minimum score or the maximum number of documents is recomputed instantly in the
 > browser, without a new search: every candidate's reranker score is shown with the threshold marker, so the minimum can
 > be chosen by eye (the score scale depends on the reranker model).
@@ -89,8 +91,9 @@ the number of windows an oversized chunk was scored across, and its outcome:
 
 _Set as reference_ freezes a search as the baseline for the next ones. The following searches are then compared with it:
 the parameters that changed (index, search mode, question, keywords, max documents retrieved, compression — including the
-minimum score and maximum number of documents) and the chunks that were lost, gained or moved. A client-side threshold
-change produces a new comparable search without a backend call. Two kinds of absence are distinguished:
+minimum score and maximum number of documents), the chunks that were lost, gained or moved, and those now passed on to
+the model or no longer passed on. A client-side threshold change produces a new comparable search without a backend call:
+it moves no rank, but changes which chunks are passed on. Two kinds of absence are distinguished:
 
 * _absent from index_: the two searches target different indexes and the chunk does not exist in the current one (an ingestion problem),
 * _outside top k_: the chunk still exists, but no longer surfaces within the retrieved window (a ranking problem).

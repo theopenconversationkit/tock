@@ -561,7 +561,8 @@ GET  /gen-ai/bots/:botId/vector-store/retrieval-settings
 ```
 
 `retrieval-settings` renvoie les réglages effectifs du bot, qui préremplissent le
-diagnostic et servent de base au bandeau de divergence : `searchType`,
+diagnostic et servent de base au bandeau de divergence : `ragEnabled` (le runtime
+ne charge qu'une configuration RAG activée), `searchType`,
 `maxDocumentsRetrieved` (config RAG), `compressionEnabled`, `minScore`,
 `maxDocuments`, `fillToMaxDocuments`, `provider` et `model` (compresseur). L'endpoint
 du compresseur n'est jamais exposé. Purement admin : rien n'est demandé à

@@ -50,8 +50,10 @@ L'écran de diagnostic suit la chaîne de recherche de production, de haut en ba
    maximum de documents. C'est ce nombre maximum qui fixe combien de chunks sont transmis au modèle de réponse.
 4. **Lancement** : les avertissements et le bandeau de divergence, puis la recherche.
 
-> Le formulaire part des réglages réels du bot ; un bandeau liste tout réglage modifié et propose de revenir à celui du
-> bot. Le compresseur s'applique aux documents remontés : son _nombre maximum de documents_ ne peut donc pas dépasser le
+> Le formulaire part des réglages réels du bot, et la recherche attend qu'ils soient chargés ; un bandeau liste tout réglage
+> modifié et propose de revenir à celui du bot. Un message prévient si le bot n'a pas de configuration RAG, si son RAG est
+> désactivé (le runtime n'applique alors pas ces réglages), ou si les réglages n'ont pas pu être chargés (le formulaire
+> part alors de valeurs par défaut). Le compresseur s'applique aux documents remontés : son _nombre maximum de documents_ ne peut donc pas dépasser le
 > _nombre de documents remontés_. Modifier le score minimum ou le nombre maximum de documents est recalculé
 > instantanément dans le navigateur, sans nouvelle recherche : le score reranker de chaque candidat est affiché avec le
 > marqueur de seuil, pour choisir le minimum à l'œil (l'échelle dépend du modèle de reranking).
@@ -91,8 +93,9 @@ RRF, rerank), le nombre de fenêtres dans lesquelles un chunk surdimensionné a 
 
 _Set as reference_ fige une recherche comme référence pour les suivantes. Les recherches suivantes lui sont alors comparées :
 les paramètres qui ont changé (index, mode de recherche, question, mots-clés, nombre de documents remontés, compression —
-y compris le score minimum et le nombre maximum de documents) et les chunks perdus, gagnés ou déplacés. Un changement de
-seuil côté client produit une recherche comparable sans appel serveur. Deux types d'absence sont distingués :
+y compris le score minimum et le nombre maximum de documents), les chunks perdus, gagnés ou déplacés, et ceux qui sont
+désormais transmis au modèle ou ne le sont plus. Un changement de seuil côté client produit une recherche comparable sans
+appel serveur : il ne déplace aucun rang, mais modifie les chunks transmis. Deux types d'absence sont distingués :
 
 * _absent from index_ : les deux recherches visent des index différents et le chunk n'existe pas dans l'index courant (un problème d'ingestion),
 * _outside top k_ : le chunk existe toujours, mais ne remonte plus dans la fenêtre remontée (un problème de classement).

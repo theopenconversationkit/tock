@@ -32,6 +32,8 @@ export interface VectorStoreCapabilities {
  * what the user changed. The compressor endpoint is never exposed by the API.
  */
 export interface RetrievalSettings {
+  /** Whether the runtime applies this RAG configuration at all (it only loads an enabled one). */
+  ragEnabled: boolean;
   searchType: DocumentSearchType;
   maxDocumentsRetrieved: number;
   compressionEnabled: boolean;
@@ -236,6 +238,15 @@ export type ChunkOutcome =
   | 'compression_failed'
   | 'not_retrieved';
 
+/**
+ * Whether a chunk with this outcome reaches the answering model. Padded chunks
+ * (filled_below_threshold) do, even though they did not make the threshold:
+ * every count of "chunks handed to the model" must go through this.
+ */
+export function isPassedOn(outcome: ChunkOutcome): boolean {
+  return outcome === 'kept' || outcome === 'filled_below_threshold';
+}
+
 export interface SearchResultChunk {
   chunkId: ChunkId;
   documentId: string;
@@ -300,6 +311,12 @@ export type AbsenceReason = 'absent_from_index' | 'outside_k' | 'unknown';
 
 export type RunDelta = 'gained' | 'lost' | 'moved' | 'stable';
 
+/**
+ * Change in whether the chunk reaches the answering model, independent of its
+ * retrieval rank: a threshold change moves no rank but can flip this.
+ */
+export type PassedOnChange = 'now_passed_on' | 'no_longer_passed_on';
+
 export interface RunComparisonRow {
   chunkId: ChunkId;
   title: string;
@@ -311,6 +328,11 @@ export interface RunComparisonRow {
   magnitude: number;
   /** Only set when delta is 'lost' */
   absenceReason?: AbsenceReason;
+  /** Handed to the answering model in each run */
+  passedOnReference: boolean;
+  passedOnCurrent: boolean;
+  /** Set when the chunk reaches the model in one run and not in the other */
+  passedOnChange?: PassedOnChange;
   pinned: boolean;
 }
 
@@ -320,7 +342,11 @@ export interface RunComparison {
   /** Named in the banner; the more entries, the less interpretable the delta */
   changedFields: RunDiffField[];
   rows: RunComparisonRow[];
+  /** Chunks handed to the answering model in both runs */
   commonInTopK: number;
   lost: number;
   gained: number;
+  /** Chunks now handed to the model that were not in the reference, and the reverse */
+  nowPassedOn: number;
+  noLongerPassedOn: number;
 }

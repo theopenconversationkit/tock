@@ -654,6 +654,22 @@ async def _pinned_fts_metrics(
     }
 
 
+# Keys the runtime retrieval adds to a document on the way (channel scores,
+# ranks). They are not stored metadata, and are already exposed in ranks/scores:
+# keep them out of the metadata panel, so retrieved and pinned chunks look alike.
+RUNTIME_METADATA_KEYS = frozenset(
+    {VECTOR_SCORE_METADATA_KEY, FTS_SCORE_METADATA_KEY, 'rank'}
+)
+
+
+def _stored_metadata(document: Document) -> dict[str, Any]:
+    return {
+        key: value
+        for key, value in document.metadata.items()
+        if key not in RUNTIME_METADATA_KEYS
+    }
+
+
 def _result(
     candidate: Candidate,
     outcome: ChunkOutcome,
@@ -671,7 +687,7 @@ def _result(
         outcome=outcome,
         pinned=pinned,
         reranker_windows=candidate.reranker_windows,
-        metadata=document.metadata,
+        metadata=_stored_metadata(document),
     )
 
 

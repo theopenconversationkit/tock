@@ -52,4 +52,45 @@ describe('buildRunComparison', () => {
 
     expect(comparison.rows[0].absenceReason).toBe('outside_k');
   });
+
+  it('reports a chunk that stops reaching the model on a threshold change, at the same rank', () => {
+    const before = run('index-a', [chunk(1, 'kept')]);
+    const after = run('index-a', [chunk(1, 'below_min_score')]);
+
+    const comparison = buildRunComparison(before, after);
+
+    expect(comparison.rows[0].delta).toBe('stable');
+    expect(comparison.rows[0].passedOnChange).toBe('no_longer_passed_on');
+    expect(comparison.noLongerPassedOn).toBe(1);
+    expect(comparison.nowPassedOn).toBe(0);
+    expect(comparison.commonInTopK).toBe(0);
+  });
+
+  it('counts padded chunks as passed on to the model', () => {
+    const before = run('index-a', [chunk(1, 'filled_below_threshold')]);
+    const after = run('index-a', [chunk(1, 'kept')]);
+
+    const comparison = buildRunComparison(before, after);
+
+    expect(comparison.rows[0].passedOnChange).toBeUndefined();
+    expect(comparison.commonInTopK).toBe(1);
+  });
+
+  it('orders passed-on changes consistently whatever the comparison direction', () => {
+    const stable: SearchResultChunk = { ...chunk(1, 'kept'), chunkId: 'a:1/1' };
+    const moved: SearchResultChunk = { ...chunk(5, 'kept'), chunkId: 'b:1/1' };
+    const before = run('index-a', [stable, moved]);
+    const after = run('index-a', [
+      { ...stable, outcome: 'below_min_score' },
+      { ...moved, ranks: { ...moved.ranks, vector: 2 }, outcome: 'below_min_score' }
+    ]);
+
+    const forward = buildRunComparison(before, after).rows.map((row) => row.chunkId);
+    const reversedInput = buildRunComparison(
+      run('index-a', [moved, stable]),
+      run('index-a', [...after.response.results].reverse())
+    ).rows.map((row) => row.chunkId);
+
+    expect(forward).toEqual(reversedInput);
+  });
 });

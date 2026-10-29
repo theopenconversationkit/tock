@@ -1,6 +1,8 @@
 import { DocumentSearchType } from '../../rag/rag-settings/models/engines-configurations';
 import {
   AbsenceReason,
+  isPassedOn,
+  PassedOnChange,
   RunComparison,
   RunComparisonRow,
   RunDelta,
@@ -84,6 +86,8 @@ export function buildRunComparison(reference: SearchRun, current: SearchRun): Ru
 
   let lost = 0;
   let gained = 0;
+  let nowPassedOn = 0;
+  let noLongerPassedOn = 0;
 
   for (const chunkId of chunkIds) {
     const rankReference = referenceRanks.get(chunkId) ?? null;
@@ -117,6 +121,21 @@ export function buildRunComparison(reference: SearchRun, current: SearchRun): Ru
       delta = 'stable';
     }
 
+    // Independent of the rank: a threshold change moves no rank but decides
+    // which of the retrieved chunks reach the answering model.
+    const referenceChunk = referenceChunks.get(chunkId);
+    const currentChunk = currentChunks.get(chunkId);
+    const passedOnReference = !!referenceChunk && isPassedOn(referenceChunk.outcome);
+    const passedOnCurrent = !!currentChunk && isPassedOn(currentChunk.outcome);
+    let passedOnChange: PassedOnChange | undefined;
+    if (passedOnCurrent && !passedOnReference) {
+      passedOnChange = 'now_passed_on';
+      nowPassedOn++;
+    } else if (passedOnReference && !passedOnCurrent) {
+      passedOnChange = 'no_longer_passed_on';
+      noLongerPassedOn++;
+    }
+
     rows.push({
       chunkId,
       title: chunk.title,
@@ -126,21 +145,28 @@ export function buildRunComparison(reference: SearchRun, current: SearchRun): Ru
       delta,
       magnitude,
       absenceReason,
+      passedOnReference,
+      passedOnCurrent,
+      passedOnChange,
       pinned: chunk.pinned
     });
   }
 
-  // Losses and gains first: they are the structural changes. Movements follow,
-  // widest first. Stable rows are noise and end up last, collapsed by the UI.
-  const order: Record<RunDelta, number> = { lost: 0, gained: 1, moved: 2, stable: 3 };
+  // Losses and gains first: they are the structural changes. Then the chunks
+  // whose passing to the model changed, then movements, widest first. Stable
+  // rows are noise and end up last, collapsed by the UI.
+  const order: Record<RunDelta, number> = { lost: 0, gained: 1, moved: 3, stable: 4 };
+  const rowOrder = (row: RunComparisonRow): number =>
+    row.passedOnChange && (row.delta === 'moved' || row.delta === 'stable') ? 2 : order[row.delta];
   rows.sort((a, b) => {
-    if (order[a.delta] !== order[b.delta]) return order[a.delta] - order[b.delta];
-    if (a.delta === 'moved') return b.magnitude - a.magnitude;
+    if (rowOrder(a) !== rowOrder(b)) return rowOrder(a) - rowOrder(b);
+    // Within a group, by magnitude only when both moved: the passed-on group
+    // mixes moved and stable rows, and a one-sided rule would not be a total order.
+    if (a.delta === 'moved' && b.delta === 'moved') return b.magnitude - a.magnitude;
     return (a.rankCurrent ?? a.rankReference ?? 0) - (b.rankCurrent ?? b.rankReference ?? 0);
   });
 
-  const referenceTopK = new Set(reference.response.results.filter((result) => result.outcome === 'kept').map((result) => result.chunkId));
-  const commonInTopK = current.response.results.filter((result) => result.outcome === 'kept' && referenceTopK.has(result.chunkId)).length;
+  const commonInTopK = rows.filter((row) => row.passedOnReference && row.passedOnCurrent).length;
 
-  return { reference, current, changedFields, rows, commonInTopK, lost, gained };
+  return { reference, current, changedFields, rows, commonInTopK, lost, gained, nowPassedOn, noLongerPassedOn };
 }

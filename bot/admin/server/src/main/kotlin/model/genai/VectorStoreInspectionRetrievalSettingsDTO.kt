@@ -23,8 +23,12 @@ import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchType
  * The bot's effective retrieval settings, used to pre-fill the diagnostic form
  * and to flag divergences from the running chain. The compressor endpoint is
  * deliberately never exposed.
+ *
+ * [ragEnabled] tells whether the runtime applies this configuration at all:
+ * the bot only loads an enabled RAG configuration.
  */
 data class VectorStoreInspectionRetrievalSettingsDTO(
+    val ragEnabled: Boolean,
     val searchType: DocumentSearchType,
     val maxDocumentsRetrieved: Int,
     val compressionEnabled: Boolean,
