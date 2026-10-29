@@ -23,6 +23,7 @@ import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.UserLock_.Companion.Date
 import ai.tock.bot.mongo.UserLock_.Companion.Locked
 import ai.tock.bot.mongo.UserLock_.Companion._id
+import ai.tock.shared.booleanProperty
 import ai.tock.shared.error
 import ai.tock.shared.intProperty
 import ai.tock.shared.longProperty
@@ -34,6 +35,8 @@ import io.github.resilience4j.kotlin.retry.executeSuspendFunction
 import io.github.resilience4j.retry.Retry
 import io.github.resilience4j.retry.RetryConfig
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -58,6 +61,7 @@ import java.time.Instant.now
 import java.util.UUID
 import java.util.concurrent.TimeUnit.HOURS
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  *
@@ -77,6 +81,8 @@ internal object MongoUserLock : UserLock {
     private val col = asyncDatabase.getCollection<UserLock>().coroutine
 
     private val lockTimeout = longProperty("tock_bot_lock_timeout_in_ms", 5000)
+
+    private val renewLockLease = booleanProperty("tock_bot_lock_renew_lease", false)
 
     /** Interval at which to refresh a lease for an ongoing operation;
      short enough to never expire under normal conditions. */
@@ -250,22 +256,12 @@ internal object MongoUserLock : UserLock {
                 // another owner has genuinely taken over the lock: cancel op() when
                 // abortOnLockLoss is requested, otherwise just log and let it continue.
                 val heartbeatJob =
-                    launch {
-                        while (isActive) {
-                            delay(lockHeartbeatInterval)
-                            if (!renewLock(userId, lockId)) {
-                                logger.warn { "lock for user $userId was taken over by another owner while running" }
-                                if (abortOnLockLoss) {
-                                    opJob.cancel(
-                                        CancellationException(
-                                            "lock for user $userId expired while op() was running",
-                                            LockLostException("lock for user $userId expired while op() was running"),
-                                        ),
-                                    )
-                                }
-                                break
-                            }
+                    if (renewLockLease) {
+                        launch {
+                            keepRenewingLease(userId, lockId, abortOnLockLoss, opJob)
                         }
+                    } else {
+                        null
                     }
                 try {
                     opJob.await()
@@ -273,12 +269,35 @@ internal object MongoUserLock : UserLock {
                     // unwrap our own LockLostException, leave other cancellation causes as-is
                     throw e.cause as? LockLostException ?: e
                 } finally {
-                    heartbeatJob.cancel()
+                    heartbeatJob?.cancel()
                 }
             }
         } finally {
             releaseLock(userId, lockId)
             postLockRelease?.invoke()
+        }
+    }
+
+    private suspend fun <T> CoroutineScope.keepRenewingLease(
+        userId: String,
+        lockId: UUID,
+        abortOnLockLoss: Boolean,
+        opJob: Deferred<T>,
+    ) {
+        while (isActive) {
+            delay(lockHeartbeatInterval.milliseconds)
+            if (!renewLock(userId, lockId)) {
+                logger.warn { "lock for user $userId was taken over by another owner while running" }
+                if (abortOnLockLoss) {
+                    opJob.cancel(
+                        CancellationException(
+                            "lock for user $userId expired while op() was running",
+                            LockLostException("lock for user $userId expired while op() was running"),
+                        ),
+                    )
+                }
+                break
+            }
         }
     }
 
