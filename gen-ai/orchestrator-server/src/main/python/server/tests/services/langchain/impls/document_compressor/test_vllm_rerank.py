@@ -346,3 +346,23 @@ def test_successful_call_resets_previous_fallback_info(mocked_post):
     mocked_post.return_value = _ok_response([{'index': 0, 'relevance_score': 0.9}])
     rerank.compress_documents(documents=documents, query='q')
     assert rerank.last_fallback_info is None
+
+
+@patch('gen_ai_orchestrator.services.langchain.impls.document_compressor.vllm_rerank.requests.post')
+def test_score_ties_are_broken_by_retrieval_order_not_response_order(mocked_post):
+    # Retrieval order a, b, c; the server answers c, b, a with a and b tied at
+    # the max_documents boundary: the earlier retrieved one (a) must win, so the
+    # studio diagnostic can reproduce the selection client-side.
+    documents = [Document(page_content=name) for name in ('a', 'b', 'c')]
+    mocked_post.return_value = _ok_response(
+        [
+            {'index': 2, 'relevance_score': 0.95},
+            {'index': 1, 'relevance_score': 0.70},
+            {'index': 0, 'relevance_score': 0.70},
+        ]
+    )
+
+    rerank = _make_rerank(min_score=0.5, max_documents=2)
+    result = rerank.compress_documents(documents=documents, query='question')
+
+    assert [doc.page_content for doc in result] == ['c', 'a']

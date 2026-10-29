@@ -37,7 +37,8 @@ def select_reranked_documents(
     """Select the documents a reranker keeps from its scored candidates.
 
     Sort by ``reranker_score`` descending (missing score treated as 0, ties keep
-    input order via the stable sort), keep those at or above ``min_score`` up to
+    input order via the stable sort — providers hand ``scored_docs`` over in
+    retrieval order, so ties go to the better retrieved candidate), keep those at or above ``min_score`` up to
     ``max_documents``, then — when ``fill_to_max_documents`` is set and the result
     is still short — complete it with the best below-threshold documents.
     """

@@ -189,8 +189,13 @@ class VllmRerank(BaseDocumentCompressor):
             if parent not in best_scores or score > best_scores[parent]:
                 best_scores[parent] = score
 
+        # Hand the scored documents over in input (retrieval) order, not in the
+        # order of the provider's response: the selection's stable sort then
+        # breaks score ties by retrieval rank, deterministically, and the studio
+        # diagnostic reproduces it when it recomputes thresholds client-side.
         scored_docs = []
-        for parent, score in best_scores.items():
+        for parent in sorted(best_scores):
+            score = best_scores[parent]
             doc = documents[parent]
             doc.metadata['reranker_score'] = score
             if window_counts[parent] > 1:

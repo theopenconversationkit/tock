@@ -374,6 +374,7 @@
         size="tiny"
         status="warning"
         class="mt-1"
+        [disabled]="loading"
         (click)="resetToBotSettings()"
       >
         {{ 'vsi.diagnostic.reset_to_bot' | transloco }}

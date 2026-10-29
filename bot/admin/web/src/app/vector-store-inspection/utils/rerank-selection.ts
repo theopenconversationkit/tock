@@ -41,7 +41,9 @@ export function selectRerankedChunkIds(
   fillToMaxDocuments: boolean
 ): Set<ChunkId> {
   // Array.prototype.sort is stable (ES2019+), so ties keep input order like the
-  // backend's stable sort.
+  // backend's stable sort. Candidates come in retrieval order, which is also the
+  // order the backend providers hand their scored documents over in, so a tie
+  // at the max documents boundary is broken the same way on both sides.
   const ranked = [...candidates].sort((a, b) => scoreOf(b) - scoreOf(a));
   const above = ranked.filter((candidate) => scoreOf(candidate) >= minScore);
   const below = ranked.filter((candidate) => scoreOf(candidate) < minScore);

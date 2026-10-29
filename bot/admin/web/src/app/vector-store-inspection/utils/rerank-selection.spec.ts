@@ -35,7 +35,9 @@ const CASES: Case[] = [
   { name: 'fill_partial', scores: [['a', 0.9], ['b', 0.3], ['c', 0.2], ['d', 0.1]], minScore: 0.5, maxDocuments: 2, fill: true, expected: ['a', 'b'] },
   { name: 'unsorted_input', scores: [['a', 0.2], ['b', 0.95], ['c', 0.6]], minScore: 0.5, maxDocuments: 5, fill: false, expected: ['b', 'c'] },
   { name: 'missing_score_as_zero', scores: [['a', 0.8], ['b', null]], minScore: 0.5, maxDocuments: 5, fill: false, expected: ['a'] },
-  { name: 'ties_keep_input_order', scores: [['a', 0.5], ['b', 0.5]], minScore: 0.5, maxDocuments: 5, fill: false, expected: ['a', 'b'] }
+  { name: 'ties_keep_input_order', scores: [['a', 0.5], ['b', 0.5]], minScore: 0.5, maxDocuments: 5, fill: false, expected: ['a', 'b'] },
+  // A tie right at the max documents boundary: the earlier candidate in retrieval order wins.
+  { name: 'tie_at_max_boundary', scores: [['a', 0.7], ['b', 0.7], ['c', 0.95]], minScore: 0.5, maxDocuments: 2, fill: false, expected: ['c', 'a'] }
 ];
 
 function candidates(scores: [string, number | null][]): ScoredCandidate[] {

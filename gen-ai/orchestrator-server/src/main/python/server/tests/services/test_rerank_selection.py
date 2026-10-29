@@ -103,6 +103,16 @@ CASES = [
         False,
         ['a', 'b'],
     ),
+    (
+        # A tie right at the max_documents boundary: the earlier candidate (in
+        # retrieval order, which providers now hand over) wins.
+        'tie_at_max_boundary',
+        [('a', 0.7), ('b', 0.7), ('c', 0.95)],
+        0.5,
+        2,
+        False,
+        ['c', 'a'],
+    ),
 ]
 
 

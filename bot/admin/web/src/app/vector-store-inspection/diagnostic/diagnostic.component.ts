@@ -368,7 +368,9 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
   resetToBotSettings(): void {
     const settings = this.botSettings;
-    if (!settings) return;
+    // During a search the form must keep describing the request in flight: a
+    // reset now would be overwritten by results computed with other settings.
+    if (!settings || this.loading) return;
     this.k = settings.maxDocumentsRetrieved;
     this.compressionEnabled = settings.compressionEnabled;
     if (settings.minScore != null) this.minScore = settings.minScore;

@@ -126,8 +126,10 @@ class AwsBedrockRerank(BaseDocumentCompressor):
             }
             return list(documents)[: self.max_documents]
 
+        # Input (retrieval) order, not the provider's response order: score ties
+        # are then broken by retrieval rank, as the studio diagnostic assumes.
         scored_docs = []
-        for res in results:
+        for res in sorted(results, key=lambda res: res['index']):
             doc = documents[res['index']]
             doc.metadata['reranker_score'] = res['relevance_score']
             scored_docs.append(doc)

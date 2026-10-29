@@ -158,13 +158,13 @@ export function buildRunComparison(reference: SearchRun, current: SearchRun): Ru
   const order: Record<RunDelta, number> = { lost: 0, gained: 1, moved: 3, stable: 4 };
   const rowOrder = (row: RunComparisonRow): number =>
     row.passedOnChange && (row.delta === 'moved' || row.delta === 'stable') ? 2 : order[row.delta];
-  rows.sort((a, b) => {
-    if (rowOrder(a) !== rowOrder(b)) return rowOrder(a) - rowOrder(b);
-    // Within a group, by magnitude only when both moved: the passed-on group
-    // mixes moved and stable rows, and a one-sided rule would not be a total order.
-    if (a.delta === 'moved' && b.delta === 'moved') return b.magnitude - a.magnitude;
-    return (a.rankCurrent ?? a.rankReference ?? 0) - (b.rankCurrent ?? b.rankReference ?? 0);
-  });
+  // One lexicographic key for every row, so the comparator is a total order
+  // whatever the mix of deltas in a group: group, then widest move first
+  // (magnitude is 0 for anything that did not move), then rank, then id.
+  const rankOf = (row: RunComparisonRow): number => row.rankCurrent ?? row.rankReference ?? Number.MAX_SAFE_INTEGER;
+  rows.sort(
+    (a, b) => rowOrder(a) - rowOrder(b) || b.magnitude - a.magnitude || rankOf(a) - rankOf(b) || a.chunkId.localeCompare(b.chunkId)
+  );
 
   const commonInTopK = rows.filter((row) => row.passedOnReference && row.passedOnCurrent).length;
 

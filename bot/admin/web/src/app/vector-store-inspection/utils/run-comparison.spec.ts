@@ -93,4 +93,32 @@ describe('buildRunComparison', () => {
 
     expect(forward).toEqual(reversedInput);
   });
+
+  it('orders a mix of moved and stable passed-on changes the same way for every input permutation', () => {
+    const row = (id: string, rank: number, outcome: SearchResultChunk['outcome']): SearchResultChunk => ({
+      ...chunk(rank, outcome),
+      chunkId: id
+    });
+    // a: 2 -> 1 (moved 1), b: 10 -> 5 (moved 5), c: 3 -> 3 (stable); all stop being passed on.
+    const reference = [row('a', 2, 'kept'), row('b', 10, 'kept'), row('c', 3, 'kept')];
+    const current = [row('a', 1, 'below_min_score'), row('b', 5, 'below_min_score'), row('c', 3, 'below_min_score')];
+
+    const permutations = <T>(items: T[]): T[][] =>
+      items.length <= 1
+        ? [items]
+        : items.flatMap((item, i) => permutations([...items.slice(0, i), ...items.slice(i + 1)]).map((rest) => [item, ...rest]));
+
+    const orders = new Set<string>();
+    for (const ref of permutations(reference)) {
+      for (const cur of permutations(current)) {
+        orders.add(
+          buildRunComparison(run('index-a', ref), run('index-a', cur))
+            .rows.map((r) => r.chunkId)
+            .join(',')
+        );
+      }
+    }
+
+    expect([...orders]).toEqual(['b,a,c']);
+  });
 });
