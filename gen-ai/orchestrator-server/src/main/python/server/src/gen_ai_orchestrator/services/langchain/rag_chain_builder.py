@@ -75,7 +75,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class RetrievalTrace:
-    """Optional sink for the intermediate retrieval/compression state.
+    """Optional sink for the intermediate retrieval state.
 
     Passed down the shared pipeline by callers that need to observe it (the
     vector store inspection). When left unset the runtime pays no cost and
@@ -88,16 +88,12 @@ class RetrievalTrace:
     rrf_scores: dict[tuple, float] = field(default_factory=dict)
     # Hybrid search ran without keywords: FTS and RRF were skipped, vector only.
     hybrid_vector_only_fallback: bool = False
-    compressor_input: list[Document] = field(default_factory=list)
-    compressor_output: list[Document] = field(default_factory=list)
-    fallback_info: Optional[dict] = None
 
 
 def compress_documents_with_fallback(
     compressor,
     documents: list[Document],
     query: str,
-    trace: Optional[RetrievalTrace] = None,
 ) -> tuple[list[Document], Optional[dict]]:
     """Run the compressor, surfacing the fault-tolerant fallback it recorded.
 
@@ -108,10 +104,6 @@ def compress_documents_with_fallback(
     fallback_info = getattr(compressor, 'last_fallback_info', None)
     if fallback_info:
         logger.warning('[Compressor] Fallback occurred: %s', fallback_info)
-    if trace is not None:
-        trace.compressor_input = list(documents)
-        trace.compressor_output = docs
-        trace.fallback_info = fallback_info
     return docs, fallback_info
 
 

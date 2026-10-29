@@ -7,11 +7,13 @@ modification d'un fichier existant.
 
 Chemins relatifs à la racine du repo `tock`.
 
-Rappel de principe : chemin runtime intact. Tout passe par un routeur dédié et un
-service d'inspection qui **réutilise** les fonctions existantes de
-`rag_chain_builder.py` sans les modifier. Le seul point où l'on frôle le runtime
-est l'exposition des scores (§ orchestrateur), et il est traité par des variantes
-locales, pas par une modification des retrievers de production.
+Rappel de principe : **une seule chaîne**. Le diagnostic n'a pas de copie de la
+recherche, du RRF ni de la compression : il appelle le même code que le runtime
+(`rag_chain_builder.py`, retrievers de production, compresseurs), avec une trace
+optionnelle qui expose les étapes intermédiaires. Le runtime a donc été modifié,
+mais sans changement de comportement : mêmes documents, même ordre, mêmes noms
+d'étapes et de spans, mêmes footnotes. Seules s'ajoutent deux clés de score dans
+les métadonnées des documents. Un test de parité le garantit.
 
 ---
 
@@ -90,11 +92,33 @@ Fonction qui retourne les capacités par provider (`search_types`,
 `supports_scores`, `notes`). Peut démarrer avec des valeurs codées en dur par
 provider. C'est ce qui permet à l'UI de ne pas coder « si OpenSearch alors… ».
 
-### Métadonnées — réutilisation, pas de modification
+### Chaîne partagée — modifications du runtime
 
-`services/langchain/rag_chain_builder.py` fournit `get_chunk_identifier()`,
-`get_web_source_url()`, et le format des métadonnées. **Réutilisé tel quel**, cité
-ici pour mémoire : ne pas le modifier.
+**[M]** `services/langchain/rag_chain_builder.py` : `RetrievalTrace` optionnel passé
+aux retrievers (`SimilarityRetriever`, `FTSRetriever`, `HybridRetriever`), et
+`compress_documents_with_fallback` partagé par le runtime et le diagnostic. Sans
+trace, aucun coût et aucun changement de comportement. Fournit aussi
+`get_chunk_identifier()` et le format des métadonnées.
+
+**[M]** `services/langchain/factories/vector_stores/pgvector_factory.py` :
+`ScoredVectorStoreRetriever`, sous-classe de `VectorStoreRetriever` qui conserve
+`1 - distance` dans `metadata['vector_score']` (même nom de run
+`VectorStoreRetriever`, donc même span Langfuse).
+
+**[M]** `services/langchain/factories/vector_stores/postgresql_text_retriever.py` :
+`build_docs()` conserve le `ts_rank` dans `metadata['fts_score']`.
+
+**[M]** `services/langchain/rag_response_builder.py` : retire ces deux clés des
+footnotes renvoyées au bot.
+
+**[N]** `services/langchain/impls/document_compressor/rerank_selection.py` et
+**[M]** `vllm_rerank.py`, `bloomz_rerank.py`, `aws_bedrock_rerank.py` : sélection
+factorisée (tri, seuil, complément), reproduite à l'identique côté studio pour le
+recalcul instantané des seuils ; réinitialisation de `last_fallback_info` à chaque
+appel.
+
+**[N]** `tests/services/test_retrieval_pipeline_parity.py` : garde-fou de parité
+runtime / diagnostic.
 
 ---
 
@@ -199,7 +223,7 @@ souvent on peut réutiliser directement les data classes du client.
 | Modèles requête/réponse Python                           | 2 [M]          | déclaratif, volumineux                | moyen       |
 | Service d'inspection — documents/indexes/stats/anomalies | 1-2 [N]        | SQL neuf                              | moyen-élevé |
 | Service d'inspection — search                            | (même fichier) | réutilisation + capture d'état        | **élevé**   |
-| Scores                                                   | 1 [N]          | variante locale, non intrusive        | faible      |
+| Chaîne partagée + scores                                 | 1 [N], 7 [M]   | runtime modifié, comportement inchangé | moyen       |
 | Client Retrofit (api + service + impl + modèles)         | 5 [N], 1 [M]   | patron + volume déclaratif            | moyen       |
 | Routes admin GenAIVerticle                               | 1 [M]          | patron existant + résolution settings | moyen       |
 
@@ -209,26 +233,27 @@ scores par étage, comptabilité des `outcome`). Tout le reste est soit du patro
 répété, soit du SQL neuf mais conceptuellement simple.
 
 L'instrumentation du compresseur, initialement identifiée comme le risque
-principal, est **levée** : `BloomzRerank`
-(`services/langchain/impls/document_compressor/bloomz_rerank.py`) pose déjà
-`metadata['reranker_score']` sur chaque document scoré et gère lui-même la
-tolérance de panne (`is_fault_tolerant`, `fill_to_max_documents`). Le service
-d'inspection lit ces scores sans modifier le module.
+principal, est **levée** : chaque compresseur pose déjà `metadata['reranker_score']`
+(et `reranker_windows` pour vLLM) sur les documents qu'il reçoit, et enregistre
+son repli dans `last_fallback_info`. Le diagnostic construit le compresseur comme
+le runtime (tolérant aux pannes) et lit ces informations après l'appel.
 
 ---
 
-## Ce qui n'est PAS touché — garde-fous
+## Garde-fous
 
-- `services/langchain/rag_chain_builder.py` : réutilisé, jamais modifié. C'est la
-  garantie que le runtime n'est pas impacté.
-- `services/langchain/impls/document_compressor/bloomz_rerank.py` : réutilisé,
-  jamais modifié (module maintenu par une autre équipe).
-- `routers/rag_router.py`, `services/rag/rag_service.py` : intouchés.
-- Les retrievers de production (`SimilarityRetriever`, `FTSRetriever`,
-  `HybridRetriever`) : réutilisés, jamais modifiés. Les scores sont récupérés par
-  des appels parallèles (`asimilarity_search_with_score`, variante de
-  `build_docs`), pas en modifiant ces classes.
+- `routers/rag_router.py`, `services/rag/rag_service.py` et la signature de
+  `create_rag_chain()` : intouchés.
+- Comportement du runtime : inchangé, vérifié par
+  `test_retrieval_pipeline_parity.py` (mêmes documents transmis au modèle, même
+  ordre, mêmes paramètres de recherche, compresseur construit à l'identique) et par
+  les tests existants de la chaîne RAG.
+- Noms des étapes (`similarity_retriever_retrieve`, `hybrid_retrieve`,
+  `fts_retrieve`, `document_compressor`) et capture `RunnableAssign<answer>` :
+  inchangés, `RAGCallbackHandler` et Langfuse en dépendent.
 
 Périmètre exclu, à signaler en revue : tout le SQL (listing, documents,
-exact_rank) est **PGVector uniquement**. OpenSearch est hors périmètre, et
-`/capabilities` le déclare proprement (`hybrid_and_fts_not_implemented`).
+exact_rank) est **PGVector uniquement**. OpenSearch est hors périmètre :
+`/capabilities` le déclare (`hybrid_and_fts_not_implemented`), et son inspection
+garde un appel de recherche direct, hors de la chaîne partagée. La parité
+runtime / diagnostic n'est donc garantie que pour PGVector.

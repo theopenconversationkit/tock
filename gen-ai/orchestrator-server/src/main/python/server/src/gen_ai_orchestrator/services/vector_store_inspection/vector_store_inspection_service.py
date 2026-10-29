@@ -147,11 +147,6 @@ def _normalise_datetime(value: Optional[str]) -> str:
         return value
 
 
-def _source(metadata: dict[str, Any]) -> Optional[str]:
-    value = metadata.get('source') or metadata.get('reference')
-    return str(value) if value else None
-
-
 def _document_id(document: Document) -> str:
     return str(document.metadata.get('id') or '')
 

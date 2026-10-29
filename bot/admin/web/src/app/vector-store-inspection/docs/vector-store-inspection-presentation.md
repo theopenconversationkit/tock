@@ -237,10 +237,10 @@ hiérarchie document → chunks n'existe pas dans le stock.
 
 ## 6. Contrat d'API
 
-Routeur dédié `vector_store_inspection_router`, chemin runtime intact. Cinq
-routes admin relaient les endpoints orchestrateur ; la sixième,
-`retrieval-settings`, est propre à l'admin. Toutes vivent dans `GenAIVerticle`
-(rôle `admin`, comme le reste de la configuration RAG).
+Routeur dédié `vector_store_inspection_router`, chaîne de recherche partagée
+avec le runtime (§5.1). Cinq routes admin relaient les endpoints orchestrateur ;
+la sixième, `retrieval-settings`, est propre à l'admin. Toutes vivent dans
+`GenAIVerticle` (rôle `admin`, comme le reste de la configuration RAG).
 
 | #   | Endpoint                                          | Écran                         |
 | --- | ------------------------------------------------- | ----------------------------- |
