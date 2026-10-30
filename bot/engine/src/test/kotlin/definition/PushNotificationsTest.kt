@@ -124,7 +124,7 @@ internal class PushNotificationsTest : BotEngineTest() {
     @OptIn(ExperimentalTockCoroutines::class)
     @Test
     suspend fun `GIVEN locked user session WHEN pushNotification is called THEN throw SkippedEventException`() {
-        coEvery { userLock.withLock(recipientId.id, any(), postLockRelease = any(), op = any<suspend () -> Unit>()) } throws LockAcquisitionException("test")
+        coEvery { userLock.withLock(recipientId.id, any(), renewLease = any(), postLockRelease = any(), op = any<suspend () -> Unit>()) } throws LockAcquisitionException("test")
         coEvery { connector.notify(any(), any(), any(), notificationType = any(), errorListener = any()) } coAnswers {
             firstArg<ConnectorController>().handleUserEvent(
                 SendChoice(

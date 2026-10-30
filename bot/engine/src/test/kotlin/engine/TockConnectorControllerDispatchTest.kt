@@ -44,9 +44,9 @@ internal class TockConnectorControllerDispatchTest : BotEngineTest() {
 
     @Test
     fun `GIVEN a call from an event loop thread WHEN handleUserEvent THEN blocking processing is done on the worker pool`() {
-        coEvery { userLock.withLock<Any?>(any(), any(), any(), any()) } coAnswers {
+        coEvery { userLock.withLock<Any?>(any(), any(), any(), any(), any()) } coAnswers {
             @Suppress("UNCHECKED_CAST")
-            (args[3] as suspend () -> Any?).invoke()
+            (args[4] as suspend () -> Any?).invoke()
         }
         coEvery { userTimelineDAO.loadWithLastValidDialog(any(), any(), any(), any(), any()) } returns userTimeline
         var profileLoadingThread: String? = null
