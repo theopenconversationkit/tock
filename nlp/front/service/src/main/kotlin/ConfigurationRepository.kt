@@ -177,6 +177,7 @@ internal object ConfigurationRepository {
                     it.qualifiedName,
                     it.entities.mapNotNull { e -> toEntityWithEntityTypesTree(e) },
                     it.entitiesRegexp.mapValues { r -> LinkedHashSet(r.value.map { v -> EntitiesRegexp(v.regexp) }) },
+                    it.description,
                 )
             }
         return Application(

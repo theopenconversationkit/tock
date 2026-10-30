@@ -88,7 +88,9 @@ object ParserService : Parser {
                     .getApplications()
                     .forEach { app ->
                         app.supportedLocales.forEach { locale ->
-                            modelCore.warmupModels(BuildContext(toApplication(app), locale, app.nlpEngineType))
+                            modelCore.warmupModels(
+                                BuildContext(toApplication(app), locale, app.nlpEngineType, app.effectiveEntityNlpEngineType),
+                            )
                         }
                     }
             } catch (e: Exception) {
@@ -217,6 +219,7 @@ object ParserService : Parser {
                     toApplication(application),
                     language,
                     application.nlpEngineType,
+                    application.effectiveEntityNlpEngineType,
                     EntityEvaluationContext(
                         referenceDate,
                         application.mergeEngineTypes,
@@ -398,6 +401,7 @@ object ParserService : Parser {
                     toApplication(application),
                     language,
                     application.nlpEngineType,
+                    application.effectiveEntityNlpEngineType,
                     EntityEvaluationContext(
                         referenceDate,
                         referenceDateByEntityMap =
@@ -434,6 +438,7 @@ object ParserService : Parser {
                     toApplication(application),
                     language,
                     application.nlpEngineType,
+                    application.effectiveEntityNlpEngineType,
                     EntityEvaluationContext(
                         referenceDate,
                         referenceDateByEntityMap =

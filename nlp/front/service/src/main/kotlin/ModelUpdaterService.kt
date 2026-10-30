@@ -114,7 +114,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
                     s.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) })
                 }
             model.updateIntentModel(
-                BuildContext(toApplication(application), language, engineType, onlyIfNotExists),
+                BuildContext(toApplication(application), language, engineType, onlyIfNotExists = onlyIfNotExists),
                 samples,
             )
             samples.size
@@ -140,10 +140,10 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
                     }
             model.updateEntityModelForIntent(
                 BuildContext(
-                    toApplication(application),
-                    language,
-                    engineType,
-                    onlyIfNotExists,
+                    application = toApplication(application),
+                    language = language,
+                    engineType = engineType,
+                    onlyIfNotExists = onlyIfNotExists,
                 ),
                 i,
                 samples,
@@ -201,7 +201,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
                         s.toSampleExpression({ config.toIntent(it) }, { entityTypeByName(it) })
                     }
                 model.updateEntityModelForEntityType(
-                    BuildContext(toApplication(application), language, engineType, onlyIfNotExists),
+                    BuildContext(toApplication(application), language, engineType, onlyIfNotExists = onlyIfNotExists),
                     entityType,
                     samples,
                 )

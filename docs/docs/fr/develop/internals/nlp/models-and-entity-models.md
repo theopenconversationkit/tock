@@ -13,6 +13,7 @@ Ceux qui viennent des différentes libs de NLP `EngineType` :
 - Stanford (module optionnel [`tock-corenlp`](https://github.com/theopenconversationkit/tock-corenlp))
 - Rasa
 - OpenNlp
+- System One (voir plus bas)
 
 Pour les entités des implémentations étendent `EntityTypeClassifier`
 Ces types sont trouvés notamment lors de `getIntentClassifier` pour les intentions et `getEntityClassifier` dans NlpEngineRepository, définit dans le bot configuration avec le `EngineType` de défini
@@ -28,7 +29,27 @@ Les injections de dépendences pour les modèles de NLP participent à leur char
 - Exemple : `OpenNlpEngineProvider.kt`
 Il semble nécessaire de créer un nouveau provider de NLP et d'implémenter l'interface `NlpEngineProvider` et d'ajouter la définition dans `META-INF/services/ai.tock.nlp.model.service.engine.NlpEngineProvider`
 
-## Les modèles d'entités
+### Le modèle de classification System One
+System One est le contrat générique d'API pour les modèles de décision. Ce module l'intègre
+dans Tock en s'appuyant actuellement sur les modèles `Clef` / `Clef-flash`
+(https://blog.cloudflare.com/clef-decision-models/), hébergés par Cloudflare (Workers AI) et
+accessibles via son API REST - il n'y a pas de mode auto-hébergé.
+
+Le moteur Tock est `systemone` (`NlpEngineType.systemone`). Les modèles Clef ne font
+**que de la classification d'intention** : ils n'ont aucune capacité d'extraction
+d'entités (`SystemOneEntityClassifier` renvoie toujours une liste vide). Pour obtenir des entités
+sur une application qui utilise System One pour les intentions, chaque `ApplicationDefinition` peut
+désormais définir un **moteur d'entités dédié**, indépendant du moteur d'intention
+(`entityNlpEngineType`, avec repli implicite sur `nlpEngineType` si non défini) - cette
+capacité est générique et n'est pas réservée à Clef.
+
+Pour construire ses critères de classification, le modèle Clef s'appuie sur la **description de
+l'intention définie dans TOCK Studio** (`IntentDefinition.description`), propagée jusqu'au
+`Intent.description` du coeur NLP : plus les descriptions d'intentions sont précises, plus la
+classification est fiable. Voir `nlp/model/systemone/README.md` pour la configuration complète
+(compte Cloudflare, jeton d'API, choix entre `clef` et `clef-flash`, tarification).
+
+## Les modèles d'entités :
 Ls modèles d'entités par défaut dans Tock sont ceux provenant de dictionnaires ou de duckling.
 
 ### Les providers d'entités

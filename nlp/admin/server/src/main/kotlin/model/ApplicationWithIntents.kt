@@ -52,6 +52,11 @@ data class ApplicationWithIntents(
      */
     val nlpEngineType: NlpEngineType = NlpEngineType(),
     /**
+     * Optional dedicated nlp engine used for entity models/calls, independent from [nlpEngineType].
+     * `null` means "same as [nlpEngineType]" (the historical behaviour).
+     */
+    val entityNlpEngineType: NlpEngineType? = null,
+    /**
      * Is intent entity model and "standalone" entity models are used to find the better values ?
      */
     val mergeEngineTypes: Boolean = true,
@@ -92,6 +97,7 @@ data class ApplicationWithIntents(
             intents.sortedWith(compareBy({ it.label }, { it.name })),
             application.supportedLocales,
             application.nlpEngineType,
+            application.entityNlpEngineType,
             application.mergeEngineTypes,
             application.useEntityModels,
             application.supportSubEntities,
@@ -111,6 +117,7 @@ data class ApplicationWithIntents(
             supportedLocales,
             emptyMap(),
             nlpEngineType,
+            entityNlpEngineType,
             mergeEngineTypes,
             useEntityModels,
             supportSubEntities,
