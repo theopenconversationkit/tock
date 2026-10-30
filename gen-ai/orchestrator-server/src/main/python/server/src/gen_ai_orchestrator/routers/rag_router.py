@@ -17,6 +17,7 @@
 import logging
 
 from fastapi import APIRouter, Request
+from sse_starlette.sse import EventSourceResponse
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
@@ -33,7 +34,7 @@ from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
 )
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.routers.responses.responses import RAGResponse
-from gen_ai_orchestrator.services.rag.rag_service import rag
+from gen_ai_orchestrator.services.rag.rag_service import rag, rag_stream
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,28 @@ async def ask_rag(
 
     # execute RAG
     return await rag(request, debug)
+
+
+@rag_router.post('/stream')
+async def ask_rag_stream(
+    http_request: Request, request: RAGRequest, debug: bool = False
+) -> EventSourceResponse:
+    """
+    ## Ask a RAG System with streaming
+    Ask a question to a RAG System and stream the answer via Server-Sent Events.
+
+    Streams one `token` event per fragment of the answer as it is generated,
+    then a final `answer` event carrying the complete RAGResponse.
+
+    Note: the toxicity guardrail is not applied on this streaming route.
+    """
+    # Check the consistency of the Vector Store Provider with the request body
+    validate_vector_store_rag_query(
+        http_request, request.vector_store_setting, request.document_search_params
+    )
+
+    # execute streaming RAG
+    return EventSourceResponse(rag_stream(request, debug))
 
 
 def validate_vector_store_rag_query(

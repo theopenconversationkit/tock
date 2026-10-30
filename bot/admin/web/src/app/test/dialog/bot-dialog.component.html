@@ -49,6 +49,15 @@
         >
           {{ 'test.bot-dialog.sourcesContent' | transloco }}
         </nb-toggle>
+
+        <nb-toggle
+          [nbTooltip]="'test.bot-dialog.streamingTooltip' | transloco"
+          labelPosition="start"
+          [(ngModel)]="streaming"
+          class="nb-toggle-reset-label-margin"
+        >
+          {{ 'test.bot-dialog.streaming' | transloco }}
+        </nb-toggle>
       </div>
     </div>
   </nb-card-header>
@@ -57,10 +66,12 @@
     <tock-chat-ui
       height="calc(100vh - 450px)"
       [mayScroll]="true"
+      [queryInProgress]="testQueryInProgress"
       #chatUi
     >
       @for (m of messages; track m) {
       <tock-chat-ui-message
+        [action]="m.action"
         [message]="m.message"
         [reply]="m.bot"
         [avatar]="getUserAvatar(m.bot)"

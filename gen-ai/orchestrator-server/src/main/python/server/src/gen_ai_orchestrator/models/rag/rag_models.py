@@ -244,7 +244,9 @@ class RAGDebugData(QADebugData):
             'Keys: "rag_question_condensation_llm" (LLM condensation), '
             '"similarity_retriever_retrieve"/"hybrid_retrieve"/"fts_retrieve" (retrieval), '
             '"document_compressor" (reranking, optional), '
-            '"rag_answer_generation_llm" (LLM response generation). '
+            '"rag_answer_generation_llm" (LLM response generation), '
+            '"rag_answer_generation_first_token" (time-to-first-token of the answer '
+            'generation, streaming mode only). '
             'Absent keys = step not activated. None = debug off.'
         ),
         default=None,

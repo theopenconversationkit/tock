@@ -37,7 +37,7 @@ export class BotDialogResponse {
     public hasNlpStats: boolean,
     public userActionId?: string,
     public userLocale?: string,
-    public debug?: any
+    public ragDebug?: any
   ) {}
 
   static fromJSON(json?: any): BotDialogResponse {
@@ -57,7 +57,8 @@ export class TestMessage {
     public message?: BotMessage,
     public locale?: string,
     public actionId?: string,
-    public hasNlpStats?: boolean
+    public hasNlpStats?: boolean,
+    public action?: ActionReport
   ) {}
 }
 

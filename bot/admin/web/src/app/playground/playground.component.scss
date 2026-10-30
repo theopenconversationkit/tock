@@ -26,6 +26,22 @@
   min-height: 10em;
 }
 
+// Discreet toolbar below the prompt: option on the left, actions on the right.
+.playground-actions-bar {
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+  background-color: var(--background-basic-color-2);
+
+  .index-change-button {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+
+  .playground-streaming-toggle {
+    font-size: 0.85rem;
+  }
+}
+
 .response-timer {
   display: inline-flex;
   align-items: center;

@@ -18,10 +18,13 @@ package ai.tock.bot.connector.rest.client
 
 import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientMessageResponse
+import kotlinx.coroutines.flow.Flow
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Streaming
 
 /**
  *
@@ -32,4 +35,11 @@ interface ConnectorRestService {
         @Path("locale") locale: String,
         @Body request: ClientMessageRequest,
     ): Call<ClientMessageResponse>
+
+    @Streaming
+    @POST("{locale}/stream")
+    fun talkStream(
+        @Path("locale") locale: String,
+        @Body request: ClientMessageRequest,
+    ): Call<ResponseBody>
 }

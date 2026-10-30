@@ -78,7 +78,7 @@
         </nb-accordion-item>
       </nb-accordion>
     </nb-card-header>
-    <nb-card-body class="d-flex justify-content-between align-items-start pr-3">
+    <nb-card-body>
       <nb-form-field class="w-100 align-items-start">
         <textarea
           #textareaPromptRef
@@ -110,6 +110,7 @@
             pack="nebular-essentials"
           ></nb-icon>
         </button>
+        @if (canExpandPrompt) {
         <button
           nbSuffix
           nbButton
@@ -118,13 +119,74 @@
           [style.margin]="getPromptShortcutsMargin()"
           (click)="expandTextareaPrompt()"
         >
-          <nb-icon icon="arrows-angle-expand"></nb-icon>
+          <nb-icon [icon]="promptExpanded ? 'arrows-angle-contract' : 'arrows-angle-expand'"></nb-icon>
         </button>
+        }
       </nb-form-field>
-      <div
-        class="ml-2"
-        style="width: min-content"
-      >
+
+      <div class="playground-actions-bar d-flex align-items-center mt-2">
+        <nb-checkbox
+          class="playground-streaming-toggle"
+          [(ngModel)]="streaming"
+          [ngModelOptions]="{ standalone: true }"
+          [disabled]="testQueryInProgress"
+          [nbTooltip]="'playground.playground.streamingTooltip' | transloco"
+        >
+          {{ 'playground.playground.streamingLabel' | transloco }}
+        </nb-checkbox>
+
+        <span class="flex-grow-1"></span>
+
+        @if (!testQueryInProgress && messagesHistory.length > 1) {
+        <div class="d-flex align-items-center mr-2">
+          <button
+            type="button"
+            nbButton
+            ghost
+            size="small"
+            [nbTooltip]="'playground.playground.goBackInHistoryTooltip' | transloco"
+            class="index-change-button"
+            (click)="messageHistoryMove(false)"
+            [disabled]="messagesHistoryCursor < 1"
+          >
+            <nb-icon
+              icon="chevron-left-outline"
+              pack="nebular-essentials"
+            ></nb-icon>
+          </button>
+          <button
+            type="button"
+            nbButton
+            ghost
+            size="small"
+            [nbTooltip]="'playground.playground.moveForwardInHistoryTooltip' | transloco"
+            class="index-change-button"
+            (click)="messageHistoryMove(true)"
+            [disabled]="messagesHistory.length < 2 || messagesHistoryCursor === messagesHistory.length - 1"
+          >
+            <nb-icon
+              icon="chevron-right-outline"
+              pack="nebular-essentials"
+            ></nb-icon>
+          </button>
+        </div>
+        }
+
+        @if (messages.length !== 0) {
+        <button
+          [nbTooltip]="'playground.playground.clearHistoryTooltip' | transloco"
+          nbButton
+          ghost
+          status="warning"
+          size="medium"
+          class="mr-2"
+          [disabled]="testQueryInProgress"
+          (click)="clearHistory()"
+        >
+          <nb-icon icon="trash"></nb-icon>
+        </button>
+        }
+
         <button
           nbButton
           size="medium"
@@ -134,52 +196,8 @@
           [disabled]="testQueryInProgress || !form.valid || !prompt.value?.length"
         >
           <nb-icon icon="send"></nb-icon>
+          <span class="ml-1">{{ 'playground.playground.sendQueryLabel' | transloco }}</span>
         </button>
-        @if (messages.length !== 0) {
-        <button
-          [nbTooltip]="'playground.playground.clearHistoryTooltip' | transloco"
-          nbButton
-          status="warning"
-          size="medium"
-          class="mt-2"
-          (click)="clearHistory()"
-        >
-          <nb-icon icon="trash"></nb-icon>
-        </button>
-        } @if (!testQueryInProgress && messagesHistory.length > 1) {
-        <div class="border-top mt-2">
-          <button
-            type="button"
-            nbButton
-            ghost
-            size="medium"
-            [nbTooltip]="'playground.playground.goBackInHistoryTooltip' | transloco"
-            class="index-change-button"
-            (click)="messageHistoryMove(false)"
-            [disabled]="messagesHistoryCursor < 1"
-          >
-            <nb-icon
-              icon="chevron-up-outline"
-              pack="nebular-essentials"
-            ></nb-icon>
-          </button>
-          <button
-            type="button"
-            nbButton
-            ghost
-            size="medium"
-            [nbTooltip]="'playground.playground.moveForwardInHistoryTooltip' | transloco"
-            class="index-change-button"
-            (click)="messageHistoryMove(true)"
-            [disabled]="messagesHistory.length < 2 || messagesHistoryCursor === messagesHistory.length - 1"
-          >
-            <nb-icon
-              icon="chevron-down-outline"
-              pack="nebular-essentials"
-            ></nb-icon>
-          </button>
-        </div>
-        }
       </div>
     </nb-card-body>
     @if (testQueryInProgress || messages.length) {
@@ -194,6 +212,11 @@
           <span class="response-timer ml-2 pl-1">
             <nb-icon icon="clock"></nb-icon>
             {{ message.responseTime / 1000 | number: '1.2-2' }}s
+            @if (message.ttft !== undefined && message.ttft !== null) {
+            <span [nbTooltip]="'playground.playground.ttftTooltip' | transloco">
+              &nbsp;· {{ 'playground.playground.ttftLabel' | transloco }} {{ message.ttft | number: '1.2-2' }}s
+            </span>
+            }
           </span>
           }
           <tock-chat-ui-message

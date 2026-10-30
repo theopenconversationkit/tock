@@ -97,6 +97,47 @@ class RestConnector(
                         ),
                     )
                 }
+
+                // Streaming endpoint for SSE responses
+                router.post("$path/:locale/stream").blocking { context ->
+                    if (!requestFilter.accept(context.request())) {
+                        context.response().setStatusCode(403).end()
+                        return@blocking
+                    }
+                    val message: MessageRequest = mapper.readValue(context.body().asString())
+                    val action = transformMessage(message)
+                    val locale = Locale.forLanguageTag(context.pathParam("locale"))
+                    action.state.sourceConnectorType = message.connectorType
+                    action.state.targetConnectorType = message.targetConnectorType
+                    action.metadata.debugEnabled = message.debugEnabled
+                    action.metadata.sourceWithContent = message.sourceWithContent
+                    action.metadata.streamedResponse = true
+
+                    // Configure response for Server-Sent Events.
+                    // setChunked(true) is required so each write() is flushed to the socket
+                    // immediately instead of being buffered until end() (progressive streaming).
+                    context
+                        .response()
+                        .setChunked(true)
+                        .putHeader("Content-Type", "text/event-stream")
+                        .putHeader("Cache-Control", "no-cache")
+                        .putHeader("Connection", "keep-alive")
+
+                    controller.handle(
+                        action,
+                        ConnectorData(
+                            RestConnectorCallback(
+                                applicationId,
+                                message.targetConnectorType,
+                                context,
+                                if (message.test) controller.botDefinition.testBehaviour else null,
+                                locale,
+                                action,
+                                streaming = true,
+                            ),
+                        ),
+                    )
+                }
             }
         }
     }

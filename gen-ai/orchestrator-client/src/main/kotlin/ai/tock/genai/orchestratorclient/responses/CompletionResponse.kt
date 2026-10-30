@@ -19,4 +19,5 @@ package ai.tock.genai.orchestratorclient.responses
 data class CompletionResponse(
     val answer: String,
     val observabilityInfo: ObservabilityInfo? = null,
+    val ttft: Double? = null,
 )
