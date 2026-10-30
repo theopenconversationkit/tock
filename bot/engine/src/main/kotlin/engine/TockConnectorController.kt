@@ -75,6 +75,11 @@ internal class TockConnectorController(
         private val parseAudioFileEnabled = booleanProperty("tock_bot_audio_nlp_enabled", true)
         private val audioNlpFileLimit = intProperty("tock_bot_audio_nlp_max_size", 1024 * 1024)
 
+        // Per-turn locks are held very briefly and at high frequency; renewing their lease here
+        // caused the lock to not be released under load (see #2119), so this is disabled by default,
+        // unlike other (potentially long-running) UserLock callers.
+        private val renewUserTurnLockLease = booleanProperty("tock_bot_user_turn_lock_renew_lease", false)
+
         internal fun register(
             connector: Connector,
             bot: Bot,
@@ -180,10 +185,14 @@ internal class TockConnectorController(
         try {
             logger.debug { "try to lock $playerId" }
             // Not aborting on lock loss to preserve old behavior
+            // Per-turn locks are held very briefly and at high frequency; renewing their lease here
+            // caused the lock to not be released under load (see #2119), so this call site opts out
+            // of renewal by default rather than disabling it for every other (potentially long-running) caller.
             userLock.withLock(
                 userId = id,
                 postLockRelease = { callback.userLockReleased(action) },
                 abortOnLockLoss = false,
+                renewLease = renewUserTurnLockLease,
             ) {
                 try {
                     callback.userLocked(action)

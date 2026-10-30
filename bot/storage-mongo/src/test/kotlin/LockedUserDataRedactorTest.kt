@@ -43,8 +43,8 @@ class LockedUserDataRedactorTest {
     @BeforeEach
     fun setup() {
         // executes op() directly, as if the lock was instantly acquired
-        coEvery { userLock.withLock(any(), any(), postLockRelease = any(), op = any<suspend () -> Any?>()) } coAnswers {
-            arg<suspend () -> Any?>(3).invoke()
+        coEvery { userLock.withLock(any(), any(), renewLease = any(), postLockRelease = any(), op = any<suspend () -> Any?>()) } coAnswers {
+            arg<suspend () -> Any?>(4).invoke()
         }
     }
 
@@ -57,8 +57,8 @@ class LockedUserDataRedactorTest {
 
         assertEquals(expected, result)
         coVerifyOrder {
-            userLock.withLock<RedactionResult>(newUserId, any(), any(), any())
-            userLock.withLock<RedactionResult>(oldUserId, any(), any(), any())
+            userLock.withLock<RedactionResult>(newUserId, any(), any(), any(), any())
+            userLock.withLock<RedactionResult>(oldUserId, any(), any(), any(), any())
             delegate.migrateUserId(namespace, oldUserId, newUserId)
         }
     }
@@ -72,8 +72,8 @@ class LockedUserDataRedactorTest {
 
         assertEquals(expected, result)
         coVerifyOrder {
-            userLock.withLock<RedactionResult>("a-user", any(), any(), any())
-            userLock.withLock<RedactionResult>("z-user", any(), any(), any())
+            userLock.withLock<RedactionResult>("a-user", any(), any(), any(), any())
+            userLock.withLock<RedactionResult>("z-user", any(), any(), any(), any())
             delegate.migrateUserId(namespace, "z-user", "a-user")
         }
     }
@@ -83,7 +83,7 @@ class LockedUserDataRedactorTest {
         val result = runBlocking { redactor.migrateUserId(namespace, userId, userId) }
 
         assertEquals(RedactionResult(emptyMap()), result)
-        coVerify(exactly = 0) { userLock.withLock<RedactionResult>(any(), any(), any(), any()) }
+        coVerify(exactly = 0) { userLock.withLock<RedactionResult>(any(), any(), any(), any(), any()) }
         coVerify(exactly = 0) { delegate.migrateUserId(any(), any(), any()) }
     }
 
@@ -95,7 +95,7 @@ class LockedUserDataRedactorTest {
         val result = runBlocking { redactor.deleteByUserId(namespace, userId) }
 
         assertEquals(expected, result)
-        coVerify { userLock.withLock<RedactionResult>(userId, any(), any(), any()) }
+        coVerify { userLock.withLock<RedactionResult>(userId, any(), any(), any(), any()) }
         coVerify { delegate.deleteByUserId(namespace, userId) }
     }
 
@@ -114,7 +114,7 @@ class LockedUserDataRedactorTest {
     @Test
     fun `a lost lock propagates as LockLostException, not swallowed`() {
         coEvery {
-            userLock.withLock(userId, any(), any(), any<suspend () -> Any?>())
+            userLock.withLock(userId, any(), any(), any(), any<suspend () -> Any?>())
         } throws LockLostException("lock for user $userId expired while op() was running")
 
         assertFailsWith<LockLostException> {
