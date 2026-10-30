@@ -218,7 +218,7 @@ class BotDashboardServiceTest {
         val evaluationDAO = mockk<EvaluationSampleDAO>(relaxed = true)
         val knowledgeBaseDAO = mockk<KnowledgeBaseDAO>(relaxed = true)
         val lock = mockk<UserLock>()
-        coEvery { lock.withLock<Unit>(any(), any(), any(), any()) } coAnswers { arg<suspend () -> Unit>(3).invoke() }
+        coEvery { lock.withLock<Unit>(any(), any(), any(), any(), any()) } coAnswers { arg<suspend () -> Unit>(4).invoke() }
         val secret = RawSecretKey("test-secret")
         val config = BotVectorStoreConfiguration(newId(), "ns", "bot", true, PGVectorStoreSetting("localhost", 5432, "user", secret, "db"))
         tockInternalInjector = KodeinInjector()

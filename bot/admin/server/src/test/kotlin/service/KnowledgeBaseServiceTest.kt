@@ -78,6 +78,7 @@ class KnowledgeBaseServiceTest {
             override suspend fun <T> withLock(
                 userId: String,
                 abortOnLockLoss: Boolean,
+                renewLease: Boolean,
                 postLockRelease: (() -> Unit)?,
                 op: suspend () -> T,
             ): T {
