@@ -27,6 +27,23 @@ export interface VectorStoreCapabilities {
   notes: string[];
 }
 
+/**
+ * The bot's effective retrieval settings, used to pre-fill the form and to flag
+ * what the user changed. The compressor endpoint is never exposed by the API.
+ */
+export interface RetrievalSettings {
+  /** Whether the runtime applies this RAG configuration at all (it only loads an enabled one). */
+  ragEnabled: boolean;
+  searchType: DocumentSearchType;
+  maxDocumentsRetrieved: number;
+  compressionEnabled: boolean;
+  minScore: number | null;
+  maxDocuments: number | null;
+  fillToMaxDocuments: boolean | null;
+  provider: string | null;
+  model: string | null;
+}
+
 // ---------------------------------------------------------------------------
 // Index listing
 // ---------------------------------------------------------------------------
@@ -136,17 +153,6 @@ export interface CondenseResponse {
 // ---------------------------------------------------------------------------
 
 /**
- * Where the compression stage sits relative to the top-k cut.
- *
- * `afterCut` mirrors the runtime, where the compressor wraps an
- * already-truncated retriever and can therefore only remove documents.
- * `beforeCut` lets the reranker sort the whole fetched window, which is what it
- * would do if the runtime dissociated fetchK from k. The UI labels the latter
- * as not matching production.
- */
-export type CompressionStage = 'afterCut' | 'beforeCut';
-
-/**
  * Compressor thresholds as overridden for a single diagnostic run.
  *
  * Not a duplicate of CompressorSetting: that one describes the bot's stored
@@ -167,15 +173,23 @@ export interface CompressionOverride {
 // Search / diagnostic
 // ---------------------------------------------------------------------------
 
-export type FunnelStageStatus = 'applied' | 'skipped' | 'disabled' | 'failed_fallback';
+/**
+ * `failed_fallback`: the compressor fell back as it would at runtime (chunks still passed on).
+ * `failed`: the stage raised outside that fault tolerance; the runtime would fail the request.
+ */
+export type FunnelStageStatus = 'applied' | 'skipped' | 'disabled' | 'failed_fallback' | 'failed';
 
 export interface FunnelStage {
   status: FunnelStageStatus;
   count: number | null;
-  /** Populated notably on failed_fallback */
+  /** Machine-readable cause, notably on failed_fallback (bad_response, exception, query_too_long) */
   reason?: string | null;
+  /** Free-text detail behind the reason (error message), shown as a tooltip */
+  detail?: string | null;
   /** topKCut only */
   discarded?: number;
+  /** Wall-clock duration in seconds (compression stage only) */
+  duration?: number | null;
 }
 
 export interface SearchFunnel {
@@ -201,13 +215,37 @@ export interface ChannelScores {
 }
 
 /**
- * The middle three only occur when compression ran.
+ * below_min_score, reranked_out, filled_below_threshold and cut_by_fallback
+ * only occur when compression ran.
  *
  * `filled_below_threshold` deserves distinct treatment in the UI: such a chunk
  * survived despite an insufficient score, courtesy of fill_to_max_documents,
  * which is not the same as being kept on merit.
+ *
+ * `cut_by_fallback`: the compressor fell back and returned the first
+ * max_documents chunks in retrieval order, unscored; this chunk was past them.
+ *
+ * `compression_failed`: compression failed outright; the runtime would not
+ * answer, so no chunk is passed on.
  */
-export type ChunkOutcome = 'kept' | 'cut_by_top_k' | 'below_min_score' | 'reranked_out' | 'filled_below_threshold' | 'not_retrieved';
+export type ChunkOutcome =
+  | 'kept'
+  | 'cut_by_top_k'
+  | 'below_min_score'
+  | 'reranked_out'
+  | 'filled_below_threshold'
+  | 'cut_by_fallback'
+  | 'compression_failed'
+  | 'not_retrieved';
+
+/**
+ * Whether a chunk with this outcome reaches the answering model. Padded chunks
+ * (filled_below_threshold) do, even though they did not make the threshold:
+ * every count of "chunks handed to the model" must go through this.
+ */
+export function isPassedOn(outcome: ChunkOutcome): boolean {
+  return outcome === 'kept' || outcome === 'filled_below_threshold';
+}
 
 export interface SearchResultChunk {
   chunkId: ChunkId;
@@ -219,6 +257,8 @@ export interface SearchResultChunk {
   scores: ChannelScores;
   outcome: ChunkOutcome;
   pinned: boolean;
+  /** Number of windows an oversized chunk was split into and scored across. */
+  rerankerWindows?: number | null;
   metadata?: Record<string, unknown>;
 }
 
@@ -231,13 +271,10 @@ export interface SearchRequest {
   query: string;
   /** Required for FULL_TEXT_SEARCH and HYBRID_SEARCH */
   keyWords?: string[];
-  /** Candidates pulled from the store */
-  fetchK: number;
-  /** Survivors after the cut */
+  /** Max documents retrieved per channel, and the top-k cut before compression */
   k: number;
   /** False disables the compression stage entirely */
   compressionEnabled: boolean;
-  compressionStage: CompressionStage;
   compressionOverride?: CompressionOverride;
   pinnedChunkIds?: ChunkId[];
   pinnedRankStrategy?: PinnedRankStrategy;
@@ -245,7 +282,6 @@ export interface SearchRequest {
 
 export interface SearchResponse {
   funnel: SearchFunnel;
-  compressionStage: CompressionStage;
   results: SearchResultChunk[];
   duration: number;
 }
@@ -264,16 +300,22 @@ export interface SearchRun {
 }
 
 /** Which parameters differ between the reference run and the current one. */
-export type RunDiffField = 'index' | 'searchType' | 'query' | 'keyWords' | 'fetchK' | 'k' | 'compression';
+export type RunDiffField = 'index' | 'searchType' | 'query' | 'keyWords' | 'k' | 'compression';
 
 /**
  * Why a chunk present in the reference run is missing from the current one.
  * An ingestion problem must only be reported when the current index was
  * explicitly checked. Otherwise the cause remains unknown.
  */
-export type AbsenceReason = 'absent_from_index' | 'outside_fetch_k' | 'unknown';
+export type AbsenceReason = 'absent_from_index' | 'outside_k' | 'unknown';
 
 export type RunDelta = 'gained' | 'lost' | 'moved' | 'stable';
+
+/**
+ * Change in whether the chunk reaches the answering model, independent of its
+ * retrieval rank: a threshold change moves no rank but can flip this.
+ */
+export type PassedOnChange = 'now_passed_on' | 'no_longer_passed_on';
 
 export interface RunComparisonRow {
   chunkId: ChunkId;
@@ -286,6 +328,11 @@ export interface RunComparisonRow {
   magnitude: number;
   /** Only set when delta is 'lost' */
   absenceReason?: AbsenceReason;
+  /** Handed to the answering model in each run */
+  passedOnReference: boolean;
+  passedOnCurrent: boolean;
+  /** Set when the chunk reaches the model in one run and not in the other */
+  passedOnChange?: PassedOnChange;
   pinned: boolean;
 }
 
@@ -295,7 +342,11 @@ export interface RunComparison {
   /** Named in the banner; the more entries, the less interpretable the delta */
   changedFields: RunDiffField[];
   rows: RunComparisonRow[];
+  /** Chunks handed to the answering model in both runs */
   commonInTopK: number;
   lost: number;
   gained: number;
+  /** Chunks now handed to the model that were not in the reference, and the reverse */
+  nowPassedOn: number;
+  noLongerPassedOn: number;
 }

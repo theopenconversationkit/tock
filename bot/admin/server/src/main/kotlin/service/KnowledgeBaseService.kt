@@ -598,14 +598,12 @@ class KnowledgeBaseService(
             checkNotNull(
                 VectorStoreInspectionAdminService.search(
                     VectorStoreInspectionSearchRequestDTO(
-                        target.indexName,
-                        mode,
-                        condensed.condensedQuestion,
-                        condensed.keyWords,
-                        k,
-                        k,
-                        false,
-                        "afterCut",
+                        indexName = target.indexName,
+                        searchType = mode,
+                        query = condensed.condensedQuestion,
+                        keyWords = condensed.keyWords,
+                        k = k,
+                        compressionEnabled = false,
                         pinnedChunkIds = request.entryId?.let { listOf("$it:1/1") }.orEmpty(),
                         pinnedRankStrategy = "truncated",
                     ),

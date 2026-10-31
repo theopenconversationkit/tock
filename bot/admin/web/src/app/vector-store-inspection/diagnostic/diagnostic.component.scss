@@ -30,11 +30,6 @@
   align-items: center;
 }
 
-.k-field {
-  width: 7rem;
-  flex: 0 0 auto;
-}
-
 .funnel-grid {
   display: flex;
   flex-wrap: wrap;
@@ -86,4 +81,43 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.score-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.score-row {
+  .score-bar-track {
+    position: relative;
+    height: 0.75rem;
+    background: var(--background-basic-color-3);
+    border-radius: 0.25rem;
+    overflow: hidden;
+  }
+
+  .score-bar {
+    height: 100%;
+    background: var(--color-success-default);
+
+    &.below {
+      background: var(--color-basic-500);
+    }
+  }
+
+  .score-threshold {
+    position: absolute;
+    top: -0.1rem;
+    bottom: -0.1rem;
+    width: 2px;
+    background: var(--color-warning-default);
+  }
+
+  .score-value {
+    min-width: 2.5rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
 }

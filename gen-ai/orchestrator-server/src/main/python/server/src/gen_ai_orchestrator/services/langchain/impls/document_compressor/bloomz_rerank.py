@@ -25,6 +25,9 @@ from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compress
     GenAIDocumentCompressorUnknownLabelException,
 )
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
+from gen_ai_orchestrator.services.langchain.impls.document_compressor.rerank_selection import (
+    select_reranked_documents,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +69,10 @@ class BloomzRerank(BaseDocumentCompressor):
         Returns:
             A sequence of compressed documents.
         """
+        # Reset the fallback marker so a previous call's fallback is never read
+        # as this call's (the compressor instance is reused).
+        self.last_fallback_info = None
+
         if len(documents) == 0:  # to avoid empty api call
             return []
 
@@ -170,30 +177,9 @@ class BloomzRerank(BaseDocumentCompressor):
                 logger.error(f"[Compressor] Error processing result: {exc}")
                 continue
 
-        scored_docs = sorted(
+        return select_reranked_documents(
             scored_docs,
-            key=lambda d: d.metadata.get('reranker_score', 0),
-            reverse=True,
+            min_score=self.min_score,
+            max_documents=self.max_documents,
+            fill_to_max_documents=self.fill_to_max_documents,
         )
-
-        above_threshold = [
-            d
-            for d in scored_docs
-            if d.metadata.get('reranker_score', 0) >= self.min_score
-        ]
-
-        below_threshold = [
-            d
-            for d in scored_docs
-            if d.metadata.get('reranker_score', 0) < self.min_score
-        ]
-
-        # base result
-        result = above_threshold[: self.max_documents]
-
-        # fill-to-K
-        if self.fill_to_max_documents and len(result) < self.max_documents:
-            remaining_slots = self.max_documents - len(result)
-            result.extend(below_threshold[:remaining_slots])
-
-        return result

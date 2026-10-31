@@ -23,6 +23,9 @@ from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compress
     GenAIDocumentCompressorErrorException,
 )
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
+from gen_ai_orchestrator.services.langchain.impls.document_compressor.rerank_selection import (
+    select_reranked_documents,
+)
 from gen_ai_orchestrator.services.langchain.impls.document_compressor.rerank_windowing import (
     make_windows,
 )
@@ -186,34 +189,25 @@ class VllmRerank(BaseDocumentCompressor):
             if parent not in best_scores or score > best_scores[parent]:
                 best_scores[parent] = score
 
+        # Hand the scored documents over in input (retrieval) order, not in the
+        # order of the provider's response: the selection's stable sort then
+        # breaks score ties by retrieval rank, deterministically, and the studio
+        # diagnostic reproduces it when it recomputes thresholds client-side.
         scored_docs = []
-        for parent, score in best_scores.items():
+        for parent in sorted(best_scores):
+            score = best_scores[parent]
             doc = documents[parent]
             doc.metadata['reranker_score'] = score
             if window_counts[parent] > 1:
                 doc.metadata['reranker_windows'] = window_counts[parent]
             scored_docs.append(doc)
 
-        scored_docs = sorted(
+        return select_reranked_documents(
             scored_docs,
-            key=lambda d: d.metadata.get('reranker_score', 0),
-            reverse=True,
+            min_score=self.min_score,
+            max_documents=self.max_documents,
+            fill_to_max_documents=self.fill_to_max_documents,
         )
-
-        above_threshold = [
-            d for d in scored_docs if d.metadata.get('reranker_score', 0) >= self.min_score
-        ]
-        below_threshold = [
-            d for d in scored_docs if d.metadata.get('reranker_score', 0) < self.min_score
-        ]
-
-        result = above_threshold[: self.max_documents]
-
-        if self.fill_to_max_documents and len(result) < self.max_documents:
-            remaining_slots = self.max_documents - len(result)
-            result.extend(below_threshold[:remaining_slots])
-
-        return result
 
     def _build_windows(
         self, documents: Sequence[Document], budget: int

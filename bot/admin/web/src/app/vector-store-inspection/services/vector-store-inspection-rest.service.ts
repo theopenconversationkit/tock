@@ -3,13 +3,13 @@ import { Observable } from 'rxjs';
 
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
-import { CompressorSettings } from '../../configuration/compressor-settings/models/compressor-settings';
 import {
   CondenseRequest,
   CondenseResponse,
   DocumentsRequest,
   DocumentsResponse,
   IndexListResponse,
+  RetrievalSettings,
   SearchRequest,
   SearchResponse,
   VectorStoreCapabilities
@@ -73,13 +73,12 @@ export class VectorStoreInspectionRestService extends VectorStoreInspectionServi
     return this.rest.post<SearchRequest, SearchResponse>(this.baseUrl('/search'), request, (response: SearchResponse) => response);
   }
 
-  getCompressorSettings(): Observable<CompressorSettings | null> {
-    // Existing route, reused as-is. Returns null when no compressor is
-    // configured for the bot; the admin route answers an empty body, which the
-    // parser maps to null rather than an empty object.
-    return this.rest.get<CompressorSettings | null>(
-      `/gen-ai/bots/${this.botId}/configuration/document-compressor`,
-      (settings: CompressorSettings) => (settings && Object.keys(settings).length ? settings : null)
+  getRetrievalSettings(): Observable<RetrievalSettings | null> {
+    // The bot's effective retrieval settings (search type, max documents
+    // retrieved, compressor state). Resolved server side; the compressor
+    // endpoint is never part of the payload. Null when no RAG config exists.
+    return this.rest.get<RetrievalSettings | null>(this.baseUrl('/retrieval-settings'), (settings: RetrievalSettings) =>
+      settings && Object.keys(settings).length ? settings : null
     );
   }
 }

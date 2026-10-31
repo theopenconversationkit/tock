@@ -98,9 +98,9 @@ Le `chunk_id` est construit par `get_chunk_identifier()` sous la forme `{id}:{ch
 
 Le filtre textuel de l'écran d'exploration ne peut pas rendre ce service : c'est un `ILIKE` sur titre et contenu, de la navigation, pas une recherche sémantique.
 
-En complément, une action « ouvrir dans le diagnostic » passe le `chunk_id` en paramètre de route ; le diagnostic l'épingle à l'initialisation et l'utilisateur y accède à l'analyse fine, variation de `k` et de `fetchK`, modes de recherche, compression, comparaison d'exécutions. Le test intégré donne la réponse immédiate, le diagnostic l'investigation.
+En complément, une action « ouvrir dans le diagnostic » passe le `chunk_id` en paramètre de route ; le diagnostic l'épingle à l'initialisation et l'utilisateur y accède à l'analyse fine, variation de `k` et des seuils du compresseur, comparaison d'exécutions. Le test intégré donne la réponse immédiate, le diagnostic l'investigation.
 
-Deux réserves à connaître. Le test suppose un index : en mode autonome non encore amorcé, l'action est désactivée avec un message explicite. Et tant que la régression RAG v3 sur `compressor_setting` n'est pas corrigée, l'outil d'inspection reflète le comportement **attendu** de la compression et non le runtime réel, écart qu'il faut signaler plutôt que laisser découvrir en recette.
+Une réserve à connaître : le test suppose un index. En mode autonome non encore amorcé, l'action est désactivée avec un message explicite.
 
 ### 3.5 Import et export
 

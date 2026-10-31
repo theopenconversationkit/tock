@@ -22,10 +22,8 @@ function run(indexName: string, results: SearchResultChunk[], pinnedChunkIds: st
       indexName,
       searchType: DocumentSearchType.SIMILARITY_SEARCH,
       query: 'query',
-      fetchK: 10,
       k: 4,
       compressionEnabled: false,
-      compressionStage: 'beforeCut',
       pinnedChunkIds
     } as SearchRequest,
     response: { results } as SearchResponse,
@@ -52,6 +50,75 @@ describe('buildRunComparison', () => {
   it('reports a ranking issue when a pinned chunk exists outside the fetched window', () => {
     const comparison = buildRunComparison(reference, run('index-b', [chunk(null, 'not_retrieved')], ['document:1/1']));
 
-    expect(comparison.rows[0].absenceReason).toBe('outside_fetch_k');
+    expect(comparison.rows[0].absenceReason).toBe('outside_k');
+  });
+
+  it('reports a chunk that stops reaching the model on a threshold change, at the same rank', () => {
+    const before = run('index-a', [chunk(1, 'kept')]);
+    const after = run('index-a', [chunk(1, 'below_min_score')]);
+
+    const comparison = buildRunComparison(before, after);
+
+    expect(comparison.rows[0].delta).toBe('stable');
+    expect(comparison.rows[0].passedOnChange).toBe('no_longer_passed_on');
+    expect(comparison.noLongerPassedOn).toBe(1);
+    expect(comparison.nowPassedOn).toBe(0);
+    expect(comparison.commonInTopK).toBe(0);
+  });
+
+  it('counts padded chunks as passed on to the model', () => {
+    const before = run('index-a', [chunk(1, 'filled_below_threshold')]);
+    const after = run('index-a', [chunk(1, 'kept')]);
+
+    const comparison = buildRunComparison(before, after);
+
+    expect(comparison.rows[0].passedOnChange).toBeUndefined();
+    expect(comparison.commonInTopK).toBe(1);
+  });
+
+  it('orders passed-on changes consistently whatever the comparison direction', () => {
+    const stable: SearchResultChunk = { ...chunk(1, 'kept'), chunkId: 'a:1/1' };
+    const moved: SearchResultChunk = { ...chunk(5, 'kept'), chunkId: 'b:1/1' };
+    const before = run('index-a', [stable, moved]);
+    const after = run('index-a', [
+      { ...stable, outcome: 'below_min_score' },
+      { ...moved, ranks: { ...moved.ranks, vector: 2 }, outcome: 'below_min_score' }
+    ]);
+
+    const forward = buildRunComparison(before, after).rows.map((row) => row.chunkId);
+    const reversedInput = buildRunComparison(
+      run('index-a', [moved, stable]),
+      run('index-a', [...after.response.results].reverse())
+    ).rows.map((row) => row.chunkId);
+
+    expect(forward).toEqual(reversedInput);
+  });
+
+  it('orders a mix of moved and stable passed-on changes the same way for every input permutation', () => {
+    const row = (id: string, rank: number, outcome: SearchResultChunk['outcome']): SearchResultChunk => ({
+      ...chunk(rank, outcome),
+      chunkId: id
+    });
+    // a: 2 -> 1 (moved 1), b: 10 -> 5 (moved 5), c: 3 -> 3 (stable); all stop being passed on.
+    const reference = [row('a', 2, 'kept'), row('b', 10, 'kept'), row('c', 3, 'kept')];
+    const current = [row('a', 1, 'below_min_score'), row('b', 5, 'below_min_score'), row('c', 3, 'below_min_score')];
+
+    const permutations = <T>(items: T[]): T[][] =>
+      items.length <= 1
+        ? [items]
+        : items.flatMap((item, i) => permutations([...items.slice(0, i), ...items.slice(i + 1)]).map((rest) => [item, ...rest]));
+
+    const orders = new Set<string>();
+    for (const ref of permutations(reference)) {
+      for (const cur of permutations(current)) {
+        orders.add(
+          buildRunComparison(run('index-a', ref), run('index-a', cur))
+            .rows.map((r) => r.chunkId)
+            .join(',')
+        );
+      }
+    }
+
+    expect([...orders]).toEqual(['b,a,c']);
   });
 });

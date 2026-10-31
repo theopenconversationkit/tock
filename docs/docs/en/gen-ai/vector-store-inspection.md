@@ -17,7 +17,8 @@ They are available in the _Gen AI_ menu:
 > (more details on roles in [security](../operate/security.md#roles)).
 >
 > The inspection is available for the [PGVector](providers/vector-store.md) provider. With OpenSearch, only the vector
-> search mode is available: full text and hybrid modes are not implemented for this provider.
+> search mode is available: full text and hybrid modes are not implemented for this provider, and the diagnostic uses
+> vector search whatever mode the bot is configured with (as the runtime does).
 
 ## Vector store exploration
 
@@ -35,27 +36,45 @@ even when no search channel returns them. The _Diagnose_ button opens the diagno
 
 ## Retrieval diagnostic
 
-The diagnostic screen follows the retrieval chain, from top to bottom:
+The diagnostic screen follows the runtime retrieval chain, from top to bottom:
 
 1. **Question**: the question as a user would ask it. It can be condensed (the condensed question and the keywords
    are filled by the condensing LLM, and can be edited). Condensation is not deterministic: the search uses the displayed
    values as they are, so a search can be replayed identically.
 2. **Retrieval**: the index, the search mode (_Vector_, _Full text_ or _Hybrid_; full text and hybrid modes require
-   keywords) and _fetch k_, the number of candidates pulled from the store.
-3. **Compression**: whether to apply the [document compressor](compressor.md), with its minimum score
-   and maximum number of documents. The default values are the ones configured for the bot.
-4. **Final context**: _k_, the number of chunks finally handed to the answering model.
+   keywords) and _Max documents retrieved_ (`k`): the number of chunks each channel returns, kept by the RRF fusion in
+   hybrid mode, and forming the pool handed to the compressor. The search mode is taken from the bot configuration and
+   shown read-only.
+3. **Compression**: whether to apply the [document compressor](compressor.md), with its minimum score and maximum
+   number of documents. That maximum is what sets how many chunks reach the answering model.
+4. **Run**: the warnings and the divergence banner, then the search.
 
-> In the runtime chain, _fetch k_ and _k_ are always equal. The diagnostic lets you set them independently
-> to see what a wider search would bring. A warning is displayed when the configuration differs from the production chain.
+> The form starts from the bot's actual retrieval settings, and the search waits until they are loaded; a banner lists any
+> setting you changed and offers to reset it to the bot's. A message warns when the bot has no RAG configuration, when its
+> RAG is disabled (the runtime then does not apply these settings), or when the settings could not be loaded (the form
+> then starts from defaults). The compressor runs on the retrieved documents, so its _maximum number of documents_ cannot exceed
+> _Max documents retrieved_. Changing the minimum score or the maximum number of documents is recomputed instantly in the
+> browser, without a new search: every candidate's reranker score is shown with the threshold marker, so the minimum can
+> be chosen by eye (the score scale depends on the reranker model).
+>
+> With the maximum number of documents equal to _Max documents retrieved_, no minimum score and no padding, the
+> compressor keeps every chunk and only reorders them: a message points it out.
+>
+> The reranker is called with the same timeout as in production: retrieving more documents increases the reranking time
+> and may trigger a fallback, as it would in production.
 
 ### Funnel and results
 
 The funnel shows each stage with its number of chunks: vector and full text channels (in hybrid mode), RRF fusion,
-compression, then the top-k cut.
+the top-k cut, then compression (with its duration). When the compressor fails, it falls back as in production: it
+passes on the first documents in retrieval order, unscored, up to its maximum number of documents. The stage is then
+shown as _failed, fell back_ with the reason (reranker error, failed call, or question too long for the reranker); the
+error message is available as a tooltip. If compression fails outside that fault tolerance (an invalid compressor
+configuration, for instance), the stage is shown as _failed_ and no chunk is passed on: in production, the request
+would fail. The thresholds cannot be retuned until a new search returns scores.
 
-The results table shows one chunk per line, with its rank and score for each channel (vector, full text, RRF, rerank)
-and its outcome:
+The results table shows one chunk per line, with its rank and score for each channel (vector, full text, RRF, rerank),
+the number of windows an oversized chunk was scored across, and its outcome:
 
 | Outcome          | Meaning                                                                         |
 |------------------|---------------------------------------------------------------------------------|
@@ -64,15 +83,19 @@ and its outcome:
 | below threshold  | Reached the compressor but scored below the minimum                             |
 | ranked out       | Above the threshold, but ranked past the maximum number of documents           |
 | padded in        | Scored below the threshold, but pulled back to fill the document count          |
+| cut by fallback  | Compressor fell back: past the first documents passed on unscored               |
+| not passed on    | Compression failed: in production, no chunk would be passed on                  |
 | absent           | Returned by no search channel at all                                            |
 
 ### Comparing searches
 
 _Set as reference_ freezes a search as the baseline for the next ones. The following searches are then compared with it:
-the parameters that changed (index, search mode, question, keywords, fetch k, k, compression) and the chunks that
-were lost, gained or moved. Two kinds of absence are distinguished:
+the parameters that changed (index, search mode, question, keywords, max documents retrieved, compression — including the
+minimum score and maximum number of documents), the chunks that were lost, gained or moved, and those now passed on to
+the model or no longer passed on. A client-side threshold change produces a new comparable search without a backend call:
+it moves no rank, but changes which chunks are passed on. Two kinds of absence are distinguished:
 
 * _absent from index_: the two searches target different indexes and the chunk does not exist in the current one (an ingestion problem),
-* _outside top fetch k_: the chunk still exists, but no longer surfaces within the fetched window (a ranking problem).
+* _outside top k_: the chunk still exists, but no longer surfaces within the retrieved window (a ranking problem).
 
 Comparisons are computed in the browser and are not saved.

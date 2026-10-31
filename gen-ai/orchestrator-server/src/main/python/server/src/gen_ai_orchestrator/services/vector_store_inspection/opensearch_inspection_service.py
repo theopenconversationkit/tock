@@ -20,9 +20,6 @@ import time
 from fastapi import HTTPException
 from langchain_core.documents import Document
 
-from gen_ai_orchestrator.routers.requests.vector_store_inspection_requests import (
-    CompressionStage,
-)
 from gen_ai_orchestrator.routers.responses.vector_store_inspection_responses import (
     ChunkOutcome,
     FunnelStage,
@@ -106,7 +103,7 @@ async def search(request, factory):
     if request.search_type != DocumentSearchType.SIMILARITY_SEARCH:
         raise HTTPException(400, 'OpenSearch supports similarity search only')
     store = factory.get_vector_store()
-    rows = await store.asimilarity_search_with_score(request.query, k=request.fetch_k)
+    rows = await store.asimilarity_search_with_score(request.query, k=request.k)
     candidates = []
     for rank, (doc, score) in enumerate(rows, start=1):
         candidates.append(
@@ -120,20 +117,17 @@ async def search(request, factory):
     cut_count = len(cut)
     discarded = max(0, len(candidates) - cut_count)
     if request.compression_enabled:
-        compressed_ids, compressed_outcomes, scores, compression = await _compress(
-            request,
-            cut
-            if request.compression_stage == CompressionStage.AFTER_CUT
-            else candidates,
-        )
+        (
+            _compressed_ids,
+            compressed_outcomes,
+            scores,
+            windows,
+            compression,
+        ) = await _compress(request, cut)
         outcomes.update(compressed_outcomes)
-        if request.compression_stage == CompressionStage.BEFORE_CUT:
-            cut_count = min(len(compressed_ids), request.k)
-            discarded = max(0, len(compressed_ids) - request.k)
-            for chunk_id in compressed_ids[request.k :]:
-                outcomes[chunk_id] = ChunkOutcome.CUT_BY_TOP_K
         for candidate in candidates:
             candidate.scores['compressor'] = scores.get(candidate.chunk_id)
+            candidate.reranker_windows = windows.get(candidate.chunk_id)
     else:
         outcomes.update({c.chunk_id: ChunkOutcome.KEPT for c in cut})
     pins = set(request.pinned_chunk_ids)
@@ -204,7 +198,6 @@ async def search(request, factory):
             ),
             compression=compression,
         ),
-        compression_stage=request.compression_stage,
         results=results,
         duration=time.perf_counter() - started,
     )

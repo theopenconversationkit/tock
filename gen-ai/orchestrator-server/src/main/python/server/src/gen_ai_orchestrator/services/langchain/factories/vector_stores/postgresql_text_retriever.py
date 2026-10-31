@@ -48,8 +48,21 @@ class _MetadataFilterBuilder(PGVector):
         return self._create_filter_clause(metadata_filter)
 
 
+# Metadata key holding the FTS channel score (ts_rank). Distinct from the vector
+# one (pgvector_factory.VECTOR_SCORE_METADATA_KEY) so both survive the RRF
+# metadata merge of a document found by the two channels.
+FTS_SCORE_METADATA_KEY = 'fts_score'
+
+
 def build_docs(rows) -> list[Document]:
-    docs = [Document(page_content=row.document, metadata=row.cmetadata) for row in rows]
+    docs = []
+    for row in rows:
+        metadata = dict(row.cmetadata or {})
+        # Keep the ts_rank score the query already computes, read back by the
+        # vector store inspection as the FTS channel score. It reaches neither
+        # the LLM context, RAGDocumentMetadata nor the footnotes.
+        metadata[FTS_SCORE_METADATA_KEY] = float(row.score)
+        docs.append(Document(page_content=row.document, metadata=metadata))
 
     return docs
 
