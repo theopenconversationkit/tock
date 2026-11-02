@@ -18,7 +18,9 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.engine.user.LockLostException
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -118,7 +120,7 @@ class MongoUserLockTest : AbstractTest() {
             assertEquals(initialDate, assertNotNull(currentLock()).date)
 
             // the lease has expired: another owner takes over
-            delay(2200.milliseconds)
+            delay(3000.milliseconds)
             assertTrue(MongoUserLock.tryLock(userId))
 
             assertFailsWith<LockLostException> { result.await().getOrThrow() }
@@ -139,7 +141,7 @@ class MongoUserLockTest : AbstractTest() {
                         "done"
                     }
                 }
-            delay(5200.milliseconds)
+            delay(6.seconds)
             assertTrue(MongoUserLock.tryLock(userId))
 
             assertEquals("done", result.await())
@@ -189,6 +191,24 @@ class MongoUserLockTest : AbstractTest() {
             } finally {
                 result.cancel()
             }
+        }
+    }
+
+    @Test
+    fun `GIVEN a running op WHEN the caller is cancelled THEN the lock is released immediately`() {
+        runBlocking {
+            var released = false
+            val job =
+                launch {
+                    MongoUserLock.withLock(userId, postLockRelease = { released = true }) {
+                        delay(20.seconds)
+                    }
+                }
+            delay(500.milliseconds)
+            job.cancelAndJoin()
+
+            assertTrue(released)
+            assertTrue(MongoUserLock.tryLock(userId), "the lock should have been released")
         }
     }
 }
