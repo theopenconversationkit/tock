@@ -43,7 +43,7 @@ class LockedUserDataRedactorTest {
     @BeforeEach
     fun setup() {
         // executes op() directly, as if the lock was instantly acquired
-        coEvery { userLock.withLock(any(), any(), renewLease = any(), postLockRelease = any(), op = any<suspend () -> Any?>()) } coAnswers {
+        coEvery { userLock.withLock(any(), any(), maxLeaseRenewal = any(), postLockRelease = any(), op = any<suspend () -> Any?>()) } coAnswers {
             arg<suspend () -> Any?>(4).invoke()
         }
     }

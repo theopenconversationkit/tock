@@ -41,6 +41,7 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
+import ai.tock.shared.longProperty
 import ai.tock.shared.provide
 import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
@@ -53,6 +54,7 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.net.URI
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.time.Duration.Companion.milliseconds
 
 @Deprecated("Use coroutine stories to perform asynchronous operations")
 private val synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
@@ -100,9 +102,10 @@ internal class TockConnectorController(
             }
         }
 
-        // Full-turn processing can outlast the lease duration, so renewal is enabled by default.
-        // Disable it only when the entire protected operation is bounded below the lease duration.
-        private val renewUserTurnLockLease = booleanProperty("tock_bot_user_turn_lock_renew_lease", true)
+        // The user lock lease is renewed while a turn is being processed (a turn can take longer than the lease,
+        // e.g. with LLM calls), but only up to this duration, so that a stuck turn cannot lock the user forever (see #2119).
+        private val userTurnLockMaxLeaseRenewal =
+            longProperty("tock_bot_user_turn_lock_max_lease_renewal_in_ms", 60_000).milliseconds
 
         internal fun register(
             connector: Connector,
@@ -227,14 +230,11 @@ internal class TockConnectorController(
         try {
             logger.debug { "try to lock $playerId" }
             // Not aborting on lock loss to preserve old behavior
-            // Per-turn locks are held very briefly and at high frequency; renewing their lease here
-            // caused the lock to not be released under load (see #2119), so this call site opts out
-            // of renewal by default rather than disabling it for every other (potentially long-running) caller.
             userLock.withLock(
                 userId = id,
                 postLockRelease = { callback.userLockReleased(action) },
                 abortOnLockLoss = false,
-                renewLease = renewUserTurnLockLease,
+                maxLeaseRenewal = userTurnLockMaxLeaseRenewal,
             ) {
                 try {
                     callback.userLocked(action)

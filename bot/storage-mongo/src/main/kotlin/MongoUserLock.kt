@@ -60,7 +60,9 @@ import java.time.Instant.now
 import java.util.UUID
 import java.util.concurrent.TimeUnit.HOURS
 import kotlin.random.Random
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.TimeSource
 
 /**
  *
@@ -230,8 +232,8 @@ internal object MongoUserLock : UserLock {
     /**
      * Checks, without touching the lease date, whether [lockId] still owns the lock for [userId].
      * Returns false if another owner has since taken over, meaning the caller no longer holds a
-     * valid lock. Used instead of [renewLock] when the caller opted out of lease renewal, so that
-     * ownership loss is still detected (and [abortOnLockLoss] still honored) even though the lease
+     * valid lock. Used instead of [renewLock] once the lease is no longer renewed, so that
+     * ownership loss is still detected (and abortOnLockLoss still honored) even though the lease
      * itself is left to expire on its own.
      */
     private suspend fun isStillOwner(
@@ -259,7 +261,7 @@ internal object MongoUserLock : UserLock {
     override suspend fun <T> withLock(
         userId: String,
         abortOnLockLoss: Boolean,
-        renewLease: Boolean,
+        maxLeaseRenewal: Duration,
         postLockRelease: (() -> Unit)?,
         op: suspend () -> T,
     ): T {
@@ -269,19 +271,19 @@ internal object MongoUserLock : UserLock {
         return try {
             coroutineScope {
                 val opJob = async { op() }
-                // Ownership is always monitored while op() runs, independently of renewLease: when true,
-                // each check also extends the lease (preventing long-running work from being pre-empted);
-                // when false, the lease is left to expire on its own but loss of ownership is still detected,
-                // so abortOnLockLoss keeps being honored either way.
+                // Ownership is monitored for as long as op() runs. The lease is renewed during at most
+                // maxLeaseRenewal, then left to expire on its own, so that a stuck op() cannot hold the lock
+                // forever (see #2119). Loss of ownership is detected either way, so abortOnLockLoss is always honored.
                 val heartbeatJob =
                     launch {
-                        monitorLockOwnership(userId, lockId, abortOnLockLoss, renewLease, opJob)
+                        monitorLockOwnership(userId, lockId, abortOnLockLoss, maxLeaseRenewal, opJob)
                     }
                 try {
                     opJob.await()
                 } catch (e: CancellationException) {
                     // unwrap our own LockLostException, leave other cancellation causes as-is
-                    throw e.cause as? LockLostException ?: e
+                    // (the whole cause chain is searched, as coroutine stack trace recovery may wrap the exception)
+                    throw generateSequence<Throwable>(e) { it.cause }.filterIsInstance<LockLostException>().firstOrNull() ?: e
                 } finally {
                     heartbeatJob.cancel()
                 }
@@ -296,12 +298,21 @@ internal object MongoUserLock : UserLock {
         userId: String,
         lockId: UUID,
         abortOnLockLoss: Boolean,
-        renewLease: Boolean,
+        maxLeaseRenewal: Duration,
         opJob: Deferred<T>,
     ) {
+        val renewalDeadline = if (maxLeaseRenewal.isInfinite()) null else TimeSource.Monotonic.markNow() + maxLeaseRenewal
+        var renewalStopped = false
         while (isActive) {
             delay(lockHeartbeatInterval.milliseconds)
-            val stillOwned = if (renewLease) renewLock(userId, lockId) else isStillOwner(userId, lockId)
+            val renew = renewalDeadline?.hasNotPassedNow() ?: true
+            if (!renew && !renewalStopped) {
+                renewalStopped = true
+                if (maxLeaseRenewal.isPositive()) {
+                    logger.warn { "operation still running after $maxLeaseRenewal for user $userId - lock lease is no longer renewed" }
+                }
+            }
+            val stillOwned = if (renew) renewLock(userId, lockId) else isStillOwner(userId, lockId)
             if (!stillOwned) {
                 logger.warn { "lock for user $userId was taken over by another owner while running" }
                 if (abortOnLockLoss) {
