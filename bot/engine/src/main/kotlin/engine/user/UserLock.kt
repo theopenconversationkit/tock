@@ -46,27 +46,27 @@ interface UserLock {
      * Renewal stops once [op] has been running for [maxLeaseRenewal]: from then on the lease is left to
      * expire on its own, so that an [op] which never completes cannot hold the lock forever.
      *
-     * Ownership of the lock is checked at each renewal interval, whether the lease is renewed or not.
-     * If [abortOnLockLoss] is `true` and the lock is found to have been taken over by another owner
-     * (e.g. because the lease expired), [op] is aborted and this method throws [LockLostException];
-     * otherwise [op] keeps running despite the lost lock.
+     * If [abortOnLockLoss] is `true`, ownership of the lock is checked at each renewal interval (whether the
+     * lease is renewed or not), and if the lock is found to have been taken over by another owner
+     * (e.g. because the lease expired), [op] is aborted and this method throws [LockLostException].
+     * Otherwise [op] keeps running despite the lost lock.
      *
      * The lock is always released once [op] completes, is canceled, or throws
      * (unless it has been taken over by another owner in the meantime).
      *
      * @param userId the user for which to lease a lock
      * @param abortOnLockLoss if `true`, aborts [op] when the lock is found to have been lost prematurely
+     * @param postLockRelease optional listener to invoke after the lock is released (normally or after an exception)
      * @param maxLeaseRenewal the maximum duration during which the lease is renewed while [op] runs
      * ([Duration.INFINITE] by default, [Duration.ZERO] to never renew the lease)
-     * @param postLockRelease optional listener to invoke after the lock is released (normally or after an exception)
      * @throws LockAcquisitionException when the lock cannot be acquired after a configurable amount of attempts
      * @throws LockLostException if the lock is lost mid-operation
      */
     suspend fun <T> withLock(
         userId: String,
         abortOnLockLoss: Boolean = true,
-        maxLeaseRenewal: Duration = Duration.INFINITE,
         postLockRelease: (() -> Unit)? = null,
+        maxLeaseRenewal: Duration = Duration.INFINITE,
         op: suspend () -> T,
     ): T
 

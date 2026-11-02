@@ -79,8 +79,8 @@ class KnowledgeBaseServiceTest {
             override suspend fun <T> withLock(
                 userId: String,
                 abortOnLockLoss: Boolean,
-                maxLeaseRenewal: Duration,
                 postLockRelease: (() -> Unit)?,
+                maxLeaseRenewal: Duration,
                 op: suspend () -> T,
             ): T {
                 acquiredLocks.add(userId)

@@ -261,8 +261,8 @@ internal object MongoUserLock : UserLock {
     override suspend fun <T> withLock(
         userId: String,
         abortOnLockLoss: Boolean,
-        maxLeaseRenewal: Duration,
         postLockRelease: (() -> Unit)?,
+        maxLeaseRenewal: Duration,
         op: suspend () -> T,
     ): T {
         val lockId = UUID.randomUUID()
@@ -271,9 +271,9 @@ internal object MongoUserLock : UserLock {
         return try {
             coroutineScope {
                 val opJob = async { op() }
-                // Ownership is monitored for as long as op() runs. The lease is renewed during at most
-                // maxLeaseRenewal, then left to expire on its own, so that a stuck op() cannot hold the lock
-                // forever (see #2119). Loss of ownership is detected either way, so abortOnLockLoss is always honored.
+                // The lease is renewed during at most maxLeaseRenewal, then left to expire on its own,
+                // so that a stuck op() cannot hold the lock forever (see #2119). When abortOnLockLoss is requested,
+                // ownership keeps being checked after renewal stops, so that op() is aborted once the lock is taken over.
                 val heartbeatJob =
                     launch {
                         monitorLockOwnership(userId, lockId, abortOnLockLoss, maxLeaseRenewal, opJob)
@@ -310,6 +310,10 @@ internal object MongoUserLock : UserLock {
                 renewalStopped = true
                 if (maxLeaseRenewal.isPositive()) {
                     logger.warn { "operation still running after $maxLeaseRenewal for user $userId - lock lease is no longer renewed" }
+                }
+                if (!abortOnLockLoss) {
+                    // nothing more to do: the lease will expire on its own, and op() is never aborted
+                    break
                 }
             }
             val stillOwned = if (renew) renewLock(userId, lockId) else isStillOwner(userId, lockId)
