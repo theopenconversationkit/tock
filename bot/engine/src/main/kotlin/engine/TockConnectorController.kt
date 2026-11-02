@@ -77,6 +77,29 @@ internal class TockConnectorController(
         private val parseAudioFileEnabled = booleanProperty("tock_bot_audio_nlp_enabled", true)
         private val audioNlpFileLimit = intProperty("tock_bot_audio_nlp_max_size", 1024 * 1024)
 
+        // The audio file is downloaded while the user lock is held: without timeouts, an unresponsive server
+        // would block the turn (and its worker thread) forever.
+        private val audioDownloadTimeoutInMs = intProperty("tock_bot_audio_download_timeout_in_ms", 10_000)
+
+        /**
+         * Downloads the audio file at [url], with connection and read timeouts.
+         * Returns null if the file is not smaller than [maxSize], without reading it fully.
+         */
+        internal fun downloadAudioFile(
+            url: String,
+            maxSize: Int = audioNlpFileLimit,
+            timeoutInMs: Int = audioDownloadTimeoutInMs,
+        ): ByteArray? {
+            val connection =
+                URI(url).toURL().openConnection().apply {
+                    connectTimeout = timeoutInMs
+                    readTimeout = timeoutInMs
+                }
+            return connection.getInputStream().use { input ->
+                input.readNBytes(maxSize).takeIf { it.size < maxSize }
+            }
+        }
+
         internal fun register(
             connector: Connector,
             bot: Bot,
@@ -171,8 +194,8 @@ internal class TockConnectorController(
         userTimeline: UserTimeline,
     ): Action {
         if (parseAudioFileEnabled && action is SendAttachment && action.type == audio) {
-            val bytes = URI(action.url).toURL().readBytes()
-            if (bytes.size < audioNlpFileLimit) {
+            val bytes = downloadAudioFile(action.url)
+            if (bytes != null) {
                 val stt: STT = injector.provide()
                 val text = stt.parse(bytes, userTimeline.userPreferences.locale)
                 if (text != null) {

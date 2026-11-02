@@ -195,6 +195,7 @@ en mode _Bot intégré_.
 | `tock_cleanup_delay_seconds` | `60` | Délai maximal pour envoyer les messages en attente d'une story coroutine |
 | `tock_bot_audio_nlp_enabled` | `true` | Envoie les messages audio au NLP (_speech to text_) |
 | `tock_bot_audio_nlp_max_size` | `1048576` | Taille maximale des messages audio envoyés au NLP, en octets |
+| `tock_bot_audio_download_timeout_in_ms` | `10000` | Timeout de connexion et de lecture lors du téléchargement des messages audio |
 | `tock_bot_serve_files` | `true` | Sert les fichiers téléversés dans _Tock Studio_ (images des réponses...) |
 | `tock_bot_serve_files_path` | `/f/` | Chemin de ces fichiers |
 | `tock_nlp_proxy_on_bot` | `false` | Expose l'API NLP à travers le bot |
