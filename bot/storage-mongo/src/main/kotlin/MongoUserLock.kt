@@ -34,12 +34,17 @@ import io.github.resilience4j.kotlin.retry.executeSuspendFunction
 import io.github.resilience4j.retry.Retry
 import io.github.resilience4j.retry.RetryConfig
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
@@ -58,6 +63,9 @@ import java.time.Instant.now
 import java.util.UUID
 import java.util.concurrent.TimeUnit.HOURS
 import kotlin.random.Random
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.TimeSource
 
 /**
  *
@@ -210,18 +218,42 @@ internal object MongoUserLock : UserLock {
     /**
      * Touches the lock lease (resets its date) as long as [lockId] still owns it.
      * Returns false if the lease has already been taken over by another owner,
-     * meaning the caller no longer holds a valid lock.
+     * meaning the caller no longer holds a valid lock, and null if this could not be determined
+     * (e.g. transient Mongo error).
      */
     private suspend fun renewLock(
         userId: String,
         lockId: UUID,
-    ): Boolean =
+    ): Boolean? =
         try {
             val query = and(_id eq userId.toId(), UserLock::lockId eq lockId.toString())
             col.updateOne(query, setValue(Date, now())).modifiedCount > 0
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            logger.error(e)
-            false
+            logger.error(e) { "unable to renew the lock lease for user $userId" }
+            null
+        }
+
+    /**
+     * Checks, without touching the lease date, whether [lockId] still owns the lock for [userId].
+     * Returns false if another owner has since taken over, meaning the caller no longer holds a
+     * valid lock. Used instead of [renewLock] once the lease is no longer renewed, so that
+     * ownership loss is still detected (and abortOnLockLoss still honored) even though the lease
+     * itself is left to expire on its own. Returns null if this could not be determined (e.g. transient Mongo error).
+     */
+    private suspend fun isStillOwner(
+        userId: String,
+        lockId: UUID,
+    ): Boolean? =
+        try {
+            val lock = col.findOneById(userId)
+            lock != null && lock.locked && lock.lockId == lockId.toString()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            logger.error(e) { "unable to check the lock ownership for user $userId" }
+            null
         }
 
     /**
@@ -238,47 +270,81 @@ internal object MongoUserLock : UserLock {
         userId: String,
         abortOnLockLoss: Boolean,
         postLockRelease: (() -> Unit)?,
+        maxLeaseRenewal: Duration,
         op: suspend () -> T,
     ): T {
         val lockId = UUID.randomUUID()
         acquireLock(userId, lockId)
+        // computed before launching op(), so that a delayed heartbeat cannot extend the renewal budget
+        val renewalDeadline = if (maxLeaseRenewal.isInfinite()) null else TimeSource.Monotonic.markNow() + maxLeaseRenewal
 
         return try {
             coroutineScope {
                 val opJob = async { op() }
-                // Periodically renews the lease while op() runs. If renewal ever fails,
-                // another owner has genuinely taken over the lock: cancel op() when
-                // abortOnLockLoss is requested, otherwise just log and let it continue.
+                // The lease is renewed during at most maxLeaseRenewal, then left to expire on its own,
+                // so that a stuck op() cannot hold the lock forever (see #2119). When abortOnLockLoss is requested,
+                // ownership keeps being checked after renewal stops, so that op() is aborted once the lock is taken over.
+                // The heartbeat does not block (reactive Mongo driver): it runs on its own dispatcher, so that a blocking
+                // op() or a saturated op() dispatcher (e.g. worker pool full of blocking turns) cannot delay the renewal.
                 val heartbeatJob =
-                    launch {
-                        while (isActive) {
-                            delay(lockHeartbeatInterval)
-                            if (!renewLock(userId, lockId)) {
-                                logger.warn { "lock for user $userId was taken over by another owner while running" }
-                                if (abortOnLockLoss) {
-                                    opJob.cancel(
-                                        CancellationException(
-                                            "lock for user $userId expired while op() was running",
-                                            LockLostException("lock for user $userId expired while op() was running"),
-                                        ),
-                                    )
-                                }
-                                break
-                            }
-                        }
+                    launch(Dispatchers.Default) {
+                        monitorLockOwnership(userId, lockId, abortOnLockLoss, maxLeaseRenewal, renewalDeadline, opJob)
                     }
                 try {
                     opJob.await()
                 } catch (e: CancellationException) {
                     // unwrap our own LockLostException, leave other cancellation causes as-is
-                    throw e.cause as? LockLostException ?: e
+                    // (the whole cause chain is searched, as coroutine stack trace recovery may wrap the exception)
+                    throw generateSequence<Throwable>(e) { it.cause }.filterIsInstance<LockLostException>().firstOrNull() ?: e
                 } finally {
                     heartbeatJob.cancel()
                 }
             }
         } finally {
-            releaseLock(userId, lockId)
+            // the caller may have been cancelled: release the lock anyway
+            withContext(NonCancellable) {
+                releaseLock(userId, lockId)
+            }
             postLockRelease?.invoke()
+        }
+    }
+
+    private suspend fun <T> CoroutineScope.monitorLockOwnership(
+        userId: String,
+        lockId: UUID,
+        abortOnLockLoss: Boolean,
+        maxLeaseRenewal: Duration,
+        renewalDeadline: TimeSource.Monotonic.ValueTimeMark?,
+        opJob: Deferred<T>,
+    ) {
+        var renewalStopped = false
+        while (isActive) {
+            delay(lockHeartbeatInterval.milliseconds)
+            val renew = renewalDeadline?.hasNotPassedNow() ?: true
+            if (!renew && !renewalStopped) {
+                renewalStopped = true
+                if (maxLeaseRenewal.isPositive()) {
+                    logger.warn { "operation still running after $maxLeaseRenewal for user $userId - lock lease is no longer renewed" }
+                }
+                if (!abortOnLockLoss) {
+                    // nothing more to do: the lease will expire on its own, and op() is never aborted
+                    break
+                }
+            }
+            val stillOwned = if (renew) renewLock(userId, lockId) else isStillOwner(userId, lockId)
+            // null: unknown (e.g. transient Mongo error), try again at the next interval
+            if (stillOwned == false) {
+                logger.warn { "lock for user $userId was taken over by another owner while running" }
+                if (abortOnLockLoss) {
+                    opJob.cancel(
+                        CancellationException(
+                            "lock for user $userId expired while op() was running",
+                            LockLostException("lock for user $userId expired while op() was running"),
+                        ),
+                    )
+                }
+                break
+            }
         }
     }
 

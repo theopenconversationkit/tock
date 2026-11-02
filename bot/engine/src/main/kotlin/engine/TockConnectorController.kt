@@ -41,6 +41,7 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
+import ai.tock.shared.longProperty
 import ai.tock.shared.provide
 import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
@@ -53,6 +54,7 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.net.URI
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.time.Duration.Companion.milliseconds
 
 @Deprecated("Use coroutine stories to perform asynchronous operations")
 private val synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
@@ -99,6 +101,11 @@ internal class TockConnectorController(
                 input.readNBytes(maxSize).takeIf { it.size < maxSize }
             }
         }
+
+        // The user lock lease is renewed while a turn is being processed (a turn can take longer than the lease,
+        // e.g. with LLM calls), but only up to this duration, so that a stuck turn cannot lock the user forever (see #2119).
+        private val userTurnLockMaxLeaseRenewal =
+            longProperty("tock_bot_user_turn_lock_max_lease_renewal_in_ms", 120_000).milliseconds
 
         internal fun register(
             connector: Connector,
@@ -227,6 +234,7 @@ internal class TockConnectorController(
                 userId = id,
                 postLockRelease = { callback.userLockReleased(action) },
                 abortOnLockLoss = false,
+                maxLeaseRenewal = userTurnLockMaxLeaseRenewal,
             ) {
                 try {
                     callback.userLocked(action)

@@ -64,6 +64,7 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration
 
 class KnowledgeBaseServiceTest {
     private val dao = MemoryKnowledgeBaseDAO()
@@ -79,6 +80,7 @@ class KnowledgeBaseServiceTest {
                 userId: String,
                 abortOnLockLoss: Boolean,
                 postLockRelease: (() -> Unit)?,
+                maxLeaseRenewal: Duration,
                 op: suspend () -> T,
             ): T {
                 acquiredLocks.add(userId)
