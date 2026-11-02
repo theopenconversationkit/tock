@@ -37,12 +37,14 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
@@ -299,7 +301,10 @@ internal object MongoUserLock : UserLock {
                 }
             }
         } finally {
-            releaseLock(userId, lockId)
+            // the caller may have been cancelled: release the lock anyway
+            withContext(NonCancellable) {
+                releaseLock(userId, lockId)
+            }
             postLockRelease?.invoke()
         }
     }
