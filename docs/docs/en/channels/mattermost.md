@@ -32,3 +32,4 @@ It answers the messages of a channel (optionally only those starting with a trig
 | Outgoing webhook token | Token of the outgoing webhook or slash command |
 | Optional Channel Id | (optional) dedicated channel |
 | Optional Tock Username | (optional) username displayed for the bot |
+| Reply in thread (true = 1, false = 0) | (optional) `1` to answer in the thread of the user message instead of posting a new message in the channel (default `0`) |
