@@ -241,7 +241,7 @@ See [Installation](installation.md#data-retention).
 | `tock_bot_add_namespace_to_timeline_id` | `false` | Prefixes the user identifiers with the namespace, to separate the users of several namespaces |
 | `tock_bot_encrypted_flags` | | Dialog flags whose value is encrypted |
 | `tock_bot_lock_timeout_in_ms` | `5000` | Lifetime of the lock lease of a user (renewed while a message is processed) |
-| `tock_bot_user_turn_lock_max_lease_renewal_in_ms` | `60000` | Maximum duration during which the lock lease is renewed while a message is processed; past it, the lease expires so that a stuck processing cannot lock the user forever |
+| `tock_bot_user_turn_lock_max_lease_renewal_in_ms` | `120000` | Maximum duration during which the lock lease is renewed while a message is processed; past it, the lease expires so that a stuck processing cannot lock the user forever |
 | `tock_bot_locked_attempts_wait_in_ms` | `500` | Delay between two attempts to acquire the lock |
 | `tock_bot_lock_retry_jitter_in_ms` | `20` | Random delay added to this delay |
 | `tock_bot_max_locked_attempts` | `10` | Number of attempts before giving up |

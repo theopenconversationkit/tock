@@ -105,7 +105,7 @@ internal class TockConnectorController(
         // The user lock lease is renewed while a turn is being processed (a turn can take longer than the lease,
         // e.g. with LLM calls), but only up to this duration, so that a stuck turn cannot lock the user forever (see #2119).
         private val userTurnLockMaxLeaseRenewal =
-            longProperty("tock_bot_user_turn_lock_max_lease_renewal_in_ms", 60_000).milliseconds
+            longProperty("tock_bot_user_turn_lock_max_lease_renewal_in_ms", 120_000).milliseconds
 
         internal fun register(
             connector: Connector,

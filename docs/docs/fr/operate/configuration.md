@@ -241,7 +241,7 @@ Voir [Installation](installation.md#conservation-des-donnees).
 | `tock_bot_add_namespace_to_timeline_id` | `false` | Préfixe les identifiants utilisateurs par le namespace, pour séparer les utilisateurs de plusieurs namespaces |
 | `tock_bot_encrypted_flags` | | _Flags_ de dialogue dont la valeur est chiffrée |
 | `tock_bot_lock_timeout_in_ms` | `5000` | Durée de validité du bail du verrou d'un utilisateur (renouvelé pendant le traitement d'un message) |
-| `tock_bot_user_turn_lock_max_lease_renewal_in_ms` | `60000` | Durée maximale pendant laquelle le bail du verrou est renouvelé pendant le traitement d'un message ; au-delà, le bail expire pour qu'un traitement bloqué ne verrouille pas l'utilisateur indéfiniment |
+| `tock_bot_user_turn_lock_max_lease_renewal_in_ms` | `120000` | Durée maximale pendant laquelle le bail du verrou est renouvelé pendant le traitement d'un message ; au-delà, le bail expire pour qu'un traitement bloqué ne verrouille pas l'utilisateur indéfiniment |
 | `tock_bot_locked_attempts_wait_in_ms` | `500` | Délai entre deux tentatives d'acquisition du verrou |
 | `tock_bot_lock_retry_jitter_in_ms` | `20` | Délai aléatoire ajouté à ce délai |
 | `tock_bot_max_locked_attempts` | `10` | Nombre de tentatives avant abandon |
