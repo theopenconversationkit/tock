@@ -216,18 +216,21 @@ internal object MongoUserLock : UserLock {
     /**
      * Touches the lock lease (resets its date) as long as [lockId] still owns it.
      * Returns false if the lease has already been taken over by another owner,
-     * meaning the caller no longer holds a valid lock.
+     * meaning the caller no longer holds a valid lock, and null if this could not be determined
+     * (e.g. transient Mongo error).
      */
     private suspend fun renewLock(
         userId: String,
         lockId: UUID,
-    ): Boolean =
+    ): Boolean? =
         try {
             val query = and(_id eq userId.toId(), UserLock::lockId eq lockId.toString())
             col.updateOne(query, setValue(Date, now())).modifiedCount > 0
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            logger.error(e)
-            false
+            logger.error(e) { "unable to renew the lock lease for user $userId" }
+            null
         }
 
     /**
@@ -235,18 +238,20 @@ internal object MongoUserLock : UserLock {
      * Returns false if another owner has since taken over, meaning the caller no longer holds a
      * valid lock. Used instead of [renewLock] once the lease is no longer renewed, so that
      * ownership loss is still detected (and abortOnLockLoss still honored) even though the lease
-     * itself is left to expire on its own.
+     * itself is left to expire on its own. Returns null if this could not be determined (e.g. transient Mongo error).
      */
     private suspend fun isStillOwner(
         userId: String,
         lockId: UUID,
-    ): Boolean =
+    ): Boolean? =
         try {
             val lock = col.findOneById(userId)
             lock != null && lock.locked && lock.lockId == lockId.toString()
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            logger.error(e)
-            false
+            logger.error(e) { "unable to check the lock ownership for user $userId" }
+            null
         }
 
     /**
@@ -322,7 +327,8 @@ internal object MongoUserLock : UserLock {
                 }
             }
             val stillOwned = if (renew) renewLock(userId, lockId) else isStillOwner(userId, lockId)
-            if (!stillOwned) {
+            // null: unknown (e.g. transient Mongo error), try again at the next interval
+            if (stillOwned == false) {
                 logger.warn { "lock for user $userId was taken over by another owner while running" }
                 if (abortOnLockLoss) {
                     opJob.cancel(
