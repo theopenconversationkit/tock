@@ -4441,7 +4441,8 @@ Ils sont disponibles dans le menu <em>Gen AI</em> :</p>
 <p>Pour accéder à ces pages, il faut bénéficier du rôle <strong><em>admin</em></strong>
 (plus de détails sur les rôles dans <a href="../operate/security.html#roles">sécurité</a>).</p>
 <p>L'inspection est disponible pour le fournisseur <a href="providers/vector-store.html">PGVector</a>. Avec OpenSearch, seul le mode de
-recherche vectorielle est disponible : les modes plein texte et hybride ne sont pas implémentés pour ce fournisseur.</p>
+recherche vectorielle est disponible : les modes plein texte et hybride ne sont pas implémentés pour ce fournisseur, et
+le diagnostic utilise la recherche vectorielle quel que soit le mode configuré pour le bot (comme le fait le runtime).</p>
 </blockquote>
 <h2 id="exploration-de-la-base-vectorielle">Exploration de la base vectorielle</h2>
 <p>Sélectionnez un index (un index par session d'indexation) pour afficher son bilan d'ingestion :</p>
@@ -4459,26 +4460,43 @@ recherche vectorielle est disponible : les modes plein texte et hybride ne sont 
 toujours dans les résultats, même si aucun canal de recherche ne les renvoie. Le bouton <em>Diagnose</em> ouvre le diagnostic
 avec les chunks épinglés.</p>
 <h2 id="diagnostic-de-recherche">Diagnostic de recherche</h2>
-<p>L'écran de diagnostic suit la chaîne de recherche, de haut en bas :</p>
+<p>L'écran de diagnostic suit la chaîne de recherche de production, de haut en bas :</p>
 <ol>
 <li><strong>Question</strong> : la question telle qu'un utilisateur la poserait. Elle peut être condensée (la question condensée et les
    mots-clés sont remplis par le LLM de condensation, et peuvent être modifiés). La condensation n'est pas déterministe :
    la recherche utilise les valeurs affichées telles quelles, pour qu'une recherche puisse être rejouée à l'identique.</li>
 <li><strong>Recherche</strong> : l'index, le mode de recherche (<em>Vector</em>, <em>Full text</em> ou <em>Hybrid</em> ; les modes plein texte et hybride
-   nécessitent des mots-clés) et <em>fetch k</em>, le nombre de candidats ramenés de la base.</li>
+   nécessitent des mots-clés) et le <em>nombre maximal de documents récupérés</em> (<code>k</code>) : le nombre de chunks que chaque canal
+   remonte, que la fusion RRF garde en hybride, et qui forme le vivier transmis au compresseur. Le mode de recherche
+   provient de la configuration du bot et est affiché en lecture seule.</li>
 <li><strong>Compression</strong> : appliquer ou non le <a href="compressor.html">compresseur de documents</a>, avec son score minimum et son nombre
-   maximum de documents. Les valeurs par défaut sont celles configurées pour le bot.</li>
-<li><strong>Contexte final</strong> : <em>k</em>, le nombre de chunks finalement transmis au modèle de réponse.</li>
+   maximum de documents. C'est ce nombre maximum qui fixe combien de chunks sont transmis au modèle de réponse.</li>
+<li><strong>Lancement</strong> : les avertissements et le bandeau de divergence, puis la recherche.</li>
 </ol>
 <blockquote>
-<p>Dans la chaîne de production, <em>fetch k</em> et <em>k</em> sont toujours égaux. Le diagnostic permet de les régler séparément
-pour voir ce qu'une recherche plus large apporterait. Un avertissement s'affiche quand la configuration diffère de la chaîne de production.</p>
+<p>Le formulaire part des réglages réels du bot, et la recherche attend qu'ils soient chargés ; un bandeau liste tout réglage
+modifié et propose de revenir à celui du bot. Un message prévient si le bot n'a pas de configuration RAG, si son RAG est
+désactivé (le runtime n'applique alors pas ces réglages), ou si les réglages n'ont pas pu être chargés (le formulaire
+part alors de valeurs par défaut). Le compresseur s'applique aux documents remontés : son <em>nombre maximum de documents</em> ne peut donc pas dépasser le
+<em>nombre de documents remontés</em>. Modifier le score minimum ou le nombre maximum de documents est recalculé
+instantanément dans le navigateur, sans nouvelle recherche : le score reranker de chaque candidat est affiché avec le
+marqueur de seuil, pour choisir le minimum à l'œil (l'échelle dépend du modèle de reranking).</p>
+<p>Avec un nombre maximum de documents égal au nombre de documents remontés, sans score minimum ni complément, le
+compresseur garde tous les chunks et ne fait que les réordonner : un message le signale.</p>
+<p>Le reranker est appelé avec le même délai d'expiration qu'en production : augmenter le nombre de documents remontés
+augmente le temps de reranking et peut provoquer un repli, comme il le ferait en production.</p>
 </blockquote>
 <h3 id="entonnoir-et-resultats">Entonnoir et résultats</h3>
 <p>L'entonnoir affiche chaque étape avec son nombre de chunks : canaux vectoriel et plein texte (en mode hybride),
-fusion RRF, compression, puis coupe top-k.</p>
+fusion RRF, coupe top-k, puis compression (avec sa durée). Quand le compresseur échoue, il passe en repli comme en
+production : il transmet les premiers documents dans l'ordre de la recherche, sans score, jusqu'à son nombre maximum de
+documents. L'étape est alors affichée comme <em>échec, repli</em> avec la raison (erreur du reranker, appel en échec, ou
+question trop longue pour le reranker) ; le message d'erreur est disponible en infobulle. Si la compression échoue
+hors de cette tolérance aux pannes (par exemple une configuration du compresseur invalide), l'étape est affichée comme
+<em>échec</em> et aucun chunk n'est transmis : en production, la requête échouerait. Les seuils ne peuvent pas être
+réajustés tant qu'une nouvelle recherche n'a pas renvoyé de scores.</p>
 <p>Le tableau de résultats affiche un chunk par ligne, avec son rang et son score pour chaque canal (vectoriel, plein texte,
-RRF, rerank) et son sort :</p>
+RRF, rerank), le nombre de fenêtres dans lesquelles un chunk surdimensionné a été scoré, et son sort :</p>
 <table>
 <thead>
 <tr>
@@ -4508,6 +4526,14 @@ RRF, rerank) et son sort :</p>
 <td>Sous le seuil, mais repêché pour compléter le nombre de documents</td>
 </tr>
 <tr>
+<td>cut by fallback</td>
+<td>Compresseur en repli : au-delà des premiers documents transmis sans score</td>
+</tr>
+<tr>
+<td>not passed on</td>
+<td>La compression a échoué : en production, aucun chunk ne serait transmis</td>
+</tr>
+<tr>
 <td>absent</td>
 <td>Renvoyé par aucun canal de recherche</td>
 </tr>
@@ -4515,11 +4541,13 @@ RRF, rerank) et son sort :</p>
 </table>
 <h3 id="comparer-des-recherches">Comparer des recherches</h3>
 <p><em>Set as reference</em> fige une recherche comme référence pour les suivantes. Les recherches suivantes lui sont alors comparées :
-les paramètres qui ont changé (index, mode de recherche, question, mots-clés, fetch k, k, compression) et les chunks
-perdus, gagnés ou déplacés. Deux types d'absence sont distingués :</p>
+les paramètres qui ont changé (index, mode de recherche, question, mots-clés, nombre de documents remontés, compression —
+y compris le score minimum et le nombre maximum de documents), les chunks perdus, gagnés ou déplacés, et ceux qui sont
+désormais transmis au modèle ou ne le sont plus. Un changement de seuil côté client produit une recherche comparable sans
+appel serveur : il ne déplace aucun rang, mais modifie les chunks transmis. Deux types d'absence sont distingués :</p>
 <ul>
 <li><em>absent from index</em> : les deux recherches visent des index différents et le chunk n'existe pas dans l'index courant (un problème d'ingestion),</li>
-<li><em>outside top fetch k</em> : le chunk existe toujours, mais ne remonte plus dans la fenêtre ramenée (un problème de classement).</li>
+<li><em>outside top k</em> : le chunk existe toujours, mais ne remonte plus dans la fenêtre remontée (un problème de classement).</li>
 </ul>
 <p>Les comparaisons sont calculées dans le navigateur et ne sont pas enregistrées.</p>
 <!-- Chat inclusion start -->
@@ -4813,7 +4841,7 @@ perdus, gagnés ou déplacés. Deux types d'absence sont distingués :</p>
     <span class="md-icon" title="Dernière mise à jour">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="9 octobre 2026 16:17:42 UTC">9 octobre 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2 novembre 2026 09:47:01 UTC">2 novembre 2026</span>
   </span>
 
     
