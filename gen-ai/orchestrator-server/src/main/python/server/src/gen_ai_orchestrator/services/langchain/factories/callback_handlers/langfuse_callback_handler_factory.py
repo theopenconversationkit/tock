@@ -64,7 +64,8 @@ class LangfuseCallbackHandlerFactory(LangChainCallbackHandlerFactory):
             self._langfuse_client = Langfuse(
                 public_key=self.setting.public_key,
                 secret_key=fetch_secret_key_value(self.setting.secret_key),
-                base_url=str(self.setting.url),
+                # AnyUrl adds a trailing slash, which leads to '//api/public/otel/v1/traces'
+                base_url=str(self.setting.url).rstrip('/'),
                 timeout=application_settings.observability_provider_timeout,
             )
         return self._langfuse_client
