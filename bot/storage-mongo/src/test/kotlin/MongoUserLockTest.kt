@@ -169,4 +169,26 @@ class MongoUserLockTest : AbstractTest() {
             }
         }
     }
+
+    @Test
+    fun `GIVEN a max lease renewal WHEN op starts with blocking code on a single thread THEN the renewal budget is not extended`() {
+        runBlocking {
+            val result =
+                async {
+                    MongoUserLock.withLock(userId, abortOnLockLoss = false, maxLeaseRenewal = 3.seconds) {
+                        // blocks the runBlocking thread, delaying the first heartbeat
+                        @Suppress("BlockingMethodInNonBlockingContext")
+                        Thread.sleep(3000)
+                        delay(20.seconds)
+                    }
+                }
+            try {
+                // the renewal budget has elapsed before the first heartbeat (at about 5.5s): the lease is not renewed
+                delay(7.seconds)
+                assertTrue(MongoUserLock.tryLock(userId), "the lease should have expired")
+            } finally {
+                result.cancel()
+            }
+        }
+    }
 }

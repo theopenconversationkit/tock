@@ -267,6 +267,8 @@ internal object MongoUserLock : UserLock {
     ): T {
         val lockId = UUID.randomUUID()
         acquireLock(userId, lockId)
+        // computed before launching op(), so that a delayed heartbeat cannot extend the renewal budget
+        val renewalDeadline = if (maxLeaseRenewal.isInfinite()) null else TimeSource.Monotonic.markNow() + maxLeaseRenewal
 
         return try {
             coroutineScope {
@@ -276,7 +278,7 @@ internal object MongoUserLock : UserLock {
                 // ownership keeps being checked after renewal stops, so that op() is aborted once the lock is taken over.
                 val heartbeatJob =
                     launch {
-                        monitorLockOwnership(userId, lockId, abortOnLockLoss, maxLeaseRenewal, opJob)
+                        monitorLockOwnership(userId, lockId, abortOnLockLoss, maxLeaseRenewal, renewalDeadline, opJob)
                     }
                 try {
                     opJob.await()
@@ -299,9 +301,9 @@ internal object MongoUserLock : UserLock {
         lockId: UUID,
         abortOnLockLoss: Boolean,
         maxLeaseRenewal: Duration,
+        renewalDeadline: TimeSource.Monotonic.ValueTimeMark?,
         opJob: Deferred<T>,
     ) {
-        val renewalDeadline = if (maxLeaseRenewal.isInfinite()) null else TimeSource.Monotonic.markNow() + maxLeaseRenewal
         var renewalStopped = false
         while (isActive) {
             delay(lockHeartbeatInterval.milliseconds)
