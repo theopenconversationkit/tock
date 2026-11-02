@@ -100,10 +100,9 @@ internal class TockConnectorController(
             }
         }
 
-        // Per-turn locks are held very briefly and at high frequency; renewing their lease here
-        // caused the lock to not be released under load (see #2119), so this is disabled by default,
-        // unlike other (potentially long-running) UserLock callers.
-        private val renewUserTurnLockLease = booleanProperty("tock_bot_user_turn_lock_renew_lease", false)
+        // Full-turn processing can outlast the lease duration, so renewal is enabled by default.
+        // Disable it only when the entire protected operation is bounded below the lease duration.
+        private val renewUserTurnLockLease = booleanProperty("tock_bot_user_turn_lock_renew_lease", true)
 
         internal fun register(
             connector: Connector,
