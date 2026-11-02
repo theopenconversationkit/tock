@@ -52,6 +52,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.listProperty
 import ai.tock.shared.security.RequestFilter
+import ai.tock.shared.security.sha256Uuid
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
@@ -248,6 +249,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
                                                 userId = userId,
                                                 username = contact?.profile?.name,
                                             ),
+                                            priorUserId = message.from?.let { PlayerId(sha256Uuid(it).toString()) },
                                         ),
                                     )
                                 } else {
