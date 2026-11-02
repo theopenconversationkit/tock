@@ -36,6 +36,7 @@ import io.github.resilience4j.retry.RetryConfig
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -276,8 +277,10 @@ internal object MongoUserLock : UserLock {
                 // The lease is renewed during at most maxLeaseRenewal, then left to expire on its own,
                 // so that a stuck op() cannot hold the lock forever (see #2119). When abortOnLockLoss is requested,
                 // ownership keeps being checked after renewal stops, so that op() is aborted once the lock is taken over.
+                // The heartbeat does not block (reactive Mongo driver): it runs on its own dispatcher, so that a blocking
+                // op() or a saturated op() dispatcher (e.g. worker pool full of blocking turns) cannot delay the renewal.
                 val heartbeatJob =
-                    launch {
+                    launch(Dispatchers.Default) {
                         monitorLockOwnership(userId, lockId, abortOnLockLoss, maxLeaseRenewal, renewalDeadline, opJob)
                     }
                 try {

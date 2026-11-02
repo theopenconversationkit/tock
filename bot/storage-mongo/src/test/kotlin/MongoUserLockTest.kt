@@ -17,6 +17,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.engine.user.LockLostException
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.getCollection
+import java.util.concurrent.Executors
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -173,28 +175,6 @@ class MongoUserLockTest : AbstractTest() {
     }
 
     @Test
-    fun `GIVEN a max lease renewal WHEN op starts with blocking code on a single thread THEN the renewal budget is not extended`() {
-        runBlocking {
-            val result =
-                async {
-                    MongoUserLock.withLock(userId, abortOnLockLoss = false, maxLeaseRenewal = 3.seconds) {
-                        // blocks the runBlocking thread, delaying the first heartbeat
-                        @Suppress("BlockingMethodInNonBlockingContext")
-                        Thread.sleep(3000)
-                        delay(20.seconds)
-                    }
-                }
-            try {
-                // the renewal budget has elapsed before the first heartbeat (at about 5.5s): the lease is not renewed
-                delay(7.seconds)
-                assertTrue(MongoUserLock.tryLock(userId), "the lease should have expired")
-            } finally {
-                result.cancel()
-            }
-        }
-    }
-
-    @Test
     fun `GIVEN a running op WHEN the caller is cancelled THEN the lock is released immediately`() {
         runBlocking {
             var released = false
@@ -209,6 +189,28 @@ class MongoUserLockTest : AbstractTest() {
 
             assertTrue(released)
             assertTrue(MongoUserLock.tryLock(userId), "the lock should have been released")
+        }
+    }
+
+    @Test
+    fun `GIVEN op blocking the only thread of its dispatcher WHEN it runs longer than the lock timeout THEN the lease is still renewed`() {
+        val singleThread = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+        try {
+            runBlocking {
+                val result =
+                    async(singleThread) {
+                        MongoUserLock.withLock(userId) {
+                            // blocks the only thread of the dispatcher of op()
+                            @Suppress("BlockingMethodInNonBlockingContext")
+                            Thread.sleep(7000)
+                        }
+                    }
+                delay(6.seconds)
+                assertFalse(MongoUserLock.tryLock(userId), "the lease should have been renewed")
+                result.await()
+            }
+        } finally {
+            singleThread.close()
         }
     }
 }
