@@ -12,11 +12,9 @@ and keeps the best ones, so that the answering model receives fewer, more releva
 > To access this page, you need the **_admin_** role
 > (more details on roles in [security](../operate/security.md#roles)).
 
-!!! warning
-    In the current RAG chain (multi-query retriever, since release 26.3.3), the compressor configured here
-    is not applied when answering: enabling or disabling it has no effect on the bot answers.
-    It is used by the [retrieval diagnostic](vector-store-inspection.md#retrieval-diagnostic),
-    which shows what it would change.
+The compressor runs after retrieval, on the documents returned by the vector store, and before the answering LLM.
+The [retrieval diagnostic](vector-store-inspection.md#retrieval-diagnostic) lets you tune its minimum score and
+maximum number of documents against the actual reranker scores, before changing the bot configuration.
 
 ## Configuration
 

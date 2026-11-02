@@ -95,7 +95,9 @@ data class VectorStoreInspectionFunnelStage(
     @JsonInclude(JsonInclude.Include.ALWAYS)
     val count: Int?,
     val reason: String? = null,
+    val detail: String? = null,
     val discarded: Int? = null,
+    val duration: Double? = null,
 )
 
 data class VectorStoreInspectionSearchFunnel(
@@ -137,13 +139,12 @@ data class VectorStoreInspectionSearchResultChunk(
     val scores: VectorStoreInspectionChannelScores,
     val outcome: String,
     val pinned: Boolean,
+    val rerankerWindows: Int? = null,
     val metadata: Map<String, Any?>? = null,
 )
 
 data class VectorStoreInspectionSearchResponse(
     val funnel: VectorStoreInspectionSearchFunnel,
-    /** Internal orchestrator value: before_cut or after_cut. */
-    val compressionStage: String,
     val results: List<VectorStoreInspectionSearchResultChunk>,
     val duration: Double,
 )

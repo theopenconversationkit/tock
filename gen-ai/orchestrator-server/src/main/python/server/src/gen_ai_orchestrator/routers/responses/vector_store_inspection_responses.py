@@ -27,7 +27,6 @@ from gen_ai_orchestrator.models.vector_stores.vector_store_search_type import (
 )
 from gen_ai_orchestrator.routers.requests.vector_store_inspection_requests import (
     AnomalyCode,
-    CompressionStage,
 )
 
 
@@ -104,13 +103,22 @@ class FunnelStageStatus(str, Enum):
     SKIPPED = 'skipped'
     DISABLED = 'disabled'
     FAILED_FALLBACK = 'failed_fallback'
+    # The stage raised outside the compressor's own fault tolerance: the runtime
+    # would fail the whole request, nothing would reach the answering model.
+    FAILED = 'failed'
 
 
 class FunnelStage(BaseModel):
     status: FunnelStageStatus
     count: Optional[int]
+    # Machine-readable cause, notably on failed_fallback (bad_response,
+    # exception, query_too_long): the front translates it.
     reason: Optional[str] = None
+    # Free-text detail behind the reason (error message), shown as a tooltip.
+    detail: Optional[str] = None
     discarded: Optional[int] = None
+    """Wall-clock duration of the stage in seconds (compression only)."""
+    duration: Optional[float] = None
 
 
 class SearchFunnel(BaseModel):
@@ -140,6 +148,12 @@ class ChunkOutcome(str, Enum):
     BELOW_MIN_SCORE = 'below_min_score'
     RERANKED_OUT = 'reranked_out'
     FILLED_BELOW_THRESHOLD = 'filled_below_threshold'
+    # The compressor fell back and returned the first max_documents documents in
+    # retrieval order, unscored: the others were cut by that truncation.
+    CUT_BY_FALLBACK = 'cut_by_fallback'
+    # Compression failed outright (FunnelStageStatus.FAILED): the runtime would
+    # not answer, so no chunk is passed on.
+    COMPRESSION_FAILED = 'compression_failed'
     NOT_RETRIEVED = 'not_retrieved'
 
 
@@ -153,11 +167,12 @@ class SearchResultChunk(BaseModel):
     scores: ChannelScores
     outcome: ChunkOutcome
     pinned: bool
+    # Number of windows an oversized chunk was split into and scored across.
+    reranker_windows: Optional[int] = None
     metadata: Optional[dict[str, Any]] = None
 
 
 class SearchResponse(BaseModel):
     funnel: SearchFunnel
-    compression_stage: CompressionStage
     results: list[SearchResultChunk]
     duration: float

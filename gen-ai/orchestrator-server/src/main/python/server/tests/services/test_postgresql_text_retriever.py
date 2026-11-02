@@ -21,6 +21,8 @@ from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_fac
     PGVectorFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.postgresql_text_retriever import (
+    FTS_SCORE_METADATA_KEY,
+    build_docs,
     build_statement,
 )
 
@@ -86,3 +88,23 @@ def test_pgvector_factory_passes_filter_to_text_retriever():
     assert retriever.table_name == 'my-index'
     assert retriever.k == 3
     assert retriever.metadata_filter == {'source': 'https://doc.tock.ai'}
+
+
+def test_build_docs_keeps_the_ts_rank_without_touching_the_stored_metadata():
+    stored = {'id': 'doc', 'title': 'Doc'}
+    row = MagicMock(document='content', cmetadata=stored, score=0.42)
+
+    [document] = build_docs([row])
+
+    assert document.page_content == 'content'
+    assert document.metadata == {'id': 'doc', 'title': 'Doc', FTS_SCORE_METADATA_KEY: 0.42}
+    # The row's metadata is copied, never mutated.
+    assert stored == {'id': 'doc', 'title': 'Doc'}
+
+
+def test_build_docs_tolerates_missing_metadata():
+    row = MagicMock(document='content', cmetadata=None, score=1.0)
+
+    [document] = build_docs([row])
+
+    assert document.metadata == {FTS_SCORE_METADATA_KEY: 1.0}

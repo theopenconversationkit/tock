@@ -22,12 +22,13 @@ export class RunComparisonComponent {
 
   displayStable: boolean = false;
 
+  /** Rows worth showing by default: rank changes, and chunks whose passing to the model changed. */
   get movedRows(): RunComparisonRow[] {
-    return this.comparison.rows.filter((row) => row.delta !== 'stable');
+    return this.comparison.rows.filter((row) => row.delta !== 'stable' || !!row.passedOnChange);
   }
 
   get stableRows(): RunComparisonRow[] {
-    return this.comparison.rows.filter((row) => row.delta === 'stable');
+    return this.comparison.rows.filter((row) => row.delta === 'stable' && !row.passedOnChange);
   }
 
   get visibleRows(): RunComparisonRow[] {

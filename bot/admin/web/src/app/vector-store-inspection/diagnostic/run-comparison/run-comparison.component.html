@@ -50,6 +50,14 @@
         <div class="list-entry-desc text-muted">{{ 'vsi.comparison.gained' | transloco }}</div>
       </div>
       <div class="background-basic-color-2 rounded px-3 py-2">
+        <div class="stat-value">
+          <span class="text-success">+{{ comparison.nowPassedOn }}</span>
+          /
+          <span class="text-danger">&minus;{{ comparison.noLongerPassedOn }}</span>
+        </div>
+        <div class="list-entry-desc text-muted">{{ 'vsi.comparison.passed_on_changes' | transloco }}</div>
+      </div>
+      <div class="background-basic-color-2 rounded px-3 py-2">
         <div class="stat-value">{{ movedRows.length }}</div>
         <div class="list-entry-desc text-muted">{{ 'vsi.comparison.divergences' | transloco }}</div>
       </div>
@@ -117,13 +125,19 @@
       </span>
       } @else {
       <span class="text-muted">{{ 'vsi.comparison.deltas.stable' | transloco }}</span>
+      } @if (row.passedOnChange) {
+      <div
+        [class.text-success]="row.passedOnChange === 'now_passed_on'"
+        [class.text-danger]="row.passedOnChange === 'no_longer_passed_on'"
+        [nbTooltip]="'vsi.comparison.passed_on.' + row.passedOnChange + '_tooltip' | transloco"
+      >
+        {{ 'vsi.comparison.passed_on.' + row.passedOnChange | transloco }}
+      </div>
       }
     </div>
   </nb-card-body>
 </nb-card>
-}
-
-@if (stableRows.length) {
+} @if (stableRows.length) {
 <div class="d-flex justify-content-center mt-2">
   <button
     nbButton

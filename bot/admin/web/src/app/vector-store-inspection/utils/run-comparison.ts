@@ -1,6 +1,8 @@
 import { DocumentSearchType } from '../../rag/rag-settings/models/engines-configurations';
 import {
   AbsenceReason,
+  isPassedOn,
+  PassedOnChange,
   RunComparison,
   RunComparisonRow,
   RunDelta,
@@ -39,11 +41,12 @@ export function diffRequests(reference: SearchRequest, current: SearchRequest): 
   if (reference.searchType !== current.searchType) changed.push('searchType');
   if (reference.query.trim() !== current.query.trim()) changed.push('query');
   if (!sameKeyWords(reference.keyWords, current.keyWords)) changed.push('keyWords');
-  if (reference.fetchK !== current.fetchK) changed.push('fetchK');
   if (reference.k !== current.k) changed.push('k');
   if (
     reference.compressionEnabled !== current.compressionEnabled ||
-    (current.compressionEnabled && reference.compressionStage !== current.compressionStage)
+    (current.compressionEnabled &&
+      (reference.compressionOverride?.minScore !== current.compressionOverride?.minScore ||
+        reference.compressionOverride?.maxDocuments !== current.compressionOverride?.maxDocuments))
   ) {
     changed.push('compression');
   }
@@ -83,6 +86,8 @@ export function buildRunComparison(reference: SearchRun, current: SearchRun): Ru
 
   let lost = 0;
   let gained = 0;
+  let nowPassedOn = 0;
+  let noLongerPassedOn = 0;
 
   for (const chunkId of chunkIds) {
     const rankReference = referenceRanks.get(chunkId) ?? null;
@@ -100,12 +105,12 @@ export function buildRunComparison(reference: SearchRun, current: SearchRun): Ru
       const wasCheckedInCurrentIndex = current.request.pinnedChunkIds?.includes(chunkId);
       absenceReason =
         currentChunk?.outcome === 'not_retrieved'
-          ? 'outside_fetch_k'
+          ? 'outside_k'
           : indexChanged
           ? wasCheckedInCurrentIndex
             ? 'absent_from_index'
             : 'unknown'
-          : 'outside_fetch_k';
+          : 'outside_k';
     } else if (rankReference === null && rankCurrent !== null) {
       delta = 'gained';
       gained++;
@@ -114,6 +119,21 @@ export function buildRunComparison(reference: SearchRun, current: SearchRun): Ru
       magnitude = Math.abs(rankCurrent - rankReference);
     } else {
       delta = 'stable';
+    }
+
+    // Independent of the rank: a threshold change moves no rank but decides
+    // which of the retrieved chunks reach the answering model.
+    const referenceChunk = referenceChunks.get(chunkId);
+    const currentChunk = currentChunks.get(chunkId);
+    const passedOnReference = !!referenceChunk && isPassedOn(referenceChunk.outcome);
+    const passedOnCurrent = !!currentChunk && isPassedOn(currentChunk.outcome);
+    let passedOnChange: PassedOnChange | undefined;
+    if (passedOnCurrent && !passedOnReference) {
+      passedOnChange = 'now_passed_on';
+      nowPassedOn++;
+    } else if (passedOnReference && !passedOnCurrent) {
+      passedOnChange = 'no_longer_passed_on';
+      noLongerPassedOn++;
     }
 
     rows.push({
@@ -125,21 +145,28 @@ export function buildRunComparison(reference: SearchRun, current: SearchRun): Ru
       delta,
       magnitude,
       absenceReason,
+      passedOnReference,
+      passedOnCurrent,
+      passedOnChange,
       pinned: chunk.pinned
     });
   }
 
-  // Losses and gains first: they are the structural changes. Movements follow,
-  // widest first. Stable rows are noise and end up last, collapsed by the UI.
-  const order: Record<RunDelta, number> = { lost: 0, gained: 1, moved: 2, stable: 3 };
-  rows.sort((a, b) => {
-    if (order[a.delta] !== order[b.delta]) return order[a.delta] - order[b.delta];
-    if (a.delta === 'moved') return b.magnitude - a.magnitude;
-    return (a.rankCurrent ?? a.rankReference ?? 0) - (b.rankCurrent ?? b.rankReference ?? 0);
-  });
+  // Losses and gains first: they are the structural changes. Then the chunks
+  // whose passing to the model changed, then movements, widest first. Stable
+  // rows are noise and end up last, collapsed by the UI.
+  const order: Record<RunDelta, number> = { lost: 0, gained: 1, moved: 3, stable: 4 };
+  const rowOrder = (row: RunComparisonRow): number =>
+    row.passedOnChange && (row.delta === 'moved' || row.delta === 'stable') ? 2 : order[row.delta];
+  // One lexicographic key for every row, so the comparator is a total order
+  // whatever the mix of deltas in a group: group, then widest move first
+  // (magnitude is 0 for anything that did not move), then rank, then id.
+  const rankOf = (row: RunComparisonRow): number => row.rankCurrent ?? row.rankReference ?? Number.MAX_SAFE_INTEGER;
+  rows.sort(
+    (a, b) => rowOrder(a) - rowOrder(b) || b.magnitude - a.magnitude || rankOf(a) - rankOf(b) || a.chunkId.localeCompare(b.chunkId)
+  );
 
-  const referenceTopK = new Set(reference.response.results.filter((result) => result.outcome === 'kept').map((result) => result.chunkId));
-  const commonInTopK = current.response.results.filter((result) => result.outcome === 'kept' && referenceTopK.has(result.chunkId)).length;
+  const commonInTopK = rows.filter((row) => row.passedOnReference && row.passedOnCurrent).length;
 
-  return { reference, current, changedFields, rows, commonInTopK, lost, gained };
+  return { reference, current, changedFields, rows, commonInTopK, lost, gained, nowPassedOn, noLongerPassedOn };
 }

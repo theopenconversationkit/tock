@@ -1,12 +1,12 @@
 import { Observable } from 'rxjs';
 
-import { CompressorSettings } from '../../configuration/compressor-settings/models/compressor-settings';
 import {
   CondenseRequest,
   CondenseResponse,
   DocumentsRequest,
   DocumentsResponse,
   IndexListResponse,
+  RetrievalSettings,
   SearchRequest,
   SearchResponse,
   VectorStoreCapabilities
@@ -47,12 +47,10 @@ export abstract class VectorStoreInspectionService {
   abstract search(request: SearchRequest): Observable<SearchResponse>;
 
   /**
-   * Compressor configuration of the current bot, used to seed the diagnostic
-   * form so it mirrors the running chain.
-   *
-   * No new endpoint is needed: the REST implementation calls the existing
-   * GET /rest/admin/gen-ai/bots/{botId}/configuration/document-compressor.
-   * Returns null when no compressor is configured at all.
+   * The bot's effective retrieval settings (search type, max documents
+   * retrieved, compressor state + thresholds + provider/model), used to seed the
+   * diagnostic form and flag divergences. Resolved server side; the compressor
+   * endpoint is never exposed. Returns null when the bot has no RAG config.
    */
-  abstract getCompressorSettings(): Observable<CompressorSettings | null>;
+  abstract getRetrievalSettings(): Observable<RetrievalSettings | null>;
 }

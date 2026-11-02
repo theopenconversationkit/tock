@@ -40,11 +40,6 @@ class AnomalyCode(str, Enum):
     DUPLICATE_TITLE = 'duplicate_title'
 
 
-class CompressionStage(str, Enum):
-    BEFORE_CUT = 'before_cut'
-    AFTER_CUT = 'after_cut'
-
-
 class PinnedRankStrategy(str, Enum):
     TRUNCATED = 'truncated'
     SCORE_ONLY = 'score_only'
@@ -99,10 +94,8 @@ class VectorStoreInspectionSearchRequest(BaseModel):
     search_type: DocumentSearchType
     query: str = Field(min_length=1)
     key_words: list[str] = Field(default_factory=list)
-    fetch_k: int = Field(ge=1, le=500)
     k: int = Field(ge=1, le=500)
     compression_enabled: bool = False
-    compression_stage: CompressionStage
     compression_override: Optional[CompressionOverride] = None
     pinned_chunk_ids: list[str] = Field(default_factory=list, max_length=50)
     pinned_rank_strategy: PinnedRankStrategy = PinnedRankStrategy.SCORE_ONLY

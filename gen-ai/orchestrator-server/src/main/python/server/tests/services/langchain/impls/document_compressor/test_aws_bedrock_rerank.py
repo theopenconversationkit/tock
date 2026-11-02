@@ -137,3 +137,24 @@ def test_compress_documents_not_fault_tolerant_raises(mocked_bedrock_rerank_cls)
 
     with pytest.raises(GenAIDocumentCompressorErrorException):
         rerank.compress_documents(documents=documents, query='question')
+
+
+@patch(
+    'gen_ai_orchestrator.services.langchain.impls.document_compressor.aws_bedrock_rerank.BedrockRerank'
+)
+def test_score_ties_are_broken_by_retrieval_order_not_response_order(
+    mocked_bedrock_rerank_cls,
+):
+    documents = [Document(page_content=name) for name in ('a', 'b', 'c')]
+    mocked_client = MagicMock()
+    mocked_client.rerank.return_value = [
+        {'index': 2, 'relevance_score': 0.95},
+        {'index': 1, 'relevance_score': 0.70},
+        {'index': 0, 'relevance_score': 0.70},
+    ]
+    mocked_bedrock_rerank_cls.return_value = mocked_client
+
+    rerank = _make_rerank(min_score=0.5, max_documents=2)
+    result = rerank.compress_documents(documents=documents, query='question')
+
+    assert [doc.page_content for doc in result] == ['c', 'a']

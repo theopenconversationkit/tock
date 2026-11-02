@@ -1,8 +1,8 @@
 # Contrat d'interface — outil d'inspection de la base vectorielle
 
 Document de spécification à destination des développeurs back. Décrit les
-endpoints, leurs entrées et leurs sorties, et les refactors orchestrateur qu'ils
-supposent.
+endpoints, leurs entrées et leurs sorties, et la part de la chaîne RAG qu'ils
+partagent avec le runtime.
 
 Compagnon du document de présentation générale ; on s'y réfère pour la
 justification des choix, ce document-ci ne décrit que les interfaces.
@@ -11,12 +11,13 @@ justification des choix, ce document-ci ne décrit que les interfaces.
 
 ## 1. Principes
 
-**Routeur dédié, chemin runtime intact.** Toutes les routes vivent sous un
-nouveau `vector_store_inspection_router`. Aucune modification de `rag_router`,
-`rag_service`, ni de la signature de `create_rag_chain()`. Les fonctions
-réutilisées (`build_question_condensation_chain`, `apply_rrf_ranking`,
-`add_rank_metadata`, `get_chunk_identifier`) sont importées telles quelles depuis
-`rag_chain_builder.py` — pas de duplication, pas de fork.
+**Routeur dédié, chaîne partagée.** Toutes les routes vivent sous un
+`vector_store_inspection_router` dédié. Aucune modification de `rag_router`,
+`rag_service`, ni de la signature de `create_rag_chain()`. En revanche, la
+recherche, le RRF et la compression ne sont pas rejoués : le diagnostic appelle
+les mêmes retrievers et la même fonction de compression que le runtime, avec une
+trace optionnelle qui expose les étapes intermédiaires (§6). Le comportement du
+runtime est inchangé quand la trace est absente.
 
 **Deux niveaux d'appel.** Le studio ne parle pas à l'orchestrateur. Il appelle le
 serveur admin (`GenAIVerticle`), qui relaie via `orchestrator-client`. Chaque
@@ -27,18 +28,19 @@ depuis Mongo ; le studio n'envoie jamais de credentials.
 **Conventions de nommage.** Sur le fil orchestrateur (FastAPI), le JSON est en
 `snake_case` — c'est la convention utilisée dans ce document. Le mapper Jackson de
 `orchestrator-client` applique déjà `SNAKE_CASE` + `NON_NULL`, donc les data
-classes Kotlin restent en `camelCase`. Côté studio, les modèles TypedScript sont
+classes Kotlin restent en `camelCase`. Côté studio, les modèles TypeScript sont
 en `camelCase`.
 
 **Capabilities plutôt que conditions codées en dur.** L'UI n'encode jamais « si
 OpenSearch alors pas d'hybride ». Elle interroge les capacités du provider et
 construit ses contrôles à partir de la réponse (§6).
 
-**La compression est supposée disponible.** À l'heure actuelle
-`create_rag_chain()` ne lit jamais `request.compressor_setting` (régression RAG
-v3, `d92e72aa`). C'est un défaut distinct, corrigé indépendamment. Cet outil est
-spécifié contre le comportement **attendu** : la compression est un étage de
-l'entonnoir à part entière, activable, désactivable et observable.
+**Réglages du bot par défaut.** Le diagnostic part des réglages effectifs du
+bot (type de recherche, nombre de documents remontés, compresseur) et signale
+toute divergence introduite par l'utilisateur. Seuls trois réglages sont
+modifiables : le nombre de documents remontés (`k`), le `max_documents` et le
+`min_score` du compresseur. Le type de recherche et `fill_to_max_documents`
+restent ceux du bot.
 
 ---
 
@@ -49,16 +51,15 @@ l'entonnoir à part entière, activable, désactivable et observable.
 | 1   | `GET /vector-store-inspection/indexes`          | sélecteur d'index          | requête catalogue                |
 | 2   | `POST /vector-store-inspection/documents`       | Exploration                | requête paginée                  |
 | 3   | `POST /vector-store-inspection/condense`        | bandeau de condensation    | 1 appel LLM                      |
-| 4   | `POST /vector-store-inspection/search`          | Diagnostic + comparaison   | 1 embedding + 1-2 requêtes stock |
+| 4   | `POST /vector-store-inspection/search`          | Diagnostic + comparaison   | 1 embedding + 1-2 requêtes stock + 1 appel reranker |
 | 5   | `GET /vector-store-providers/{id}/capabilities` | construction des contrôles | statique                         |
 
 L'endpoint 5 est le seul hors du routeur dédié : il complète naturellement le
 `vector_store_providers_router` existant.
 
-Aucun endpoint pour la configuration du compresseur : le studio la lit depuis la
-route admin existante
-`GET /rest/admin/gen-ai/bots/{botId}/configuration/document-compressor`, qui
-renvoie `BotDocumentCompressorConfigurationDTO` avec son `enabled`.
+Aucun endpoint orchestrateur pour les réglages du bot : la route admin
+`GET /gen-ai/bots/:botId/vector-store/retrieval-settings` les assemble depuis les
+configurations RAG et compresseur stockées (§7).
 
 ---
 
@@ -280,10 +281,8 @@ Le cœur. Exécute une recherche et renvoie l'entonnoir complet.
   "search_type": "HYBRID_SEARCH",
   "query": "Conditions de résiliation anticipée d'un contrat d'assurance habitation",
   "key_words": ["résiliation", "assurance habitation", "anticipée"],
-  "fetch_k": 150,
   "k": 8,
   "compression_enabled": true,
-  "compression_stage": "before_cut",
   "compression_override": {
     "min_score": 0.4,
     "max_documents": 4,
@@ -299,35 +298,23 @@ Le cœur. Exécute une recherche et renvoie l'entonnoir complet.
 | `search_type`          | enum          | `SIMILARITY_SEARCH` \| `FULL_TEXT_SEARCH` \| `HYBRID_SEARCH`  |
 | `query`                | string        | Question brute ou condensée — jamais recalculée côté serveur  |
 | `key_words`            | string[]      | Requis pour FTS et hybride                                    |
-| `fetch_k`              | int           | Candidats ramenés du stock                                    |
-| `k`                    | int           | Survivants après la coupe                                     |
+| `k`                    | int           | Documents remontés par canal, et coupe top-k avant compression |
 | `compression_enabled`  | bool          | `false` désactive l'étage compression                         |
-| `compression_stage`    | enum          | `before_cut` (cible) \| `after_cut` (reproduction du runtime) |
 | `compression_override` | objet \| null | Seuils du compresseur pour cette exécution (§3.4.1)           |
 | `pinned_chunk_ids`     | string[]      | Chunks toujours présents dans la réponse                      |
 | `pinned_rank_strategy` | enum          | `truncated` \| `score_only` \| `exact_rank`                   |
 
-**`fetch_k` et `k` sont dissociés.** `fetch_k` gouverne combien de candidats sont
-ramenés, `k` combien survivent à la coupe. Le runtime utilise un seul `k` pour
-les deux, que l'outil sait reproduire (`fetch_k = k`) comme dépasser. Quand
-`fetch_k != k`, l'UI signale que la configuration ne reflète pas le runtime.
-
-**`compression_stage`** :
-
-| valeur       | comportement                                                                                                         |
-| ------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `before_cut` | ramène `fetch_k` → compresse → coupe à `k`. **Ordre cible.** Le compresseur arbitre l'ensemble du vivier             |
-| `after_cut`  | ramène `fetch_k` → coupe à `k` → compresse. Fidèle au runtime, où le compresseur enveloppe un retriever déjà tronqué |
-
-L'UI présente `before_cut` comme le défaut et expose `after_cut` via une case
-« reproduire l'ordre du runtime ». Une fois la dissociation `fetch_k` adoptée au
-runtime, `compression_stage` disparaît et `before_cut` devient le seul
-comportement.
+**Un seul `k`.** Chaque canal remonte `k`, RRF garde le top `k`, puis le
+compresseur rescore ces `k` documents et coupe à `max_documents` (la vraie coupe
+finale). L'ordre est celui du runtime depuis la PR #2114 — il n'y a plus de
+`fetch_k` ni d'ordre alternatif. Le formulaire interdit `max_documents > k` : le
+compresseur ne peut que filtrer ou réordonner, jamais élargir.
 
 `query` et `key_words` sont toujours fournis par l'appelant et jamais recalculés.
 C'est ce qui rend la condensation optionnelle et la comparaison possible. En
-hybride sans `key_words`, renvoyer une **erreur explicite** plutôt que retomber
-silencieusement en vectoriel comme le fait `HybridRetriever` aujourd'hui.
+hybride sans `key_words`, `HybridRetriever` retombe silencieusement en vectoriel
+seul : acceptable au runtime, trompeur dans un outil de diagnostic. Le studio
+refuse donc de lancer la recherche dans ce cas.
 
 #### 3.4.1 `compression_override`
 
@@ -346,13 +333,12 @@ divergence introduite par l'utilisateur.
 ```json
 {
   "funnel": {
-    "vector": { "status": "applied", "count": 150 },
-    "fts": { "status": "applied", "count": 88, "reason": null },
-    "rrf": { "status": "applied", "count": 191 },
-    "compression": { "status": "applied", "count": 4, "reason": null },
-    "top_k_cut": { "status": "applied", "count": 4, "discarded": 0 }
+    "vector": { "status": "applied", "count": 8 },
+    "fts": { "status": "applied", "count": 8, "reason": null },
+    "rrf": { "status": "applied", "count": 13 },
+    "top_k_cut": { "status": "applied", "count": 8, "discarded": 5 },
+    "compression": { "status": "applied", "count": 4, "reason": null, "detail": null, "duration": 0.231 }
   },
-  "compression_stage": "before_cut",
   "results": [
     {
       "chunk_id": "a3f1...:2/7",
@@ -363,18 +349,28 @@ divergence introduite par l'utilisateur.
       "ranks": { "vector": 1, "fts": 3, "rrf": 1 },
       "scores": { "vector": 0.891, "fts": 0.42, "rrf": 0.0304, "compressor": 0.77 },
       "outcome": "kept",
-      "pinned": false
+      "pinned": false,
+      "reranker_windows": null
     }
   ],
   "duration": 0.412
 }
 ```
 
-**`funnel[].status`** : `applied` \| `skipped` \| `disabled` \| `failed_fallback`.
-La distinction est essentielle sur `compression` : `BloomzRerank` est
-`is_fault_tolerant` par défaut et renvoie les documents inchangés sur timeout ou
-erreur HTTP — sans ce statut, « le compresseur a tout gardé » et « le compresseur
-a planté » sont indistinguables. `reason` porte la cause sur `failed_fallback`.
+**`funnel[].status`** : `applied` \| `skipped` \| `disabled` \| `failed_fallback` \| `failed`.
+La distinction est essentielle sur `compression` : le compresseur est
+`is_fault_tolerant` par défaut et renvoie les premiers `max_documents` documents
+(ordre de récupération) sur timeout ou erreur — sans ce statut, « le compresseur a
+tout gardé » et « le compresseur a planté » sont indistinguables. `reason` porte
+la cause sur `failed_fallback`, toujours parmi `bad_response`, `exception` et
+`query_too_long` (toute autre cause est ramenée à `exception`), et `detail` le
+message d'erreur ou le budget restant, affiché en infobulle. L'étage
+`compression` porte aussi `duration` (secondes).
+
+`failed` : la compression a échoué hors de sa tolérance aux pannes (construction
+du compresseur, configuration invalide…). Le runtime ferait échouer la requête :
+`reason` vaut `error`, `detail` porte le message, aucun chunk n'est transmis
+(`count` à 0, chunks en `compression_failed`).
 
 `skipped` : étage non utilisé par le mode courant (FTS et RRF en vectoriel pur).
 `disabled` : compression désactivée par l'utilisateur.
@@ -392,12 +388,21 @@ chunk, ce qui est souvent l'explication recherchée.
 | `below_min_score`        | a atteint le compresseur, scoré sous `min_score`                |
 | `reranked_out`           | au-dessus de `min_score` mais classé au-delà de `max_documents` |
 | `filled_below_threshold` | scoré sous `min_score` mais repêché par `fill_to_max_documents` |
+| `cut_by_fallback`        | compresseur en repli : au-delà des `max_documents` premiers     |
+| `compression_failed`     | compression en échec (`failed`) : aucun chunk transmis          |
 | `not_retrieved`          | remonté par aucun canal                                         |
 
-Les trois du milieu ne surviennent que si la compression a tourné.
+`below_min_score`, `reranked_out`, `filled_below_threshold`, `cut_by_fallback` et
+`compression_failed` ne surviennent que si la compression a tourné. En repli, les documents transmis
+sont `kept` (non scorés) et les suivants `cut_by_fallback`.
 `filled_below_threshold` mérite un traitement distinct dans l'UI : le chunk a
 survécu malgré un score insuffisant, ce qui n'est pas la même chose que d'être
 retenu au mérite.
+
+**`reranker_windows`** : nombre de fenêtres dans lesquelles un chunk surdimensionné
+a été scoré (`null` sinon). Les changements de `min_score` / `max_documents` sont
+recalculés côté client à partir des scores déjà renvoyés — aucun nouvel appel
+serveur.
 
 **Épinglage.** Les chunks de `pinned_chunk_ids` apparaissent toujours dans
 `results`, même absents de tous les canaux. `pinned_rank_strategy` gouverne le
@@ -405,7 +410,7 @@ coût :
 
 | stratégie    | comportement                                                      | coût                       |
 | ------------ | ----------------------------------------------------------------- | -------------------------- |
-| `truncated`  | cherché uniquement dans le `fetch_k` ramené ; `rank = null` sinon | nul                        |
+| `truncated`  | cherché uniquement dans les `k` remontés ; `rank = null` sinon    | nul                        |
 | `score_only` | score calculé contre la requête, rang non résolu                  | 1 requête ciblée par chunk |
 | `exact_rank` | `COUNT(*)` des chunks mieux classés                               | scan de collection         |
 
@@ -433,13 +438,14 @@ qu'implicitement depuis la recherche précédente, pour qu'on puisse essayer
 plusieurs variantes contre une base stable.
 
 Un descripteur de diff nomme ce qui a changé (`index`, `search_type`, `query`,
-`key_words`, `fetch_k`, `k`, `compression`), affiché en bandeau. Deux libellés
-d'absence distincts :
+`key_words`, `k`, `compression` — y compris `min_score` et `max_documents`),
+affiché en bandeau. Un changement de seuil côté client produit une exécution
+comparable sans appel serveur. Deux libellés d'absence distincts :
 
 - `absent_from_index` — index différents et le chunk n'existe pas dans l'index
   courant. Problème d'ingestion.
-- `outside_fetch_k` — même index, le chunk est simplement sorti de la fenêtre
-  ramenée. Problème de classement.
+- `outside_k` — même index, le chunk est simplement sorti de la fenêtre remontée.
+  Problème de classement.
 
 Les fusionner masquerait les deux diagnostics que l'outil existe pour séparer.
 
@@ -484,35 +490,55 @@ paramètre, §7).
 
 ---
 
-## 6. Refactors orchestrateur requis
+## 6. Chaîne partagée avec le runtime
 
-C'est là que le vrai poids se trouve. Aucun n'est évitable, tous sans impact
-runtime.
+Le diagnostic n'a pas sa propre orchestration : il appelle les mêmes briques que
+`create_rag_chain`, ce qui garantit par construction les mêmes documents, le même
+ordre et le même comportement du compresseur.
 
-### 6.1 Exposer les scores
+### 6.1 Scores conservés par les retrievers runtime
 
-`get_vector_store_retriever()` passe par `as_retriever()` → `similarity_search`,
-sans score. `PostgreSQLTextRetriever.build_docs()` calcule
-`ts_rank(d.fts_vector, q.ts_query) AS score` puis le **jette**.
+- **Vecteur** : `PGVectorFactory.get_vector_store_retriever()` renvoie un
+  `ScoredVectorStoreRetriever` (sous-classe de `VectorStoreRetriever`) qui appelle
+  `similarity_search_with_score` et pose `1 - distance` dans
+  `metadata['vector_score']`. `similarity_search` de PGVector passant déjà par la
+  même requête, documents et ordre sont inchangés ; `filter`, `search_kwargs`, le
+  mode async et le span retriever (Langfuse) sont hérités. OpenSearch garde
+  `as_retriever()`.
+- **FTS** : `PostgreSQLTextRetriever.build_docs()` conserve le `ts_rank` déjà
+  calculé dans `metadata['fts_score']`.
 
-Le service d'inspection appelle `asimilarity_search_with_score()` directement sur
-le `VectorStore`, plus une variante de `build_docs()` qui conserve `row.score`.
-Retrievers runtime inchangés.
+Deux clés distinctes : la fusion RRF ne recopie que les clés absentes, une clé
+commune perdrait le score FTS d'un chunk trouvé par les deux canaux. Ces scores
+n'atteignent ni le contexte du LLM, ni `RAGDocumentMetadata`, ni les footnotes
+renvoyées au bot (`rag_response_builder` les retire). Le retriever garde le nom de
+run `VectorStoreRetriever`, donc le même span Langfuse qu'avant.
 
-### 6.2 Exposer les canaux hybrides séparément
+### 6.2 Trace optionnelle des étapes
 
-`HybridRetriever.retrieve()` produit `docs_vector` et `docs_fts` puis ne renvoie
-que la fusion. Le service d'inspection rejoue la séquence en appelant les mêmes
-fonctions (`add_rank_metadata`, `apply_rrf_ranking`) et garde les trois listes.
+`RetrievalTrace` (dans `rag_chain_builder`) est passé en option à
+`SimilarityRetriever`, `FTSRetriever` et `HybridRetriever`. Absent au runtime : coût
+nul, comportement identique. Le diagnostic y lit les listes par canal, les scores
+RRF, la liste fusionnée telle que produite (déjà coupée à `k`) et le repli
+éventuel sur mots-clés manquants.
 
-**Attention à l'ordre** : `apply_rrf_ranking()` écrit
-`doc.metadata['rank']['rrf']` en supposant que la clé `rank` existe déjà — créée
-par `add_rank_metadata()`. Appeler le RRF sans avoir posé les rangs lève un
-`KeyError`.
+La compression passe par `compress_documents_with_fallback`, partagé : le
+compresseur est construit comme au runtime (tolérant aux pannes) et
+`last_fallback_info` est lu après l'appel. La sélection (tri, seuil, complément)
+est factorisée dans `select_reranked_documents`, utilisée par les trois
+compresseurs et reproduite à l'identique côté studio pour le recalcul instantané
+des seuils.
 
-### 6.3 Listing, comptage et pagination
+### 6.3 Garde-fou
 
-Inexistant. Requiert un accès SQL direct à
+`test_retrieval_pipeline_parity.py` vérifie que les documents qui atteignent
+l'étape de réponse au runtime sont exactement ceux étiquetés `kept` /
+`filled_below_threshold` par le diagnostic, dans le même ordre, en similarité,
+FTS et hybride, avec et sans compresseur, et en repli.
+
+### 6.4 Listing, comptage et pagination
+
+Propres à l'exploration, sans équivalent runtime : accès SQL direct à
 `langchain_pg_embedding` / `langchain_pg_collection`, sur le modèle de
 `PostgreSQLTextRetriever`. Le pool est disponible via `db_pool_registry`.
 
@@ -531,7 +557,16 @@ POST /gen-ai/bots/:botId/vector-store/documents
 POST /gen-ai/bots/:botId/vector-store/condense
 POST /gen-ai/bots/:botId/vector-store/search
 GET  /gen-ai/bots/:botId/vector-store/capabilities
+GET  /gen-ai/bots/:botId/vector-store/retrieval-settings
 ```
+
+`retrieval-settings` renvoie les réglages effectifs du bot, qui préremplissent le
+diagnostic et servent de base au bandeau de divergence : `ragEnabled` (le runtime
+ne charge qu'une configuration RAG activée), `searchType`,
+`maxDocumentsRetrieved` (config RAG), `compressionEnabled`, `minScore`,
+`maxDocuments`, `fillToMaxDocuments`, `provider` et `model` (compresseur). L'endpoint
+du compresseur n'est jamais exposé. Purement admin : rien n'est demandé à
+l'orchestrateur.
 
 Rôle : `admin`, cohérent avec le reste des écrans de configuration RAG. Ouvrir
 l'outil aux `botUser` est un chantier séparé.
@@ -557,6 +592,6 @@ Côté studio, les types réutilisent l'existant plutôt que de les redéfinir :
 Types propres à la fonctionnalité (aucun équivalent dans le repo) :
 `VectorStoreIndex`, `VectorStoreCapabilities`, `IndexStats`, `IndexAnomaly`,
 `InspectedDocument`, `InspectedChunk`, `SearchFunnel`, `FunnelStage`,
-`ChannelRanks`, `ChannelScores`, `ChunkOutcome`, `CompressionStage`,
-`CompressionOverride`, `PinnedRankStrategy`, `SearchRun`, `RunComparison`,
+`ChannelRanks`, `ChannelScores`, `ChunkOutcome`, `CompressionOverride`,
+`RetrievalSettings`, `PinnedRankStrategy`, `SearchRun`, `RunComparison`,
 `RunComparisonRow`, `RunDiffField`, `AbsenceReason`, `RunDelta`.

@@ -17,6 +17,11 @@
 import logging
 from typing import Optional
 
+from langchain_core.callbacks import (
+    AsyncCallbackManagerForRetrieverRun,
+    CallbackManagerForRetrieverRun,
+)
+from langchain_core.documents import Document
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_postgres import PGVector
 from sqlalchemy import text
@@ -41,6 +46,53 @@ from gen_ai_orchestrator.services.langchain.factories.vector_stores.vector_store
 )
 
 logger = logging.getLogger(__name__)
+
+
+# Metadata key holding the vector channel score. Distinct from the FTS one
+# (postgresql_text_retriever.FTS_SCORE_METADATA_KEY) so both survive the RRF
+# metadata merge of a document found by the two channels.
+VECTOR_SCORE_METADATA_KEY = 'vector_score'
+
+
+def _attach_vector_score(doc: Document, distance: float) -> Document:
+    # PGVector returns a distance (smaller is closer); expose it on the same
+    # 1 - distance scale the inspection already uses for pinned chunks.
+    doc.metadata[VECTOR_SCORE_METADATA_KEY] = 1.0 - float(distance)
+    return doc
+
+
+class ScoredVectorStoreRetriever(VectorStoreRetriever):
+    """Similarity retriever that keeps the score in metadata.
+
+    Behaves exactly like the default similarity retriever — PGVector's
+    similarity_search already delegates to similarity_search_with_score and drops
+    the score, so this returns the same documents in the same order — but records
+    it under metadata['vector_score'] (1 - distance) for the vector store
+    inspection. The score reaches neither the LLM context, RAGDocumentMetadata nor
+    the footnotes returned to the bot (see rag_response_builder). Only the default
+    search_type='similarity' is supported: Tock never sets the LangChain mmr /
+    similarity_score_threshold strategies.
+    """
+
+    def _get_relevant_documents(
+        self, query: str, *, run_manager: CallbackManagerForRetrieverRun
+    ) -> list[Document]:
+        return [
+            _attach_vector_score(doc, distance)
+            for doc, distance in self.vectorstore.similarity_search_with_score(
+                query, **self.search_kwargs
+            )
+        ]
+
+    async def _aget_relevant_documents(
+        self, query: str, *, run_manager: AsyncCallbackManagerForRetrieverRun
+    ) -> list[Document]:
+        return [
+            _attach_vector_score(doc, distance)
+            for doc, distance in await self.vectorstore.asimilarity_search_with_score(
+                query, **self.search_kwargs
+            )
+        ]
 
 
 class PGVectorFactory(LangChainVectorStoreFactory):
@@ -99,8 +151,14 @@ class PGVectorFactory(LangChainVectorStoreFactory):
     def get_vector_store_retriever(
         self, search_kwargs: dict, async_mode: Optional[bool] = True
     ) -> VectorStoreRetriever:
-        return self.get_vector_store(async_mode).as_retriever(
-            search_kwargs=search_kwargs
+        vector_store = self.get_vector_store(async_mode)
+        return ScoredVectorStoreRetriever(
+            vectorstore=vector_store,
+            search_kwargs=search_kwargs,
+            tags=vector_store._get_retriever_tags(),
+            # Keep the run name of the default retriever, so Langfuse traces and
+            # any dashboard keyed on it see the same span as before.
+            name='VectorStoreRetriever',
         )
 
     def get_text_store_retriever(

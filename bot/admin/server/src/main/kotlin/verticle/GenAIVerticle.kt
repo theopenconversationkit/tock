@@ -62,6 +62,7 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
         // Vector store inspection
         private const val PATH_VECTOR_STORE_INSPECTION = "/gen-ai/bots/:botId/vector-store"
         private const val PATH_VECTOR_STORE_CAPABILITIES = "$PATH_VECTOR_STORE_INSPECTION/capabilities"
+        private const val PATH_VECTOR_STORE_RETRIEVAL_SETTINGS = "$PATH_VECTOR_STORE_INSPECTION/retrieval-settings"
         private const val PATH_VECTOR_STORE_INDEXES = "$PATH_VECTOR_STORE_INSPECTION/indexes"
         private const val PATH_VECTOR_STORE_DOCUMENTS = "$PATH_VECTOR_STORE_INSPECTION/documents"
         private const val PATH_VECTOR_STORE_CONDENSE = "$PATH_VECTOR_STORE_INSPECTION/condense"
@@ -305,6 +306,15 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     VectorStoreInspectionAdminService.getCapabilities(app.namespace, app.name)
+                }
+            }
+
+            blockingJsonGet(
+                PATH_VECTOR_STORE_RETRIEVAL_SETTINGS,
+                admin,
+            ) { context: RoutingContext ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    VectorStoreInspectionAdminService.getRetrievalSettings(app.namespace, app.name)
                 }
             }
 
