@@ -40,6 +40,11 @@ export class ChatUiMessageDebugComponent {
     });
   }
 
+  get truncatedCount(): number {
+    const documents: any[] = this.action.ragDebug?.documents ?? [];
+    return documents.filter((d) => d?.metadata?.truncated === true).length;
+  }
+
   getStatusClassName(): string {
     const status = this.action.ragDebug?.answer?.status;
     if (!status) {

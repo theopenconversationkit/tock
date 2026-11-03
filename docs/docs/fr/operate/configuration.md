@@ -459,6 +459,8 @@ Les variables de la base vectorielle sont décrites dans la page [Vector DB sett
 | `tock_gen_ai_orchestrator_em_provider_timeout` | `4` | Délai maximal des appels d'embedding, en secondes |
 | `tock_gen_ai_orchestrator_compressor_provider_timeout` | `7` | Délai maximal des appels au compresseur de documents, en secondes |
 | `tock_gen_ai_orchestrator_compressor_vllm_max_input_tokens` | `8192` | Longueur d'entrée maximale (question + document) en tokens acceptée par le modèle de reranking vLLM ; doit correspondre au `--max-model-len` du serveur ; les documents trop longs sont découpés en fenêtres scorées séparément |
+| `tock_gen_ai_orchestrator_rag_document_max_chars` | `20000` | Longueur maximale, en caractères, d'un document récupéré envoyé au LLM de génération ; les documents plus longs sont tronqués (coupés à la limite en conservant le dernier mot entier, warning en log, métadonnées `truncated` / `original_length` / `truncated_length`) ; `0` désactive la troncature |
+| `tock_gen_ai_orchestrator_rag_document_truncation_word_completion_chars` | `100` | Nombre maximal de caractères ajoutés au-delà de la limite pour terminer le dernier mot d'un document tronqué (borne la coupe pour un contenu sans espace) |
 | `tock_gen_ai_orchestrator_observability_provider_timeout` | `3` | Délai maximal des appels d'observabilité, en secondes |
 | `tock_gen_ai_orchestrator_observability_provider_max_retries` | `0` | Nombre de nouvelles tentatives d'un appel d'observabilité en échec |
 | `tock_gen_ai_orchestrator_db_pool_size` | `10` | Taille du pool de connexions PGVector |

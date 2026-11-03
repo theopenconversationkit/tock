@@ -42,6 +42,9 @@ from langchain_core.runnables import (
     RunnableSerializable,
 )
 
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
 from gen_ai_orchestrator.models.prompt.prompt_formatter import PromptFormatter
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import (
@@ -105,6 +108,58 @@ def compress_documents_with_fallback(
     if fallback_info:
         logger.warning('[Compressor] Fallback occurred: %s', fallback_info)
     return docs, fallback_info
+
+
+def _truncate_at_word_end(text: str, max_chars: int, max_completion_chars: int) -> str:
+    """Cut `text` at `max_chars`, extending to the end of the word cut in the middle."""
+    end = max_chars
+    if not text[end - 1].isspace():
+        limit = min(len(text), max_chars + max_completion_chars)
+        while end < limit and not text[end].isspace():
+            end += 1
+    return text[:end]
+
+
+def truncate_oversized_documents(
+    documents: list[Document], max_chars: int, max_completion_chars: int = 0
+) -> list[Document]:
+    """Truncate aberrant documents so that they cannot overflow the LLM prompt.
+
+    Content is cut at `max_chars`, keeping the last word whole (at most
+    `max_completion_chars` characters are added to complete it). Truncated documents
+    are copies flagged with `truncated`, `original_length` and `truncated_length`
+    metadata. A non-positive `max_chars` disables it.
+    """
+    if max_chars <= 0:
+        return documents
+
+    result = []
+    for doc in documents:
+        original_length = len(doc.page_content)
+        if original_length <= max_chars:
+            result.append(doc)
+            continue
+        content = _truncate_at_word_end(
+            doc.page_content, max_chars, max_completion_chars
+        )
+        logger.warning(
+            '[Truncation] Document %s truncated from %d to %d characters',
+            get_chunk_identifier(doc),
+            original_length,
+            len(content),
+        )
+        result.append(
+            Document(
+                page_content=content,
+                metadata={
+                    **doc.metadata,
+                    'truncated': True,
+                    'original_length': original_length,
+                    'truncated_length': len(content),
+                },
+            )
+        )
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -537,6 +592,18 @@ def create_rag_chain(
             compress_and_capture_fallback,
             name='document_compressor',
         )
+
+    def truncate_documents(x):
+        x['documents'] = truncate_oversized_documents(
+            x['documents'],
+            application_settings.rag_document_max_chars,
+            application_settings.rag_document_truncation_word_completion_chars,
+        )
+        return x
+
+    rag_inputs = rag_inputs | RunnableLambda(
+        truncate_documents, name='document_truncation'
+    )
 
     answer_chain = (
         {

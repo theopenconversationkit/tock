@@ -521,7 +521,10 @@
       "sentences": "Phrases ({count})",
       "content": "Contenu",
       "metadata": "Métadonnées",
-      "full_debug_json": "JSON de débogage complet"
+      "full_debug_json": "JSON de débogage complet",
+      "truncated": "tronqués",
+      "truncated_tooltip": "Contenu tronqué avant l'envoi au LLM (taille d'origine : {length} caractères)",
+      "truncated_detail": "Ce chunk dépassait la taille maximale configurée et a été tronqué avant l'envoi au LLM. Taille d'origine : {length} caractères, taille après troncature : {truncatedLength} caractères."
     },
     "error-helper": {
       "required": "Ce champ est obligatoire",

@@ -67,6 +67,16 @@ class _Settings(BaseSettings):
     reranking model. Must match the --max-model-len actually used by the vLLM
     server (8192 is the limit of Alibaba-NLP/gte-multilingual-reranker-base).
     Oversized documents are split into windows scored separately."""
+    rag_document_max_chars: int = 20000
+    """Maximum length (in characters) of a retrieved document's content sent to the
+    answering LLM. Longer documents are truncated, flagged in their metadata and
+    logged. Set to 0 to disable truncation.
+    The 20000 default is roughly 5000 to 7000 tokens for ordinary text: well under LLM
+    context limits, while letting legitimately long tables through. Dense content
+    (tables, base64, non-Latin text) yields more tokens per character."""
+    rag_document_truncation_word_completion_chars: int = 100
+    """Maximum number of characters added past `rag_document_max_chars` to complete the
+    last word of a truncated document. Bounds the cut for content without whitespace."""
 
     vector_store_provider: Optional[VectorStoreProvider] = (
         VectorStoreProvider.PGVECTOR

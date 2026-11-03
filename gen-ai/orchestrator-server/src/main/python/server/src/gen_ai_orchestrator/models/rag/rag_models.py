@@ -178,6 +178,18 @@ class RAGDocumentMetadata(BaseModel):
     reranker_score: Optional[float] = Field(
         description='The compressor score', examples=[0.9149009585380554], default=None
     )
+    truncated: Optional[bool] = Field(
+        description='True if the document content was truncated before being sent to the LLM.',
+        default=None,
+    )
+    original_length: Optional[int] = Field(
+        description='Original content length in characters, set when the document was truncated.',
+        default=None,
+    )
+    truncated_length: Optional[int] = Field(
+        description='Content length in characters after truncation, i.e. as sent to the LLM. Set when the document was truncated.',
+        default=None,
+    )
 
 
 class RAGDocument(BaseModel):

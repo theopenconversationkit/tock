@@ -521,7 +521,10 @@
       "sentences": "Sentences ({count})",
       "content": "Content",
       "metadata": "Metadata",
-      "full_debug_json": "Full debug JSON"
+      "full_debug_json": "Full debug JSON",
+      "truncated": "truncated",
+      "truncated_tooltip": "Content truncated before being sent to the LLM (original length: {length} characters)",
+      "truncated_detail": "This chunk exceeded the configured maximum size and was truncated before being sent to the LLM. Original length: {length} characters, length after truncation: {truncatedLength} characters."
     },
     "error-helper": {
       "required": "This field is required",
