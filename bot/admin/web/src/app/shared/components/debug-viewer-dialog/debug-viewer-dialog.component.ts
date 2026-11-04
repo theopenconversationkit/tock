@@ -8,6 +8,9 @@ interface DebugDocument {
     id: string;
     title: string;
     chunk: string;
+    truncated?: boolean;
+    original_length?: number;
+    truncated_length?: number;
     [key: string]: any;
   };
 }
@@ -91,9 +94,9 @@ export class DebugViewerDialogComponent implements OnInit {
         metadata,
         metadataEntries: Object.keys(metadata).map((key) => ({ key, value: metadata[key] })),
         expanded: false,
-        truncated: metadata['truncated'] === true,
-        originalLength: metadata['original_length'],
-        truncatedLength: metadata['truncated_length']
+        truncated: metadata.truncated === true,
+        originalLength: metadata.original_length,
+        truncatedLength: metadata.truncated_length
       };
     });
 

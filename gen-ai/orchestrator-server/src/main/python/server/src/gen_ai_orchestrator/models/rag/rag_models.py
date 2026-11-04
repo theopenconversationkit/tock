@@ -187,7 +187,7 @@ class RAGDocumentMetadata(BaseModel):
         default=None,
     )
     truncated_length: Optional[int] = Field(
-        description='Content length in characters after truncation, i.e. as sent to the LLM. Set when the document was truncated.',
+        description='Content length in characters after truncation (marker included), i.e. as sent to the LLM. Set when the document was truncated.',
         default=None,
     )
 

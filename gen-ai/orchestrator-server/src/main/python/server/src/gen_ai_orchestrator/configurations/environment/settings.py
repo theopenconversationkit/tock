@@ -71,6 +71,9 @@ class _Settings(BaseSettings):
     """Maximum length (in characters) of a retrieved document's content sent to the
     answering LLM. Longer documents are truncated, flagged in their metadata and
     logged. Set to 0 to disable truncation.
+    This is a threshold, not a strict bound on the final content: the last word is
+    completed (up to `rag_document_truncation_word_completion_chars` more characters)
+    and a short marker is appended, so a truncated document ends up slightly longer.
     The 20000 default is roughly 5000 to 7000 tokens for ordinary text: well under LLM
     context limits, while letting legitimately long tables through. Dense content
     (tables, base64, non-Latin text) yields more tokens per character."""

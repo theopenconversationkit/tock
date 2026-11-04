@@ -81,7 +81,7 @@
             [nbTooltip]="'shared.debug-viewer-dialog.truncated_tooltip' | transloco: { length: doc.originalLength }"
           >
             <nb-icon icon="exclamation-triangle"></nb-icon>
-            @if (doc.originalLength) { {{ doc.originalLength }} }
+            @if (doc.originalLength) { {{ doc.originalLength }} {{ 'shared.debug-viewer-dialog.chars_suffix' | transloco }} }
           </span>
           }
           @if (!doc.expanded && doc.reason) {

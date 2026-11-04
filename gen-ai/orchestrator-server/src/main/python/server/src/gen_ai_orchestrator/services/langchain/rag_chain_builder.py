@@ -110,6 +110,11 @@ def compress_documents_with_fallback(
     return docs, fallback_info
 
 
+TRUNCATION_MARKER = (
+    '\n\n[... content truncated: original length {original_length} characters ...]'
+)
+
+
 def _truncate_at_word_end(text: str, max_chars: int, max_completion_chars: int) -> str:
     """Cut `text` at `max_chars`, extending to the end of the word cut in the middle."""
     end = max_chars
@@ -126,9 +131,11 @@ def truncate_oversized_documents(
     """Truncate aberrant documents so that they cannot overflow the LLM prompt.
 
     Content is cut at `max_chars`, keeping the last word whole (at most
-    `max_completion_chars` characters are added to complete it). Truncated documents
-    are copies flagged with `truncated`, `original_length` and `truncated_length`
-    metadata. A non-positive `max_chars` disables it.
+    `max_completion_chars` characters are added to complete it), then followed by an
+    explicit marker. Documents whose content is kept entirely are returned untouched.
+    Truncated documents are copies flagged with `truncated`, `original_length` and
+    `truncated_length` (marker included) metadata. A non-positive `max_chars`
+    disables it.
     """
     if max_chars <= 0:
         return documents
@@ -139,15 +146,19 @@ def truncate_oversized_documents(
         if original_length <= max_chars:
             result.append(doc)
             continue
-        content = _truncate_at_word_end(
+        kept = _truncate_at_word_end(
             doc.page_content, max_chars, max_completion_chars
-        )
+        ).rstrip()
+        if len(kept) >= original_length:
+            result.append(doc)
+            continue
         logger.warning(
             '[Truncation] Document %s truncated from %d to %d characters',
             get_chunk_identifier(doc),
             original_length,
-            len(content),
+            len(kept),
         )
+        content = kept + TRUNCATION_MARKER.format(original_length=original_length)
         result.append(
             Document(
                 page_content=content,
