@@ -459,6 +459,8 @@ The vector store variables are described on the [Vector DB settings](../gen-ai/v
 | `tock_gen_ai_orchestrator_em_provider_timeout` | `4` | Timeout of the embedding calls, in seconds |
 | `tock_gen_ai_orchestrator_compressor_provider_timeout` | `7` | Timeout of the document compressor calls, in seconds |
 | `tock_gen_ai_orchestrator_compressor_vllm_max_input_tokens` | `8192` | Maximum input length (query + document) in tokens accepted by the vLLM reranking model; must match the server's `--max-model-len`; oversized documents are split into windows scored separately |
+| `tock_gen_ai_orchestrator_rag_document_max_chars` | `20000` | Maximum length, in characters, of a retrieved document sent to the answering LLM; longer documents are truncated (cut at the limit keeping the last word whole, explicit marker, warning log, `truncated` / `original_length` / `truncated_length` metadata); `0` disables it |
+| `tock_gen_ai_orchestrator_rag_document_truncation_word_completion_chars` | `100` | Maximum number of characters added past the limit to complete the last word of a truncated document (bounds the cut for content without whitespace) |
 | `tock_gen_ai_orchestrator_observability_provider_timeout` | `3` | Timeout of the observability calls, in seconds |
 | `tock_gen_ai_orchestrator_observability_provider_max_retries` | `0` | Number of retries of a failed observability call |
 | `tock_gen_ai_orchestrator_db_pool_size` | `10` | Size of the PGVector connection pool |

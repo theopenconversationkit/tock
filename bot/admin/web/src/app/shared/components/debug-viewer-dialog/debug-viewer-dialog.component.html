@@ -19,10 +19,14 @@
         <span class="documents-summary__title">
           {{ 'shared.debug-viewer-dialog.documents_title' | transloco: { count: allDocuments.length } }}
         </span>
-        @if (hasContextUsage) {
+        @if (hasContextUsage || truncatedCount) {
         <span class="documents-summary__counts">
+          @if (hasContextUsage) {
           <span class="badge badge--used"> {{ usedDocuments.length }} {{ 'shared.debug-viewer-dialog.used' | transloco }} </span>
           <span class="badge badge--unused"> {{ unusedDocuments.length }} {{ 'shared.debug-viewer-dialog.unused' | transloco }} </span>
+          } @if (truncatedCount) {
+          <span class="badge badge--truncated"> {{ truncatedCount }} {{ 'shared.debug-viewer-dialog.truncated' | transloco }} </span>
+          }
         </span>
         }
       </header>
@@ -71,6 +75,15 @@
           ></span>
           }
           <span class="doc-item__title">{{ doc.title }}</span>
+          @if (doc.truncated) {
+          <span
+            class="doc-item__truncated"
+            [nbTooltip]="'shared.debug-viewer-dialog.truncated_tooltip' | transloco: { length: doc.originalLength }"
+          >
+            <nb-icon icon="exclamation-triangle"></nb-icon>
+            @if (doc.originalLength) { {{ doc.originalLength }} {{ 'shared.debug-viewer-dialog.chars_suffix' | transloco }} }
+          </span>
+          }
           @if (!doc.expanded && doc.reason) {
           <span class="doc-item__reason-preview">{{ doc.reason }}</span>
           }
@@ -78,6 +91,12 @@
 
         @if (doc.expanded) {
         <div class="doc-item__detail">
+          @if (doc.truncated) {
+          <p class="doc-item__truncation-detail">
+            <nb-icon icon="exclamation-triangle"></nb-icon>
+            {{ 'shared.debug-viewer-dialog.truncated_detail' | transloco: { length: doc.originalLength, truncatedLength: doc.truncatedLength } }}
+          </p>
+          }
           @if (doc.reason) {
           <p class="doc-item__reason">
             <span class="doc-item__label">

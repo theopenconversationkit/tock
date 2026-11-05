@@ -47,4 +47,21 @@ describe('DebugViewerComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should show the truncated badge and the row icon for truncated documents', () => {
+    const truncatedFixture = TestBed.createComponent(DebugViewerDialogComponent);
+    truncatedFixture.componentRef.setInput('debug', {
+      documents: [
+        { content: 'a', metadata: { id: '1', chunk: '1/1', title: 'A', truncated: true, original_length: 30000, truncated_length: 20050 } },
+        { content: 'b', metadata: { id: '2', chunk: '1/1', title: 'B' } },
+        { content: 'c', metadata: { id: '3', chunk: '1/1', title: 'C', truncated: true, original_length: 40000, truncated_length: 20050 } }
+      ]
+    });
+    truncatedFixture.detectChanges();
+
+    expect(truncatedFixture.componentInstance.truncatedCount).toBe(2);
+    const el: HTMLElement = truncatedFixture.nativeElement;
+    expect(el.querySelector('.badge--truncated')?.textContent).toContain('2');
+    expect(el.querySelectorAll('.doc-item__truncated').length).toBe(2);
+  });
 });

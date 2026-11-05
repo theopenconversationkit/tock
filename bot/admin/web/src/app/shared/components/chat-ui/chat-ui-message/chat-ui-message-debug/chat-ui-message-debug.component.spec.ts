@@ -60,4 +60,14 @@ describe('ChatUiMessageDebugComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should count truncated chunks and show the tag even when condensed', () => {
+    fixture.componentRef.setInput('action', {
+      ragDebug: { documents: [{ metadata: { truncated: true } }, { metadata: {} }, { metadata: { truncated: true } }] }
+    });
+    fixture.componentRef.setInput('condensed', true);
+    fixture.detectChanges();
+    expect(component.truncatedCount).toBe(2);
+    expect(fixture.nativeElement.textContent).toContain('Truncated chunks');
+  });
 });

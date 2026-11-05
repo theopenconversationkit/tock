@@ -24,7 +24,15 @@
     Status | <strong class="ml-1">{{ getStatusLabel() }}</strong>
   </div>
 
-  @if (!condensed && action.ragDebug?.answer?.topic && action.ragDebug?.answer?.topic !== 'unknown') {
+  @if (truncatedCount) {
+  <div
+    class="tag status-warning"
+    (click)="showDebug()"
+    nbTooltip="Show details"
+  >
+    Truncated chunks | <strong class="ml-1">{{ truncatedCount }}</strong>
+  </div>
+  } @if (!condensed && action.ragDebug?.answer?.topic && action.ragDebug?.answer?.topic !== 'unknown') {
   <div
     class="tag topic"
     (click)="showDebug()"

@@ -8,6 +8,9 @@ interface DebugDocument {
     id: string;
     title: string;
     chunk: string;
+    truncated?: boolean;
+    original_length?: number;
+    truncated_length?: number;
     [key: string]: any;
   };
 }
@@ -31,6 +34,9 @@ interface DocumentSummaryItem {
   metadata: Record<string, any>;
   metadataEntries: { key: string; value: any }[];
   expanded: boolean;
+  truncated: boolean;
+  originalLength?: number;
+  truncatedLength?: number;
 }
 
 @Component({
@@ -47,6 +53,7 @@ export class DebugViewerDialogComponent implements OnInit {
   usedDocuments: DocumentSummaryItem[] = [];
   unusedDocuments: DocumentSummaryItem[] = [];
   hasContextUsage = false;
+  truncatedCount = 0;
 
   constructor(public dialogRef: NbDialogRef<DebugViewerDialogComponent>) {}
 
@@ -86,9 +93,14 @@ export class DebugViewerDialogComponent implements OnInit {
         sentences: usage?.sentences ?? [],
         metadata,
         metadataEntries: Object.keys(metadata).map((key) => ({ key, value: metadata[key] })),
-        expanded: false
+        expanded: false,
+        truncated: metadata.truncated === true,
+        originalLength: metadata.original_length,
+        truncatedLength: metadata.truncated_length
       };
     });
+
+    this.truncatedCount = this.allDocuments.filter((d) => d.truncated).length;
 
     if (this.hasContextUsage) {
       this.usedDocuments = this.allDocuments.filter((d) => d.used);
