@@ -33,6 +33,7 @@ internal object MattermostConnectorProvider : ConnectorProvider {
     private const val DEDICATED_CHANNEL_ID = "_dedicated_room_id_"
     private const val OUTGOING_TOKEN = "_outgoing_token_"
     private const val TOCK_USERNAME = "_tock_username_"
+    private const val REPLY_IN_THREAD = "_reply_in_thread_"
 
     override val connectorType: ConnectorType get() = mattermostConnectorType
 
@@ -46,6 +47,7 @@ internal object MattermostConnectorProvider : ConnectorProvider {
                 parameters[DEDICATED_CHANNEL_ID]?.run { if (isBlank()) null else trim() },
                 parameters.getValue(OUTGOING_TOKEN),
                 parameters[TOCK_USERNAME]?.run { if (isBlank()) null else trim() },
+                parameters[REPLY_IN_THREAD]?.trim() == "1",
             )
         }
     }
@@ -77,6 +79,11 @@ internal object MattermostConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Optional Tock Username",
                     TOCK_USERNAME,
+                    false,
+                ),
+                ConnectorTypeConfigurationField(
+                    "Reply in thread (true = 1, false = 0)",
+                    REPLY_IN_THREAD,
                     false,
                 ),
             ),

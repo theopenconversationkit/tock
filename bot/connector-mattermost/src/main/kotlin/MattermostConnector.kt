@@ -18,6 +18,7 @@ package ai.tock.bot.connector.mattermost
 
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
+import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.mattermost.model.MattermostConnectorMessage
 import ai.tock.bot.connector.mattermost.model.MattermostMessageIn
@@ -49,6 +50,7 @@ class MattermostConnector(
     private val channelId: String? = null,
     private val outgoingToken: String,
     private val tockUsername: String? = null,
+    private val replyInThread: Boolean = false,
 ) : ConnectorBase(mattermostConnectorType) {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -90,7 +92,8 @@ class MattermostConnector(
 
                     try {
                         val event = MattermostRequestConverter.toEvent(message, applicationId)
-                        controller.handle(event)
+                        val callback = MattermostConnectorCallback(applicationId, message.channelId, message.postId)
+                        controller.handle(event, ConnectorData(callback))
                     } catch (e: Throwable) {
                         logger.logError(e, requestTimerData)
                     }
@@ -117,18 +120,31 @@ class MattermostConnector(
         if (event is Action) {
             val message = MattermostMessageConverter.toMessageOut(event, channelId, tockUsername)
             if (message != null) {
-                sendMessage(message, delayInMs)
+                sendMessage(message, callback, delayInMs)
             }
         }
     }
 
     private fun sendMessage(
         message: MattermostConnectorMessage,
+        callback: ConnectorCallback,
         delayInMs: Long,
     ) {
         executor.executeBlocking(Duration.ofMillis(delayInMs)) {
-            client.sendMessage(message as MattermostMessageOut)
+            client.sendMessage((message as MattermostMessageOut).inThreadOf(callback))
         }
+    }
+
+    private fun MattermostMessageOut.inThreadOf(callback: ConnectorCallback): MattermostMessageOut {
+        if (!replyInThread || callback !is MattermostConnectorCallback || callback.postId == null) {
+            return this
+        }
+        // a thread only exists in the channel of its root post
+        if (channel != null && channel != callback.channelId) {
+            logger.warn { "Reply not sent in thread: channel $channel differs from channel ${callback.channelId} of post ${callback.postId}" }
+            return this
+        }
+        return copy(rootId = callback.postId)
     }
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =

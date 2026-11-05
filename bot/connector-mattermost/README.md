@@ -52,6 +52,14 @@ Instead of an outgoing webhook, we can configure a slash command inside Mattermo
 
 See https://developers.mattermost.com/integrate/slash-commands/custom/ for more info on custom slash commands.
 
+### Reply in thread
+
+By default, the bot answers with a new message in the channel. Set `Reply in thread (true = 1, false = 0)` to `1`
+in the `Connector Custom Configuration` to answer in the thread of the user message instead.
+
+The answer is sent as a new message when it goes to another channel than the user message
+(for instance when `Optional Channel Id` is set to another channel).
+
 ### todo
 
 - reply on the original channel
