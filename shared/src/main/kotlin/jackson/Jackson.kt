@@ -32,16 +32,33 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import mu.KotlinLogging
-import org.litote.jackson.getJacksonModulesFromServiceLoader
-import org.litote.kmongo.id.jackson.IdJacksonModule
+import org.litote.jackson.JacksonModuleServiceLoader
+import tools.jackson.databind.ValueSerializer
+import java.util.ServiceConfigurationError
+import java.util.ServiceLoader
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * Load dynamically a Jackson 2 module for the Tock [mapper].
+ *
+ * The Mongo mapping uses Jackson 3: its modules are loaded with [org.litote.jackson.JacksonModuleServiceLoader].
+ */
+fun interface Jackson2ModuleServiceLoader {
+    /**
+     * The module to load.
+     */
+    fun module(): Module
+}
+
 internal val jacksonAdditionalModules: List<Module> by lazy {
     try {
-        getJacksonModulesFromServiceLoader().also { logger.debug { "additional modules: $it" } }
+        ServiceLoader
+            .load(Jackson2ModuleServiceLoader::class.java)
+            .map { it.module() }
+            .also { logger.debug { "additional modules: $it" } }
     } catch (e: Exception) {
         logger.error(e)
         emptyList<Module>()
@@ -57,7 +74,7 @@ val mapper: ObjectMapper by lazy {
         .findAndRegisterModules()
         // force java time module
         .registerModule(JavaTimeModule())
-        .registerModule(IdJacksonModule())
+        .registerModule(Jackson2IdModule())
         .registerModules(jacksonAdditionalModules)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .setSerializationInclusion(JsonInclude.Include.NON_NULL)
@@ -66,7 +83,29 @@ val mapper: ObjectMapper by lazy {
         .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
         .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
         .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+        .apply {
+            // the generated serializers are Jackson 3 ones: keep their format, which contains the null properties
+            generatedSerializerTypes.forEach { addMixIn(it, IncludeNullProperties::class.java) }
+        }
 }
+
+@JsonInclude(JsonInclude.Include.ALWAYS)
+private interface IncludeNullProperties
+
+/**
+ * The classes with a serializer generated from [org.litote.jackson.data.JacksonData].
+ */
+private val generatedSerializerTypes: List<Class<*>>
+    get() =
+        try {
+            ServiceLoader
+                .load(JacksonModuleServiceLoader::class.java)
+                .filterIsInstance<ValueSerializer<*>>()
+                .mapNotNull { it.handledType() }
+        } catch (e: ServiceConfigurationError) {
+            logger.error(e)
+            emptyList()
+        }
 
 /**
  * Read value from a [JsonParser].

@@ -37,7 +37,7 @@ import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.name
 import ai.tock.shared.namespace
-import com.mongodb.client.MongoCollection
+import com.mongodb.kotlin.client.MongoCollection
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
@@ -45,6 +45,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.gte
+import org.litote.kmongo.mapNotNull
 import org.litote.kmongo.save
 import java.util.Locale
 

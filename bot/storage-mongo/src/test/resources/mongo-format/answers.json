@@ -1,0 +1,61 @@
+{
+  "answers": [
+    {
+      "answers": [],
+      "answerType": "simple"
+    },
+    {
+      "storyHandlerClassName": "handler",
+      "answerType": "builtin"
+    },
+    {
+      "scriptVersions": [
+        {
+          "script": "script",
+          "compiledCode": [],
+          "version": {
+            "botVersion": {
+              "major": "1",
+              "minor": "0",
+              "iteration": "0"
+            },
+            "tockVersion": {
+              "major": "1",
+              "minor": "0",
+              "iteration": "0"
+            }
+          },
+          "mainClassName": "main",
+          "date": {
+            "$date": {
+              "$numberLong": "1793873730123"
+            }
+          }
+        }
+      ],
+      "current": {
+        "script": "script",
+        "compiledCode": [],
+        "version": {
+          "botVersion": {
+            "major": "1",
+            "minor": "0",
+            "iteration": "0"
+          },
+          "tockVersion": {
+            "major": "1",
+            "minor": "0",
+            "iteration": "0"
+          }
+        },
+        "mainClassName": "main",
+        "date": {
+          "$date": {
+            "$numberLong": "1793873730123"
+          }
+        }
+      },
+      "answerType": "script"
+    }
+  ]
+}

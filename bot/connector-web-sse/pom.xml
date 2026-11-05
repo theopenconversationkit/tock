@@ -40,11 +40,11 @@
         </dependency>
         <dependency>
             <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo</artifactId>
+            <artifactId>kmongo-dsl-sync-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo-async</artifactId>
+            <artifactId>kmongo-dsl-coroutine-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>

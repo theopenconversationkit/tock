@@ -21,6 +21,11 @@ import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import tools.jackson.databind.ValueDeserializer
+import tools.jackson.core.JsonParser as JsonParser3
+import tools.jackson.core.JsonToken as JsonToken3
+import tools.jackson.databind.DeserializationContext as DeserializationContext3
+import tools.jackson.databind.annotation.JsonDeserialize as JsonDeserialize3
 
 internal object UnknownValueDeserializer : JsonDeserializer<UnknownValue>() {
     override fun deserialize(
@@ -38,8 +43,25 @@ internal object UnknownValueDeserializer : JsonDeserializer<UnknownValue>() {
     }
 }
 
+internal class UnknownValueDeserializer3 : ValueDeserializer<UnknownValue>() {
+    override fun deserialize(
+        p: JsonParser3,
+        ctxt: DeserializationContext3,
+    ): UnknownValue {
+        while (p.currentToken() == JsonToken3.PROPERTY_NAME) {
+            p.nextToken()
+            if (p.currentToken()?.isStructStart == true) {
+                p.skipChildren()
+            }
+            p.nextToken()
+        }
+        return UnknownValue()
+    }
+}
+
 /**
  * Used when real value type is unavailable.
  */
 @JsonDeserialize(using = UnknownValueDeserializer::class)
+@JsonDeserialize3(using = UnknownValueDeserializer3::class)
 class UnknownValue : Value

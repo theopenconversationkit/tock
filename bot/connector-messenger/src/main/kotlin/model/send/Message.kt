@@ -17,14 +17,17 @@
 package ai.tock.bot.connector.messenger.model.send
 
 import ai.tock.bot.connector.messenger.json.send.MessageDeserializer
+import ai.tock.bot.connector.messenger.json.send.MessageMongoDeserializer
 import ai.tock.bot.connector.messenger.model.MessengerConnectorMessage
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import tools.jackson.databind.annotation.JsonDeserialize as JsonDeserialize3
 
 /**
  *
  */
 @JsonDeserialize(using = MessageDeserializer::class)
+@JsonDeserialize3(using = MessageMongoDeserializer::class)
 abstract class Message(
     @get:JsonProperty("quick_replies")
     val quickReplies: List<QuickReply>? = null,

@@ -24,14 +24,14 @@ import ai.tock.shared.getDatabase
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.MongoDatabase
 
 const val MONGO_DATABASE: String = TOCK_MODEL_DATABASE
 
 val modelMongoModule =
     Kodein.Module {
         bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-        bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
+        bind<com.mongodb.kotlin.client.coroutine.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
         bind<NlpEngineModelDAO>() with provider { NlpEngineModelMongoDAO }
         bind<NlpApplicationConfigurationDAO>() with provider { NlpApplicationConfigurationMongoDAO }
     }

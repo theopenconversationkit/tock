@@ -1,0 +1,25 @@
+{
+  "_id": {
+    "actionId": "a",
+    "dialogId": "b"
+  },
+  "messages": [
+    {
+      "klass": "ai.tock.bot.mongo.MongoFormatTest$Custom",
+      "value": {
+        "name": "custom",
+        "date": {
+          "$date": {
+            "$numberLong": "1793873730123"
+          }
+        }
+      }
+    },
+    null
+  ],
+  "date": {
+    "$date": {
+      "$numberLong": "1793873730123"
+    }
+  }
+}

@@ -23,7 +23,7 @@ import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
 import mu.KotlinLogging
 import org.bson.BsonString
-import org.litote.kmongo.reactivestreams.getCollection
+import org.litote.kmongo.coroutine.getCollection
 import java.util.concurrent.ConcurrentHashMap
 
 internal class MongoFeatureCache : FeatureCache {

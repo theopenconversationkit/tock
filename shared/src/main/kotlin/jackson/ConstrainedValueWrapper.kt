@@ -17,7 +17,9 @@
 package ai.tock.shared.jackson
 
 import ai.tock.shared.jackson.ConstrainedValueWrapper.ConstrainedValueDeserializer
+import ai.tock.shared.jackson.ConstrainedValueWrapper.ConstrainedValueDeserializer3
 import ai.tock.shared.jackson.ConstrainedValueWrapper.ConstrainedValueSerializer
+import ai.tock.shared.jackson.ConstrainedValueWrapper.ConstrainedValueSerializer3
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -27,8 +29,16 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import mu.KotlinLogging
+import tools.jackson.databind.SerializationContext
+import tools.jackson.databind.ValueDeserializer
+import tools.jackson.databind.ValueSerializer
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.reflect.KClass
+import tools.jackson.core.JsonGenerator as JsonGenerator3
+import tools.jackson.core.JsonParser as JsonParser3
+import tools.jackson.databind.DeserializationContext as DeserializationContext3
+import tools.jackson.databind.annotation.JsonDeserialize as JsonDeserialize3
+import tools.jackson.databind.annotation.JsonSerialize as JsonSerialize3
 
 private val constrainedTypes = CopyOnWriteArraySet<String>()
 
@@ -45,12 +55,26 @@ fun addConstrainedTypes(types: Set<KClass<*>>) {
  */
 @JsonDeserialize(using = ConstrainedValueDeserializer::class)
 @JsonSerialize(using = ConstrainedValueSerializer::class)
+@JsonDeserialize3(using = ConstrainedValueDeserializer3::class)
+@JsonSerialize3(using = ConstrainedValueSerializer3::class)
 data class ConstrainedValueWrapper<T : Any>(
     val klass: String,
     val value: T?,
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
+
+        private fun loadClass(className: String): Class<*>? =
+            try {
+                if (constrainedTypes.contains(className)) {
+                    Class.forName(className)
+                } else {
+                    throw AssertionError("unregister class: $className")
+                }
+            } catch (e: Exception) {
+                logger.warn("deserialization error for class ${e.message}")
+                null
+            }
     }
 
     internal class ConstrainedValueSerializer : JsonSerializer<ConstrainedValueWrapper<*>>() {
@@ -74,18 +98,7 @@ data class ConstrainedValueWrapper<T : Any>(
         ): ConstrainedValueWrapper<*>? {
             var fieldName = jp.fieldNameWithValueReady()
             if (fieldName != null) {
-                val classValue: Class<*>? =
-                    try {
-                        val className = jp.text
-                        if (constrainedTypes.contains(className)) {
-                            Class.forName(className)
-                        } else {
-                            throw AssertionError("unregister class: $className")
-                        }
-                    } catch (e: Exception) {
-                        logger.warn("deserialization error for class ${e.message}")
-                        null
-                    }
+                val classValue: Class<*>? = loadClass(jp.text)
                 fieldName = jp.fieldNameWithValueReady()
                 if (fieldName != null) {
                     if (classValue == null) {
@@ -107,6 +120,33 @@ data class ConstrainedValueWrapper<T : Any>(
             }
             return null
         }
+    }
+
+    /**
+     * The Mongo mapping uses Jackson 3.
+     */
+    internal class ConstrainedValueSerializer3 : ValueSerializer<ConstrainedValueWrapper<*>>() {
+        override fun serialize(
+            value: ConstrainedValueWrapper<*>,
+            gen: JsonGenerator3,
+            serializers: SerializationContext,
+        ) {
+            gen.writeStartObject()
+            gen.writeName(ConstrainedValueWrapper<*>::klass.name)
+            gen.writeString(value.klass)
+            serializers.defaultSerializeProperty(ConstrainedValueWrapper<*>::value.name, value.value, gen)
+            gen.writeEndObject()
+        }
+    }
+
+    /**
+     * The Mongo mapping uses Jackson 3.
+     */
+    internal class ConstrainedValueDeserializer3 : ValueDeserializer<ConstrainedValueWrapper<*>>() {
+        override fun deserialize(
+            jp: JsonParser3,
+            context: DeserializationContext3,
+        ): ConstrainedValueWrapper<*>? = jp.readWrappedValue(::loadClass) { klass, value -> ConstrainedValueWrapper(klass.name, value) }
     }
 
     constructor(klass: KClass<*>, value: T?) : this(klass.java.name, value)

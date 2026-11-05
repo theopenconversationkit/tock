@@ -63,6 +63,7 @@ import java.time.Instant
 import java.time.Instant.now
 import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
+import tools.jackson.databind.annotation.JsonDeserialize as JsonDeserialize3
 
 /**
  *
@@ -205,8 +206,10 @@ internal data class DialogCol(
     data class DialogStateMongoWrapper(
         var currentIntent: Intent?,
         @JsonDeserialize(contentAs = EntityStateValueWrapper::class)
+        @JsonDeserialize3(contentAs = EntityStateValueWrapper::class)
         val entityValues: Map<String, EntityStateValueWrapper>,
         @JsonDeserialize(contentAs = AnyValueWrapper::class)
+        @JsonDeserialize3(contentAs = AnyValueWrapper::class)
         val context: Map<String, AnyValueWrapper?>,
         var userLocation: UserLocation?,
         var nextActionState: NextUserActionState?,

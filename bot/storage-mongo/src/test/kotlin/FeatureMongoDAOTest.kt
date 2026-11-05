@@ -21,6 +21,8 @@ import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.feature
 import ai.tock.bot.mongo.Feature_.Companion._id
 import ai.tock.shared.internalDefaultZoneId
 import com.mongodb.client.result.DeleteResult
+import com.mongodb.kotlin.client.coroutine.FindFlow
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -39,14 +41,19 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.litote.kmongo.coroutine.CoroutineCollection
-import org.litote.kmongo.coroutine.CoroutineFindPublisher
-import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.coroutine.deleteOneById
+import org.litote.kmongo.coroutine.find
+import org.litote.kmongo.coroutine.findOne
+import org.litote.kmongo.coroutine.save
+import org.litote.kmongo.coroutine.toList
 import org.litote.kmongo.eq
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+
+private const val KMONGO_COROUTINE_EXTENSIONS = "org.litote.kmongo.coroutine.MongoCollectionsKt"
+private const val KMONGO_COROUTINE_COMPATIBILITY = "org.litote.kmongo.coroutine.KMongo4CompatibilityKt"
 
 internal class FeatureMongoDAOTest {
     @Suppress("ktlint:standard:enum-entry-name-case")
@@ -78,25 +85,22 @@ internal class FeatureMongoDAOTest {
             "ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature+otherApplicationId",
         )
 
-    private val collection: CoroutineCollection<ai.tock.bot.mongo.Feature> = mockk()
-    private val col = mockk<com.mongodb.reactivestreams.client.MongoCollection<ai.tock.bot.mongo.Feature>>()
+    private val col = mockk<MongoCollection<ai.tock.bot.mongo.Feature>>()
+    private val collection = col
     private val cache = mockk<MongoFeatureCache>()
     private val featureDAO by lazy { FeatureMongoDAO(cache, col) }
     private var features = mutableListOf<ai.tock.bot.mongo.Feature>()
 
     @AfterEach
     fun cleanupFeatures() {
-        unmockkStatic("org.litote.kmongo.MongoCollectionsKt", "kotlin.collections.KMongoIterableKt")
-        unmockkStatic("org.litote.kmongo.coroutine.CoroutineCollectionKt")
-        clearMocks(collection, col, cache)
+        unmockkStatic(KMONGO_COROUTINE_EXTENSIONS, KMONGO_COROUTINE_COMPATIBILITY)
+        clearMocks(col, cache)
     }
 
     @BeforeEach
     internal fun setUp() {
-        mockkStatic("org.litote.kmongo.MongoCollectionsKt", "kotlin.collections.KMongoIterableKt")
-        mockkStatic("org.litote.kmongo.coroutine.CoroutineCollectionKt")
+        mockkStatic(KMONGO_COROUTINE_EXTENSIONS, KMONGO_COROUTINE_COMPATIBILITY)
         features.clear()
-        every { col.coroutine } returns collection
         coEvery { collection.save(any()) } returns mockk()
         every { cache.setState(any(), any()) } just Runs
 
@@ -185,7 +189,7 @@ internal class FeatureMongoDAOTest {
                 val feature = Feature(featureID.id, featureID.key, value, botId, namespace)
                 coEvery { collection.findOne(_id eq featureID.id) } returns feature
                 features.add(feature)
-                val publisherList: CoroutineFindPublisher<ai.tock.bot.mongo.Feature> = mockk()
+                val publisherList: FindFlow<ai.tock.bot.mongo.Feature> = mockk()
                 coEvery { publisherList.toList() } returns features
                 coEvery { collection.find(any<Bson>()) } returns publisherList
                 coEvery { collection.find(any<String>()) } returns publisherList
@@ -418,7 +422,7 @@ internal class FeatureMongoDAOTest {
         every { cache.stateOf(featureID.id) } returns feature
         coEvery { collection.findOne(_id eq featureID.id) } returns feature
         feature?.also { features.add(it) }
-        val publisherList: CoroutineFindPublisher<ai.tock.bot.mongo.Feature> = mockk()
+        val publisherList: FindFlow<ai.tock.bot.mongo.Feature> = mockk()
         coEvery { publisherList.toList() } returns features
         coEvery { collection.find(any<Bson>()) } returns publisherList
         coEvery { collection.find(any<String>()) } returns publisherList

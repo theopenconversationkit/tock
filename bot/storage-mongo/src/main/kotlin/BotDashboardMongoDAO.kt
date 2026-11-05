@@ -23,12 +23,12 @@ import ai.tock.bot.admin.dashboard.BotHistoryCursor
 import ai.tock.bot.admin.dashboard.BotHistoryEvent
 import ai.tock.bot.admin.dashboard.BotIdentity
 import ai.tock.bot.admin.dashboard.BotIndexSessionNote
-import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.model.Updates
+import com.mongodb.kotlin.client.MongoDatabase
 import org.litote.kmongo.getCollection
 
 internal class BotDashboardMongoDAO(
@@ -53,7 +53,7 @@ internal class BotDashboardMongoDAO(
     override fun metadata(
         namespace: String,
         botId: String,
-    ): BotDashboardMetadata? = metadata.find(scope(namespace, botId)).first()
+    ): BotDashboardMetadata? = metadata.find(scope(namespace, botId)).firstOrNull()
 
     override fun saveIdentity(
         namespace: String,
@@ -75,7 +75,7 @@ internal class BotDashboardMongoDAO(
         namespace: String,
         botId: String,
         sessionId: String,
-    ): BotIndexSessionNote? = notes.find(Filters.and(scope(namespace, botId), Filters.eq("indexSessionId", sessionId))).first()
+    ): BotIndexSessionNote? = notes.find(Filters.and(scope(namespace, botId), Filters.eq("indexSessionId", sessionId))).firstOrNull()
 
     override fun saveNote(note: BotIndexSessionNote) {
         notes.updateOne(
@@ -93,7 +93,7 @@ internal class BotDashboardMongoDAO(
         namespace: String,
         botId: String,
         type: String,
-    ): BotHistoryEvent? = events.find(Filters.and(scope(namespace, botId), Filters.eq("type", type))).sort(Indexes.descending("date", "_id")).first()
+    ): BotHistoryEvent? = events.find(Filters.and(scope(namespace, botId), Filters.eq("type", type))).sort(Indexes.descending("date", "_id")).firstOrNull()
 
     override fun history(
         namespace: String,

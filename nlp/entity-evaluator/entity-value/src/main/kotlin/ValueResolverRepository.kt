@@ -32,6 +32,7 @@ import kotlin.reflect.KClass
 object ValueResolverRepository {
     private val idClassMap = ConcurrentHashMap<String, KClass<out Value>>()
     private val classIdMap = ConcurrentHashMap<KClass<out Value>, String>()
+    private val customValueTypes = ConcurrentHashMap.newKeySet<String>()
 
     init {
         listOf(
@@ -68,6 +69,17 @@ object ValueResolverRepository {
                 classIdMap.put(kClass, this)
             }
     }
+
+    /**
+     * Allows a class to be read in a [CustomValueWrapper].
+     * The name of the class is in the deserialized data: the other classes are ignored, so that these data can not
+     * create instances of arbitrary classes.
+     */
+    fun registerCustomValueType(type: KClass<*>) {
+        customValueTypes.add(type.java.name)
+    }
+
+    internal fun isCustomValueType(className: String): Boolean = customValueTypes.contains(className)
 
     internal fun getType(id: String): KClass<out Value> =
         idClassMap[id] ?: try {

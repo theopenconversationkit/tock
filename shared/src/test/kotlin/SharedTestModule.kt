@@ -24,17 +24,18 @@ import ai.tock.shared.security.mongo.MongoCredentialsProvider
 import ai.tock.shared.vertx.VertxProvider
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
-import com.mongodb.client.MongoClient
+import com.mongodb.kotlin.client.MongoClient
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.vertx.core.Vertx
 import mu.KotlinLogging
 import org.litote.kmongo.Id
-import org.litote.kmongo.KFlapdoodle
-import org.litote.kmongo.reactivestreams.KFlapdoodleReactiveStreams
+import org.litote.kmongo.KMongo
+import org.litote.kmongo.testcontainers.KMongoTestServer
 import java.time.Duration
 import java.util.concurrent.Callable
 import java.util.concurrent.CompletableFuture
@@ -45,20 +46,6 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.atomic.AtomicInteger
 
 private val logger = KotlinLogging.logger {}
-
-/**
- * Overrides flapdoodle's OS/platform detection with a known-supported Ubuntu release.
- * This is a workaround for OS versions not yet supported by flapdoodle's embedded MongoDB
- * (e.g. Ubuntu 26.04 before flapdoodle adds it to its UbuntuVersion enum).
- * The system property "de.flapdoodle.os.override" is read by flapdoodle's Platform.detect()
- * before any file-based OS detection, making the embedded MongoDB start reliably.
- * See https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo/issues/571
- */
-private fun applyFlapdoodleOsOverride() {
-    val arch = if (System.getProperty("os.arch", "").matches(Regex("aarch64"))) "ARM_64" else "X86_64"
-    System.setProperty("de.flapdoodle.os.override", "Linux|$arch|Ubuntu|Ubuntu_24_04")
-    logger.info { "Overriding flapdoodle OS detection: Linux|$arch|Ubuntu|Ubuntu_24_04 (current OS not yet supported)" }
-}
 
 /**
  * Mocked vertx.
@@ -89,45 +76,35 @@ val sharedTestModule =
         }
 
         try {
-            bind<MongoClient>() with
+            bind<com.mongodb.client.MongoClient>() with
                 singleton {
                     try {
                         // init kmongo configuration for persistence tests
                         TockKMongoConfiguration.configure()
-                        KFlapdoodle.mongoClient
+                        KMongo.createJavaClient(KMongoTestServer.connectionString)
                     } catch (t: Throwable) {
-                        logger.trace("error during KMongo configuration, retrying with OS override", t)
-                        try {
-                            // Workaround for OS versions not yet supported by flapdoodle (e.g. Ubuntu 26.04):
-                            // override platform detection to a known-supported Ubuntu release so that
-                            // flapdoodle can still resolve and download a MongoDB binary package.
-                            applyFlapdoodleOsOverride()
-                            KFlapdoodle.mongoClient
-                        } catch (t2: Throwable) {
-                            logger.trace("error during KMongo configuration with OS override", t2)
-                            mockk<MongoClient>(relaxed = true)
-                        }
+                        logger.trace("error during KMongo configuration", t)
+                        mockk<com.mongodb.client.MongoClient>(relaxed = true)
                     }
+                }
+            bind<MongoClient>() with
+                singleton {
+                    KMongo.createClient(instance<com.mongodb.client.MongoClient>())
                 }
         } catch (t: Throwable) {
             logger.trace("sync mongo driver is not present in classpath")
         }
         try {
-            bind<com.mongodb.reactivestreams.client.MongoClient>() with
+            bind<com.mongodb.kotlin.client.coroutine.MongoClient>() with
                 singleton {
                     try {
                         // init kmongo configuration for persistence tests
                         TockKMongoConfiguration.configure(true)
-                        KFlapdoodleReactiveStreams.mongoClient
+                        org.litote.kmongo.coroutine.KMongo
+                            .createClient(KMongoTestServer.connectionString)
                     } catch (t: Throwable) {
-                        logger.trace("error during KMongo configuration, retrying with OS override", t)
-                        try {
-                            applyFlapdoodleOsOverride()
-                            KFlapdoodleReactiveStreams.mongoClient
-                        } catch (t2: Throwable) {
-                            logger.trace("error during KMongo configuration with OS override", t2)
-                            mockk<com.mongodb.reactivestreams.client.MongoClient>(relaxed = true)
-                        }
+                        logger.trace("error during KMongo configuration", t)
+                        mockk<com.mongodb.kotlin.client.coroutine.MongoClient>(relaxed = true)
                     }
                 }
         } catch (t: Throwable) {

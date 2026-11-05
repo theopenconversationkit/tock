@@ -30,9 +30,9 @@ import ai.tock.shared.ensureIndex
 import ai.tock.shared.isDocumentDB
 import ai.tock.shared.watch
 import ai.tock.translator.I18nLabel
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.Variable
+import com.mongodb.kotlin.client.MongoCollection
 import mu.KotlinLogging
 import org.bson.conversions.Bson
 import org.litote.kmongo.Id
@@ -42,6 +42,8 @@ import org.litote.kmongo.MongoOperator.`in`
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.ascending
+import org.litote.kmongo.coroutine.getCollection
+import org.litote.kmongo.count
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.descending
 import org.litote.kmongo.div
@@ -60,16 +62,17 @@ import org.litote.kmongo.`in`
 import org.litote.kmongo.json
 import org.litote.kmongo.limit
 import org.litote.kmongo.lookup
+import org.litote.kmongo.mapNotNull
 import org.litote.kmongo.match
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
 import org.litote.kmongo.project
-import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
 import org.litote.kmongo.save
 import org.litote.kmongo.skip
 import org.litote.kmongo.sort
+import org.litote.kmongo.toList
 import org.litote.kmongo.unwind
 import kotlin.reflect.KProperty
 
@@ -123,17 +126,17 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                     FaqDefinition::botId eq botId,
                     FaqDefinition::namespace eq namespace,
                 ),
-            ).into(ArrayList())
+            ).toList()
 
     override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? = col.findOne(FaqDefinition::intentId eq id)
 
-    override fun getFaqDefinitionByIntentIds(intentIds: Set<Id<IntentDefinition>>): List<FaqDefinition> = col.find(FaqDefinition::intentId `in` intentIds).into(ArrayList())
+    override fun getFaqDefinitionByIntentIds(intentIds: Set<Id<IntentDefinition>>): List<FaqDefinition> = col.find(FaqDefinition::intentId `in` intentIds).toList()
 
-    override fun getFaqDefinitionByTags(tags: Set<String>): List<FaqDefinition> = col.find(FaqDefinition::tags `in` tags).into(ArrayList())
+    override fun getFaqDefinitionByTags(tags: Set<String>): List<FaqDefinition> = col.find(FaqDefinition::tags `in` tags).toList()
 
     override fun getFaqDefinitionByI18nId(id: Id<I18nLabel>): FaqDefinition? = col.findOne(FaqDefinition::i18nId eq id)
 
-    override fun getFaqDefinitionByI18nIds(ids: Set<Id<I18nLabel>>): List<FaqDefinition>? = col.find(FaqDefinition::i18nId `in` ids).into(ArrayList())
+    override fun getFaqDefinitionByI18nIds(ids: Set<Id<I18nLabel>>): List<FaqDefinition>? = col.find(FaqDefinition::i18nId `in` ids).toList()
 
     override fun getFaqDefinitionByIntentIdAndBotIdAndNamespace(
         intentId: Id<IntentDefinition>,

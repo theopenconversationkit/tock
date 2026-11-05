@@ -28,11 +28,12 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.provider
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.MongoDatabase
 import io.mockk.spyk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
-import org.litote.kmongo.reactivestreams.getCollection
+import org.litote.kmongo.coroutine.deleteMany
+import org.litote.kmongo.coroutine.getCollection
 
 /**
  *
@@ -55,7 +56,7 @@ abstract class AbstractTest(
                 Kodein {
                     import(sharedTestModule)
                     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-                    bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with
+                    bind<com.mongodb.kotlin.client.coroutine.MongoDatabase>(MONGO_DATABASE) with
                         provider {
                             getAsyncDatabase(
                                 MONGO_DATABASE,

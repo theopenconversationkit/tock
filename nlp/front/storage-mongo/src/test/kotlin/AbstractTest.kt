@@ -25,7 +25,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.MongoDatabase
 import org.junit.jupiter.api.BeforeEach
 
 /**
@@ -42,7 +42,7 @@ abstract class AbstractTest {
             Kodein {
                 import(sharedTestModule)
                 bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-                bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with
+                bind<com.mongodb.kotlin.client.coroutine.MongoDatabase>(MONGO_DATABASE) with
                     provider {
                         getAsyncDatabase(
                             MONGO_DATABASE,

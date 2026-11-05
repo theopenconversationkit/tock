@@ -58,10 +58,10 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.name
 import ai.tock.shared.withNamespace
 import com.mongodb.ReadPreference.secondaryPreferred
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReturnDocument.AFTER
+import com.mongodb.kotlin.client.MongoCollection
 import mu.KotlinLogging
 import org.bson.Document
 import org.litote.jackson.data.JacksonData
@@ -95,7 +95,6 @@ import org.litote.kmongo.save
 import org.litote.kmongo.setValue
 import org.litote.kmongo.sort
 import org.litote.kmongo.sum
-import org.litote.kmongo.withDocumentClass
 import org.litote.kmongo.year
 import java.time.Instant
 import java.time.LocalDate

@@ -25,15 +25,15 @@ import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
 import ai.tock.shared.watch
-import com.mongodb.client.MongoCollection
+import com.mongodb.kotlin.client.MongoCollection
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import org.litote.kmongo.coroutine.getCollection
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.save
 
 /**

@@ -33,17 +33,17 @@ import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import ai.tock.shared.security.decrypt
 import ai.tock.shared.security.encrypt
 import ai.tock.shared.security.encryptionEnabled
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken
-import com.fasterxml.jackson.core.TreeNode
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
+import tools.jackson.core.JsonParser
+import tools.jackson.core.JsonToken
+import tools.jackson.core.TreeNode
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.ValueDeserializer
+import tools.jackson.databind.annotation.JsonDeserialize
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -218,7 +218,7 @@ internal data class UserTimelineCol(
             }
     }
 
-    class FlagsDeserializer : JsonDeserializer<Map<String, TimeBoxedFlagWrapper>>() {
+    class FlagsDeserializer : ValueDeserializer<Map<String, TimeBoxedFlagWrapper>>() {
         companion object {
             val reference = object : TypeReference<Map<String, TimeBoxedFlagWrapper>>() {}
         }
@@ -226,15 +226,13 @@ internal data class UserTimelineCol(
         override fun deserialize(
             jp: JsonParser,
             context: DeserializationContext,
-        ): Map<String, TimeBoxedFlagWrapper> {
-            val mapper = jp.getCodec()
-            return if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
-                mapper.readValue(jp, reference)
+        ): Map<String, TimeBoxedFlagWrapper> =
+            if (jp.currentToken() == JsonToken.START_OBJECT) {
+                jp.readValueAs(reference)
             } else {
                 // consume this stream
-                mapper.readTree<TreeNode>(jp)
+                jp.readValueAsTree<TreeNode>()
                 emptyMap()
             }
-        }
     }
 }

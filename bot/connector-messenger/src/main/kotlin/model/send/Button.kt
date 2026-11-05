@@ -17,10 +17,13 @@
 package ai.tock.bot.connector.messenger.model.send
 
 import ai.tock.bot.connector.messenger.json.send.ButtonDeserializer
+import ai.tock.bot.connector.messenger.json.send.ButtonMongoDeserializer
 import ai.tock.bot.engine.message.Choice
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import tools.jackson.databind.annotation.JsonDeserialize as JsonDeserialize3
 
 @JsonDeserialize(using = ButtonDeserializer::class)
+@JsonDeserialize3(using = ButtonMongoDeserializer::class)
 abstract class Button(
     val type: ButtonType,
 ) : UserAction {

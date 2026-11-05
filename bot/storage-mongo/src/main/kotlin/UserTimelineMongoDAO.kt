@@ -96,6 +96,7 @@ import com.mongodb.client.model.Filters.lte
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.model.Updates
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.bson.Document
@@ -113,10 +114,22 @@ import org.litote.kmongo.avg
 import org.litote.kmongo.bson
 import org.litote.kmongo.combine
 import org.litote.kmongo.coroutine.aggregate
-import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.coroutine.ascendingSort
+import org.litote.kmongo.coroutine.deleteOneById
+import org.litote.kmongo.coroutine.descendingSort
+import org.litote.kmongo.coroutine.distinct
+import org.litote.kmongo.coroutine.ensureIndex
+import org.litote.kmongo.coroutine.ensureUniqueIndex
+import org.litote.kmongo.coroutine.find
+import org.litote.kmongo.coroutine.findOne
+import org.litote.kmongo.coroutine.findOneById
+import org.litote.kmongo.coroutine.save
+import org.litote.kmongo.coroutine.toList
+import org.litote.kmongo.coroutine.updateOneById
 import org.litote.kmongo.descending
 import org.litote.kmongo.div
 import org.litote.kmongo.eq
+import org.litote.kmongo.first
 import org.litote.kmongo.from
 import org.litote.kmongo.group
 import org.litote.kmongo.gt
@@ -138,6 +151,7 @@ import org.litote.kmongo.setValue
 import org.litote.kmongo.sort
 import org.litote.kmongo.sum
 import org.litote.kmongo.toId
+import org.litote.kmongo.toList
 import org.litote.kmongo.unwind
 import org.litote.kmongo.upsert
 import java.time.Instant
@@ -164,7 +178,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     private val logger = KotlinLogging.logger {}
 
-    private val db = asyncDatabase.coroutine
+    private val db = asyncDatabase
     val userTimelineCol = db.getCollection<UserTimelineCol>("user_timeline")
     val dialogCol = db.getCollection<DialogCol>("dialog")
     internal val dialogTextCol = db.getCollection<DialogTextCol>("dialog_text")
@@ -663,7 +677,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     descending(LastUpdateDate),
                 ),
                 limit(1),
-            ).first()
+            ).firstOrNull()
 
     private suspend fun loadLastValidDialogCol(
         namespace: String,
@@ -680,7 +694,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     descending(LastUpdateDate),
                 ),
                 limit(1),
-            ).first()
+            ).firstOrNull()
 
     private suspend fun loadLastValidDialog(
         namespace: String,
@@ -949,7 +963,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                 query.annotationStates,
                                 query.annotationReasons,
                             ),
-                        ).first()
+                        ).firstOrNull()
                         ?.getInteger("total")
                         ?.toLong() ?: 0L
                 val annotations =

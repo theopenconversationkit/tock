@@ -27,8 +27,8 @@ import ai.tock.shared.defaultCountOptions
 import ai.tock.shared.error
 import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.longProperty
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.IndexOptions
+import com.mongodb.kotlin.client.MongoCollection
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data

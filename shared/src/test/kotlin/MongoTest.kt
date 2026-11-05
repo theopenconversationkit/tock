@@ -18,7 +18,6 @@ package ai.tock.shared
 
 import ai.tock.shared.security.mongo.DefaultMongoCredentialsProvider
 import ai.tock.shared.security.mongo.MongoCredentialsProvider
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.util.KMongoConfiguration
+import tools.jackson.module.kotlin.readValue
 import java.time.Period
 import kotlin.test.assertEquals
 

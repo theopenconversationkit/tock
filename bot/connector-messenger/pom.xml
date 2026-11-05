@@ -72,6 +72,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.litote.kmongo</groupId>
+            <artifactId>kmongo-dsl-sync-jackson</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.litote.kmongo</groupId>
+            <artifactId>kmongo-dsl-coroutine-jackson</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-shared</artifactId>
             <type>test-jar</type>

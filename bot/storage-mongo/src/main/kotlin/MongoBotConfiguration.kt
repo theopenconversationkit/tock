@@ -19,14 +19,14 @@ package ai.tock.bot.mongo
 import ai.tock.shared.injector
 import ai.tock.shared.listProperty
 import com.github.salomonbrys.kodein.instance
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.MongoDatabase
 
 /**
  *
  */
 internal object MongoBotConfiguration {
     val database: MongoDatabase by injector.instance(MONGO_DATABASE)
-    val asyncDatabase: com.mongodb.reactivestreams.client.MongoDatabase by injector.instance(MONGO_DATABASE)
+    val asyncDatabase: com.mongodb.kotlin.client.coroutine.MongoDatabase by injector.instance(MONGO_DATABASE)
     private val encryptedFlags = listProperty("tock_bot_encrypted_flags", emptyList()).toSet()
 
     fun hasToEncryptFlag(flag: String): Boolean = encryptedFlags.contains(flag)
