@@ -50,6 +50,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNull
+import org.litote.kmongo.coroutine.findOne
+import org.litote.kmongo.coroutine.findOneById
+import org.litote.kmongo.coroutine.save
 import org.litote.kmongo.eq
 import org.litote.kmongo.newId
 import java.time.Instant

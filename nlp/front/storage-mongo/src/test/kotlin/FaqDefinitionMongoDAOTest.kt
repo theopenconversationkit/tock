@@ -33,7 +33,7 @@ import ai.tock.translator.I18nLabel
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import com.mongodb.client.MongoCollection
+import com.mongodb.kotlin.client.MongoCollection
 import org.apache.commons.lang3.StringUtils
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test

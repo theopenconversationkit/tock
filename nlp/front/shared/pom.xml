@@ -58,14 +58,14 @@
                         <configuration>
                             <annotationProcessorPaths>
                                 <annotationProcessorPath>
-                                    <groupId>org.litote.jackson</groupId>
-                                    <artifactId>jackson-generator</artifactId>
-                                    <version>${jackson-generator}</version>
+                                    <groupId>org.litote.kmongo</groupId>
+                                    <artifactId>kmongo-dsl-annotation-generator</artifactId>
+                                    <version>${kmongo-dsl}</version>
                                 </annotationProcessorPath>
                                 <annotationProcessorPath>
                                     <groupId>org.litote.kmongo</groupId>
-                                    <artifactId>kmongo-annotation-processor</artifactId>
-                                    <version>${kmongo}</version>
+                                    <artifactId>kmongo-dsl-annotation-processor</artifactId>
+                                    <version>${kmongo-dsl}</version>
                                 </annotationProcessorPath>
                             </annotationProcessorPaths>
                         </configuration>

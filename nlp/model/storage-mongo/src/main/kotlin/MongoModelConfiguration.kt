@@ -16,14 +16,18 @@
 
 package ai.tock.nlp.model.service.storage.mongo
 
+import ai.tock.shared.getJavaDatabase
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.MongoDatabase
 
 /**
  *
  */
 internal object MongoModelConfiguration {
     val database: MongoDatabase by injector.instance(MONGO_DATABASE)
-    val asyncDatabase: com.mongodb.reactivestreams.client.MongoDatabase by injector.instance(MONGO_DATABASE)
+
+    /** The Java driver database, for GridFS (not provided by the Kotlin driver). */
+    val javaDatabase: com.mongodb.client.MongoDatabase by lazy { getJavaDatabase(MONGO_DATABASE) }
+    val asyncDatabase: com.mongodb.kotlin.client.coroutine.MongoDatabase by injector.instance(MONGO_DATABASE)
 }

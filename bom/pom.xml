@@ -56,11 +56,9 @@
         <kotlin-logging>3.0.5</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>5.12.0</kmongo>
+        <kmongo-dsl>5.14.0</kmongo-dsl>
         <jackson>2.22.3</jackson>
-        <jackson-module-loader>0.4.0</jackson-module-loader>
-        <jackson-data>0.4.0</jackson-data>
-        <jackson-generator>0.4.0</jackson-generator>
+        <jackson3>3.2.4</jackson3>
         <klaxon>5.6</klaxon>
         <vertx>5.2.0</vertx>
         <retrofit>3.0.0</retrofit>
@@ -548,6 +546,14 @@
               vertx-dependencies must stay last: it also manages older versions of Jackson 2 (LTS), Guava,
               Error Prone... but it is the one that provides the Netty and Jackson 3 versions matching Vert.x.
             -->
+            <!-- before vertx-dependencies, which imports an older Jackson 3 BOM -->
+            <dependency>
+                <groupId>tools.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson3}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
@@ -598,6 +604,13 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>org.litote.kmongo</groupId>
+                <artifactId>kmongo-dsl-bom</artifactId>
+                <version>${kmongo-dsl}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>io.vertx</groupId>
                 <artifactId>vertx-dependencies</artifactId>
                 <version>${vertx}</version>
@@ -610,41 +623,6 @@
                 <groupId>com.github.salomonbrys.kodein</groupId>
                 <artifactId>kodein</artifactId>
                 <version>${kodein}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.litote.kmongo</groupId>
-                <artifactId>kmongo</artifactId>
-                <version>${kmongo}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.litote.kmongo</groupId>
-                <artifactId>kmongo-async</artifactId>
-                <version>${kmongo}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.litote.kmongo</groupId>
-                <artifactId>kmongo-coroutine</artifactId>
-                <version>${kmongo}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.litote.kmongo</groupId>
-                <artifactId>kmongo-id</artifactId>
-                <version>${kmongo}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.litote.kmongo</groupId>
-                <artifactId>kmongo-id-jackson</artifactId>
-                <version>${kmongo}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.litote.jackson</groupId>
-                <artifactId>jackson-data</artifactId>
-                <version>${jackson-data}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.litote.jackson</groupId>
-                <artifactId>jackson-module-loader</artifactId>
-                <version>${jackson-module-loader}</version>
             </dependency>
             <dependency>
                 <groupId>com.beust</groupId>

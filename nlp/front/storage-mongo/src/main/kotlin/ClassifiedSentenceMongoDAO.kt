@@ -63,10 +63,10 @@ import ai.tock.shared.provide
 import ai.tock.shared.safeCollation
 import ai.tock.shared.security.UserLogin
 import com.mongodb.ReadPreference.secondaryPreferred
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Collation
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.kotlin.client.MongoCollection
 import mu.KotlinLogging
 import org.bson.conversions.Bson
 import org.litote.jackson.data.JacksonData
@@ -79,6 +79,7 @@ import org.litote.kmongo.combine
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.distinct
 import org.litote.kmongo.eq
+import org.litote.kmongo.filterNotNull
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.gt

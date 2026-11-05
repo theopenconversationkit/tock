@@ -4,7 +4,9 @@
 /dist
 /tmp
 **/target/*
-!**/target/generated-sources
+!**/target/generated-sources/
+**/target/generated-sources/*
+!**/target/generated-sources/kaptKotlin/
 node_modules
 environment.dev.ts
 
@@ -136,7 +138,6 @@ docs/_build/
 
 # PyBuilder
 .pybuilder/
-target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -239,3 +240,6 @@ pyrightconfig.json
 
 # Playwright MCP session artifacts
 .playwright-mcp/
+
+# KAPT generated sources are versioned (a generated package may be named "build")
+!**/target/generated-sources/kaptKotlin/**/build/
