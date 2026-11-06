@@ -24,6 +24,7 @@ import { VectorStoreIndex } from '../../models/vector-store-inspection.models';
 export class IndexSelectorComponent {
   @ViewChildren(NbTooltipDirective) tooltips: QueryList<NbTooltipDirective>;
 
+  @Input() disabled = false;
   @Input() indexes: VectorStoreIndex[] = [];
   @Input() selected: VectorStoreIndex | null = null;
   @Input() label: string = '';
@@ -31,13 +32,16 @@ export class IndexSelectorComponent {
 
   @Output() indexChange = new EventEmitter<VectorStoreIndex>();
 
-  onSelect(index: VectorStoreIndex): void {
+  onSelect(indexName: string): void {
     // Nebular mounts tooltips in a detached overlay; when the option list
     // closes, the option is destroyed without a mouseleave, leaving the
     // tooltip on screen. Closing them by hand on every change is the only
     // reliable fix.
     this.hideTooltips();
-    this.indexChange.emit(index);
+    // API refreshes replace the objects while tracked options stay mounted.
+    // Bind Nebular to the stable name, then emit the latest index data.
+    const index = this.indexes.find((candidate) => candidate.indexName === indexName);
+    if (index) this.indexChange.emit(index);
   }
 
   hideTooltips(): void {

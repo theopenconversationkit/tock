@@ -16,16 +16,24 @@
 
 package ai.tock.genai.orchestratorclient.api
 
+import ai.tock.genai.orchestratorclient.requests.VectorStoreChunkTargetRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreDeleteChunkRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreDeleteIndexRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreIndexTargetRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionCapabilitiesRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionCondenseRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionDocumentsRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionIndexesRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionSearchRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreSetEmbeddingModelRequest
 import ai.tock.genai.orchestratorclient.responses.VectorStoreCapabilitiesResponse
+import ai.tock.genai.orchestratorclient.responses.VectorStoreChunkDescriptionResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreIndexListResponse
+import ai.tock.genai.orchestratorclient.responses.VectorStoreIndexMetadataResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionCondenseResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionDocumentsResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionSearchResponse
+import ai.tock.genai.orchestratorclient.responses.VectorStoreWriteResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -55,4 +63,29 @@ internal interface VectorStoreInspectionApi {
     fun search(
         @Body request: VectorStoreInspectionSearchRequest,
     ): Call<VectorStoreInspectionSearchResponse>
+
+    @POST("/vector-store-inspection/index-metadata")
+    fun getIndexMetadata(
+        @Body request: VectorStoreIndexTargetRequest,
+    ): Call<VectorStoreIndexMetadataResponse>
+
+    @POST("/vector-store-inspection/embedding-model")
+    fun setEmbeddingModel(
+        @Body request: VectorStoreSetEmbeddingModelRequest,
+    ): Call<VectorStoreIndexMetadataResponse>
+
+    @POST("/vector-store-inspection/chunk")
+    fun getChunk(
+        @Body request: VectorStoreChunkTargetRequest,
+    ): Call<VectorStoreChunkDescriptionResponse>
+
+    @POST("/vector-store-inspection/delete-chunk")
+    fun deleteChunk(
+        @Body request: VectorStoreDeleteChunkRequest,
+    ): Call<VectorStoreWriteResponse>
+
+    @POST("/vector-store-inspection/delete-index")
+    fun deleteIndex(
+        @Body request: VectorStoreDeleteIndexRequest,
+    ): Call<VectorStoreWriteResponse>
 }

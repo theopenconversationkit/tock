@@ -1,6 +1,10 @@
+import { KnowledgeBaseJob } from '../../knowledge-base/models';
 import { Observable } from 'rxjs';
 
 import {
+  IndexMetadata,
+  DeleteChunkRequest,
+  VectorStoreMutation,
   CondenseRequest,
   CondenseResponse,
   DocumentsRequest,
@@ -53,4 +57,10 @@ export abstract class VectorStoreInspectionService {
    * endpoint is never exposed. Returns null when the bot has no RAG config.
    */
   abstract getRetrievalSettings(): Observable<RetrievalSettings | null>;
+
+  abstract getIndexMetadata(indexName: string): Observable<IndexMetadata>;
+  abstract setEmbeddingModel(indexName: string, embeddingModel: string): Observable<IndexMetadata>;
+  abstract deleteChunk(request: DeleteChunkRequest): Observable<VectorStoreMutation>;
+  abstract deleteIndex(indexName: string): Observable<VectorStoreMutation>;
+  abstract getMutationJob(jobId: string): Observable<KnowledgeBaseJob>;
 }

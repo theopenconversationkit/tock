@@ -16,16 +16,24 @@
 
 package ai.tock.genai.orchestratorclient.services
 
+import ai.tock.genai.orchestratorclient.requests.VectorStoreChunkTargetRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreDeleteChunkRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreDeleteIndexRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreIndexTargetRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionCapabilitiesRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionCondenseRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionDocumentsRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionIndexesRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionSearchRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreSetEmbeddingModelRequest
 import ai.tock.genai.orchestratorclient.responses.VectorStoreCapabilitiesResponse
+import ai.tock.genai.orchestratorclient.responses.VectorStoreChunkDescriptionResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreIndexListResponse
+import ai.tock.genai.orchestratorclient.responses.VectorStoreIndexMetadataResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionCondenseResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionDocumentsResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionSearchResponse
+import ai.tock.genai.orchestratorclient.responses.VectorStoreWriteResponse
 
 interface VectorStoreInspectionService {
     fun getCapabilities(request: VectorStoreInspectionCapabilitiesRequest): VectorStoreCapabilitiesResponse?
@@ -37,4 +45,14 @@ interface VectorStoreInspectionService {
     fun condense(request: VectorStoreInspectionCondenseRequest): VectorStoreInspectionCondenseResponse?
 
     fun search(request: VectorStoreInspectionSearchRequest): VectorStoreInspectionSearchResponse?
+
+    fun getIndexMetadata(request: VectorStoreIndexTargetRequest): VectorStoreIndexMetadataResponse
+
+    fun setEmbeddingModel(request: VectorStoreSetEmbeddingModelRequest): VectorStoreIndexMetadataResponse
+
+    fun getChunk(request: VectorStoreChunkTargetRequest): VectorStoreChunkDescriptionResponse
+
+    fun deleteChunk(request: VectorStoreDeleteChunkRequest): VectorStoreWriteResponse
+
+    fun deleteIndex(request: VectorStoreDeleteIndexRequest): VectorStoreWriteResponse
 }

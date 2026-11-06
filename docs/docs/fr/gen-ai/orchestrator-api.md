@@ -69,8 +69,16 @@ Utilisées par les écrans d'[inspection de la base vectorielle](vector-store-in
 | `POST` | `/vector-store-inspection/capabilities` | Capacités du fournisseur de base vectorielle (modes de recherche, etc.) |
 | `POST` | `/vector-store-inspection/indexes` | Liste les index |
 | `POST` | `/vector-store-inspection/documents` | Documents et chunks d'un index, avec statistiques et anomalies |
+| `POST` | `/vector-store-inspection/index-metadata` | Consulte les métadonnées de l’index (PGVector) |
+| `POST` | `/vector-store-inspection/embedding-model` | Ajoute le modèle d’embedding uniquement s’il manque (PGVector) |
+| `POST` | `/vector-store-inspection/chunk` | Consulte les métadonnées d’un chunk et le nombre de chunks de l’index avant une modification (PGVector) |
+| `POST` | `/vector-store-inspection/delete-chunk` | Supprime un chunk par son identifiant physique dans l’index sélectionné (PGVector) |
+| `POST` | `/vector-store-inspection/delete-index` | Supprime un index et ses chunks, en protégeant l’index configuré transmis par le serveur admin (PGVector) |
 | `POST` | `/vector-store-inspection/condense` | Condense une question et en extrait les mots-clés |
 | `POST` | `/vector-store-inspection/search` | Lance une recherche et renvoie le détail de chaque étape |
+
+Les routes de gestion sont appelées par le serveur admin du Studio, qui détermine le périmètre des index du bot et son index courant.
+Les refus métier de gestion sont renvoyés dans le champ `error` de la réponse ; le serveur admin les traduit en HTTP `404` ou `409` pour le Studio.
 
 ### Supervision
 

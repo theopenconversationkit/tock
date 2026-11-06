@@ -89,7 +89,7 @@ object VectorStoreInspectionAdminService {
                     indexNamePrefix = indexNamePrefix(namespace, botId, vectorStoreSetting),
                 ),
             ) ?: return null
-        val currentSessionId = RAGService.getRAGConfiguration(namespace, botId)?.indexSessionId
+        val currentIndexName = VectorStoreIndexLifecycle.currentIndexName(namespace, botId, vectorStoreSetting)
         return VectorStoreIndexListDTO(
             response.indexes.map { index ->
                 VectorStoreIndexDTO(
@@ -98,7 +98,7 @@ object VectorStoreInspectionAdminService {
                     indexDatetime = index.indexDatetime,
                     documentCount = index.documentCount,
                     chunkCount = index.chunkCount,
-                    isCurrent = index.indexSessionId == currentSessionId,
+                    isCurrent = index.indexName == currentIndexName,
                 )
             },
         )

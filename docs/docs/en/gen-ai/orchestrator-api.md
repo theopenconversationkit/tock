@@ -69,8 +69,16 @@ Used by the [vector store inspection](vector-store-inspection.md) screens:
 | `POST` | `/vector-store-inspection/capabilities` | Capabilities of the vector store provider (search modes, etc.) |
 | `POST` | `/vector-store-inspection/indexes` | Lists the indexes |
 | `POST` | `/vector-store-inspection/documents` | Documents and chunks of an index, with statistics and anomalies |
+| `POST` | `/vector-store-inspection/index-metadata` | Reads index metadata (PGVector) |
+| `POST` | `/vector-store-inspection/embedding-model` | Adds the embedding model only when missing (PGVector) |
+| `POST` | `/vector-store-inspection/chunk` | Reads a chunk's metadata and the index chunk count before a mutation (PGVector) |
+| `POST` | `/vector-store-inspection/delete-chunk` | Deletes a chunk by its physical row ID within the selected index (PGVector) |
+| `POST` | `/vector-store-inspection/delete-index` | Deletes an index and its chunks, protecting the configured index supplied by the admin server (PGVector) |
 | `POST` | `/vector-store-inspection/condense` | Condenses a question and extracts its keywords |
 | `POST` | `/vector-store-inspection/search` | Runs a search and returns the detail of each stage |
+
+The management endpoints are called by the Studio admin server, which resolves the bot's index scope and current index.
+Expected management failures are returned in the response's `error` field; the admin server translates them to HTTP `404` or `409` for the Studio.
 
 ### Monitoring
 

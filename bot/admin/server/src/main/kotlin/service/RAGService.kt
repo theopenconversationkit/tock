@@ -20,6 +20,7 @@ import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.model.genai.BotRAGConfigurationDTO
+import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseIndexState
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
@@ -62,19 +63,21 @@ object RAGService {
         namespace: String,
         botId: String,
     ) {
-        val ragConfig =
-            ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-                ?: WebVerticle.badRequest("No RAG configuration is defined yet [namespace: $namespace, botId: $botId]")
+        VectorStoreIndexLifecycle.withLock(namespace, botId) {
+            val ragConfig =
+                ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+                    ?: WebVerticle.badRequest("No RAG configuration is defined yet [namespace: $namespace, botId: $botId]")
 
-        logger.info { "Deleting the RAG Configuration [namespace: $namespace, botId: $botId]" }
-        ragConfigurationDAO.delete(ragConfig._id)
+            logger.info { "Deleting the RAG Configuration [namespace: $namespace, botId: $botId]" }
+            ragConfigurationDAO.delete(ragConfig._id)
 
-        logger.info { "Deleting the question condensing LLM secret ..." }
-        ragConfig.questionCondensingLlmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
-        logger.info { "Deleting the question answering LLM secret ..." }
-        ragConfig.questionAnsweringLlmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
-        logger.info { "Deleting the Embedding secret ..." }
-        ragConfig.emSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
+            logger.info { "Deleting the question condensing LLM secret ..." }
+            ragConfig.questionCondensingLlmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
+            logger.info { "Deleting the question answering LLM secret ..." }
+            ragConfig.questionAnsweringLlmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
+            logger.info { "Deleting the Embedding secret ..." }
+            ragConfig.emSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
+        }
     }
 
     /**
@@ -87,14 +90,16 @@ object RAGService {
         ragConfig: BotRAGConfigurationDTO,
         author: String? = null,
     ): BotRAGConfiguration =
-        BotHistoryService.configuration(
-            ragConfig.namespace,
-            ragConfig.botId,
-            "rag-settings",
-            author,
-            previous = { ragConfigurationDAO.findByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId) },
-            save = { saveWithValidation(ragConfig) },
-        )
+        VectorStoreIndexLifecycle.withLock(ragConfig.namespace, ragConfig.botId) {
+            BotHistoryService.configuration(
+                ragConfig.namespace,
+                ragConfig.botId,
+                "rag-settings",
+                author,
+                previous = { ragConfigurationDAO.findByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId) },
+                save = { saveWithValidation(ragConfig) },
+            )
+        }
 
     private fun saveWithValidation(ragConfig: BotRAGConfigurationDTO): BotRAGConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId).firstOrNull()
@@ -136,8 +141,15 @@ object RAGService {
         previous: BotRAGConfiguration,
         updated: BotRAGConfiguration,
     ) {
-        check(RAGValidationService.validate(updated).isEmpty()) { "knowledge-base.job.activation_failed" }
-        check(ragConfigurationDAO.saveIfUnchanged(previous, updated)) { "knowledge-base.job.configuration_changed" }
+        VectorStoreIndexLifecycle.withLock(updated.namespace, updated.botId) {
+            val target = KnowledgeBaseService.default.target(updated.namespace, updated.botId, updated.indexSessionId)
+            check(target != null && KnowledgeBaseService.default.probe(target).state == KnowledgeBaseIndexState.READY) {
+                "knowledge-base.job.index_missing"
+            }
+
+            check(RAGValidationService.validate(updated).isEmpty()) { "knowledge-base.job.activation_failed" }
+            check(ragConfigurationDAO.saveIfUnchanged(previous, updated)) { "knowledge-base.job.configuration_changed" }
+        }
     }
 
     private fun saveRagConfiguration(ragConfiguration: BotRAGConfigurationDTO): BotRAGConfiguration {

@@ -66,6 +66,7 @@ class IndexStats(BaseModel):
 
 
 class InspectedChunk(BaseModel):
+    row_id: str = ''
     chunk_id: str
     chunk: str
     content: str

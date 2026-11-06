@@ -179,7 +179,7 @@ class KnowledgeBaseService(
     fun probe(target: KnowledgeBaseTarget): KnowledgeBaseIndexProbe {
         val state = indexing.indexState(KnowledgeBaseTargetRequest(target.setting, target.indexName, target.indexPrefix))
         val cmetadata = state.cmetadata
-        val hasContractMetadata = cmetadata?.containsKey("schema_version") == true
+        val hasContractMetadata = cmetadata?.keys?.any { it in setOf("schema_version", "embedding_model", "embedding_provider", "origin", "created_at", "created_by") } == true
         val collectionModel = EmbeddingModelIdentity.normalizeCollectionModel(cmetadata?.get("embedding_model") as? String)
         val rowCount = state.rowCount
         val kbRowCount = state.kbRowCount

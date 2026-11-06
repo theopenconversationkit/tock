@@ -1,9 +1,13 @@
+import { KnowledgeBaseJob } from '../../knowledge-base/models';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
 import {
+  IndexMetadata,
+  DeleteChunkRequest,
+  VectorStoreMutation,
   CondenseRequest,
   CondenseResponse,
   DocumentsRequest,
@@ -80,5 +84,30 @@ export class VectorStoreInspectionRestService extends VectorStoreInspectionServi
     return this.rest.get<RetrievalSettings | null>(this.baseUrl('/retrieval-settings'), (settings: RetrievalSettings) =>
       settings && Object.keys(settings).length ? settings : null
     );
+  }
+
+  getIndexMetadata(indexName: string): Observable<IndexMetadata> {
+    return this.management('/index-metadata', { indexName });
+  }
+
+  setEmbeddingModel(indexName: string, embeddingModel: string): Observable<IndexMetadata> {
+    return this.management('/embedding-model', { indexName, embeddingModel });
+  }
+
+  deleteChunk(request: DeleteChunkRequest): Observable<VectorStoreMutation> {
+    return this.management('/delete-chunk', request);
+  }
+
+  deleteIndex(indexName: string): Observable<VectorStoreMutation> {
+    return this.management('/delete-index', { indexName });
+  }
+
+  getMutationJob(jobId: string): Observable<KnowledgeBaseJob> {
+    return this.rest.get(`/bots/${this.botId}/knowledge-base/jobs/${encodeURIComponent(jobId)}`, (job) => job, true);
+  }
+
+  private management<T>(path: string, request: unknown): Observable<T> {
+    // Show translated, actionable errors beside the operation instead of the generic global toast.
+    return this.rest.post(this.baseUrl(path), request, (response: T) => response, undefined, true, {}, true);
   }
 }

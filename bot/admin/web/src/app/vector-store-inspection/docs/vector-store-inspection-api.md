@@ -7,6 +7,46 @@ partagent avec le runtime.
 Compagnon du document de présentation générale ; on s'y réfère pour la
 justification des choix, ce document-ci ne décrit que les interfaces.
 
+Les actions de gestion ajoutées à l’exploration sont réservées aux
+administrateurs et à PGVector.
+
+### Actions de gestion
+
+Les routes admin suivantes utilisent le préfixe `/gen-ai/bots/:botId/vector-store`
+et des corps JSON en `camelCase` :
+
+| Route POST | Corps | Réponse |
+| --- | --- | --- |
+| `/index-metadata` | `indexName` | `metadata`, `isCurrent`, `currentEmbeddingModel`, `embeddingIncompatible` |
+| `/embedding-model` | `indexName`, `embeddingModel` | Métadonnées actualisées et éventuel avertissement d’incompatibilité |
+| `/delete-chunk` | `indexName`, `rowId`, `expectedCurrent`, `allowEmptyIndex`, `unpublishKnowledgeBase` | `deletedCount` ou `jobId` de dépublication |
+| `/delete-index` | `indexName` | `deletedCount` |
+
+`rowId` est l’identifiant physique désormais retourné avec chaque chunk ;
+`chunkId` reste l’identifiant logique utilisé par les épingles et le diagnostic.
+Les indicateurs de confirmation ne donnent aucun droit supplémentaire : le
+serveur relit la configuration du bot et les métadonnées du chunk. Si l’action
+confirmée ne correspond plus à la situation réelle, il renvoie un conflit 409.
+Un modèle déjà renseigné produit également un conflit ; un index ou chunk absent
+produit une réponse 404. Les messages métier utilisent `vsi.management.errors.*`.
+
+Pour une dépublication, le studio suit le job existant via
+`GET /bots/:botId/knowledge-base/jobs/:jobId` et distingue l’attente, le succès et
+l’échec de synchronisation. La fiche source n’est pas supprimée.
+
+L’orchestrateur expose les mêmes suffixes sous `/vector-store-inspection`, ainsi
+qu’un POST interne `/chunk` pour lire les métadonnées et le nombre de chunks avant
+une suppression. Le serveur admin injecte la connexion, le préfixe autorisé et le
+nom de l’index protégé. Les mutations utilisent des transactions PostgreSQL ;
+l’ajout du modèle verrouille la collection avant de vérifier l’absence de valeur.
+Une valeur absente, `null` ou une chaîne blanche peut être renseignée ; les autres
+valeurs ne peuvent pas être écrasées. Les clés étrangères sont conservées.
+
+Le nom de l’index courant est résolu depuis la configuration RAG, indépendamment
+des métadonnées des chunks. Les changements de configuration et les mutations
+partagent un verrou de cycle de vie par bot ; un index en cours de création par
+un job de la knowledge base ne peut pas être supprimé.
+
 ---
 
 ## 1. Principes
@@ -122,8 +162,8 @@ documents.
 
 | Champ                | Type           | Description                                                          |
 | -------------------- | -------------- | -------------------------------------------------------------------- |
-| `filter.text`        | string \| null | `ILIKE` sur titre et contenu. Navigation, pas recherche sémantique   |
-| `filter.document_id` | string \| null | Restreint à un document                                              |
+| `filter.text`        | string \| null | Correspondance partielle, sans distinction de casse, sur le titre, l’identifiant du document (`metadata.id`) et le contenu (`ILIKE`). Pas de recherche sémantique. |
+| `filter.document_id` | string \| null | Restreint à un identifiant de document exact (`metadata.id`)          |
 | `filter.anomaly`     | string \| null | Un des `code` d'anomalie (§3.2.1). Restreint aux documents concernés |
 | `start`              | int            | Offset (contrat de pagination partagé du studio)                     |
 | `size`               | int            | Taille de page                                                       |

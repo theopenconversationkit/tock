@@ -67,15 +67,17 @@ object VectorStoreService {
         namespace: String,
         botId: String,
     ) {
-        val vectorStoreConfig =
-            vectorStoreConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-                ?: WebVerticle.badRequest("No Vector Store configuration is defined yet [namespace: $namespace, botId: $botId]")
+        VectorStoreIndexLifecycle.withLock(namespace, botId) {
+            val vectorStoreConfig =
+                vectorStoreConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+                    ?: WebVerticle.badRequest("No Vector Store configuration is defined yet [namespace: $namespace, botId: $botId]")
 
-        logger.info { "Deleting the Vector Store Configuration [namespace: $namespace, botId: $botId]" }
-        vectorStoreConfigurationDAO.delete(vectorStoreConfig._id)
+            logger.info { "Deleting the Vector Store Configuration [namespace: $namespace, botId: $botId]" }
+            vectorStoreConfigurationDAO.delete(vectorStoreConfig._id)
 
-        logger.info { "Deleting the database secret ..." }
-        SecurityUtils.deleteSecret(vectorStoreConfig.setting.password)
+            logger.info { "Deleting the database secret ..." }
+            SecurityUtils.deleteSecret(vectorStoreConfig.setting.password)
+        }
     }
 
     /**
@@ -88,14 +90,16 @@ object VectorStoreService {
         vectorStoreConfig: BotVectorStoreConfigurationDTO,
         author: String? = null,
     ): BotVectorStoreConfiguration =
-        BotHistoryService.configuration(
-            vectorStoreConfig.namespace,
-            vectorStoreConfig.botId,
-            "vector-store",
-            author,
-            previous = { vectorStoreConfigurationDAO.findByNamespaceAndBotId(vectorStoreConfig.namespace, vectorStoreConfig.botId) },
-            save = { saveWithValidation(vectorStoreConfig) },
-        )
+        VectorStoreIndexLifecycle.withLock(vectorStoreConfig.namespace, vectorStoreConfig.botId) {
+            BotHistoryService.configuration(
+                vectorStoreConfig.namespace,
+                vectorStoreConfig.botId,
+                "vector-store",
+                author,
+                previous = { vectorStoreConfigurationDAO.findByNamespaceAndBotId(vectorStoreConfig.namespace, vectorStoreConfig.botId) },
+                save = { saveWithValidation(vectorStoreConfig) },
+            )
+        }
 
     private fun saveWithValidation(vectorStoreConfig: BotVectorStoreConfigurationDTO): BotVectorStoreConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(vectorStoreConfig.namespace, vectorStoreConfig.botId).firstOrNull()
