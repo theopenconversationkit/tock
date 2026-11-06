@@ -1,23 +1,5 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NbDialogService } from '@nebular/theme';
-import { Debug } from '../../../../model/dialog-data';
-
 import { ChatUiMessageDebugComponent } from './chat-ui-message-debug.component';
 import { TestSharedModule } from '../../../../test-shared.module';
 
@@ -69,5 +51,37 @@ describe('ChatUiMessageDebugComponent', () => {
     fixture.detectChanges();
     expect(component.truncatedCount).toBe(2);
     expect(fixture.nativeElement.textContent).toContain('Truncated chunks');
+  });
+
+  describe('status tag', () => {
+    function setRagDebug(ragDebug: any): void {
+      fixture.componentRef.setInput('action', { ragDebug });
+      fixture.detectChanges();
+    }
+
+    it('should display the status label when answer.status is provided', () => {
+      setRagDebug({ answer: { status: 'found_in_context' } });
+      expect(component.showStatusTag).toBeTrue();
+      expect(component.getStatusClassName()).toBe('status-success');
+      expect(fixture.nativeElement.textContent).toContain('Found in context');
+    });
+
+    it('should display "Technical error" when the engine reports a technical_error status', () => {
+      setRagDebug({ answer: { status: 'technical_error' }, error: { errorMessage: 'boom' } });
+      expect(fixture.nativeElement.textContent).toContain('Technical error');
+    });
+
+    it('should display "Error" for legacy debug data carrying an error without answer.status', () => {
+      setRagDebug({ error: { errorMessage: 'boom', errorDetail: {} } });
+      expect(component.showStatusTag).toBeTrue();
+      expect(component.getStatusClassName()).toBe('status-error');
+      expect(fixture.nativeElement.textContent).toContain('Status | Error');
+    });
+
+    it('should not display any status tag for legacy debug data without answer.status nor error', () => {
+      setRagDebug({ user_question: 'legacy question', answer: 'legacy plain text answer', documents: [] });
+      expect(component.showStatusTag).toBeFalse();
+      expect(fixture.nativeElement.textContent).not.toContain('Status |');
+    });
   });
 });
