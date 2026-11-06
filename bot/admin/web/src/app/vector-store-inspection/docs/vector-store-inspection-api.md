@@ -7,9 +7,8 @@ partagent avec le runtime.
 Compagnon du document de présentation générale ; on s'y réfère pour la
 justification des choix, ce document-ci ne décrit que les interfaces.
 
-Les actions de gestion ajoutées à l’exploration sont décrites dans le
-[cadrage fonctionnel](vector-store-management-functional-spec.md). Elles sont
-réservées aux administrateurs et à PGVector.
+Les actions de gestion ajoutées à l’exploration sont réservées aux
+administrateurs et à PGVector.
 
 ### Actions de gestion
 
