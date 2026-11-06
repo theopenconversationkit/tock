@@ -51,7 +51,7 @@ data class ServerSentEvent(
  *
  */
 class ConnectorRestClient(
-    private val baseUrl: String = System.getenv("tock_bot_rest_url") ?: "http://localhost:8888",
+    private val baseUrl: String = System.getenv("tock_bot_rest_url") ?: "http://localhost:8889",
 ) {
     private val restCache: Cache<String, ConnectorRestService> =
         CacheBuilder.newBuilder().expireAfterAccess(Duration.ofHours(1)).build()
