@@ -39,6 +39,11 @@
   }
 }
 
+::ng-deep .grid-columns-header nb-checkbox .text {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
 @include media-breakpoint-up(lg) {
   .grid {
     grid-template-columns: 6fr 4fr;
@@ -68,5 +73,20 @@
 @include media-breakpoint-up(sm) {
   .grid-columns-header {
     grid-template-columns: auto 1fr;
+  }
+}
+
+.sort-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary-default);
+    outline-offset: 2px;
   }
 }
