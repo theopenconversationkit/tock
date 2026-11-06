@@ -24,7 +24,7 @@ import {ActionNlpStats, DialogReport, NlpCallStats} from './model/dialog-data';
 import { AdminConfiguration } from './model/conf';
 
 export interface TockSimpleSessionStorage {
-  test: { debug: boolean; sourceWithContent?: boolean };
+  test: { debug: boolean; sourceWithContent?: boolean; streaming?: boolean };
   dialogs: { displayTests: boolean };
 }
 

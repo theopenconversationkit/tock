@@ -251,6 +251,15 @@ class WebConnector internal constructor(
         errorListener: ((Throwable) -> Unit)?,
         transientDialogContext: DialogContext,
     ) {
+        val directStreamed = (event as? Action)?.metadata?.streamedResponse == true
+        // Standard streaming: only if a SSE channel is connected to this instance to receive the partial responses
+        val userAction = (event as? Action)?.takeIf { it.playerId.type == user }
+        val sseStreaming =
+            sseEnabled && !directStreamed &&
+                userAction != null && sseEndpoint.isConnected(applicationId, userAction.playerId.id)
+        if (sseStreaming) {
+            userAction?.metadata?.streamedResponse = true
+        }
         val callback =
             WebConnectorCallback(
                 applicationId = applicationId,
@@ -260,7 +269,11 @@ class WebConnector internal constructor(
                 webMapper = webMapper,
                 eventId = event.id.toString(),
                 messageProcessor = messageProcessor,
-                streamedResponse = (event as? Action)?.metadata?.streamedResponse == true,
+                streamedResponse = directStreamed,
+                sseTokenSender =
+                    userAction?.takeIf { sseStreaming }?.let { a ->
+                        { response -> sseEndpoint.sendTransientResponse(applicationId, a.playerId.id, response) }
+                    },
             )
         if (sseEnabled) {
             // Uniquely identify each response, so they can be reconciled between SSE and POST

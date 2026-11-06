@@ -27,4 +27,5 @@ data class BotDialogResponse(
     val userLocale: Locale? = null,
     val userActionId: String? = null,
     val hasNlpStats: Boolean = false,
+    val ragDebug: Any? = null,
 )

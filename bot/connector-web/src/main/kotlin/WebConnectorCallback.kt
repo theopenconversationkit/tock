@@ -21,6 +21,7 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.MetadataEvent
+import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_RESPONSE_METADATA
 import ai.tock.bot.engine.event.hasStreamMetadata
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.vertx.sendSseMessage
@@ -45,7 +46,16 @@ internal class WebConnectorCallback(
     private val eventId: String,
     private val messageProcessor: WebMessageProcessor,
     internal val streamedResponse: Boolean,
+    private val sseTokenSender: ((WebConnectorResponse) -> Unit)? = null,
 ) : ConnectorCallbackBase(applicationId, webConnectorType, errorListener) {
+    private val streamBuffer = StringBuilder()
+
+    @Volatile
+    private var sseStreamStarted = false
+
+    // One fixed Vert.x context so that partial responses are written in order
+    private val streamContext by lazy { context?.vertx()?.getOrCreateContext() }
+
     fun addAction(action: Action) {
         actions.add(action)
     }
@@ -69,7 +79,10 @@ internal class WebConnectorCallback(
                 messageProcessor.process(action)
             }
 
-        return WebConnectorResponse(messages, metadata.toMap()) // clone the metadata
+        // The stream flag is kept out of `metadata` so that final messages are not merged as stream chunks
+        val responseMetadata =
+            if (sseStreamStarted) metadata + (STREAM_RESPONSE_METADATA to "true") else metadata.toMap()
+        return WebConnectorResponse(messages, responseMetadata)
     }
 
     fun sendResponse() {
@@ -84,6 +97,37 @@ internal class WebConnectorCallback(
         context
             ?.response()
             ?.sendSseMessage(webMapper.writeValueAsString(createResponse(listOf(action))))
+    }
+
+    /** Forwards a RAG token to the client over the standard SSE channel; `/sse/direct` does not receive tokens. */
+    override fun sendStreamedToken(content: String) {
+        if (content.isEmpty() || streamedResponse) return
+        sendStreamedTokenOverSse(content)
+    }
+
+    /**
+     * Standard streaming: the accumulated text is pushed on the regular SSE channel as a message
+     * flagged TOCK_STREAM_RESPONSE with the RESPONSE_ID, so that clients replace the previous version.
+     */
+    private fun sendStreamedTokenOverSse(content: String) {
+        val sender = sseTokenSender ?: return
+        val text =
+            synchronized(streamBuffer) {
+                streamBuffer.append(content)
+                streamBuffer.toString()
+            }
+        sseStreamStarted = true
+        val response =
+            WebConnectorResponse(
+                listOf(messageProcessor.processText(text)),
+                metadata + (STREAM_RESPONSE_METADATA to "true"),
+            )
+        val streamContext = this.streamContext
+        if (streamContext != null) {
+            streamContext.runOnContext { sender(response) }
+        } else {
+            sender(response)
+        }
     }
 
     override fun eventSkipped(event: Event) {

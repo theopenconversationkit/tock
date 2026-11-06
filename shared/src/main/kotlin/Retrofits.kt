@@ -416,6 +416,10 @@ private class LoggingInterceptor(
                 logger.info("<-- END HTTP")
             } else if (bodyEncoded(response.headers)) {
                 logger.info("<-- END HTTP (encoded body omitted)")
+            } else if (isEventStream(response)) {
+                // Server-Sent Events: never buffer the body for logging, it would block
+                // until the stream ends and defeat progressive streaming.
+                logger.info("<-- END HTTP (streaming body, event-stream not logged)")
             } else {
                 val source = responseBody?.source()
                 if (source != null) {
@@ -474,4 +478,6 @@ private class LoggingInterceptor(
         val contentEncoding = headers.get("Content-Encoding")
         return contentEncoding != null && !contentEncoding.equals("identity", ignoreCase = true)
     }
+
+    private fun isEventStream(response: Response): Boolean = response.header("Content-Type")?.contains("text/event-stream", ignoreCase = true) == true
 }
