@@ -26,6 +26,14 @@ data class Intent(
     val name: String,
     val entities: List<Entity>,
     val entitiesRegexp: Map<Locale, LinkedHashSet<EntitiesRegexp>> = emptyMap(),
+    /**
+     * The optional description of the intent, as set in TOCK Studio
+     * ([ai.tock.nlp.front.shared.config.IntentDefinition.description]).
+     *
+     * Leveraged by engines that benefit
+     * from a human-readable description of each intent (e.g. clef).
+     */
+    val description: String? = null,
 ) {
     companion object {
         const val UNKNOWN_INTENT_NAME: String = "$TOCK_NAMESPACE:unknown"

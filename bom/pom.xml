@@ -231,6 +231,11 @@
             </dependency>
             <dependency>
                 <groupId>ai.tock</groupId>
+                <artifactId>tock-nlp-model-systemone</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-core-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -671,6 +676,11 @@
             <dependency>
                 <groupId>com.squareup.retrofit2</groupId>
                 <artifactId>converter-jackson</artifactId>
+                <version>${retrofit}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.retrofit2</groupId>
+                <artifactId>converter-kotlinx-serialization</artifactId>
                 <version>${retrofit}</version>
             </dependency>
             <dependency>

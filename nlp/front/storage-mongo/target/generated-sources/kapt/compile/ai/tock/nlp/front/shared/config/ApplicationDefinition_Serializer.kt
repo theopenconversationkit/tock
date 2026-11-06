@@ -66,6 +66,11 @@ internal class ApplicationDefinition_Serializer :
         gen.writeFieldName("nlpEngineType")
         val _nlpEngineType_ = value.nlpEngineType
         serializers.defaultSerializeValue(_nlpEngineType_, gen)
+        gen.writeFieldName("entityNlpEngineType")
+        val _entityNlpEngineType_ = value.entityNlpEngineType
+        if(_entityNlpEngineType_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_entityNlpEngineType_, gen)
+                }
         gen.writeFieldName("mergeEngineTypes")
         val _mergeEngineTypes_ = value.mergeEngineTypes
         gen.writeBoolean(_mergeEngineTypes_)

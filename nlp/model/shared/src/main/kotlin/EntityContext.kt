@@ -69,7 +69,7 @@ class EntityCallContextForIntent(
     constructor(context: CallContext, intent: Intent) : this(
         intent,
         context.language,
-        context.engineType,
+        context.entityEngineType,
         context.application.name,
         context.evaluationContext.referenceDate,
     )
@@ -90,7 +90,7 @@ class EntityCallContextForEntity(
         this(
             entity.entityType,
             context.language,
-            context.engineType,
+            context.entityEngineType,
             context.application.name,
             context.evaluationContext.referenceDateForEntity(entity),
         )
@@ -144,14 +144,14 @@ class EntityBuildContextForIntent(
     constructor(context: BuildContext, intent: Intent) : this(
         intent,
         context.language,
-        context.engineType,
+        context.entityEngineType,
         context.application.name,
     )
 
     constructor(context: CallContext, intent: Intent) : this(
         intent,
         context.language,
-        context.engineType,
+        context.entityEngineType,
         context.application.name,
     )
 
@@ -189,7 +189,7 @@ class EntityBuildContextForSubEntities(
     applicationName: String,
 ) : EntityBuildContext(language, engineType, applicationName) {
     constructor(context: BuildContext, entityType: EntityType) :
-        this(entityType, context.language, context.engineType, context.application.name)
+        this(entityType, context.language, context.entityEngineType, context.application.name)
 
     override fun key(): EntityContextKey = EntityContextKey(applicationName, null, language, engineType, entityType, true)
 

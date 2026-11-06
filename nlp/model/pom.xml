@@ -37,6 +37,7 @@
         <module>opennlp</module>
         <module>rasa</module>
         <module>sagemaker</module>
+        <module>systemone</module>
     </modules>
 
     <dependencies>
