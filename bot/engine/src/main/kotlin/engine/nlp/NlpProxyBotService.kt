@@ -55,7 +55,7 @@ internal object NlpProxyBotService {
         )
 
     init {
-        val tockNlpServiceUrl = URL(System.getenv("tock_nlp_service_url") ?: "http://localhost:8889")
+        val tockNlpServiceUrl = URL(System.getenv("tock_nlp_service_url") ?: "http://localhost:8888")
         tockNlpServiceHost = System.getenv("tock_nlp_service_host") ?: tockNlpServiceUrl.host
         tockNlpServicePort = System.getenv("tock_nlp_service_port")?.toInt() ?: tockNlpServiceUrl.port
         tockNlpServiceSsl = (System.getenv("tock_nlp_service_SSL") ?: tockNlpServiceUrl.protocol) == "https"

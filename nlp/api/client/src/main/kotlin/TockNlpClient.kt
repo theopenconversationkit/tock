@@ -55,7 +55,7 @@ import java.util.concurrent.TimeUnit
  *  Wraps calls to the NLP stack.
  */
 class TockNlpClient(
-    baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http://localhost:8889",
+    baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http://localhost:8888",
 ) : NlpClient {
     companion object {
         private val logger = KotlinLogging.logger {}

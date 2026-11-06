@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="NlpService" type="JetRunConfigurationType">
     <envs>
-      <env name="nlpverticle_port" value="8889" />
+      <env name="nlpverticle_port" value="8888" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="ai.tock.nlp.api.StartNlpServiceKt" />
     <module name="tock-nlp-api-service" />

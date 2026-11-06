@@ -69,7 +69,7 @@ internal object DucklingClient {
                 longProperty("tock_duckling_request_timeout_ms", 4000),
                 logger,
                 circuitBreaker = true,
-            ).baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
+            ).baseUrl("${property("nlp_duckling_url", "http://localhost:8888")}/")
                 .addConverterFactory(RawJsonBodyConverterFactory)
                 .build()
 

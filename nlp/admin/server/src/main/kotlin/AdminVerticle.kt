@@ -1229,7 +1229,7 @@ open class AdminVerticle : WebVerticle() {
                             context.response().end(
                                 it.result().toString(UTF_8).replace(
                                     "_HOST_",
-                                    verticleProperty("nlp_external_host", "localhost:8889"),
+                                    verticleProperty("nlp_external_host", "localhost:8888"),
                                 ),
                             )
                         } else {
