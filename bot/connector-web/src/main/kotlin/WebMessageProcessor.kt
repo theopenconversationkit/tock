@@ -60,6 +60,8 @@ internal class WebMessageProcessor(
             }
         }
 
+    fun processText(text: String): WebMessage = WebMessage(text = postProcess(text))
+
     private fun postProcess(
         message: WebMessage?,
         actionId: String,

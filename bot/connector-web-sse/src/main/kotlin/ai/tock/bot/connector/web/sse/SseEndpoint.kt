@@ -84,6 +84,17 @@ class SseEndpoint internal constructor(
         response: WebConnectorResponseContract,
     ): Future<Unit> = channels.send(appId = connectorId, recipientId, response)
 
+    fun isConnected(
+        connectorId: String,
+        recipientId: String,
+    ): Boolean = channels.isConnected(connectorId, recipientId)
+
+    fun sendTransientResponse(
+        connectorId: String,
+        recipientId: String,
+        response: WebConnectorResponseContract,
+    ): Future<Boolean> = channels.sendTransient(connectorId, recipientId, response)
+
     private fun SseChannels.register(
         response: HttpServerResponse,
         connectorId: String,

@@ -21,22 +21,19 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.MetadataEvent
+import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_RESPONSE_METADATA
 import ai.tock.bot.engine.event.hasStreamMetadata
 import ai.tock.shared.booleanProperty
-import ai.tock.shared.vertx.sendSseEvent
 import ai.tock.shared.vertx.sendSseMessage
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.http.HttpHeaders
 import io.vertx.ext.web.RoutingContext
-import mu.KotlinLogging
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 private val mergeStreamResponse: Boolean =
     booleanProperty("tock_web_connector_merge_stream_response", true)
-
-private val logger = KotlinLogging.logger {}
 
 internal class WebConnectorCallback(
     applicationId: String,
@@ -49,7 +46,16 @@ internal class WebConnectorCallback(
     private val eventId: String,
     private val messageProcessor: WebMessageProcessor,
     internal val streamedResponse: Boolean,
+    private val sseTokenSender: ((WebConnectorResponse) -> Unit)? = null,
 ) : ConnectorCallbackBase(applicationId, webConnectorType, errorListener) {
+    private val streamBuffer = StringBuilder()
+
+    @Volatile
+    private var sseStreamStarted = false
+
+    // One fixed Vert.x context so that partial responses are written in order
+    private val streamContext by lazy { context?.vertx()?.getOrCreateContext() }
+
     fun addAction(action: Action) {
         actions.add(action)
     }
@@ -73,7 +79,10 @@ internal class WebConnectorCallback(
                 messageProcessor.process(action)
             }
 
-        return WebConnectorResponse(messages, metadata.toMap()) // clone the metadata
+        // The stream flag is kept out of `metadata` so that final messages are not merged as stream chunks
+        val responseMetadata =
+            if (sseStreamStarted) metadata + (STREAM_RESPONSE_METADATA to "true") else metadata.toMap()
+        return WebConnectorResponse(messages, responseMetadata)
     }
 
     fun sendResponse() {
@@ -90,28 +99,34 @@ internal class WebConnectorCallback(
             ?.sendSseMessage(webMapper.writeValueAsString(createResponse(listOf(action))))
     }
 
-    /**
-     * Forward a partial/progressive text token to the client as an SSE `token` event
-     * while the answer is still being generated (RAG streaming mode).
-     *
-     * Token callbacks run on a foreign thread (the orchestrator SSE background thread);
-     * writing the Vert.x response from a non-event-loop thread does not flush until the
-     * next event-loop activity, which batches all tokens together. Marshalling every write
-     * onto the Vert.x context serializes them in order and flushes each chunk immediately.
-     */
+    /** Forwards a RAG token to the client over the standard SSE channel; `/sse/direct` does not receive tokens. */
     override fun sendStreamedToken(content: String) {
-        if (!streamedResponse || content.isEmpty()) return
-        val ctx = context ?: return
-        try {
-            val data = webMapper.writeValueAsString(mapOf("content" to content))
-            ctx.vertx().runOnContext {
-                val response = ctx.response()
-                if (!response.ended()) {
-                    response.sendSseEvent("token", data)
-                }
+        if (content.isEmpty() || streamedResponse) return
+        sendStreamedTokenOverSse(content)
+    }
+
+    /**
+     * Standard streaming: the accumulated text is pushed on the regular SSE channel as a message
+     * flagged TOCK_STREAM_RESPONSE with the RESPONSE_ID, so that clients replace the previous version.
+     */
+    private fun sendStreamedTokenOverSse(content: String) {
+        val sender = sseTokenSender ?: return
+        val text =
+            synchronized(streamBuffer) {
+                streamBuffer.append(content)
+                streamBuffer.toString()
             }
-        } catch (e: Exception) {
-            logger.error(e) { "Error writing streamed token" }
+        sseStreamStarted = true
+        val response =
+            WebConnectorResponse(
+                listOf(messageProcessor.processText(text)),
+                metadata + (STREAM_RESPONSE_METADATA to "true"),
+            )
+        val streamContext = this.streamContext
+        if (streamContext != null) {
+            streamContext.runOnContext { sender(response) }
+        } else {
+            sender(response)
         }
     }
 
