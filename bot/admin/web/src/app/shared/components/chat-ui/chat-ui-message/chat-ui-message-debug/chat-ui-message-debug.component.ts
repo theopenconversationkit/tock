@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
 import { ActionReport } from '../../../../model/dialog-data';
 import { DebugViewerDialogComponent } from '../../../debug-viewer-dialog/debug-viewer-dialog.component';
 import { getContrastYIQ, getInterpolatedColor, RagAnswerStatus, RagAnswerStatusLabels, snakeCaseToDisplayLabel } from '../../../../utils';
 
 @Component({
-    selector: 'tock-chat-ui-message-debug',
-    templateUrl: './chat-ui-message-debug.component.html',
-    styleUrls: ['./chat-ui-message-debug.component.scss'],
-    standalone: false
+  selector: 'tock-chat-ui-message-debug',
+  templateUrl: './chat-ui-message-debug.component.html',
+  styleUrls: ['./chat-ui-message-debug.component.scss'],
+  standalone: false
 })
 export class ChatUiMessageDebugComponent {
   @Input() action: ActionReport;
   @Input() condensed: boolean = false;
 
-  constructor(private nbDialogService: NbDialogService) {}
+  private nbDialogService = inject(NbDialogService);
 
   showDebug() {
     this.nbDialogService.open(DebugViewerDialogComponent, {
@@ -45,10 +45,27 @@ export class ChatUiMessageDebugComponent {
     return documents.filter((d) => d?.metadata?.truncated === true).length;
   }
 
+  /**
+   * Whether the "Status" tag should be displayed.
+   *
+   * Recent engine versions always carry an `answer.status` in the RAG debug data (including
+   * `technical_error` when the LLM call fails). Older versions only set an `error` entry on failure
+   * and nothing when the answer was produced successfully, so a RAG debug payload without
+   * `answer.status` AND without `error` is a legacy successful answer: no status tag is shown
+   * rather than a misleading "Error".
+   */
+  get showStatusTag(): boolean {
+    return !!this.action.ragDebug?.answer?.status || this.hasLegacyError;
+  }
+
+  private get hasLegacyError(): boolean {
+    return !!this.action.ragDebug?.error;
+  }
+
   getStatusClassName(): string {
     const status = this.action.ragDebug?.answer?.status;
     if (!status) {
-      return 'status-error';
+      return this.hasLegacyError ? 'status-error' : '';
     }
 
     switch (status.toLowerCase()) {
@@ -70,7 +87,7 @@ export class ChatUiMessageDebugComponent {
     if (status) {
       return RagAnswerStatusLabels[status.toLowerCase()] || snakeCaseToDisplayLabel(status);
     }
-    return 'Error';
+    return this.hasLegacyError ? 'Error' : '';
   }
 
   getConfidenceBgColor(): { bg: string; fg: string } {
