@@ -89,6 +89,8 @@ export interface IndexStats {
 }
 
 export interface InspectedChunk {
+  /** Physical row id, used only for scoped mutations. */
+  rowId?: string;
   chunkId: ChunkId;
   /** Raw `n/N` form */
   chunk: string;
@@ -349,4 +351,24 @@ export interface RunComparison {
   /** Chunks now handed to the model that were not in the reference, and the reverse */
   nowPassedOn: number;
   noLongerPassedOn: number;
+}
+
+export interface IndexMetadata {
+  metadata: Record<string, unknown>;
+  isCurrent: boolean;
+  currentEmbeddingModel: string | null;
+  embeddingIncompatible: boolean;
+}
+
+export interface DeleteChunkRequest {
+  indexName: string;
+  rowId: string;
+  expectedCurrent: boolean;
+  allowEmptyIndex: boolean;
+  unpublishKnowledgeBase: boolean;
+}
+
+export interface VectorStoreMutation {
+  deletedCount: number;
+  jobId?: string | null;
 }

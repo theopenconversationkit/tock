@@ -488,6 +488,14 @@ class KnowledgeBaseServiceTest {
             verify(exactly = 0) { RAGService.switchKnowledgeBaseIndex(any(), any()) }
         }
 
+    @Test fun `legacy index model is visible without schema version metadata`() {
+        every { indexing.indexState(any()) } returns
+            KnowledgeBaseIndexStateResponse(true, 1, 1, mapOf("embedding_model" to "historical-model"))
+        val probe = service.probe(target)
+        assertEquals("historical-model", probe.collection?.embeddingModel)
+        assertTrue(probe.embeddingIncompatible)
+    }
+
     @Test fun `a collection embedding model matches the bot ignoring an Ollama latest tag`() {
         val ollamaTarget = target.copy(embeddingModel = "nomic-embed-text")
         every { indexing.indexState(any()) } returns

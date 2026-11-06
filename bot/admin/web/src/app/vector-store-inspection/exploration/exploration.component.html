@@ -6,7 +6,8 @@
       ghost
       shape="round"
       [nbTooltip]="'vsi.exploration.refresh_tooltip' | transloco"
-      (click)="fetchDocuments()"
+      (click)="refresh()"
+      [disabled]="managementBusy"
     >
       <nb-icon icon="arrow-repeat"></nb-icon>
     </button>
@@ -15,13 +16,30 @@
 
 @if (configurations?.length === 0) {
 <tock-no-data-found [title]="'vsi.common.no_bot_configuration_detected' | transloco"></tock-no-data-found>
-} @else {
+} @else { @if (managementError) {
+<nb-alert status="danger">{{ managementError | transloco }}</nb-alert>
+} @if (managementMessage) {
+<nb-alert [status]="pendingJobId ? 'info' : 'success'">
+  {{ managementMessage | transloco }}
+  @if (pendingJobId && !managementBusy) {
+  <button
+    nbButton
+    ghost
+    size="small"
+    (click)="followUnpublication()"
+  >
+    {{ 'vsi.management.check_status' | transloco }}
+  </button>
+  }
+</nb-alert>
+}
 
 <nb-card class="shadow-sm mb-2">
   <nb-card-body>
     <div class="index-grid">
       <tock-vector-store-index-selector
         [indexes]="indexes"
+        [disabled]="managementBusy"
         [selected]="currentIndex"
         [label]="'vsi.common.index_label' | transloco"
         [placeholder]="'vsi.common.index_placeholder' | transloco"
@@ -36,12 +54,86 @@
         </div>
         <div class="list-entry-desc text-muted ellipsis">{{ currentIndex.indexSessionId }}</div>
       </div>
+      } @if (managementEnabled && currentIndex) {
+      <button
+        nbButton
+        outline
+        status="danger"
+        size="small"
+        class="index-delete"
+        [disabled]="managementBusy || currentIndex.isCurrent"
+        (click)="deleteIndex()"
+      >
+        <nb-icon icon="trash"></nb-icon>{{ 'vsi.management.delete_index' | transloco }}
+      </button>
       }
     </div>
   </nb-card-body>
 </nb-card>
 
-@if (stats) {
+@if (managementEnabled && currentIndex) {
+<nb-card
+  class="shadow-sm mb-2"
+  [nbSpinner]="metadataLoading"
+>
+  <nb-card-header>{{ 'vsi.management.metadata_title' | transloco }}</nb-card-header>
+  <nb-card-body>
+    @if (metadataError) {
+    <nb-alert status="danger">{{ metadataError | transloco }}</nb-alert>
+    } @if (indexMetadata) { @if (hasMetadata) {
+    <tock-vector-store-metadata [metadata]="indexMetadata.metadata"></tock-vector-store-metadata>
+    } @else {
+    <p class="text-muted">{{ 'vsi.management.no_metadata' | transloco }}</p>
+    } @if (indexMetadata.embeddingIncompatible) {
+    <nb-alert
+      status="warning"
+      class="mt-2 mb-0"
+      >{{ 'vsi.management.model_mismatch' | transloco: { model: indexMetadata.currentEmbeddingModel } }}</nb-alert
+    >
+    } @if (canSetEmbeddingModel) {
+    <form
+      class="mt-3"
+      (ngSubmit)="saveEmbeddingModel()"
+    >
+      <label for="index-embedding-model">{{ 'vsi.management.model_label' | transloco }}</label>
+      <p class="text-muted font-size-small">{{ 'vsi.management.model_help' | transloco }}</p>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <input
+          nbInput
+          id="index-embedding-model"
+          name="embeddingModel"
+          [(ngModel)]="embeddingModel"
+          maxlength="300"
+          [disabled]="managementBusy"
+          [placeholder]="'vsi.management.model_placeholder' | transloco"
+        />
+        <button
+          nbButton
+          status="primary"
+          size="small"
+          type="submit"
+          [disabled]="managementBusy || !embeddingModel.trim()"
+        >
+          {{ 'vsi.management.add_model' | transloco }}
+        </button>
+        @if (indexMetadata.currentEmbeddingModel) {
+        <button
+          nbButton
+          ghost
+          size="small"
+          type="button"
+          [disabled]="managementBusy"
+          (click)="embeddingModel = indexMetadata.currentEmbeddingModel"
+        >
+          {{ 'vsi.management.use_current_model' | transloco: { model: indexMetadata.currentEmbeddingModel } }}
+        </button>
+        }
+      </div>
+    </form>
+    } }
+  </nb-card-body>
+</nb-card>
+} @if (stats) {
 <div class="stats-grid mt-1">
   <nb-card class="shadow-sm mb-0">
     <nb-card-body class="p-3">
@@ -195,5 +287,11 @@
 </div>
 
 @for (document of documents; track trackByDocumentId($index, document)) {
-<tock-vector-store-document-entry [document]="document"></tock-vector-store-document-entry>
+<tock-vector-store-document-entry
+  [document]="document"
+  [managementEnabled]="managementEnabled"
+  [managementBusy]="managementBusy"
+  [isCurrentIndex]="currentIndex?.isCurrent ?? false"
+  (deleteChunk)="deleteChunk($event, document)"
+></tock-vector-store-document-entry>
 } } }

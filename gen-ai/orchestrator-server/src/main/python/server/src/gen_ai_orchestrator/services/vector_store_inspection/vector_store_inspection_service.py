@@ -284,7 +284,9 @@ def _documents_page_statement() -> TextClause:
                     source IS NOT NULL AND source !~* '^https?://'
                 ) AS non_url_source,
                 BOOL_OR(
-                    title ILIKE :text_pattern OR document ILIKE :text_pattern
+                    title ILIKE :text_pattern
+                    OR document_id ILIKE :text_pattern
+                    OR document ILIKE :text_pattern
                 ) AS text_match
             FROM chunks
             GROUP BY document_id
@@ -404,7 +406,7 @@ async def get_documents(
     chunks_by_document: dict[str, list[InspectedChunk]] = {}
     if request.include_chunks and document_ids:
         chunks_statement = text("""
-            SELECT e.document, e.cmetadata
+            SELECT e.id, e.document, e.cmetadata
             FROM langchain_pg_embedding e
             JOIN langchain_pg_collection c ON c.uuid = e.collection_id
             WHERE c.name = :index_name
@@ -429,6 +431,7 @@ async def get_documents(
             content = get_source_content(document)
             chunks_by_document.setdefault(_document_id(document), []).append(
                 InspectedChunk(
+                    row_id=str(row['id']),
                     chunk_id=get_chunk_identifier(document),
                     chunk=str(metadata.get('chunk') or ''),
                     content=content,

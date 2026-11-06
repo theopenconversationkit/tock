@@ -34,6 +34,33 @@ Select an index (one index per indexing session) to display its ingestion report
 A chunk can be **pinned**: pinned chunks are tracked in the retrieval diagnostic, where they always appear in the results,
 even when no search channel returns them. The _Diagnose_ button opens the diagnostic with the pinned chunks.
 
+### Managing chunks and indexes
+
+With PGVector, administrators can manage the selected index from the exploration screen.
+Selecting an index here does not change the index configured for the bot.
+
+* **Index metadata**: display all available metadata, including partial metadata on older indexes.
+  If the embedding model is missing, add the model that actually produced the stored vectors.
+  The current bot model can be suggested, but must be confirmed. An existing model cannot be overwritten.
+  Other metadata is preserved; no vectors are recalculated and the bot configuration is unchanged.
+  A different model on the current index is accepted with an incompatibility warning.
+* **Delete a chunk**: confirm the deletion in the selected index. For a Knowledge Base entry in the bot's current
+  index, this unpublishes the entry and schedules removal through synchronization; the entry remains as a draft.
+  In an older index, only that copy is deleted and the source entry stays unchanged.
+  Imported document chunks can be recreated by a later ingestion.
+* **Delete an index**: confirm deletion of the index and all its chunks. The configured index is protected even when
+  RAG is disabled or the index is empty. An index being created by a Knowledge Base job is also protected until that job finishes.
+
+Deleting the last chunk is allowed, with a warning that the index will become empty; it does not delete the collection.
+An empty legacy collection without Tock creation metadata cannot be repopulated through the usual Knowledge Base publication
+workflow. The existing RAG validation remains in place: use Knowledge Base index creation to build a new index, or an ingestion
+tool capable of targeting the old collection. Adding the embedding model alone does not make that empty collection usable.
+
+After deletion, counts and documents refresh while the surviving selected index remains displayed.
+For Knowledge Base unpublication, the screen reports synchronization progress or failure.
+The text filter matches the title, document identifier displayed below the title, or content, using a partial,
+case-insensitive match. A matching document retains all its chunks in the selected index.
+
 ## Retrieval diagnostic
 
 The diagnostic screen follows the runtime retrieval chain, from top to bottom:

@@ -85,6 +85,7 @@ import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.model.UserSearchQueryResult
 import ai.tock.bot.admin.service.BotDashboardService
 import ai.tock.bot.admin.service.BotHistoryService
+import ai.tock.bot.admin.service.VectorStoreIndexLifecycle
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -845,18 +846,20 @@ object BotAdminService {
         // Manage the import of an unknown story, taking into account the RAG configuration
         if (ragConfiguration?.enabled == true && Intent.UNKNOWN_INTENT.name.withoutNamespace() == storyToImport.intent.name) {
             if (importMode == StoriesImportMode.RAG_OFF) {
-                ragConfigurationDAO
-                    .findByNamespaceAndBotId(namespace, botConf.botId)
-                    ?.let {
-                        BotHistoryService.configuration(
-                            namespace,
-                            botConf.botId,
-                            "rag-settings",
-                            author,
-                            previous = { it },
-                            save = { ragConfigurationDAO.save(it.copy(enabled = false)) },
-                        )
-                    }
+                VectorStoreIndexLifecycle.withLock(namespace, botConf.botId) {
+                    ragConfigurationDAO
+                        .findByNamespaceAndBotId(namespace, botConf.botId)
+                        ?.let {
+                            BotHistoryService.configuration(
+                                namespace,
+                                botConf.botId,
+                                "rag-settings",
+                                author,
+                                previous = { it },
+                                save = { ragConfigurationDAO.save(it.copy(enabled = false)) },
+                            )
+                        }
+                }
             } else if (importMode == StoriesImportMode.RAG_ON) {
                 storyToSave = storyToSave.copy(features = prepareEndingFeatures(storyToSave, false))
             }

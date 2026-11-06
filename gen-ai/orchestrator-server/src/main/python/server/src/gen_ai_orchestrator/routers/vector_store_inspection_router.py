@@ -23,12 +23,27 @@ from gen_ai_orchestrator.routers.requests.vector_store_inspection_requests impor
     VectorStoreInspectionIndexesRequest,
     VectorStoreInspectionSearchRequest,
 )
+from gen_ai_orchestrator.routers.requests.vector_store_management_requests import (
+    ChunkTargetRequest,
+    DeleteChunkRequest,
+    DeleteIndexRequest,
+    IndexTargetRequest,
+    SetEmbeddingModelRequest,
+)
 from gen_ai_orchestrator.routers.responses.vector_store_inspection_responses import (
     CondenseResponse,
     IndexListResponse,
     SearchResponse,
     VectorStoreCapabilitiesResponse,
     VectorStoreInspectionDocumentsResponse,
+)
+from gen_ai_orchestrator.routers.responses.vector_store_management_responses import (
+    ChunkDescriptionResponse,
+    IndexMetadataResponse,
+    VectorStoreWriteResponse,
+)
+from gen_ai_orchestrator.services.vector_store_inspection import (
+    vector_store_management_service as management,
 )
 from gen_ai_orchestrator.services.vector_store_inspection.vector_store_inspection_service import (
     condense,
@@ -76,3 +91,30 @@ async def inspect_search(
     request: VectorStoreInspectionSearchRequest,
 ) -> SearchResponse:
     return await search(request)
+
+
+@vector_store_inspection_router.post('/index-metadata')
+async def index_metadata(request: IndexTargetRequest) -> IndexMetadataResponse:
+    return await management.index_metadata(request)
+
+
+@vector_store_inspection_router.post('/embedding-model')
+async def set_embedding_model(
+    request: SetEmbeddingModelRequest,
+) -> IndexMetadataResponse:
+    return await management.set_embedding_model(request)
+
+
+@vector_store_inspection_router.post('/chunk')
+async def describe_chunk(request: ChunkTargetRequest) -> ChunkDescriptionResponse:
+    return await management.describe_chunk(request)
+
+
+@vector_store_inspection_router.post('/delete-chunk')
+async def delete_chunk(request: DeleteChunkRequest) -> VectorStoreWriteResponse:
+    return await management.delete_chunk(request)
+
+
+@vector_store_inspection_router.post('/delete-index')
+async def delete_index(request: DeleteIndexRequest) -> VectorStoreWriteResponse:
+    return await management.delete_index(request)
