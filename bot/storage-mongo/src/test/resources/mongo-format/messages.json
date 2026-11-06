@@ -1,0 +1,25 @@
+{
+  "messages": [
+    {
+      "text": "text",
+      "messages": [],
+      "userInterface": null,
+      "delay": {
+        "$numberLong": "0"
+      },
+      "eventType": "sentence",
+      "isSimpleMessage": true
+    },
+    {
+      "intentName": "intent",
+      "parameters": {
+        "a": "b"
+      },
+      "delay": {
+        "$numberLong": "0"
+      },
+      "eventType": "choice",
+      "isSimpleMessage": false
+    }
+  ]
+}

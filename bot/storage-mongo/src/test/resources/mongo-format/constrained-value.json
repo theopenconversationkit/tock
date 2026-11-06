@@ -1,0 +1,11 @@
+{
+  "klass": "ai.tock.bot.mongo.MongoFormatTest$Custom",
+  "value": {
+    "name": "custom",
+    "date": {
+      "$date": {
+        "$numberLong": "1793873730123"
+      }
+    }
+  }
+}

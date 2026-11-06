@@ -17,13 +17,13 @@
 package ai.tock.bot.api.client
 
 import ai.tock.bot.api.model.message.bot.I18nText
+import ai.tock.shared.jackson.Jackson2ModuleServiceLoader
 import ai.tock.shared.jackson.addSerializer
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.module.SimpleModule
-import org.litote.jackson.JacksonModuleServiceLoader
 
 private object I18nTextSerializer : JsonSerializer<I18nText>() {
     override fun serialize(
@@ -56,6 +56,6 @@ private object ClientApiJacksonConfiguration {
         }
 }
 
-internal class ClientApiJacksonModuleServiceLoader : JacksonModuleServiceLoader {
+internal class ClientApiJacksonModuleServiceLoader : Jackson2ModuleServiceLoader {
     override fun module(): Module = ClientApiJacksonConfiguration.module
 }

@@ -85,6 +85,7 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.all
 import org.litote.kmongo.and
+import org.litote.kmongo.associateBy
 import org.litote.kmongo.dateToString
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.document
@@ -95,6 +96,7 @@ import org.litote.kmongo.findOneById
 import org.litote.kmongo.from
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.group
+import org.litote.kmongo.groupBy
 import org.litote.kmongo.gt
 import org.litote.kmongo.gte
 import org.litote.kmongo.ifNull

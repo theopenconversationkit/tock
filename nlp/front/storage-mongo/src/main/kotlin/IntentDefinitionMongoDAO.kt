@@ -30,17 +30,18 @@ import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
-import com.mongodb.client.MongoCollection
+import com.mongodb.kotlin.client.MongoCollection
 import org.litote.kmongo.Id
 import org.litote.kmongo.contains
+import org.litote.kmongo.coroutine.getCollection
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.`in`
-import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.save
+import org.litote.kmongo.toList
 
 /**
  *
@@ -77,7 +78,7 @@ internal object IntentDefinitionMongoDAO : IntentDefinitionDAO {
 
     override fun getIntentById(id: Id<IntentDefinition>): IntentDefinition? = col.findOneById(id)
 
-    override fun getIntentByIds(ids: Set<Id<IntentDefinition>>): List<IntentDefinition>? = col.find(_id `in` ids).into(ArrayList())
+    override fun getIntentByIds(ids: Set<Id<IntentDefinition>>): List<IntentDefinition>? = col.find(_id `in` ids).toList()
 
     override fun save(intent: IntentDefinition) {
         col.save(intent)

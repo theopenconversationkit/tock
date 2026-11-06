@@ -19,8 +19,8 @@ package ai.tock.nlp.front.storage.mongo
 import ai.tock.nlp.front.service.storage.FaqSettingsDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.FaqSettings
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.kotlin.client.MongoCollection
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteOneById

@@ -36,7 +36,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.providerOrNull
 import com.github.salomonbrys.kodein.singleton
-import com.mongodb.client.MongoClient
+import com.mongodb.kotlin.client.MongoClient
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -86,12 +86,13 @@ val sharedModule =
         bind<WebSecurityHandler>(tag = WebSecurityMode.PASSTHROUGH.name) with singleton { WebSecurityPassthroughHandler() }
 
         try {
+            bind<com.mongodb.client.MongoClient>() with singleton { mongoJavaClient }
             bind<MongoClient>() with singleton { mongoClient }
         } catch (e: Exception) {
             logger.warn { e.message }
         }
         try {
-            bind<com.mongodb.reactivestreams.client.MongoClient>() with singleton { asyncMongoClient }
+            bind<com.mongodb.kotlin.client.coroutine.MongoClient>() with singleton { asyncMongoClient }
         } catch (e: Exception) {
             logger.warn { e.message }
         }

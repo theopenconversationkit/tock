@@ -18,10 +18,14 @@ package ai.tock.bot.connector.web
 
 import ai.tock.bot.connector.SerializableConnectorMessage
 import ai.tock.bot.jackson.MixinSerializableConnectorMessage
+import ai.tock.shared.jackson.Jackson2ModuleServiceLoader
 import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.databind.module.SimpleModule
 import org.litote.jackson.JacksonModuleServiceLoader
+import tools.jackson.databind.JacksonModule
+import tools.jackson.databind.jsontype.NamedType as NamedType3
+import tools.jackson.databind.module.SimpleModule as SimpleModule3
 
 private object WebOrchestrationJacksonConfiguration {
     val module: SimpleModule
@@ -33,8 +37,22 @@ private object WebOrchestrationJacksonConfiguration {
             }
             return module
         }
+
+    val mongoModule: SimpleModule3
+        get() {
+            val module = SimpleModule3()
+            with(module) {
+                setMixInAnnotation(SerializableConnectorMessage::class.java, MixinSerializableConnectorMessage::class.java)
+                registerSubtypes(NamedType3(WebMessage::class.java, "WebMessage"))
+            }
+            return module
+        }
 }
 
-internal class WebOrchestrationJacksonModuleServiceLoader : JacksonModuleServiceLoader {
+internal class WebOrchestrationJacksonModuleServiceLoader : Jackson2ModuleServiceLoader {
     override fun module(): Module = WebOrchestrationJacksonConfiguration.module
+}
+
+internal class WebOrchestrationKMongoJacksonModuleServiceLoader : JacksonModuleServiceLoader {
+    override fun module(): JacksonModule = WebOrchestrationJacksonConfiguration.mongoModule
 }

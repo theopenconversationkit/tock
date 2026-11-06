@@ -31,15 +31,15 @@ import ai.tock.shared.isDocumentDB
 import ai.tock.shared.name
 import ai.tock.shared.namespace
 import ai.tock.shared.watch
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.kotlin.client.MongoCollection
 import org.litote.kmongo.and
+import org.litote.kmongo.coroutine.getCollection
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.pull
 import org.litote.kmongo.pullByFilter
-import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.replaceOneWithFilter
 import org.litote.kmongo.updateOne
 import java.util.Locale

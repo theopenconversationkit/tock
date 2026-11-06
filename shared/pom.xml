@@ -69,14 +69,14 @@
                         <configuration>
                             <annotationProcessorPaths>
                                 <annotationProcessorPath>
-                                    <groupId>org.litote.jackson</groupId>
-                                    <artifactId>jackson-generator</artifactId>
-                                    <version>${jackson-generator}</version>
+                                    <groupId>org.litote.kmongo</groupId>
+                                    <artifactId>kmongo-dsl-annotation-generator</artifactId>
+                                    <version>${kmongo-dsl}</version>
                                 </annotationProcessorPath>
                                 <annotationProcessorPath>
                                     <groupId>org.litote.kmongo</groupId>
-                                    <artifactId>kmongo-annotation-processor</artifactId>
-                                    <version>${kmongo}</version>
+                                    <artifactId>kmongo-dsl-annotation-processor</artifactId>
+                                    <version>${kmongo-dsl}</version>
                                 </annotationProcessorPath>
                             </annotationProcessorPaths>
                         </configuration>
@@ -132,15 +132,15 @@
         </dependency>
         <dependency>
             <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo-id-jackson</artifactId>
+            <artifactId>kmongo-dsl-id</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.litote.jackson</groupId>
-            <artifactId>jackson-module-loader</artifactId>
+            <groupId>org.litote.kmongo</groupId>
+            <artifactId>kmongo-dsl-jackson-module-loader</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.litote.jackson</groupId>
-            <artifactId>jackson-data</artifactId>
+            <groupId>org.litote.kmongo</groupId>
+            <artifactId>kmongo-dsl-jackson-data</artifactId>
         </dependency>
 
         <dependency>
@@ -214,12 +214,12 @@
         </dependency>
         <dependency>
             <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo</artifactId>
+            <artifactId>kmongo-dsl-sync-jackson</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo-async</artifactId>
+            <artifactId>kmongo-dsl-coroutine-jackson</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -275,7 +275,7 @@
         </dependency>
         <dependency>
             <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo-flapdoodle</artifactId>
+            <artifactId>kmongo-dsl-testcontainers</artifactId>
             <scope>provided</scope>
         </dependency>
 

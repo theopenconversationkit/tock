@@ -22,8 +22,9 @@ import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration_.Companion.Defa
 import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration_.Companion.Namespace
 import ai.tock.nlp.front.shared.namespace.NamespaceSharingConfiguration
 import ai.tock.shared.watch
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.kotlin.client.MongoCollection
+import org.litote.kmongo.coroutine.getCollection
 import org.litote.kmongo.div
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -31,7 +32,6 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.or
-import org.litote.kmongo.reactivestreams.getCollection
 
 object NamespaceConfigurationMongoDAO : NamespaceConfigurationDAO {
     private val col: MongoCollection<NamespaceConfiguration> by lazy {

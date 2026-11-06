@@ -50,11 +50,14 @@ import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
-import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.coroutine.deleteOneById
+import org.litote.kmongo.coroutine.ensureIndex
+import org.litote.kmongo.coroutine.findOneById
+import org.litote.kmongo.coroutine.getCollection
+import org.litote.kmongo.coroutine.updateOne
 import org.litote.kmongo.eq
 import org.litote.kmongo.lt
 import org.litote.kmongo.or
-import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.setValue
 import org.litote.kmongo.toId
 import org.litote.kmongo.upsert
@@ -82,7 +85,7 @@ internal object MongoUserLock : UserLock {
 
     private val logger = KotlinLogging.logger {}
 
-    private val col = asyncDatabase.getCollection<UserLock>().coroutine
+    private val col = asyncDatabase.getCollection<UserLock>()
 
     private val lockTimeout = longProperty("tock_bot_lock_timeout_in_ms", 5000)
 

@@ -23,7 +23,7 @@ import ai.tock.shared.provide
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import com.mongodb.client.MongoCollection
+import com.mongodb.kotlin.client.MongoCollection
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId

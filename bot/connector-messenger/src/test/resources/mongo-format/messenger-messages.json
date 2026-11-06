@@ -1,0 +1,66 @@
+{
+  "messages": [
+    {
+      "klass": "ai.tock.bot.connector.messenger.model.send.TextMessage",
+      "value": {
+        "text": "text",
+        "quick_replies": null
+      }
+    },
+    {
+      "klass": "ai.tock.bot.connector.messenger.model.send.AttachmentMessage",
+      "value": {
+        "attachment": {
+          "type": "template",
+          "payload": {
+            "text": "text",
+            "buttons": [
+              {
+                "url": "https://a.b",
+                "title": "title",
+                "webview_height_ratio": null,
+                "messenger_extensions": null,
+                "fallback_url": null,
+                "type": "web_url"
+              },
+              {
+                "payload": "payload",
+                "title": "title",
+                "type": "postback"
+              }
+            ],
+            "template_type": "button"
+          }
+        },
+        "quick_replies": null
+      }
+    },
+    {
+      "klass": "ai.tock.bot.connector.messenger.model.send.AttachmentMessage",
+      "value": {
+        "attachment": {
+          "type": "template",
+          "payload": {
+            "elements": [
+              {
+                "title": "title",
+                "image_url": null,
+                "subtitle": "subtitle",
+                "buttons": [
+                  {
+                    "payload": "payload",
+                    "title": "title",
+                    "type": "postback"
+                  }
+                ]
+              }
+            ],
+            "template_type": "generic"
+          }
+        },
+        "quick_replies": null
+      }
+    }
+  ],
+  "after": "after"
+}

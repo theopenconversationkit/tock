@@ -23,14 +23,15 @@ import ai.tock.shared.injector
 import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import com.github.salomonbrys.kodein.instance
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.IndexOptions
+import com.mongodb.kotlin.client.MongoCollection
+import com.mongodb.kotlin.client.MongoDatabase
 import mu.KotlinLogging
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.save
+import org.litote.kmongo.toList
 import java.util.concurrent.TimeUnit
 
 object PayloadWhatsAppCloudMongoDAO : PayloadWhatsAppCloudDAO {
@@ -49,7 +50,7 @@ object PayloadWhatsAppCloudMongoDAO : PayloadWhatsAppCloudDAO {
 
     private val collection: MongoCollection<PayloadWhatsAppCloud>
 
-    private fun MongoDatabase.collectionExists(collectionName: String): Boolean = listCollectionNames().contains(collectionName)
+    private fun MongoDatabase.collectionExists(collectionName: String): Boolean = listCollectionNames().toList().contains(collectionName)
 
     init {
         database.createCollectionIfNotExists()
