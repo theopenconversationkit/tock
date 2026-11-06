@@ -97,7 +97,8 @@ export class RestService {
     parseFunction?: (value: any) => O,
     baseUrl?: string,
     returnErrorOn400422 = false,
-    params = {}
+    params = {},
+    silent = false
   ): Observable<O> {
     return this.http
       .post(`${baseUrl ? baseUrl : this.url}${path}`, JsonUtils.stringify(value), {
@@ -107,7 +108,9 @@ export class RestService {
       })
       .pipe(
         map((res: string) => (parseFunction ? parseFunction(res || {}) : ((res || {}) as O))),
-        catchError((e) => this.handleError(this, e, returnErrorOn400422))
+        catchError((e) =>
+          silent && e?.status !== 401 && e?.status !== 403 ? observableThrowError(e) : this.handleError(this, e, returnErrorOn400422)
+        )
       );
   }
 

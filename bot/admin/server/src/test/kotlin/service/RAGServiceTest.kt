@@ -27,6 +27,7 @@ import ai.tock.bot.admin.model.knowledgebase.KnowledgeBaseIndexState
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.test.TFunction
 import ai.tock.bot.test.TRunnable
 import ai.tock.bot.test.TSupplier
@@ -49,6 +50,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
 import io.mockk.clearAllMocks
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -120,6 +122,12 @@ class RAGServiceTest : AbstractTest() {
             tockInternalInjector = KodeinInjector()
             Kodein
                 .Module {
+                    bind<UserLock>() with
+                        provider {
+                            mockk<UserLock> {
+                                coEvery { withLock<Any?>(any(), any(), any(), any(), any()) } coAnswers { arg<suspend () -> Any?>(4).invoke() }
+                            }
+                        }
                     bind<BotRAGConfigurationDAO>() with singleton { ragDao }
                     bind<StoryDefinitionConfigurationDAO>() with singleton { storyDao }
                     bind<LLMProviderService>() with singleton { llmProviderService }

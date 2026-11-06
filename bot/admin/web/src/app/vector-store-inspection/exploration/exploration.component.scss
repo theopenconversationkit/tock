@@ -8,9 +8,24 @@
 
 .index-grid {
   display: grid;
-  grid-template-columns: minmax(12rem, 2fr) minmax(8rem, 1fr);
+  grid-template-columns: minmax(12rem, 2fr) minmax(8rem, 1fr) auto;
   gap: 1rem;
   align-items: center;
+}
+
+.index-delete {
+  justify-self: end;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .index-grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    tock-vector-store-index-selector {
+      grid-column: 1 / -1;
+    }
+  }
 }
 
 .stats-grid {

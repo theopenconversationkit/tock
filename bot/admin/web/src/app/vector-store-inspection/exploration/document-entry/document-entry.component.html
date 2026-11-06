@@ -52,7 +52,7 @@
   @if (displayChunks) {
   <nb-card-body class="background-basic-color-2 p-2 pt-1 inner-shade-top">
     <div class="details-wrapper scrollbar-narrow">
-      @for (chunk of document.chunks; track chunk.chunkId) {
+      @for (chunk of document.chunks; track chunk.rowId || chunk.chunkId) {
       <div
         class="background-basic-color-1 rounded px-2 py-1 mt-1 font-size-small d-flex justify-content-between align-items-start gap-2"
         [class.pinned-chunk]="isPinned(chunk.chunkId)"
@@ -82,6 +82,24 @@
 
         <div class="d-flex align-items-center gap-1">
           <span class="text-muted chunk-length">{{ chunk.contentLength }}</span>
+          @if (managementEnabled && chunk.rowId) {
+          <button
+            nbButton
+            ghost
+            size="tiny"
+            status="danger"
+            [disabled]="managementBusy"
+            [nbTooltip]="
+              (isCurrentIndex && chunk.metadata?.source_type === 'internal_kb'
+                ? 'vsi.management.unpublish_chunk'
+                : 'vsi.management.delete_chunk'
+              ) | transloco
+            "
+            (click)="deleteChunk.emit(chunk)"
+          >
+            <nb-icon icon="trash"></nb-icon>
+          </button>
+          }
           <button
             nbButton
             ghost

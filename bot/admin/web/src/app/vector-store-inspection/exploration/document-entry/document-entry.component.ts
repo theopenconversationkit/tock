@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 
 import { ChunkId, InspectedChunk, InspectedDocument } from '../../models/vector-store-inspection.models';
 import { VectorStoreInspectionStateService } from '../../services/vector-store-inspection-state.service';
@@ -23,6 +23,10 @@ export class DocumentEntryComponent {
   readonly state = inject(VectorStoreInspectionStateService);
 
   @Input() document!: InspectedDocument;
+  @Input() managementEnabled = false;
+  @Input() managementBusy = false;
+  @Input() isCurrentIndex = false;
+  @Output() deleteChunk = new EventEmitter<InspectedChunk>();
 
   displayChunks: boolean = false;
 
