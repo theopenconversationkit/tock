@@ -232,7 +232,7 @@ class WebConnector internal constructor(
             val event = request.toEvent(applicationId)
             val requestInfos = WebRequestInfos(context.request())
             WebRequestInfosByEvent.put(event.id.toString(), requestInfos)
-            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos), transientDialogContext = transientContext, errorListener = null)
+            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos), transientDialogContext = transientContext, errorListener = null, streamDelta = request.streamMode == STREAM_MODE_DELTA)
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
             context.fail(t)
@@ -250,6 +250,7 @@ class WebConnector internal constructor(
         headersMetadata: Map<String, String>,
         errorListener: ((Throwable) -> Unit)?,
         transientDialogContext: DialogContext,
+        streamDelta: Boolean = false,
     ) {
         val directStreamed = (event as? Action)?.metadata?.streamedResponse == true
         // Standard streaming: only if a SSE channel is connected to this instance to receive the partial responses
@@ -270,6 +271,7 @@ class WebConnector internal constructor(
                 eventId = event.id.toString(),
                 messageProcessor = messageProcessor,
                 streamedResponse = directStreamed,
+                streamDelta = streamDelta,
                 sseTokenSender =
                     userAction?.takeIf { sseStreaming }?.let { a ->
                         { response -> sseEndpoint.sendTransientResponse(applicationId, a.playerId.id, response) }
@@ -434,11 +436,10 @@ class WebConnector internal constructor(
         } else {
             callback.addAction(event)
             if (sseEnabled) {
-                sseEndpoint.sendResponse(
-                    event.connectorId,
-                    event.recipientId.id,
-                    callback.createResponse(listOf(event)),
-                )
+                val response = callback.createResponse(listOf(event))
+                callback.sendFinalOverSse {
+                    sseEndpoint.sendResponse(event.connectorId, event.recipientId.id, response)
+                }
             }
             if (event.metadata.lastAnswer) {
                 callback.sendResponse()

@@ -32,6 +32,15 @@ import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
+/**
+ * Metadata of a partial frame that only carries the end of the rendered text (instead of the whole text so far):
+ * the client keeps the first TOCK_STREAM_KEEP characters of the current message and appends the frame text.
+ * The rendered text is the same as in the default mode, only the common prefix is not sent again.
+ */
+const val STREAM_MODE_METADATA = "TOCK_STREAM_MODE"
+const val STREAM_MODE_DELTA = "delta"
+const val STREAM_KEEP_METADATA = "TOCK_STREAM_KEEP"
+
 private val mergeStreamResponse: Boolean =
     booleanProperty("tock_web_connector_merge_stream_response", true)
 
@@ -47,11 +56,18 @@ internal class WebConnectorCallback(
     private val messageProcessor: WebMessageProcessor,
     internal val streamedResponse: Boolean,
     private val sseTokenSender: ((WebConnectorResponse) -> Unit)? = null,
+    private val streamDelta: Boolean = false,
 ) : ConnectorCallbackBase(applicationId, webConnectorType, errorListener) {
     private val streamBuffer = StringBuilder()
 
     @Volatile
     private var sseStreamStarted = false
+
+    // Guarded by streamBuffer: once the final response is queued, late partial frames are dropped
+    private var sseStreamFinished = false
+
+    // Rendered text of the previous partial frame, to send only what changed in delta mode
+    private var lastRenderedText = ""
 
     // One fixed Vert.x context so that partial responses are written in order
     private val streamContext by lazy { context?.vertx()?.getOrCreateContext() }
@@ -111,27 +127,63 @@ internal class WebConnectorCallback(
      */
     private fun sendStreamedTokenOverSse(content: String) {
         val sender = sseTokenSender ?: return
-        val text =
-            synchronized(streamBuffer) {
-                streamBuffer.append(content)
-                streamBuffer.toString()
+        synchronized(streamBuffer) {
+            if (sseStreamFinished) return
+            streamBuffer.append(content)
+            sseStreamStarted = true
+            val rendered = messageProcessor.processText(streamBuffer.toString())
+            val response =
+                if (streamDelta) {
+                    val previous = lastRenderedText
+                    val renderedText = rendered.text.orEmpty()
+                    val keep = commonPrefixLength(previous, renderedText)
+                    lastRenderedText = renderedText
+                    if (keep == renderedText.length && keep == previous.length) return
+                    WebConnectorResponse(
+                        listOf(WebMessage(text = renderedText.substring(keep))),
+                        metadata +
+                            (STREAM_RESPONSE_METADATA to "true") +
+                            (STREAM_MODE_METADATA to STREAM_MODE_DELTA) +
+                            (STREAM_KEEP_METADATA to keep.toString()),
+                    )
+                } else {
+                    WebConnectorResponse(listOf(rendered), metadata + (STREAM_RESPONSE_METADATA to "true"))
+                }
+            val streamContext = this.streamContext
+            if (streamContext != null) {
+                streamContext.runOnContext { sender(response) }
+            } else {
+                sender(response)
             }
-        sseStreamStarted = true
-        val response =
-            WebConnectorResponse(
-                listOf(messageProcessor.processText(text)),
-                metadata + (STREAM_RESPONSE_METADATA to "true"),
-            )
-        val streamContext = this.streamContext
-        if (streamContext != null) {
-            streamContext.runOnContext { sender(response) }
-        } else {
-            sender(response)
         }
+    }
+
+    /**
+     * Sends the final response on the SSE channel. When partial frames were queued, it goes through the same
+     * Vert.x context so that it is always written after them and TRK/TVK end up with the complete message.
+     */
+    fun sendFinalOverSse(send: () -> Unit) {
+        val streamContext = this.streamContext
+        val queued =
+            synchronized(streamBuffer) {
+                sseStreamFinished = true
+                sseStreamStarted && streamContext != null
+            }
+        if (queued) streamContext?.runOnContext { send() } else send()
     }
 
     override fun eventSkipped(event: Event) {
         super.eventSkipped(event)
         sendResponse()
     }
+}
+
+private fun commonPrefixLength(
+    a: String,
+    b: String,
+): Int {
+    val max = minOf(a.length, b.length)
+    var i = 0
+    while (i < max && a[i] == b[i]) i++
+    return i
 }
