@@ -25,9 +25,14 @@ import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { deepCopy } from '../../shared/utils';
 import { RagEmbeddingCoherence, RagIndexState, RagIndexStatus, RagSettings } from './models';
+import { VectorStoreIndex } from '../../vector-store-inspection/models/vector-store-inspection.models';
 
 import { RagSettingsComponent } from './rag-settings.component';
 import { TestSharedModule } from '../../shared/test-shared.module';
+
+function index(indexSessionId: string, indexName = `ns_app_bot_new_assistant_session_${indexSessionId}`): VectorStoreIndex {
+  return { indexName, indexSessionId, indexDatetime: '2026-11-01T10:00:00', documentCount: 1, chunkCount: 1, isCurrent: false };
+}
 
 const settings = {
   id: 'abcdefghijkl123456789',
@@ -111,18 +116,6 @@ describe('RagSettingsComponent', () => {
   });
 
   describe('index status hints', () => {
-    it('flags a missing index', () => {
-      component.indexStatus = {
-        indexState: RagIndexState.MISSING,
-        collectionEmbeddingModel: null,
-        coherence: RagEmbeddingCoherence.UNKNOWN
-      };
-
-      expect(component.indexStatusMissing).toBeTrue();
-      expect(component.indexStatusUnknownModel).toBeFalse();
-      expect(component.indexStatusMismatch).toBeFalse();
-    });
-
     it('flags an unknown model only on a ready index', () => {
       component.indexStatus = {
         indexState: RagIndexState.READY,
@@ -131,7 +124,6 @@ describe('RagSettingsComponent', () => {
       };
 
       expect(component.indexStatusUnknownModel).toBeTrue();
-      expect(component.indexStatusMissing).toBeFalse();
       expect(component.indexStatusMismatch).toBeFalse();
     });
 
@@ -143,7 +135,6 @@ describe('RagSettingsComponent', () => {
       };
 
       expect(component.indexStatusUnknownModel).toBeFalse();
-      expect(component.indexStatusMissing).toBeFalse();
       expect(component.indexStatusMismatch).toBeFalse();
     });
 
@@ -163,7 +154,6 @@ describe('RagSettingsComponent', () => {
     it('shows no hint without a status', () => {
       component.indexStatus = null;
 
-      expect(component.indexStatusMissing).toBeFalse();
       expect(component.indexStatusUnknownModel).toBeFalse();
       expect(component.indexStatusMismatch).toBeFalse();
       expect(component.indexStatusIndexModel).toBeNull();
@@ -193,26 +183,292 @@ describe('RagSettingsComponent', () => {
       expect(rest.post).not.toHaveBeenCalled();
     });
 
-    it('reads the status from the index-status endpoint when a session is set', () => {
-      const status: RagIndexStatus = {
-        indexState: RagIndexState.MISSING,
-        collectionEmbeddingModel: null,
-        coherence: RagEmbeddingCoherence.UNKNOWN
-      };
+    it('does not call the endpoint while the form is incomplete', () => {
       const rest = TestBed.inject(RestService) as unknown as { post: jasmine.Spy };
-      rest.post = jasmine.createSpy('post').and.returnValue(of(status));
+      rest.post = jasmine.createSpy('post');
       component.indexSessionId.setValue('session-1');
-
-      expect(loadStatus()).toEqual(status);
-      expect(rest.post).toHaveBeenCalledWith('/gen-ai/bots/testName/configuration/rag/index-status', jasmine.any(Object));
-    });
-
-    it('swallows an endpoint failure and clears the status', () => {
-      const rest = TestBed.inject(RestService) as unknown as { post: jasmine.Spy };
-      rest.post = jasmine.createSpy('post').and.returnValue(throwError(() => new Error('boom')));
-      component.indexSessionId.setValue('session-1');
+      component.indexStatusUnavailable = true;
 
       expect(loadStatus()).toBeNull();
+      expect(rest.post).not.toHaveBeenCalled();
+      expect(component.indexStatusUnavailable).toBeFalse();
+    });
+
+    describe('with a complete form', () => {
+      let rest: { post: jasmine.Spy };
+
+      beforeEach(() => {
+        rest = TestBed.inject(RestService) as unknown as { post: jasmine.Spy };
+        spyOnProperty(component.form, 'valid').and.returnValue(true);
+        component.indexSessionId.setValue('session-1');
+      });
+
+      it('reads the status from the index-status endpoint', () => {
+        const status: RagIndexStatus = {
+          indexState: RagIndexState.READY,
+          collectionEmbeddingModel: null,
+          coherence: RagEmbeddingCoherence.UNKNOWN
+        };
+        rest.post = jasmine.createSpy('post').and.returnValue(of(status));
+        component.indexStatusUnavailable = true;
+
+        expect(loadStatus()).toEqual(status);
+        expect(rest.post).toHaveBeenCalledWith(
+          '/gen-ai/bots/testName/configuration/rag/index-status',
+          jasmine.any(Object),
+          null,
+          null,
+          true
+        );
+        expect(component.indexStatusUnavailable).toBeFalse();
+      });
+
+      it('clears the status without locking the form on a refused candidate (400)', () => {
+        rest.post = jasmine.createSpy('post').and.returnValue(throwError(() => new HttpErrorResponse({ status: 400 })));
+
+        expect(loadStatus()).toBeNull();
+        expect(component.indexStatusUnavailable).toBeFalse();
+        expect(component.vectorStoreUnavailable).toBeFalse();
+      });
+
+      it('locks the form on a server failure', () => {
+        rest.post = jasmine.createSpy('post').and.returnValue(throwError(() => 'Server error : 500 - Internal Server Error'));
+
+        expect(loadStatus()).toBeNull();
+        expect(component.indexStatusUnavailable).toBeTrue();
+        expect(component.vectorStoreUnavailable).toBeTrue();
+      });
+
+      it('locks the form on an empty answer', () => {
+        rest.post = jasmine.createSpy('post').and.returnValue(of({}));
+
+        expect(loadStatus()).toBeNull();
+        expect(component.vectorStoreUnavailable).toBeTrue();
+      });
+    });
+  });
+
+  describe('index list', () => {
+    it('loads the indexes of the current bot', () => {
+      const rest = TestBed.inject(RestService) as unknown as { get: jasmine.Spy };
+      rest.get = jasmine.createSpy('get').and.callFake((_url: string, parse: (value: any) => any) => of(parse({ indexes: [index('a')] })));
+
+      let result: VectorStoreIndex[] | null | undefined;
+      component['getIndexesLoader']().subscribe((indexes) => (result = indexes));
+
+      expect(rest.get).toHaveBeenCalledWith('/gen-ai/bots/testName/vector-store/indexes', jasmine.any(Function), true);
+      expect(result).toEqual([index('a')]);
+    });
+
+    it('treats an answer without an indexes array as a failure', () => {
+      const rest = TestBed.inject(RestService) as unknown as { get: jasmine.Spy };
+      rest.get = jasmine.createSpy('get').and.callFake((_url: string, parse: (value: any) => any) => of(parse({})));
+
+      let result: VectorStoreIndex[] | null | undefined;
+      component['getIndexesLoader']().subscribe((indexes) => (result = indexes));
+
+      expect(result).toBeNull();
+    });
+
+    it('treats a request error as a failure', () => {
+      const rest = TestBed.inject(RestService) as unknown as { get: jasmine.Spy };
+      rest.get = jasmine.createSpy('get').and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+
+      let result: VectorStoreIndex[] | null | undefined;
+      component['getIndexesLoader']().subscribe((indexes) => (result = indexes));
+
+      expect(result).toBeNull();
+    });
+
+    it('keeps only collections carrying a session id as selectable, reports the others', () => {
+      const invalid = index('', 'ns_app_bot_new_assistant_session_ghost');
+      component['applyIndexes']([index('recent'), invalid, index('old')]);
+
+      expect(component.indexes.map((i) => i.indexSessionId)).toEqual(['recent', 'old']);
+      expect(component.invalidIndexes).toEqual([invalid]);
+      expect(component.indexesLoaded).toBeTrue();
+      expect(component.vectorStoreUnavailable).toBeFalse();
+    });
+
+    it('flags the vector store as unavailable when the list failed', () => {
+      component['applyIndexes'](null);
+
+      expect(component.indexesLoaded).toBeFalse();
+      expect(component.indexesLoadFailed).toBeTrue();
+      expect(component.vectorStoreUnavailable).toBeTrue();
+    });
+
+    it('marks as current the index of the saved configuration only', () => {
+      component.settingsBackup = { ...settings, indexSessionId: 'old' };
+
+      expect(component.isCurrentIndex(index('old'))).toBeTrue();
+      expect(component.isCurrentIndex(index('recent'))).toBeFalse();
+    });
+  });
+
+  describe('missing configured index', () => {
+    beforeEach(() => component['applyIndexes']([index('recent'), index('', 'ns_app_bot_new_assistant_session_ghost')]));
+
+    it('is missing when no valid index matches the configured session', () => {
+      component.indexSessionId.setValue('gone');
+      expect(component.configuredIndexMissing).toBeTrue();
+    });
+
+    it('is not missing when a valid index matches', () => {
+      component.indexSessionId.setValue('recent');
+      expect(component.configuredIndexMissing).toBeFalse();
+    });
+
+    it('is not missing without a configured session', () => {
+      component.indexSessionId.setValue('  ');
+      expect(component.configuredIndexMissing).toBeFalse();
+    });
+
+    it('is never asserted while the list is unknown', () => {
+      component['applyIndexes'](null);
+      component.indexSessionId.setValue('gone');
+      expect(component.configuredIndexMissing).toBeFalse();
+    });
+  });
+
+  describe('save blocking', () => {
+    function setEnabled(value: boolean): void {
+      component.enabled.enable({ emitEvent: false });
+      component.enabled.setValue(value, { emitEvent: false });
+    }
+
+    it('allows saving in the nominal case', () => {
+      component['applyIndexes']([index('recent')]);
+      component.indexSessionId.setValue('recent');
+      setEnabled(true);
+
+      expect(component.saveBlockReason).toBeNull();
+    });
+
+    it('blocks saving a missing index while RAG is enabled', () => {
+      component['applyIndexes']([index('recent')]);
+      component.indexSessionId.setValue('gone');
+      setEnabled(true);
+
+      expect(component.saveBlockReason).toBe('rag.rag-settings.save_blocked_index_missing');
+      expect(component.canSave).toBeFalse();
+    });
+
+    it('allows saving a missing index while RAG is disabled', () => {
+      component['applyIndexes']([index('recent')]);
+      component.indexSessionId.setValue('gone');
+      setEnabled(false);
+
+      expect(component.saveBlockReason).toBeNull();
+    });
+
+    describe('when the vector store is unavailable', () => {
+      beforeEach(() => {
+        component['applyIndexes'](null);
+        component.settingsBackup = { ...settings, enabled: true, indexSessionId: 'recent' };
+        component.indexSessionId.setValue('recent');
+        component.form.markAsPristine();
+      });
+
+      it('blocks any save', () => {
+        setEnabled(true);
+        component.maxDocumentsRetrieved.setValue(8);
+        component.maxDocumentsRetrieved.markAsDirty();
+
+        expect(component.saveBlockReason).toBe('rag.rag-settings.save_blocked_unavailable');
+      });
+
+      it('allows disabling RAG when nothing else changed', () => {
+        setEnabled(false);
+        component.enabled.markAsDirty();
+
+        expect(component.saveBlockReason).toBeNull();
+      });
+
+      it('blocks disabling RAG along with another change', () => {
+        setEnabled(false);
+        component.enabled.markAsDirty();
+        component.maxDocumentsRetrieved.markAsDirty();
+
+        expect(component.saveBlockReason).toBe('rag.rag-settings.save_blocked_unavailable');
+      });
+
+      it('blocks disabling RAG on imported settings', () => {
+        setEnabled(false);
+        component['importedSettings'] = true;
+
+        expect(component.saveBlockReason).toBe('rag.rag-settings.save_blocked_unavailable');
+      });
+
+      it('blocks when RAG was not saved as enabled', () => {
+        component.settingsBackup = { ...settings, enabled: false, indexSessionId: 'recent' };
+        setEnabled(false);
+
+        expect(component.saveBlockReason).toBe('rag.rag-settings.save_blocked_unavailable');
+      });
+    });
+  });
+
+  describe('submit', () => {
+    let rest: { post: jasmine.Spy };
+
+    beforeEach(() => {
+      rest = TestBed.inject(RestService) as unknown as { post: jasmine.Spy };
+      spyOn(component['translocoService'], 'translate').and.callFake(((key: string) => key) as any);
+      spyOnProperty(component.form, 'valid').and.returnValue(true);
+    });
+
+    it('clears a missing index when RAG is disabled', () => {
+      component['applyIndexes']([index('recent')]);
+      component.indexSessionId.setValue('gone');
+      component.form.markAsDirty();
+      rest.post = jasmine.createSpy('post').and.callFake((_url: string, body: RagSettings) => of({ ...settings, ...body, enabled: false }));
+
+      component.submit();
+
+      expect(rest.post.calls.mostRecent().args[1].indexSessionId).toBeNull();
+    });
+
+    it('keeps the configured index when the list could not be loaded', () => {
+      component['applyIndexes'](null);
+      component.settingsBackup = { ...settings, enabled: true, indexSessionId: 'recent' };
+      component.indexSessionId.setValue('recent');
+      component.form.markAsPristine();
+      component.enabled.enable({ emitEvent: false });
+      component.enabled.setValue(false, { emitEvent: false });
+      component.enabled.markAsDirty();
+      rest.post = jasmine.createSpy('post').and.callFake((_url: string, body: RagSettings) => of({ ...settings, ...body }));
+
+      component.submit();
+
+      const body = rest.post.calls.mostRecent().args[1];
+      expect(body.indexSessionId).toBe('recent');
+      expect(body.enabled).toBeFalse();
+    });
+
+    it('does not post while saving is blocked', () => {
+      component['applyIndexes'](null);
+      component.form.markAsDirty();
+      rest.post = jasmine.createSpy('post');
+
+      component.submit();
+
+      expect(rest.post).not.toHaveBeenCalled();
+    });
+
+    it('moves the current index mark once the server confirmed the save', () => {
+      component['applyIndexes']([index('recent'), index('old')]);
+      component.settingsBackup = { ...settings, indexSessionId: 'old' };
+      component.indexSessionId.setValue('recent');
+      component.form.markAsDirty();
+      rest.post = jasmine.createSpy('post').and.callFake((_url: string, body: RagSettings) => of({ ...settings, ...body }));
+
+      expect(component.isCurrentIndex(index('old'))).toBeTrue();
+
+      component.submit();
+
+      expect(component.isCurrentIndex(index('recent'))).toBeTrue();
+      expect(component.isCurrentIndex(index('old'))).toBeFalse();
     });
   });
 

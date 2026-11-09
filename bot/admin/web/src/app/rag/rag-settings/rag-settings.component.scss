@@ -25,3 +25,58 @@
   align-items: center;
   justify-content: end;
 }
+
+// --- Index select ---------------------------------------------------------
+//
+// Same width fix as the vector store inspection index selector, kept apart on
+// purpose (the two views evolve independently): the trigger label and the
+// option rows must be allowed to shrink so long index names ellipsis instead
+// of pushing the caret or widening the options panel. The full name stays
+// reachable through the tooltip.
+
+.index-select {
+  ::ng-deep .select-button {
+    min-width: 0;
+
+    .select-value,
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+  }
+}
+
+.index-option-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+// Fixed slot so names stay aligned whether or not the row carries the current index mark.
+.index-current-slot {
+  flex: 0 0 1rem;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.index-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.index-date {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.index-invalid-name {
+  word-break: break-all;
+}
