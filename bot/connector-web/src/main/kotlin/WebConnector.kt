@@ -232,7 +232,18 @@ class WebConnector internal constructor(
             val event = request.toEvent(applicationId)
             val requestInfos = WebRequestInfos(context.request())
             WebRequestInfosByEvent.put(event.id.toString(), requestInfos)
-            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos), transientDialogContext = transientContext, errorListener = null, streamDelta = request.streamMode == STREAM_MODE_DELTA)
+            handleEvent(
+                applicationId,
+                request.locale,
+                event,
+                controller,
+                context,
+                extraHeadersAsMetadata(requestInfos),
+                transientDialogContext = transientContext,
+                errorListener = null,
+                streamDelta =
+                    request.streamMode == STREAM_MODE_DELTA,
+            )
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
             context.fail(t)

@@ -16,11 +16,11 @@
 
 package ai.tock.bot.connector.web
 
+import ai.tock.bot.connector.web.sse.SseEndpoint.Companion.webMapper
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.MetadataEvent.Companion.RESPONSE_ID_METADATA
 import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_RESPONSE_METADATA
 import ai.tock.bot.engine.user.PlayerId
-import ai.tock.bot.connector.web.sse.SseEndpoint.Companion.webMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
@@ -32,20 +32,19 @@ class WebConnectorCallbackStreamingTest {
         streamDelta: Boolean = false,
         markdown: Boolean = false,
         sender: ((WebConnectorResponse) -> Unit)?,
-    ) =
-        WebConnectorCallback(
-            applicationId = "app",
-            errorListener = null,
-            locale = java.util.Locale.FRENCH,
-            context = null,
-            metadata = java.util.concurrent.ConcurrentHashMap(mapOf(RESPONSE_ID_METADATA to "r1")),
-            webMapper = webMapper,
-            eventId = "e1",
-            messageProcessor = WebMessageProcessor(markdown),
-            streamedResponse = false,
-            sseTokenSender = sender,
-            streamDelta = streamDelta,
-        )
+    ) = WebConnectorCallback(
+        applicationId = "app",
+        errorListener = null,
+        locale = java.util.Locale.FRENCH,
+        context = null,
+        metadata = java.util.concurrent.ConcurrentHashMap(mapOf(RESPONSE_ID_METADATA to "r1")),
+        webMapper = webMapper,
+        eventId = "e1",
+        messageProcessor = WebMessageProcessor(markdown),
+        streamedResponse = false,
+        sseTokenSender = sender,
+        streamDelta = streamDelta,
+    )
 
     @Test
     fun `tokens are sent as accumulated messages flagged as streamed`() {
@@ -84,7 +83,9 @@ class WebConnectorCallbackStreamingTest {
 
     @Test
     fun `final response is written after queued partial frames and late partials are dropped`() {
-        val vertx = io.vertx.core.Vertx.vertx()
+        val vertx =
+            io.vertx.core.Vertx
+                .vertx()
         try {
             val routingContext = io.mockk.mockk<io.vertx.ext.web.RoutingContext>()
             io.mockk.every { routingContext.vertx() } returns vertx
@@ -159,7 +160,14 @@ class WebConnectorCallbackStreamingTest {
             val keep = it.metadata.getValue(STREAM_KEEP_METADATA).toInt()
             text = text.substring(0, keep) + it.responses.single().text
         }
-        assertEquals(cumulative.last().responses.single().text, text)
+        assertEquals(
+            cumulative
+                .last()
+                .responses
+                .single()
+                .text,
+            text,
+        )
         assertEquals(true, text.contains("<ul>"))
     }
 }
