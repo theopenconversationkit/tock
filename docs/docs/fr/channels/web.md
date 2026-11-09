@@ -71,7 +71,7 @@ sont alors streamées directement sur la même requête.
 Quand le bot streame ses réponses (par exemple les réponses RAG générées par un LLM), les morceaux streamés sont
 regroupés dans la réponse finale (`tock_web_connector_merge_stream_response`, `true` par défaut).
 
-#### Streaming progressif des réponses RAG
+### Streaming progressif des réponses RAG
 
 Avec `tock_web_sse=true`, si le client a ouvert le canal `<chemin>/sse?userid=<id>` (et que ce canal est connecté à
 l'instance qui traite le message), les réponses RAG sont envoyées progressivement sur ce canal pendant leur génération.
