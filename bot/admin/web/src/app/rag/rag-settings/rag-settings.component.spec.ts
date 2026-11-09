@@ -16,7 +16,7 @@
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
 import { NbToastrService, NbWindowService } from '@nebular/theme';
 import { of, throwError } from 'rxjs';
@@ -164,10 +164,14 @@ describe('RagSettingsComponent', () => {
   describe('index status loading', () => {
     // The debounced trigger is plain plumbing; the decision logic lives in loadIndexStatus, which is
     // exercised directly here (of()/throwError() resolve synchronously, so the result is set at once).
-    function loadStatus(): RagIndexStatus | null | undefined {
-      let result: RagIndexStatus | null | undefined;
-      component['loadIndexStatus']().subscribe((status) => (result = status));
+    function loadResult(): { session: string | null; status: RagIndexStatus | null } | undefined {
+      let result: { session: string | null; status: RagIndexStatus | null } | undefined;
+      component['loadIndexStatus']().subscribe((value) => (result = value));
       return result;
+    }
+
+    function loadStatus(): RagIndexStatus | null | undefined {
+      return loadResult()?.status;
     }
 
     it('reports NONE for a blank session without calling the endpoint', () => {
@@ -175,23 +179,35 @@ describe('RagSettingsComponent', () => {
       rest.post = jasmine.createSpy('post');
       component.indexSessionId.setValue('   ');
 
-      expect(loadStatus()).toEqual({
-        indexState: RagIndexState.NONE,
-        collectionEmbeddingModel: null,
-        coherence: RagEmbeddingCoherence.UNKNOWN
+      expect(loadResult()).toEqual({
+        session: null,
+        status: {
+          indexState: RagIndexState.NONE,
+          collectionEmbeddingModel: null,
+          coherence: RagEmbeddingCoherence.UNKNOWN
+        }
       });
       expect(rest.post).not.toHaveBeenCalled();
     });
 
-    it('does not call the endpoint while the form is incomplete', () => {
+    it('keeps an outage flagged when the session is blank (no remote check)', () => {
+      component.indexSessionId.setValue('');
+      component.indexStatusUnavailable = true;
+
+      loadStatus();
+
+      expect(component.indexStatusUnavailable).toBeTrue();
+    });
+
+    it('does not call the endpoint while the form is incomplete, and keeps an outage flagged', () => {
       const rest = TestBed.inject(RestService) as unknown as { post: jasmine.Spy };
       rest.post = jasmine.createSpy('post');
       component.indexSessionId.setValue('session-1');
       component.indexStatusUnavailable = true;
 
-      expect(loadStatus()).toBeNull();
+      expect(loadResult()).toEqual({ session: 'session-1', status: null });
       expect(rest.post).not.toHaveBeenCalled();
-      expect(component.indexStatusUnavailable).toBeFalse();
+      expect(component.indexStatusUnavailable).toBeTrue();
     });
 
     describe('with a complete form', () => {
@@ -212,7 +228,7 @@ describe('RagSettingsComponent', () => {
         rest.post = jasmine.createSpy('post').and.returnValue(of(status));
         component.indexStatusUnavailable = true;
 
-        expect(loadStatus()).toEqual(status);
+        expect(loadResult()).toEqual({ session: 'session-1', status });
         expect(rest.post).toHaveBeenCalledWith(
           '/gen-ai/bots/testName/configuration/rag/index-status',
           jasmine.any(Object),
@@ -231,6 +247,14 @@ describe('RagSettingsComponent', () => {
         expect(component.vectorStoreUnavailable).toBeFalse();
       });
 
+      it('does not lift an outage on a refused candidate (400): it proves no recovery', () => {
+        rest.post = jasmine.createSpy('post').and.returnValue(throwError(() => new HttpErrorResponse({ status: 422 })));
+        component.indexStatusUnavailable = true;
+
+        expect(loadStatus()).toBeNull();
+        expect(component.indexStatusUnavailable).toBeTrue();
+      });
+
       it('locks the form on a server failure', () => {
         rest.post = jasmine.createSpy('post').and.returnValue(throwError(() => 'Server error : 500 - Internal Server Error'));
 
@@ -246,6 +270,136 @@ describe('RagSettingsComponent', () => {
         expect(component.vectorStoreUnavailable).toBeTrue();
       });
     });
+  });
+
+  describe('index status transitions (through the debounced trigger)', () => {
+    const ready: RagIndexStatus = {
+      indexState: RagIndexState.READY,
+      collectionEmbeddingModel: null,
+      coherence: RagEmbeddingCoherence.UNKNOWN
+    };
+    const missing: RagIndexStatus = {
+      indexState: RagIndexState.MISSING,
+      collectionEmbeddingModel: null,
+      coherence: RagEmbeddingCoherence.UNKNOWN
+    };
+    let rest: { post: jasmine.Spy; delete: jasmine.Spy };
+    let formValid: boolean;
+
+    // The debounced trigger keeps a single pending timer: the component must be created inside the fake zone,
+    // otherwise a check scheduled during creation runs on a real timer that tick() cannot reach.
+    function transitionTest(body: () => void): () => void {
+      return fakeAsync(() => {
+        rest = TestBed.inject(RestService) as unknown as { post: jasmine.Spy; delete: jasmine.Spy };
+        rest.post = jasmine.createSpy('post').and.returnValue(of(null));
+        rest.delete = jasmine.createSpy('delete').and.returnValue(of(true));
+        fixture = TestBed.createComponent(RagSettingsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        formValid = true;
+        spyOnProperty(component.form, 'valid').and.callFake(() => formValid);
+        component['applyIndexes']([index('a'), index('b')]);
+        flush();
+
+        body();
+
+        flush();
+      });
+    }
+
+    function failNextChecks(): void {
+      rest.post = jasmine.createSpy('post').and.returnValue(throwError(() => new HttpErrorResponse({ status: 503 })));
+    }
+
+    function answerNextChecks(status: RagIndexStatus): void {
+      rest.post = jasmine.createSpy('post').and.returnValue(of(status));
+    }
+
+    function select(session: string | null): void {
+      component.indexSessionId.setValue(session);
+      tick(400);
+    }
+
+    it(
+      'keeps the outage when "No index" is then selected',
+      transitionTest(() => {
+        failNextChecks();
+        select('a');
+        expect(component.vectorStoreUnavailable).toBeTrue();
+
+        select(null);
+
+        expect(component.vectorStoreUnavailable).toBeTrue();
+        component.deleteSettings();
+        expect(rest.delete).not.toHaveBeenCalled();
+      })
+    );
+
+    it(
+      'keeps the outage when the form then becomes incomplete',
+      transitionTest(() => {
+        failNextChecks();
+        select('a');
+        expect(component.vectorStoreUnavailable).toBeTrue();
+
+        formValid = false;
+        select('b');
+
+        expect(component.vectorStoreUnavailable).toBeTrue();
+        component.deleteSettings();
+        expect(rest.delete).not.toHaveBeenCalled();
+      })
+    );
+
+    it(
+      'lifts the outage once a remote check succeeds',
+      transitionTest(() => {
+        failNextChecks();
+        select('a');
+        expect(component.vectorStoreUnavailable).toBeTrue();
+
+        answerNextChecks(ready);
+        select('b');
+
+        expect(component.vectorStoreUnavailable).toBeFalse();
+        component.deleteSettings();
+        expect(rest.delete).toHaveBeenCalled();
+      })
+    );
+
+    it(
+      'treats a listed index as missing when the server answers MISSING for it',
+      transitionTest(() => {
+        component.enabled.enable({ emitEvent: false });
+        component.enabled.setValue(true, { emitEvent: false });
+        answerNextChecks(missing);
+        select('b');
+
+        expect(component.configuredIndexMissing).toBeTrue();
+        expect(component.saveBlockReason).toBe('rag.rag-settings.save_blocked_index_missing');
+
+        component.form.markAsDirty();
+        component.submit();
+        expect(rest.post).toHaveBeenCalledTimes(1); // the status check only, no save
+      })
+    );
+
+    it(
+      'does not let a MISSING answer for one session block another one',
+      transitionTest(() => {
+        answerNextChecks(missing);
+        select('b');
+        expect(component.configuredIndexMissing).toBeTrue();
+
+        // Selecting A: until its own check answers, the MISSING status still held is B's and must not apply to A.
+        answerNextChecks(ready);
+        component.indexSessionId.setValue('a');
+        expect(component.configuredIndexMissing).toBeFalse();
+
+        tick(400);
+        expect(component.configuredIndexMissing).toBeFalse();
+      })
+    );
   });
 
   describe('index list', () => {

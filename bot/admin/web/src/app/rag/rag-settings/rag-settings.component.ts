@@ -103,6 +103,9 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
   /** State and embedding coherence of the collection the configured index session resolves to, refreshed as it is edited. */
   indexStatus: RagIndexStatus | null = null;
+
+  /** Session id the current `indexStatus` was obtained for: a status only speaks for its own candidate. */
+  indexStatusSession: string | null = null;
   private indexStatusTrigger$: Subject<void> = new Subject();
 
   /**
@@ -120,7 +123,10 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   /** The index list could not be fetched. Lasts until the page is reloaded. */
   indexesLoadFailed: boolean = false;
 
-  /** The last index status check failed on the server side. Cleared by the next successful check. */
+  /**
+   * An index status check failed on the server side. Only a later successful check clears it: a skipped check
+   * (blank session, incomplete form) proves nothing about the outage.
+   */
   indexStatusUnavailable: boolean = false;
 
   /** The form content comes from an import and was never saved: a save then always carries more than an activation change. */
@@ -152,7 +158,10 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
         switchMap(() => this.loadIndexStatus()),
         takeUntil(this.destroy$)
       )
-      .subscribe((status) => (this.indexStatus = status));
+      .subscribe(({ session, status }) => {
+        this.indexStatusSession = session;
+        this.indexStatus = status;
+      });
 
     // The check also runs when the form becomes complete, as it is skipped while incomplete.
     merge(
@@ -231,6 +240,7 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
       this.configurations = confs;
 
       this.indexStatus = null;
+      this.indexStatusSession = null;
       this.indexes = [];
       this.invalidIndexes = [];
       this.indexesLoaded = false;
@@ -311,34 +321,46 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
     return formValue;
   }
 
-  /** Reads the state and embedding coherence of the collection the current session id resolves to. */
-  private loadIndexStatus(): Observable<RagIndexStatus | null> {
-    const session = (this.indexSessionId.value ?? '').trim();
+  /**
+   * Reads the state and embedding coherence of the collection the current session id resolves to, along with the
+   * session it was read for. Only a valid answer from the server clears the outage flag; a skipped check leaves it
+   * untouched.
+   */
+  private loadIndexStatus(): Observable<{ session: string | null; status: RagIndexStatus | null }> {
+    const session = (this.indexSessionId.value ?? '').trim() || null;
 
     // A blank session resolves to NONE server side; report it directly without a round trip.
     if (!session) {
-      this.indexStatusUnavailable = false;
-      return of({ indexState: RagIndexState.NONE, collectionEmbeddingModel: null, coherence: RagEmbeddingCoherence.UNKNOWN });
+      return of({
+        session,
+        status: { indexState: RagIndexState.NONE, collectionEmbeddingModel: null, coherence: RagEmbeddingCoherence.UNKNOWN }
+      });
     }
 
     // The endpoint deserializes the full configuration DTO: an incomplete form would fail server side for reasons
     // unrelated to the vector store. No check until the form is complete; the hint is cleared meanwhile.
     if (!this.form.valid) {
-      this.indexStatusUnavailable = false;
-      return of(null);
+      return of({ session, status: null });
     }
 
     const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/rag/index-status`;
-    // A 400/422 is a refused candidate, not an outage: clear the hint. Anything else (server error, unreachable
-    // orchestrator, empty answer) means the vector store cannot be read: saving is locked until a check succeeds.
     return this.rest.post<RagSettings, RagIndexStatus>(url, this.buildRagConfigBody(), null, null, true).pipe(
       map((status) => {
-        this.indexStatusUnavailable = !status?.indexState;
-        return this.indexStatusUnavailable ? null : status;
+        if (!status?.indexState) {
+          // Empty answer: the orchestrator error surfaced as an empty body.
+          this.indexStatusUnavailable = true;
+          return { session, status: null };
+        }
+        this.indexStatusUnavailable = false;
+        return { session, status };
       }),
       catchError((error) => {
-        this.indexStatusUnavailable = !(error instanceof HttpErrorResponse && [400, 422].includes(error.status));
-        return of(null);
+        // A 400/422 is the admin refusing to read the candidate, before any orchestrator call: it proves neither an
+        // outage nor a recovery, the flag is left as is. Anything else means the vector store cannot be read.
+        if (!(error instanceof HttpErrorResponse && [400, 422].includes(error.status))) {
+          this.indexStatusUnavailable = true;
+        }
+        return of({ session, status: null });
       })
     );
   }
@@ -423,13 +445,19 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   }
 
   /**
-   * A session id is configured but no valid index of the bot matches it (deleted collection, import from another
-   * environment, invalid collection). Only asserted once the list is known: a failed load proves nothing.
-   * Exact match on the raw session id, the value the ingestion wrote in the chunks.
+   * A session id is configured but its collection is missing or unusable. Two sources:
+   * - the index list loaded with the page: no valid index matches (deleted collection, import from another
+   *   environment, invalid collection). Only asserted once the list is known: a failed load proves nothing.
+   *   Exact match on the raw session id, the value the ingestion wrote in the chunks;
+   * - the index status check: the server answered MISSING for this very session, which also covers an index
+   *   removed after the list was loaded.
    */
   get configuredIndexMissing(): boolean {
     const session = this.configuredSessionId;
-    return this.indexesLoaded && !!session && !this.indexes.some((index) => index.indexSessionId === session);
+    if (!session) return false;
+    const missingPerStatus = this.indexStatus?.indexState === RagIndexState.MISSING && this.indexStatusSession === session;
+    const missingFromList = this.indexesLoaded && !this.indexes.some((index) => index.indexSessionId === session);
+    return missingPerStatus || missingFromList;
   }
 
   /**
