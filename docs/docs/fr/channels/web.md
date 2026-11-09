@@ -91,6 +91,8 @@ et `preferences.messages.streamMode` de `tock-vue-kit`). Les trames partielles p
 `TOCK_STREAM_MODE=delta` et `TOCK_STREAM_KEEP=N` : le client conserve les `N` premiers caractères du message courant et
 leur ajoute le texte de la trame. La réponse finale est toujours complète.
 
+Pour l'architecture détaillée, voir [Streaming des réponses RAG](../develop/internals/rag-streaming.md).
+
 > Le moteur sélectionne le streaming RAG quand l'action utilisateur porte `metadata.streamedResponse=true`. Le
 > connecteur web positionne ce flag lui-même quand un canal SSE est connecté ; il n'a pas à être renseigné par le client.
 

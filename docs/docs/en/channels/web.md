@@ -90,6 +90,8 @@ and `preferences.messages.streamMode` of `tock-vue-kit`). Partial frames then ca
 `TOCK_STREAM_MODE=delta` and `TOCK_STREAM_KEEP=N`: the client keeps the first `N` characters of the current message and
 appends the frame text. The final answer is always complete.
 
+For the detailed architecture, see [RAG answer streaming](../develop/internals/rag-streaming.md).
+
 > The engine selects RAG streaming when the user action carries `metadata.streamedResponse=true`. The web connector
 > sets this flag itself when an SSE channel is connected; clients do not have to provide it.
 
