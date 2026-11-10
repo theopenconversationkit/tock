@@ -16,52 +16,53 @@
 
 package ai.tock.shared
 
-import ai.tock.shared.jackson.addDeserializer
-import ai.tock.shared.jackson.addSerializer
-import ai.tock.shared.jackson.jacksonAdditionalModules
 import ai.tock.shared.security.mongo.MongoCredentialsProvider
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonTokenId
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
-import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer
-import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeserializer
-import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
-import com.mongodb.client.AggregateIterable
-import com.mongodb.client.FindIterable
-import com.mongodb.client.MongoClient
-import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Collation
 import com.mongodb.client.model.CountOptions
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
 import com.mongodb.connection.TransportSettings
-import com.mongodb.reactivestreams.client.MongoCollection
+import com.mongodb.kotlin.client.AggregateIterable
+import com.mongodb.kotlin.client.FindIterable
+import com.mongodb.kotlin.client.MongoClient
+import com.mongodb.kotlin.client.MongoDatabase
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import de.undercouch.bson4jackson.types.Decimal128
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import org.bson.BsonDocument
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.ascending
+import org.litote.kmongo.coroutine.watchIndefinitely
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdToStringGenerator
-import org.litote.kmongo.reactivestreams.watchIndefinitely
 import org.litote.kmongo.runCommand
 import org.litote.kmongo.util.CollectionNameFormatter
 import org.litote.kmongo.util.KMongoConfiguration
 import org.litote.kmongo.util.KMongoConfiguration.registerBsonModule
 import org.litote.kmongo.util.KMongoUtil
+import tools.jackson.core.JsonGenerator
+import tools.jackson.core.JsonParser
+import tools.jackson.core.JsonTokenId
+import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.SerializationContext
+import tools.jackson.databind.deser.std.StdScalarDeserializer
+import tools.jackson.databind.ext.javatime.deser.DurationDeserializer
+import tools.jackson.databind.ext.javatime.deser.JSR310StringParsableDeserializer
+import tools.jackson.databind.ext.javatime.ser.DurationSerializer
+import tools.jackson.databind.module.SimpleModule
+import tools.jackson.databind.ser.std.StdScalarSerializer
+import tools.jackson.databind.ser.std.ToStringSerializer
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.Period
@@ -95,30 +96,30 @@ internal object TockKMongoConfiguration {
 
         val tockModule =
             SimpleModule().apply {
-                addSerializer(ZoneId::class, ToStringSerializer(ZoneId::class.java))
-                addDeserializer(ZoneId::class, JSR310StringParsableDeserializer.ZONE_ID)
-                addSerializer(ZoneOffset::class, ToStringSerializer(ZoneOffset::class.java))
-                addDeserializer(ZoneOffset::class, JSR310StringParsableDeserializer.ZONE_OFFSET)
-                addDeserializer(Period::class, JSR310StringParsableDeserializer.PERIOD)
-                addSerializer(Period::class, ToStringSerializer(Period::class.java))
+                addSerializer(ZoneId::class.java, ToStringSerializer(ZoneId::class.java))
+                addDeserializer(ZoneId::class.java, JSR310StringParsableDeserializer.ZONE_ID)
+                addSerializer(ZoneOffset::class.java, ToStringSerializer(ZoneOffset::class.java))
+                addDeserializer(ZoneOffset::class.java, JSR310StringParsableDeserializer.ZONE_OFFSET)
+                addDeserializer(Period::class.java, JSR310StringParsableDeserializer.PERIOD)
+                addSerializer(Period::class.java, ToStringSerializer(Period::class.java))
                 if (isDocumentDB()) {
                     addSerializer(
-                        Duration::class,
+                        Duration::class.java,
                         object : StdScalarSerializer<Duration>(Duration::class.java) {
                             override fun serialize(
-                                duration: Duration?,
-                                generator: JsonGenerator?,
-                                provider: SerializerProvider?,
+                                duration: Duration,
+                                generator: JsonGenerator,
+                                provider: SerializationContext,
                             ) {
-                                generator?.writeString(duration?.toString())
+                                generator.writeString(duration.toString())
                             }
                         },
                     )
                 } else {
-                    addSerializer(Duration::class, DurationSerializer.INSTANCE)
+                    addSerializer(Duration::class.java, DurationSerializer.INSTANCE)
                 }
                 addDeserializer(
-                    Duration::class,
+                    Duration::class.java,
                     object : StdScalarDeserializer<Duration>(Duration::class.java) {
                         override fun deserialize(
                             parser: JsonParser,
@@ -149,12 +150,13 @@ internal object TockKMongoConfiguration {
                 )
             }
 
+        // the modules of the service loader are already registered by the KMongo mappers
         registerBsonModule(tockModule)
-        KMongoConfiguration.extendedJsonMapper.registerModule(tockModule)
-        jacksonAdditionalModules.forEach {
-            registerBsonModule(it)
-            KMongoConfiguration.extendedJsonMapper.registerModule(it)
-        }
+        KMongoConfiguration.extendedJsonMapper =
+            KMongoConfiguration.extendedJsonMapper
+                .rebuild()
+                .addModule(tockModule)
+                .build()
     }
 
     fun configure(async: Boolean = false) {
@@ -181,9 +183,10 @@ private val asyncMongoUrl =
 private val credentialsProvider = injector.provide<MongoCredentialsProvider>()
 
 /**
- * The sync [MongoClient] of Tock.
+ * The Java sync client of Tock (used for GridFS, not provided by the Kotlin driver).
+ * [mongoClient] shares its connection pool.
  */
-internal val mongoClient: MongoClient by lazy {
+internal val mongoJavaClient: com.mongodb.client.MongoClient by lazy {
     TockKMongoConfiguration.configure()
     if (mongoUrl.credential == null) {
         val connectionString = mongoUrl
@@ -194,18 +197,25 @@ internal val mongoClient: MongoClient by lazy {
                 .run { credentialsProvider.getCredentials()?.let { credential(it) } ?: this }
                 .build()
 
-        KMongo.createClient(settings)
+        KMongo.createJavaClient(settings)
     } else {
-        KMongo.createClient(mongoUrl)
+        KMongo.createJavaClient(MongoClientSettings.builder().applyConnectionString(mongoUrl).build())
     }
 }
 
 /**
- * The async [MongoClient] of Tock.
+ * The sync [MongoClient] of Tock.
  */
-internal val asyncMongoClient: com.mongodb.reactivestreams.client.MongoClient by lazy {
+internal val mongoClient: MongoClient by lazy {
+    KMongo.createClient(injector.provide<com.mongodb.client.MongoClient>())
+}
+
+/**
+ * The async (coroutine) [MongoClient] of Tock.
+ */
+internal val asyncMongoClient: com.mongodb.kotlin.client.coroutine.MongoClient by lazy {
     TockKMongoConfiguration.configure(true)
-    org.litote.kmongo.reactivestreams.KMongo.createClient(
+    org.litote.kmongo.coroutine.KMongo.createClient(
         MongoClientSettings
             .builder()
             .applyConnectionString(asyncMongoUrl)
@@ -233,31 +243,57 @@ fun getDatabase(databaseNameProperty: String): MongoDatabase {
 }
 
 /**
+ * Return the Java sync database specified in the [databaseNameProperty] - to use GridFS.
+ * if the env or system property is not found, use the [databaseNameProperty] as database name (remove "_mongo_db" string is present).
+ */
+fun getJavaDatabase(databaseNameProperty: String): com.mongodb.client.MongoDatabase {
+    val databaseName = formatDatabase(databaseNameProperty)
+    logger.info("get java database $databaseName")
+    return injector.provide<com.mongodb.client.MongoClient>().getDatabase(databaseName)
+}
+
+/**
  * Return the async database specified in the [databaseNameProperty].
  * if the env or system property is not found, use the [databaseNameProperty] as database name (remove "_mongo_db" string is present).
  */
-fun getAsyncDatabase(databaseNameProperty: String): com.mongodb.reactivestreams.client.MongoDatabase {
+fun getAsyncDatabase(databaseNameProperty: String): com.mongodb.kotlin.client.coroutine.MongoDatabase {
     val databaseName = formatDatabase(databaseNameProperty)
     logger.info("get database $databaseName")
-    return injector.provide<com.mongodb.reactivestreams.client.MongoClient>().getDatabase(databaseName)
+    return injector.provide<com.mongodb.kotlin.client.coroutine.MongoClient>().getDatabase(databaseName)
 }
 
 private fun formatDatabase(databaseNameProperty: String): String = property(databaseNameProperty, databaseNameProperty).replace("_mongo_db", "")
 
-inline fun <reified T : Any> MongoCollection<T>.watch(
+/**
+ * The scope of the change stream listeners.
+ */
+private val changeStreamScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+/**
+ * Listens indefinitely the changes of the collection: the change stream is reopened after the errors
+ * (and after the last received change). The [listener] exceptions are logged and do not stop the listening.
+ */
+fun <T : Any> MongoCollection<T>.watch(
     fullDocument: FullDocument = FullDocument.DEFAULT,
-    noinline listener: (ChangeStreamDocument<T>) -> Unit,
+    listener: (ChangeStreamDocument<T>) -> Unit,
 ) {
-    watchIndefinitely(
-        fullDocument = fullDocument,
-        subscribeListener = { (KotlinLogging.logger {}).info { "Subscribe stream" } },
-        errorListener = { (KotlinLogging.logger {}).error(it) },
-        reopenListener = { (KotlinLogging.logger {}).warn { "Reopen stream" } },
-        listener = listener,
-    )
+    val collectionName = namespace.collectionName
+    changeStreamScope.launch {
+        logger.info { "Subscribe stream $collectionName" }
+        watchIndefinitely(
+            fullDocument = fullDocument,
+            onError = { logger.warn(it) { "Reopen stream $collectionName" } },
+        ).collect {
+            try {
+                listener(it)
+            } catch (e: Exception) {
+                logger.error(e) { "error in $collectionName change stream listener" }
+            }
+        }
+    }
 }
 
-fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
+fun <T : Any> com.mongodb.kotlin.client.MongoCollection<T>.ensureIndex(
     vararg properties: kotlin.reflect.KProperty<*>,
     indexOptions: IndexOptions = IndexOptions(),
 ): String {
@@ -267,7 +303,7 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
     return ensureIndex(*properties, indexOptions = indexOptions)
 }
 
-fun <T> com.mongodb.client.MongoCollection<T>.ensureUniqueIndex(
+fun <T : Any> com.mongodb.kotlin.client.MongoCollection<T>.ensureUniqueIndex(
     vararg properties: kotlin.reflect.KProperty<*>,
     indexOptions: IndexOptions = IndexOptions(),
 ): String {
@@ -277,7 +313,7 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureUniqueIndex(
     return ensureUniqueIndex(*properties, indexOptions = indexOptions)
 }
 
-fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
+fun <T : Any> com.mongodb.kotlin.client.MongoCollection<T>.ensureIndex(
     keys: Bson,
     indexOptions: IndexOptions = IndexOptions(),
 ): String {
@@ -287,7 +323,7 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
     return ensureIndex(keys, indexOptions = indexOptions)
 }
 
-fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
+fun <T : Any> com.mongodb.kotlin.client.MongoCollection<T>.ensureIndex(
     keys: String,
     indexOptions: IndexOptions = IndexOptions(),
 ): String {
@@ -386,14 +422,14 @@ fun pingMongoDatabase(databaseName: String): Boolean {
 /**
  * Set collation if database supports it (ie not with DocumentDB)
  */
-fun <T> FindIterable<T>.safeCollation(collation: Collation): FindIterable<T> =
+fun <T : Any> FindIterable<T>.safeCollation(collation: Collation): FindIterable<T> =
     if (isDocumentDB()) {
         this
     } else {
         collation(collation)
     }
 
-fun <T> AggregateIterable<T>.safeCollation(collation: Collation): AggregateIterable<T> =
+fun <T : Any> AggregateIterable<T>.safeCollation(collation: Collation): AggregateIterable<T> =
     if (isDocumentDB()) {
         this
     } else {

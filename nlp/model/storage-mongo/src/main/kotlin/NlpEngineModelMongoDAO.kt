@@ -23,6 +23,7 @@ import ai.tock.nlp.model.service.storage.NlpEngineModelDAO
 import ai.tock.nlp.model.service.storage.NlpModelStream
 import ai.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.asyncDatabase
 import ai.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.database
+import ai.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.javaDatabase
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.watch
 import com.mongodb.MongoGridFSException
@@ -36,6 +37,7 @@ import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.Filters.ne
 import com.mongodb.client.model.changestream.FullDocument
 import mu.KotlinLogging
+import org.bson.Document
 import java.io.InputStream
 import java.time.Instant
 
@@ -47,22 +49,22 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
 
     private val entityBucket: GridFSBucket by lazy {
         GridFSBuckets
-            .create(database, "fs_entity")
+            .create(javaDatabase, "fs_entity")
             .apply {
-                database.getCollection("fs_entity.files").ensureIndex("{filename:1}")
+                database.getCollection<Document>("fs_entity.files").ensureIndex("{filename:1}")
             }
     }
     private val intentBucket: GridFSBucket by lazy {
         GridFSBuckets
-            .create(database, "fs_intent")
+            .create(javaDatabase, "fs_intent")
             .apply {
-                database.getCollection("fs_intent.files").ensureIndex("{filename:1}")
+                database.getCollection<Document>("fs_intent.files").ensureIndex("{filename:1}")
             }
     }
 
-    private val asyncEntityCol = asyncDatabase.getCollection("fs_entity.files")
+    private val asyncEntityCol = asyncDatabase.getCollection<Document>("fs_entity.files")
 
-    private val asyncIntentCol = asyncDatabase.getCollection("fs_intent.files")
+    private val asyncIntentCol = asyncDatabase.getCollection<Document>("fs_intent.files")
 
     private fun getGridFSFile(
         bucket: GridFSBucket,

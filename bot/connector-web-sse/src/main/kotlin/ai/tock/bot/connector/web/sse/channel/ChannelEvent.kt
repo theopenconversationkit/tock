@@ -23,6 +23,7 @@ import io.vertx.core.Future
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
+import tools.jackson.databind.annotation.JsonDeserialize as JsonDeserialize3
 
 /**
  *  Event that will be retrieved by the bot and sent to the recipient if SSE is activated
@@ -31,6 +32,7 @@ internal data class ChannelEvent(
     val appId: String = "unknown",
     val recipientId: String,
     @get:JsonDeserialize(`as` = WebConnectorResponseContent::class)
+    @get:JsonDeserialize3(`as` = WebConnectorResponseContent::class)
     val webConnectorResponse: WebConnectorResponseContract,
     val status: Status = Status.ENQUEUED,
     val enqueuedAt: Instant = Instant.now(),

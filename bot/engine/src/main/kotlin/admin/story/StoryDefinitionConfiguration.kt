@@ -33,6 +33,7 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import ai.tock.shared.defaultNamespace
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.Locale
@@ -242,5 +243,6 @@ data class StoryDefinitionConfiguration(
     private fun findEnabledFeatures(applicationId: String?): List<StoryDefinitionConfigurationFeature> = findFeatures(applicationId).filter { it.enabled }
 
     @Transient
+    @get:JsonIgnore
     internal val mainIntent: Intent = intent.intent(namespace)
 }

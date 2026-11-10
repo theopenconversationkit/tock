@@ -1,0 +1,63 @@
+{
+  "storyDefinitionId": "story",
+  "currentIntent": {
+    "name": "test"
+  },
+  "currentStep": null,
+  "actions": [
+    {
+      "type": "sentence",
+      "text": "text",
+      "customMessage": false,
+      "nlpStats": false,
+      "id": "action",
+      "date": {
+        "$date": {
+          "$numberLong": "1793873730123"
+        }
+      },
+      "state": {
+        "entityValues": [],
+        "testEvent": false,
+        "sourceConnectorType": null,
+        "targetConnectorType": null,
+        "userInterface": null,
+        "userVerified": true,
+        "intent": null,
+        "step": null,
+        "notification": false,
+        "sourceApplicationId": null
+      },
+      "botMetadata": {
+        "lastAnswer": false,
+        "priority": "normal",
+        "notificationType": null,
+        "visibility": "UNKNOWN",
+        "replyMessage": "UNKNOWN",
+        "quoteMessage": "UNKNOWN",
+        "orchestrationLock": false,
+        "orchestratedBy": null,
+        "returnsHistory": false,
+        "debugEnabled": false,
+        "sourceWithContent": false,
+        "isGenAiRagAnswer": false,
+        "streamedResponse": false,
+        "observabilityInfo": null,
+        "feedback": null
+      },
+      "playerId": {
+        "id": "a",
+        "type": "user",
+        "clientId": null
+      },
+      "recipientId": {
+        "id": "b",
+        "type": "user",
+        "clientId": null
+      },
+      "applicationId": "app",
+      "annotation": null,
+      "isEvaluable": false
+    }
+  ]
+}

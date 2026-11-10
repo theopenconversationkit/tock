@@ -18,6 +18,7 @@ package ai.tock.nlp.entity
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
+import tools.jackson.databind.annotation.JsonTypeIdResolver as JsonTypeIdResolver3
 
 /**
  * It is recommended (but not mandatory) that values evaluated by EntityEvaluators
@@ -27,4 +28,5 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
 @JsonTypeIdResolver(ValueTypeIdResolver::class)
+@JsonTypeIdResolver3(ValueTypeIdResolver3::class)
 interface Value

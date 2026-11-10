@@ -52,13 +52,11 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.MongoDatabase
 import indicator.IndicatorMongoDAO
 import indicator.metric.MetricMongoDAO
-import org.litote.kmongo.coroutine.CoroutineDatabase
-import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.reactivestreams.getCollection
-import com.mongodb.reactivestreams.client.MongoDatabase as AsyncMongoDatabase
+import org.litote.kmongo.coroutine.getCollection
+import com.mongodb.kotlin.client.coroutine.MongoDatabase as AsyncMongoDatabase
 
 const val MONGO_DATABASE: String = TOCK_BOT_DATABASE
 
@@ -71,7 +69,6 @@ val botMongoModule =
                     MONGO_DATABASE,
                 )
             }
-        bind<CoroutineDatabase>(MONGO_DATABASE) with provider { instance<AsyncMongoDatabase>(MONGO_DATABASE).coroutine }
         bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
         bind<BotBusinessRulesConfigurationDAO>() with provider { BotBusinessRulesConfigurationMongoDAO }
         bind<BotDashboardDAO>() with singleton { BotDashboardMongoDAO(instance(MONGO_DATABASE)) }

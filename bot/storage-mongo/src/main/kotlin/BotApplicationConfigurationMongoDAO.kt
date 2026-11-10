@@ -35,13 +35,13 @@ import ai.tock.shared.watch
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
+import org.litote.kmongo.coroutine.getCollectionOfName
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.replaceUpsert
 import org.litote.kmongo.save
 

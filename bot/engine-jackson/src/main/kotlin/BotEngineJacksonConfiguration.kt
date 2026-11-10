@@ -45,6 +45,7 @@ import ai.tock.bot.engine.message.Location
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.message.SentenceWithFootnotes
+import ai.tock.shared.jackson.Jackson2ModuleServiceLoader
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
@@ -58,6 +59,16 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier
 import mu.KotlinLogging
 import org.litote.jackson.JacksonModuleServiceLoader
+import tools.jackson.databind.JacksonModule
+import tools.jackson.databind.deser.ValueDeserializerModifier
+import tools.jackson.databind.ser.ValueSerializerModifier
+import tools.jackson.databind.BeanDescription as BeanDescription3
+import tools.jackson.databind.DeserializationConfig as DeserializationConfig3
+import tools.jackson.databind.SerializationConfig as SerializationConfig3
+import tools.jackson.databind.introspect.BeanPropertyDefinition as BeanPropertyDefinition3
+import tools.jackson.databind.jsontype.NamedType as NamedType3
+import tools.jackson.databind.module.SimpleModule as SimpleModule3
+import tools.jackson.databind.ser.BeanPropertyWriter as BeanPropertyWriter3
 
 /**
  *
@@ -100,69 +111,73 @@ private object BotEngineJacksonConfiguration {
     )
     interface MixinMediaMessageDump
 
+    /** The mixins, common to the Tock mapper (Jackson 2) and to the Mongo mapping (Jackson 3). */
+    private val mixins: List<Pair<Class<*>, Class<*>>> =
+        listOf(
+            Message::class.java to MixinMessage::class.java,
+            AnswerConfiguration::class.java to MixinAnswerConfiguration::class.java,
+            AnswerConfigurationDump::class.java to MixinAnswerConfigurationDump::class.java,
+            MediaMessageDescriptor::class.java to MixinMediaMessage::class.java,
+            MediaMessageDescriptorDump::class.java to MixinMediaMessageDump::class.java,
+        )
+
+    /** The named subtypes, common to the Tock mapper (Jackson 2) and to the Mongo mapping (Jackson 3). */
+    private val subtypes: List<Pair<Class<*>, String>> =
+        listOf(
+            Attachment::class.java to EventType.attachment.name,
+            Sentence::class.java to EventType.sentence.name,
+            SentenceWithFootnotes::class.java to EventType.sentenceWithFootnotes.name,
+            DebugMessage::class.java to EventType.debug.name,
+            Choice::class.java to EventType.choice.name,
+            Location::class.java to EventType.location.name,
+            SimpleAnswerConfiguration::class.java to AnswerConfigurationType.simple.name,
+            ScriptAnswerConfiguration::class.java to AnswerConfigurationType.script.name,
+            MessageAnswerConfiguration::class.java to AnswerConfigurationType.message.name,
+            BuiltInAnswerConfiguration::class.java to AnswerConfigurationType.builtin.name,
+            SimpleAnswerConfigurationDump::class.java to AnswerConfigurationType.simple.name,
+            ScriptAnswerConfigurationDump::class.java to AnswerConfigurationType.script.name,
+            MessageAnswerConfigurationDump::class.java to AnswerConfigurationType.message.name,
+            BuiltInAnswerConfigurationDump::class.java to AnswerConfigurationType.builtin.name,
+            MediaCardDescriptor::class.java to MediaMessageType.card.name,
+            MediaActionDescriptor::class.java to MediaMessageType.action.name,
+            MediaCarouselDescriptor::class.java to MediaMessageType.carousel.name,
+            MediaCardDescriptorDump::class.java to MediaMessageType.card.name,
+            MediaActionDescriptorDump::class.java to MediaMessageType.action.name,
+            MediaCarouselDescriptorDump::class.java to MediaMessageType.carousel.name,
+        )
+
+    private fun excludeFromSerialization(
+        beanClass: Class<*>,
+        propertyName: String,
+    ): Boolean =
+        when {
+            beanClass == ScriptAnswerVersionedConfiguration::class.java -> {
+                propertyName == ScriptAnswerVersionedConfiguration::storyDefinition.name
+            }
+
+            CharSequence::class.java.isAssignableFrom(beanClass) -> {
+                propertyName == "length" || propertyName == "empty"
+            }
+
+            else -> {
+                false
+            }
+        }
+
+    private fun excludeFromDeserialization(
+        beanClass: Class<*>,
+        propertyName: String,
+    ): Boolean =
+        beanClass == ScriptAnswerVersionedConfiguration::class.java &&
+            propertyName == ScriptAnswerVersionedConfiguration::storyDefinition.name
+
+    /** The module of the Tock mapper. */
     val module: SimpleModule
         get() {
             val module = SimpleModule()
             with(module) {
-                setMixInAnnotation(Message::class.java, MixinMessage::class.java)
-                registerSubtypes(NamedType(Attachment::class.java, EventType.attachment.name))
-                registerSubtypes(NamedType(Sentence::class.java, EventType.sentence.name))
-                registerSubtypes(NamedType(SentenceWithFootnotes::class.java, EventType.sentenceWithFootnotes.name))
-                registerSubtypes(NamedType(DebugMessage::class.java, EventType.debug.name))
-                registerSubtypes(NamedType(Choice::class.java, EventType.choice.name))
-                registerSubtypes(NamedType(Location::class.java, EventType.location.name))
-
-                setMixInAnnotation(AnswerConfiguration::class.java, MixinAnswerConfiguration::class.java)
-                registerSubtypes(NamedType(SimpleAnswerConfiguration::class.java, AnswerConfigurationType.simple.name))
-                registerSubtypes(NamedType(ScriptAnswerConfiguration::class.java, AnswerConfigurationType.script.name))
-                registerSubtypes(
-                    NamedType(
-                        MessageAnswerConfiguration::class.java,
-                        AnswerConfigurationType.message.name,
-                    ),
-                )
-                registerSubtypes(
-                    NamedType(
-                        BuiltInAnswerConfiguration::class.java,
-                        AnswerConfigurationType.builtin.name,
-                    ),
-                )
-
-                setMixInAnnotation(AnswerConfigurationDump::class.java, MixinAnswerConfigurationDump::class.java)
-                registerSubtypes(
-                    NamedType(
-                        SimpleAnswerConfigurationDump::class.java,
-                        AnswerConfigurationType.simple.name,
-                    ),
-                )
-                registerSubtypes(
-                    NamedType(
-                        ScriptAnswerConfigurationDump::class.java,
-                        AnswerConfigurationType.script.name,
-                    ),
-                )
-                registerSubtypes(
-                    NamedType(
-                        MessageAnswerConfigurationDump::class.java,
-                        AnswerConfigurationType.message.name,
-                    ),
-                )
-                registerSubtypes(
-                    NamedType(
-                        BuiltInAnswerConfigurationDump::class.java,
-                        AnswerConfigurationType.builtin.name,
-                    ),
-                )
-
-                setMixInAnnotation(MediaMessageDescriptor::class.java, MixinMediaMessage::class.java)
-                registerSubtypes(NamedType(MediaCardDescriptor::class.java, MediaMessageType.card.name))
-                registerSubtypes(NamedType(MediaActionDescriptor::class.java, MediaMessageType.action.name))
-                registerSubtypes(NamedType(MediaCarouselDescriptor::class.java, MediaMessageType.carousel.name))
-
-                setMixInAnnotation(MediaMessageDescriptorDump::class.java, MixinMediaMessageDump::class.java)
-                registerSubtypes(NamedType(MediaCardDescriptorDump::class.java, MediaMessageType.card.name))
-                registerSubtypes(NamedType(MediaActionDescriptorDump::class.java, MediaMessageType.action.name))
-                registerSubtypes(NamedType(MediaCarouselDescriptorDump::class.java, MediaMessageType.carousel.name))
+                mixins.forEach { (target, mixin) -> setMixInAnnotation(target, mixin) }
+                subtypes.forEach { (type, name) -> registerSubtypes(NamedType(type, name)) }
 
                 setSerializerModifier(
                     object : BeanSerializerModifier() {
@@ -170,22 +185,7 @@ private object BotEngineJacksonConfiguration {
                             config: SerializationConfig,
                             beanDesc: BeanDescription,
                             beanProperties: MutableList<BeanPropertyWriter>,
-                        ): List<BeanPropertyWriter> =
-                            when {
-                                beanDesc.beanClass == ScriptAnswerVersionedConfiguration::class.java -> {
-                                    beanProperties
-                                        .filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
-                                        .toList()
-                                }
-
-                                CharSequence::class.java.isAssignableFrom(beanDesc.beanClass) -> {
-                                    beanProperties.filter { it.name != "length" && it.name != "empty" }.toList()
-                                }
-
-                                else -> {
-                                    super.changeProperties(config, beanDesc, beanProperties)
-                                }
-                            }
+                        ): List<BeanPropertyWriter> = beanProperties.filterNot { excludeFromSerialization(beanDesc.beanClass, it.name) }
                     },
                 )
 
@@ -195,14 +195,38 @@ private object BotEngineJacksonConfiguration {
                             config: DeserializationConfig,
                             beanDesc: BeanDescription,
                             propDefs: MutableList<BeanPropertyDefinition>,
-                        ): List<BeanPropertyDefinition> =
-                            if (beanDesc.beanClass == ScriptAnswerVersionedConfiguration::class.java) {
-                                propDefs
-                                    .filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
-                                    .toList()
-                            } else {
-                                super.updateProperties(config, beanDesc, propDefs)
-                            }
+                        ): List<BeanPropertyDefinition> = propDefs.filterNot { excludeFromDeserialization(beanDesc.beanClass, it.name) }
+                    },
+                )
+            }
+            return module
+        }
+
+    /** The module of the Mongo mapping. */
+    val mongoModule: SimpleModule3
+        get() {
+            val module = SimpleModule3()
+            with(module) {
+                mixins.forEach { (target, mixin) -> setMixInAnnotation(target, mixin) }
+                subtypes.forEach { (type, name) -> registerSubtypes(NamedType3(type, name)) }
+
+                setSerializerModifier(
+                    object : ValueSerializerModifier() {
+                        override fun changeProperties(
+                            config: SerializationConfig3,
+                            beanDesc: BeanDescription3.Supplier,
+                            beanProperties: MutableList<BeanPropertyWriter3>,
+                        ): List<BeanPropertyWriter3> = beanProperties.filterNot { excludeFromSerialization(beanDesc.beanClass, it.name) }
+                    },
+                )
+
+                setDeserializerModifier(
+                    object : ValueDeserializerModifier() {
+                        override fun updateProperties(
+                            config: DeserializationConfig3,
+                            beanDesc: BeanDescription3.Supplier,
+                            propDefs: MutableList<BeanPropertyDefinition3>,
+                        ): List<BeanPropertyDefinition3> = propDefs.filterNot { excludeFromDeserialization(beanDesc.beanClass, it.name) }
                     },
                 )
             }
@@ -217,6 +241,10 @@ private object BotEngineJacksonConfiguration {
 )
 interface MixinSerializableConnectorMessage
 
-class BotTockEngineKMongoJacksonModuleServiceLoader : JacksonModuleServiceLoader {
+class BotTockEngineJacksonModuleServiceLoader : Jackson2ModuleServiceLoader {
     override fun module(): Module = BotEngineJacksonConfiguration.module
+}
+
+class BotTockEngineKMongoJacksonModuleServiceLoader : JacksonModuleServiceLoader {
+    override fun module(): JacksonModule = BotEngineJacksonConfiguration.mongoModule
 }

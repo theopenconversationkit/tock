@@ -29,7 +29,7 @@ import ai.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogSt
 import ai.tock.shared.Dice
 import ai.tock.shared.defaultLocale
 import com.mongodb.ReadPreference.primary
-import com.mongodb.client.MongoCollection
+import com.mongodb.kotlin.client.MongoCollection
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.findOne

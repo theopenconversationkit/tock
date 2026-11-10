@@ -23,12 +23,13 @@ import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
 import ai.tock.shared.getDatabase
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.kotlin.client.MongoCollection
+import com.mongodb.kotlin.client.MongoDatabase
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
+import org.litote.kmongo.asSequence
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne

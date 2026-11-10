@@ -22,22 +22,24 @@ import ai.tock.shared.injector
 import ai.tock.shared.longProperty
 import ai.tock.shared.watch
 import com.github.salomonbrys.kodein.instance
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions
+import com.mongodb.kotlin.client.MongoCollection
+import com.mongodb.kotlin.client.MongoDatabase
 import io.vertx.core.Future
 import mu.KotlinLogging
 import org.litote.kmongo.and
+import org.litote.kmongo.coroutine.getCollectionOfName
 import org.litote.kmongo.eq
+import org.litote.kmongo.fold
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
 import org.litote.kmongo.setTo
+import org.litote.kmongo.toList
 import org.litote.kmongo.updateMany
 import org.litote.kmongo.updateOneById
 import java.util.concurrent.TimeUnit
-import com.mongodb.reactivestreams.client.MongoDatabase as ReactiveMongoDatabase
+import com.mongodb.kotlin.client.coroutine.MongoDatabase as ReactiveMongoDatabase
 
 internal object ChannelMongoDAO : ChannelDAO {
     private const val COLLECTION_NAME = "web_channel_event"
@@ -48,10 +50,10 @@ internal object ChannelMongoDAO : ChannelDAO {
         TOCK_BOT_DATABASE,
     )
     private val logger = KotlinLogging.logger {}
-    private val asyncWebChannelResponseCol: com.mongodb.reactivestreams.client.MongoCollection<ChannelEvent>
+    private val asyncWebChannelResponseCol: com.mongodb.kotlin.client.coroutine.MongoCollection<ChannelEvent>
     private val webChannelResponseCol: MongoCollection<ChannelEvent>
 
-    private fun MongoDatabase.collectionExists(collectionName: String): Boolean = listCollectionNames().contains(collectionName)
+    private fun MongoDatabase.collectionExists(collectionName: String): Boolean = listCollectionNames().toList().contains(collectionName)
 
     private val messageQueueTtl = longProperty("tock_web_sse_message_queue_ttl_days", -1)
     private val messageQueueMaxCount = longProperty("tock_web_sse_message_queue_max_count", 50000)
