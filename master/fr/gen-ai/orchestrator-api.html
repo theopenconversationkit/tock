@@ -4592,6 +4592,31 @@ Le descripteur OpenAPI est disponible sur <code>/openapi.json</code>.</p>
 </tr>
 <tr>
 <td><code>POST</code></td>
+<td><code>/vector-store-inspection/index-metadata</code></td>
+<td>Consulte les métadonnées de l’index (PGVector)</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/vector-store-inspection/embedding-model</code></td>
+<td>Ajoute le modèle d’embedding uniquement s’il manque (PGVector)</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/vector-store-inspection/chunk</code></td>
+<td>Consulte les métadonnées d’un chunk et le nombre de chunks de l’index avant une modification (PGVector)</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/vector-store-inspection/delete-chunk</code></td>
+<td>Supprime un chunk par son identifiant physique dans l’index sélectionné (PGVector)</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/vector-store-inspection/delete-index</code></td>
+<td>Supprime un index et ses chunks, en protégeant l’index configuré transmis par le serveur admin (PGVector)</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
 <td><code>/vector-store-inspection/condense</code></td>
 <td>Condense une question et en extrait les mots-clés</td>
 </tr>
@@ -4602,6 +4627,8 @@ Le descripteur OpenAPI est disponible sur <code>/openapi.json</code>.</p>
 </tr>
 </tbody>
 </table>
+<p>Les routes de gestion sont appelées par le serveur admin du Studio, qui détermine le périmètre des index du bot et son index courant.
+Les refus métier de gestion sont renvoyés dans le champ <code>error</code> de la réponse ; le serveur admin les traduit en HTTP <code>404</code> ou <code>409</code> pour le Studio.</p>
 <h3 id="supervision">Supervision</h3>
 <table>
 <thead>
@@ -4953,7 +4980,7 @@ Les codes sont définis dans <code>ErrorCode</code> (<code>gen_ai_orchestrator/m
     <span class="md-icon" title="Dernière mise à jour">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="9 octobre 2026 16:17:42 UTC">9 octobre 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="10 novembre 2026 13:10:16 UTC">10 novembre 2026</span>
   </span>
 
     

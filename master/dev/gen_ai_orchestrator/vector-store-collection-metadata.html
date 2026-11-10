@@ -4172,10 +4172,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#set-once-never-updated" class="md-nav__link">
+  <a href="#creation-metadata-and-manual-model-declarations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Set once, never updated
+        Creation metadata and manual model declarations
       
     </span>
   </a>
@@ -4308,10 +4308,11 @@ below apply to them: their embedding coherence is always considered <em>unknown<
 </tbody>
 </table>
 <p><strong>"Has Tock contract metadata"</strong> means the <code>cmetadata</code> contains a <code>schema_version</code> key. A collection without it — an
-older collection, or one created by another tool — is treated as <em>not</em> Tock-owned for every check below.</p>
-<h2 id="set-once-never-updated">Set once, never updated</h2>
+older collection, or one created by another tool — is not certified as a Tock-created collection.
+Partial metadata is still displayed and an existing <code>embedding_model</code> is used for compatibility checks without <code>schema_version</code>.</p>
+<h2 id="creation-metadata-and-manual-model-declarations">Creation metadata and manual model declarations</h2>
 <p>Contract metadata is written <strong>only when the collection is created</strong>, by the first write of a <code>CREATE_INDEX</code> job. It is
-never updated afterwards and never back-filled onto pre-existing collections:</p>
+preserved on later indexing operations:</p>
 <ul>
 <li>PGVector's constructor calls <code>get_or_create</code>, which sets <code>cmetadata</code> when it creates the collection but never
   overwrites it on later opens.</li>
@@ -4319,6 +4320,12 @@ never updated afterwards and never back-filled onto pre-existing collections:</p
   <code>langchain_pg_collection</code>/<code>langchain_pg_embedding</code> directly with SQL and never goes through the PGVector constructor,
   which would otherwise create an empty, uncertified collection as a side effect.</li>
 </ul>
+<p>Vector store exploration additionally allows an administrator to fill a missing, null or blank <code>embedding_model</code> on an
+existing collection. The server marks this declaration with <code>embedding_model_source: "manual"</code>, allowing subsequent
+corrections from the explorer. An automatic model or a model without this exact marker stays protected.
+No migration infers the provenance of existing values; <code>origin</code> describes index creation, not model declaration.
+Corrections compare the previously read value under a PostgreSQL lock and return a conflict if it changed.
+This preserves all other metadata and does not create <code>schema_version</code>, recalculate vectors or change the bot configuration.</p>
 <p>As a consequence, an empty PGVector collection <em>without</em> contract metadata is considered <strong>missing</strong>: it was almost
 certainly created implicitly by a runtime query rather than by a Tock <code>CREATE_INDEX</code> job.</p>
 <h2 id="normalised-embedding-model">Normalised embedding model</h2>
@@ -4336,7 +4343,7 @@ collection with the <strong>normalised</strong> model of the bot's current embed
 <ul>
 <li>Both known and equal → <strong>MATCH</strong>.</li>
 <li>Both known and different → <strong>MISMATCH</strong>.</li>
-<li>Either side unknown (no model, or a collection with no contract metadata) → <strong>UNKNOWN</strong>.</li>
+<li>Either side unknown (missing or blank model) → <strong>UNKNOWN</strong>.</li>
 </ul>
 <p>The provider is <strong>not</strong> part of the comparison. Only <strong>MISMATCH</strong> is blocking; <strong>UNKNOWN</strong> never blocks — it is the
 deliberately safe default that keeps the studio usable against older collections and OpenSearch.</p>
@@ -4640,7 +4647,7 @@ deliberately safe default that keeps the studio usable against older collections
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 23, 2026 15:00:59 UTC">October 23, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 10, 2026 13:10:16 UTC">November 10, 2026</span>
   </span>
 
     

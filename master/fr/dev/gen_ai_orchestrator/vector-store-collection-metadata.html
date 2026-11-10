@@ -4172,10 +4172,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#ecrites-une-fois-jamais-mises-a-jour" class="md-nav__link">
+  <a href="#ecriture-a-la-creation-et-declaration-manuelle-du-modele" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Écrites une fois, jamais mises à jour
+        Écriture à la création et déclaration manuelle du modèle
       
     </span>
   </a>
@@ -4311,11 +4311,11 @@ suivantes :</p>
 </tbody>
 </table>
 <p><strong>« Possède les métadonnées de contrat Tock »</strong> signifie que <code>cmetadata</code> contient une clé <code>schema_version</code>. Une
-collection qui en est dépourvue — plus ancienne, ou créée par un autre outil — est traitée comme <em>non</em> détenue par Tock
-pour toutes les vérifications ci-dessous.</p>
-<h2 id="ecrites-une-fois-jamais-mises-a-jour">Écrites une fois, jamais mises à jour</h2>
+collection qui en est dépourvue — plus ancienne, ou créée par un autre outil — n’est pas certifiée comme créée par Tock.
+Les métadonnées partielles restent affichées et un <code>embedding_model</code> renseigné sert aux contrôles de compatibilité même sans <code>schema_version</code>.</p>
+<h2 id="ecriture-a-la-creation-et-declaration-manuelle-du-modele">Écriture à la création et déclaration manuelle du modèle</h2>
 <p>Les métadonnées de contrat sont écrites <strong>uniquement à la création de la collection</strong>, par la première écriture d'un job
-<code>CREATE_INDEX</code>. Elles ne sont jamais mises à jour ensuite, ni rétro-appliquées aux collections préexistantes :</p>
+<code>CREATE_INDEX</code>. Elles sont conservées lors des indexations suivantes :</p>
 <ul>
 <li>Le constructeur de PGVector appelle <code>get_or_create</code>, qui renseigne <code>cmetadata</code> lorsqu'il crée la collection mais ne
   l'écrase jamais aux ouvertures ultérieures.</li>
@@ -4323,6 +4323,12 @@ pour toutes les vérifications ci-dessous.</p>
   <code>langchain_pg_collection</code>/<code>langchain_pg_embedding</code> en SQL et ne passe jamais par le constructeur PGVector, qui créerait
   sinon une collection vide et non certifiée en effet de bord.</li>
 </ul>
+<p>L’exploration de la base vectorielle permet aussi à un administrateur de compléter un <code>embedding_model</code> absent, nul ou
+vide sur une collection existante. Cette déclaration est marquée <code>embedding_model_source: "manual"</code> par le serveur
+et reste corrigeable dans l’explorateur. Un modèle renseigné automatiquement ou sans ce marqueur exact reste protégé.
+Aucune migration ne déduit la provenance des valeurs existantes ; <code>origin</code> décrit la création de l’index, pas la saisie du modèle.
+La correction compare la valeur lue avec la valeur courante sous verrou PostgreSQL et renvoie un conflit si elle a changé.
+Les autres métadonnées sont conservées, sans ajout de <code>schema_version</code>, recalcul des vecteurs ni modification de la configuration du bot.</p>
 <p>En conséquence, une collection PGVector vide <em>sans</em> métadonnées de contrat est considérée comme <strong>manquante</strong> : elle a
 très probablement été créée implicitement par une requête d'exécution plutôt que par un job <code>CREATE_INDEX</code> de Tock.</p>
 <h2 id="modele-dembedding-normalise">Modèle d'embedding normalisé</h2>
@@ -4340,7 +4346,7 @@ stocké sur la collection avec le modèle <strong>normalisé</strong> du paramé
 <ul>
 <li>Les deux connus et égaux → <strong>MATCH</strong>.</li>
 <li>Les deux connus et différents → <strong>MISMATCH</strong>.</li>
-<li>L'un des deux inconnu (pas de modèle, ou collection sans métadonnées de contrat) → <strong>UNKNOWN</strong>.</li>
+<li>L'un des deux inconnu (modèle absent ou vide) → <strong>UNKNOWN</strong>.</li>
 </ul>
 <p>Le fournisseur n'entre <strong>pas</strong> dans la comparaison. Seul <strong>MISMATCH</strong> est bloquant ; <strong>UNKNOWN</strong> ne bloque jamais — c'est
 la valeur par défaut délibérément sûre qui garde le studio utilisable face aux anciennes collections et à OpenSearch.</p>
@@ -4644,7 +4650,7 @@ la valeur par défaut délibérément sûre qui garde le studio utilisable face 
     <span class="md-icon" title="Dernière mise à jour">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="23 octobre 2026 15:00:59 UTC">23 octobre 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="10 novembre 2026 13:10:16 UTC">10 novembre 2026</span>
   </span>
 
     
