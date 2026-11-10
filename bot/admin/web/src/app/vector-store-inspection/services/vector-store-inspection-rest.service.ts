@@ -108,6 +108,6 @@ export class VectorStoreInspectionRestService extends VectorStoreInspectionServi
 
   private management<T>(path: string, request: unknown): Observable<T> {
     // Show translated, actionable errors beside the operation instead of the generic global toast.
-    return this.rest.post(this.baseUrl(path), request, (response: T) => response, undefined, true, {}, true);
+    return this.rest.postWithOptions(this.baseUrl(path), request, { parseFunction: (response: T) => response, silent: true });
   }
 }

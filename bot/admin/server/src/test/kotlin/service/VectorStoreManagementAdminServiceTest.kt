@@ -37,6 +37,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -57,6 +58,7 @@ class VectorStoreManagementAdminServiceTest {
     fun setup() {
         mockkObject(RAGService, VectorStoreService, VectorStoreIndexLifecycle)
         every { VectorStoreIndexLifecycle.withLock<Any?>(any(), any(), any()) } answers { thirdArg<() -> Any?>().invoke() }
+        every { VectorStoreIndexLifecycle.withProjectionLock<Any?>(any(), any(), any()) } answers { thirdArg<() -> Any?>().invoke() }
         every { RAGService.getRAGConfiguration("ns", "bot") } returns rag
         every { rag.indexSessionId } returns "current"
         every { rag.enabled } returns false
@@ -64,6 +66,7 @@ class VectorStoreManagementAdminServiceTest {
         every { VectorStoreService.getVectorStoreConfiguration("ns", "bot", true) } returns null
         every { inspection.getCapabilities(any()) } returns VectorStoreCapabilitiesResponse(VectorStoreProvider.PGVector, emptyList(), true, true, true)
         every { knowledgeBase.dao } returns dao
+        every { knowledgeBase.invalidateProjections(any(), any(), any(), any(), any()) } returns Unit
         every { dao.activeJobs("ns", "bot") } returns emptyList()
         every { inspection.getChunk(any()) } returns VectorStoreChunkDescriptionResponse(mapOf("source_type" to "document"), 2)
         every { inspection.deleteChunk(any()) } returns VectorStoreWriteResponse(1)
@@ -95,6 +98,41 @@ class VectorStoreManagementAdminServiceTest {
     }
 
     @Test
+    fun `bot names containing the session separator cannot escape their scope`() {
+        val foreign = "ns_ns_bot_bot_session_2_session_old"
+        assertFailsWith<RestException> { service.metadata("ns", "bot", foreign) }
+        assertFailsWith<RestException> { service.setEmbeddingModel("ns", "bot", VectorStoreEmbeddingModelRequestDTO(foreign, "model")) }
+        assertFailsWith<RestException> { service.deleteChunk("ns", "bot", VectorStoreDeleteChunkRequestDTO(foreign, "row", false), "user") }
+        assertFailsWith<RestException> { service.deleteIndex("ns", "bot", foreign) }
+        verify(exactly = 0) { inspection.getCapabilities(any()) }
+        verify(exactly = 0) { knowledgeBase.invalidateProjections(any(), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `direct deletions invalidate the matching journal before deleting vectors`() {
+        service.deleteChunk("ns", "bot", VectorStoreDeleteChunkRequestDTO(old, "row", false), "user")
+        verifyOrder {
+            VectorStoreIndexLifecycle.withProjectionLock<Any?>("ns", "bot", any())
+            knowledgeBase.invalidateProjections("ns", "bot", old, null, "row")
+            inspection.deleteChunk(any())
+        }
+        service.deleteIndex("ns", "bot", old)
+        verifyOrder {
+            knowledgeBase.invalidateProjections("ns", "bot", old, null, null)
+            inspection.deleteIndex(any())
+        }
+    }
+
+    @Test
+    fun `a failed Mongo invalidation prevents SQL deletion`() {
+        every { knowledgeBase.invalidateProjections(any(), any(), any(), any(), any()) } throws IllegalStateException("Mongo unavailable")
+        assertFailsWith<IllegalStateException> { service.deleteChunk("ns", "bot", VectorStoreDeleteChunkRequestDTO(old, "row", false), "user") }
+        assertFailsWith<IllegalStateException> { service.deleteIndex("ns", "bot", old) }
+        verify(exactly = 0) { inspection.deleteChunk(any()) }
+        verify(exactly = 0) { inspection.deleteIndex(any()) }
+    }
+
+    @Test
     fun `current KB chunk unpublishes the source and returns its synchronization job`() {
         every { inspection.getChunk(any()) } returns VectorStoreChunkDescriptionResponse(mapOf("source_type" to "internal_kb", "kb_entry_id" to "entry"), 1)
         val job = mockk<KnowledgeBaseJobDTO>()
@@ -104,6 +142,8 @@ class VectorStoreManagementAdminServiceTest {
         assertEquals("job", result.jobId)
         verify { knowledgeBase.bulk("ns", "bot", match { it.entryIds == listOf("entry") && it.status == KnowledgeBaseEntryStatus.DRAFT }, "user") }
         verify(exactly = 0) { inspection.deleteChunk(any()) }
+        verify(exactly = 0) { VectorStoreIndexLifecycle.withProjectionLock<Any?>(any(), any(), any()) }
+        verify(exactly = 0) { knowledgeBase.invalidateProjections(any(), any(), any(), any(), any()) }
     }
 
     @Test

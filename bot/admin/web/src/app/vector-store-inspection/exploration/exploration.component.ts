@@ -61,6 +61,7 @@ export class ExplorationComponent implements OnInit, OnDestroy {
   public readonly state = inject(VectorStoreInspectionStateService);
   private documentsRequestId = 0;
   private metadataRequestId = 0;
+  private configurationsRequestId = 0;
   private readonly contextChanged$ = new Subject<void>();
   private readonly dialogs = inject(DialogService);
   private readonly transloco = inject(TranslocoService);
@@ -123,6 +124,7 @@ export class ExplorationComponent implements OnInit, OnDestroy {
     // belong to a namespace/bot pair, so everything held in the feature state
     // has to be dropped and reloaded.
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs) => {
+      const requestId = ++this.configurationsRequestId;
       this.configurations = confs;
 
       const botChanged = this.state.applyBotContext(this.botKey(confs));
@@ -134,6 +136,10 @@ export class ExplorationComponent implements OnInit, OnDestroy {
         this.managementError = null;
         this.managementMessage = null;
         this.pendingJobId = null;
+        this.resetFilters();
+        this.stats = null;
+        this.anomalies = [];
+        this.documents = [];
       }
       if (!confs.length) {
         this.loading = false;
@@ -144,39 +150,41 @@ export class ExplorationComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$), takeUntil(this.contextChanged$))
         .subscribe({
           next: (capabilities) => {
+            if (requestId !== this.configurationsRequestId) return;
             this.managementEnabled = capabilities.provider === VectorDbProvider.PGVector;
-            this.fetchMetadata();
+            this.loadExploration();
           },
           error: () => {
+            if (requestId !== this.configurationsRequestId) return;
             this.managementEnabled = false;
+            this.loadExploration();
           }
         });
-      if (botChanged) {
-        this.resetFilters();
-        this.stats = null;
-        this.anomalies = [];
-        this.documents = [];
-        this.fetchIndexes();
-      } else if (this.currentIndex) {
-        // Coming back to the view with the same bot: reload the list so an index created
-        // meanwhile (e.g. from the knowledge base) is visible, then reconcile the selection.
-        // Selection kept: currentIndex$ sees no name change and does not refetch, so refresh the
-        // page here. Selection changed: currentIndex$ drives the reload. Never both, so no double fetch.
-        this.loading = true;
-        this.state
-          .refreshIndexes()
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: (selectionKept) => {
-              if (selectionKept) this.fetchDocuments();
-              else if (!this.currentIndex) this.loading = false;
-            },
-            error: () => (this.loading = false)
-          });
-      } else {
-        this.fetchIndexes();
-      }
     });
+  }
+
+  private loadExploration(): void {
+    if (this.currentIndex) {
+      // Coming back to the view with the same bot: reload the list so an index created
+      // meanwhile (e.g. from the knowledge base) is visible, then reconcile the selection.
+      // Selection kept: currentIndex$ sees no name change and does not refetch, so refresh the
+      // page here. Selection changed: currentIndex$ drives the reload. Never both, so no double fetch.
+      this.loading = true;
+      this.state
+        .refreshIndexes()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (selectionKept) => {
+            if (selectionKept) {
+              this.fetchDocuments();
+              this.fetchMetadata();
+            } else if (!this.currentIndex) this.loading = false;
+          },
+          error: () => (this.loading = false)
+        });
+    } else {
+      this.fetchIndexes();
+    }
   }
 
   fetchIndexes(): void {

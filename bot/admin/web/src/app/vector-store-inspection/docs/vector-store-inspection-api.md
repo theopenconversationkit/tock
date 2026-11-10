@@ -10,7 +10,7 @@ justification des choix, ce document-ci ne décrit que les interfaces.
 Les actions de gestion ajoutées à l’exploration sont réservées aux
 administrateurs et à PGVector.
 
-### Actions de gestion
+## Actions de gestion
 
 Les routes admin suivantes utilisent le préfixe `/gen-ai/bots/:botId/vector-store`
 et des corps JSON en `camelCase` :
@@ -46,6 +46,14 @@ Le nom de l’index courant est résolu depuis la configuration RAG, indépendam
 des métadonnées des chunks. Les changements de configuration et les mutations
 partagent un verrou de cycle de vie par bot ; un index en cours de création par
 un job de la knowledge base ne peut pas être supprimé.
+
+Le contrôle du périmètre exige un suffixe de session non vide, sans second séparateur de session :
+un bot `faq-session-2` ne doit pas être confondu avec le bot `faq`. La liste des index utilise la même règle.
+Les suppressions directes prennent d’abord le verrou du worker KB, puis celui du cycle de vie.
+Elles invalident les projections Mongo de la cible avant la suppression SQL, sans modifier les fiches sources.
+Si la suppression SQL échoue, une vérification peut restaurer le suivi des lignes encore présentes.
+Les verrous ne sont pas réentrants ; l’ordre est worker KB, cycle de vie, puis mutations KB.
+La dépublication conserve le parcours existant et peut être demandée pendant une synchronisation.
 
 ---
 

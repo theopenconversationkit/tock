@@ -26,7 +26,7 @@ describe('RestService silent POST errors', () => {
   it('preserves a conflict response for the caller without a generic global error', () => {
     const globalError = spyOn(service.errorEmitter, 'emit');
     let received: HttpErrorResponse;
-    service.post('/test', {}, undefined, undefined, true, {}, true).subscribe({ error: (error) => (received = error) });
+    service.postWithOptions('/test', {}, { silent: true }).subscribe({ error: (error) => (received = error) });
     http
       .expectOne(service.url + '/test')
       .flush({ errors: [{ message: 'vsi.management.errors.confirmation_changed' }] }, { status: 409, statusText: 'Conflict' });
@@ -42,8 +42,19 @@ describe('RestService silent POST errors', () => {
     expect(globalError).toHaveBeenCalled();
   });
 
+  it('preserves the URL, parameters and response parser of existing positional calls', () => {
+    let result: number;
+    service
+      .post('/legacy', { value: 'test' }, (response) => response.count, '/custom', true, { page: 2 })
+      .subscribe((value) => (result = value));
+    const request = http.expectOne('/custom/legacy?page=2');
+    expect(JSON.parse(request.request.body)).toEqual({ value: 'test' });
+    request.flush({ count: 3 });
+    expect(result).toBe(3);
+  });
+
   it('still redirects to login on an authentication error', () => {
-    const subscription = service.post('/test', {}, undefined, undefined, true, {}, true).subscribe();
+    const subscription = service.postWithOptions('/test', {}, { silent: true }).subscribe();
     http.expectOne(service.url + '/test').flush({}, { status: 401, statusText: 'Unauthorized' });
     expect(router.navigateByUrl).toHaveBeenCalledWith('/login');
     subscription.unsubscribe();

@@ -26,18 +26,23 @@ The metadata is stored in the PGVector `langchain_pg_collection.cmetadata` JSON 
 | `embedding_model`    | string  | no       | Normalised embedding model name, omitted when the model is unknown.            |
 
 **"Has Tock contract metadata"** means the `cmetadata` contains a `schema_version` key. A collection without it — an
-older collection, or one created by another tool — is treated as *not* Tock-owned for every check below.
+older collection, or one created by another tool — is not certified as a Tock-created collection.
+Partial metadata is still displayed and an existing `embedding_model` is used for compatibility checks without `schema_version`.
 
 ## Set once, never updated
 
 Contract metadata is written **only when the collection is created**, by the first write of a `CREATE_INDEX` job. It is
-never updated afterwards and never back-filled onto pre-existing collections:
+preserved on later indexing operations:
 
 - PGVector's constructor calls `get_or_create`, which sets `cmetadata` when it creates the collection but never
   overwrites it on later opens.
 - Any operation that must *not* create a collection (existence and state probes) reads
   `langchain_pg_collection`/`langchain_pg_embedding` directly with SQL and never goes through the PGVector constructor,
   which would otherwise create an empty, uncertified collection as a side effect.
+
+Vector store exploration additionally allows an administrator to fill a missing, null or blank `embedding_model` on an
+existing collection. A defined model cannot be overwritten. This preserves all other metadata and does not create
+`schema_version`, recalculate vectors or change the bot configuration.
 
 As a consequence, an empty PGVector collection *without* contract metadata is considered **missing**: it was almost
 certainly created implicitly by a runtime query rather than by a Tock `CREATE_INDEX` job.
@@ -59,7 +64,7 @@ collection with the **normalised** model of the bot's current embedding setting:
 
 - Both known and equal → **MATCH**.
 - Both known and different → **MISMATCH**.
-- Either side unknown (no model, or a collection with no contract metadata) → **UNKNOWN**.
+- Either side unknown (missing or blank model) → **UNKNOWN**.
 
 The provider is **not** part of the comparison. Only **MISMATCH** is blocking; **UNKNOWN** never blocks — it is the
 deliberately safe default that keeps the studio usable against older collections and OpenSearch.

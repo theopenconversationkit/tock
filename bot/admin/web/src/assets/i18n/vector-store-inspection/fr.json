@@ -36,7 +36,7 @@
       "invalid_model": "Renseignez un nom de modèle de 1 à 300 caractères.",
       "knowledge_base_chunk": "Ce chunk nécessite la dépublication de sa fiche source.",
       "knowledge_base_entry_missing": "La fiche source de ce chunk n’a pas pu être identifiée.",
-      "index_busy": "Cet index est en cours de création. Attendez la fin de l’opération avant de le supprimer.",
+      "index_busy": "Une opération sur la base vectorielle est en cours. Réessayez dans quelques instants.",
       "unpublish_failed": "La fiche est dépubliée, mais la synchronisation n’a pas pu retirer tout son contenu. Consultez la knowledge base pour corriger l’erreur et relancer la synchronisation.",
       "job_status_unavailable": "Le résultat de la synchronisation n’a pas pu être récupéré. Vous pouvez vérifier à nouveau son état.",
       "operation_failed": "L’opération n’a pas pu être terminée. Actualisez les informations avant de réessayer."

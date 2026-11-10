@@ -60,7 +60,7 @@ class VectorStoreManagementAdminService(
     ): Target {
         val setting = VectorStoreService.getVectorStoreConfiguration(namespace, botId, enabled = true)?.setting
         val prefix = VectorStoreIndexLifecycle.indexName(namespace, botId, "", setting)
-        if (indexName.isBlank() || !indexName.startsWith(prefix) || indexName == prefix) fail("index_outside_bot")
+        if (!VectorStoreIndexLifecycle.belongsToBot(indexName, prefix)) fail("index_outside_bot")
         // Resolve the environment fallback too: a null setting does not necessarily mean PGVector.
         if (inspection
                 .getCapabilities(
@@ -113,8 +113,8 @@ class VectorStoreManagementAdminService(
         botId: String,
         request: VectorStoreDeleteChunkRequestDTO,
         author: String,
-    ): VectorStoreMutationDTO =
-        VectorStoreIndexLifecycle.withLock(namespace, botId) {
+    ): VectorStoreMutationDTO {
+        val mutation = {
             val target = target(namespace, botId, request.indexName)
             val current = request.indexName == target.current
             if (current != request.expectedCurrent) fail("confirmation_changed")
@@ -130,18 +130,27 @@ class VectorStoreManagementAdminService(
                 val job = knowledgeBase.bulk(namespace, botId, KnowledgeBaseBulkStatus(listOf(entryId), KnowledgeBaseEntryStatus.DRAFT), author)
                 VectorStoreMutationDTO(jobId = job.id)
             } else {
+                knowledgeBase.invalidateProjections(namespace, botId, request.indexName, target.setting, request.rowId)
                 val result = inspection.deleteChunk(VectorStoreDeleteChunkRequest(target.setting, target.prefix, request.indexName, request.rowId, current, request.allowEmptyIndex))
                 checkError(result.error)
                 VectorStoreMutationDTO(deletedCount = result.deletedCount)
             }
         }
+        // Unpublication only queues the existing KB operation and remains available while indexing runs.
+        // The authoritative origin check above prevents this path from performing a direct deletion.
+        return if (request.unpublishKnowledgeBase) {
+            VectorStoreIndexLifecycle.withLock(namespace, botId, mutation)
+        } else {
+            VectorStoreIndexLifecycle.withProjectionLock(namespace, botId, mutation)
+        }
+    }
 
     fun deleteIndex(
         namespace: String,
         botId: String,
         indexName: String,
     ): VectorStoreMutationDTO =
-        VectorStoreIndexLifecycle.withLock(namespace, botId) {
+        VectorStoreIndexLifecycle.withProjectionLock(namespace, botId) {
             val target = target(namespace, botId, indexName)
             if (indexName == target.current) fail("current_index_protected")
             // A CREATE_INDEX job may still be filling an index before activating it.
@@ -153,6 +162,7 @@ class VectorStoreManagementAdminService(
             ) {
                 fail("index_busy")
             }
+            knowledgeBase.invalidateProjections(namespace, botId, indexName, target.setting)
             val result = inspection.deleteIndex(VectorStoreDeleteIndexRequest(target.setting, target.prefix, indexName, target.current))
             checkError(result.error)
             VectorStoreMutationDTO(deletedCount = result.deletedCount)

@@ -36,7 +36,7 @@
       "invalid_model": "Enter a model name between 1 and 300 characters.",
       "knowledge_base_chunk": "This chunk requires unpublishing its source entry.",
       "knowledge_base_entry_missing": "The source entry for this chunk could not be identified.",
-      "index_busy": "This index is being created. Wait until creation finishes before deleting it.",
+      "index_busy": "A vector store operation is in progress. Try again shortly.",
       "unpublish_failed": "The entry is unpublished, but synchronization could not remove all its content. Open the knowledge base to resolve the error and retry synchronization.",
       "job_status_unavailable": "The synchronization result could not be retrieved. You can check its status again.",
       "operation_failed": "The operation could not be completed. Refresh the information before retrying."

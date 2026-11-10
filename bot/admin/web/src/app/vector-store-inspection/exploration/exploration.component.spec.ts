@@ -175,6 +175,58 @@ describe('ExplorationComponent management', () => {
     expect(component.indexMetadata).toBeNull();
   });
 
+  it('loads capabilities and metadata once on entry, and reuses capabilities on configuration emissions', () => {
+    component.currentIndex = null;
+    component.managementEnabled = false;
+    component.ngOnInit();
+    expect(inspection.getCapabilities).toHaveBeenCalledTimes(1);
+    expect(inspection.getIndexMetadata).toHaveBeenCalledTimes(1);
+    (TestBed.inject(BotConfigurationService).configurations as BehaviorSubject<any>).next([{ namespace: 'ns', botId: 'bot' }]);
+    expect(inspection.getCapabilities).toHaveBeenCalledTimes(1);
+    expect(inspection.getIndexMetadata).toHaveBeenCalledTimes(2);
+  });
+
+  it('waits for capabilities before fetching index metadata', () => {
+    const capabilities = new Subject<any>();
+    inspection.getCapabilities.and.returnValue(capabilities);
+    component.currentIndex = null;
+    component.managementEnabled = false;
+    component.ngOnInit();
+    expect(inspection.getIndexMetadata).not.toHaveBeenCalled();
+    (TestBed.inject(BotConfigurationService).configurations as BehaviorSubject<any>).next([{ namespace: 'ns', botId: 'bot' }]);
+    capabilities.next({ provider: VectorDbProvider.PGVector });
+    capabilities.complete();
+    expect(inspection.getCapabilities).toHaveBeenCalledTimes(1);
+    expect(inspection.getIndexes).toHaveBeenCalledTimes(1);
+    expect(inspection.getIndexMetadata).toHaveBeenCalledTimes(1);
+  });
+
+  it('restores management from cached capabilities when returning to exploration', () => {
+    component.currentIndex = null;
+    component.ngOnInit();
+    component.ngOnDestroy();
+    inspection.getIndexMetadata.calls.reset();
+    component = TestBed.createComponent(ExplorationComponent).componentInstance;
+    component.ngOnInit();
+    expect(component.managementEnabled).toBeTrue();
+    expect(inspection.getCapabilities).toHaveBeenCalledTimes(1);
+    expect(inspection.getIndexMetadata).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not load a previous bot after a late capabilities response', () => {
+    const previous = new Subject<any>();
+    inspection.getCapabilities.and.returnValues(previous, of({ provider: VectorDbProvider.OpenSearch } as any));
+    component.currentIndex = null;
+    component.managementEnabled = false;
+    component.ngOnInit();
+    (TestBed.inject(BotConfigurationService).configurations as BehaviorSubject<any>).next([{ namespace: 'ns', botId: 'other' }]);
+    previous.next({ provider: VectorDbProvider.PGVector });
+    previous.complete();
+    expect(component.managementEnabled).toBeFalse();
+    expect(inspection.getIndexes).toHaveBeenCalledTimes(1);
+    expect(inspection.getIndexMetadata).not.toHaveBeenCalled();
+  });
+
   it('never offers overwriting a nonempty model, including malformed stored values', () => {
     component.indexMetadata = {
       metadata: { embedding_model: 'existing' },

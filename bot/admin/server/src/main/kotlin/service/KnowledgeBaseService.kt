@@ -77,6 +77,16 @@ class KnowledgeBaseService(
 
         fun hash(value: String): String = MessageDigest.getInstance("SHA-256").digest(value.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
 
+        private fun targetId(
+            namespace: String,
+            botId: String,
+            indexName: String,
+            setting: VectorStoreSetting?,
+        ): String {
+            val identity = mapper.writeValueAsString(BotHistoryService.snapshot(setting))
+            return hash("$namespace/$botId/$indexName/$identity")
+        }
+
         fun normalizeTitle(value: String): String = value.trim().lowercase(Locale.ROOT).replace(Regex("\\s+"), " ")
 
         fun contentHash(payload: KnowledgeBaseEntryPayload): String {
@@ -156,9 +166,8 @@ class KnowledgeBaseService(
         val setting = VectorStoreService.getVectorStoreConfiguration(namespace, botId, enabled = true)?.setting
         val (_, name) = VectorStoreUtils.getVectorStoreElements(namespace, botId, indexSession, rag.maxDocumentsRetrieved, rag.documentSearchType, setting)
         val (_, prefix) = VectorStoreUtils.getVectorStoreElements(namespace, botId, "", rag.maxDocumentsRetrieved, rag.documentSearchType, setting)
-        val identity = mapper.writeValueAsString(BotHistoryService.snapshot(setting))
         return KnowledgeBaseTarget(
-            hash("$namespace/$botId/$name/$identity"),
+            targetId(namespace, botId, name, setting),
             namespace,
             botId,
             indexSession,
@@ -169,6 +178,24 @@ class KnowledgeBaseService(
             // Normalized embedding model (single source of truth); null when unknown (e.g. Azure without a model).
             EmbeddingModelIdentity.normalized(rag.emSetting),
         )
+    }
+
+    /**
+     * Caller holds the worker and lifecycle locks. Invalidate before the SQL deletion: if either store fails,
+     * Mongo must not certify a row that may have disappeared. Verification can restore a still-existing row.
+     * No source entry or projection belonging to another target is changed, and no synchronization is queued.
+     */
+    fun invalidateProjections(
+        namespace: String,
+        botId: String,
+        indexName: String,
+        setting: VectorStoreSetting?,
+        rowId: String? = null,
+    ) {
+        dao
+            .projections(namespace, botId, targetId(namespace, botId, indexName, setting))
+            .filter { rowId == null || rowId in it.rowIds }
+            .forEach { dao.deleteProjection(it._id) }
     }
 
     /**

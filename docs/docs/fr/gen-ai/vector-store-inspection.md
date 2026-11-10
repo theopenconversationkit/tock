@@ -48,6 +48,7 @@ Sélectionner un index ici ne change pas l’index configuré pour le bot.
 * **Supprimer un chunk** : confirmer la suppression dans l’index sélectionné. Pour une fiche de la knowledge base dans
   l’index courant du bot, l’action dépublie la fiche et programme le retrait via la synchronisation ; la fiche reste en brouillon.
   Dans un ancien index, seule cette copie est supprimée et la fiche source reste inchangée.
+  Son suivi d’indexation est actualisé : si cet index redevient courant, une publication pourra recréer le contenu supprimé.
   Une nouvelle ingestion peut recréer les chunks de documents importés.
 * **Supprimer un index** : confirmer la suppression de l’index et de tous ses chunks. L’index configuré est protégé même
   si le RAG est désactivé ou si l’index est vide. Un index en cours de création par la knowledge base reste également protégé jusqu’à la fin de la tâche.
@@ -59,6 +60,7 @@ ou utiliser un outil d’ingestion capable de cibler l’ancienne collection. Aj
 
 Après suppression, les compteurs et les documents sont actualisés en conservant l’affichage de l’index sélectionné s’il existe toujours.
 Pour une dépublication, l’écran indique la progression de la synchronisation ou son échec.
+Une suppression directe peut être temporairement indisponible pendant une synchronisation de la knowledge base ; réessayer après sa fin.
 Le filtre textuel recherche dans le titre, l’identifiant du document affiché sous le titre ou le contenu, avec une correspondance
 partielle et sans distinction de majuscules. Un document correspondant conserve tous ses chunks dans l’index sélectionné.
 

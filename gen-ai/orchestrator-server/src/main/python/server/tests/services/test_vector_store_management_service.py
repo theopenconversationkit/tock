@@ -30,6 +30,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from gen_ai_orchestrator.routers.requests.vector_store_inspection_requests import (
     VectorStoreInspectionDocumentsRequest,
+    VectorStoreInspectionIndexesRequest,
 )
 from gen_ai_orchestrator.routers.requests.vector_store_management_requests import (
     ChunkTargetRequest,
@@ -54,14 +55,22 @@ def target(**kwargs):
     return dict(index_name=INDEX, index_name_prefix=PREFIX, **kwargs)
 
 
-def test_scope_is_checked_before_opening_a_store():
+@pytest.mark.parametrize('index_name', ['another_bot', PREFIX, PREFIX + '2_session_old'])
+def test_scope_is_checked_before_opening_a_store(index_name):
     with patch.object(service, '_pg_factory') as factory:
         with pytest.raises(HTTPException) as error:
             service._factory(
-                IndexTargetRequest(index_name='another_bot', index_name_prefix=PREFIX)
+                IndexTargetRequest(index_name=index_name, index_name_prefix=PREFIX)
             )
         assert error.value.status_code == 403
         factory.assert_not_called()
+
+
+@pytest.mark.parametrize('separator', ['_', '-'])
+def test_scope_accepts_only_the_requested_bot_session(separator):
+    prefix = f'ns{separator}x{separator}bot{separator}faq{separator}session{separator}'
+    assert inspection._is_allowed_index(prefix + '123_abc', prefix)
+    assert not inspection._is_allowed_index(prefix + f'2{separator}session{separator}123', prefix)
 
 
 @pytest.mark.parametrize('value', ['', '   ', 'x' * 301])
@@ -134,6 +143,18 @@ async def database():
         async with bootstrap.begin() as connection:
             await connection.execute(text(f'DROP SCHEMA {schema} CASCADE'))
         await bootstrap.dispose()
+
+
+@pytest.mark.asyncio
+async def test_index_list_excludes_foreign_bots_sharing_the_prefix(database):
+    async with database.begin() as connection:
+        await connection.execute(
+            text('INSERT INTO langchain_pg_collection VALUES (:uuid, :name, NULL)'),
+            {'uuid': uuid4(), 'name': PREFIX + '2_session_old'},
+        )
+    with patch.object(inspection, '_pg_factory', return_value=SimpleNamespace(pool=SimpleNamespace(async_engine=database))):
+        response = await inspection.get_indexes(VectorStoreInspectionIndexesRequest(index_name_prefix=PREFIX))
+    assert {index.index_name for index in response.indexes} == {INDEX, OTHER}
 
 
 @pytest.mark.asyncio

@@ -58,6 +58,9 @@ tool capable of targeting the old collection. Adding the embedding model alone d
 
 After deletion, counts and documents refresh while the surviving selected index remains displayed.
 For Knowledge Base unpublication, the screen reports synchronization progress or failure.
+Deleting an old Knowledge Base copy also invalidates its indexing record, so publishing can recreate the missing content
+if that index becomes current again. Direct deletions may be temporarily unavailable during Knowledge Base synchronization;
+retry when it finishes.
 The text filter matches the title, document identifier displayed below the title, or content, using a partial,
 case-insensitive match. A matching document retains all its chunks in the selected index.
 
