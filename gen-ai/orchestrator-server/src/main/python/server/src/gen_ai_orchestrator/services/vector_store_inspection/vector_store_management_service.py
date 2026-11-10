@@ -75,11 +75,19 @@ async def set_embedding_model(
         metadata = dict(collection['cmetadata'] or {})
         existing = metadata.get('embedding_model')
         # Only null/missing/blank strings are absent. Malformed non-string values must not be overwritten.
-        if existing is not None and (not isinstance(existing, str) or existing.strip()):
+        if existing is not None and (
+            not isinstance(existing, str)
+            or (existing.strip() and metadata.get('embedding_model_source') != 'manual')
+        ):
             return IndexMetadataResponse(
                 metadata=metadata, error='model_already_defined'
             )
+        # Compare under the same lock: a stale add/edit must not overwrite a newer declaration.
+        current = existing if isinstance(existing, str) and existing.strip() else None
+        if request.expected_embedding_model != current:
+            return IndexMetadataResponse(metadata=metadata, error='model_changed')
         metadata['embedding_model'] = request.embedding_model
+        metadata['embedding_model_source'] = 'manual'
         await connection.execute(
             text(
                 'UPDATE langchain_pg_collection SET cmetadata = CAST(:metadata AS json) WHERE uuid = :uuid'

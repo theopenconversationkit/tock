@@ -92,7 +92,10 @@ class VectorStoreManagementAdminService(
             val target = target(namespace, botId, request.indexName)
             val model = request.embeddingModel.trim()
             if (model.isEmpty() || model.length > 300) fail("invalid_model")
-            val result = inspection.setEmbeddingModel(VectorStoreSetEmbeddingModelRequest(target.setting, target.prefix, request.indexName, model))
+            val result =
+                inspection.setEmbeddingModel(
+                    VectorStoreSetEmbeddingModelRequest(target.setting, target.prefix, request.indexName, model, request.expectedEmbeddingModel),
+                )
             checkError(result.error)
             metadataDTO(namespace, botId, request.indexName == target.current, result.metadata)
         }

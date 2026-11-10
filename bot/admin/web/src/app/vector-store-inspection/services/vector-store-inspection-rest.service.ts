@@ -90,8 +90,8 @@ export class VectorStoreInspectionRestService extends VectorStoreInspectionServi
     return this.management('/index-metadata', { indexName });
   }
 
-  setEmbeddingModel(indexName: string, embeddingModel: string): Observable<IndexMetadata> {
-    return this.management('/embedding-model', { indexName, embeddingModel });
+  setEmbeddingModel(indexName: string, embeddingModel: string, expectedEmbeddingModel: string | null = null): Observable<IndexMetadata> {
+    return this.management('/embedding-model', { indexName, embeddingModel, expectedEmbeddingModel });
   }
 
   deleteChunk(request: DeleteChunkRequest): Observable<VectorStoreMutation> {

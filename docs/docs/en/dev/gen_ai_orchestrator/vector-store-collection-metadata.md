@@ -29,7 +29,7 @@ The metadata is stored in the PGVector `langchain_pg_collection.cmetadata` JSON 
 older collection, or one created by another tool — is not certified as a Tock-created collection.
 Partial metadata is still displayed and an existing `embedding_model` is used for compatibility checks without `schema_version`.
 
-## Set once, never updated
+## Creation metadata and manual model declarations
 
 Contract metadata is written **only when the collection is created**, by the first write of a `CREATE_INDEX` job. It is
 preserved on later indexing operations:
@@ -41,8 +41,11 @@ preserved on later indexing operations:
   which would otherwise create an empty, uncertified collection as a side effect.
 
 Vector store exploration additionally allows an administrator to fill a missing, null or blank `embedding_model` on an
-existing collection. A defined model cannot be overwritten. This preserves all other metadata and does not create
-`schema_version`, recalculate vectors or change the bot configuration.
+existing collection. The server marks this declaration with `embedding_model_source: "manual"`, allowing subsequent
+corrections from the explorer. An automatic model or a model without this exact marker stays protected.
+No migration infers the provenance of existing values; `origin` describes index creation, not model declaration.
+Corrections compare the previously read value under a PostgreSQL lock and return a conflict if it changed.
+This preserves all other metadata and does not create `schema_version`, recalculate vectors or change the bot configuration.
 
 As a consequence, an empty PGVector collection *without* contract metadata is considered **missing**: it was almost
 certainly created implicitly by a runtime query rather than by a Tock `CREATE_INDEX` job.

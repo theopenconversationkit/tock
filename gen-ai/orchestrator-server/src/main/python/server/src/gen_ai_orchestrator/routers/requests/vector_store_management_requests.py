@@ -31,6 +31,8 @@ class IndexTargetRequest(BaseModel):
 
 class SetEmbeddingModelRequest(IndexTargetRequest):
     embedding_model: str = Field(min_length=1, max_length=300)
+    # Null means adding a missing model; edits must carry the exact value read.
+    expected_embedding_model: Optional[str] = None
 
     @field_validator('embedding_model')
     @classmethod

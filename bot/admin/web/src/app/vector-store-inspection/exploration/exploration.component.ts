@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Subject, exhaustMap, finalize, take, takeUntil, takeWhile, timer } from 'rxjs';
 import { TranslocoService } from '@jsverse/transloco';
 import { DialogService } from '../../core-nlp/dialog.service';
@@ -55,6 +55,9 @@ export class ExplorationComponent implements OnInit, OnDestroy {
   pagination: Pagination = { start: 0, end: 0, size: 25, total: 0 };
 
   @ViewChildren(NbTooltipDirective) tooltips: QueryList<NbTooltipDirective>;
+  @ViewChild('embeddingModelInput') set embeddingModelInput(input: ElementRef<HTMLInputElement> | undefined) {
+    input?.nativeElement.focus();
+  }
 
   private readonly botConfiguration = inject(BotConfigurationService);
   private readonly inspection = inject(VectorStoreInspectionService);
@@ -63,6 +66,7 @@ export class ExplorationComponent implements OnInit, OnDestroy {
   private metadataRequestId = 0;
   private configurationsRequestId = 0;
   private readonly contextChanged$ = new Subject<void>();
+  private readonly indexChanged$ = new Subject<void>();
   private readonly dialogs = inject(DialogService);
   private readonly transloco = inject(TranslocoService);
 
@@ -71,6 +75,7 @@ export class ExplorationComponent implements OnInit, OnDestroy {
   metadataLoading = false;
   indexMetadata: IndexMetadata | null = null;
   embeddingModel = '';
+  editingEmbeddingModel: string | null = null;
   managementError: string | null = null;
   metadataError: string | null = null;
   managementMessage: string | null = null;
@@ -86,6 +91,16 @@ export class ExplorationComponent implements OnInit, OnDestroy {
     return !!this.indexMetadata && Object.keys(this.indexMetadata.metadata).length > 0;
   }
 
+  get canEditEmbeddingModel(): boolean {
+    const metadata = this.indexMetadata?.metadata;
+    return (
+      this.managementEnabled &&
+      metadata?.['embedding_model_source'] === 'manual' &&
+      typeof metadata['embedding_model'] === 'string' &&
+      !!metadata['embedding_model'].trim()
+    );
+  }
+
   ngOnInit(): void {
     // Read the list from the stream rather than from the loadIndexes result:
     // the state service pushes the list before the preselected index, and
@@ -99,10 +114,12 @@ export class ExplorationComponent implements OnInit, OnDestroy {
       this.currentIndex = index;
 
       if (changed) {
+        this.indexChanged$.next();
         this.documentsRequestId++;
         this.metadataRequestId++;
         this.indexMetadata = null;
         this.embeddingModel = '';
+        this.editingEmbeddingModel = null;
         this.stats = null;
         this.documents = [];
         this.anomalies = [];
@@ -287,42 +304,81 @@ export class ExplorationComponent implements OnInit, OnDestroy {
       });
   }
 
-  saveEmbeddingModel(): void {
-    if (this.managementBusy || !this.currentIndex || !this.canSetEmbeddingModel || !this.embeddingModel.trim()) return;
+  editEmbeddingModel(): void {
+    if (this.managementBusy || !this.canEditEmbeddingModel) return;
+    this.hideTooltips();
+    this.editingEmbeddingModel = this.indexMetadata.metadata['embedding_model'] as string;
+    this.embeddingModel = this.editingEmbeddingModel;
+  }
+
+  cancelEmbeddingModelEdit(): void {
+    if (this.managementBusy) return;
+    this.editingEmbeddingModel = null;
+    this.embeddingModel = '';
+  }
+
+  saveEmbeddingModel(event?: Event): void {
+    if (
+      (event instanceof KeyboardEvent && event.isComposing) ||
+      this.managementBusy ||
+      !this.managementEnabled ||
+      !this.currentIndex ||
+      !this.embeddingModel.trim() ||
+      this.embeddingModel.trim().length > 300
+    )
+      return;
     const indexName = this.currentIndex.indexName;
     const model = this.embeddingModel.trim();
+    if (this.editingEmbeddingModel !== null) {
+      if (!this.canEditEmbeddingModel) return;
+      if (model === this.editingEmbeddingModel) {
+        this.cancelEmbeddingModelEdit();
+        return;
+      }
+      this.persistEmbeddingModel(indexName, model, this.editingEmbeddingModel);
+      return;
+    }
+    if (!this.canSetEmbeddingModel) return;
     this.confirm(
       'vsi.management.add_model',
       this.transloco.translate('vsi.management.confirm_model', { model, index: indexName }),
-      () => {
-        this.managementBusy = true;
-        this.managementError = null;
-        this.managementMessage = null;
-        this.inspection
-          .setEmbeddingModel(indexName, model)
-          .pipe(
-            takeUntil(this.destroy$),
-            takeUntil(this.contextChanged$),
-            finalize(() => {
-              this.managementBusy = false;
-            })
-          )
-          .subscribe({
-            next: (metadata) => {
-              this.metadataRequestId++;
-              this.metadataLoading = false;
-              this.indexMetadata = metadata;
-              this.embeddingModel = '';
-              this.managementMessage = 'vsi.management.model_saved';
-            },
-            error: (error) => {
-              this.managementError = this.errorKey(error);
-              this.fetchMetadata();
-            }
-          });
-      },
+      () => this.persistEmbeddingModel(indexName, model, null),
       'primary'
     );
+  }
+
+  private persistEmbeddingModel(indexName: string, model: string, expectedModel: string | null): void {
+    this.managementBusy = true;
+    this.managementError = null;
+    this.managementMessage = null;
+    this.inspection
+      .setEmbeddingModel(indexName, model, expectedModel)
+      .pipe(
+        takeUntil(this.destroy$),
+        takeUntil(this.contextChanged$),
+        takeUntil(this.indexChanged$),
+        finalize(() => {
+          this.managementBusy = false;
+        })
+      )
+      .subscribe({
+        next: (metadata) => {
+          this.metadataRequestId++;
+          this.metadataLoading = false;
+          this.indexMetadata = metadata;
+          this.embeddingModel = '';
+          this.editingEmbeddingModel = null;
+          this.managementMessage = 'vsi.management.model_saved';
+        },
+        error: (error) => {
+          this.managementError = this.errorKey(error);
+          if (['vsi.management.errors.model_changed', 'vsi.management.errors.model_already_defined'].includes(this.managementError)) {
+            this.editingEmbeddingModel = null;
+            this.embeddingModel = '';
+          }
+          this.fetchMetadata();
+        }
+      });
   }
 
   deleteChunk(chunk: InspectedChunk, document: InspectedDocument): void {
@@ -536,5 +592,6 @@ export class ExplorationComponent implements OnInit, OnDestroy {
     this.destroy$.next(null);
     this.destroy$.complete();
     this.contextChanged$.complete();
+    this.indexChanged$.complete();
   }
 }

@@ -8,7 +8,7 @@
     "use_current_model": "Proposer le modèle du bot : {{model}}",
     "add_model": "Ajouter le modèle",
     "model_saved": "Le modèle d’embedding a été enregistré.",
-    "confirm_model": "Ajouter le modèle « {{model}} » aux métadonnées de l’index {{index}} ? Cette information ne pourra plus être modifiée depuis l’explorateur.",
+    "confirm_model": "Ajouter le modèle « {{model}} » aux métadonnées de l’index {{index}} ? Renseignez le modèle qui a réellement produit les vecteurs. Aucun vecteur ne sera recalculé.",
     "model_mismatch": "Le modèle déclaré pour cet index diffère de celui du bot ({{model}}). Les recherches peuvent être inadaptées et certaines opérations de la knowledge base peuvent être bloquées. Vérifiez la configuration RAG ; elle n’a pas été modifiée.",
     "delete_chunk": "Supprimer le chunk",
     "unpublish_chunk": "Dépublier la fiche et retirer son contenu du bot",
@@ -28,7 +28,7 @@
     "errors": {
       "index_not_found": "Cet index n’existe plus. Actualisez la liste.",
       "chunk_not_found": "Ce chunk n’existe plus dans cet index.",
-      "model_already_defined": "Un modèle est déjà renseigné sur cet index. Il ne peut pas être écrasé.",
+      "model_already_defined": "Le modèle de cet index est automatique ou d’origine inconnue. Il ne peut pas être modifié.",
       "current_index_protected": "Cet index est maintenant configuré pour le bot et ne peut pas être supprimé.",
       "confirmation_changed": "Le contenu ou le rôle de l’index a changé. Vérifiez les informations actualisées et confirmez à nouveau l’action.",
       "index_outside_bot": "Cet index n’appartient pas au bot sélectionné.",
@@ -39,8 +39,10 @@
       "index_busy": "Une opération sur la base vectorielle est en cours. Réessayez dans quelques instants.",
       "unpublish_failed": "La fiche est dépubliée, mais la synchronisation n’a pas pu retirer tout son contenu. Consultez la knowledge base pour corriger l’erreur et relancer la synchronisation.",
       "job_status_unavailable": "Le résultat de la synchronisation n’a pas pu être récupéré. Vous pouvez vérifier à nouveau son état.",
-      "operation_failed": "L’opération n’a pas pu être terminée. Actualisez les informations avant de réessayer."
-    }
+      "operation_failed": "L’opération n’a pas pu être terminée. Actualisez les informations avant de réessayer.",
+      "model_changed": "Le modèle a changé depuis votre lecture. Vérifiez la valeur actualisée avant de réessayer."
+    },
+    "edit_model": "Modifier le modèle d’embedding"
   },
   "common": {
     "index_label": "Index",

@@ -81,7 +81,64 @@
     @if (metadataError) {
     <nb-alert status="danger">{{ metadataError | transloco }}</nb-alert>
     } @if (indexMetadata) { @if (hasMetadata) {
-    <tock-vector-store-metadata [metadata]="indexMetadata.metadata"></tock-vector-store-metadata>
+    <tock-vector-store-metadata
+      [metadata]="indexMetadata.metadata"
+      [valueTemplates]="canEditEmbeddingModel ? { embedding_model: embeddingModelValue } : {}"
+    ></tock-vector-store-metadata>
+    <ng-template #embeddingModelValue>
+      @if (editingEmbeddingModel !== null) {
+      <div class="model-editor">
+        <input
+          #embeddingModelInput
+          nbInput
+          fieldSize="tiny"
+          type="text"
+          [attr.aria-label]="'vsi.management.model_label' | transloco"
+          maxlength="300"
+          [value]="embeddingModel"
+          (input)="embeddingModel = embeddingModelInput.value"
+          [disabled]="managementBusy"
+          (keydown.enter)="saveEmbeddingModel($event)"
+          (keydown.escape)="cancelEmbeddingModelEdit()"
+        />
+        <button
+          nbButton
+          ghost
+          size="tiny"
+          type="button"
+          [attr.aria-label]="'common.actions.save' | transloco"
+          [nbTooltip]="'common.actions.save' | transloco"
+          [disabled]="managementBusy || !embeddingModel.trim() || embeddingModel.trim().length > 300"
+          (click)="saveEmbeddingModel()"
+        >
+          <nb-icon icon="check-lg"></nb-icon>
+        </button>
+        <button
+          nbButton
+          ghost
+          size="tiny"
+          type="button"
+          [attr.aria-label]="'common.actions.cancel' | transloco"
+          [nbTooltip]="'common.actions.cancel' | transloco"
+          [disabled]="managementBusy"
+          (click)="cancelEmbeddingModelEdit()"
+        >
+          <nb-icon icon="x-lg"></nb-icon>
+        </button>
+      </div>
+      } @else {
+      <button
+        type="button"
+        class="model-display"
+        [attr.aria-label]="('vsi.management.edit_model' | transloco) + ': ' + indexMetadata.metadata['embedding_model']"
+        [nbTooltip]="'vsi.management.edit_model' | transloco"
+        [disabled]="managementBusy"
+        (click)="editEmbeddingModel()"
+      >
+        {{ indexMetadata.metadata['embedding_model'] }}
+      </button>
+      }
+    </ng-template>
     } @else {
     <p class="text-muted">{{ 'vsi.management.no_metadata' | transloco }}</p>
     } @if (indexMetadata.embeddingIncompatible) {

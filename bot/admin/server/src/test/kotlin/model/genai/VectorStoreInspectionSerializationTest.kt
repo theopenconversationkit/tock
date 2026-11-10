@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.model.genai
 
 import ai.tock.genai.orchestratorclient.requests.VectorStoreDeleteIndexRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreSetEmbeddingModelRequest
 import ai.tock.genai.orchestratorclient.responses.InspectedChunk
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionChannelRanks
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionChannelScores
@@ -31,6 +32,22 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class VectorStoreInspectionSerializationTest {
+    @Test
+    fun `model correction preserves the expected value across Studio and orchestrator contracts`() {
+        val dto =
+            mapper.readValue(
+                """{"indexName":"index","embeddingModel":"corrected","expectedEmbeddingModel":" typo "}""",
+                VectorStoreEmbeddingModelRequestDTO::class.java,
+            )
+        val request = VectorStoreSetEmbeddingModelRequest(null, "prefix_", dto.indexName, dto.embeddingModel, dto.expectedEmbeddingModel)
+        val json =
+            mapper
+                .copy()
+                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+                .valueToTree<com.fasterxml.jackson.databind.JsonNode>(request)
+        assertEquals(" typo ", json["expected_embedding_model"].asText())
+    }
+
     @Test
     fun `absent protected index remains explicit in the orchestrator request`() {
         val request = VectorStoreDeleteIndexRequest(null, "prefix_", "prefix_old", null)

@@ -43,6 +43,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class VectorStoreManagementAdminServiceTest {
@@ -188,8 +189,23 @@ class VectorStoreManagementAdminServiceTest {
     }
 
     @Test
+    fun `manual correction forwards the exact expected value and preserves provenance`() {
+        every { inspection.setEmbeddingModel(any()) } returns
+            VectorStoreIndexMetadataResponse(
+                mapOf("embedding_model" to "bot-model", "embedding_model_source" to "manual"),
+            )
+        val result = service.setEmbeddingModel("ns", "bot", VectorStoreEmbeddingModelRequestDTO(current, " bot-model ", " old-model "))
+        assertEquals("manual", result.metadata["embedding_model_source"])
+        assertFalse(result.embeddingIncompatible)
+        verify {
+            inspection.setEmbeddingModel(match { it.embeddingModel == "bot-model" && it.expectedEmbeddingModel == " old-model " })
+        }
+        verify(exactly = 0) { RAGService.saveRag(any(), any()) }
+    }
+
+    @Test
     fun `concurrent model update is surfaced as a conflict`() {
-        every { inspection.setEmbeddingModel(any()) } returns VectorStoreIndexMetadataResponse(error = "model_already_defined")
+        every { inspection.setEmbeddingModel(any()) } returns VectorStoreIndexMetadataResponse(error = "model_changed")
         val error = assertFailsWith<RestException> { service.setEmbeddingModel("ns", "bot", VectorStoreEmbeddingModelRequestDTO(current, "model")) }
         assertEquals(409, error.httpResponseStatus.code())
     }

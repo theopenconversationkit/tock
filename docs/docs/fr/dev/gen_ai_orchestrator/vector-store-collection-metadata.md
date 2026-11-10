@@ -32,7 +32,7 @@ suivantes :
 collection qui en est dépourvue — plus ancienne, ou créée par un autre outil — n’est pas certifiée comme créée par Tock.
 Les métadonnées partielles restent affichées et un `embedding_model` renseigné sert aux contrôles de compatibilité même sans `schema_version`.
 
-## Écrites une fois, jamais mises à jour
+## Écriture à la création et déclaration manuelle du modèle
 
 Les métadonnées de contrat sont écrites **uniquement à la création de la collection**, par la première écriture d'un job
 `CREATE_INDEX`. Elles sont conservées lors des indexations suivantes :
@@ -44,8 +44,11 @@ Les métadonnées de contrat sont écrites **uniquement à la création de la co
   sinon une collection vide et non certifiée en effet de bord.
 
 L’exploration de la base vectorielle permet aussi à un administrateur de compléter un `embedding_model` absent, nul ou
-vide sur une collection existante. Un modèle renseigné ne peut pas être écrasé. Les autres métadonnées sont conservées,
-sans ajout de `schema_version`, recalcul des vecteurs ni modification de la configuration du bot.
+vide sur une collection existante. Cette déclaration est marquée `embedding_model_source: "manual"` par le serveur
+et reste corrigeable dans l’explorateur. Un modèle renseigné automatiquement ou sans ce marqueur exact reste protégé.
+Aucune migration ne déduit la provenance des valeurs existantes ; `origin` décrit la création de l’index, pas la saisie du modèle.
+La correction compare la valeur lue avec la valeur courante sous verrou PostgreSQL et renvoie un conflit si elle a changé.
+Les autres métadonnées sont conservées, sans ajout de `schema_version`, recalcul des vecteurs ni modification de la configuration du bot.
 
 En conséquence, une collection PGVector vide *sans* métadonnées de contrat est considérée comme **manquante** : elle a
 très probablement été créée implicitement par une requête d'exécution plutôt que par un job `CREATE_INDEX` de Tock.

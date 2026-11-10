@@ -8,7 +8,7 @@
     "use_current_model": "Suggest the bot’s model: {{model}}",
     "add_model": "Add model",
     "model_saved": "The embedding model has been saved.",
-    "confirm_model": "Add model “{{model}}” to index {{index}}? This information cannot subsequently be changed from the explorer.",
+    "confirm_model": "Add model “{{model}}” to index {{index}}? Enter the model that actually produced the vectors. No vectors will be recalculated.",
     "model_mismatch": "This index’s declared model differs from the bot’s model ({{model}}). Searches may be unsuitable and some knowledge base operations may be blocked. Check the RAG configuration; it has not been changed.",
     "delete_chunk": "Delete chunk",
     "unpublish_chunk": "Unpublish the entry and remove its content from the bot",
@@ -28,7 +28,7 @@
     "errors": {
       "index_not_found": "This index no longer exists. Refresh the list.",
       "chunk_not_found": "This chunk no longer exists in this index.",
-      "model_already_defined": "This index already has a model. It cannot be overwritten.",
+      "model_already_defined": "This index’s model is automatic or of unknown origin. It cannot be changed.",
       "current_index_protected": "This index is now configured for the bot and cannot be deleted.",
       "confirmation_changed": "The index’s contents or role have changed. Review the refreshed information and confirm the action again.",
       "index_outside_bot": "This index does not belong to the selected bot.",
@@ -39,8 +39,10 @@
       "index_busy": "A vector store operation is in progress. Try again shortly.",
       "unpublish_failed": "The entry is unpublished, but synchronization could not remove all its content. Open the knowledge base to resolve the error and retry synchronization.",
       "job_status_unavailable": "The synchronization result could not be retrieved. You can check its status again.",
-      "operation_failed": "The operation could not be completed. Refresh the information before retrying."
-    }
+      "operation_failed": "The operation could not be completed. Refresh the information before retrying.",
+      "model_changed": "The model has changed since you read it. Review the refreshed value before trying again."
+    },
+    "edit_model": "Edit embedding model"
   },
   "common": {
     "index_label": "Index",

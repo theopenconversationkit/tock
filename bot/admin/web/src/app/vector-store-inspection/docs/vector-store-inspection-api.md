@@ -18,7 +18,7 @@ et des corps JSON en `camelCase` :
 | Route POST | Corps | Réponse |
 | --- | --- | --- |
 | `/index-metadata` | `indexName` | `metadata`, `isCurrent`, `currentEmbeddingModel`, `embeddingIncompatible` |
-| `/embedding-model` | `indexName`, `embeddingModel` | Métadonnées actualisées et éventuel avertissement d’incompatibilité |
+| `/embedding-model` | `indexName`, `embeddingModel`, `expectedEmbeddingModel` (optionnel) | Métadonnées actualisées et éventuel avertissement d’incompatibilité |
 | `/delete-chunk` | `indexName`, `rowId`, `expectedCurrent`, `allowEmptyIndex`, `unpublishKnowledgeBase` | `deletedCount` ou `jobId` de dépublication |
 | `/delete-index` | `indexName` | `deletedCount` |
 
@@ -27,7 +27,7 @@ et des corps JSON en `camelCase` :
 Les indicateurs de confirmation ne donnent aucun droit supplémentaire : le
 serveur relit la configuration du bot et les métadonnées du chunk. Si l’action
 confirmée ne correspond plus à la situation réelle, il renvoie un conflit 409.
-Un modèle déjà renseigné produit également un conflit ; un index ou chunk absent
+Un modèle protégé ou modifié depuis sa lecture produit également un conflit ; un index ou chunk absent
 produit une réponse 404. Les messages métier utilisent `vsi.management.errors.*`.
 
 Pour une dépublication, le studio suit le job existant via
@@ -38,9 +38,12 @@ L’orchestrateur expose les mêmes suffixes sous `/vector-store-inspection`, ai
 qu’un POST interne `/chunk` pour lire les métadonnées et le nombre de chunks avant
 une suppression. Le serveur admin injecte la connexion, le préfixe autorisé et le
 nom de l’index protégé. Les mutations utilisent des transactions PostgreSQL ;
-l’ajout du modèle verrouille la collection avant de vérifier l’absence de valeur.
-Une valeur absente, `null` ou une chaîne blanche peut être renseignée ; les autres
-valeurs ne peuvent pas être écrasées. Les clés étrangères sont conservées.
+l’enregistrement du modèle verrouille la collection avant de vérifier sa valeur et sa provenance.
+Une valeur absente, `null` ou une chaîne blanche peut être renseignée avec `expectedEmbeddingModel` absent ou `null`.
+Le serveur écrit alors `embedding_model_source: "manual"`. Seul un modèle chaîne non vide avec ce marqueur exact peut
+être corrigé, en transmettant sa valeur précédente exacte dans `expectedEmbeddingModel` (`expected_embedding_model`
+côté orchestrateur). Une lecture périmée renvoie `model_changed` ; une valeur protégée renvoie `model_already_defined`.
+La provenance ne peut pas être fournie par le client. Les autres clés sont conservées, notamment `origin` et `schema_version`.
 
 Le nom de l’index courant est résolu depuis la configuration RAG, indépendamment
 des métadonnées des chunks. Les changements de configuration et les mutations

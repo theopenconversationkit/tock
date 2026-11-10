@@ -203,12 +203,13 @@ async def test_legacy_metadata_and_unknown_fields_are_preserved(database):
     assert response.metadata == {
         'custom': {'nested': [1, 2]},
         'embedding_model': 'historical-model',
+        'embedding_model_source': 'manual',
     }
     assert (
         await service.set_embedding_model(
             SetEmbeddingModelRequest(**target(embedding_model='replacement'))
         )
-    ).error == 'model_already_defined'
+    ).error == 'model_changed'
 
 
 @pytest.mark.asyncio
@@ -222,7 +223,84 @@ async def test_two_simultaneous_writes_cannot_overwrite_a_model(database):
         ]
     )
     assert sum(result.error is None for result in results) == 1
-    assert sum(result.error == 'model_already_defined' for result in results) == 1
+    assert sum(result.error == 'model_changed' for result in results) == 1
+    winner = next(
+        result.metadata['embedding_model'] for result in results if result.error is None
+    )
+    assert (await service.index_metadata(IndexTargetRequest(**target()))).metadata[
+        'embedding_model'
+    ] == winner
+
+
+@pytest.mark.asyncio
+async def test_manual_model_can_be_corrected_without_changing_vectors(database):
+    await service.set_embedding_model(
+        SetEmbeddingModelRequest(**target(embedding_model='typo'))
+    )
+    async with database.begin() as connection:
+        before = (
+            await connection.execute(text('SELECT * FROM langchain_pg_embedding ORDER BY id'))
+        ).all()
+    response = await service.set_embedding_model(
+        SetEmbeddingModelRequest(
+            **target(embedding_model=' corrected ', expected_embedding_model='typo')
+        )
+    )
+    assert response.error is None
+    assert response.metadata == {
+        'embedding_model': 'corrected',
+        'embedding_model_source': 'manual',
+    }
+    async with database.begin() as connection:
+        assert (
+            await connection.execute(text('SELECT * FROM langchain_pg_embedding ORDER BY id'))
+        ).all() == before
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('source', [None, 'automatic', 'unrecognized', 'manual'])
+@pytest.mark.parametrize('model', ['existing', 42])
+async def test_only_a_manual_string_can_be_overwritten(database, source, model):
+    metadata = {'embedding_model': model, 'custom': {'nested': [1, 2]}, 'origin': 'tock_kb'}
+    if source is not None:
+        metadata['embedding_model_source'] = source
+    async with database.begin() as connection:
+        await connection.execute(
+            text(
+                'UPDATE langchain_pg_collection SET cmetadata=CAST(:metadata AS json) WHERE name=:name'
+            ),
+            {'name': INDEX, 'metadata': json.dumps(metadata)},
+        )
+    response = await service.set_embedding_model(
+        SetEmbeddingModelRequest(
+            **target(embedding_model='replacement', expected_embedding_model=str(model))
+        )
+    )
+    if source == 'manual' and isinstance(model, str):
+        assert response.error is None
+        metadata['embedding_model'] = 'replacement'
+    else:
+        assert response.error == 'model_already_defined'
+    assert (await service.index_metadata(IndexTargetRequest(**target()))).metadata == metadata
+
+
+@pytest.mark.asyncio
+async def test_two_simultaneous_corrections_cannot_overwrite_each_other(database):
+    await service.set_embedding_model(
+        SetEmbeddingModelRequest(**target(embedding_model='typo'))
+    )
+    results = await asyncio.gather(
+        *[
+            service.set_embedding_model(
+                SetEmbeddingModelRequest(
+                    **target(embedding_model=model, expected_embedding_model='typo')
+                )
+            )
+            for model in ['first-correction', 'second-correction']
+        ]
+    )
+    assert sum(result.error is None for result in results) == 1
+    assert sum(result.error == 'model_changed' for result in results) == 1
     winner = next(
         result.metadata['embedding_model'] for result in results if result.error is None
     )

@@ -42,7 +42,9 @@ Sélectionner un index ici ne change pas l’index configuré pour le bot.
 
 * **Métadonnées de l’index** : afficher toutes les informations disponibles, même partielles sur un ancien index.
   Si le modèle d’embedding manque, renseigner celui qui a réellement produit les vecteurs stockés.
-  Le modèle actuel du bot peut être proposé, mais doit être confirmé. Un modèle existant ne peut pas être écrasé.
+  Le modèle actuel du bot peut être proposé, mais doit être confirmé. Une saisie dans cet écran est marquée
+  `embedding_model_source: "manual"` et peut être corrigée en cliquant sur sa valeur : coche ou Entrée pour enregistrer,
+  croix ou Échap pour annuler. Un modèle automatique ou sans provenance reste en lecture seule, y compris les anciens modèles saisis avant ce marquage.
   Les autres métadonnées sont conservées ; aucun vecteur n’est recalculé et la configuration du bot reste inchangée.
   Un modèle différent sur l’index courant est accepté avec un avertissement d’incompatibilité.
 * **Supprimer un chunk** : confirmer la suppression dans l’index sélectionné. Pour une fiche de la knowledge base dans

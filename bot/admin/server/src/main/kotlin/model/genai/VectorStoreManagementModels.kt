@@ -23,6 +23,7 @@ data class VectorStoreIndexRequestDTO(
 data class VectorStoreEmbeddingModelRequestDTO(
     val indexName: String,
     val embeddingModel: String,
+    val expectedEmbeddingModel: String? = null,
 )
 
 data class VectorStoreDeleteChunkRequestDTO(

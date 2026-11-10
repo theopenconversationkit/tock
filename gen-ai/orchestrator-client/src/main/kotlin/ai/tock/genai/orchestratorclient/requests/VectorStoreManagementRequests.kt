@@ -29,6 +29,7 @@ data class VectorStoreSetEmbeddingModelRequest(
     val indexNamePrefix: String,
     val indexName: String,
     val embeddingModel: String,
+    val expectedEmbeddingModel: String? = null,
 )
 
 data class VectorStoreChunkTargetRequest(

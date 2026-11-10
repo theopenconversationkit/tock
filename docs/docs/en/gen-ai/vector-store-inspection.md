@@ -41,7 +41,9 @@ Selecting an index here does not change the index configured for the bot.
 
 * **Index metadata**: display all available metadata, including partial metadata on older indexes.
   If the embedding model is missing, add the model that actually produced the stored vectors.
-  The current bot model can be suggested, but must be confirmed. An existing model cannot be overwritten.
+  The current bot model can be suggested, but must be confirmed. A model entered here is marked
+  `embedding_model_source: "manual"` and can be corrected by clicking its value: checkmark or Enter to save,
+  cross or Escape to cancel. Automatic models and models of unknown origin remain read-only, including models entered before this marker existed.
   Other metadata is preserved; no vectors are recalculated and the bot configuration is unchanged.
   A different model on the current index is accepted with an incompatibility warning.
 * **Delete a chunk**: confirm the deletion in the selected index. For a Knowledge Base entry in the bot's current

@@ -59,7 +59,7 @@ export abstract class VectorStoreInspectionService {
   abstract getRetrievalSettings(): Observable<RetrievalSettings | null>;
 
   abstract getIndexMetadata(indexName: string): Observable<IndexMetadata>;
-  abstract setEmbeddingModel(indexName: string, embeddingModel: string): Observable<IndexMetadata>;
+  abstract setEmbeddingModel(indexName: string, embeddingModel: string, expectedEmbeddingModel?: string | null): Observable<IndexMetadata>;
   abstract deleteChunk(request: DeleteChunkRequest): Observable<VectorStoreMutation>;
   abstract deleteIndex(indexName: string): Observable<VectorStoreMutation>;
   abstract getMutationJob(jobId: string): Observable<KnowledgeBaseJob>;

@@ -240,4 +240,97 @@ describe('ExplorationComponent management', () => {
     component.indexMetadata.metadata['embedding_model'] = '  ';
     expect(component.canSetEmbeddingModel).toBeTrue();
   });
+
+  const manualMetadata: IndexMetadata = {
+    metadata: { embedding_model: 'typo', embedding_model_source: 'manual' },
+    isCurrent: true,
+    currentEmbeddingModel: 'corrected',
+    embeddingIncompatible: true
+  };
+
+  it('adds a missing model only after confirmation', () => {
+    component.indexMetadata = { ...manualMetadata, metadata: {} };
+    component.embeddingModel = ' historical ';
+    inspection.setEmbeddingModel.and.returnValue(of(manualMetadata));
+    component.saveEmbeddingModel();
+    expect(inspection.setEmbeddingModel).not.toHaveBeenCalled();
+    confirmation.next(true);
+    expect(inspection.setEmbeddingModel).toHaveBeenCalledOnceWith('index', 'historical', null);
+  });
+
+  it('only edits a nonempty manual string', () => {
+    for (const source of [undefined, 'automatic', 'unknown', 'manual']) {
+      for (const model of ['existing', 42, null, ' ']) {
+        component.indexMetadata = { ...manualMetadata, metadata: { embedding_model: model, embedding_model_source: source } };
+        component.editEmbeddingModel();
+        expect(component.canEditEmbeddingModel).toBe(source === 'manual' && model === 'existing');
+        expect(component.editingEmbeddingModel).toBe(source === 'manual' && model === 'existing' ? 'existing' : null);
+        component.cancelEmbeddingModelEdit();
+      }
+    }
+  });
+
+  it('corrects a manual model inline and refreshes the incompatibility warning', () => {
+    component.indexMetadata = manualMetadata;
+    component.editEmbeddingModel();
+    component.embeddingModel = ' corrected ';
+    inspection.setEmbeddingModel.and.returnValue(
+      of({ ...manualMetadata, metadata: { ...manualMetadata.metadata, embedding_model: 'corrected' }, embeddingIncompatible: false })
+    );
+    component.saveEmbeddingModel();
+    expect(dialogs.openDialog).not.toHaveBeenCalled();
+    expect(inspection.setEmbeddingModel).toHaveBeenCalledOnceWith('index', 'corrected', 'typo');
+    expect(component.indexMetadata.embeddingIncompatible).toBeFalse();
+    expect(component.editingEmbeddingModel).toBeNull();
+  });
+
+  it('keeps the draft on failure and prevents duplicate saves while pending', () => {
+    const pending = new Subject<IndexMetadata>();
+    inspection.setEmbeddingModel.and.returnValue(pending);
+    component.indexMetadata = manualMetadata;
+    component.editEmbeddingModel();
+    component.embeddingModel = 'corrected';
+    component.saveEmbeddingModel();
+    component.saveEmbeddingModel();
+    component.cancelEmbeddingModelEdit();
+    expect(inspection.setEmbeddingModel).toHaveBeenCalledTimes(1);
+    expect(component.editingEmbeddingModel).toBe('typo');
+    inspection.getIndexMetadata.and.returnValue(of(manualMetadata));
+    pending.error(new Error('offline'));
+    expect(component.managementBusy).toBeFalse();
+    expect(component.embeddingModel).toBe('corrected');
+    expect(component.editingEmbeddingModel).toBe('typo');
+  });
+
+  it('reloads a concurrently changed model and closes the stale editor', () => {
+    component.indexMetadata = manualMetadata;
+    component.editEmbeddingModel();
+    component.embeddingModel = 'corrected';
+    inspection.setEmbeddingModel.and.returnValue(
+      throwError(() => ({ error: { errors: [{ message: 'vsi.management.errors.model_changed' }] } }))
+    );
+    inspection.getIndexMetadata.and.returnValue(
+      of({ ...manualMetadata, metadata: { ...manualMetadata.metadata, embedding_model: 'newer' } })
+    );
+    component.saveEmbeddingModel();
+    expect(component.editingEmbeddingModel).toBeNull();
+    expect(component.indexMetadata.metadata['embedding_model']).toBe('newer');
+    expect(component.managementError).toBe('vsi.management.errors.model_changed');
+  });
+
+  it('does not apply a late save to a different index', () => {
+    component.currentIndex = null;
+    component.ngOnInit();
+    component.indexMetadata = manualMetadata;
+    component.editEmbeddingModel();
+    component.embeddingModel = 'corrected';
+    const pending = new Subject<IndexMetadata>();
+    inspection.setEmbeddingModel.and.returnValue(pending);
+    component.saveEmbeddingModel();
+    component.state.selectIndex({ ...index, indexName: 'other' });
+    pending.next(manualMetadata);
+    expect(component.editingEmbeddingModel).toBeNull();
+    expect(component.indexMetadata.metadata).toEqual({});
+    expect(component.managementBusy).toBeFalse();
+  });
 });
