@@ -25,6 +25,14 @@ import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { JsonUtils } from '../../model/commons';
 import { APP_BASE_HREF } from '@angular/common';
 
+export interface RestPostOptions<O> {
+  parseFunction?: (value: any) => O;
+  baseUrl?: string;
+  returnErrorOn400422?: boolean;
+  params?: Record<string, any>;
+  silent?: boolean;
+}
+
 @Injectable()
 export class RestService {
   private static defaultNotAuthenticatedUrl: string = environment.serverUrl;
@@ -99,6 +107,11 @@ export class RestService {
     returnErrorOn400422 = false,
     params = {}
   ): Observable<O> {
+    return this.postWithOptions(path, value, { parseFunction, baseUrl, returnErrorOn400422, params });
+  }
+
+  postWithOptions<I, O>(path: string, value?: I, options: RestPostOptions<O> = {}): Observable<O> {
+    const { parseFunction, baseUrl, returnErrorOn400422 = false, params = {}, silent = false } = options;
     return this.http
       .post(`${baseUrl ? baseUrl : this.url}${path}`, JsonUtils.stringify(value), {
         headers: this.headers(),
@@ -107,7 +120,9 @@ export class RestService {
       })
       .pipe(
         map((res: string) => (parseFunction ? parseFunction(res || {}) : ((res || {}) as O))),
-        catchError((e) => this.handleError(this, e, returnErrorOn400422))
+        catchError((e) =>
+          silent && e?.status !== 401 && e?.status !== 403 ? observableThrowError(e) : this.handleError(this, e, returnErrorOn400422)
+        )
       );
   }
 

@@ -62,6 +62,7 @@ data class InspectedChunk(
     val content: String,
     val contentLength: Int,
     val metadata: Map<String, Any?>,
+    val rowId: String = "",
 )
 
 data class InspectedDocument(

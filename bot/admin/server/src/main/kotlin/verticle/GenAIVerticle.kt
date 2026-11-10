@@ -26,6 +26,9 @@ import ai.tock.bot.admin.model.genai.BotSentenceGenerationInfoDTO
 import ai.tock.bot.admin.model.genai.BotVectorStoreConfigurationDTO
 import ai.tock.bot.admin.model.genai.PlaygroundRequest
 import ai.tock.bot.admin.model.genai.SentenceGenerationRequest
+import ai.tock.bot.admin.model.genai.VectorStoreDeleteChunkRequestDTO
+import ai.tock.bot.admin.model.genai.VectorStoreEmbeddingModelRequestDTO
+import ai.tock.bot.admin.model.genai.VectorStoreIndexRequestDTO
 import ai.tock.bot.admin.model.genai.VectorStoreInspectionCondenseRequestDTO
 import ai.tock.bot.admin.model.genai.VectorStoreInspectionDocumentsRequestDTO
 import ai.tock.bot.admin.model.genai.VectorStoreInspectionSearchRequestDTO
@@ -37,6 +40,7 @@ import ai.tock.bot.admin.service.ObservabilityService
 import ai.tock.bot.admin.service.RAGService
 import ai.tock.bot.admin.service.SentenceGenerationService
 import ai.tock.bot.admin.service.VectorStoreInspectionAdminService
+import ai.tock.bot.admin.service.VectorStoreManagementAdminService
 import ai.tock.bot.admin.service.VectorStoreService
 import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.botUser
@@ -296,6 +300,27 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
                 checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Deleting 'Document Compressor' configuration..." }
                     DocumentCompressorService.deleteConfig(app.namespace, app.name)
+                }
+            }
+
+            blockingJsonPost("$PATH_VECTOR_STORE_INSPECTION/index-metadata", admin) { context: RoutingContext, request: VectorStoreIndexRequestDTO ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    VectorStoreManagementAdminService.default.metadata(app.namespace, app.name, request.indexName)
+                }
+            }
+            blockingJsonPost("$PATH_VECTOR_STORE_INSPECTION/embedding-model", admin) { context: RoutingContext, request: VectorStoreEmbeddingModelRequestDTO ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    VectorStoreManagementAdminService.default.setEmbeddingModel(app.namespace, app.name, request)
+                }
+            }
+            blockingJsonPost("$PATH_VECTOR_STORE_INSPECTION/delete-chunk", admin) { context: RoutingContext, request: VectorStoreDeleteChunkRequestDTO ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    VectorStoreManagementAdminService.default.deleteChunk(app.namespace, app.name, request, context.userLogin ?: "unknown")
+                }
+            }
+            blockingJsonPost("$PATH_VECTOR_STORE_INSPECTION/delete-index", admin) { context: RoutingContext, request: VectorStoreIndexRequestDTO ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    VectorStoreManagementAdminService.default.deleteIndex(app.namespace, app.name, request.indexName)
                 }
             }
 

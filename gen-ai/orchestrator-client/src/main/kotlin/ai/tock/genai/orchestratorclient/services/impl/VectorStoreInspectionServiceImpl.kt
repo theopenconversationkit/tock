@@ -17,16 +17,24 @@
 package ai.tock.genai.orchestratorclient.services.impl
 
 import ai.tock.genai.orchestratorclient.api.VectorStoreInspectionApi
+import ai.tock.genai.orchestratorclient.requests.VectorStoreChunkTargetRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreDeleteChunkRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreDeleteIndexRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreIndexTargetRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionCapabilitiesRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionCondenseRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionDocumentsRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionIndexesRequest
 import ai.tock.genai.orchestratorclient.requests.VectorStoreInspectionSearchRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreSetEmbeddingModelRequest
 import ai.tock.genai.orchestratorclient.responses.VectorStoreCapabilitiesResponse
+import ai.tock.genai.orchestratorclient.responses.VectorStoreChunkDescriptionResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreIndexListResponse
+import ai.tock.genai.orchestratorclient.responses.VectorStoreIndexMetadataResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionCondenseResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionDocumentsResponse
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionSearchResponse
+import ai.tock.genai.orchestratorclient.responses.VectorStoreWriteResponse
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.services.VectorStoreInspectionService
 
@@ -43,4 +51,20 @@ class VectorStoreInspectionServiceImpl : VectorStoreInspectionService {
     override fun condense(request: VectorStoreInspectionCondenseRequest): VectorStoreInspectionCondenseResponse? = api.condense(request).execute().body()
 
     override fun search(request: VectorStoreInspectionSearchRequest): VectorStoreInspectionSearchResponse? = api.search(request).execute().body()
+
+    override fun getIndexMetadata(request: VectorStoreIndexTargetRequest): VectorStoreIndexMetadataResponse = api.getIndexMetadata(request).checkedBody()
+
+    override fun setEmbeddingModel(request: VectorStoreSetEmbeddingModelRequest): VectorStoreIndexMetadataResponse = api.setEmbeddingModel(request).checkedBody()
+
+    override fun getChunk(request: VectorStoreChunkTargetRequest): VectorStoreChunkDescriptionResponse = api.getChunk(request).checkedBody()
+
+    override fun deleteChunk(request: VectorStoreDeleteChunkRequest): VectorStoreWriteResponse = api.deleteChunk(request).checkedBody()
+
+    override fun deleteIndex(request: VectorStoreDeleteIndexRequest): VectorStoreWriteResponse = api.deleteIndex(request).checkedBody()
+
+    private fun <T> retrofit2.Call<T>.checkedBody(): T {
+        val response = execute()
+        check(response.isSuccessful) { "Vector store management request failed" }
+        return checkNotNull(response.body()) { "Empty vector store management response" }
+    }
 }

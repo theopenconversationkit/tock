@@ -35,6 +35,10 @@ async def indexes(factory, prefix):
     def read():
         from opensearchpy.exceptions import NotFoundError
 
+        from gen_ai_orchestrator.services.vector_store_inspection.vector_store_inspection_service import (
+            _is_allowed_index,
+        )
+
         client = factory.get_vector_store().client
         try:
             names = client.indices.get(index=prefix + '*')
@@ -42,7 +46,7 @@ async def indexes(factory, prefix):
             return []
         rows = []
         for name in names:
-            if not name.startswith(prefix):
+            if not _is_allowed_index(name, prefix):
                 continue
             id_mapping = (
                 names[name]

@@ -3,16 +3,17 @@
   name="index"
 >
   <nb-select
+    [disabled]="disabled"
     fullWidth
     class="index-select"
-    [selected]="selected"
+    [selected]="selected?.indexName ?? null"
     (selectedChange)="onSelect($event)"
     (blur)="hideTooltips()"
     [placeholder]="placeholder"
   >
     @for (index of indexes; track index.indexName) {
     <nb-option
-      [value]="index"
+      [value]="index.indexName"
       class="index-option"
     >
       <div class="index-option-row">

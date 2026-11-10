@@ -107,11 +107,12 @@ class KnowledgeBaseServiceTest {
             KnowledgeBaseIndexStateResponse(true, 1, 1, mapOf("schema_version" to 1, "embedding_model" to "model"))
         every { indexing.rows(any()) } returns KnowledgeBaseRowsResponse(emptyList())
         every { indexing.index(any()) } answers {
+            val request = firstArg<KnowledgeBaseIndexRequest>()
             KnowledgeBaseWriteResponse(
-                firstArg<ai.tock.genai.orchestratorclient.requests.KnowledgeBaseIndexRequest>().entries.map {
+                request.entries.map {
                     KnowledgeBaseWriteResult(
                         it.entryId,
-                        listOf("kb-" + KnowledgeBaseService.hash("index/${it.entryId}")),
+                        listOf("kb-" + KnowledgeBaseService.hash("${request.indexName}/${it.entryId}")),
                         1,
                     )
                 },
@@ -374,6 +375,58 @@ class KnowledgeBaseServiceTest {
         assertEquals(0, counts.orphan)
     }
 
+    @Test fun `deleting an old row preserves the live projection and allows republishing after switching back`() =
+        runBlocking {
+            mockkObject(VectorStoreService) {
+                every { VectorStoreService.getVectorStoreConfiguration(any(), any(), true) } returns null
+                every { service.target(any(), any(), any()) } answers { callOriginal() }
+                every { indexing.indexState(any()) } returns KnowledgeBaseIndexStateResponse(true, 1, 0, mapOf("embedding_model" to "test"))
+                val saved = create()
+                val live = service.target("ns", "bot")!!
+                val old = service.target("ns", "bot", "old")!!
+                val row = "kb-" + KnowledgeBaseService.hash("${old.indexName}/${saved.entry.id}")
+                val oldProjection = projection(saved.entry.id, saved.entry.contentHash).copy(_id = "${old.id}/${saved.entry.id}", targetId = old.id, rowIds = listOf(row))
+                val liveProjection = oldProjection.copy(_id = "${live.id}/${saved.entry.id}", targetId = live.id, rowIds = listOf("live-row"))
+                dao.saveProjection(oldProjection)
+                dao.saveProjection(liveProjection)
+                dao.saveProjection(oldProjection.copy(_id = "${old.id}/other", entryId = "other", rowIds = listOf("other-row")))
+
+                service.invalidateProjections("ns", "bot", old.indexName, old.setting, row)
+
+                assertEquals(listOf(liveProjection), dao.projections("ns", "bot", live.id))
+                assertEquals(listOf("other"), dao.projections("ns", "bot", old.id).map { it.entryId })
+                assertEquals(KnowledgeBaseEntryStatus.PUBLISHED, dao.entries.getValue(saved.entry.id).status)
+                every { RAGService.getRAGConfiguration("ns", "bot") } returns live.rag.copy(indexSessionId = "old")
+                assertEquals(KnowledgeBaseProjectionState.PENDING, service.get("ns", "bot", saved.entry.id).projectionState)
+                val publish = service.bulk("ns", "bot", KnowledgeBaseBulkStatus(listOf(saved.entry.id), KnowledgeBaseEntryStatus.PUBLISHED), "author")
+                processor().process(dao.jobs.getValue(publish.id))
+
+                verify(exactly = 1) { indexing.index(match { it.indexName == old.indexName && it.entries.single().entryId == saved.entry.id }) }
+                assertEquals(KnowledgeBaseProjectionState.INDEXED, service.get("ns", "bot", saved.entry.id).projectionState)
+            }
+        }
+
+    @Test fun `deleting an old index clears only its projections without requiring a RAG configuration`() {
+        mockkObject(VectorStoreService) {
+            every { VectorStoreService.getVectorStoreConfiguration(any(), any(), true) } returns null
+            every { service.target(any(), any(), any()) } answers { callOriginal() }
+            val live = service.target("ns", "bot")!!
+            val old = service.target("ns", "bot", "old")!!
+            val source = create().entry
+            dao.saveProjection(projection(source.id).copy(_id = "old-one", targetId = old.id))
+            dao.saveProjection(projection("other").copy(_id = "old-two", targetId = old.id))
+            val liveProjection = projection(source.id).copy(targetId = live.id)
+            dao.saveProjection(liveProjection)
+            every { RAGService.getRAGConfiguration("ns", "bot") } returns null
+
+            service.invalidateProjections("ns", "bot", old.indexName, old.setting)
+
+            assertTrue(dao.projections("ns", "bot", old.id).isEmpty())
+            assertEquals(listOf(liveProjection), dao.projections("ns", "bot", live.id))
+            assertEquals(KnowledgeBaseEntryStatus.PUBLISHED, dao.entries.getValue(source.id).status)
+        }
+    }
+
     @Test fun `resuming a job does not create another row for an acknowledged projection`() =
         runBlocking {
             val saved = create()
@@ -487,6 +540,14 @@ class KnowledgeBaseServiceTest {
             assertEquals(currentProjection, dao.projections.values.single { it.targetId == target.id && it.entryId == saved.entry.id })
             verify(exactly = 0) { RAGService.switchKnowledgeBaseIndex(any(), any()) }
         }
+
+    @Test fun `legacy index model is visible without schema version metadata`() {
+        every { indexing.indexState(any()) } returns
+            KnowledgeBaseIndexStateResponse(true, 1, 1, mapOf("embedding_model" to "historical-model"))
+        val probe = service.probe(target)
+        assertEquals("historical-model", probe.collection?.embeddingModel)
+        assertTrue(probe.embeddingIncompatible)
+    }
 
     @Test fun `a collection embedding model matches the bot ignoring an Ollama latest tag`() {
         val ollamaTarget = target.copy(embeddingModel = "nomic-embed-text")

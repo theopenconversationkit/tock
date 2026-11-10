@@ -133,8 +133,16 @@ class PromptCaptureHandler(BaseCallbackHandler):
             )
 
 
+def _is_allowed_index(index_name: str, index_name_prefix: str) -> bool:
+    if not index_name_prefix or not index_name.startswith(index_name_prefix):
+        return False
+    session = index_name[len(index_name_prefix) :]
+    # A bot such as faq-session-2 shares faq's prefix, but owns a distinct session.
+    return bool(session.strip()) and '_session_' not in session and '-session-' not in session
+
+
 def _assert_allowed_index(index_name: str, index_name_prefix: str) -> None:
-    if not index_name.startswith(index_name_prefix):
+    if not _is_allowed_index(index_name, index_name_prefix):
         raise HTTPException(status_code=403, detail='Index is outside the current bot')
 
 
@@ -251,6 +259,7 @@ async def get_indexes(
                 chunk_count=int(row['chunk_count']),
             )
             for row in rows
+            if _is_allowed_index(row['index_name'], request.index_name_prefix)
         ]
     )
 
@@ -284,7 +293,9 @@ def _documents_page_statement() -> TextClause:
                     source IS NOT NULL AND source !~* '^https?://'
                 ) AS non_url_source,
                 BOOL_OR(
-                    title ILIKE :text_pattern OR document ILIKE :text_pattern
+                    title ILIKE :text_pattern
+                    OR document_id ILIKE :text_pattern
+                    OR document ILIKE :text_pattern
                 ) AS text_match
             FROM chunks
             GROUP BY document_id
@@ -404,7 +415,7 @@ async def get_documents(
     chunks_by_document: dict[str, list[InspectedChunk]] = {}
     if request.include_chunks and document_ids:
         chunks_statement = text("""
-            SELECT e.document, e.cmetadata
+            SELECT e.id, e.document, e.cmetadata
             FROM langchain_pg_embedding e
             JOIN langchain_pg_collection c ON c.uuid = e.collection_id
             WHERE c.name = :index_name
@@ -429,6 +440,7 @@ async def get_documents(
             content = get_source_content(document)
             chunks_by_document.setdefault(_document_id(document), []).append(
                 InspectedChunk(
+                    row_id=str(row['id']),
                     chunk_id=get_chunk_identifier(document),
                     chunk=str(metadata.get('chunk') or ''),
                     content=content,

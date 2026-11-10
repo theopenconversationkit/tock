@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, TemplateRef } from '@angular/core';
 
 /**
  * Renders a chunk's metadata as a key/value tree.
@@ -17,6 +17,8 @@ import { Component, Input } from '@angular/core';
 })
 export class MetadataViewComponent {
   @Input() metadata: Record<string, unknown> | null = null;
+  /** Optional value renderers for top-level keys; nested metadata stays read-only. */
+  @Input() valueTemplates: Record<string, TemplateRef<unknown>> = {};
 
   get entries(): { key: string; value: unknown }[] {
     if (!this.metadata) return [];

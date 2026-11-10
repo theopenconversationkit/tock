@@ -16,6 +16,9 @@
 
 package ai.tock.bot.admin.model.genai
 
+import ai.tock.genai.orchestratorclient.requests.VectorStoreDeleteIndexRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreSetEmbeddingModelRequest
+import ai.tock.genai.orchestratorclient.responses.InspectedChunk
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionChannelRanks
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionChannelScores
 import ai.tock.genai.orchestratorclient.responses.VectorStoreInspectionFunnelStage
@@ -29,6 +32,45 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class VectorStoreInspectionSerializationTest {
+    @Test
+    fun `model correction preserves the expected value across Studio and orchestrator contracts`() {
+        val dto =
+            mapper.readValue(
+                """{"indexName":"index","embeddingModel":"corrected","expectedEmbeddingModel":" typo "}""",
+                VectorStoreEmbeddingModelRequestDTO::class.java,
+            )
+        val request = VectorStoreSetEmbeddingModelRequest(null, "prefix_", dto.indexName, dto.embeddingModel, dto.expectedEmbeddingModel)
+        val json =
+            mapper
+                .copy()
+                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+                .valueToTree<com.fasterxml.jackson.databind.JsonNode>(request)
+        assertEquals(" typo ", json["expected_embedding_model"].asText())
+    }
+
+    @Test
+    fun `absent protected index remains explicit in the orchestrator request`() {
+        val request = VectorStoreDeleteIndexRequest(null, "prefix_", "prefix_old", null)
+        val json =
+            mapper
+                .copy()
+                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+                .valueToTree<com.fasterxml.jackson.databind.JsonNode>(request)
+        assertTrue(json.has("protected_index_name"))
+        assertTrue(json["protected_index_name"].isNull)
+    }
+
+    @Test
+    fun `physical row identifier survives the orchestrator and Studio contracts`() {
+        val json = """{"row_id":"row-uuid","chunk_id":"doc:1/1","chunk":"1/1","content":"text","content_length":4,"metadata":{}}"""
+        val chunk =
+            mapper
+                .copy()
+                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+                .readValue(json, InspectedChunk::class.java)
+        assertEquals("row-uuid", mapper.valueToTree<com.fasterxml.jackson.databind.JsonNode>(chunk)["rowId"].asText())
+    }
+
     @Test
     fun `orchestrator top k cut stage is deserialized`() {
         val response =

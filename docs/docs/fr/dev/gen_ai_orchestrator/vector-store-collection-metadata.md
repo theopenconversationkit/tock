@@ -29,19 +29,26 @@ suivantes :
 | `embedding_model`    | chaîne  | non    | Nom normalisé du modèle d'embedding, omis quand le modèle est inconnu.         |
 
 **« Possède les métadonnées de contrat Tock »** signifie que `cmetadata` contient une clé `schema_version`. Une
-collection qui en est dépourvue — plus ancienne, ou créée par un autre outil — est traitée comme *non* détenue par Tock
-pour toutes les vérifications ci-dessous.
+collection qui en est dépourvue — plus ancienne, ou créée par un autre outil — n’est pas certifiée comme créée par Tock.
+Les métadonnées partielles restent affichées et un `embedding_model` renseigné sert aux contrôles de compatibilité même sans `schema_version`.
 
-## Écrites une fois, jamais mises à jour
+## Écriture à la création et déclaration manuelle du modèle
 
 Les métadonnées de contrat sont écrites **uniquement à la création de la collection**, par la première écriture d'un job
-`CREATE_INDEX`. Elles ne sont jamais mises à jour ensuite, ni rétro-appliquées aux collections préexistantes :
+`CREATE_INDEX`. Elles sont conservées lors des indexations suivantes :
 
 - Le constructeur de PGVector appelle `get_or_create`, qui renseigne `cmetadata` lorsqu'il crée la collection mais ne
   l'écrase jamais aux ouvertures ultérieures.
 - Toute opération qui ne doit *pas* créer de collection (sondes d'existence et d'état) lit directement
   `langchain_pg_collection`/`langchain_pg_embedding` en SQL et ne passe jamais par le constructeur PGVector, qui créerait
   sinon une collection vide et non certifiée en effet de bord.
+
+L’exploration de la base vectorielle permet aussi à un administrateur de compléter un `embedding_model` absent, nul ou
+vide sur une collection existante. Cette déclaration est marquée `embedding_model_source: "manual"` par le serveur
+et reste corrigeable dans l’explorateur. Un modèle renseigné automatiquement ou sans ce marqueur exact reste protégé.
+Aucune migration ne déduit la provenance des valeurs existantes ; `origin` décrit la création de l’index, pas la saisie du modèle.
+La correction compare la valeur lue avec la valeur courante sous verrou PostgreSQL et renvoie un conflit si elle a changé.
+Les autres métadonnées sont conservées, sans ajout de `schema_version`, recalcul des vecteurs ni modification de la configuration du bot.
 
 En conséquence, une collection PGVector vide *sans* métadonnées de contrat est considérée comme **manquante** : elle a
 très probablement été créée implicitement par une requête d'exécution plutôt que par un job `CREATE_INDEX` de Tock.
@@ -63,7 +70,7 @@ stocké sur la collection avec le modèle **normalisé** du paramétrage d'embed
 
 - Les deux connus et égaux → **MATCH**.
 - Les deux connus et différents → **MISMATCH**.
-- L'un des deux inconnu (pas de modèle, ou collection sans métadonnées de contrat) → **UNKNOWN**.
+- L'un des deux inconnu (modèle absent ou vide) → **UNKNOWN**.
 
 Le fournisseur n'entre **pas** dans la comparaison. Seul **MISMATCH** est bloquant ; **UNKNOWN** ne bloque jamais — c'est
 la valeur par défaut délibérément sûre qui garde le studio utilisable face aux anciennes collections et à OpenSearch.

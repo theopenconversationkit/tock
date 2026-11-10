@@ -35,6 +35,37 @@ Un chunk peut être **épinglé** : les chunks épinglés sont suivis dans le di
 toujours dans les résultats, même si aucun canal de recherche ne les renvoie. Le bouton _Diagnose_ ouvre le diagnostic
 avec les chunks épinglés.
 
+### Gérer les chunks et les index
+
+Avec PGVector, les administrateurs peuvent gérer l’index sélectionné depuis l’explorateur.
+Sélectionner un index ici ne change pas l’index configuré pour le bot.
+
+* **Métadonnées de l’index** : afficher toutes les informations disponibles, même partielles sur un ancien index.
+  Si le modèle d’embedding manque, renseigner celui qui a réellement produit les vecteurs stockés.
+  Le modèle actuel du bot peut être proposé, mais doit être confirmé. Une saisie dans cet écran est marquée
+  `embedding_model_source: "manual"` et peut être corrigée en cliquant sur sa valeur : coche ou Entrée pour enregistrer,
+  croix ou Échap pour annuler. Un modèle automatique ou sans provenance reste en lecture seule, y compris les anciens modèles saisis avant ce marquage.
+  Les autres métadonnées sont conservées ; aucun vecteur n’est recalculé et la configuration du bot reste inchangée.
+  Un modèle différent sur l’index courant est accepté avec un avertissement d’incompatibilité.
+* **Supprimer un chunk** : confirmer la suppression dans l’index sélectionné. Pour une fiche de la knowledge base dans
+  l’index courant du bot, l’action dépublie la fiche et programme le retrait via la synchronisation ; la fiche reste en brouillon.
+  Dans un ancien index, seule cette copie est supprimée et la fiche source reste inchangée.
+  Son suivi d’indexation est actualisé : si cet index redevient courant, une publication pourra recréer le contenu supprimé.
+  Une nouvelle ingestion peut recréer les chunks de documents importés.
+* **Supprimer un index** : confirmer la suppression de l’index et de tous ses chunks. L’index configuré est protégé même
+  si le RAG est désactivé ou si l’index est vide. Un index en cours de création par la knowledge base reste également protégé jusqu’à la fin de la tâche.
+
+Supprimer le dernier chunk est autorisé, avec un avertissement indiquant que l’index sera vide ; la collection est conservée.
+Une ancienne collection vide sans les métadonnées de création Tock ne peut pas être réalimentée par le parcours habituel
+de publication de la knowledge base. La validation RAG existante est conservée : créer un nouvel index depuis la knowledge base,
+ou utiliser un outil d’ingestion capable de cibler l’ancienne collection. Ajouter uniquement le modèle d’embedding ne rend pas cette collection vide exploitable.
+
+Après suppression, les compteurs et les documents sont actualisés en conservant l’affichage de l’index sélectionné s’il existe toujours.
+Pour une dépublication, l’écran indique la progression de la synchronisation ou son échec.
+Une suppression directe peut être temporairement indisponible pendant une synchronisation de la knowledge base ; réessayer après sa fin.
+Le filtre textuel recherche dans le titre, l’identifiant du document affiché sous le titre ou le contenu, avec une correspondance
+partielle et sans distinction de majuscules. Un document correspondant conserve tous ses chunks dans l’index sélectionné.
+
 ## Diagnostic de recherche
 
 L'écran de diagnostic suit la chaîne de recherche de production, de haut en bas :

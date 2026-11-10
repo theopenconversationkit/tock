@@ -3,7 +3,9 @@
   @for (entry of entries; track entry.key) {
   <dt class="text-muted">{{ entry.key }}</dt>
   <dd class="m-0">
-    @if (isObject(entry.value)) {
+    @if (valueTemplates[entry.key]; as valueTemplate) {
+    <ng-container [ngTemplateOutlet]="valueTemplate"></ng-container>
+    } @else if (isObject(entry.value)) {
     <tock-vector-store-metadata [metadata]="asRecord(entry.value)"></tock-vector-store-metadata>
     } @else if (isArray(entry.value)) {
     <span class="metadata-array">

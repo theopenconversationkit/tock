@@ -8,9 +8,24 @@
 
 .index-grid {
   display: grid;
-  grid-template-columns: minmax(12rem, 2fr) minmax(8rem, 1fr);
+  grid-template-columns: minmax(12rem, 2fr) minmax(8rem, 1fr) auto;
   gap: 1rem;
   align-items: center;
+}
+
+.index-delete {
+  justify-self: end;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .index-grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    tock-vector-store-index-selector {
+      grid-column: 1 / -1;
+    }
+  }
 }
 
 .stats-grid {
@@ -48,4 +63,39 @@
 
 .anomaly-select {
   min-width: 14rem;
+}
+
+.model-display {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+
+  &:hover:not(:disabled) {
+    text-decoration: underline dotted;
+  }
+}
+
+.model-editor {
+  display: flex;
+  align-items: center;
+  max-width: 36rem;
+  --button-ghost-tiny-padding: 0 0.25rem;
+  --icon-button-ghost-tiny-padding: 0 0.25rem;
+
+  input[nbInput] {
+    width: 100%;
+    min-width: 0;
+    padding: 0 0.5rem;
+    font: inherit;
+  }
+
+  button {
+    flex-shrink: 0;
+  }
 }

@@ -1,9 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 
 import { VectorStoreInspectionStateService } from './vector-store-inspection-state.service';
 import { VectorStoreInspectionService } from './vector-store-inspection.service';
 import { IndexListResponse, VectorStoreIndex } from '../models/vector-store-inspection.models';
+import { VectorDbProvider } from '../../configuration/vector-db-settings/models/providers-configuration';
 
 function makeIndex(name: string, overrides: Partial<VectorStoreIndex> = {}): VectorStoreIndex {
   return {
@@ -21,14 +22,16 @@ describe('VectorStoreInspectionStateService', () => {
   let service: VectorStoreInspectionStateService;
   // Reassigned per test before refreshIndexes is called; the mock reads it lazily.
   let response: IndexListResponse;
+  let capabilities: jasmine.Spy;
 
   beforeEach(() => {
     response = { indexes: [] };
+    capabilities = jasmine.createSpy().and.returnValue(of({ provider: VectorDbProvider.PGVector }));
 
     TestBed.configureTestingModule({
       providers: [
         VectorStoreInspectionStateService,
-        { provide: VectorStoreInspectionService, useValue: { getIndexes: () => of(response) } }
+        { provide: VectorStoreInspectionService, useValue: { getIndexes: () => of(response), getCapabilities: capabilities } }
       ]
     });
 
@@ -37,6 +40,42 @@ describe('VectorStoreInspectionStateService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('shares in-flight capabilities and caches the result until the bot changes', () => {
+    const pending = new Subject<any>();
+    capabilities.and.returnValue(pending);
+    service.applyBotContext('ns/bot');
+    const received: any[] = [];
+    service.loadCapabilities().subscribe((value) => received.push(value));
+    service.loadCapabilities().subscribe((value) => received.push(value));
+    pending.next({ provider: VectorDbProvider.PGVector });
+    pending.complete();
+    service.loadCapabilities().subscribe((value) => received.push(value));
+    expect(received.length).toBe(3);
+    expect(capabilities).toHaveBeenCalledTimes(1);
+    service.applyBotContext('ns/other');
+    service.loadCapabilities().subscribe();
+    expect(capabilities).toHaveBeenCalledTimes(2);
+  });
+
+  it('allows retrying failed capabilities and ignores results from a previous context', () => {
+    capabilities.and.returnValue(throwError(() => new Error('offline')));
+    service.applyBotContext('ns/bot');
+    service.loadCapabilities().subscribe({ error: () => undefined });
+    const pending = new Subject<any>();
+    capabilities.and.returnValue(pending);
+    service.loadCapabilities().subscribe();
+    service.applyBotContext('ns/other');
+    let current: any;
+    service.capabilities$.subscribe((value) => (current = value));
+    pending.next({ provider: VectorDbProvider.PGVector });
+    pending.complete();
+    expect(current).toBeNull();
+    capabilities.and.returnValue(of({ provider: VectorDbProvider.OpenSearch }));
+    service.loadCapabilities().subscribe();
+    expect(current.provider).toBe(VectorDbProvider.OpenSearch);
+    expect(capabilities).toHaveBeenCalledTimes(3);
   });
 
   describe('refreshIndexes', () => {

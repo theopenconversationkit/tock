@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, finalize, map, of, shareReplay, tap } from 'rxjs';
 
 import { VectorStoreInspectionService } from './vector-store-inspection.service';
 import { DocumentSearchType } from '../../rag/rag-settings/models/engines-configurations';
@@ -38,6 +38,8 @@ export class VectorStoreInspectionStateService {
   readonly referenceRun$: Observable<SearchRun | null> = this.referenceRun$$.asObservable();
 
   private currentBotKey: string | null = null;
+  private capabilitiesRequest: Observable<VectorStoreCapabilities> | null = null;
+  private capabilitiesGeneration = 0;
 
   get referenceRun(): SearchRun | null {
     return this.referenceRun$$.value;
@@ -111,7 +113,7 @@ export class VectorStoreInspectionStateService {
       map((response) => {
         this.indexes$$.next(response.indexes);
 
-        const stillPresent = selectedName ? (response.indexes.find((index) => index.indexName === selectedName) ?? null) : null;
+        const stillPresent = selectedName ? response.indexes.find((index) => index.indexName === selectedName) ?? null : null;
 
         if (stillPresent) {
           this.currentIndex$$.next(stillPresent);
@@ -126,7 +128,20 @@ export class VectorStoreInspectionStateService {
   }
 
   loadCapabilities(): Observable<VectorStoreCapabilities> {
-    return this.inspection.getCapabilities().pipe(tap((c) => this.capabilities$$.next(c)));
+    if (this.capabilities$$.value) return of(this.capabilities$$.value);
+    if (this.capabilitiesRequest) return this.capabilitiesRequest;
+    const generation = this.capabilitiesGeneration;
+    const request = this.inspection.getCapabilities().pipe(
+      tap((capabilities) => {
+        if (generation === this.capabilitiesGeneration) this.capabilities$$.next(capabilities);
+      }),
+      finalize(() => {
+        if (this.capabilitiesRequest === request) this.capabilitiesRequest = null;
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+    this.capabilitiesRequest = request;
+    return request;
   }
 
   selectIndex(index: VectorStoreIndex): void {
@@ -175,12 +190,7 @@ export class VectorStoreInspectionStateService {
     if (botKey === this.currentBotKey) return false;
 
     this.currentBotKey = botKey;
-
-    this.indexes$$.next([]);
-    this.currentIndex$$.next(null);
-    this.capabilities$$.next(null);
-    this.pinnedChunkIds$$.next([]);
-    this.referenceRun$$.next(null);
+    this.reset();
 
     return true;
   }
@@ -191,6 +201,8 @@ export class VectorStoreInspectionStateService {
    * a chunk id from another bot's index means nothing here.
    */
   reset(): void {
+    this.capabilitiesGeneration++;
+    this.capabilitiesRequest = null;
     this.indexes$$.next([]);
     this.currentIndex$$.next(null);
     this.capabilities$$.next(null);
