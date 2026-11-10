@@ -82,6 +82,10 @@ async def indexes(factory, prefix):
                     chunk_count=int(count),
                 )
             )
+        # Same order as the PGVector listing: most recently fed index first, undated ones last,
+        # ties broken by name. Two stable sorts: name ascending, then datetime descending.
+        rows.sort(key=lambda row: row.index_name)
+        rows.sort(key=lambda row: row.index_datetime or '', reverse=True)
         return rows
 
     return IndexListResponse(indexes=await asyncio.to_thread(read))

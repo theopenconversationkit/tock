@@ -38,7 +38,8 @@
       <button
         nbButton
         status="primary"
-        [nbTooltip]="'rag.rag-settings.save_settings_tooltip' | transloco"
+        [disabled]="!!saveBlockReason"
+        [nbTooltip]="saveBlockReason || 'rag.rag-settings.save_settings_tooltip' | transloco"
         (click)="submit()"
       >
         <nb-icon icon="floppy"></nb-icon>
@@ -58,6 +59,25 @@
       [nbSpinner]="loading"
       class="pb-0"
     >
+      @if (vectorStoreUnavailable) {
+      <nb-alert
+        status="danger"
+        class="mt-2 mb-3"
+      >
+        <div class="font-weight-bold mb-1">
+          <nb-icon
+            icon="exclamation-octagon"
+            class="mr-1"
+          ></nb-icon>
+          {{ 'rag.rag-settings.indexes_unavailable_title' | transloco }}
+        </div>
+        <div>{{ 'rag.rag-settings.indexes_unavailable_message' | transloco }}</div>
+        @if (settingsBackup?.enabled) {
+        <div class="mt-1">{{ 'rag.rag-settings.indexes_unavailable_disable_hint' | transloco }}</div>
+        }
+      </nb-alert>
+      }
+
       <nb-card class="mt-2 mb-3">
         <nb-card-header>{{ 'rag.rag-settings.rag_activation_title' | transloco }}</nb-card-header>
         <nb-card-body class="d-flex gap-2 align-items-start">
@@ -337,7 +357,30 @@
         <nb-card-header>{{ 'rag.rag-settings.indexing_session_title' | transloco }}</nb-card-header>
         <nb-card-body>
           <div class="row">
-            <div class="col-12 col-lg-6 px-3">
+            <div class="col-12 px-3">
+              @if (configuredIndexMissing) {
+              <nb-alert
+                status="danger"
+                class="mb-2"
+              >
+                <div class="font-weight-bold mb-1">
+                  <nb-icon
+                    icon="exclamation-octagon"
+                    class="mr-1"
+                  ></nb-icon>
+                  {{ 'rag.rag-settings.index_missing_title' | transloco }}
+                </div>
+                <div>{{ 'rag.rag-settings.index_missing_message' | transloco: { session: configuredSessionId } }}</div>
+                <div class="mt-1">
+                  @if (submittedEnabled) {
+                  {{ 'rag.rag-settings.index_missing_enabled_hint' | transloco }}
+                  } @else {
+                  {{ 'rag.rag-settings.index_missing_disabled_hint' | transloco }}
+                  }
+                </div>
+              </nb-alert>
+              }
+
               <tock-form-control
                 [label]="'rag.rag-settings.indexing_session_id_label' | transloco"
                 name="indexingSessionId"
@@ -346,21 +389,51 @@
                 [showError]="isSubmitted"
                 [boldLabel]="false"
               >
-                <input
-                  nbInput
+                <nb-select
                   fullWidth
                   formControlName="indexSessionId"
-                />
+                  class="index-select"
+                  [placeholder]="'rag.rag-settings.index_placeholder' | transloco"
+                  (blur)="hideIndexTooltips()"
+                  (selectedChange)="hideIndexTooltips()"
+                >
+                  <nb-option [value]="null">
+                    <span class="text-muted">{{ 'rag.rag-settings.index_none_option' | transloco }}</span>
+                  </nb-option>
+                  @for (index of indexes; track index.indexName) {
+                  <nb-option
+                    [value]="index.indexSessionId"
+                    class="index-option"
+                  >
+                    <div class="index-option-row">
+                      <span class="index-current-slot">
+                        @if (isCurrentIndex(index)) {
+                        <nb-icon
+                          icon="check-circle-fill"
+                          class="text-success"
+                          [nbTooltip]="'rag.rag-settings.index_current_tooltip' | transloco"
+                        ></nb-icon>
+                        }
+                      </span>
+                      <span
+                        class="index-name"
+                        [nbTooltip]="index.indexName"
+                      >
+                        {{ index.indexName }}
+                      </span>
+                      @if (index.indexDatetime) {
+                      <span class="index-date text-muted">
+                        {{ 'rag.rag-settings.index_modified_on' | transloco }} {{ index.indexDatetime | date: 'y/MM/dd - HH:mm' }}
+                      </span>
+                      }
+                    </div>
+                  </nb-option>
+                  }
+                </nb-select>
               </tock-form-control>
 
-              @if (indexStatusMissing) {
-              <p class="text-warning mt-1 mb-0">
-                <nb-icon
-                  icon="exclamation-triangle"
-                  class="mr-1"
-                ></nb-icon>
-                {{ 'rag.rag-settings.index_status_missing' | transloco }}
-              </p>
+              @if (indexesLoaded && !indexes.length) {
+              <p class="text-muted mt-1 mb-0">{{ 'rag.rag-settings.no_index_available' | transloco }}</p>
               } @if (indexStatusUnknownModel) {
               <p class="text-warning mt-1 mb-0">
                 <nb-icon
@@ -375,25 +448,23 @@
                   icon="exclamation-triangle"
                   class="mr-1"
                 ></nb-icon>
-                {{ 'rag.rag-settings.index_status_mismatch' | transloco: { indexModel: indexStatusIndexModel, botModel: indexStatusBotModel } }}
+                {{
+                  'rag.rag-settings.index_status_mismatch' | transloco: { indexModel: indexStatusIndexModel, botModel: indexStatusBotModel }
+                }}
               </p>
-              }
-            </div>
-            <div class="col-12 col-lg-6 px-3">
-              <tock-form-control
-                [label]="'rag.rag-settings.vector_db_index_name_label' | transloco"
-                name="indexName"
-                [controls]="indexName"
-                [required]="false"
-                [boldLabel]="false"
+              } @if (invalidIndexes.length) {
+              <nb-alert
+                status="warning"
+                class="mt-2 mb-0"
               >
-                <input
-                  nbInput
-                  fullWidth
-                  formControlName="indexName"
-                  readonly
-                />
-              </tock-form-control>
+                <div>{{ 'rag.rag-settings.invalid_indexes_message' | transloco }}</div>
+                <ul class="mb-0 mt-1">
+                  @for (index of invalidIndexes; track index.indexName) {
+                  <li class="index-invalid-name">{{ index.indexName }}</li>
+                  }
+                </ul>
+              </nb-alert>
+              }
             </div>
             <div class="col-12 px-3">
               <tock-form-control
@@ -451,6 +522,7 @@
           <button
             nbButton
             status="danger"
+            [disabled]="vectorStoreUnavailable"
             [nbTooltip]="'rag.rag-settings.delete_settings_button' | transloco"
             (click)="confirmSettingsDeletion()"
           >

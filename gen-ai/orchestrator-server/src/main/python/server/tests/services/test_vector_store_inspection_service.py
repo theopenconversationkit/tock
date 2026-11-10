@@ -313,3 +313,45 @@ async def test_compression_error_is_a_failure_not_a_fallback():
     assert stage.reason == 'error'
     assert stage.detail == 'bad compressor setting'
     assert stage.count == 0
+
+
+@pytest.mark.asyncio
+async def test_opensearch_indexes_are_listed_most_recent_first():
+    from types import SimpleNamespace
+
+    from gen_ai_orchestrator.services.vector_store_inspection import (
+        opensearch_inspection_service as inspection,
+    )
+
+    prefix = 'ns_test_bot_test_session_'
+    datetimes = {
+        prefix + 'old': '2026-01-01T10:00:00',
+        prefix + 'undated': None,
+        prefix + 'recent': '2026-11-01T10:00:00',
+        prefix + 'middle_b': '2026-06-01T10:00:00',
+        prefix + 'middle_a': '2026-06-01T10:00:00',
+    }
+
+    def search(index, body):
+        metadata = {'index_session_id': index[len(prefix):]}
+        if datetimes[index]:
+            metadata['index_datetime'] = datetimes[index]
+        return {
+            'hits': {'total': {'value': 1}, 'hits': [{'_source': {'metadata': metadata}}]},
+            'aggregations': {'documents': {'value': 1}},
+        }
+
+    client = MagicMock()
+    client.indices.get.return_value = {name: {} for name in datetimes}
+    client.search.side_effect = search
+    factory = SimpleNamespace(get_vector_store=lambda: SimpleNamespace(client=client))
+
+    listed = await inspection.indexes(factory, prefix)
+
+    assert [index.index_name for index in listed.indexes] == [
+        prefix + 'recent',
+        prefix + 'middle_a',
+        prefix + 'middle_b',
+        prefix + 'old',
+        prefix + 'undated',
+    ]

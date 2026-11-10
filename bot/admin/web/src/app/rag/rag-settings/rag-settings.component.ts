@@ -1,7 +1,23 @@
-import { Component, inject, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, forkJoin, merge, Observable, of, Subject, switchMap, takeUntil, pairwise, from, catchError } from 'rxjs';
-import { NbDialogRef, NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
+import {
+  debounceTime,
+  forkJoin,
+  merge,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+  pairwise,
+  from,
+  catchError,
+  map,
+  distinctUntilChanged,
+  filter
+} from 'rxjs';
+import { NbDialogRef, NbDialogService, NbToastrService, NbTooltipDirective, NbWindowService } from '@nebular/theme';
 
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
@@ -30,6 +46,7 @@ import { FileValidators } from '../../shared/validators';
 import { CanComponentDeactivate } from '../../shared/guards/can-deactivate.guard';
 import { DirtyStateGuard, DirtyStateService } from '../../core/dirty-state.service';
 import { TranslocoService } from '@jsverse/transloco';
+import { IndexListResponse, VectorStoreIndex } from '../../vector-store-inspection/models/vector-store-inspection.models';
 
 interface RagSettingsForm {
   id: FormControl<string>;
@@ -39,7 +56,6 @@ interface RagSettingsForm {
   explainabilityEnabled: FormControl<boolean>;
 
   indexSessionId: FormControl<string>;
-  indexName: FormControl<string>;
   documentSearchType: FormControl<string>;
 
   maxDocumentsRetrieved: FormControl<number>;
@@ -87,10 +103,38 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
   /** State and embedding coherence of the collection the configured index session resolves to, refreshed as it is edited. */
   indexStatus: RagIndexStatus | null = null;
+
+  /** Session id the current `indexStatus` was obtained for: a status only speaks for its own candidate. */
+  indexStatusSession: string | null = null;
   private indexStatusTrigger$: Subject<void> = new Subject();
+
+  /**
+   * Selectable indexes of the current bot, most recently fed first (ordered server side). Only collections
+   * whose chunks carry an index session id: any other collection is invalid and cannot back the RAG.
+   */
+  indexes: VectorStoreIndex[] = [];
+
+  /** Collections found for the bot whose chunks carry no index session id: reported, never selectable. */
+  invalidIndexes: VectorStoreIndex[] = [];
+
+  /** The index list was fetched successfully. */
+  indexesLoaded: boolean = false;
+
+  /** The index list could not be fetched. Lasts until the page is reloaded. */
+  indexesLoadFailed: boolean = false;
+
+  /**
+   * An index status check failed on the server side. Only a later successful check clears it: a skipped check
+   * (blank session, incomplete form) proves nothing about the outage.
+   */
+  indexStatusUnavailable: boolean = false;
+
+  /** The form content comes from an import and was never saved: a save then always carries more than an activation change. */
+  private importedSettings: boolean = false;
 
   @ViewChild('exportConfirmationModal') exportConfirmationModal: TemplateRef<any>;
   @ViewChild('importModal') importModal: TemplateRef<any>;
+  @ViewChildren(NbTooltipDirective) tooltips: QueryList<NbTooltipDirective>;
 
   private state = inject(StateService);
   private rest = inject(RestService);
@@ -114,9 +158,21 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
         switchMap(() => this.loadIndexStatus()),
         takeUntil(this.destroy$)
       )
-      .subscribe((status) => (this.indexStatus = status));
+      .subscribe(({ session, status }) => {
+        this.indexStatusSession = session;
+        this.indexStatus = status;
+      });
 
-    merge(this.indexSessionId.valueChanges, this.emProvider.valueChanges, this.form.get('emSetting').valueChanges)
+    // The check also runs when the form becomes complete, as it is skipped while incomplete.
+    merge(
+      this.indexSessionId.valueChanges,
+      this.emProvider.valueChanges,
+      this.form.get('emSetting').valueChanges,
+      this.form.statusChanges.pipe(
+        distinctUntilChanged(),
+        filter((status) => status === 'VALID')
+      )
+    )
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.indexStatusTrigger$.next());
 
@@ -184,10 +240,20 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
       this.configurations = confs;
 
       this.indexStatus = null;
+      this.indexStatusSession = null;
+      this.indexes = [];
+      this.invalidIndexes = [];
+      this.indexesLoaded = false;
+      this.indexesLoadFailed = false;
+      this.indexStatusUnavailable = false;
+      this.importedSettings = false;
 
       if (confs.length) {
-        forkJoin([this.getRagSettingsLoader()]).subscribe((res) => {
+        // The index list is loaded with the settings and assigned before the form is patched: nb-select drops a
+        // selection whose option is not rendered yet.
+        forkJoin([this.getRagSettingsLoader(), this.getIndexesLoader()]).subscribe((res) => {
           const settings = res[0];
+          this.applyIndexes(res[1]);
           if (settings?.id) {
             this.settingsBackup = deepCopy(settings);
             setTimeout(() => {
@@ -212,6 +278,35 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   }
 
   /**
+   * Indexes of the current bot. Never errors: a failure resolves to null. Silent call, the failure is reported by
+   * the page itself. An orchestrator error reaches the admin as an empty body, which the rest service turns into `{}`:
+   * a response without an `indexes` array is a failure too, while a real empty list arrives as `{ indexes: [] }`.
+   */
+  private getIndexesLoader(): Observable<VectorStoreIndex[] | null> {
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/vector-store/indexes`;
+    return this.rest
+      .get<VectorStoreIndex[] | null>(
+        url,
+        (response: IndexListResponse) => (Array.isArray(response?.indexes) ? response.indexes : null),
+        true
+      )
+      .pipe(catchError(() => of(null)));
+  }
+
+  private applyIndexes(indexes: VectorStoreIndex[] | null): void {
+    if (indexes === null) {
+      this.indexes = [];
+      this.invalidIndexes = [];
+      this.indexesLoaded = false;
+      this.indexesLoadFailed = true;
+      return;
+    }
+    this.indexes = indexes.filter((index) => !!index.indexSessionId?.trim());
+    this.invalidIndexes = indexes.filter((index) => !index.indexSessionId?.trim());
+    this.indexesLoaded = true;
+  }
+
+  /**
    * The candidate configuration as the save endpoint expects it. Reused as is for the read only
    * index-status check: the server reads its `indexSessionId` and `emSetting` only, but the endpoint
    * deserializes the full configuration DTO, exactly like the save.
@@ -226,18 +321,48 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
     return formValue;
   }
 
-  /** Reads the state and embedding coherence of the collection the current session id resolves to. */
-  private loadIndexStatus(): Observable<RagIndexStatus | null> {
-    const session = (this.indexSessionId.value ?? '').trim();
+  /**
+   * Reads the state and embedding coherence of the collection the current session id resolves to, along with the
+   * session it was read for. Only a valid answer from the server clears the outage flag; a skipped check leaves it
+   * untouched.
+   */
+  private loadIndexStatus(): Observable<{ session: string | null; status: RagIndexStatus | null }> {
+    const session = (this.indexSessionId.value ?? '').trim() || null;
 
     // A blank session resolves to NONE server side; report it directly without a round trip.
     if (!session) {
-      return of({ indexState: RagIndexState.NONE, collectionEmbeddingModel: null, coherence: RagEmbeddingCoherence.UNKNOWN });
+      return of({
+        session,
+        status: { indexState: RagIndexState.NONE, collectionEmbeddingModel: null, coherence: RagEmbeddingCoherence.UNKNOWN }
+      });
+    }
+
+    // The endpoint deserializes the full configuration DTO: an incomplete form would fail server side for reasons
+    // unrelated to the vector store. No check until the form is complete; the hint is cleared meanwhile.
+    if (!this.form.valid) {
+      return of({ session, status: null });
     }
 
     const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/rag/index-status`;
-    // A failed status check must never disrupt editing: swallow the error and clear the hint.
-    return this.rest.post<RagSettings, RagIndexStatus>(url, this.buildRagConfigBody()).pipe(catchError(() => of(null)));
+    return this.rest.post<RagSettings, RagIndexStatus>(url, this.buildRagConfigBody(), null, null, true).pipe(
+      map((status) => {
+        if (!status?.indexState) {
+          // Empty answer: the orchestrator error surfaced as an empty body.
+          this.indexStatusUnavailable = true;
+          return { session, status: null };
+        }
+        this.indexStatusUnavailable = false;
+        return { session, status };
+      }),
+      catchError((error) => {
+        // A 400/422 is the admin refusing to read the candidate, before any orchestrator call: it proves neither an
+        // outage nor a recovery, the flag is left as is. Anything else means the vector store cannot be read.
+        if (!(error instanceof HttpErrorResponse && [400, 422].includes(error.status))) {
+          this.indexStatusUnavailable = true;
+        }
+        return of({ session, status: null });
+      })
+    );
   }
 
   form = new FormGroup<RagSettingsForm>({
@@ -248,7 +373,6 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
     explainabilityEnabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
 
     indexSessionId: new FormControl(undefined),
-    indexName: new FormControl(undefined),
     documentSearchType: new FormControl(undefined),
 
     maxDocumentsRetrieved: new FormControl(undefined),
@@ -303,17 +427,78 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
     return this.form.get('maxDocumentsRetrieved') as FormControl;
   }
 
-  get indexName(): FormControl {
-    return this.form.get('indexName') as FormControl;
-  }
-
   get documentSearchType(): FormControl {
     return this.form.get('documentSearchType') as FormControl;
   }
 
-  /** No collection backs the configured session id. */
-  get indexStatusMissing(): boolean {
-    return this.indexStatus?.indexState === RagIndexState.MISSING;
+  /**
+   * The vector store data could not be retrieved from the orchestrator (index list or index status check).
+   * Unstable situation: no save is allowed, except disabling RAG without any other change.
+   */
+  get vectorStoreUnavailable(): boolean {
+    return this.indexesLoadFailed || this.indexStatusUnavailable;
+  }
+
+  /** Session id currently held by the form, trimmed; null when blank. */
+  get configuredSessionId(): string | null {
+    return (this.indexSessionId.value ?? '').trim() || null;
+  }
+
+  /**
+   * A session id is configured but its collection is missing or unusable. Two sources:
+   * - the index list loaded with the page: no valid index matches (deleted collection, import from another
+   *   environment, invalid collection). Only asserted once the list is known: a failed load proves nothing.
+   *   Exact match on the raw session id, the value the ingestion wrote in the chunks;
+   * - the index status check: the server answered MISSING for this very session, which also covers an index
+   *   removed after the list was loaded.
+   */
+  get configuredIndexMissing(): boolean {
+    const session = this.configuredSessionId;
+    if (!session) return false;
+    const missingPerStatus = this.indexStatus?.indexState === RagIndexState.MISSING && this.indexStatusSession === session;
+    const missingFromList = this.indexesLoaded && !this.indexes.some((index) => index.indexSessionId === session);
+    return missingPerStatus || missingFromList;
+  }
+
+  /**
+   * Nebular mounts tooltips in a detached overlay: when the options list closes, an option is destroyed without a
+   * mouseleave and its tooltip stays on screen. Closing them by hand is the only reliable fix.
+   */
+  hideIndexTooltips(): void {
+    this.tooltips?.forEach((tooltip) => tooltip.hide());
+  }
+
+  /** The index saved in the configuration, recomputed client side so it follows each confirmed save. */
+  isCurrentIndex(index: VectorStoreIndex): boolean {
+    return !!this.settingsBackup?.indexSessionId && index.indexSessionId === this.settingsBackup.indexSessionId;
+  }
+
+  /** RAG activation as it would be submitted: a disabled toggle is left out of the form value, hence saved as false. */
+  get submittedEnabled(): boolean {
+    return this.form.value.enabled === true;
+  }
+
+  /**
+   * The only change is turning off a RAG saved as enabled. That save carries the stored configuration untouched,
+   * so the server neither validates it nor calls the orchestrator: the one write allowed when the vector store is
+   * unreachable.
+   */
+  private get isDeactivationOnly(): boolean {
+    if (!this.settingsBackup?.enabled || this.submittedEnabled || this.importedSettings) return false;
+    return Object.entries(this.form.controls)
+      .filter(([key]) => key !== 'enabled')
+      .every(([, control]) => control.pristine);
+  }
+
+  /** Why the form cannot be saved right now, as a translation key; null when saving is allowed. */
+  get saveBlockReason(): string | null {
+    if (this.vectorStoreUnavailable) {
+      return this.isDeactivationOnly ? null : 'rag.rag-settings.save_blocked_unavailable';
+    }
+    if (this.configuredIndexMissing && this.submittedEnabled) {
+      return 'rag.rag-settings.save_blocked_index_missing';
+    }
+    return null;
   }
 
   /** The index exists but does not declare the model it was built with, so coherence cannot be asserted. */
@@ -335,6 +520,7 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   }
 
   get canSave(): boolean {
+    if (this.saveBlockReason) return false;
     return this.isSubmitted ? this.form.valid : this.form.dirty;
   }
 
@@ -509,6 +695,7 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   }
 
   cancel(): void {
+    this.importedSettings = false;
     this.initForm(this.settingsBackup);
   }
 
@@ -543,12 +730,18 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
       formValue.namespace = this.state.currentApplication.namespace;
       formValue.botId = this.state.currentApplication.name;
 
+      // A configured index that no longer exists is only kept while it can be checked: once the list is known, a
+      // save with RAG disabled clears it (saving it with RAG enabled is blocked upstream).
+      if (this.configuredIndexMissing) {
+        formValue.indexSessionId = null;
+      }
+
       const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/rag`;
       this.rest.post(url, formValue, null, null, true).subscribe({
         next: (ragSettings: RagSettings) => {
+          // Becomes the reference of isCurrentIndex: the current index mark moves only once the server confirmed.
           this.settingsBackup = ragSettings;
-
-          this.indexName.reset();
+          this.importedSettings = false;
 
           this.form.patchValue(ragSettings);
           this.form.markAsPristine();
@@ -667,7 +860,6 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
     delete formValue['emProvider'];
     delete formValue['id'];
     delete formValue['enabled'];
-    delete formValue['indexName'];
 
     if (this.sensitiveParams?.length) {
       this.sensitiveParams.forEach((sensitiveParam) => {
@@ -752,6 +944,7 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
         this.initForm(settings);
         this.form.markAsDirty();
+        this.importedSettings = true;
 
         this.closeImportModal();
       });
@@ -781,6 +974,7 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   }
 
   deleteSettings(): void {
+    if (this.vectorStoreUnavailable) return;
     const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/rag`;
     this.rest.delete<boolean>(url).subscribe(() => {
       delete this.settingsBackup;
