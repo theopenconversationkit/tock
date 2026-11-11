@@ -64,7 +64,7 @@ class BuildModelWorker {
                         app,
                         intentId,
                         locale,
-                        app.nlpEngineType,
+                        app.effectiveEntityNlpEngineType,
                         onlyIfNotExists,
                     )
                 }
@@ -94,7 +94,7 @@ class BuildModelWorker {
                         app,
                         intentId,
                         key.language,
-                        app.nlpEngineType,
+                        app.effectiveEntityNlpEngineType,
                         onlyIfNotExists,
                     )
                 }
@@ -129,7 +129,7 @@ class BuildModelWorker {
                             app,
                             entityType,
                             locale,
-                            app.nlpEngineType,
+                            app.effectiveEntityNlpEngineType,
                             onlyIfNotExists,
                         )
                     }

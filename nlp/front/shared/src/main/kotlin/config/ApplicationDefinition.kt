@@ -55,6 +55,13 @@ data class ApplicationDefinition(
      */
     val nlpEngineType: NlpEngineType = NlpEngineType.opennlp,
     /**
+     * Optional dedicated nlp engine used for entity models/calls, independent from [nlpEngineType].
+     * When `null` (the default), entity models use the same engine as intent models - this
+     * reproduces the historical behaviour exactly. Set it to use a different engine than
+     * [nlpEngineType] for entity extraction, e.g. when [nlpEngineType] is an intent-only engine.
+     */
+    val entityNlpEngineType: NlpEngineType? = null,
+    /**
      * Is intent entity model and "standalone" entity models are used to find the better values?
      */
     val mergeEngineTypes: Boolean = true,
@@ -88,4 +95,11 @@ data class ApplicationDefinition(
      */
     @Transient
     val qualifiedName: String = name.withNamespace(namespace)
+
+    /**
+     * The effective nlp engine used for entity models/calls: [entityNlpEngineType] if set,
+     * [nlpEngineType] otherwise.
+     */
+    @Transient
+    val effectiveEntityNlpEngineType: NlpEngineType = entityNlpEngineType ?: nlpEngineType
 }

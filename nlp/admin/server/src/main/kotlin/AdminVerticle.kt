@@ -339,6 +339,7 @@ open class AdminVerticle : WebVerticle() {
                 if (existingApp == null) onApplicationCreated(newApp, context.userLogin)
                 // trigger a full rebuild if nlp engine change
                 if (appWithSameName?.nlpEngineType != newApp.nlpEngineType ||
+                    appWithSameName.entityNlpEngineType != newApp.entityNlpEngineType ||
                     appWithSameName.normalizeText != newApp.normalizeText
                 ) {
                     front.triggerBuild(ModelBuildTrigger(newApp._id, true))

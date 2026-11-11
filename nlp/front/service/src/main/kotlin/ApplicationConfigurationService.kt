@@ -260,6 +260,7 @@ object ApplicationConfigurationService :
             intent.qualifiedName,
             intent.entities.mapNotNull { ConfigurationRepository.toEntity(it.entityTypeName, it.role) },
             intent.entitiesRegexp,
+            intent.description,
         )
 
     override fun switchSentencesIntent(
