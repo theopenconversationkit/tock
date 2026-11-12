@@ -399,6 +399,13 @@ nb-menu {
     min-height: 240px;
   }
 
+  &.minimized nb-card.floating-resizable {
+    resize: none;
+    overflow: visible;
+    min-width: 0;
+    min-height: 0;
+  }
+
   &.maximized {
     nb-card {
       max-width: 55vw;

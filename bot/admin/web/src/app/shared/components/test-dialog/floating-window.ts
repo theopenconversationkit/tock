@@ -19,11 +19,11 @@
  * (Nebular only offers minimize/maximize/full-screen). The window is switched to fixed
  * positioning on the first interaction so it can be freely placed on the screen.
  */
-export function makeWindowFloating(host: HTMLElement): () => void {
+export function makeWindowFloating(host: HTMLElement): { dispose: () => void; reset: () => void } {
   const windowEl = host.closest('nb-window') as HTMLElement | null;
   const header = windowEl?.querySelector('nb-card-header') as HTMLElement | null;
   const card = windowEl?.querySelector('nb-card') as HTMLElement | null;
-  if (!windowEl || !header || !card) return () => {};
+  if (!windowEl || !header || !card) return { dispose: () => {}, reset: () => {} };
 
   header.style.cursor = 'move';
   header.style.userSelect = 'none';
@@ -43,6 +43,13 @@ export function makeWindowFloating(host: HTMLElement): () => void {
     card.style.maxWidth = 'none';
     card.style.width = '100%';
     card.style.height = '100%';
+  };
+
+  // Give the layout back to Nebular (needed when its state changes: minimize, maximize, full screen)
+  const reset = () => {
+    delete windowEl.dataset['floating'];
+    ['position', 'margin', 'left', 'top', 'width', 'height', 'maxWidth'].forEach((p) => windowEl.style.removeProperty(p.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase())));
+    ['maxWidth', 'width', 'height'].forEach((p) => card.style.removeProperty(p.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase())));
   };
 
   const onMouseDown = (down: MouseEvent) => {
@@ -87,8 +94,11 @@ export function makeWindowFloating(host: HTMLElement): () => void {
 
   header.addEventListener('mousedown', onMouseDown);
   card.addEventListener('mousedown', onCardMouseDown);
-  return () => {
-    header.removeEventListener('mousedown', onMouseDown);
-    card.removeEventListener('mousedown', onCardMouseDown);
+  return {
+    reset,
+    dispose: () => {
+      header.removeEventListener('mousedown', onMouseDown);
+      card.removeEventListener('mousedown', onCardMouseDown);
+    }
   };
 }

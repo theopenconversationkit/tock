@@ -57,9 +57,10 @@ export class TestDialogService {
         initialState: NbWindowState.MAXIMIZED
       });
 
-      const detachFloating = makeWindowFloating(this.windowRef.componentRef.location.nativeElement);
+      const floating = makeWindowFloating(this.windowRef.componentRef.location.nativeElement);
+      this.windowRef.stateChange.subscribe(() => floating.reset());
       this.windowRef.onClose.subscribe(() => {
-        detachFloating();
+        floating.dispose();
         this.messages = undefined;
         this.windowRef = undefined;
         delete this.replayDialogStack;
