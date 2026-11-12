@@ -49,8 +49,8 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
   if (!windowEl || !header || !card) return { setMode: () => {}, dispose: () => {} };
 
   const px = (value: string) => parseFloat(value) || 0;
-  const vw = () => window.innerWidth;
-  const vh = () => window.innerHeight;
+  const vw = () => document.documentElement.clientWidth;
+  const vh = () => document.documentElement.clientHeight;
 
   const defaultBox = (): Box => {
     const width = Math.min(Math.max(vw() * 0.55, MIN_WIDTH), vw());
