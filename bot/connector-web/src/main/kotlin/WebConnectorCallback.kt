@@ -21,9 +21,14 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.MetadataEvent
+import ai.tock.bot.engine.event.MetadataEvent.Companion.REQUEST_ID_METADATA
+import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_DISCARD_METADATA
+import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_PARTIAL_METADATA
+import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_REPLACE_METADATA
 import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_RESPONSE_METADATA
 import ai.tock.bot.engine.event.hasStreamMetadata
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.longProperty
 import ai.tock.shared.vertx.sendSseMessage
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.http.HttpHeaders
@@ -31,6 +36,7 @@ import io.vertx.ext.web.RoutingContext
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Metadata of a partial frame that only carries the end of the rendered text (instead of the whole text so far):
@@ -43,6 +49,10 @@ const val STREAM_KEEP_METADATA = "TOCK_STREAM_KEEP"
 
 private val mergeStreamResponse: Boolean =
     booleanProperty("tock_web_connector_merge_stream_response", true)
+
+/** Minimum delay between two partial frames; tokens received in between are only buffered (0 = every token). */
+internal val streamMinFrameIntervalMs: Long =
+    longProperty("tock_web_connector_stream_min_interval_ms", 100)
 
 internal class WebConnectorCallback(
     applicationId: String,
@@ -57,8 +67,20 @@ internal class WebConnectorCallback(
     internal val streamedResponse: Boolean,
     private val sseTokenSender: ((WebConnectorResponse) -> Unit)? = null,
     private val streamDelta: Boolean = false,
+    requestId: String? = null,
+    private val minFrameIntervalMs: Long = 0,
 ) : ConnectorCallbackBase(applicationId, webConnectorType, errorListener) {
+    init {
+        if (!requestId.isNullOrBlank()) metadata[REQUEST_ID_METADATA] = requestId
+    }
+
     private val streamBuffer = StringBuilder()
+
+    // Whether a frame replacing the streamed bubble was already sent on the SSE channel
+    private val replacementSent = AtomicBoolean(false)
+
+    // Guarded by streamBuffer: throttling of the partial frames
+    private var lastFrameNanos = 0L
 
     @Volatile
     private var sseStreamStarted = false
@@ -83,7 +105,14 @@ internal class WebConnectorCallback(
         }
     }
 
-    fun createResponse(actions: List<Action>): WebConnectorResponse {
+    /**
+     * @param finalEnvelope true for the response of the POST, which groups all the actions of the request;
+     * otherwise the response is a single-action frame sent on the SSE channel.
+     */
+    fun createResponse(
+        actions: List<Action>,
+        finalEnvelope: Boolean = false,
+    ): WebConnectorResponse {
         val messages =
             actions.mapNotNull { a ->
                 val action =
@@ -95,18 +124,49 @@ internal class WebConnectorCallback(
                 messageProcessor.process(action)
             }
 
-        // The stream flag is kept out of `metadata` so that final messages are not merged as stream chunks
+        // The stream flags are kept out of `metadata` so that final messages are not merged as stream chunks
         val responseMetadata =
-            if (sseStreamStarted) metadata + (STREAM_RESPONSE_METADATA to "true") else metadata.toMap()
+            if (sseStreamStarted) metadata + finalStreamMetadata(messages, finalEnvelope) else metadata.toMap()
         return WebConnectorResponse(messages, responseMetadata)
     }
+
+    /**
+     * Only one final message replaces the streamed bubble: the first one with a text, designated by its `actionId`
+     * (stable whatever the channel and the dedup between SSE and POST). Without such a message the bubble is discarded.
+     */
+    private fun finalStreamMetadata(
+        messages: List<WebConnectorMessage>,
+        finalEnvelope: Boolean,
+    ): Map<String, String> {
+        val replacement =
+            messages
+                .filterIsInstance<WebMessage>()
+                .firstOrNull { !it.text.isNullOrEmpty() && it.actionId != null }
+        val replacementId = replacement?.actionId
+        val replaces = if (finalEnvelope) replacementId != null else replacementId != null && replacementSent.compareAndSet(false, true)
+        return if (replaces) {
+            mapOf(STREAM_RESPONSE_METADATA to "true", STREAM_REPLACE_METADATA to replacementId!!)
+        } else if (finalEnvelope) {
+            mapOf(STREAM_DISCARD_METADATA to "true")
+        } else {
+            emptyMap()
+        }
+    }
+
+    /** Frame telling SSE clients to remove the streamed bubble when no final message replaced it. */
+    fun discardResponse(): WebConnectorResponse? =
+        if (sseStreamStarted && !replacementSent.get()) {
+            WebConnectorResponse(emptyList(), metadata + (STREAM_DISCARD_METADATA to "true"))
+        } else {
+            null
+        }
 
     fun sendResponse() {
         WebRequestInfosByEvent.invalidate(eventId)
         context
             ?.response()
             ?.putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-            ?.end(webMapper.writeValueAsString(createResponse(actions)))
+            ?.end(webMapper.writeValueAsString(createResponse(actions, finalEnvelope = true)))
     }
 
     fun sendStreamedResponse(action: Action) {
@@ -131,6 +191,9 @@ internal class WebConnectorCallback(
             if (sseStreamFinished) return
             streamBuffer.append(content)
             sseStreamStarted = true
+            val now = System.nanoTime()
+            if (lastFrameNanos != 0L && now - lastFrameNanos < minFrameIntervalMs * 1_000_000) return
+            lastFrameNanos = now
             val rendered = messageProcessor.processText(streamBuffer.toString())
             val response =
                 if (streamDelta) {
@@ -143,11 +206,15 @@ internal class WebConnectorCallback(
                         listOf(WebMessage(text = renderedText.substring(keep))),
                         metadata +
                             (STREAM_RESPONSE_METADATA to "true") +
+                            (STREAM_PARTIAL_METADATA to "true") +
                             (STREAM_MODE_METADATA to STREAM_MODE_DELTA) +
                             (STREAM_KEEP_METADATA to keep.toString()),
                     )
                 } else {
-                    WebConnectorResponse(listOf(rendered), metadata + (STREAM_RESPONSE_METADATA to "true"))
+                    WebConnectorResponse(
+                        listOf(rendered),
+                        metadata + (STREAM_RESPONSE_METADATA to "true") + (STREAM_PARTIAL_METADATA to "true"),
+                    )
                 }
             val streamContext = this.streamContext
             if (streamContext != null) {

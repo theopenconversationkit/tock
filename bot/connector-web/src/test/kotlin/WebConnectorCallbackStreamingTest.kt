@@ -18,12 +18,17 @@ package ai.tock.bot.connector.web
 
 import ai.tock.bot.connector.web.sse.SseEndpoint.Companion.webMapper
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.event.MetadataEvent.Companion.REQUEST_ID_METADATA
 import ai.tock.bot.engine.event.MetadataEvent.Companion.RESPONSE_ID_METADATA
+import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_DISCARD_METADATA
+import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_PARTIAL_METADATA
+import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_REPLACE_METADATA
 import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_RESPONSE_METADATA
 import ai.tock.bot.engine.user.PlayerId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.litote.kmongo.toId
 
 class WebConnectorCallbackStreamingTest {
     private val sent = mutableListOf<WebConnectorResponse>()
@@ -31,6 +36,8 @@ class WebConnectorCallbackStreamingTest {
     private fun callback(
         streamDelta: Boolean = false,
         markdown: Boolean = false,
+        requestId: String? = null,
+        minFrameIntervalMs: Long = 0,
         sender: ((WebConnectorResponse) -> Unit)?,
     ) = WebConnectorCallback(
         applicationId = "app",
@@ -44,7 +51,14 @@ class WebConnectorCallbackStreamingTest {
         streamedResponse = false,
         sseTokenSender = sender,
         streamDelta = streamDelta,
+        requestId = requestId,
+        minFrameIntervalMs = minFrameIntervalMs,
     )
+
+    private fun sentence(
+        text: String,
+        id: String,
+    ) = PlayerId("").let { SendSentence(it, "", it, text, id = id.toId()) }
 
     @Test
     fun `tokens are sent as accumulated messages flagged as streamed`() {
@@ -112,7 +126,6 @@ class WebConnectorCallbackStreamingTest {
             callback.sendStreamedToken("late")
 
             assertEquals(true, done.await(5, java.util.concurrent.TimeUnit.SECONDS))
-            Thread.sleep(100)
             assertEquals(51, order.size)
             assertEquals("FINAL", order.last())
         } finally {
@@ -169,5 +182,81 @@ class WebConnectorCallbackStreamingTest {
             text,
         )
         assertEquals(true, text.contains("<ul>"))
+    }
+
+    @Test
+    fun `partial frames are flagged as partial in both modes`() {
+        val cumulative = callback { sent.add(it) }
+        cumulative.sendStreamedToken("Hel")
+        val delta = callback(streamDelta = true) { sent.add(it) }
+        delta.sendStreamedToken("Hel")
+        sent.forEach { assertEquals("true", it.metadata[STREAM_PARTIAL_METADATA]) }
+    }
+
+    @Test
+    fun `final frame designates the replacing message and carries no partial flag`() {
+        val callback = callback { sent.add(it) }
+        callback.sendStreamedToken("Hello")
+        val first = callback.createResponse(listOf(sentence("Hello final", "a1")))
+        val second = callback.createResponse(listOf(sentence("Follow-up", "a2")))
+
+        assertEquals("true", first.metadata[STREAM_RESPONSE_METADATA])
+        assertEquals("a1", first.metadata[STREAM_REPLACE_METADATA])
+        assertNull(first.metadata[STREAM_PARTIAL_METADATA])
+        assertNull(second.metadata[STREAM_RESPONSE_METADATA])
+        assertNull(second.metadata[STREAM_REPLACE_METADATA])
+    }
+
+    @Test
+    fun `post envelope designates the first text message whatever the number of messages`() {
+        val callback = callback { sent.add(it) }
+        callback.sendStreamedToken("Hello")
+        val envelope =
+            callback.createResponse(listOf(sentence("Hello final", "a1"), sentence("Follow-up", "a2")), finalEnvelope = true)
+
+        assertEquals(2, envelope.responses.size)
+        assertEquals("true", envelope.metadata[STREAM_RESPONSE_METADATA])
+        assertEquals("a1", envelope.metadata[STREAM_REPLACE_METADATA])
+        assertNull(envelope.metadata[STREAM_DISCARD_METADATA])
+    }
+
+    @Test
+    fun `post envelope without text discards the streamed bubble`() {
+        val callback = callback { sent.add(it) }
+        callback.sendStreamedToken("Hello")
+        val envelope = callback.createResponse(listOf(sentence("", "a1")), finalEnvelope = true)
+
+        assertEquals("true", envelope.metadata[STREAM_DISCARD_METADATA])
+        assertNull(envelope.metadata[STREAM_RESPONSE_METADATA])
+        assertNull(envelope.metadata[STREAM_REPLACE_METADATA])
+    }
+
+    @Test
+    fun `discard frame is only produced when no frame replaced the streamed bubble`() {
+        val callback = callback { sent.add(it) }
+        assertNull(callback.discardResponse())
+        callback.sendStreamedToken("Hello")
+        assertEquals("true", callback.discardResponse()?.metadata?.get(STREAM_DISCARD_METADATA))
+        callback.createResponse(listOf(sentence("Final", "a1")))
+        assertNull(callback.discardResponse())
+    }
+
+    @Test
+    fun `request id is echoed on partial frames and on the final response`() {
+        val callback = callback(requestId = "req-1") { sent.add(it) }
+        callback.sendStreamedToken("Hello")
+        val final = callback.createResponse(listOf(sentence("Final", "a1")), finalEnvelope = true)
+
+        assertEquals("req-1", sent.single().metadata[REQUEST_ID_METADATA])
+        assertEquals("req-1", final.metadata[REQUEST_ID_METADATA])
+    }
+
+    @Test
+    fun `tokens received faster than the minimum interval are buffered, not sent`() {
+        val callback = callback(minFrameIntervalMs = 60_000) { sent.add(it) }
+        callback.sendStreamedToken("Hel")
+        callback.sendStreamedToken("lo")
+
+        assertEquals(listOf("Hel"), sent.map { it.responses.single().text })
     }
 }

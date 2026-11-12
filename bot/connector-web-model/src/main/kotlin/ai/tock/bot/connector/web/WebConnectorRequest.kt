@@ -34,6 +34,7 @@ interface WebConnectorRequestContract {
     val sourceWithContent: Boolean get() = false
     val streamedResponse: Boolean get() = false
     val streamMode: String? get() = null
+    val requestId: String? get() = null
     val feedback: FeedbackParams?
 }
 
@@ -48,5 +49,6 @@ data class WebConnectorRequestContent(
     override val sourceWithContent: Boolean = false,
     override val streamedResponse: Boolean = false,
     override val streamMode: String? = null,
+    override val requestId: String? = null,
     override val feedback: FeedbackParams? = null,
 ) : WebConnectorRequestContract

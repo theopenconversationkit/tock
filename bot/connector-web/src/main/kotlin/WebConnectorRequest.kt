@@ -41,6 +41,7 @@ data class WebConnectorRequest(
     override val sourceWithContent: Boolean = false,
     override val streamedResponse: Boolean = false,
     override val streamMode: String? = null,
+    override val requestId: String? = null,
     override val feedback: FeedbackParams? = null,
 ) : WebConnectorRequestContract {
     fun toEvent(applicationId: String): Event =

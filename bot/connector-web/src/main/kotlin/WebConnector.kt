@@ -241,8 +241,8 @@ class WebConnector internal constructor(
                 extraHeadersAsMetadata(requestInfos),
                 transientDialogContext = transientContext,
                 errorListener = null,
-                streamDelta =
-                    request.streamMode == STREAM_MODE_DELTA,
+                streamDelta = request.streamMode == STREAM_MODE_DELTA,
+                requestId = request.requestId,
             )
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
@@ -262,6 +262,7 @@ class WebConnector internal constructor(
         errorListener: ((Throwable) -> Unit)?,
         transientDialogContext: DialogContext,
         streamDelta: Boolean = false,
+        requestId: String? = null,
     ) {
         val directStreamed = (event as? Action)?.metadata?.streamedResponse == true
         // Standard streaming: only if a SSE channel is connected to this instance to receive the partial responses
@@ -283,6 +284,8 @@ class WebConnector internal constructor(
                 messageProcessor = messageProcessor,
                 streamedResponse = directStreamed,
                 streamDelta = streamDelta,
+                requestId = requestId,
+                minFrameIntervalMs = streamMinFrameIntervalMs,
                 sseTokenSender =
                     userAction?.takeIf { sseStreaming }?.let { a ->
                         { response -> sseEndpoint.sendTransientResponse(applicationId, a.playerId.id, response) }
@@ -450,6 +453,13 @@ class WebConnector internal constructor(
                 val response = callback.createResponse(listOf(event))
                 callback.sendFinalOverSse {
                     sseEndpoint.sendResponse(event.connectorId, event.recipientId.id, response)
+                }
+                if (event.metadata.lastAnswer) {
+                    callback.discardResponse()?.let { discard ->
+                        callback.sendFinalOverSse {
+                            sseEndpoint.sendResponse(event.connectorId, event.recipientId.id, discard)
+                        }
+                    }
                 }
             }
             if (event.metadata.lastAnswer) {
