@@ -285,9 +285,12 @@ async def execute_rag_chain_stream(
         config=config,
     )
 
+    t_inputs = time.time()
+
     # 2. Answer generation (streamed token by token).
     answer_dict = {}
     previous_answer = ''
+    t_first_token = t_last_token = None
 
     async for event in answer_chain.astream_events(
         input=prepared, config=config, version='v2'
@@ -301,6 +304,9 @@ async def execute_rag_chain_stream(
             if len(current_answer) > len(previous_answer):
                 delta = current_answer[len(previous_answer):]
                 previous_answer = current_answer
+                t_last_token = time.time()
+                if t_first_token is None:
+                    t_first_token = t_last_token
                 yield {
                     'event': 'token',
                     'data': json.dumps(
@@ -312,6 +318,7 @@ async def execute_rag_chain_stream(
         elif kind == 'on_chain_end' and not event.get('parent_ids'):
             answer_dict = event['data']['output']
 
+    t_llm_end = time.time()
     chain_output = {**prepared, 'answer': answer_dict}
     llm_answer = LLMAnswer(**answer_dict)
 
@@ -336,6 +343,8 @@ async def execute_rag_chain_stream(
             }
             return
 
+    t_guardrail_end = time.time()
+
     # In streaming mode the answer parser receives incremental chunks, never a full
     # AIMessage, so RAGCallbackHandler.on_chain_start never records 'rag_chain_output'.
     # build_rag_debug_data would then parse a None record into a default LLMAnswer
@@ -350,6 +359,20 @@ async def execute_rag_chain_stream(
     logger.info(
         'RAG chain (stream) - End of execution. (Duration: %s seconds)', rag_duration
     )
+    t_end = time.time()
+    if t_first_token is not None:
+        logger.info(
+            'RAG chain (stream) - Timings: retrieval+condensation=%.2fs, '
+            'first_token=+%.2fs, answer_text=%.2fs, '
+            'after_last_token_until_llm_end=%.2fs (JSON fields after "answer", e.g. context_usage), '
+            'guardrail=%.2fs, total=%.2fs',
+            t_inputs - start_time,
+            t_first_token - t_inputs,
+            t_last_token - t_first_token,
+            t_llm_end - t_last_token,
+            t_guardrail_end - t_llm_end,
+            t_end - start_time,
+        )
 
     response = build_rag_response(
         chain_output=chain_output,

@@ -455,7 +455,7 @@ Les variables de la base vectorielle sont décrites dans la page [Vector DB sett
 | `tock_gen_ai_orchestrator_application_logging_config_ini` | fichier fourni | Fichier de configuration des logs |
 | `tock_gen_ai_orchestrator_llm_provider_timeout` | `30` | Délai maximal des appels aux LLM, en secondes |
 | `tock_gen_ai_orchestrator_llm_provider_max_retries` | `0` | Nombre de nouvelles tentatives d'un appel LLM en échec |
-| `tock_gen_ai_orchestrator_llm_rate_limits` | `true` | Active la limitation de débit des appels aux LLM |
+| `tock_gen_ai_orchestrator_llm_rate_limits` | `false` | Active la limitation de débit des appels aux LLM |
 | `tock_gen_ai_orchestrator_em_provider_timeout` | `4` | Délai maximal des appels d'embedding, en secondes |
 | `tock_gen_ai_orchestrator_compressor_provider_timeout` | `7` | Délai maximal des appels au compresseur de documents, en secondes |
 | `tock_gen_ai_orchestrator_compressor_vllm_max_input_tokens` | `8192` | Longueur d'entrée maximale (question + document) en tokens acceptée par le modèle de reranking vLLM ; doit correspondre au `--max-model-len` du serveur ; les documents trop longs sont découpés en fenêtres scorées séparément |

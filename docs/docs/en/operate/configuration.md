@@ -455,7 +455,7 @@ The vector store variables are described on the [Vector DB settings](../gen-ai/v
 | `tock_gen_ai_orchestrator_application_logging_config_ini` | provided file | Logging configuration file |
 | `tock_gen_ai_orchestrator_llm_provider_timeout` | `30` | Timeout of the LLM calls, in seconds |
 | `tock_gen_ai_orchestrator_llm_provider_max_retries` | `0` | Number of retries of a failed LLM call |
-| `tock_gen_ai_orchestrator_llm_rate_limits` | `true` | Enables the rate limit of the LLM calls |
+| `tock_gen_ai_orchestrator_llm_rate_limits` | `false` | Enables the rate limit of the LLM calls |
 | `tock_gen_ai_orchestrator_em_provider_timeout` | `4` | Timeout of the embedding calls, in seconds |
 | `tock_gen_ai_orchestrator_compressor_provider_timeout` | `7` | Timeout of the document compressor calls, in seconds |
 | `tock_gen_ai_orchestrator_compressor_vllm_max_input_tokens` | `8192` | Maximum input length (query + document) in tokens accepted by the vLLM reranking model; must match the server's `--max-model-len`; oversized documents are split into windows scored separately |
