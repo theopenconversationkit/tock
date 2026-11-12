@@ -25,6 +25,8 @@ data class MattermostMessageOut(
     val username: String? = null,
     val links: List<Link> = emptyList(),
     val footnotes: List<Footnote> = emptyList(),
+    @get:JsonProperty("root_id")
+    val rootId: String? = null,
 ) : MattermostConnectorMessage() {
     @JsonProperty("text")
     fun getFullText(): String {

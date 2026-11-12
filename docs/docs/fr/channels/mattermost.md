@@ -32,3 +32,4 @@ Il répond aux messages d'un canal (éventuellement seulement à ceux qui commen
 | Outgoing webhook token | Jeton du webhook sortant ou de la commande slash |
 | Optional Channel Id | (facultatif) canal dédié |
 | Optional Tock Username | (facultatif) nom d'utilisateur affiché pour le bot |
+| Reply in thread (true = 1, false = 0) | (facultatif) `1` pour répondre dans le fil du message de l'utilisateur au lieu de poster un nouveau message dans le canal (défaut `0`) |
