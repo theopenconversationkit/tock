@@ -291,9 +291,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
                   currentBotMessage.message = new Sentence(0, [], accumulatedTokens);
                 }
                 this.cd.detectChanges();
+                this.chatUi.scrollToBottom();
               });
-
-              setTimeout(() => this.chatUi.scrollToBottom());
             } catch (e) {
               console.error('Error parsing token event', e);
             }
@@ -332,6 +331,10 @@ export class BotDialogComponent implements OnInit, OnDestroy {
                 });
               }
 
+              this.ngZone.run(() => {
+                this.cd.detectChanges();
+                this.chatUi.scrollToBottom();
+              });
               setTimeout(() => this.chatUi.scrollToBottom());
             } catch (e) {
               console.error('Error parsing answer event', e);
