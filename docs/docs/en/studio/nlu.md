@@ -63,7 +63,7 @@ or from a conversation via the _Test_ > _Test_ page in _Tock Studio_.
 
 The buttons and commands under each sentence are identical to those in the _New sentence_ tab (see above).
 
-## The _Search sentences_ tab
+## The _All Sentences_ tab
 
 This screen allows you to search through all the sentences: _Inbox sentences_ but also qualified sentences
 saved in the model.

@@ -16,20 +16,20 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SentencesSearchComponent } from './sentences-search.component';
+import { SentencesAllComponent } from './sentences-all.component';
 import { TestSharedModule } from '../../../shared/test-shared.module';
 
-describe('SentencesSearchComponent', () => {
-  let component: SentencesSearchComponent;
-  let fixture: ComponentFixture<SentencesSearchComponent>;
+describe('SentencesAllComponent', () => {
+  let component: SentencesAllComponent;
+  let fixture: ComponentFixture<SentencesAllComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SentencesSearchComponent],
+      declarations: [SentencesAllComponent],
       imports: [TestSharedModule]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SentencesSearchComponent);
+    fixture = TestBed.createComponent(SentencesAllComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
