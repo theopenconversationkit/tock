@@ -81,20 +81,29 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
     clamp();
   };
 
-  let saved: { left: string; top: string; width: string; height: string } | null = null;
-
-  // Gives the layout back to Nebular when its state changes (minimize, maximize, full screen)
-  const reset = () => {
+  const STORAGE_KEY = 'tock-test-dialog-geometry';
+  type Geometry = { left: string; top: string; width: string; height: string };
+  let saved: Geometry | null = null;
+  try {
+    saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+  } catch {
     saved = null;
-    release();
+  }
+
+  // Remembers the current floating geometry (also across window closes and page reloads)
+  const commit = () => {
+    clamp();
+    saved = { left: windowEl.style.left, top: windowEl.style.top, width: windowEl.style.width, height: windowEl.style.height };
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    } catch {
+      // storage unavailable: the geometry is only kept in memory
+    }
   };
 
-  const suspend = () => {
-    saved = windowEl.dataset['floating']
-      ? { left: windowEl.style.left, top: windowEl.style.top, width: windowEl.style.width, height: windowEl.style.height }
-      : null;
-    release();
-  };
+  // Gives the layout back to Nebular (minimized / full screen) but keeps the geometry
+  const suspend = () => release();
+  const reset = () => release();
 
   const resume = () => {
     if (!saved) return;
@@ -136,7 +145,7 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
     const up = () => {
       document.removeEventListener('mousemove', move);
       document.removeEventListener('mouseup', up);
-      clamp();
+      commit();
     };
     document.addEventListener('mousemove', move);
     document.addEventListener('mouseup', up);
@@ -182,7 +191,7 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
     const up = () => {
       document.removeEventListener('mousemove', move);
       document.removeEventListener('mouseup', up);
-      clamp();
+      commit();
     };
     document.addEventListener('mousemove', move);
     document.addEventListener('mouseup', up);
