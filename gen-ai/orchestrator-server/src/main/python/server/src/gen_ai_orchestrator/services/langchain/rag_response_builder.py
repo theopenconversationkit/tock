@@ -175,12 +175,25 @@ def get_llm_answer_from_raw(output: str | None) -> LLMAnswer:
     return LLMAnswer(**parse_json_markdown(output))
 
 
-def get_condensing_llm_answer_from_raw(output: str | None) -> LLMCondensedQuestion:
-    """Parse a raw JSON string (possibly fenced with ```json```) into an LLMCondensedQuestion."""
-    if output is None:
-        return LLMCondensedQuestion()
+def get_condensing_llm_answer_from_raw(
+    output: str | None, fallback_question: str = ''
+) -> LLMCondensedQuestion:
+    """Parse a raw JSON string (possibly fenced with ```json```) into an LLMCondensedQuestion.
 
-    return LLMCondensedQuestion(**parse_json_markdown(output))
+    The RAG chain falls back to the original question when the condensing LLM does not return
+    valid JSON (e.g. an empty answer): the debug data does the same instead of failing the request.
+    """
+    if output is not None and output.strip():
+        try:
+            return LLMCondensedQuestion(**parse_json_markdown(output))
+        except (ValueError, TypeError):
+            pass
+
+    logger.warning(
+        'Question condensation output is empty or not valid JSON: '
+        'the debug data uses the original question.'
+    )
+    return LLMCondensedQuestion(condensed_question=fallback_question)
 
 
 def build_rag_debug_data(
@@ -202,7 +215,8 @@ def build_rag_debug_data(
         condensing_llm_answer=get_condensing_llm_answer_from_raw(
             records_callback_handler.records.get(
                 'rag_question_condensation_chain_output'
-            )
+            ),
+            request.question_answering_prompt.inputs['question'],
         ),
         question_answering_prompt=records_callback_handler.records.get('rag_prompt'),
         documents=get_rag_documents(records_callback_handler),

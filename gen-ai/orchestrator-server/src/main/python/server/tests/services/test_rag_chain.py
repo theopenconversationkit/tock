@@ -663,6 +663,14 @@ def test_get_condensing_llm_answer_from_raw_with_text_around_json():
     assert llm_answer.key_words == ['deploy']
 
 
+@pytest.mark.parametrize('raw', [None, '', '  ', 'not json at all'])
+def test_get_condensing_llm_answer_from_raw_falls_back_to_the_original_question(raw):
+    llm_answer = get_condensing_llm_answer_from_raw(raw, 'How to deploy Tock?')
+
+    assert llm_answer.condensed_question == 'How to deploy Tock?'
+    assert llm_answer.key_words is None
+
+
 def test_rag_chain_with_compressor_applies_compression_to_documents():
     """Test that RunnablePassthrough.assign correctly applies compressor to documents."""
     from langchain_core.runnables import RunnableLambda, RunnablePassthrough
