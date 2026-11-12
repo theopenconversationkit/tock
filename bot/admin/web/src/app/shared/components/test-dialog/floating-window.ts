@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const MARGIN = 8;
+const MARGIN = 0;
 const WINDOW_PROPS = ['position', 'margin', 'left', 'top', 'width', 'height', 'max-width', 'max-height', 'transform'];
 const CARD_PROPS = ['max-width', 'max-height', 'width', 'height'];
 
@@ -23,11 +23,21 @@ const CARD_PROPS = ['max-width', 'max-height', 'width', 'height'];
  * (Nebular only offers minimize/maximize/full-screen). The window is switched to fixed
  * positioning on the first interaction and always kept inside the viewport.
  */
-export function makeWindowFloating(host: HTMLElement): { dispose: () => void; reset: () => void } {
+export interface FloatingWindow {
+  dispose: () => void;
+  /** Gives the layout back to Nebular and forgets the floating geometry */
+  reset: () => void;
+  /** Gives the layout back to Nebular but remembers the floating geometry (window minimized) */
+  suspend: () => void;
+  /** Re-applies the remembered floating geometry */
+  resume: () => void;
+}
+
+export function makeWindowFloating(host: HTMLElement): FloatingWindow {
   const windowEl = host.closest('nb-window') as HTMLElement | null;
   const header = windowEl?.querySelector('nb-card-header') as HTMLElement | null;
   const card = windowEl?.querySelector('nb-card') as HTMLElement | null;
-  if (!windowEl || !header || !card) return { dispose: () => {}, reset: () => {} };
+  if (!windowEl || !header || !card) return { dispose: () => {}, reset: () => {}, suspend: () => {}, resume: () => {} };
 
   header.style.cursor = 'move';
   header.style.userSelect = 'none';
@@ -54,7 +64,7 @@ export function makeWindowFloating(host: HTMLElement): { dispose: () => void; re
     const rect = windowEl.getBoundingClientRect();
     windowEl.dataset['floating'] = 'true';
     windowEl.style.position = 'fixed';
-    windowEl.style.margin = '0';
+    windowEl.style.setProperty('margin', '0', 'important');
     windowEl.style.transform = 'none';
     windowEl.style.left = rect.left + 'px';
     windowEl.style.top = rect.top + 'px';
@@ -71,8 +81,39 @@ export function makeWindowFloating(host: HTMLElement): { dispose: () => void; re
     clamp();
   };
 
+  let saved: { left: string; top: string; width: string; height: string } | null = null;
+
   // Gives the layout back to Nebular when its state changes (minimize, maximize, full screen)
   const reset = () => {
+    saved = null;
+    release();
+  };
+
+  const suspend = () => {
+    saved = windowEl.dataset['floating']
+      ? { left: windowEl.style.left, top: windowEl.style.top, width: windowEl.style.width, height: windowEl.style.height }
+      : null;
+    release();
+  };
+
+  const resume = () => {
+    if (!saved) return;
+    windowEl.dataset['floating'] = 'true';
+    windowEl.style.position = 'fixed';
+    windowEl.style.setProperty('margin', '0', 'important');
+    windowEl.style.transform = 'none';
+    windowEl.style.left = saved.left;
+    windowEl.style.top = saved.top;
+    windowEl.style.width = saved.width;
+    windowEl.style.height = saved.height;
+    card.style.maxWidth = 'none';
+    card.style.maxHeight = 'none';
+    card.style.width = '100%';
+    card.style.height = '100%';
+    clamp();
+  };
+
+  const release = () => {
     delete windowEl.dataset['floating'];
     WINDOW_PROPS.forEach((p) => windowEl.style.removeProperty(p));
     CARD_PROPS.forEach((p) => card.style.removeProperty(p));
@@ -123,6 +164,8 @@ export function makeWindowFloating(host: HTMLElement): { dispose: () => void; re
   card.addEventListener('mousedown', onCardMouseDown);
   return {
     reset,
+    suspend,
+    resume,
     dispose: () => {
       header.removeEventListener('mousedown', onHeaderMouseDown);
       card.removeEventListener('mousedown', onCardMouseDown);

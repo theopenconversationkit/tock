@@ -58,7 +58,15 @@ export class TestDialogService {
       });
 
       const floating = makeWindowFloating(this.windowRef.componentRef.location.nativeElement);
-      this.windowRef.stateChange.subscribe(() => floating.reset());
+      this.windowRef.stateChange.subscribe((change) => {
+        if (change.newState === NbWindowState.MINIMIZED) {
+          floating.suspend();
+        } else if (change.oldState === NbWindowState.MINIMIZED) {
+          setTimeout(() => floating.resume());
+        } else {
+          floating.reset();
+        }
+      });
       this.windowRef.onClose.subscribe(() => {
         floating.dispose();
         this.messages = undefined;
