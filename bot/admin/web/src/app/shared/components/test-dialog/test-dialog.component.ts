@@ -162,8 +162,8 @@ export class TestDialogComponent implements OnInit, OnDestroy {
         const storedMessages = this.testDialogService.getStoredMessages();
         if (!this.messages?.length && storedMessages?.length > 0) {
           this.messages = storedMessages;
-          setTimeout(() => this.chatUi.scrollToBottom());
         }
+        setTimeout(() => this.chatUi?.scrollToBottom());
       }
     });
 
