@@ -328,7 +328,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                             }
 
                             override fun onError(error: Throwable) {
-                                logger.error(error) { "Error during RAG streaming" }
+                                // Logged once by the surrounding catch once rethrown.
                                 // Do NOT throw here: this runs on the eventsource background
                                 // thread and would never reach the handler's catch block.
                                 // Capture it and rethrow on the handler thread below.

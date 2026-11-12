@@ -18,8 +18,10 @@ package ai.tock.genai.orchestratorclient.services.impl
 
 import ai.tock.genai.orchestratorclient.api.RAGApi
 import ai.tock.genai.orchestratorclient.requests.RAGRequest
+import ai.tock.genai.orchestratorclient.responses.ErrorResponse
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
 import ai.tock.genai.orchestratorclient.responses.TokenEvent
+import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorParsingError
 import ai.tock.genai.orchestratorclient.services.RAGService
@@ -119,8 +121,20 @@ class RAGServiceImpl : RAGService {
                                             // Mark terminal so the subsequent stream close is not
                                             // surfaced as a second (spurious) error.
                                             completed.set(true)
+                                            val businessError =
+                                                if (node.has("code") && node.has("info")) {
+                                                    runCatching {
+                                                        jsonObjectMapper.treeToValue(node, ErrorResponse::class.java)
+                                                    }.getOrNull()
+                                                } else {
+                                                    null
+                                                }
                                             listener.onError(
-                                                GenAIOrchestratorParsingError(message = message, detail = detail),
+                                                if (businessError != null) {
+                                                    GenAIOrchestratorBusinessError(message = message, error = businessError)
+                                                } else {
+                                                    GenAIOrchestratorParsingError(message = message, detail = detail)
+                                                },
                                             )
                                             latch.countDown()
                                         }
@@ -171,7 +185,13 @@ class RAGServiceImpl : RAGService {
                     .build()
 
             eventSource.start()
-            latch.await()
+            if (!latch.await(timeout, TimeUnit.MILLISECONDS)) {
+                completed.set(true)
+                throw GenAIOrchestratorParsingError(
+                    message = "RAG stream timeout",
+                    detail = "No terminal event received within ${timeout}ms",
+                )
+            }
             listener.onComplete()
         } catch (e: Exception) {
             logger.error { "RAG stream error: ${e.message}" }
