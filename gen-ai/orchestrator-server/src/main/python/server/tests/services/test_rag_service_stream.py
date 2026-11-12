@@ -52,3 +52,24 @@ async def test_rag_stream_emits_error_event_on_unexpected_exception():
 
     assert events[-1]['event'] == 'error'
     assert json.loads(events[-1]['data'])['info']['cause'] == 'boom'
+
+
+@pytest.mark.asyncio
+async def test_condensation_falls_back_to_raw_question_on_invalid_json():
+    from langchain_core.language_models.fake_chat_models import FakeListChatModel
+
+    from gen_ai_orchestrator.models.prompt.prompt_formatter import PromptFormatter
+    from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
+    from gen_ai_orchestrator.services.langchain import rag_chain_builder as b
+    from langchain_core.exceptions import OutputParserException
+
+    llm = FakeListChatModel(responses=['Une reponse en prose, pas du JSON.'])
+    prompt = PromptTemplate(
+        formatter=PromptFormatter.F_STRING, template='Condense.', inputs={}
+    )
+    chain = b.build_question_condensation_chain(llm, prompt).with_fallbacks(
+        [b.RunnableLambda(b._condensation_fallback)],
+        exceptions_to_handle=(OutputParserException,),
+    )
+    result = await chain.ainvoke({'question': 'Le teletravail ?', 'chat_history': []})
+    assert result == {'condensed_question': 'Le teletravail ?', 'key_words': None}

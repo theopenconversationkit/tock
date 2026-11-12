@@ -32,6 +32,7 @@ from urllib.parse import urlparse
 
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.exceptions import OutputParserException
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
@@ -450,6 +451,15 @@ def add_rank_metadata(
 # ---------------------------------------------------------------------------
 
 
+def _condensation_fallback(inputs: dict) -> dict:
+    """Use the raw question when the condensing LLM did not return the expected JSON."""
+    logger.warning(
+        'Question condensation output could not be parsed as JSON: '
+        'falling back to the original question.'
+    )
+    return {'condensed_question': inputs['question'], 'key_words': None}
+
+
 def build_question_condensation_chain(llm, prompt: PromptTemplate):
     """
     Return a chain that rewrites the user question into a stand-alone query
@@ -573,6 +583,9 @@ def create_rag_chain_parts(
 
     condensation_chain = build_question_condensation_chain(
         question_condensing_llm, request.question_condensing_prompt
+    ).with_fallbacks(
+        [RunnableLambda(_condensation_fallback, name='question_condensation_fallback')],
+        exceptions_to_handle=(OutputParserException,),
     )
 
     rag_prompt = LangChainPromptTemplate.from_template(
