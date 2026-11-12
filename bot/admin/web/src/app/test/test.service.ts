@@ -28,6 +28,7 @@ import {
   XRayTestPlan
 } from './model/test';
 import { Observable, Subject } from 'rxjs';
+import { SseParser } from '../shared/utils/sse-parser';
 
 export interface SSEEvent {
   event?: string;
@@ -59,43 +60,18 @@ export class TestService {
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.withCredentials = true;
 
-      // [SSE-DEBUG] timestamped tracing of stream reception in the browser.
-      // Remove once streaming fluidity is confirmed.
-      const t0 = performance.now();
-      const ts = () => `+${(performance.now() - t0).toFixed(0)}ms`;
-      console.debug(`[SSE-DEBUG] ${ts()} request sent`);
-
       let lastProcessedIndex = 0;
+      const parser = new SseParser();
 
       xhr.onreadystatechange = () => {
         if (xhr.readyState >= 3 && xhr.responseText.length > lastProcessedIndex) {
-          console.debug(
-            `[SSE-DEBUG] ${ts()} onreadystatechange readyState=${xhr.readyState} ` +
-              `+${xhr.responseText.length - lastProcessedIndex} chars (total=${xhr.responseText.length})`
-          );
           const newData = xhr.responseText.substring(lastProcessedIndex);
-          const lines = newData.split('\n');
-
-          for (let i = 0; i < lines.length - 1; i++) {
-            const line = lines[i];
-            if (line.startsWith('event:')) {
-              const eventType = line.substring(6).trim();
-              const nextLineIndex = i + 1;
-              if (nextLineIndex < lines.length) {
-                const dataLine = lines[nextLineIndex];
-                if (dataLine.startsWith('data:')) {
-                  const eventData = dataLine.substring(5).trim();
-                  console.debug(`[SSE-DEBUG] ${ts()} emit event=${eventType} data=${eventData.substring(0, 60)}`);
-                  observer.next({ event: eventType, data: eventData });
-                }
-              }
-            }
-          }
-
           lastProcessedIndex = xhr.responseText.length;
+          parser.push(newData).forEach((event) => observer.next(event));
         }
 
         if (xhr.readyState === 4) {
+          parser.flush().forEach((event) => observer.next(event));
           if (xhr.status === 200) {
             observer.complete();
           } else {

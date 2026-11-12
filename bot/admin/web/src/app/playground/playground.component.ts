@@ -3,7 +3,7 @@ import { Location } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef, NbDialogService, NbMenuService, NbToastrService } from '@nebular/theme';
 import { FileValidators } from '../shared/validators';
-import { getDialogMessageUserAvatar, readFileAsText } from '../shared/utils';
+import { getDialogMessageUserAvatar, readFileAsText, SseParser } from '../shared/utils';
 import { AiEngineProvider, AiEngineSettingKeyName, EnginesConfiguration, PromptDefinitionFormatter } from '../shared/model/ai-settings';
 import { EnginesConfigurations, QuestionAnsweringDefaultPrompt } from '../rag/rag-settings/models/engines-configurations';
 import { BotApplicationConfiguration } from '../core/model/configuration';
@@ -432,31 +432,17 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
       xhr.withCredentials = true;
 
       let lastProcessedIndex = 0;
+      const parser = new SseParser();
 
       xhr.onreadystatechange = () => {
         if (xhr.readyState >= 3 && xhr.responseText.length > lastProcessedIndex) {
           const newData = xhr.responseText.substring(lastProcessedIndex);
-          const lines = newData.split('\n');
-
-          for (let i = 0; i < lines.length - 1; i++) {
-            const line = lines[i];
-            if (line.startsWith('event:')) {
-              const eventType = line.substring(6).trim();
-              const nextLineIndex = i + 1;
-              if (nextLineIndex < lines.length) {
-                const dataLine = lines[nextLineIndex];
-                if (dataLine.startsWith('data:')) {
-                  const eventData = dataLine.substring(5).trim();
-                  observer.next({ event: eventType, data: eventData });
-                }
-              }
-            }
-          }
-
           lastProcessedIndex = xhr.responseText.length;
+          parser.push(newData).forEach((event) => observer.next(event));
         }
 
         if (xhr.readyState === 4) {
+          parser.flush().forEach((event) => observer.next(event));
           if (xhr.status === 200 || xhr.status === 201) {
             observer.complete();
           } else {
