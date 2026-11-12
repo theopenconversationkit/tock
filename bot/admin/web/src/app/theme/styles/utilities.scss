@@ -392,6 +392,13 @@ nb-menu {
     background-color: var(--background-basic-color-2);
   }
 
+  nb-card.floating-resizable {
+    resize: both;
+    overflow: auto;
+    min-width: 320px;
+    min-height: 240px;
+  }
+
   &.maximized {
     nb-card {
       max-width: 55vw;

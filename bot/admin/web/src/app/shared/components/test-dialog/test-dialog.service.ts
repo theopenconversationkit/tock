@@ -16,6 +16,7 @@
 
 import { Injectable } from '@angular/core';
 import { NbWindowRef, NbWindowService, NbWindowState } from '@nebular/theme';
+import { makeWindowFloating } from './floating-window';
 import { TestDialogComponent } from './test-dialog.component';
 import { TestMessage } from '../../../test/model/test';
 import { Subject } from 'rxjs';
@@ -56,7 +57,9 @@ export class TestDialogService {
         initialState: NbWindowState.MAXIMIZED
       });
 
+      const detachFloating = makeWindowFloating(this.windowRef.componentRef.location.nativeElement);
       this.windowRef.onClose.subscribe(() => {
+        detachFloating();
         this.messages = undefined;
         this.windowRef = undefined;
         delete this.replayDialogStack;
