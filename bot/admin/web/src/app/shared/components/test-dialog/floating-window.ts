@@ -14,173 +14,170 @@
  * limitations under the License.
  */
 
-const MARGIN = 0;
-const WINDOW_PROPS = ['position', 'margin', 'left', 'top', 'width', 'height', 'max-width', 'max-height', 'transform'];
-const CARD_PROPS = ['max-width', 'max-height', 'width', 'height'];
+export type FloatingMode = 'normal' | 'maximized' | 'collapsed';
 
-/**
- * Makes a Nebular window draggable by its header and resizable from its bottom-right corner
- * (Nebular only offers minimize/maximize/full-screen), from any edge or corner. The window is switched to fixed
- * positioning on the first interaction and always kept inside the viewport.
- */
 export interface FloatingWindow {
+  /** normal: remembered geometry, maximized: fills the viewport, collapsed: rolled up to its header */
+  setMode: (mode: FloatingMode) => void;
   dispose: () => void;
-  /** Gives the layout back to Nebular and forgets the floating geometry */
-  reset: () => void;
-  /** Gives the layout back to Nebular but remembers the floating geometry (window minimized) */
-  suspend: () => void;
-  /** Re-applies the remembered floating geometry */
-  resume: () => void;
 }
 
+interface Box {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+const MAXIMIZED_MARGIN = 16;
+const MIN_WIDTH = 320;
+const MIN_HEIGHT = 240;
+const EDGE = 6;
+const CORNER = 14;
+const TRANSITION_MS = 200;
+const STORAGE_KEY = 'tock-test-dialog-geometry';
+
+/**
+ * Makes a Nebular window free-floating: it owns the position and size of the window (Nebular's own
+ * minimized / maximized / full-screen layouts are replaced by in-place modes), draggable by its header,
+ * resizable from any edge or corner, always kept inside the viewport, and remembered across reloads.
+ */
 export function makeWindowFloating(host: HTMLElement): FloatingWindow {
   const windowEl = host.closest('nb-window') as HTMLElement | null;
   const header = windowEl?.querySelector('nb-card-header') as HTMLElement | null;
   const card = windowEl?.querySelector('nb-card') as HTMLElement | null;
-  if (!windowEl || !header || !card) return { dispose: () => {}, reset: () => {}, suspend: () => {}, resume: () => {} };
-
-  header.style.cursor = 'move';
-  header.style.userSelect = 'none';
-  card.classList.add('floating-resizable');
+  if (!windowEl || !header || !card) return { setMode: () => {}, dispose: () => {} };
 
   const px = (value: string) => parseFloat(value) || 0;
+  const vw = () => window.innerWidth;
+  const vh = () => window.innerHeight;
 
-  const clamp = () => {
-    const rect = windowEl.getBoundingClientRect();
-    const w = Math.min(rect.width, window.innerWidth - 2 * MARGIN);
-    const h = Math.min(rect.height, window.innerHeight - 2 * MARGIN);
-    const left = Math.min(Math.max(px(windowEl.style.left), MARGIN), window.innerWidth - w - MARGIN);
-    const top = Math.min(Math.max(px(windowEl.style.top), MARGIN), window.innerHeight - h - MARGIN);
-    windowEl.style.width = w + 'px';
-    windowEl.style.height = h + 'px';
-    windowEl.style.left = left + 'px';
-    windowEl.style.top = top + 'px';
-    windowEl.style.maxWidth = window.innerWidth - left - MARGIN + 'px';
-    windowEl.style.maxHeight = window.innerHeight - top - MARGIN + 'px';
+  const defaultBox = (): Box => {
+    const width = Math.min(Math.max(vw() * 0.55, MIN_WIDTH), vw());
+    const height = Math.min(Math.max(vh() * 0.7, MIN_HEIGHT), vh());
+    return { left: 16, top: vh() - height - 16, width, height };
   };
 
-  const detach = () => {
-    if (windowEl.dataset['floating']) return;
-    const rect = windowEl.getBoundingClientRect();
-    windowEl.dataset['floating'] = 'true';
-    windowEl.style.position = 'fixed';
-    windowEl.style.setProperty('margin', '0', 'important');
-    windowEl.style.transform = 'none';
-    windowEl.style.left = rect.left + 'px';
-    windowEl.style.top = rect.top + 'px';
-    windowEl.style.width = rect.width + 'px';
-    windowEl.style.height = rect.height + 'px';
+  const loadBox = (): Box => {
+    try {
+      const s = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      if (s) return { left: px(s.left), top: px(s.top), width: px(s.width), height: px(s.height) };
+    } catch {
+      // unreadable storage: use the default geometry
+    }
+    return defaultBox();
+  };
+
+  const fit = (b: Box): Box => {
+    const width = Math.min(Math.max(b.width, MIN_WIDTH), vw());
+    const height = Math.min(Math.max(b.height, MIN_HEIGHT), vh());
+    return {
+      width,
+      height,
+      left: Math.min(Math.max(b.left, 0), vw() - width),
+      top: Math.min(Math.max(b.top, 0), vh() - height)
+    };
+  };
+
+  let box = fit(loadBox());
+  let mode: FloatingMode = 'normal';
+  let animationTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const persist = () => {
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ left: box.left + 'px', top: box.top + 'px', width: box.width + 'px', height: box.height + 'px' })
+      );
+    } catch {
+      // storage unavailable: the geometry is only kept in memory
+    }
+  };
+
+  const place = (b: Box) => {
+    const s = windowEl.style;
+    s.position = 'fixed';
+    s.setProperty('margin', '0', 'important');
+    s.transform = 'none';
+    s.maxWidth = 'none';
+    s.maxHeight = 'none';
+    s.left = b.left + 'px';
+    s.top = b.top + 'px';
+    s.width = b.width + 'px';
+    s.height = b.height + 'px';
     card.style.maxWidth = 'none';
     card.style.maxHeight = 'none';
     card.style.width = '100%';
     card.style.height = '100%';
     // An ancestor with a transform would make "fixed" relative to itself: compensate
     const after = windowEl.getBoundingClientRect();
-    windowEl.style.left = rect.left + (rect.left - after.left) + 'px';
-    windowEl.style.top = rect.top + (rect.top - after.top) + 'px';
-    clamp();
-  };
-
-  const STORAGE_KEY = 'tock-test-dialog-geometry';
-  type Geometry = { left: string; top: string; width: string; height: string };
-  let saved: Geometry | null = null;
-  try {
-    saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-  } catch {
-    saved = null;
-  }
-
-  // Remembers the current floating geometry (also across window closes and page reloads)
-  const commit = () => {
-    clamp();
-    saved = { left: windowEl.style.left, top: windowEl.style.top, width: windowEl.style.width, height: windowEl.style.height };
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-    } catch {
-      // storage unavailable: the geometry is only kept in memory
+    if (Math.abs(after.left - b.left) > 0.5 || Math.abs(after.top - b.top) > 0.5) {
+      s.left = b.left + (b.left - after.left) + 'px';
+      s.top = b.top + (b.top - after.top) + 'px';
     }
   };
 
-  // Gives the layout back to Nebular (minimized / full screen) but keeps the geometry
-  const suspend = () => release();
-  const reset = () => release();
-
-  const resume = () => {
-    if (!saved) return;
+  const render = (animate: boolean) => {
     windowEl.dataset['floating'] = 'true';
-    windowEl.style.position = 'fixed';
-    windowEl.style.setProperty('margin', '0', 'important');
-    windowEl.style.transform = 'none';
-    windowEl.style.left = saved.left;
-    windowEl.style.top = saved.top;
-    windowEl.style.width = saved.width;
-    windowEl.style.height = saved.height;
-    card.style.maxWidth = 'none';
-    card.style.maxHeight = 'none';
-    card.style.width = '100%';
-    card.style.height = '100%';
-    clamp();
+    windowEl.dataset['mode'] = mode;
+    header.style.cursor = mode === 'maximized' ? 'default' : 'move';
+    clearTimeout(animationTimer);
+    windowEl.style.transition = animate ? `left ${TRANSITION_MS}ms, top ${TRANSITION_MS}ms, width ${TRANSITION_MS}ms, height ${TRANSITION_MS}ms` : '';
+    if (animate) animationTimer = setTimeout(() => (windowEl.style.transition = ''), TRANSITION_MS + 50);
+
+    if (mode === 'maximized') {
+      place({ left: MAXIMIZED_MARGIN, top: MAXIMIZED_MARGIN, width: vw() - 2 * MAXIMIZED_MARGIN, height: vh() - 2 * MAXIMIZED_MARGIN });
+    } else if (mode === 'collapsed') {
+      const height = header.getBoundingClientRect().height;
+      const width = Math.min(box.width, vw());
+      place({ left: Math.min(Math.max(box.left, 0), vw() - width), top: Math.min(Math.max(box.top, 0), vh() - height), width, height });
+    } else {
+      box = fit(box);
+      place(box);
+    }
   };
 
-  const release = () => {
-    delete windowEl.dataset['floating'];
-    WINDOW_PROPS.forEach((p) => windowEl.style.removeProperty(p));
-    CARD_PROPS.forEach((p) => card.style.removeProperty(p));
-  };
-
-  const onHeaderMouseDown = (down: MouseEvent) => {
-    if ((down.target as HTMLElement).closest('button, a, nb-icon')) return;
-    detach();
+  const startDrag = (down: MouseEvent) => {
+    if (mode === 'maximized' || (down.target as HTMLElement).closest('button, a, nb-icon')) return;
     const startX = down.clientX;
     const startY = down.clientY;
     const startLeft = px(windowEl.style.left);
     const startTop = px(windowEl.style.top);
     const move = (e: MouseEvent) => {
       const rect = windowEl.getBoundingClientRect();
-      const maxLeft = Math.max(MARGIN, window.innerWidth - rect.width - MARGIN);
-      const maxTop = Math.max(MARGIN, window.innerHeight - rect.height - MARGIN);
-      windowEl.style.left = Math.min(Math.max(startLeft + e.clientX - startX, MARGIN), maxLeft) + 'px';
-      windowEl.style.top = Math.min(Math.max(startTop + e.clientY - startY, MARGIN), maxTop) + 'px';
+      windowEl.style.left = Math.min(Math.max(startLeft + e.clientX - startX, 0), Math.max(0, vw() - rect.width)) + 'px';
+      windowEl.style.top = Math.min(Math.max(startTop + e.clientY - startY, 0), Math.max(0, vh() - rect.height)) + 'px';
     };
     const up = () => {
       document.removeEventListener('mousemove', move);
       document.removeEventListener('mouseup', up);
-      commit();
+      box = { ...box, left: px(windowEl.style.left), top: px(windowEl.style.top) };
+      persist();
     };
     document.addEventListener('mousemove', move);
     document.addEventListener('mouseup', up);
     down.preventDefault();
   };
 
-  const MIN_WIDTH = 320;
-  const MIN_HEIGHT = 240;
-  const EDGE = 6;
-  const CORNER = 14;
-
-  if (getComputedStyle(card).position === 'static') card.style.position = 'relative';
-
   const startResize = (dir: string, down: MouseEvent) => {
-    detach();
+    if (mode !== 'normal') return;
     const startX = down.clientX;
     const startY = down.clientY;
-    const rect = windowEl.getBoundingClientRect();
-    const start = { left: px(windowEl.style.left), top: px(windowEl.style.top), width: rect.width, height: rect.height };
-    windowEl.style.maxWidth = 'none';
-    windowEl.style.maxHeight = 'none';
+    const start = { ...box };
     const move = (e: MouseEvent) => {
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
       let { left, top, width, height } = start;
-      if (dir.includes('e')) width = Math.min(Math.max(start.width + dx, MIN_WIDTH), window.innerWidth - start.left - MARGIN);
-      if (dir.includes('s')) height = Math.min(Math.max(start.height + dy, MIN_HEIGHT), window.innerHeight - start.top - MARGIN);
+      if (dir.includes('e')) width = Math.min(Math.max(start.width + dx, MIN_WIDTH), vw() - start.left);
+      if (dir.includes('s')) height = Math.min(Math.max(start.height + dy, MIN_HEIGHT), vh() - start.top);
       if (dir.includes('w')) {
         const right = start.left + start.width;
-        left = Math.min(Math.max(start.left + dx, MARGIN), right - MIN_WIDTH);
+        left = Math.min(Math.max(start.left + dx, 0), right - MIN_WIDTH);
         width = right - left;
       }
       if (dir.includes('n')) {
         const bottom = start.top + start.height;
-        top = Math.min(Math.max(start.top + dy, MARGIN), bottom - MIN_HEIGHT);
+        top = Math.min(Math.max(start.top + dy, 0), bottom - MIN_HEIGHT);
         height = bottom - top;
       }
       windowEl.style.left = left + 'px';
@@ -191,13 +188,17 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
     const up = () => {
       document.removeEventListener('mousemove', move);
       document.removeEventListener('mouseup', up);
-      commit();
+      box = { left: px(windowEl.style.left), top: px(windowEl.style.top), width: px(windowEl.style.width), height: px(windowEl.style.height) };
+      persist();
     };
     document.addEventListener('mousemove', move);
     document.addEventListener('mouseup', up);
     down.preventDefault();
     down.stopPropagation();
   };
+
+  card.classList.add('floating-resizable');
+  if (getComputedStyle(card).position === 'static') card.style.position = 'relative';
 
   const cursors: Record<string, string> = {
     n: 'ns-resize', s: 'ns-resize', e: 'ew-resize', w: 'ew-resize',
@@ -225,13 +226,20 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
     return el;
   });
 
-  header.addEventListener('mousedown', onHeaderMouseDown);
+  const onViewportResize = () => render(false);
+  header.addEventListener('mousedown', startDrag);
+  window.addEventListener('resize', onViewportResize);
+  render(false);
+
   return {
-    reset,
-    suspend,
-    resume,
+    setMode: (next) => {
+      mode = next;
+      render(true);
+    },
     dispose: () => {
-      header.removeEventListener('mousedown', onHeaderMouseDown);
+      clearTimeout(animationTimer);
+      header.removeEventListener('mousedown', startDrag);
+      window.removeEventListener('resize', onViewportResize);
       handles.forEach((h) => h.remove());
     }
   };

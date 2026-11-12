@@ -59,13 +59,10 @@ export class TestDialogService {
 
       const floating = makeWindowFloating(this.windowRef.componentRef.location.nativeElement);
       this.windowRef.stateChange.subscribe((change) => {
-        if (change.newState === NbWindowState.MINIMIZED || change.newState === NbWindowState.FULL_SCREEN) {
-          floating.suspend();
-        } else {
-          setTimeout(() => floating.resume());
-        }
+        floating.setMode(
+          change.newState === NbWindowState.MINIMIZED ? 'collapsed' : change.newState === NbWindowState.FULL_SCREEN ? 'maximized' : 'normal'
+        );
       });
-      setTimeout(() => floating.resume());
       this.windowRef.onClose.subscribe(() => {
         floating.dispose();
         this.messages = undefined;
