@@ -94,6 +94,9 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
     }
   };
 
+  const offset = { x: 0, y: 0 };
+  let measured = false;
+
   const place = (b: Box) => {
     const s = windowEl.style;
     s.position = 'fixed';
@@ -101,19 +104,22 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
     s.transform = 'none';
     s.maxWidth = 'none';
     s.maxHeight = 'none';
-    s.left = b.left + 'px';
-    s.top = b.top + 'px';
+    s.left = b.left + offset.x + 'px';
+    s.top = b.top + offset.y + 'px';
     s.width = b.width + 'px';
     s.height = b.height + 'px';
     card.style.maxWidth = 'none';
     card.style.maxHeight = 'none';
     card.style.width = '100%';
     card.style.height = '100%';
-    // An ancestor with a transform would make "fixed" relative to itself: compensate
-    const after = windowEl.getBoundingClientRect();
-    if (Math.abs(after.left - b.left) > 0.5 || Math.abs(after.top - b.top) > 0.5) {
-      s.left = b.left + (b.left - after.left) + 'px';
-      s.top = b.top + (b.top - after.top) + 'px';
+    if (offset.x === 0 && offset.y === 0 && !measured) {
+      // An ancestor with a transform would make "fixed" relative to itself: measure it once, outside any transition
+      measured = true;
+      const after = windowEl.getBoundingClientRect();
+      offset.x = b.left - after.left;
+      offset.y = b.top - after.top;
+      s.left = b.left + offset.x + 'px';
+      s.top = b.top + offset.y + 'px';
     }
   };
 
@@ -151,7 +157,7 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
     const up = () => {
       document.removeEventListener('mousemove', move);
       document.removeEventListener('mouseup', up);
-      box = { ...box, left: px(windowEl.style.left), top: px(windowEl.style.top) };
+      box = { ...box, left: px(windowEl.style.left) - offset.x, top: px(windowEl.style.top) - offset.y };
       persist();
     };
     document.addEventListener('mousemove', move);
@@ -180,15 +186,15 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
         top = Math.min(Math.max(start.top + dy, 0), bottom - MIN_HEIGHT);
         height = bottom - top;
       }
-      windowEl.style.left = left + 'px';
-      windowEl.style.top = top + 'px';
+      windowEl.style.left = left + offset.x + 'px';
+      windowEl.style.top = top + offset.y + 'px';
       windowEl.style.width = width + 'px';
       windowEl.style.height = height + 'px';
     };
     const up = () => {
       document.removeEventListener('mousemove', move);
       document.removeEventListener('mouseup', up);
-      box = { left: px(windowEl.style.left), top: px(windowEl.style.top), width: px(windowEl.style.width), height: px(windowEl.style.height) };
+      box = { left: px(windowEl.style.left) - offset.x, top: px(windowEl.style.top) - offset.y, width: px(windowEl.style.width), height: px(windowEl.style.height) };
       persist();
     };
     document.addEventListener('mousemove', move);
