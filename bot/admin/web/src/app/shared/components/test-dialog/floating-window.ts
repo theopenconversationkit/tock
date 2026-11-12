@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+const MARGIN = 8;
+const WINDOW_PROPS = ['position', 'margin', 'left', 'top', 'width', 'height', 'max-width', 'max-height', 'transform'];
+const CARD_PROPS = ['max-width', 'max-height', 'width', 'height'];
+
 /**
  * Makes a Nebular window draggable by its header and resizable from its bottom-right corner
  * (Nebular only offers minimize/maximize/full-screen). The window is switched to fixed
- * positioning on the first interaction so it can be freely placed on the screen.
+ * positioning on the first interaction and always kept inside the viewport.
  */
 export function makeWindowFloating(host: HTMLElement): { dispose: () => void; reset: () => void } {
   const windowEl = host.closest('nb-window') as HTMLElement | null;
@@ -29,56 +33,78 @@ export function makeWindowFloating(host: HTMLElement): { dispose: () => void; re
   header.style.userSelect = 'none';
   card.classList.add('floating-resizable');
 
-  const detach = () => {
+  const px = (value: string) => parseFloat(value) || 0;
+
+  const clamp = () => {
     const rect = windowEl.getBoundingClientRect();
+    const w = Math.min(rect.width, window.innerWidth - 2 * MARGIN);
+    const h = Math.min(rect.height, window.innerHeight - 2 * MARGIN);
+    const left = Math.min(Math.max(px(windowEl.style.left), MARGIN), window.innerWidth - w - MARGIN);
+    const top = Math.min(Math.max(px(windowEl.style.top), MARGIN), window.innerHeight - h - MARGIN);
+    windowEl.style.width = w + 'px';
+    windowEl.style.height = h + 'px';
+    windowEl.style.left = left + 'px';
+    windowEl.style.top = top + 'px';
+    windowEl.style.maxWidth = window.innerWidth - left - MARGIN + 'px';
+    windowEl.style.maxHeight = window.innerHeight - top - MARGIN + 'px';
+  };
+
+  const detach = () => {
     if (windowEl.dataset['floating']) return;
+    const rect = windowEl.getBoundingClientRect();
     windowEl.dataset['floating'] = 'true';
     windowEl.style.position = 'fixed';
     windowEl.style.margin = '0';
+    windowEl.style.transform = 'none';
     windowEl.style.left = rect.left + 'px';
     windowEl.style.top = rect.top + 'px';
     windowEl.style.width = rect.width + 'px';
     windowEl.style.height = rect.height + 'px';
-    windowEl.style.maxWidth = 'none';
     card.style.maxWidth = 'none';
+    card.style.maxHeight = 'none';
     card.style.width = '100%';
     card.style.height = '100%';
+    // An ancestor with a transform would make "fixed" relative to itself: compensate
+    const after = windowEl.getBoundingClientRect();
+    windowEl.style.left = rect.left + (rect.left - after.left) + 'px';
+    windowEl.style.top = rect.top + (rect.top - after.top) + 'px';
+    clamp();
   };
 
-  // Give the layout back to Nebular (needed when its state changes: minimize, maximize, full screen)
+  // Gives the layout back to Nebular when its state changes (minimize, maximize, full screen)
   const reset = () => {
     delete windowEl.dataset['floating'];
-    ['position', 'margin', 'left', 'top', 'width', 'height', 'maxWidth'].forEach((p) => windowEl.style.removeProperty(p.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase())));
-    ['maxWidth', 'width', 'height'].forEach((p) => card.style.removeProperty(p.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase())));
+    WINDOW_PROPS.forEach((p) => windowEl.style.removeProperty(p));
+    CARD_PROPS.forEach((p) => card.style.removeProperty(p));
   };
 
-  const onMouseDown = (down: MouseEvent) => {
+  const onHeaderMouseDown = (down: MouseEvent) => {
     if ((down.target as HTMLElement).closest('button, a, nb-icon')) return;
     detach();
     const startX = down.clientX;
     const startY = down.clientY;
-    const startLeft = windowEl.offsetLeft;
-    const startTop = windowEl.offsetTop;
+    const startLeft = px(windowEl.style.left);
+    const startTop = px(windowEl.style.top);
     const move = (e: MouseEvent) => {
-      const left = Math.min(Math.max(startLeft + e.clientX - startX, 0 - windowEl.offsetWidth + 80), window.innerWidth - 80);
-      const top = Math.min(Math.max(startTop + e.clientY - startY, 0), window.innerHeight - 40);
-      windowEl.style.left = left + 'px';
-      windowEl.style.top = top + 'px';
+      const rect = windowEl.getBoundingClientRect();
+      const maxLeft = Math.max(MARGIN, window.innerWidth - rect.width - MARGIN);
+      const maxTop = Math.max(MARGIN, window.innerHeight - rect.height - MARGIN);
+      windowEl.style.left = Math.min(Math.max(startLeft + e.clientX - startX, MARGIN), maxLeft) + 'px';
+      windowEl.style.top = Math.min(Math.max(startTop + e.clientY - startY, MARGIN), maxTop) + 'px';
     };
     const up = () => {
       document.removeEventListener('mousemove', move);
       document.removeEventListener('mouseup', up);
+      clamp();
     };
     document.addEventListener('mousemove', move);
     document.addEventListener('mouseup', up);
     down.preventDefault();
   };
 
-  // Native CSS resize on the card: fix the window to fixed positioning before the first resize
   const onCardMouseDown = (e: MouseEvent) => {
     const r = card.getBoundingClientRect();
-    const inCorner = e.clientX > r.right - 20 && e.clientY > r.bottom - 20;
-    if (!inCorner) return;
+    if (e.clientX < r.right - 20 || e.clientY < r.bottom - 20) return;
     detach();
     const sync = new ResizeObserver(() => {
       windowEl.style.width = card.offsetWidth + 'px';
@@ -88,16 +114,17 @@ export function makeWindowFloating(host: HTMLElement): { dispose: () => void; re
     const up = () => {
       sync.disconnect();
       document.removeEventListener('mouseup', up);
+      clamp();
     };
     document.addEventListener('mouseup', up);
   };
 
-  header.addEventListener('mousedown', onMouseDown);
+  header.addEventListener('mousedown', onHeaderMouseDown);
   card.addEventListener('mousedown', onCardMouseDown);
   return {
     reset,
     dispose: () => {
-      header.removeEventListener('mousedown', onMouseDown);
+      header.removeEventListener('mousedown', onHeaderMouseDown);
       card.removeEventListener('mousedown', onCardMouseDown);
     }
   };
