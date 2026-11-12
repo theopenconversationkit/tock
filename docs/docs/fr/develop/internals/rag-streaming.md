@@ -41,10 +41,40 @@ Avec `tock_web_sse=true`, le connecteur web n'utilise pas d'événement spécifi
 ordinaires sur le canal `<chemin>/sse?userid=<id>`, avec le contrat de streaming standard de Tock (le même que celui
 du Bot API), consommé par `tock-react-kit` et `tock-vue-kit` :
 
-- les métadonnées de chaque trame contiennent `RESPONSE_ID` et `TOCK_STREAM_RESPONSE=true` ;
-- le client remplace le message portant le même `RESPONSE_ID` par le contenu de la trame ;
-- la réponse finale (footnotes, boutons, etc.) garde `RESPONSE_ID` et `TOCK_STREAM_RESPONSE=true` et remplace le
-  message streamé : **la réponse finale fait foi**.
+- chaque trame contient `RESPONSE_ID` et `TOCK_STREAM_RESPONSE=true` (conservés pour les anciens clients) ;
+- `TOCK_STREAM_PARTIAL=true` marque les trames partielles **transitoires** (cumulées ou delta) ;
+- `TOCK_REQUEST_ID` reprend le champ optionnel `requestId` du corps de la requête (généré par le client). Il est présent
+  sur chaque trame et dans la réponse du `POST` : un client ignore les trames portant un autre identifiant (le canal
+  `/sse` d'un utilisateur est partagé par tous ses onglets et conversations) ;
+- la réponse finale fait foi. Le premier message final avec un texte porte `TOCK_STREAM_REPLACE=<actionId>`
+  (`actionId` du `WebMessage`, identique en SSE et dans le `POST`) : il remplace la bulle streamée. Les autres messages
+  sont des messages ordinaires ajoutés après ;
+- si aucun message final n'a de texte (réponse vide), `TOCK_STREAM_DISCARD=true` est envoyé (trame SSE sans message, et
+  dans les métadonnées du `POST`) : le client retire la bulle streamée.
+
+```json
+// trame partielle, mode cumulé
+{"responses":[{"text":"Bonjour mon"}],"metadata":{"RESPONSE_ID":"r1","TOCK_STREAM_RESPONSE":"true","TOCK_STREAM_PARTIAL":"true","TOCK_REQUEST_ID":"q-42"}}
+// trame partielle, mode delta
+{"responses":[{"text":"de"}],"metadata":{"RESPONSE_ID":"r1","TOCK_STREAM_RESPONSE":"true","TOCK_STREAM_PARTIAL":"true","TOCK_STREAM_MODE":"delta","TOCK_STREAM_KEEP":"11","TOCK_REQUEST_ID":"q-42"}}
+// trame finale (SSE), puis réponse du POST avec 2 messages
+{"responses":[{"text":"Bonjour monde","actionId":"a1","footnotes":[]}],"metadata":{"RESPONSE_ID":"r1","TOCK_STREAM_RESPONSE":"true","TOCK_STREAM_REPLACE":"a1","TOCK_REQUEST_ID":"q-42"}}
+{"responses":[{"text":"Bonjour monde","actionId":"a1"},{"text":"Suite","actionId":"a2"}],"metadata":{"TOCK_STREAM_RESPONSE":"true","TOCK_STREAM_REPLACE":"a1","TOCK_REQUEST_ID":"q-42"}}
+// sans texte : la bulle est retirée
+{"responses":[],"metadata":{"TOCK_STREAM_DISCARD":"true","TOCK_REQUEST_ID":"q-42"}}
+```
+
+Les trames partielles sont limitées en fréquence (`tock_web_connector_stream_min_interval_ms`, 100 ms par défaut) :
+les tokens reçus entre-temps ne sont pas perdus, la trame suivante (ou la réponse finale) porte le texte complet.
+
+**Prérequis de déploiement** : `tock_web_sse` est le seul interrupteur. Les clients (`tock-react-kit`, `tock-vue-kit`)
+doivent être mis à jour vers les versions gérant ce contrat **avant** son activation, sinon ils afficheraient les
+trames transitoires comme des messages finaux.
+
+**Limites** : avec plusieurs instances, le canal `/sse` doit être connecté à l'instance qui traite le `POST` (sticky
+sessions), sinon la réponse est simplement renvoyée dans le `POST`. Le guardrail post-stream s'applique après l'envoi du
+texte : la réponse finale remplace la bulle mais les fragments déjà affichés ne peuvent pas être retirés. Le connecteur
+Google Chat met le message à jour au plus une fois par seconde ; le dernier tampon est couvert par la réponse finale.
 
 Pour qu'une réponse streame, trois conditions sont nécessaires : `tock_web_sse=true`, un client dont le canal `/sse` est
 connecté à l'instance qui traite le message, et un bot dont la story RAG est active. Dans ce cas le connecteur positionne
@@ -106,7 +136,7 @@ Le flux Python (`execute_rag_chain_stream`) a trois étapes :
 
 - **Intrinsèquement terminal** (ne peut pas être streamé) : les footnotes (elles dépendent de `context_usage`, dernier
   champ du JSON `LLMAnswer`), la trace d'observabilité, `duration` / `step_durations`, ainsi que `status`,
-  `redirection_intent`, `score` et `display_answer`.
+  `redirection_intent` et `score`. Le texte n'est streamé qu'une fois `display_answer: true` connu (sinon il n'est que dans la réponse finale).
 - **Disponible tôt** (non streamé aujourd'hui) : les documents récupérés et les prompts de debug, connus dès l'étape 1.
 - **Le texte** : déjà streamé.
 
@@ -122,3 +152,4 @@ stockée.
 | `tock_web_direct_sse` | `false` | Active la route `<chemin>/sse/direct` |
 | `tock_web_connector_merge_stream_response` | `true` | Fusionne les `SendSentence` partiels du streaming Bot API en une réponse (sans effet sur le streaming RAG) |
 | `tock_web_sse_keepalive_delay` | `10` | Secondes entre deux pings SSE |
+| `tock_web_connector_stream_min_interval_ms` | `100` | Délai minimal (ms) entre deux trames partielles de streaming |

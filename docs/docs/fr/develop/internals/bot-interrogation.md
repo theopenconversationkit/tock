@@ -353,8 +353,10 @@ transformé par `WebConnectorCallback` en trame SSE `event: message` :
 - si le client a envoyé `streamMode: "delta"` dans la requête, la trame ne contient que la fin
   du texte qui a changé, avec `TOCK_STREAM_MODE=delta` et `TOCK_STREAM_KEEP=N` : le client
   garde les `N` premiers caractères du message courant et ajoute le texte de la trame ;
-- la réponse finale garde `RESPONSE_ID` et `TOCK_STREAM_RESPONSE=true` et remplace le message
-  streamé. Elle est écrite par le même contexte Vert.x que les trames partielles, donc après
+- les trames partielles portent `TOCK_STREAM_PARTIAL=true` et le `TOCK_REQUEST_ID` repris ; la réponse finale désigne
+  le message de remplacement avec `TOCK_STREAM_REPLACE=<actionId>` (ou `TOCK_STREAM_DISCARD=true` sans texte), voir
+  [Streaming des réponses RAG](rag-streaming.md) ;
+- la réponse finale est écrite par le même contexte Vert.x que les trames partielles, donc après
   elles, et une trame tardive est ignorée ;
 - si aucun canal n'est connecté, la réponse complète est simplement renvoyée dans le `POST`.
 

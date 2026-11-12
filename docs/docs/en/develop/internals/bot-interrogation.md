@@ -340,9 +340,11 @@ on the user action, which makes the engine choose `ragStream`. Each fragment rec
 - if the client sent `streamMode: "delta"` in the request, the frame only contains the end of the text that
   changed, with `TOCK_STREAM_MODE=delta` and `TOCK_STREAM_KEEP=N`: the client keeps the first `N`
   characters of the current message and appends the frame text;
-- the final response keeps `RESPONSE_ID` and `TOCK_STREAM_RESPONSE=true` and replaces the streamed message.
-  It is written by the same Vert.x context as the partial frames, hence after them, and a late frame is
-  ignored;
+- partial frames carry `TOCK_STREAM_PARTIAL=true` and the echoed `TOCK_REQUEST_ID`; the final response designates
+  the replacing message with `TOCK_STREAM_REPLACE=<actionId>` (or `TOCK_STREAM_DISCARD=true` when there is no text),
+  see [RAG answer streaming](rag-streaming.md);
+- the final response is written by the same Vert.x context as the partial frames,
+  hence after them, and a late frame is ignored;
 - if no channel is connected, the complete response is simply returned in the `POST`.
 
 Full detail and contract: [Streaming RAG answers](rag-streaming.md).

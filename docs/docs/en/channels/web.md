@@ -80,9 +80,13 @@ No other setting is needed. Without a connected SSE channel, nothing changes: th
 Contract (the same for `tock-react-kit` and `tock-vue-kit`):
 
 - each frame is a `message` event whose metadata contains `RESPONSE_ID` and `TOCK_STREAM_RESPONSE=true`;
-- the client replaces the message with the same `RESPONSE_ID` by the frame content;
-- the final answer (with footnotes, etc.) keeps `RESPONSE_ID` and `TOCK_STREAM_RESPONSE=true`. It is sent after all
-  partial frames and replaces the streamed message.
+- partial frames also carry `TOCK_STREAM_PARTIAL=true`; the client replaces the message with the same `RESPONSE_ID` by
+  the frame content;
+- the final answer (with footnotes, etc.) is sent after all partial frames. The first message with a text carries
+  `TOCK_STREAM_REPLACE=<actionId>` and replaces the streamed message; if there is none, `TOCK_STREAM_DISCARD=true`
+  asks the client to remove it;
+- the client may send a `requestId` in the request body: it is echoed as `TOCK_REQUEST_ID` on every frame and in the
+  `POST` response, so the client can ignore frames belonging to another request.
 
 By default, each frame contains the already rendered accumulated text. To reduce the transferred volume, the client can
 request the delta mode by adding `"streamMode": "delta"` to the request body (`streamMode` option of `tock-react-kit`

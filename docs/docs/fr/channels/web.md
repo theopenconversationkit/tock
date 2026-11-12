@@ -81,9 +81,13 @@ renvoyée dans la réponse du `POST`.
 Contrat (identique pour `tock-react-kit` et `tock-vue-kit`) :
 
 - chaque trame est un événement `message` dont les métadonnées contiennent `RESPONSE_ID` et `TOCK_STREAM_RESPONSE=true` ;
-- le client remplace le message portant le même `RESPONSE_ID` par le contenu de la trame ;
-- la réponse finale (avec notes de bas de page, etc.) garde `RESPONSE_ID` et `TOCK_STREAM_RESPONSE=true`. Elle est
-  envoyée après toutes les trames partielles et remplace le message streamé.
+- les trames partielles portent aussi `TOCK_STREAM_PARTIAL=true` ; le client remplace le message portant le même
+  `RESPONSE_ID` par le contenu de la trame ;
+- la réponse finale (avec notes de bas de page, etc.) est envoyée après toutes les trames partielles. Le premier
+  message avec un texte porte `TOCK_STREAM_REPLACE=<actionId>` et remplace le message streamé ; s'il n'y en a pas,
+  `TOCK_STREAM_DISCARD=true` demande au client de le retirer ;
+- le client peut envoyer un `requestId` dans le corps de la requête : il est repris en `TOCK_REQUEST_ID` sur chaque
+  trame et dans la réponse du `POST`, ce qui permet d'ignorer les trames d'une autre requête.
 
 Par défaut, chaque trame contient le texte cumulé déjà rendu. Pour limiter le volume transféré, le client peut demander
 le mode delta en ajoutant `"streamMode": "delta"` dans le corps de la requête (option `streamMode` de `tock-react-kit`
