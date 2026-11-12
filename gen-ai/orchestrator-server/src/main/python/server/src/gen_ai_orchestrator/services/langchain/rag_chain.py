@@ -234,9 +234,9 @@ _NON_STREAMABLE_STATUSES = {'not_found_in_context'}
 
 
 def _stream_allowed(partial: dict) -> bool:
-    """The partial answer can be streamed only if `display_answer` is explicitly true."""
+    """The partial answer is streamed unless `display_answer` is already known to be false."""
     return (
-        partial.get('display_answer') is True
+        partial.get('display_answer') is not False
         and partial.get('status') not in _NON_STREAMABLE_STATUSES
     )
 
@@ -258,9 +258,10 @@ async def execute_rag_chain_stream(
       - a final 'answer' event carrying the complete RAGResponse (JSON),
         OR an 'error' event if the post-stream guardrail blocks the answer.
 
-    `display_answer`: the answer text is buffered until the partial JSON explicitly
-    carries `display_answer: true` (with a displayable status); it is never streamed
-    when the decision is false or absent, the final 'answer' event then carries it.
+    `display_answer`: the text is not streamed once the partial JSON carries
+    `display_answer: false` (or a non-displayable status). When the field is not (yet)
+    emitted by the model, the text is streamed; the final 'answer' event stays the
+    source of truth and the client discards the bubble if nothing is to be displayed.
 
     Guardrail: tokens are streamed as they are produced, so individual tokens
     cannot be blocked before being sent. The toxicity guardrail is therefore
@@ -317,8 +318,6 @@ async def execute_rag_chain_stream(
         if kind == 'on_parser_stream' and event.get('name') == 'rag_chain_output':
             partial = event['data'].get('chunk') or {}
             current_answer = partial.get('answer') or ''
-            # The text is only streamed once the model explicitly allowed its display;
-            # until then it stays buffered (and is flushed first if the decision becomes true).
             if _stream_allowed(partial) and len(current_answer) > len(previous_answer):
                 delta = current_answer[len(previous_answer):]
                 previous_answer = current_answer

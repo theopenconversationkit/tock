@@ -821,12 +821,12 @@ async def test_stream_emits_no_token_when_display_answer_is_false():
 
 
 @pytest.mark.asyncio
-async def test_stream_buffers_text_when_decision_is_absent():
+async def test_stream_streams_text_when_decision_is_absent():
     final = {'status': 'found_in_context', 'answer': 'Bonjour'}
     tokens, answers = await _run_stream(
         [{'status': 'found_in_context', 'answer': 'Bon'}, final], final
     )
-    assert tokens == []
+    assert tokens == ['Bon', 'jour']
     assert answers[0]['answer']['answer'] == 'Bonjour'
 
 
@@ -838,7 +838,7 @@ async def test_stream_does_not_stream_not_found_in_context():
 
 
 @pytest.mark.asyncio
-async def test_stream_flushes_buffer_when_decision_becomes_true_without_duplicates():
+async def test_stream_has_no_duplicates_when_decision_arrives_late():
     final = {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour le monde'}
     tokens, answers = await _run_stream(
         [
@@ -850,5 +850,5 @@ async def test_stream_flushes_buffer_when_decision_becomes_true_without_duplicat
         ],
         final,
     )
-    assert tokens == ['Bonjour', ' le', ' monde']
+    assert tokens == ['Bon', 'jour', ' le', ' monde']
     assert answers[0]['answer']['answer'] == 'Bonjour le monde'
