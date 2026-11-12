@@ -50,6 +50,7 @@ import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.security.TockUserRole.nlpUser
 import ai.tock.shared.vertx.WebVerticle
+import io.vertx.core.http.HttpMethod.POST
 import io.vertx.ext.web.RoutingContext
 
 /**
@@ -407,10 +408,10 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
             }
 
             // ------------------------- Generation - Playground (streaming SSE) --------------------
-            blockingJsonPost(
-                PATH_COMPLETION_PLAYGROUND_STREAM,
-                admin,
-            ) { context: RoutingContext, request: PlaygroundRequest ->
+            // `blocking` and not `blockingJsonPost`: the response is written and closed on the Vert.x context by the
+            // SSE listener, so no JSON body must be written when the handler returns.
+            blocking(POST, PATH_COMPLETION_PLAYGROUND_STREAM, admin) { context: RoutingContext ->
+                val request: PlaygroundRequest = context.readJson()
                 checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "GEN AI - Playground (stream)..." }
 
@@ -447,8 +448,8 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
 
                             override fun onError(error: Throwable) {
                                 logger.error(error) { "GEN AI - Playground (stream) error" }
-                                val detail = error.message?.replace("\"", "\\\"") ?: "Unknown error"
-                                writeChunk("event: error\ndata: {\"message\": \"$detail\"}\n\n")
+                                val detail = error.message ?: "Unknown error"
+                                writeChunk("event: error\ndata: ${mapper.writeValueAsString(mapOf("message" to detail))}\n\n")
                             }
 
                             override fun onComplete() {

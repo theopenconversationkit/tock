@@ -25,6 +25,7 @@ import ai.tock.shared.Dice
 import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
+import io.vertx.core.http.HttpMethod.POST
 import io.vertx.ext.web.RoutingContext
 import kotlinx.coroutines.runBlocking
 import org.litote.kmongo.Id
@@ -126,7 +127,10 @@ class TestCoreService : TestService {
             }
 
             // Streaming version of /test/talk using Server-Sent Events
-            blockingJsonPost("/test/talk/stream", setOf(botUser)) { context, query: BotDialogRequest ->
+            // `blocking` and not `blockingJsonPost`: the SSE response is written and closed on the Vert.x context
+            // by TestTalkStreamService, so no JSON body must be written when the handler returns.
+            blocking(POST, "/test/talk/stream", setOf(botUser)) { context ->
+                val query: BotDialogRequest = context.readJson()
                 if (context.organization == query.namespace) {
                     val debugEnabled = context.queryParams()["debug"]?.toBoolean() ?: false
                     val sourceWithContent = context.queryParams()["sourceWithContent"]?.toBoolean() ?: false
@@ -150,8 +154,7 @@ class TestCoreService : TestService {
                             )
                         }
                     } catch (t: Throwable) {
-                        context.response().write("event: error\ndata: {\"error\": \"${t.message}\"}\n\n")
-                        context.response().end()
+                        TestTalkStreamService.writeError(context, t)
                     }
                 } else {
                     Companion.unauthorized()

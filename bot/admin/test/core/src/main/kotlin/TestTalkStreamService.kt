@@ -19,6 +19,7 @@ package ai.tock.bot.admin.test
 import ai.tock.bot.admin.test.model.BotDialogRequest
 import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.shared.defaultLocale
+import ai.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -83,12 +84,22 @@ object TestTalkStreamService {
             logger.debug { "Streaming talk completed successfully" }
         } catch (throwable: Throwable) {
             logger.error(throwable) { "Error in streaming talk" }
-            val errorEvent = """event: error
-data: {"error": "${throwable.message?.replace("\"", "\\\"")}"}
+            writeError(context, throwable)
+        }
+    }
 
-"""
-            context.response().write(errorEvent)
-            context.response().end()
+    /** Writes a terminal `error` event then closes the stream, on the Vert.x context after the queued writes. */
+    fun writeError(
+        context: RoutingContext,
+        throwable: Throwable,
+    ) {
+        val data = mapper.writeValueAsString(mapOf("error" to (throwable.message ?: "Unknown error")))
+        context.vertx().runOnContext {
+            val response = context.response()
+            if (!response.ended()) {
+                response.write("event: error\ndata: $data\n\n")
+                response.end()
+            }
         }
     }
 }

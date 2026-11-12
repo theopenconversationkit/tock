@@ -167,7 +167,13 @@ class CompletionServiceImpl : CompletionService {
                     .build()
 
             eventSource.start()
-            latch.await()
+            if (!latch.await(timeout, TimeUnit.MILLISECONDS)) {
+                completed.set(true)
+                throw GenAIOrchestratorParsingError(
+                    message = "Completion stream timeout",
+                    detail = "No terminal event received within ${timeout}ms",
+                )
+            }
             listener.onComplete()
         } catch (e: Exception) {
             logger.error { "Completion stream error: ${e.message}" }
