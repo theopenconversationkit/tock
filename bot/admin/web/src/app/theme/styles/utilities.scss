@@ -426,7 +426,7 @@ nb-menu {
     }
   }
 
-  &:not([data-mode='normal']) .floating-resize-handle {
+  &[data-mode='collapsed'] .floating-resize-handle {
     display: none;
   }
 

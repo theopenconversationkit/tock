@@ -22,6 +22,11 @@ export interface FloatingWindow {
   dispose: () => void;
 }
 
+export interface FloatingOptions {
+  /** Called when the user drags or resizes a maximized window, which then becomes a normal one */
+  onLeaveMaximized?: () => void;
+}
+
 interface Box {
   left: number;
   top: number;
@@ -42,7 +47,7 @@ const STORAGE_KEY = 'tock-test-dialog-geometry';
  * minimized / maximized / full-screen layouts are replaced by in-place modes), draggable by its header,
  * resizable from any edge or corner, always kept inside the viewport, and remembered across reloads.
  */
-export function makeWindowFloating(host: HTMLElement): FloatingWindow {
+export function makeWindowFloating(host: HTMLElement, options: FloatingOptions = {}): FloatingWindow {
   const windowEl = host.closest('nb-window') as HTMLElement | null;
   const header = windowEl?.querySelector('nb-card-header') as HTMLElement | null;
   const card = windowEl?.querySelector('nb-card') as HTMLElement | null;
@@ -126,7 +131,7 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
   const render = (animate: boolean) => {
     windowEl.dataset['floating'] = 'true';
     windowEl.dataset['mode'] = mode;
-    header.style.cursor = mode === 'maximized' ? 'default' : 'move';
+    header.style.cursor = 'move';
     clearTimeout(animationTimer);
     windowEl.style.transition = animate ? `left ${TRANSITION_MS}ms, top ${TRANSITION_MS}ms, width ${TRANSITION_MS}ms, height ${TRANSITION_MS}ms` : '';
     if (animate) animationTimer = setTimeout(() => (windowEl.style.transition = ''), TRANSITION_MS + 50);
@@ -143,8 +148,18 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
     }
   };
 
+  const leaveMaximized = () => {
+    if (mode !== 'maximized') return;
+    box = { left: MAXIMIZED_MARGIN, top: MAXIMIZED_MARGIN, width: vw() - 2 * MAXIMIZED_MARGIN, height: vh() - 2 * MAXIMIZED_MARGIN };
+    mode = 'normal';
+    render(false);
+    persist();
+    options.onLeaveMaximized?.();
+  };
+
   const startDrag = (down: MouseEvent) => {
-    if (mode === 'maximized' || (down.target as HTMLElement).closest('button, a, nb-icon')) return;
+    if ((down.target as HTMLElement).closest('button, a, nb-icon')) return;
+    leaveMaximized();
     const startX = down.clientX;
     const startY = down.clientY;
     const startLeft = px(windowEl.style.left);
@@ -166,7 +181,8 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
   };
 
   const startResize = (dir: string, down: MouseEvent) => {
-    if (mode !== 'normal') return;
+    if (mode === 'collapsed') return;
+    leaveMaximized();
     const startX = down.clientX;
     const startY = down.clientY;
     const start = { ...box };

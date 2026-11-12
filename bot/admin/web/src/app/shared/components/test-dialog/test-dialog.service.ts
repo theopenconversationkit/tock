@@ -57,7 +57,9 @@ export class TestDialogService {
         initialState: NbWindowState.MAXIMIZED
       });
 
-      const floating = makeWindowFloating(this.windowRef.componentRef.location.nativeElement);
+      const floating = makeWindowFloating(this.windowRef.componentRef.location.nativeElement, {
+        onLeaveMaximized: () => this.windowRef?.maximize()
+      });
       this.windowRef.stateChange.subscribe((change) => {
         floating.setMode(
           change.newState === NbWindowState.MINIMIZED ? 'collapsed' : change.newState === NbWindowState.FULL_SCREEN ? 'maximized' : 'normal'
