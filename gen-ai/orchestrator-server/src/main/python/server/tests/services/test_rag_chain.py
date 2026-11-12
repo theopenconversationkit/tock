@@ -705,9 +705,9 @@ async def _fake_astream_events(*_args, **_kwargs):
     partials = [
         {},
         {'status': 'found_in_context'},
-        {'status': 'found_in_context', 'answer': 'Bonjour'},
-        {'status': 'found_in_context', 'answer': 'Bonjour, voici'},
-        {'status': 'found_in_context', 'answer': 'Bonjour, voici la reponse.'},
+        {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour'},
+        {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour, voici'},
+        {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour, voici la reponse.'},
     ]
     for partial in partials:
         yield {
@@ -764,3 +764,91 @@ async def test_execute_rag_chain_stream_emits_token_deltas_then_answer(
     assert len(answer_events) == 1
     final = json.loads(answer_events[0]['data'])
     assert final['answer']['answer'] == 'Bonjour, voici la reponse.'
+
+
+def _stream_events(partials, final):
+    async def _events(*_args, **_kwargs):
+        for partial in partials:
+            yield {
+                'event': 'on_parser_stream',
+                'name': 'rag_chain_output',
+                'data': {'chunk': partial},
+            }
+        yield {
+            'event': 'on_chain_end',
+            'name': 'RunnableSequence',
+            'parent_ids': [],
+            'data': {'output': final},
+        }
+
+    return _events
+
+
+async def _run_stream(partials, final):
+    from gen_ai_orchestrator.services.langchain.rag_chain import (
+        execute_rag_chain_stream,
+    )
+
+    with patch(
+        'gen_ai_orchestrator.services.langchain.rag_chain.create_rag_chain_parts'
+    ) as parts:
+        rag_inputs = MagicMock()
+        rag_inputs.ainvoke = AsyncMock(
+            return_value={'documents': [], 'chat_history': []}
+        )
+        answer_chain = MagicMock()
+        answer_chain.astream_events = _stream_events(partials, final)
+        parts.return_value = (rag_inputs, answer_chain)
+        events = [e async for e in execute_rag_chain_stream(_rag_request(), False)]
+    tokens = [json.loads(e['data'])['content'] for e in events if e['event'] == 'token']
+    answers = [json.loads(e['data']) for e in events if e['event'] == 'answer']
+    return tokens, answers
+
+
+@pytest.mark.asyncio
+async def test_stream_emits_no_token_when_display_answer_is_false():
+    final = {'status': 'found_in_context', 'display_answer': False, 'answer': 'Secret'}
+    tokens, answers = await _run_stream(
+        [
+            {'status': 'found_in_context', 'display_answer': False},
+            {'status': 'found_in_context', 'display_answer': False, 'answer': 'Sec'},
+            final,
+        ],
+        final,
+    )
+    assert tokens == []
+    assert len(answers) == 1
+
+
+@pytest.mark.asyncio
+async def test_stream_buffers_text_when_decision_is_absent():
+    final = {'status': 'found_in_context', 'answer': 'Bonjour'}
+    tokens, answers = await _run_stream(
+        [{'status': 'found_in_context', 'answer': 'Bon'}, final], final
+    )
+    assert tokens == []
+    assert answers[0]['answer']['answer'] == 'Bonjour'
+
+
+@pytest.mark.asyncio
+async def test_stream_does_not_stream_not_found_in_context():
+    final = {'status': 'not_found_in_context', 'display_answer': True, 'answer': 'Rien'}
+    tokens, _ = await _run_stream([final], final)
+    assert tokens == []
+
+
+@pytest.mark.asyncio
+async def test_stream_flushes_buffer_when_decision_becomes_true_without_duplicates():
+    final = {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour le monde'}
+    tokens, answers = await _run_stream(
+        [
+            {'answer': 'Bon'},
+            {'answer': 'Bonjour'},
+            {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour'},
+            {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour le'},
+            final,
+        ],
+        final,
+    )
+    assert tokens == ['Bonjour', ' le', ' monde']
+    assert answers[0]['answer']['answer'] == 'Bonjour le monde'

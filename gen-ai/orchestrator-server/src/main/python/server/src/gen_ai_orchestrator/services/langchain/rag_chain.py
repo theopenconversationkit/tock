@@ -229,6 +229,18 @@ async def execute_rag_chain(
     )
 
 
+# Statuses for which the answer text is not a user-facing answer (redirection / no answer)
+_NON_STREAMABLE_STATUSES = {'not_found_in_context'}
+
+
+def _stream_allowed(partial: dict) -> bool:
+    """The partial answer can be streamed only if `display_answer` is explicitly true."""
+    return (
+        partial.get('display_answer') is True
+        and partial.get('status') not in _NON_STREAMABLE_STATUSES
+    )
+
+
 @opensearch_exception_handler
 @aws_bedrock_exception_handler(provider='AwsBedrock')
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
@@ -245,6 +257,10 @@ async def execute_rag_chain_stream(
         the incremental output of the answer JsonOutputParser;
       - a final 'answer' event carrying the complete RAGResponse (JSON),
         OR an 'error' event if the post-stream guardrail blocks the answer.
+
+    `display_answer`: the answer text is buffered until the partial JSON explicitly
+    carries `display_answer: true` (with a displayable status); it is never streamed
+    when the decision is false or absent, the final 'answer' event then carries it.
 
     Guardrail: tokens are streamed as they are produced, so individual tokens
     cannot be blocked before being sent. The toxicity guardrail is therefore
@@ -301,7 +317,9 @@ async def execute_rag_chain_stream(
         if kind == 'on_parser_stream' and event.get('name') == 'rag_chain_output':
             partial = event['data'].get('chunk') or {}
             current_answer = partial.get('answer') or ''
-            if len(current_answer) > len(previous_answer):
+            # The text is only streamed once the model explicitly allowed its display;
+            # until then it stays buffered (and is flushed first if the decision becomes true).
+            if _stream_allowed(partial) and len(current_answer) > len(previous_answer):
                 delta = current_answer[len(previous_answer):]
                 previous_answer = current_answer
                 t_last_token = time.time()

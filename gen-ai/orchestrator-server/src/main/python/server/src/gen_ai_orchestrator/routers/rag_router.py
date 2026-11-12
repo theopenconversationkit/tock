@@ -69,7 +69,11 @@ async def ask_rag_stream(
     Streams one `token` event per fragment of the answer as it is generated,
     then a final `answer` event carrying the complete RAGResponse.
 
-    Note: the toxicity guardrail is not applied on this streaming route.
+    The text is only streamed once the model explicitly sets `display_answer` to true.
+
+    Note: the toxicity guardrail is applied after the stream, on the complete answer: when it
+    triggers, an `error` event replaces the final `answer` event. Known limit: the fragments
+    already sent cannot be withdrawn.
     """
     # Check the consistency of the Vector Store Provider with the request body
     validate_vector_store_rag_query(
