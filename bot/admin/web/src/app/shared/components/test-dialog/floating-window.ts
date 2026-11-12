@@ -20,7 +20,7 @@ const CARD_PROPS = ['max-width', 'max-height', 'width', 'height'];
 
 /**
  * Makes a Nebular window draggable by its header and resizable from its bottom-right corner
- * (Nebular only offers minimize/maximize/full-screen). The window is switched to fixed
+ * (Nebular only offers minimize/maximize/full-screen), from any edge or corner. The window is switched to fixed
  * positioning on the first interaction and always kept inside the viewport.
  */
 export interface FloatingWindow {
@@ -143,32 +143,87 @@ export function makeWindowFloating(host: HTMLElement): FloatingWindow {
     down.preventDefault();
   };
 
-  const onCardMouseDown = (e: MouseEvent) => {
-    const r = card.getBoundingClientRect();
-    if (e.clientX < r.right - 20 || e.clientY < r.bottom - 20) return;
+  const MIN_WIDTH = 320;
+  const MIN_HEIGHT = 240;
+  const EDGE = 6;
+  const CORNER = 14;
+
+  if (getComputedStyle(card).position === 'static') card.style.position = 'relative';
+
+  const startResize = (dir: string, down: MouseEvent) => {
     detach();
-    const sync = new ResizeObserver(() => {
-      windowEl.style.width = card.offsetWidth + 'px';
-      windowEl.style.height = card.offsetHeight + 'px';
-    });
-    sync.observe(card);
+    const startX = down.clientX;
+    const startY = down.clientY;
+    const rect = windowEl.getBoundingClientRect();
+    const start = { left: px(windowEl.style.left), top: px(windowEl.style.top), width: rect.width, height: rect.height };
+    windowEl.style.maxWidth = 'none';
+    windowEl.style.maxHeight = 'none';
+    const move = (e: MouseEvent) => {
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      let { left, top, width, height } = start;
+      if (dir.includes('e')) width = Math.min(Math.max(start.width + dx, MIN_WIDTH), window.innerWidth - start.left - MARGIN);
+      if (dir.includes('s')) height = Math.min(Math.max(start.height + dy, MIN_HEIGHT), window.innerHeight - start.top - MARGIN);
+      if (dir.includes('w')) {
+        const right = start.left + start.width;
+        left = Math.min(Math.max(start.left + dx, MARGIN), right - MIN_WIDTH);
+        width = right - left;
+      }
+      if (dir.includes('n')) {
+        const bottom = start.top + start.height;
+        top = Math.min(Math.max(start.top + dy, MARGIN), bottom - MIN_HEIGHT);
+        height = bottom - top;
+      }
+      windowEl.style.left = left + 'px';
+      windowEl.style.top = top + 'px';
+      windowEl.style.width = width + 'px';
+      windowEl.style.height = height + 'px';
+    };
     const up = () => {
-      sync.disconnect();
+      document.removeEventListener('mousemove', move);
       document.removeEventListener('mouseup', up);
       clamp();
     };
+    document.addEventListener('mousemove', move);
     document.addEventListener('mouseup', up);
+    down.preventDefault();
+    down.stopPropagation();
   };
 
+  const cursors: Record<string, string> = {
+    n: 'ns-resize', s: 'ns-resize', e: 'ew-resize', w: 'ew-resize',
+    ne: 'nesw-resize', sw: 'nesw-resize', nw: 'nwse-resize', se: 'nwse-resize'
+  };
+  const handles = Object.keys(cursors).map((dir) => {
+    const el = document.createElement('div');
+    el.className = 'floating-resize-handle';
+    const corner = dir.length === 2;
+    const size = corner ? CORNER : EDGE;
+    const st = el.style;
+    st.position = 'absolute';
+    st.zIndex = '10';
+    st.cursor = cursors[dir];
+    if (dir.includes('n')) st.top = '0';
+    if (dir.includes('s')) st.bottom = '0';
+    if (dir.includes('w')) st.left = '0';
+    if (dir.includes('e')) st.right = '0';
+    st.width = dir.includes('e') || dir.includes('w') ? size + 'px' : `calc(100% - ${2 * CORNER}px)`;
+    st.height = dir.includes('n') || dir.includes('s') ? size + 'px' : `calc(100% - ${2 * CORNER}px)`;
+    if (!corner && (dir === 'n' || dir === 's')) st.left = CORNER + 'px';
+    if (!corner && (dir === 'e' || dir === 'w')) st.top = CORNER + 'px';
+    el.addEventListener('mousedown', (e) => startResize(dir, e));
+    card.appendChild(el);
+    return el;
+  });
+
   header.addEventListener('mousedown', onHeaderMouseDown);
-  card.addEventListener('mousedown', onCardMouseDown);
   return {
     reset,
     suspend,
     resume,
     dispose: () => {
       header.removeEventListener('mousedown', onHeaderMouseDown);
-      card.removeEventListener('mousedown', onCardMouseDown);
+      handles.forEach((h) => h.remove());
     }
   };
 }

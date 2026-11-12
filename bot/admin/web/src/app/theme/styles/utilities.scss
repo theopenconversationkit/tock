@@ -393,8 +393,6 @@ nb-menu {
   }
 
   nb-card.floating-resizable {
-    resize: both;
-    overflow: auto;
     min-width: 320px;
     min-height: 240px;
   }
@@ -427,9 +425,11 @@ nb-menu {
     }
   }
 
+  &.minimized .floating-resize-handle {
+    display: none;
+  }
+
   &.minimized nb-card.floating-resizable {
-    resize: none;
-    overflow: visible;
     min-width: 0;
     min-height: 0;
   }
