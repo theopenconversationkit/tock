@@ -160,7 +160,7 @@ export class TestDialogComponent implements OnInit, OnDestroy {
 
       if ([NbWindowState.MAXIMIZED, NbWindowState.FULL_SCREEN].includes(change.newState)) {
         const storedMessages = this.testDialogService.getStoredMessages();
-        if (storedMessages?.length > 0) {
+        if (!this.messages?.length && storedMessages?.length > 0) {
           this.messages = storedMessages;
           setTimeout(() => this.chatUi.scrollToBottom());
         }
