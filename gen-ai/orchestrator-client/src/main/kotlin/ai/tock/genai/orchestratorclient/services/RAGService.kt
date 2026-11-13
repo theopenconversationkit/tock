@@ -24,4 +24,10 @@ interface RAGService {
         query: RAGRequest,
         debug: Boolean = false,
     ): RAGResponse?
+
+    fun ragStream(
+        query: RAGRequest,
+        debug: Boolean = false,
+        listener: RAGStreamListener,
+    )
 }

@@ -392,14 +392,51 @@ nb-menu {
     background-color: var(--background-basic-color-2);
   }
 
-  &.maximized {
+  nb-card.floating-resizable {
+    min-width: 320px;
+    min-height: 240px;
+  }
+
+  // Free-floating window: the chat area takes the available height, the input stays at the bottom
+  &[data-floating='true'] {
     nb-card {
-      max-width: 55vw;
+      display: flex;
+      flex-direction: column;
+    }
+    nb-card-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    nb-overlay-container,
+    tock-test-dialog,
+    tock-test-dialog > div,
+    tock-test-dialog .shaders-wrapper,
+    tock-test-dialog tock-chat-ui {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    tock-test-dialog tock-chat-ui .scrollable {
+      max-height: none !important;
+      min-height: 0;
     }
   }
-  &.full-screen {
-    nb-card {
-      width: 90vw;
+
+  &[data-mode='collapsed'] .floating-resize-handle {
+    display: none;
+  }
+
+  &[data-mode='collapsed'] {
+    nb-card.floating-resizable {
+      min-width: 0;
+      min-height: 0;
+    }
+    nb-card-body {
+      display: none;
     }
   }
 }

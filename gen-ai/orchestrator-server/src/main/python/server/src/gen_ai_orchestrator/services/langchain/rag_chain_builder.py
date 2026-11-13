@@ -32,6 +32,7 @@ from urllib.parse import urlparse
 
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.exceptions import OutputParserException
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
@@ -450,6 +451,15 @@ def add_rank_metadata(
 # ---------------------------------------------------------------------------
 
 
+def _condensation_fallback(inputs: dict) -> dict:
+    """Use the raw question when the condensing LLM did not return the expected JSON."""
+    logger.warning(
+        'Question condensation output could not be parsed as JSON: '
+        'falling back to the original question.'
+    )
+    return {'condensed_question': inputs['question'], 'key_words': None}
+
+
 def build_question_condensation_chain(llm, prompt: PromptTemplate):
     """
     Return a chain that rewrites the user question into a stand-alone query
@@ -480,10 +490,21 @@ def build_question_condensation_chain(llm, prompt: PromptTemplate):
 # ---------------------------------------------------------------------------
 
 
-def create_rag_chain(
+def create_rag_chain_parts(
     request: RAGRequest,
     vector_db_async_mode: Optional[bool] = True,
-) -> RunnableSerializable[Any, dict[str, Any]]:
+) -> tuple[RunnableSerializable[Any, dict[str, Any]], RunnableSerializable[Any, dict]]:
+    """
+    Build the two separable halves of the RAG pipeline:
+
+      - ``rag_inputs``: condensation + retrieval (+ optional compression),
+        producing the dict ``{question, key_words, chat_history, documents}``.
+      - ``answer_chain``: prompt + answering LLM + JSON parser, producing the
+        ``LLMAnswer`` dict.
+
+    Keeping them separate lets the streaming path run ``rag_inputs`` eagerly
+    (it cannot be streamed token by token) and stream only ``answer_chain``.
+    """
     # -- Validate prompts --------------------------------------------------
     validate_prompt_template(
         request.question_condensing_prompt, 'Question condensing prompt'
@@ -562,6 +583,9 @@ def create_rag_chain(
 
     condensation_chain = build_question_condensation_chain(
         question_condensing_llm, request.question_condensing_prompt
+    ).with_fallbacks(
+        [RunnableLambda(_condensation_fallback, name='question_condensation_fallback')],
+        exceptions_to_handle=(OutputParserException,),
     )
 
     rag_prompt = LangChainPromptTemplate.from_template(
@@ -626,4 +650,15 @@ def create_rag_chain(
         | JsonOutputParser(pydantic_object=LLMAnswer, name='rag_chain_output')
     )
 
+    return rag_inputs, answer_chain
+
+
+def create_rag_chain(
+    request: RAGRequest,
+    vector_db_async_mode: Optional[bool] = True,
+) -> RunnableSerializable[Any, dict[str, Any]]:
+    """Assemble the full RAG chain (retrieval + answer generation)."""
+    rag_inputs, answer_chain = create_rag_chain_parts(
+        request=request, vector_db_async_mode=vector_db_async_mode
+    )
     return rag_inputs | RunnablePassthrough.assign(answer=answer_chain)

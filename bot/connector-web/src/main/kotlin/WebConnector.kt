@@ -232,7 +232,18 @@ class WebConnector internal constructor(
             val event = request.toEvent(applicationId)
             val requestInfos = WebRequestInfos(context.request())
             WebRequestInfosByEvent.put(event.id.toString(), requestInfos)
-            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos), transientDialogContext = transientContext, errorListener = null)
+            handleEvent(
+                applicationId,
+                request.locale,
+                event,
+                controller,
+                context,
+                extraHeadersAsMetadata(requestInfos),
+                transientDialogContext = transientContext,
+                errorListener = null,
+                streamDelta = request.streamMode == STREAM_MODE_DELTA,
+                requestId = request.requestId,
+            )
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
             context.fail(t)
@@ -250,7 +261,18 @@ class WebConnector internal constructor(
         headersMetadata: Map<String, String>,
         errorListener: ((Throwable) -> Unit)?,
         transientDialogContext: DialogContext,
+        streamDelta: Boolean = false,
+        requestId: String? = null,
     ) {
+        val directStreamed = (event as? Action)?.metadata?.streamedResponse == true
+        // Standard streaming: only if a SSE channel is connected to this instance to receive the partial responses
+        val userAction = (event as? Action)?.takeIf { it.playerId.type == user }
+        val sseStreaming =
+            sseEnabled && !directStreamed &&
+                userAction != null && sseEndpoint.isConnected(applicationId, userAction.playerId.id)
+        if (sseStreaming) {
+            userAction?.metadata?.streamedResponse = true
+        }
         val callback =
             WebConnectorCallback(
                 applicationId = applicationId,
@@ -260,7 +282,14 @@ class WebConnector internal constructor(
                 webMapper = webMapper,
                 eventId = event.id.toString(),
                 messageProcessor = messageProcessor,
-                streamedResponse = (event as? Action)?.metadata?.streamedResponse == true,
+                streamedResponse = directStreamed,
+                streamDelta = streamDelta,
+                requestId = requestId,
+                minFrameIntervalMs = streamMinFrameIntervalMs,
+                sseTokenSender =
+                    userAction?.takeIf { sseStreaming }?.let { a ->
+                        { response -> sseEndpoint.sendTransientResponse(applicationId, a.playerId.id, response) }
+                    },
             )
         if (sseEnabled) {
             // Uniquely identify each response, so they can be reconciled between SSE and POST
@@ -421,11 +450,17 @@ class WebConnector internal constructor(
         } else {
             callback.addAction(event)
             if (sseEnabled) {
-                sseEndpoint.sendResponse(
-                    event.connectorId,
-                    event.recipientId.id,
-                    callback.createResponse(listOf(event)),
-                )
+                val response = callback.createResponse(listOf(event))
+                callback.sendFinalOverSse {
+                    sseEndpoint.sendResponse(event.connectorId, event.recipientId.id, response)
+                }
+                if (event.metadata.lastAnswer) {
+                    callback.discardResponse()?.let { discard ->
+                        callback.sendFinalOverSse {
+                            sseEndpoint.sendResponse(event.connectorId, event.recipientId.id, discard)
+                        }
+                    }
+                }
             }
             if (event.metadata.lastAnswer) {
                 callback.sendResponse()

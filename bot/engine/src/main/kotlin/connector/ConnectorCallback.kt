@@ -64,4 +64,13 @@ interface ConnectorCallback {
      */
     fun initialUserTimelineLoaded(userTimeline: UserTimeline) {
     }
+
+    /**
+     * Called to push a partial/progressive text token to the client while the answer is
+     * still being generated (streaming mode). Connectors that support Server-Sent Events
+     * (or any streaming transport) override this to forward the token immediately.
+     * Default implementation is a no-op for connectors that do not stream.
+     */
+    fun sendStreamedToken(content: String) {
+    }
 }

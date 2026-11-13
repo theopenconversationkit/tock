@@ -191,6 +191,8 @@ nav:
       - Internals:
           - develop/internals/packages.md
           - develop/internals/main-classes.md
+          - develop/internals/bot-interrogation.md
+          - develop/internals/rag-streaming.md
           - develop/internals/bot-api.md
           - develop/internals/collections.md
           - NLP:

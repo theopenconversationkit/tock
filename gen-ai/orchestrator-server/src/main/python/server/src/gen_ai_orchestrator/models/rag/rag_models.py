@@ -115,11 +115,6 @@ class LLMAnswer(BaseModel):
         examples=[0.93],
         default=None,
     )
-    display_answer: Optional[bool] = Field(
-        description='It indicates if we should display answer or not.',
-        examples=[True],
-        default=False,
-    )
     topic: Optional[str] = Field(
         description='The main topic assigned to the answer. Must be one of the predefined list '
         "of topics, or 'unknown' if no match is possible.",
@@ -256,7 +251,9 @@ class RAGDebugData(QADebugData):
             'Keys: "rag_question_condensation_llm" (LLM condensation), '
             '"similarity_retriever_retrieve"/"hybrid_retrieve"/"fts_retrieve" (retrieval), '
             '"document_compressor" (reranking, optional), '
-            '"rag_answer_generation_llm" (LLM response generation). '
+            '"rag_answer_generation_llm" (LLM response generation), '
+            '"rag_answer_generation_first_token" (time-to-first-token of the answer '
+            'generation, streaming mode only). '
             'Absent keys = step not activated. None = debug off.'
         ),
         default=None,
