@@ -259,4 +259,42 @@ class WebConnectorCallbackStreamingTest {
 
         assertEquals(listOf("Hel"), sent.map { it.responses.single().text })
     }
+
+    @Test
+    fun `buffered tokens are flushed by a trailing frame once the interval elapses`() {
+        val vertx =
+            io.vertx.core.Vertx
+                .vertx()
+        try {
+            val routingContext = io.mockk.mockk<io.vertx.ext.web.RoutingContext>()
+            io.mockk.every { routingContext.vertx() } returns vertx
+            val received = java.util.concurrent.CopyOnWriteArrayList<String>()
+            val trailing = java.util.concurrent.CountDownLatch(1)
+            val callback =
+                WebConnectorCallback(
+                    applicationId = "app",
+                    errorListener = null,
+                    locale = java.util.Locale.FRENCH,
+                    context = routingContext,
+                    metadata = java.util.concurrent.ConcurrentHashMap(mapOf(RESPONSE_ID_METADATA to "r1")),
+                    webMapper = webMapper,
+                    eventId = "e1",
+                    messageProcessor = WebMessageProcessor(false),
+                    streamedResponse = false,
+                    sseTokenSender = {
+                        received.add(it.responses.single().text ?: "")
+                        if (received.size == 2) trailing.countDown()
+                    },
+                    minFrameIntervalMs = 40,
+                )
+            // First token goes out immediately; the second is throttled but must be flushed by the trailing frame.
+            callback.sendStreamedToken("Hel")
+            callback.sendStreamedToken("lo")
+
+            assertEquals(true, trailing.await(5, java.util.concurrent.TimeUnit.SECONDS))
+            assertEquals(listOf("Hel", "Hello"), received)
+        } finally {
+            vertx.close()
+        }
+    }
 }

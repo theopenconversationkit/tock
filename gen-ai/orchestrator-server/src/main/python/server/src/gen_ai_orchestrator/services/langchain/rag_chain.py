@@ -229,18 +229,6 @@ async def execute_rag_chain(
     )
 
 
-# Statuses for which the answer text is not a user-facing answer (redirection / no answer)
-_NON_STREAMABLE_STATUSES = {'not_found_in_context'}
-
-
-def _stream_allowed(partial: dict) -> bool:
-    """The partial answer is streamed unless `display_answer` is already known to be false."""
-    return (
-        partial.get('display_answer') is not False
-        and partial.get('status') not in _NON_STREAMABLE_STATUSES
-    )
-
-
 @opensearch_exception_handler
 @aws_bedrock_exception_handler(provider='AwsBedrock')
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
@@ -258,10 +246,8 @@ async def execute_rag_chain_stream(
       - a final 'answer' event carrying the complete RAGResponse (JSON),
         OR an 'error' event if the post-stream guardrail blocks the answer.
 
-    `display_answer`: the text is not streamed once the partial JSON carries
-    `display_answer: false` (or a non-displayable status). When the field is not (yet)
-    emitted by the model, the text is streamed; the final 'answer' event stays the
-    source of truth and the client discards the bubble if nothing is to be displayed.
+    The answer text is always streamed as it is produced; the final 'answer' event
+    stays the source of truth and the client reconciles the bubble with it.
 
     Guardrail: tokens are streamed as they are produced, so individual tokens
     cannot be blocked before being sent. The toxicity guardrail is therefore
@@ -318,7 +304,7 @@ async def execute_rag_chain_stream(
         if kind == 'on_parser_stream' and event.get('name') == 'rag_chain_output':
             partial = event['data'].get('chunk') or {}
             current_answer = partial.get('answer') or ''
-            if _stream_allowed(partial) and len(current_answer) > len(previous_answer):
+            if len(current_answer) > len(previous_answer):
                 delta = current_answer[len(previous_answer):]
                 previous_answer = current_answer
                 t_last_token = time.time()
@@ -364,8 +350,8 @@ async def execute_rag_chain_stream(
 
     # In streaming mode the answer parser receives incremental chunks, never a full
     # AIMessage, so RAGCallbackHandler.on_chain_start never records 'rag_chain_output'.
-    # build_rag_debug_data would then parse a None record into a default LLMAnswer
-    # ({"display_answer": false}). Backfill the record with the fully parsed answer so the
+    # build_rag_debug_data would then parse a None record into a default LLMAnswer.
+    # Backfill the record with the fully parsed answer so the
     # debug.answer matches the top-level answer.
     if debug and not records_handler.records.get('rag_chain_output'):
         records_handler.records['rag_chain_output'] = json.dumps(
@@ -378,7 +364,7 @@ async def execute_rag_chain_stream(
     )
     t_end = time.time()
     if t_first_token is not None:
-        logger.info(
+        logger.debug(
             'RAG chain (stream) - Timings: retrieval+condensation=%.2fs, '
             'first_token=+%.2fs, answer_text=%.2fs, '
             'after_last_token_until_llm_end=%.2fs (JSON fields after "answer", e.g. context_usage), '

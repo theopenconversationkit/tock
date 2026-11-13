@@ -65,7 +65,9 @@ du Bot API), consommé par `tock-react-kit` et `tock-vue-kit` :
 ```
 
 Les trames partielles sont limitées en fréquence (`tock_web_connector_stream_min_interval_ms`, 100 ms par défaut) :
-les tokens reçus entre-temps ne sont pas perdus, la trame suivante (ou la réponse finale) porte le texte complet.
+les tokens reçus entre-temps ne sont pas perdus. Une trame « de fin de fenêtre » est planifiée pour afficher les
+derniers tokens tamponnés avant même la réponse finale ; la trame suivante (ou la réponse finale) porte de toute façon
+le texte complet.
 
 **Prérequis de déploiement** : `tock_web_sse` est le seul interrupteur. Les clients (`tock-react-kit`, `tock-vue-kit`)
 doivent être mis à jour vers les versions gérant ce contrat **avant** son activation, sinon ils afficheraient les
@@ -75,6 +77,9 @@ trames transitoires comme des messages finaux.
 sessions), sinon la réponse est simplement renvoyée dans le `POST`. Le guardrail post-stream s'applique après l'envoi du
 texte : la réponse finale remplace la bulle mais les fragments déjà affichés ne peuvent pas être retirés. Le connecteur
 Google Chat met le message à jour au plus une fois par seconde ; le dernier tampon est couvert par la réponse finale.
+Enfin, le streaming s'arrête à la **première action finale** de la requête (`sendFinalOverSse` positionne
+`sseStreamFinished`) : si une story envoie d'abord un message puis délègue au RAG dans la même requête, la partie RAG
+n'est pas streamée (repli sûr — elle est renvoyée complète dans la réponse finale).
 
 Pour qu'une réponse streame, trois conditions sont nécessaires : `tock_web_sse=true`, un client dont le canal `/sse` est
 connecté à l'instance qui traite le message, et un bot dont la story RAG est active. Dans ce cas le connecteur positionne
@@ -136,7 +141,7 @@ Le flux Python (`execute_rag_chain_stream`) a trois étapes :
 
 - **Intrinsèquement terminal** (ne peut pas être streamé) : les footnotes (elles dépendent de `context_usage`, dernier
   champ du JSON `LLMAnswer`), la trace d'observabilité, `duration` / `step_durations`, ainsi que `status`,
-  `redirection_intent` et `score`. Le texte n'est streamé qu'une fois `display_answer: true` connu (sinon il n'est que dans la réponse finale).
+  `redirection_intent` et `score`. Le texte de la réponse est toujours streamé au fil de sa génération.
 - **Disponible tôt** (non streamé aujourd'hui) : les documents récupérés et les prompts de debug, connus dès l'étape 1.
 - **Le texte** : déjà streamé.
 

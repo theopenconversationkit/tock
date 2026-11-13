@@ -414,6 +414,15 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
             this.transloco.translate('common.messages.error'),
             { duration: 5000, status: 'danger' }
           );
+        },
+        complete: () => {
+          // Safety net: if the stream completed without an 'answer' event, make sure the UI is unblocked.
+          if (this.testQueryInProgress) {
+            this.ngZone.run(() => {
+              delete this.testQueryInProgress;
+              this.cd.detectChanges();
+            });
+          }
         }
       });
   }

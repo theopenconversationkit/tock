@@ -42,6 +42,7 @@ import ai.tock.genai.orchestratorclient.responses.RAGResponse
 import ai.tock.genai.orchestratorclient.responses.TokenEvent
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorParsingError
+import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorStreamTimeoutError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorValidationError
 import ai.tock.genai.orchestratorclient.services.RAGService
 import ai.tock.genai.orchestratorclient.services.RAGStreamListener
@@ -90,7 +91,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                     }?.toMutableList() ?: mutableListOf()
 
             // Identifying text to be sent
-            val textToSend = if (answer?.displayAnswer == true) answer.answer.orEmpty() else ""
+            val textToSend = answer?.answer.orEmpty()
 
             // Send SendSentenceWithFootnotes
             logger.info { "Send RAG answer." }
@@ -250,6 +251,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         is GenAIOrchestratorBusinessError -> RAGError(exc.message, exc.error)
                         is GenAIOrchestratorValidationError -> RAGError(exc.message, exc.detail)
                         is GenAIOrchestratorParsingError -> RAGError(exc.message, exc.detail)
+                        is GenAIOrchestratorStreamTimeoutError -> RAGError(exc.message, exc.detail)
                         else -> RAGError(errorMessage = exc.message)
                     }
 
@@ -374,6 +376,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         is GenAIOrchestratorBusinessError -> RAGError(exc.message, exc.error)
                         is GenAIOrchestratorValidationError -> RAGError(exc.message, exc.detail)
                         is GenAIOrchestratorParsingError -> RAGError(exc.message, exc.detail)
+                        is GenAIOrchestratorStreamTimeoutError -> RAGError(exc.message, exc.detail)
                         else -> RAGError(errorMessage = exc.message)
                     }
 

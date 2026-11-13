@@ -14,7 +14,7 @@
   },
   "question_answering_prompt": {
     "formatter": "jinja2",
-    "template": "You are a helpful assistant. Answer the following question based on the context provided.\n\nContext:\n{{ context }}\n\nQuestion: {{ question }}\n\nProvide a JSON response with the following structure:\n{\"status\": \"found_in_context|not_found|clarification_needed\", \"answer\": \"your answer here\", \"confidence_score\": 0.95, \"display_answer\": true}",
+    "template": "You are a helpful assistant. Answer the following question based on the context provided.\n\nContext:\n{{ context }}\n\nQuestion: {{ question }}\n\nProvide a JSON response with the following structure:\n{\"status\": \"found_in_context|not_found|clarification_needed\", \"answer\": \"your answer here\", \"confidence_score\": 0.95}",
     "inputs": {
       "question": "What is the capital of France?"
     }

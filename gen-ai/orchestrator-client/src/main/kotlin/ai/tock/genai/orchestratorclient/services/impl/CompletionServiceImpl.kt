@@ -23,6 +23,7 @@ import ai.tock.genai.orchestratorclient.responses.SentenceCompletionResponse
 import ai.tock.genai.orchestratorclient.responses.TokenEvent
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorParsingError
+import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorStreamTimeoutError
 import ai.tock.genai.orchestratorclient.services.CompletionService
 import ai.tock.genai.orchestratorclient.services.CompletionStreamListener
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -169,7 +170,7 @@ class CompletionServiceImpl : CompletionService {
             eventSource.start()
             if (!latch.await(timeout, TimeUnit.MILLISECONDS)) {
                 completed.set(true)
-                throw GenAIOrchestratorParsingError(
+                throw GenAIOrchestratorStreamTimeoutError(
                     message = "Completion stream timeout",
                     detail = "No terminal event received within ${timeout}ms",
                 )

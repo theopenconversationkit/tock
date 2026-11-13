@@ -65,7 +65,8 @@ With `tock_web_sse=true`, the web connector uses no dedicated event: it sends or
 ```
 
 Partial frames are throttled (`tock_web_connector_stream_min_interval_ms`, 100 ms by default): tokens received in
-between are not lost, since the following frame (or the final answer) carries the whole text.
+between are not lost. An "end-of-window" frame is scheduled to display the last buffered tokens even before the final
+answer; the following frame (or the final answer) carries the whole text anyway.
 
 **Deployment prerequisite**: `tock_web_sse` is the only switch. Clients (`tock-react-kit`, `tock-vue-kit`) must be
 upgraded to the versions supporting this contract **before** enabling it, otherwise they would display the transient
@@ -75,6 +76,9 @@ frames as final messages.
 sessions), otherwise the answer is simply returned in the `POST`. The post-stream guardrail applies after the text has
 been sent: the final answer replaces the bubble but the fragments already displayed cannot be withdrawn. The Google
 Chat connector patches the message at most once per second; the last buffer is covered by the final answer.
+Finally, streaming stops at the **first final action** of the request (`sendFinalOverSse` sets `sseStreamFinished`):
+if a story first sends a message and then delegates to RAG within the same request, the RAG part is not streamed (safe
+fallback — it is returned complete in the final answer).
 
 An answer is streamed when three conditions are met: `tock_web_sse=true`, a client whose `/sse` channel is connected to
 the instance handling the message, and a bot with an active RAG story. The connector then sets
@@ -135,7 +139,7 @@ The Python flow (`execute_rag_chain_stream`) has three steps:
 
 - **Intrinsically terminal** (cannot be streamed): footnotes (they depend on `context_usage`, the last field of the
   `LLMAnswer` JSON), the observability trace, `duration` / `step_durations`, and `status`, `redirection_intent`
-  and `score`. The text itself is only streamed once `display_answer: true` is known (otherwise it is only in the final answer).
+  and `score`. The answer text itself is always streamed as it is produced.
 - **Available early** (not streamed today): retrieved documents and debug prompts, known from step 1.
 - **The text**: already streamed.
 

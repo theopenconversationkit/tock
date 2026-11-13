@@ -69,7 +69,8 @@ async def ask_rag_stream(
     Streams one `token` event per fragment of the answer as it is generated,
     then a final `answer` event carrying the complete RAGResponse.
 
-    The text is only streamed once the model explicitly sets `display_answer` to true.
+    The answer text is always streamed as it is generated; the final `answer` event
+    stays the source of truth.
 
     Note: the toxicity guardrail is applied after the stream, on the complete answer: when it
     triggers, an `error` event replaces the final `answer` event. Known limit: the fragments

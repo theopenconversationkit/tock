@@ -24,6 +24,7 @@ import ai.tock.genai.orchestratorclient.responses.TokenEvent
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorParsingError
+import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorStreamTimeoutError
 import ai.tock.genai.orchestratorclient.services.RAGService
 import ai.tock.genai.orchestratorclient.services.RAGStreamListener
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -187,7 +188,7 @@ class RAGServiceImpl : RAGService {
             eventSource.start()
             if (!latch.await(timeout, TimeUnit.MILLISECONDS)) {
                 completed.set(true)
-                throw GenAIOrchestratorParsingError(
+                throw GenAIOrchestratorStreamTimeoutError(
                     message = "RAG stream timeout",
                     detail = "No terminal event received within ${timeout}ms",
                 )

@@ -82,6 +82,10 @@ internal class WebConnectorCallback(
     // Guarded by streamBuffer: throttling of the partial frames
     private var lastFrameNanos = 0L
 
+    // Guarded by streamBuffer: id of a scheduled trailing flush (0 = none), so the tokens buffered
+    // during the throttle window are still displayed as a partial frame instead of only in the final response
+    private var trailingFlushTimerId = 0L
+
     @Volatile
     private var sseStreamStarted = false
 
@@ -192,36 +196,65 @@ internal class WebConnectorCallback(
             streamBuffer.append(content)
             sseStreamStarted = true
             val now = System.nanoTime()
-            if (lastFrameNanos != 0L && now - lastFrameNanos < minFrameIntervalMs * 1_000_000) return
-            lastFrameNanos = now
-            val rendered = messageProcessor.processText(streamBuffer.toString())
-            val response =
-                if (streamDelta) {
-                    val previous = lastRenderedText
-                    val renderedText = rendered.text.orEmpty()
-                    val keep = commonPrefixLength(previous, renderedText)
-                    lastRenderedText = renderedText
-                    if (keep == renderedText.length && keep == previous.length) return
-                    WebConnectorResponse(
-                        listOf(WebMessage(text = renderedText.substring(keep))),
-                        metadata +
-                            (STREAM_RESPONSE_METADATA to "true") +
-                            (STREAM_PARTIAL_METADATA to "true") +
-                            (STREAM_MODE_METADATA to STREAM_MODE_DELTA) +
-                            (STREAM_KEEP_METADATA to keep.toString()),
-                    )
-                } else {
-                    WebConnectorResponse(
-                        listOf(rendered),
-                        metadata + (STREAM_RESPONSE_METADATA to "true") + (STREAM_PARTIAL_METADATA to "true"),
-                    )
-                }
-            val streamContext = this.streamContext
-            if (streamContext != null) {
-                streamContext.runOnContext { sender(response) }
-            } else {
-                sender(response)
+            if (lastFrameNanos != 0L && now - lastFrameNanos < minFrameIntervalMs * 1_000_000) {
+                scheduleTrailingFlush(now)
+                return
             }
+            emitPartialFrame(sender)
+        }
+    }
+
+    /**
+     * Schedules a single partial frame once the throttle window has elapsed, so that the tokens buffered during the
+     * window (in particular the last ones, when no further token triggers a frame) are displayed before the final
+     * response rather than only replaced by it. Must be called while holding the `streamBuffer` lock.
+     */
+    private fun scheduleTrailingFlush(now: Long) {
+        if (trailingFlushTimerId != 0L) return
+        val vertx = context?.vertx() ?: return
+        val elapsedMs = (now - lastFrameNanos) / 1_000_000
+        val delay = (minFrameIntervalMs - elapsedMs).coerceAtLeast(1)
+        trailingFlushTimerId =
+            vertx.setTimer(delay) {
+                synchronized(streamBuffer) {
+                    trailingFlushTimerId = 0L
+                    if (sseStreamFinished) return@synchronized
+                    val sender = sseTokenSender ?: return@synchronized
+                    emitPartialFrame(sender)
+                }
+            }
+    }
+
+    /** Renders the buffered text and sends one partial frame on the SSE channel. Must hold the `streamBuffer` lock. */
+    private fun emitPartialFrame(sender: (WebConnectorResponse) -> Unit) {
+        lastFrameNanos = System.nanoTime()
+        val rendered = messageProcessor.processText(streamBuffer.toString())
+        val response =
+            if (streamDelta) {
+                val previous = lastRenderedText
+                val renderedText = rendered.text.orEmpty()
+                val keep = commonPrefixLength(previous, renderedText)
+                lastRenderedText = renderedText
+                if (keep == renderedText.length && keep == previous.length) return
+                WebConnectorResponse(
+                    listOf(WebMessage(text = renderedText.substring(keep))),
+                    metadata +
+                        (STREAM_RESPONSE_METADATA to "true") +
+                        (STREAM_PARTIAL_METADATA to "true") +
+                        (STREAM_MODE_METADATA to STREAM_MODE_DELTA) +
+                        (STREAM_KEEP_METADATA to keep.toString()),
+                )
+            } else {
+                WebConnectorResponse(
+                    listOf(rendered),
+                    metadata + (STREAM_RESPONSE_METADATA to "true") + (STREAM_PARTIAL_METADATA to "true"),
+                )
+            }
+        val streamContext = this.streamContext
+        if (streamContext != null) {
+            streamContext.runOnContext { sender(response) }
+        } else {
+            sender(response)
         }
     }
 
@@ -234,6 +267,10 @@ internal class WebConnectorCallback(
         val queued =
             synchronized(streamBuffer) {
                 sseStreamFinished = true
+                if (trailingFlushTimerId != 0L) {
+                    context?.vertx()?.cancelTimer(trailingFlushTimerId)
+                    trailingFlushTimerId = 0L
+                }
                 sseStreamStarted && streamContext != null
             }
         if (queued) streamContext?.runOnContext { send() } else send()

@@ -176,7 +176,6 @@ async def test_execute_rag_chain_matches_footnotes_with_composite_chunk_id(
             'answer': {
                 'status': 'found_in_context',
                 'answer': 'Use the intranet page.',
-                'display_answer': True,
                 'context_usage': [
                     {
                         'chunk': 'doc-1:2/5',
@@ -713,9 +712,9 @@ async def _fake_astream_events(*_args, **_kwargs):
     partials = [
         {},
         {'status': 'found_in_context'},
-        {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour'},
-        {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour, voici'},
-        {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour, voici la reponse.'},
+        {'status': 'found_in_context', 'answer': 'Bonjour'},
+        {'status': 'found_in_context', 'answer': 'Bonjour, voici'},
+        {'status': 'found_in_context', 'answer': 'Bonjour, voici la reponse.'},
     ]
     for partial in partials:
         yield {
@@ -732,7 +731,6 @@ async def _fake_astream_events(*_args, **_kwargs):
             'output': {
                 'status': 'found_in_context',
                 'answer': 'Bonjour, voici la reponse.',
-                'display_answer': True,
             }
         },
     }
@@ -814,22 +812,7 @@ async def _run_stream(partials, final):
 
 
 @pytest.mark.asyncio
-async def test_stream_emits_no_token_when_display_answer_is_false():
-    final = {'status': 'found_in_context', 'display_answer': False, 'answer': 'Secret'}
-    tokens, answers = await _run_stream(
-        [
-            {'status': 'found_in_context', 'display_answer': False},
-            {'status': 'found_in_context', 'display_answer': False, 'answer': 'Sec'},
-            final,
-        ],
-        final,
-    )
-    assert tokens == []
-    assert len(answers) == 1
-
-
-@pytest.mark.asyncio
-async def test_stream_streams_text_when_decision_is_absent():
+async def test_stream_always_streams_the_answer_text():
     final = {'status': 'found_in_context', 'answer': 'Bonjour'}
     tokens, answers = await _run_stream(
         [{'status': 'found_in_context', 'answer': 'Bon'}, final], final
@@ -839,21 +822,24 @@ async def test_stream_streams_text_when_decision_is_absent():
 
 
 @pytest.mark.asyncio
-async def test_stream_does_not_stream_not_found_in_context():
-    final = {'status': 'not_found_in_context', 'display_answer': True, 'answer': 'Rien'}
-    tokens, _ = await _run_stream([final], final)
-    assert tokens == []
+async def test_stream_streams_not_found_in_context():
+    final = {'status': 'not_found_in_context', 'answer': 'Rien'}
+    tokens, answers = await _run_stream(
+        [{'status': 'not_found_in_context', 'answer': 'Ri'}, final], final
+    )
+    assert tokens == ['Ri', 'en']
+    assert answers[0]['answer']['answer'] == 'Rien'
 
 
 @pytest.mark.asyncio
-async def test_stream_has_no_duplicates_when_decision_arrives_late():
-    final = {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour le monde'}
+async def test_stream_has_no_duplicates_when_status_arrives_late():
+    final = {'status': 'found_in_context', 'answer': 'Bonjour le monde'}
     tokens, answers = await _run_stream(
         [
             {'answer': 'Bon'},
             {'answer': 'Bonjour'},
-            {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour'},
-            {'status': 'found_in_context', 'display_answer': True, 'answer': 'Bonjour le'},
+            {'status': 'found_in_context', 'answer': 'Bonjour'},
+            {'status': 'found_in_context', 'answer': 'Bonjour le'},
             final,
         ],
         final,
