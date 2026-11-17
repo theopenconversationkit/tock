@@ -4670,6 +4670,7 @@ allow correlation of these values (index by index, for each user)</p>
 <p>It is also necessary to pass the address of the keycloak Realm via tock_keycloak_site_url.</p>
 <p>It is however not necessary to define tock_keycloak_access_token_path, tock_keycloak_authorize_path and tock_keycloak_userinfo_path since the default values are suitable for Keycloak if the realm address is specified correctly.</p>
 <p>If tock_custom_namespace_mapping is not set or the attribute is not found, the default "app" namespace is used.</p>
+<p>The attribute named by tock_keycloak_user_role_attribute must contain the names of the Tock roles of the user (<code>nlpUser</code>, <code>botUser</code>, <code>admin</code>, <code>technicalAdmin</code>), either as a multivalued claim or as a comma-separated string. Other values are ignored, and a user without any Tock role is refused (401).</p>
 <h2 id="oauthgithub-implementation">OAuth/GitHub Implementation</h2>
 <p>This rather simplistic implementation is used as an example, as well as for the public demo platform
 <a href="https://demo.tock.ai">https://demo.tock.ai</a>.</p>
@@ -5060,7 +5061,7 @@ user profile</li>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 9, 2026 16:17:42 UTC">October 9, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 17, 2026 22:00:51 UTC">November 17, 2026</span>
   </span>
 
     
