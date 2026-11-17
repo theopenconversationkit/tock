@@ -1,0 +1,91 @@
+name: E2E
+
+# End-to-end scenario of tock-docker (e2e/): the images of the Mongo services are built from this commit,
+# then a bot in API mode is created and qualified from Tock Studio.
+# etc/releaseAndDeploy.sh requires a successful run of this workflow on the released commit.
+
+on:
+  pull_request:
+    branches: [master]
+    paths: ['.github/workflows/e2e.yml']
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      tock-docker-ref:
+        description: 'tock-docker branch, tag or SHA providing the e2e scenario'
+        required: false
+        default: 'master'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    name: E2E bot API + qualification
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'schedule' || github.repository == 'theopenconversationkit/tock' }}
+    timeout-minutes: 60
+    env:
+      MAVEN_ARGS: -B -ntp
+      BUILDX_BUILDER: tock-e2e
+
+    steps:
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+
+      - name: Checkout tock
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          path: tock
+          persist-credentials: false
+
+      - name: Checkout tock-docker
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          repository: theopenconversationkit/tock-docker
+          ref: ${{ inputs.tock-docker-ref || 'master' }}
+          path: tock-docker
+          persist-credentials: false
+
+      - name: Setup Java JDK 21
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # the tock-docker images declare amd64 and arm64 platforms
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        with:
+          name: tock-e2e
+
+      - name: Install Playwright Chromium
+        working-directory: tock-docker/e2e
+        run: >-
+          mvn test-compile exec:java -Dexec.classpathScope=test
+          -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"
+
+      - name: Build and run the e2e scenario
+        working-directory: tock-docker
+        run: e2e/run-e2e.sh --build
+
+      - name: Upload e2e reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-reports
+          path: |
+            tock-docker/e2e/logs/
+            tock-docker/e2e/target/playwright/
+            tock-docker/e2e/target/surefire-reports/
+          if-no-files-found: ignore
+          retention-days: 14
