@@ -27,7 +27,9 @@ import ai.tock.shared.security.initEncryptor
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.detailedHealthcheck
 import ai.tock.translator.Translator.initTranslator
+import io.vertx.core.Context
 import io.vertx.core.Promise
+import io.vertx.core.Vertx
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -81,6 +83,13 @@ internal class BotVerticle(
     private val handlers: MutableMap<String, ServiceInstaller> = ConcurrentHashMap()
     private val secondaryInstallers: MutableSet<ServiceInstaller> = CopyOnWriteArraySet()
     private var initialized: Boolean = false
+
+    /**
+     * True once the verticle is initialized by its deployment: the services can not be installed before,
+     * as the coroutine router needs the verticle context.
+     */
+    @Volatile
+    private var deployed: Boolean = false
 
     override val defaultCorsOrigin: String = "*"
 
@@ -149,7 +158,20 @@ internal class BotVerticle(
         install()
     }
 
+    override fun init(
+        vertx: Vertx,
+        context: Context,
+    ) {
+        super.init(vertx, context)
+        deployed = true
+    }
+
     private fun install() {
+        if (!deployed) {
+            // a configuration change applied during the deployment: the services are installed when the verticle starts
+            logger.debug { "verticle not deployed yet - services installed at startup" }
+            return
+        }
         if (handlers.any { !it.value.installed }) {
             logger.info { "Install Bot Services / ${handlers.size} registered" }
             // sort installers by registration date to keep registration order
