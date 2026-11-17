@@ -18,6 +18,7 @@ package ai.tock.bot.admin.kotlin.compiler
 
 import ai.tock.shared.error
 import ai.tock.shared.listProperty
+import ai.tock.shared.property
 import mu.KotlinLogging
 import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
@@ -31,6 +32,7 @@ import java.net.URLClassLoader
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.Properties
 import kotlin.io.path.createDirectories
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
@@ -53,7 +55,20 @@ internal object KotlinCompiler {
      */
     private val excludedJars = listOf("kotlin-compiler-embeddable", "kotlin-daemon-embeddable")
 
-    private const val JVM_TARGET = "21"
+    /**
+     * JVM target of the compiled scripts, `tock_kotlin_compiler_jvm_target` property.
+     * Defaults to the JVM target of the Tock build: the scripts inline functions of the Tock jars,
+     * which requires a JVM target greater or equal to theirs.
+     */
+    private val jvmTarget: String =
+        property(
+            "tock_kotlin_compiler_jvm_target",
+            Properties()
+                .apply {
+                    KotlinCompiler::class.java.getResourceAsStream("/tock-kotlin-compiler.properties")?.use { load(it) }
+                }.getProperty("jvm_target")
+                ?: error("jvm_target not found in tock-kotlin-compiler.properties"),
+        )
 
     @Volatile
     private var classpath: List<File> = emptyList()
@@ -62,7 +77,7 @@ internal object KotlinCompiler {
         try {
             logger.info { "Init KotlinCompiler" }
             classpath = resolveClasspath(KotlinCompiler::class.java.classLoader, extraClassPath)
-            logger.info { "End KotlinCompiler initialization" }
+            logger.info { "End KotlinCompiler initialization (jvm target $jvmTarget)" }
         } catch (t: Throwable) {
             logger.error(t)
         }
@@ -121,7 +136,7 @@ internal object KotlinCompiler {
                     noStdlib = true
                     noReflect = true
                     moduleName = "tockScript"
-                    jvmTarget = JVM_TARGET
+                    jvmTarget = this@KotlinCompiler.jvmTarget
                 }
             val exitCode = K2JVMCompiler().exec(collector, Services.EMPTY, arguments)
             if (exitCode != ExitCode.OK || collector.errors.isNotEmpty()) {
