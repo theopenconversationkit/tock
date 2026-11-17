@@ -30,7 +30,7 @@ Il peut aussi déployer les bases de données sous forme de sous-charts, ou se c
 - [OpenSearch](https://opensearch.org/) (et éventuellement OpenSearch Dashboards), comme base vectorielle pour le [RAG](../gen-ai/rag.md)
 - [PostgreSQL](https://www.postgresql.org/) avec [PGVector](https://github.com/pgvector/pgvector), comme autre base vectorielle
 
-![Tock sur Kubernetes](https://raw.githubusercontent.com/theopenconversationkit/tock-helm-chart/master/tock-24x-on-k8s.png)
+![Tock sur Kubernetes](https://raw.githubusercontent.com/theopenconversationkit/tock-helm-chart/master/assets/tockComponentsPG.svg)
 
 Voir la page [architecture](architecture.md) pour le rôle de chaque composant.
 
