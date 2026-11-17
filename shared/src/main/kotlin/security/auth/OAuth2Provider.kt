@@ -88,11 +88,18 @@ internal class OAuth2Provider(
         private val customRolesMapping = mapProperty("tock_custom_roles_mapping", emptyMap())
         private val userRoleAttribute = property("tock_oauth2_user_role_attribute", "custom:roles")
         private val defaultBaseUrl = property("tock_bot_admin_rest_default_base_url", "http://localhost:8080")
+        private val scopes =
+            listProperty("tock_oauth2_scopes", listOf("openid", "profile", "email"))
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
     }
 
     private val executor: Executor get() = injector.provide()
 
-    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler = OAuth2AuthHandler.create(vertx, oauth2, "$defaultBaseUrl/rest/callback")
+    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler =
+        OAuth2AuthHandler
+            .create(vertx, oauth2, "$defaultBaseUrl/rest/callback")
+            .withScopes(scopes)
 
     override fun protectPaths(
         verticle: WebVerticle,

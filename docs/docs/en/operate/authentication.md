@@ -95,6 +95,7 @@ Here are the properties, with example values:
 | `tock_oauth2_proxy_host` |  | Proxy host (leave blank if no proxy is used) |
 | `tock_oauth2_proxy_port` |  | Optional proxy port |
 | `tock_oauth2_user_role_attribute` | `custom:roles` | Attribute read from the token for role mapping |
+| `tock_oauth2_scopes` | `openid,profile,email` | Scopes requested at login (comma-separated) |
 | `tock_custom_roles_mapping` |  | Link between OAuth profiles and Tock roles |
 | `tock_custom_namespace_mapping` | `id1=sncf|id2=sncf` | Link between OAuth profiles and Tock namespaces |
 | `tock_bot_admin_rest_default_base_url` | `http://localhost:8080` | Redirect to Tock Studio URL if necessary |
@@ -122,6 +123,7 @@ Here are the properties and their proposed values:
 | `tock_keycloak_proxy_port` | | optional proxy port |
 | `tock_custom_namespace_mapping` | `tock_namespace` | Attribute read in the token for the namespace |
 | `tock_keycloak_user_role_attribute` | `tock_roles` | Attribute read in the token for the roles |
+| `tock_keycloak_scopes` | `openid,profile,email` | Scopes requested at login (comma-separated) |
 
 It is necessary to indicate in callback url `https://[host admin]/rest/callback`.
 
