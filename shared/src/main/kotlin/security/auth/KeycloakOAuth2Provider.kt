@@ -30,6 +30,7 @@ import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.vertx.WebVerticle
 import io.vertx.core.Vertx
+import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.core.net.ProxyOptions
 import io.vertx.ext.auth.oauth2.OAuth2Auth
@@ -83,6 +84,28 @@ internal class KeycloakOAuth2Provider(
             listProperty("tock_keycloak_scopes", listOf("openid", "profile", "email"))
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
+
+        /**
+         * Returns the names of the Tock roles listed in the role attribute of the token.
+         * The attribute is either a JSON array (multivalued Keycloak mapper) or a comma-separated string.
+         * Unknown roles are ignored.
+         */
+        internal fun parseUserRoles(customRoles: Any?): Set<String> =
+            when (customRoles) {
+                null -> emptyList()
+                is JsonArray -> customRoles.map { it.toString() }
+                else -> splitRoles(customRoles.toString())
+            }.map { it.trim() }
+                .filter { it.isNotEmpty() }
+                .mapNotNull { TockUserRole.toRole(it) }
+                .map { it.name }
+                .toSet()
+
+        private fun splitRoles(customRoles: String): List<String> =
+            customRoles
+                .removePrefix("[")
+                .removeSuffix("]")
+                .split(",")
     }
 
     private val executor: Executor get() = injector.provide()
@@ -124,10 +147,10 @@ internal class KeycloakOAuth2Provider(
                             )
                         }
                     val login: String = data.getString("email").lowercase(defaultLocale)
-                    val customRoles: String = data.getString(userRoleAttribute)
+                    val customRoles: Any? = data.getValue(userRoleAttribute)
                     val roles = parseUserRoles(customRoles)
                     if (roles.isEmpty()) {
-                        logger.warn { "empty role for $customRoles" }
+                        logger.warn { "no Tock role in attribute $userRoleAttribute: $customRoles" }
                         context.fail(401)
                     } else {
                         var namespace = data.getString(userNamespaceAttribute)
@@ -161,18 +184,6 @@ internal class KeycloakOAuth2Provider(
 
         return authHandler
     }
-
-    private fun parseCustomRoles(customRoles: String): List<String> =
-        customRoles
-            .split(",")
-            .map { it.removePrefix("[").removeSuffix("]").trim() }
-
-    private fun parseUserRoles(customRoles: String): Set<String> =
-        parseCustomRoles(customRoles)
-            .flatMap { TockUserRole.entries.map { r -> TockUserRole.toRole(r.toString()) } }
-            .filterNotNull()
-            .map { it.name }
-            .toSet()
 
     override fun excludedPaths(verticle: WebVerticle): Set<Regex> = super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
 

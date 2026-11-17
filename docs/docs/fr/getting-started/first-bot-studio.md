@@ -55,7 +55,7 @@ L'assistant crée une application nommée `new_assistant`, avec un premier conne
 
 Pour intéragir avec le bot, il faut utiliser un _connecteur_ afin de l'exposer à un canal de communication. 
 De nombreux connecteurs existent pour Tock : [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/),
-[Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/)...
+[Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/fr/)...
 Il est même possible de développer ses propres connecteurs pour ouvrir le bot à de nouveaux canaux.
 
 > Pour ce tutoriel, vous allez configurer un connecteur pour [Slack](https://slack.com/). 

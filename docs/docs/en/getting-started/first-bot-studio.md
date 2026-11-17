@@ -51,7 +51,7 @@ The wizard creates an application named `new_assistant`, with a first _Slack_ co
 ## Add a connector
 
 To interact with the bot, you must use a _connector_ to expose it to a communication channel. Many connectors exist for Tock: [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/),
-[Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/)...
+[Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/en/)...
 It is even possible to develop your own connectors to open the bot to new channels.
 > For this tutorial, you will configure a connector for [Slack](https://slack.com/).
 First, you will test the bot by staying in the _Tock Studio_ interface, and will not need to use Slack.

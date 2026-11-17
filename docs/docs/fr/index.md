@@ -72,7 +72,7 @@ sans dépendre d'un canal particulier
 [Kotlin](https://kotlinlang.org/), [Javascript/Nodejs](https://nodejs.org/), [Python](https://www.python.org/) 
 et _API_ tous langages (voir [_Bot API_](develop/bot-api.md))
 * Nombreux connecteurs texte et voix : [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
-[Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/),
+[Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/fr/),
 [Alcmeon](https://www.alcmeon.com/), clients compatibles OpenAI,
 un connecteur Web avec des kits [React](https://reactjs.org) et [Vue](https://fr.vuejs.org/)... (voir [canaux](channels/index.md))
 * Installation _cloud_ ou _on-premise_, avec ou sans [Docker](https://www.docker.com/), sur [Kubernetes](operate/kubernetes.md),

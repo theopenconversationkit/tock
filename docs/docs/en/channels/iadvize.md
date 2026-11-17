@@ -5,7 +5,7 @@ description: "Connect a Tock bot to iAdvize with its bot API, and hand the conve
 
 # iAdvize connector
 
-The iAdvize connector connects a bot to [iAdvize](https://www.iadvize.com/), a conversational platform for customer service,
+The iAdvize connector connects a bot to [iAdvize](https://www.iadvize.com/en/), a conversational platform for customer service,
 with its [bot API](https://developers.iadvize.com/).
 The bot can hand the conversation over to human agents.
 

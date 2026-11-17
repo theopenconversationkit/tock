@@ -5,7 +5,7 @@ description: "Connecter un bot Tock à iAdvize avec son API bot, et transférer 
 
 # Connecteur iAdvize
 
-Le connecteur iAdvize relie un bot à [iAdvize](https://www.iadvize.com/), une plateforme conversationnelle de service client,
+Le connecteur iAdvize relie un bot à [iAdvize](https://www.iadvize.com/fr/), une plateforme conversationnelle de service client,
 via son [API bot](https://developers.iadvize.com/).
 Le bot peut transférer la conversation à des conseillers.
 

@@ -30,7 +30,7 @@ It can also deploy the databases as sub-charts, or connect to existing ones:
 - [OpenSearch](https://opensearch.org/) (and optionally OpenSearch Dashboards), as the vector store for the [RAG](../gen-ai/rag.md)
 - [PostgreSQL](https://www.postgresql.org/) with [PGVector](https://github.com/pgvector/pgvector), as an alternative vector store
 
-![Tock on Kubernetes](https://raw.githubusercontent.com/theopenconversationkit/tock-helm-chart/master/tock-24x-on-k8s.png)
+![Tock on Kubernetes](https://raw.githubusercontent.com/theopenconversationkit/tock-helm-chart/master/assets/tockComponentsPG.svg)
 
 See the [architecture](architecture.md) page for the role of each component.
 

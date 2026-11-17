@@ -50,7 +50,7 @@ Cette page liste en fait :
 | [Slack](https://slack.com/) | texte | `slack` | [Slack](slack.md) |
 | [Google Chat](https://workspace.google.com/products/chat/) | texte | `google_chat` | [Google Chat](google-chat.md) |
 | [Mattermost](https://mattermost.com/) | texte | `mattermost` | [Mattermost](mattermost.md) |
-| [iAdvize](https://www.iadvize.com/) | texte | `iadvize` | [iAdvize](iadvize.md) |
+| [iAdvize](https://www.iadvize.com/fr/) | texte | `iadvize` | [iAdvize](iadvize.md) |
 | [Alcmeon](https://www.alcmeon.com/) | texte | `alcmeon` | [Alcmeon](alcmeon.md) |
 | Clients compatibles OpenAI (ex. [Open WebUI](https://docs.openwebui.com/)) | texte | `openai` | [API OpenAI](openai.md) |
 
