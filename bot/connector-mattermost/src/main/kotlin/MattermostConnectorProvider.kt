@@ -34,6 +34,7 @@ internal object MattermostConnectorProvider : ConnectorProvider {
     private const val OUTGOING_TOKEN = "_outgoing_token_"
     private const val TOCK_USERNAME = "_tock_username_"
     private const val REPLY_IN_THREAD = "_reply_in_thread_"
+    private const val API_TOKEN = "_api_token_"
 
     override val connectorType: ConnectorType get() = mattermostConnectorType
 
@@ -48,6 +49,7 @@ internal object MattermostConnectorProvider : ConnectorProvider {
                 parameters.getValue(OUTGOING_TOKEN),
                 parameters[TOCK_USERNAME]?.run { if (isBlank()) null else trim() },
                 parameters[REPLY_IN_THREAD]?.trim() == "1",
+                parameters[API_TOKEN]?.run { if (isBlank()) null else trim() },
             )
         }
     }
@@ -84,6 +86,11 @@ internal object MattermostConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Reply in thread (true = 1, false = 0)",
                     REPLY_IN_THREAD,
+                    false,
+                ),
+                ConnectorTypeConfigurationField(
+                    "Optional API token (to reply in existing threads)",
+                    API_TOKEN,
                     false,
                 ),
             ),

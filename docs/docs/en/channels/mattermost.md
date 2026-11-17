@@ -33,3 +33,4 @@ It answers the messages of a channel (optionally only those starting with a trig
 | Optional Channel Id | (optional) dedicated channel |
 | Optional Tock Username | (optional) username displayed for the bot |
 | Reply in thread (true = 1, false = 0) | (optional) `1` to answer in the thread of the user message instead of posting a new message in the channel (default `0`) |
+| Optional API token (to reply in existing threads) | (optional) access token of a bot account or personal access token able to read the channel; needed to answer in the thread when the user writes in an existing thread (otherwise the answer is posted in the channel) |

@@ -51,12 +51,13 @@ class MattermostConnector(
     private val outgoingToken: String,
     private val tockUsername: String? = null,
     private val replyInThread: Boolean = false,
+    apiToken: String? = null,
 ) : ConnectorBase(mattermostConnectorType) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val client: MattermostClient = MattermostClient(url, token)
+    private val client: MattermostClient = MattermostClient(url, token, apiToken)
     private val executor: Executor by injector.instance()
 
     override fun register(controller: ConnectorController) {
@@ -92,7 +93,8 @@ class MattermostConnector(
 
                     try {
                         val event = MattermostRequestConverter.toEvent(message, applicationId)
-                        val callback = MattermostConnectorCallback(applicationId, message.channelId, message.postId)
+                        val callback =
+                            MattermostConnectorCallback(applicationId, message.channelId, message.postId, client::threadRootOf)
                         controller.handle(event, ConnectorData(callback))
                     } catch (e: Throwable) {
                         logger.logError(e, requestTimerData)
@@ -131,7 +133,11 @@ class MattermostConnector(
         delayInMs: Long,
     ) {
         executor.executeBlocking(Duration.ofMillis(delayInMs)) {
-            client.sendMessage((message as MattermostMessageOut).inThreadOf(callback))
+            val out = (message as MattermostMessageOut).inThreadOf(callback)
+            if (!client.sendMessage(out) && out.rootId != null) {
+                logger.warn { "Reply in thread ${out.rootId} rejected, sending it as a new post" }
+                client.sendMessage(out.copy(rootId = null))
+            }
         }
     }
 
@@ -144,7 +150,7 @@ class MattermostConnector(
             logger.warn { "Reply not sent in thread: channel $channel differs from channel ${callback.channelId} of post ${callback.postId}" }
             return this
         }
-        return copy(rootId = callback.postId)
+        return copy(rootId = callback.threadRootId)
     }
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =

@@ -60,6 +60,16 @@ in the `Connector Custom Configuration` to answer in the thread of the user mess
 The answer is sent as a new message when it goes to another channel than the user message
 (for instance when `Optional Channel Id` is set to another channel).
 
+Mattermost only accepts the root message of a thread as the parent of an answer, but the outgoing webhook only
+gives the id of the user message. When the user writes in an existing thread, this message is a reply, so the
+connector needs to read it to find the root of the thread. To do so, set `Optional API token` to the access token
+of a [bot account](https://developers.mattermost.com/integrate/reference/bot-accounts/) or to a
+[personal access token](https://developers.mattermost.com/integrate/reference/personal-access-token/).
+The account must be able to read the channel (a bot account must be a member of the team and of the channel).
+
+Without API token, or if the message cannot be read, the answer to a message written in an existing thread is
+rejected by Mattermost: it is then sent as a new message in the channel.
+
 ### todo
 
 - reply on the original channel
