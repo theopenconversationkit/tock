@@ -49,4 +49,9 @@ describe('TokenViewComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render the token text without surrounding whitespace, as the selection offsets are computed from the rendered text', () => {
+    const span: HTMLElement = fixture.nativeElement.querySelector('span');
+    expect(span.textContent).toBe('hello');
+  });
 });
