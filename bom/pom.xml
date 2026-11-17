@@ -47,6 +47,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <kotlin>2.4.20</kotlin>
+        <kotlin-compiler>2.3.20</kotlin-compiler>
         <coroutine>1.11.0</coroutine>
         <serialization>1.11.0</serialization>
 
@@ -541,6 +542,17 @@
                 <artifactId>tock-gen-ai-orchestrator-server</artifactId>
                 <version>${project.version}</version>
                 <type>zip</type>
+            </dependency>
+
+            <!--
+              The story compiler still uses K1 APIs incompatible with Kotlin 2.4.x.
+              Pin its runtime here so the Kotlin BOM cannot override it in downstream modules,
+              especially kotlin-compiler-server. Remove this exception when migrating it to K2.
+            -->
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-compiler</artifactId>
+                <version>${kotlin-compiler}</version>
             </dependency>
 
             <!--
