@@ -16,417 +16,207 @@
 
 package ai.tock.bot.admin.kotlin.compiler
 
-import ai.tock.bot.admin.kotlin.compiler.EnvironmentManager.initializedEnvironment
 import ai.tock.shared.error
 import ai.tock.shared.listProperty
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Pair
-import com.intellij.openapi.vfs.CharsetToolkit
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.PsiErrorElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.impl.PsiFileFactoryImpl
-import com.intellij.testFramework.LightVirtualFile
 import mu.KotlinLogging
-import org.jetbrains.kotlin.analyzer.AnalysisResult
-import org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory
-import org.jetbrains.kotlin.cli.jvm.compiler.CliBindingTrace
-import org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM
-import org.jetbrains.kotlin.codegen.ClassBuilderFactories
-import org.jetbrains.kotlin.codegen.state.GenerationState
-import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
-import org.jetbrains.kotlin.container.ComponentProvider
-import org.jetbrains.kotlin.container.getService
-import org.jetbrains.kotlin.descriptors.ModuleDescriptor
-import org.jetbrains.kotlin.diagnostics.Diagnostic
-import org.jetbrains.kotlin.diagnostics.Errors
-import org.jetbrains.kotlin.diagnostics.rendering.DefaultErrorMessages
-import org.jetbrains.kotlin.idea.KotlinLanguage
-import org.jetbrains.kotlin.idea.MainFunctionDetector
-import org.jetbrains.kotlin.konan.file.File
-import org.jetbrains.kotlin.load.kotlin.PackagePartClassUtils
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.resolve.LazyTopDownAnalyzer
-import org.jetbrains.kotlin.resolve.TopDownAnalysisMode
-import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowInfo
-import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
-import org.jetbrains.kotlin.resolve.lazy.declarations.FileBasedDeclarationProviderFactory
+import org.jetbrains.kotlin.cli.common.ExitCode
+import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
+import org.jetbrains.kotlin.config.Services
+import java.io.File
 import java.net.URLClassLoader
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.Collections
-import java.util.stream.Collectors
+import kotlin.io.path.createDirectories
+import kotlin.io.path.isDirectory
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.readBytes
+import kotlin.io.path.relativeTo
+import kotlin.io.path.writeText
+import kotlin.streams.asSequence
 
 /**
  * Kotlin source code compiler.
+ *
+ * Relies only on the command line entry point of the compiler ([K2JVMCompiler]),
+ * so that it does not depend on the compiler internals, which change with every Kotlin release.
  */
 internal object KotlinCompiler {
     private val logger = KotlinLogging.logger {}
 
-    fun init(classPath: List<String> = listProperty("tock_kotlin_compiler_classpath", emptyList())) {
+    /**
+     * Jars that are not useful to compile the scripts, and are expensive to index (the compiler itself).
+     */
+    private val excludedJars = listOf("kotlin-compiler-embeddable", "kotlin-daemon-embeddable")
+
+    private const val JVM_TARGET = "21"
+
+    @Volatile
+    private var classpath: List<File> = emptyList()
+
+    fun init(extraClassPath: List<String> = listProperty("tock_kotlin_compiler_classpath", emptyList())) {
         try {
             logger.info { "Init KotlinCompiler" }
-            val paths = mutableListOf<Path>()
-            loadPathFromClassLoader(KotlinCompiler::class.java.classLoader, paths, classPath)
-            EnvironmentManager.init(paths)
+            classpath = resolveClasspath(KotlinCompiler::class.java.classLoader, extraClassPath)
             logger.info { "End KotlinCompiler initialization" }
         } catch (t: Throwable) {
             logger.error(t)
         }
     }
 
-    private fun loadPathFromClassLoader(
+    private fun resolveClasspath(
         classLoader: ClassLoader,
-        paths: MutableList<Path>,
-        classPath: List<String>,
-    ) {
-        logger.debug { "load paths from $classLoader" }
-        val cp = System.getProperty("java.class.path")
-        logger.debug { "classpath: $cp" }
-        // java 8
-        paths.addAll(
-            (classLoader as? URLClassLoader)
-                ?.urLs
-                ?.map {
-                    logger.debug { "load url $it" }
-                    Paths.get(it.toURI())
-                }
-                // java 9
-                ?: (classPath + cp.split(File.pathSeparator))
-                    .flatMap {
-                        Paths.get(it).let {
-                            if (Files.isDirectory(it)) {
-                                Files
-                                    .list(it)
-                                    .filter {
-                                        it.toString().endsWith(".jar")
-                                    }.collect(Collectors.toList()) + listOf(it)
-                            } else {
-                                listOf(it)
-                            }
+        extraClassPath: List<String>,
+    ): List<File> {
+        val paths: List<Path> =
+            (classLoader as? URLClassLoader)?.urLs?.map { Paths.get(it.toURI()) }
+                ?: (extraClassPath + System.getProperty("java.class.path").split(File.pathSeparator))
+                    .filter { it.isNotBlank() }
+                    .map { Paths.get(it) }
+                    .flatMap { path ->
+                        if (path.isDirectory()) {
+                            path.listDirectoryEntries("*.jar") + listOf(path)
+                        } else {
+                            listOf(path)
                         }
-                    }.distinct()
-                    .apply { logger.info { "class path used : $this" } },
-        )
-    }
-
-    fun getErrors(files: Map<String, String>): Map<String, List<CompileError>> {
-        val psiFiles = createPsiFiles(files)
-        val analyzer = ErrorAnalyzer(psiFiles, initializedEnvironment.project)
-        return analyzer.getAllErrors()
-    }
-
-    fun compileCorrectFiles(
-        projectFiles: Map<String, String>,
-        fileName: String,
-        searchForMain: Boolean,
-    ): CompilationResult {
-        val files = createPsiFiles(projectFiles)
-        val environment = initializedEnvironment
-        return compile(files, environment.project, environment.configuration, fileName, searchForMain)
-    }
-
-    private fun compile(
-        currentPsiFiles: List<KtFile>,
-        currentProject: Project,
-        configuration: CompilerConfiguration,
-        fileName: String,
-        searchForMain: Boolean,
-    ): CompilationResult {
-        val generationState = getGenerationState(currentPsiFiles, currentProject, configuration)
-        val context = getBindingContext(currentPsiFiles, currentProject)
-        JvmIrCodegenFactory(configuration).convertAndGenerate(currentPsiFiles, generationState, context)
-        val mainClass = findMainClass(context, currentPsiFiles, fileName, searchForMain)
-
-        val factory = generationState.factory
-        val files = HashMap<String, ByteArray>()
-        for (file in factory.asList()) {
-            files[file.relativePath] = file.asByteArray()
-        }
-        return CompilationResult(files, mainClass)
-    }
-
-    private fun getGenerationState(
-        files: List<KtFile>,
-        project: Project,
-        compilerConfiguration: CompilerConfiguration,
-    ): GenerationState {
-        val analyzeExhaust = analyzeFileForJvm(files, project).getFirst()
-        return GenerationState(
-            project,
-            analyzeExhaust.moduleDescriptor,
-            compilerConfiguration,
-            ClassBuilderFactories.BINARIES,
-        )
-    }
-
-    private fun findMainClass(
-        bindingContext: BindingContext,
-        files: List<KtFile>,
-        fileName: String,
-        searchForMain: Boolean,
-    ): String {
-        val mainFunctionDetector = MainFunctionDetector(bindingContext, LanguageVersionSettingsImpl.DEFAULT)
-        for (file in files) {
-            if (file.name.contains(fileName)) {
-                if (!searchForMain ||
-                    file.declarations.any {
-                        it is KtNamedFunction &&
-                            try {
-                                mainFunctionDetector.isMain(it)
-                            } catch (e: Exception) {
-                                false
-                            }
                     }
-                ) {
-                    return getMainClassName(file)
-                }
-            }
-        }
-        return files
-            .firstOrNull {
-                it.declarations.any {
-                    it is KtNamedFunction &&
-                        try {
-                            mainFunctionDetector.isMain(it)
-                        } catch (e: Exception) {
-                            false
-                        }
-                }
-            }?.let { getMainClassName(it) }
-            ?: getMainClassName(files.iterator().next())
+        return paths
+            .distinct()
+            .map { it.toFile() }
+            .filter { file -> excludedJars.none { file.name.startsWith(it) } }
+            .apply { logger.debug { "class path used : $this" } }
     }
 
-    private fun getMainClassName(file: KtFile): String = PackagePartClassUtils.getPackagePartFqName(file.packageFqName, file.name).asString()
-
-    private fun createPsiFiles(files: Map<String, String>): List<KtFile> =
-        files.entries.mapNotNull {
-            createFile(initializedEnvironment.project, it.key, it.value)
-        }
-
-    fun createFile(
-        project: Project,
-        name: String,
-        text: String,
-    ): KtFile? {
-        var n = name
-        if (!n.endsWith(".kt")) {
-            n += ".kt"
-        }
-        val virtualFile = LightVirtualFile(n, KotlinLanguage.INSTANCE, text)
-        virtualFile.charset = CharsetToolkit.UTF8_CHARSET
-        return (PsiFileFactory.getInstance(project) as PsiFileFactoryImpl).trySetupPsiForFile(
-            virtualFile,
-            KotlinLanguage.INSTANCE,
-            true,
-            false,
-        ) as KtFile?
-    }
-
-    fun getBindingContext(
-        files: List<KtFile>,
-        project: Project,
-    ): BindingContext {
-        val result = analyzeFileForJvm(files, project)
-        val analyzeExhaust = result.getFirst()
-        return analyzeExhaust.bindingContext
-    }
-
+    /**
+     * Compiles the [files] (file name -> source code).
+     *
+     * @return the compiled classes, and the file facade class of [fileName] as main class
+     * @throws KotlinCompilationException if the compilation fails
+     */
     @Synchronized
-    @Suppress("DEPRECATION_ERROR")
-    fun analyzeFileForJvm(
-        files: List<KtFile>,
-        project: Project,
-    ): Pair<AnalysisResult, ComponentProvider> {
-        val environment = initializedEnvironment
-        val trace = CliBindingTrace(project)
+    fun compile(
+        files: Map<String, String>,
+        fileName: String,
+    ): CompilationResult {
+        val workDir = Files.createTempDirectory("tock-kotlin-compiler")
+        try {
+            val sourceDir = workDir.resolve("src").createDirectories()
+            val outputDir = workDir.resolve("out").createDirectories()
+            val sourceFiles =
+                files.map { (name, code) ->
+                    sourceDir.resolve(sourceFileName(name)).apply { writeText(code) }
+                }
 
-        val configuration = environment.configuration
-        // configuration.put(JVMConfigurationKeys.ADD_BUILT_INS_FROM_COMPILER_TO_DEPENDENCIES, true)
+            val collector = ErrorCollector()
+            val arguments =
+                K2JVMCompilerArguments().apply {
+                    freeArgs = sourceFiles.map { it.toString() }
+                    destination = outputDir.toString()
+                    classpath = this@KotlinCompiler.classpath.joinToString(File.pathSeparator)
+                    // the stdlib and kotlin-reflect are already in the classpath
+                    noStdlib = true
+                    noReflect = true
+                    moduleName = "tockScript"
+                    jvmTarget = JVM_TARGET
+                }
+            val exitCode = K2JVMCompiler().exec(collector, Services.EMPTY, arguments)
+            if (exitCode != ExitCode.OK || collector.errors.isNotEmpty()) {
+                throw KotlinCompilationException(
+                    collector.errors.ifEmpty { listOf(compileError("Compilation failed: $exitCode")) },
+                )
+            }
 
-        val container =
-            TopDownAnalyzerFacadeForJVM.createContainer(
-                environment.project,
-                files,
-                trace,
-                configuration,
-                { globalSearchScope -> environment.createPackagePartProvider(globalSearchScope) },
-                { storageManager, ktFiles -> FileBasedDeclarationProviderFactory(storageManager, ktFiles) },
-            )
-
-        container
-            .getService(LazyTopDownAnalyzer::class.java)
-            .analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, files, DataFlowInfo.EMPTY)
-
-        val moduleDescriptor = container.getService(ModuleDescriptor::class.java)
-        for (extension in AnalysisHandlerExtension.getInstances(project)) {
-            val result = extension.analysisCompleted(project, moduleDescriptor, trace, files)
-            if (result != null) break
+            val classes =
+                Files.walk(outputDir).use { stream ->
+                    stream
+                        .asSequence()
+                        .filter { it.toString().endsWith(".class") }
+                        .associate { it.relativeTo(outputDir).joinToString("/") to it.readBytes() }
+                }
+            return CompilationResult(classes, findMainClass(classes.keys, sourceFileName(fileName)))
+        } finally {
+            workDir.toFile().deleteRecursively()
         }
-
-        return Pair(
-            AnalysisResult.success(trace.bindingContext, moduleDescriptor),
-            container,
-        )
     }
 
-    private class ErrorAnalyzer(
-        private val currentPsiFiles: List<KtFile>,
-        private val currentProject: Project,
-    ) {
-        fun getAllErrors(): Map<String, List<CompileError>> {
-            try {
-                val errors = HashMap<String, MutableList<CompileError>>()
-                for (psiFile in currentPsiFiles) {
-                    errors[psiFile.name] = getErrorsByVisitor(psiFile)
-                }
-                val bindingContext = getBindingContext(currentPsiFiles, currentProject)
-                getErrorsFromDiagnostics(bindingContext.getDiagnostics().all(), errors)
-                return errors
-            } catch (e: Throwable) {
-                throw e
+    private fun sourceFileName(name: String): String = File(name).name.let { if (it.endsWith(".kt")) it else "$it.kt" }
+
+    /**
+     * Finds the file facade class generated for [fileName] (`Greeting.kt` -> `GreetingKt`).
+     */
+    private fun findMainClass(
+        classFiles: Set<String>,
+        fileName: String,
+    ): String {
+        val facadeName = "${facadeBaseName(fileName.removeSuffix(".kt"))}Kt.class"
+        val classFile =
+            classFiles.firstOrNull { it == facadeName || it.endsWith("/$facadeName") }
+                ?: classFiles.firstOrNull { !it.contains('$') }
+                ?: throw KotlinCompilationException(listOf(compileError("No class generated for $fileName")))
+        return classFile.removeSuffix(".class").replace('/', '.')
+    }
+
+    /**
+     * Same rules as the compiler (PackagePartClassUtils): invalid identifier chars are replaced by `_`,
+     * the first char is capitalized.
+     */
+    private fun facadeBaseName(name: String): String {
+        val sanitized = name.map { if (Character.isJavaIdentifierPart(it)) it else '_' }.joinToString("")
+        return when {
+            sanitized.isEmpty() -> "_"
+            !Character.isJavaIdentifierStart(sanitized[0]) -> "_$sanitized"
+            else -> sanitized.replaceFirstChar { it.uppercaseChar() }
+        }
+    }
+
+    private fun compileError(
+        message: String,
+        location: CompilerMessageSourceLocation? = null,
+    ): CompileError {
+        // compiler locations are 1-based, editor locations are 0-based
+        val start =
+            TextPosition(
+                ((location?.line ?: 1) - 1).coerceAtLeast(0),
+                ((location?.column ?: 1) - 1).coerceAtLeast(0),
+            )
+        val end =
+            location
+                ?.takeIf { it.lineEnd > 0 && it.columnEnd > 0 }
+                ?.let { TextPosition(it.lineEnd - 1, it.columnEnd - 1) }
+                ?.takeIf { it.line > start.line || (it.line == start.line && it.ch > start.ch) }
+        // an empty range (e.g. a missing char at the end of a line) highlights the previous char
+        val interval =
+            when {
+                end != null -> TextInterval(start, end)
+                start.ch > 0 -> TextInterval(TextPosition(start.line, start.ch - 1), start)
+                else -> TextInterval(start, TextPosition(start.line, start.ch + 1))
             }
+        return CompileError(interval, message, Severity.ERROR, "red_wavy_line")
+    }
+
+    private class ErrorCollector : MessageCollector {
+        val errors = mutableListOf<CompileError>()
+
+        override fun clear() {
+            errors.clear()
         }
 
-        fun getErrorsFromDiagnostics(
-            diagnostics: Collection<Diagnostic>,
-            errors: Map<String, MutableList<CompileError>>,
+        override fun hasErrors(): Boolean = errors.isNotEmpty()
+
+        override fun report(
+            severity: CompilerMessageSeverity,
+            message: String,
+            location: CompilerMessageSourceLocation?,
         ) {
-            try {
-                for (diagnostic in diagnostics) {
-                    // fix for errors in js library files
-                    val virtualFile = diagnostic.psiFile.virtualFile
-                    if (virtualFile == null) {
-                        continue
-                    }
-                    val render = DefaultErrorMessages.render(diagnostic)
-                    if (render.contains("This cast can never succeed")) {
-                        continue
-                    }
-                    if (diagnostic.severity != org.jetbrains.kotlin.diagnostics.Severity.INFO) {
-                        val textRangeIterator = diagnostic.textRanges.iterator()
-                        if (!textRangeIterator.hasNext()) {
-                            continue
-                        }
-                        val firstRange = textRangeIterator.next()
-
-                        var className = diagnostic.severity.name
-                        if (!(diagnostic.factory === Errors.UNRESOLVED_REFERENCE) && diagnostic.severity == org.jetbrains.kotlin.diagnostics.Severity.ERROR) {
-                            className = "red_wavy_line"
-                        }
-                        val interval =
-                            getInterval(
-                                firstRange.startOffset,
-                                firstRange.endOffset,
-                                checkNotNull(diagnostic.psiFile.viewProvider.document) { "no document for ${diagnostic.psiFile.name}" },
-                            )
-                        errors.getValue(diagnostic.psiFile.name).add(
-                            CompileError(
-                                interval,
-                                render,
-                                convertSeverity(diagnostic.severity),
-                                className,
-                            ),
-                        )
-                    }
-                }
-
-                for (key in errors.keys) {
-                    Collections.sort<CompileError>(
-                        errors[key],
-                        Comparator { o1, o2 ->
-                            if (o1.interval.start.line > o2.interval.start.line) {
-                                return@Comparator 1
-                            } else if (o1.interval.start.line < o2.interval.start.line) {
-                                return@Comparator -1
-                            } else if (o1.interval.start.line == o2.interval.start.line) {
-                                if (o1.interval.start.ch > o2.interval.start.ch) {
-                                    return@Comparator 1
-                                } else if (o1.interval.start.ch < o2.interval.start.ch) {
-                                    return@Comparator -1
-                                } else if (o1.interval.start.ch == o2.interval.start.ch) {
-                                    return@Comparator 0
-                                }
-                            }
-                            -1
-                        },
-                    )
-                }
-            } catch (e: Throwable) {
-                throw e
+            if (severity.isError) {
+                errors.add(compileError(message, location))
+            } else {
+                logger.debug { "$severity $message $location" }
             }
-        }
-
-        private fun getErrorsByVisitor(psiFile: PsiFile): MutableList<CompileError> {
-            val errorElements = ArrayList<PsiErrorElement>()
-            val visitor =
-                object : PsiElementVisitor() {
-                    override fun visitElement(element: PsiElement) {
-                        element.acceptChildren(this)
-                    }
-
-                    override fun visitErrorElement(element: PsiErrorElement) {
-                        errorElements.add(element)
-                    }
-                }
-
-            val errors = ArrayList<CompileError>()
-            visitor.visitFile(psiFile)
-            for (errorElement in errorElements) {
-                val start = errorElement.textRange.startOffset
-                val end = errorElement.textRange.endOffset
-                val interval = getInterval(start, end, checkNotNull(psiFile.viewProvider.document) { "no document for ${psiFile.name}" })
-                errors.add(
-                    CompileError(
-                        interval,
-                        errorElement.errorDescription,
-                        convertSeverity(org.jetbrains.kotlin.diagnostics.Severity.ERROR),
-                        "red_wavy_line",
-                    ),
-                )
-            }
-            return errors
-        }
-
-        private fun convertSeverity(severity: org.jetbrains.kotlin.diagnostics.Severity): Severity =
-            when (severity) {
-                org.jetbrains.kotlin.diagnostics.Severity.ERROR -> Severity.ERROR
-                org.jetbrains.kotlin.diagnostics.Severity.INFO -> Severity.INFO
-                org.jetbrains.kotlin.diagnostics.Severity.WARNING -> Severity.WARNING
-                else -> Severity.INFO
-            }
-
-        private fun getInterval(
-            start: Int,
-            end: Int,
-            currentDocument: Document,
-        ): TextInterval {
-            val lineNumberForElementStart = currentDocument.getLineNumber(start)
-            val lineNumberForElementEnd = currentDocument.getLineNumber(end)
-            var charNumberForElementStart = start - currentDocument.getLineStartOffset(lineNumberForElementStart)
-            var charNumberForElementEnd = end - currentDocument.getLineStartOffset(lineNumberForElementStart)
-            if (start == end && lineNumberForElementStart == lineNumberForElementEnd) {
-                charNumberForElementStart--
-                if (charNumberForElementStart < 0) {
-                    charNumberForElementStart++
-                    charNumberForElementEnd++
-                }
-            }
-            val startPosition =
-                TextPosition(
-                    lineNumberForElementStart,
-                    charNumberForElementStart,
-                )
-            val endPosition =
-                TextPosition(lineNumberForElementEnd, charNumberForElementEnd)
-            return TextInterval(startPosition, endPosition)
         }
     }
 }

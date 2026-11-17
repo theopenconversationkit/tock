@@ -19,6 +19,7 @@ package ai.tock.bot.admin.kotlin.compiler
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -52,53 +53,6 @@ class KotlinCompilerTest {
 
     @Test
     fun `simple compilation with erroneous file reports error`() {
-        val expectedError =
-            try {
-                Runtime::class.java.getMethod("version").invoke(null)
-                listOf(
-                    CompileError(
-                        TextInterval(
-                            TextPosition(2, 34),
-                            TextPosition(2, 35),
-                        ),
-                        """Expecting '"'""",
-                        Severity.ERROR,
-                        "red_wavy_line",
-                    ),
-                    CompileError(
-                        TextInterval(
-                            TextPosition(line = 2, ch = 34),
-                            TextPosition(line = 2, ch = 35),
-                        ),
-                        "Expecting ')'",
-                        Severity.ERROR,
-                        "red_wavy_line",
-                    ),
-                )
-            } catch (e: Throwable) {
-                // java 8
-                listOf(
-                    CompileError(
-                        TextInterval(
-                            TextPosition(2, 34),
-                            TextPosition(2, 35),
-                        ),
-                        "Expecting '\"'",
-                        Severity.ERROR,
-                        "red_wavy_line",
-                    ),
-                    CompileError(
-                        TextInterval(
-                            TextPosition(2, 34),
-                            TextPosition(2, 35),
-                        ),
-                        "Expecting ')'",
-                        Severity.ERROR,
-                        "red_wavy_line",
-                    ),
-                )
-            }
-
         val erroneousSourceCode =
             mapOf(
                 "ClassToBeCompiled.kt"
@@ -109,12 +63,26 @@ class KotlinCompilerTest {
                 }""",
             )
 
-        val errors = KotlinCompiler.getErrors(erroneousSourceCode)
+        val errors =
+            assertFailsWith<KotlinCompilationException> {
+                KotlinCompiler.compile(erroneousSourceCode, "ClassToBeCompiled.kt")
+            }.errors
+        println(errors)
+        assertTrue(errors.isNotEmpty())
+        assertTrue(errors.all { it.severity == Severity.ERROR })
+        assertEquals(TextPosition(2, 34), errors.first().interval.start)
+    }
+
+    @Test
+    fun `unresolved reference reports error at the right position`() {
+        val errors =
+            assertFailsWith<KotlinCompilationException> {
+                KotlinCompiler.compile(mapOf("Invalid.kt" to "fun message() = missingValue"), "Invalid.kt")
+            }.errors
+        println(errors)
         assertEquals(1, errors.size)
-        assertEquals(
-            expectedError,
-            errors["ClassToBeCompiled.kt"],
-        )
+        assertEquals(TextInterval(TextPosition(0, 16), TextPosition(0, 28)), errors.first().interval)
+        assertTrue(errors.first().message.contains("missingValue"))
     }
 
     @Test
@@ -124,30 +92,34 @@ class KotlinCompilerTest {
                 "ClassToBeCompiled.kt"
                     to
                     """
-                import ai.tock.bot.admin.kotlin.compiler.KotlinCompilerTest  
+                import ai.tock.bot.admin.kotlin.compiler.KotlinCompilerTest
                 fun main() {
                     KotlinCompilerTest.mark = true
                 }""",
             )
         assertFalse(mark)
-        assertEquals(emptyList(), KotlinCompiler.getErrors(sourceCode)["ClassToBeCompiled.kt"])
-        val result = KotlinCompiler.compileCorrectFiles(sourceCode, "ClassToBeCompiled.kt", true)
+        val result = KotlinCompiler.compile(sourceCode, "ClassToBeCompiled.kt")
+        assertEquals("ClassToBeCompiledKt", result.mainClass)
         val compiledClassLoader =
             CompilationResultClassLoader("ClassToBeCompiledKt", result.files["ClassToBeCompiledKt.class"]!!)
         val c = compiledClassLoader.loadClass("ClassToBeCompiledKt")
-        c.declaredMethods[0].invoke(null)
+        c.getMethod("main").invoke(null)
         assertTrue(mark)
     }
 
     @Test
-    fun `simple compilation with external classes and java 9 succeed`() {
-        try {
-            // does not fail with java >= 9
-            Runtime::class.java.getMethod("version").invoke(null)
-        } catch (e: Exception) {
-            // java 8 return
-            return
-        }
+    fun `main class is the file facade of the requested file, in its package`() {
+        val result =
+            KotlinCompiler.compile(
+                mapOf("my-script.kt" to "package a.b\n\nclass Helper\n\nval x = Helper()"),
+                "my-script.kt",
+            )
+        assertEquals("a.b.My_scriptKt", result.mainClass)
+        assertTrue(result.files.containsKey("a/b/Helper.class"))
+    }
+
+    @Test
+    fun `simple compilation with external classes succeed`() {
         val sourceCode =
             mapOf(
                 "ClassToBeCompiled.kt"
@@ -157,7 +129,6 @@ class KotlinCompilerTest {
                     ai.tock.shared.Dice.newInt(2)
                 }""",
             )
-        assertEquals(emptyList(), KotlinCompiler.getErrors(sourceCode)["ClassToBeCompiled.kt"])
-        KotlinCompiler.compileCorrectFiles(sourceCode, "ClassToBeCompiled.kt", true)
+        KotlinCompiler.compile(sourceCode, "ClassToBeCompiled.kt")
     }
 }
