@@ -31,7 +31,7 @@ jobs:
     if: ${{ github.event_name != 'schedule' || github.repository == 'theopenconversationkit/tock' }}
     timeout-minutes: 60
     env:
-      MAVEN_ARGS: -B -ntp
+      MAVEN_ARGS: -B -ntp -Daether.connector.http.retryHandler.count=5
       BUILDX_BUILDER: tock-e2e
 
     steps:
@@ -68,11 +68,17 @@ jobs:
         with:
           name: tock-e2e
 
+      # the Playwright driver bundle is large: retry its download on transient network errors
       - name: Install Playwright Chromium
         working-directory: tock-docker/e2e
-        run: >-
-          mvn test-compile exec:java -Dexec.classpathScope=test
-          -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"
+        run: |
+          for attempt in 1 2 3; do
+            mvn test-compile exec:java -Dexec.classpathScope=test \
+              -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium" && exit 0
+            echo "::warning::Playwright install failed (attempt $attempt)"
+            sleep 30
+          done
+          exit 1
 
       - name: Build and run the e2e scenario
         working-directory: tock-docker
