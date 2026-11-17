@@ -395,7 +395,15 @@ object Translator {
 
         val (normalizedLabel, normalizedArgs) = NamedArgumentNormalizer.normalize(label, args)
 
-        return MessageFormat(escapeQuotes(normalizedLabel), context.userLocale)
+        val messageFormat =
+            try {
+                MessageFormat(escapeQuotes(normalizedLabel), context.userLocale)
+            } catch (e: IllegalArgumentException) {
+                logger.warn { "invalid message format pattern, label returned without formatting: \"$label\" (${e.message})" }
+                return label
+            }
+
+        return messageFormat
             .format(
                 normalizedArgs.map { formatArg(it, context) }.toTypedArray(),
                 StringBuffer(),
@@ -417,7 +425,13 @@ object Translator {
             return text
         }
         val t = escapeQuotes(NamedArgumentNormalizer.normalize(text).label)
-        val m = MessageFormat(t, source)
+        val m =
+            try {
+                MessageFormat(t, source)
+            } catch (e: IllegalArgumentException) {
+                logger.warn { "invalid message format pattern, text translated without parsing: \"$text\" (${e.message})" }
+                return translator.translate(text, source, target)
+            }
         var pattern = m.toPattern()
         val choicePrefixList: MutableList<String> = mutableListOf()
         m.formatsByArgumentIndex.forEachIndexed { i, format ->

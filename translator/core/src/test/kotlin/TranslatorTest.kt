@@ -65,6 +65,42 @@ class TranslatorTest : AbstractTest() {
     }
 
     @Test
+    fun formatMessage_shouldReturnLabel_whenPatternContainsNonNumericArgument() {
+        val result =
+            Translator.formatMessage(
+                "Hello {tenant_name} {0}",
+                I18nContext(defaultLocale, textChat, null),
+                listOf("arg"),
+            )
+        assertEquals("Hello {tenant_name} {0}", result)
+    }
+
+    @Test
+    fun translateText_shouldTranslateRawText_whenPatternContainsNonNumericArgument() {
+        val text = "Hello {tenant_name}"
+        val target = Locale.FRENCH
+        assertNotEquals(target, defaultLocale)
+        every { translatorEngine.translate(text, defaultLocale, target) } returns "Bonjour {tenant_name}"
+
+        assertEquals("Bonjour {tenant_name}", Translator.translate(text, defaultLocale, target))
+    }
+
+    @Test
+    fun translate_shouldCreateLabel_whenDefaultLabelContainsNonNumericArgumentAndUserLocaleIsNotDefault() {
+        val text = "Hello {tenant_name}"
+        val userLocale = Locale.FRENCH
+        assertNotEquals(userLocale, defaultLocale)
+        val key = I18nLabelValue("tenant_label", defaultNamespace, "category", text)
+        every { i18nDAO.getLabelById(any()) } returns null
+        every { translatorEngine.translate(text, defaultLocale, userLocale) } returns "Bonjour {tenant_name}"
+
+        assertEquals(
+            "Bonjour {tenant_name}",
+            Translator.translate(key, I18nContext(userLocale, textChat)).toString(),
+        )
+    }
+
+    @Test
     fun translate_shouldReturnsRightValue_whenAlreadyTranslatedStringIsPassed() {
         val category = "category"
         val toTranslate = "aaa"
