@@ -6,9 +6,9 @@
   [style.color]="getContrastYIQ(token.color())"
   [style.borderColor]="getContrastYIQ(token.color(), 'rgba(0,0,0,0.3)', 'rgba(255,255,255,0.6)')"
   (click)="displayMenu($event)"
-  ><!-- NO carriage return here ! -->@if (!token.subTokens) {
-  {{ token.text }}
-  }@if (token.subTokens) { @for (subtoken of token.subTokens; track subtoken) {
+  ><!-- NO whitespace around the token text: the selection offsets are computed from the rendered text -->@if (!token.subTokens)
+  {<ng-container>{{ token.text }}</ng-container
+  >}@if (token.subTokens) { @for (subtoken of token.subTokens; track subtoken) {
   <tock-token-view
     [token]="subtoken"
     [readOnly]="readOnly"
