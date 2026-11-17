@@ -40,6 +40,11 @@ data class ApplicationDefinition(
     val supportedLocales: Set<Locale> = emptySet(),
     val intentStatesMap: Map<String, Set<String>> = emptyMap(),
     val nlpEngineType: NlpEngineType = NlpEngineType.opennlp,
+    /**
+     * Optional dedicated nlp engine used for entity models/calls, independent from [nlpEngineType].
+     * `null` means "same as [nlpEngineType]".
+     */
+    val entityNlpEngineType: NlpEngineType? = null,
     val mergeEngineTypes: Boolean = true,
     val useEntityModels: Boolean = true,
     val supportSubEntities: Boolean = false,

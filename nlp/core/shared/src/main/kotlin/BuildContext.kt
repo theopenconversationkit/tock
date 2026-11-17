@@ -25,6 +25,8 @@ data class BuildContext(
     val application: Application,
     val language: Locale,
     val engineType: NlpEngineType = NlpEngineType.opennlp,
+    /** Engine type used for entity-related calls. Defaults to [engineType] so a single engine is used unless overridden. */
+    val entityEngineType: NlpEngineType = engineType,
     /** update the model only if he does not exist already */
     val onlyIfNotExists: Boolean = false,
 )

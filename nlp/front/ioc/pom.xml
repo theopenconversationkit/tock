@@ -47,6 +47,10 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-model-systemone</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-nlp-model-service</artifactId>
         </dependency>
         <dependency>

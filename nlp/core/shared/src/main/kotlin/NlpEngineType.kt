@@ -45,5 +45,10 @@ data class NlpEngineType(
          * The bgem3 nlp engine.
          */
         val bgem3 = NlpEngineType("bgem3")
+
+        /**
+         * The System One API-compatible decision model nlp engine (intent classification only).
+         */
+        val systemone = NlpEngineType("systemone")
     }
 }

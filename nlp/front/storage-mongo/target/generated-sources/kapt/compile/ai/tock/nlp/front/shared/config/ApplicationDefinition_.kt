@@ -32,6 +32,8 @@ private val __IntentStatesMap: KProperty1<ApplicationDefinition, Map<Id<IntentDe
     get() = ApplicationDefinition::intentStatesMap
 private val __NlpEngineType: KProperty1<ApplicationDefinition, NlpEngineType?>
     get() = ApplicationDefinition::nlpEngineType
+private val __EntityNlpEngineType: KProperty1<ApplicationDefinition, NlpEngineType?>
+    get() = ApplicationDefinition::entityNlpEngineType
 private val __MergeEngineTypes: KProperty1<ApplicationDefinition, Boolean?>
     get() = ApplicationDefinition::mergeEngineTypes
 private val __UseEntityModels: KProperty1<ApplicationDefinition, Boolean?>
@@ -68,6 +70,9 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
 
     val nlpEngineType: KPropertyPath<T, NlpEngineType?>
         get() = KPropertyPath(this,__NlpEngineType)
+
+    val entityNlpEngineType: KPropertyPath<T, NlpEngineType?>
+        get() = KPropertyPath(this,__EntityNlpEngineType)
 
     val mergeEngineTypes: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__MergeEngineTypes)
@@ -106,6 +111,8 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
             get() = KMapSimplePropertyPath(null, __IntentStatesMap)
         val NlpEngineType: KProperty1<ApplicationDefinition, NlpEngineType?>
             get() = __NlpEngineType
+        val EntityNlpEngineType: KProperty1<ApplicationDefinition, NlpEngineType?>
+            get() = __EntityNlpEngineType
         val MergeEngineTypes: KProperty1<ApplicationDefinition, Boolean?>
             get() = __MergeEngineTypes
         val UseEntityModels: KProperty1<ApplicationDefinition, Boolean?>
@@ -145,6 +152,9 @@ class ApplicationDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPr
 
     val nlpEngineType: KPropertyPath<T, NlpEngineType?>
         get() = KPropertyPath(this,__NlpEngineType)
+
+    val entityNlpEngineType: KPropertyPath<T, NlpEngineType?>
+        get() = KPropertyPath(this,__EntityNlpEngineType)
 
     val mergeEngineTypes: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__MergeEngineTypes)
@@ -194,6 +204,9 @@ class ApplicationDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: 
 
     val nlpEngineType: KPropertyPath<T, NlpEngineType?>
         get() = KPropertyPath(this,__NlpEngineType)
+
+    val entityNlpEngineType: KPropertyPath<T, NlpEngineType?>
+        get() = KPropertyPath(this,__EntityNlpEngineType)
 
     val mergeEngineTypes: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__MergeEngineTypes)

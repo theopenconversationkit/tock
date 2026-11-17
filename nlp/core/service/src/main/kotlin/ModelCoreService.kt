@@ -49,6 +49,9 @@ import java.time.Instant
  *
  */
 internal object ModelCoreService : ModelCore {
+    private const val TEST_PROGRESS_BAR_WIDTH = 30
+    private val WHITESPACE_REGEX = Regex("\\s+")
+
     private val logger = KotlinLogging.logger {}
 
     private val nlpClassifier: NlpClassifier by injector.instance()
@@ -62,7 +65,7 @@ internal object ModelCoreService : ModelCore {
             .forEach {
                 nlpClassifier.warmupEntityModel(
                     EntityCallContextForIntent(
-                        CallContext(context.application, context.language, context.engineType),
+                        CallContext(context.application, context.language, context.engineType, context.entityEngineType),
                         it,
                     ),
                 )
@@ -155,18 +158,36 @@ internal object ModelCoreService : ModelCore {
         val intentErrors = mutableListOf<IntentMatchError>()
         val entityErrors = mutableListOf<EntityMatchError>()
 
-        testedExpressions.forEach {
+        var successes = 0
+        var failures = 0
+
+        testedExpressions.forEachIndexed { index, expression ->
             val parseResult =
                 NlpCoreService.parse(
                     context,
-                    it.text,
+                    expression.text,
                     intentModel,
                     entityModels,
                 )
-            if (parseResult.intent != it.intent.name) {
-                intentErrors.add(IntentMatchError(it, parseResult.intent, parseResult.intentProbability))
-            } else if (hasNotSameEntities(it.entities, parseResult.entities)) {
-                entityErrors.add(EntityMatchError(it, parseResult.entities))
+            val intentMatches = parseResult.intent == expression.intent.name
+            val entitiesMatch = intentMatches && !hasNotSameEntities(expression.entities, parseResult.entities)
+            if (!intentMatches) {
+                intentErrors.add(IntentMatchError(expression, parseResult.intent, parseResult.intentProbability))
+            } else if (!entitiesMatch) {
+                entityErrors.add(EntityMatchError(expression, parseResult.entities))
+            }
+
+            if (intentMatches && entitiesMatch) {
+                successes++
+            } else {
+                failures++
+            }
+
+            logger.debug {
+                """[${expression.context.language.toLanguageTag()}] ${expression.text.replace(WHITESPACE_REGEX, " ")}
+${if (intentMatches) "✅" else "❌"} Expected ${expression.intent.name}, got ${parseResult.intent}
+${formatSentenceTestProgress(index + 1, testedExpressions.size, successes, failures)}
+"""
             }
         }
 
@@ -181,6 +202,20 @@ internal object ModelCoreService : ModelCore {
             testDuration,
             startDate,
         )
+    }
+
+    internal fun formatSentenceTestProgress(
+        completed: Int,
+        total: Int,
+        successes: Int,
+        failures: Int,
+    ): String {
+        require(total > 0) { "total must be greater than zero" }
+        val boundedCompleted = completed.coerceIn(0, total)
+        val percentage = boundedCompleted * 100 / total
+        val filledWidth = percentage * TEST_PROGRESS_BAR_WIDTH / 100
+        val bar = "#".repeat(filledWidth) + "-".repeat(TEST_PROGRESS_BAR_WIDTH - filledWidth)
+        return "Testing sentences [$bar] $percentage% ($completed/$total; success: $successes, fail: $failures) "
     }
 
     private fun hasNotSameEntities(

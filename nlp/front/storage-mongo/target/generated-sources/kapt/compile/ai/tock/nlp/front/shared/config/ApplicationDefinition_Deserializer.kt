@@ -42,6 +42,8 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
             var _intentStatesMap_set : Boolean = false
             var _nlpEngineType_: NlpEngineType? = null
             var _nlpEngineType_set : Boolean = false
+            var _entityNlpEngineType_: NlpEngineType? = null
+            var _entityNlpEngineType_set : Boolean = false
             var _mergeEngineTypes_: Boolean? = null
             var _mergeEngineTypes_set : Boolean = false
             var _useEntityModels_: Boolean? = null
@@ -101,6 +103,11 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                              else p.readValueAs(NlpEngineType::class.java);
                             _nlpEngineType_set = true
                             }
+                    "entityNlpEngineType" -> {
+                            _entityNlpEngineType_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(NlpEngineType::class.java);
+                            _entityNlpEngineType_set = true
+                            }
                     "mergeEngineTypes" -> {
                             _mergeEngineTypes_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.booleanValue;
@@ -146,15 +153,16 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                         } 
             return if(_name_set && _label_set && _namespace_set && _intents_set &&
                     _supportedLocales_set && _intentStatesMap_set && _nlpEngineType_set &&
-                    _mergeEngineTypes_set && _useEntityModels_set && _supportSubEntities_set &&
-                    _unknownIntentThreshold_set && _knownIntentThreshold_set && _normalizeText_set
-                    && __id_set)
+                    _entityNlpEngineType_set && _mergeEngineTypes_set && _useEntityModels_set &&
+                    _supportSubEntities_set && _unknownIntentThreshold_set &&
+                    _knownIntentThreshold_set && _normalizeText_set && __id_set)
                     ApplicationDefinition(name = _name_!!, label = _label_!!, namespace =
                             _namespace_!!, intents = _intents_!!, supportedLocales =
                             _supportedLocales_!!, intentStatesMap = _intentStatesMap_!!,
-                            nlpEngineType = _nlpEngineType_!!, mergeEngineTypes =
-                            _mergeEngineTypes_!!, useEntityModels = _useEntityModels_!!,
-                            supportSubEntities = _supportSubEntities_!!, unknownIntentThreshold =
+                            nlpEngineType = _nlpEngineType_!!, entityNlpEngineType =
+                            _entityNlpEngineType_, mergeEngineTypes = _mergeEngineTypes_!!,
+                            useEntityModels = _useEntityModels_!!, supportSubEntities =
+                            _supportSubEntities_!!, unknownIntentThreshold =
                             _unknownIntentThreshold_!!, knownIntentThreshold =
                             _knownIntentThreshold_!!, normalizeText = _normalizeText_!!, _id =
                             __id_!!)
@@ -174,6 +182,8 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                     map[parameters.getValue("intentStatesMap")] = _intentStatesMap_
                     if(_nlpEngineType_set)
                     map[parameters.getValue("nlpEngineType")] = _nlpEngineType_
+                    if(_entityNlpEngineType_set)
+                    map[parameters.getValue("entityNlpEngineType")] = _entityNlpEngineType_
                     if(_mergeEngineTypes_set)
                     map[parameters.getValue("mergeEngineTypes")] = _mergeEngineTypes_
                     if(_useEntityModels_set)
@@ -205,10 +215,11 @@ internal class ApplicationDefinition_Deserializer : JsonDeserializer<Application
                 primaryConstructor.findParameterByName("intents")!!, "supportedLocales" to
                 primaryConstructor.findParameterByName("supportedLocales")!!, "intentStatesMap" to
                 primaryConstructor.findParameterByName("intentStatesMap")!!, "nlpEngineType" to
-                primaryConstructor.findParameterByName("nlpEngineType")!!, "mergeEngineTypes" to
-                primaryConstructor.findParameterByName("mergeEngineTypes")!!, "useEntityModels" to
-                primaryConstructor.findParameterByName("useEntityModels")!!, "supportSubEntities" to
-                primaryConstructor.findParameterByName("supportSubEntities")!!,
+                primaryConstructor.findParameterByName("nlpEngineType")!!, "entityNlpEngineType" to
+                primaryConstructor.findParameterByName("entityNlpEngineType")!!, "mergeEngineTypes"
+                to primaryConstructor.findParameterByName("mergeEngineTypes")!!, "useEntityModels"
+                to primaryConstructor.findParameterByName("useEntityModels")!!, "supportSubEntities"
+                to primaryConstructor.findParameterByName("supportSubEntities")!!,
                 "unknownIntentThreshold" to
                 primaryConstructor.findParameterByName("unknownIntentThreshold")!!,
                 "knownIntentThreshold" to
