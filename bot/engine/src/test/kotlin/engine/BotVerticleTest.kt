@@ -88,4 +88,22 @@ internal class BotVerticleTest : BotEngineTest() {
         // Can't exposed same identifier !
         assertFalse(service1Installed)
     }
+
+    @Test
+    fun `GIVEN a verticle not deployed yet WHEN configure THEN services are installed when the verticle is deployed`() {
+        val verticle = BotVerticle(false, false)
+        var serviceInstalled = false
+        verticle.registerServices("bot_api_connector") { router ->
+            serviceInstalled = true
+            router.post("/io/app/web").handler { }
+        }
+
+        // a bot configuration change may be applied before the end of the verticle deployment
+        verticle.configure()
+        assertFalse(serviceInstalled)
+
+        verticle.init(mockedVertx, mockk<ContextInternal>())
+        verticle.configure()
+        assert(serviceInstalled)
+    }
 }
