@@ -34,6 +34,7 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.and
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.Filters.ne
+import com.mongodb.client.model.Sorts
 import com.mongodb.client.model.changestream.FullDocument
 import mu.KotlinLogging
 import java.io.InputStream
@@ -69,7 +70,12 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
         key: ClassifierContextKey,
     ): GridFSFile? =
         try {
-            bucket.find(eq("filename", key.id())).limit(1).first()
+            // the last version: saveModel removes the previous ones only after the upload of the new one
+            bucket
+                .find(eq("filename", key.id()))
+                .sort(Sorts.descending("uploadDate"))
+                .limit(1)
+                .first()
         } catch (e: MongoGridFSException) {
             logger.debug(e) { "no model exists for $key" }
             null
