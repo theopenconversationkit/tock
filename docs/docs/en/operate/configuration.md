@@ -91,6 +91,7 @@ defined by the `tock_users`, `tock_passwords`, `tock_organizations` and `tock_ro
 | `tock_oauth2_userinfo_path` | | Relative path of the user info endpoint |
 | `tock_oauth2_supported_grant_types` | | Supported grant types |
 | `tock_oauth2_user_role_attribute` | `custom:roles` | Attribute of the user info holding the roles |
+| `tock_oauth2_scopes` | `openid,profile,email` | Scopes requested at login, separated by commas. A scope that the provider does not grant makes the login fail (403) |
 | `tock_oauth2_proxy_host` | | Host of the HTTP proxy used to reach the OAuth2 or GitHub provider |
 | `tock_oauth2_proxy_port` | `0` | Port of this proxy |
 | `tock_oauth2_proxy_username` | | User of this proxy |
@@ -107,6 +108,7 @@ defined by the `tock_users`, `tock_passwords`, `tock_organizations` and `tock_ro
 | `tock_keycloak_userinfo_path` | `/protocol/openid-connect/userinfo` | Relative path of the user info endpoint |
 | `tock_keycloak_grant_types` | | Supported grant types |
 | `tock_keycloak_user_role_attribute` | `tock_roles` | Attribute holding the roles |
+| `tock_keycloak_scopes` | `openid,profile,email` | Scopes requested at login, separated by commas. A scope that the provider does not grant makes the login fail (403) |
 | `tock_keycloak_proxy_host` | | Host of the HTTP proxy used to reach Keycloak |
 | `tock_keycloak_proxy_port` | `0` | Port of this proxy |
 | `tock_github_oauth_enabled` | `false` | Enables the GitHub authentication |

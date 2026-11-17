@@ -91,6 +91,7 @@ sont définis par les propriétés `tock_users`, `tock_passwords`, `tock_organiz
 | `tock_oauth2_userinfo_path` | | Chemin relatif de l'endpoint d'informations utilisateur |
 | `tock_oauth2_supported_grant_types` | | Types de _grant_ supportés |
 | `tock_oauth2_user_role_attribute` | `custom:roles` | Attribut des informations utilisateur contenant les rôles |
+| `tock_oauth2_scopes` | `openid,profile,email` | Scopes demandés à la connexion, séparés par des virgules. Un scope que le fournisseur n'accorde pas fait échouer la connexion (403) |
 | `tock_oauth2_proxy_host` | | Hôte du proxy HTTP utilisé pour joindre le fournisseur OAuth2 ou GitHub |
 | `tock_oauth2_proxy_port` | `0` | Port de ce proxy |
 | `tock_oauth2_proxy_username` | | Utilisateur de ce proxy |
@@ -107,6 +108,7 @@ sont définis par les propriétés `tock_users`, `tock_passwords`, `tock_organiz
 | `tock_keycloak_userinfo_path` | `/protocol/openid-connect/userinfo` | Chemin relatif de l'endpoint d'informations utilisateur |
 | `tock_keycloak_grant_types` | | Types de _grant_ supportés |
 | `tock_keycloak_user_role_attribute` | `tock_roles` | Attribut contenant les rôles |
+| `tock_keycloak_scopes` | `openid,profile,email` | Scopes demandés à la connexion, séparés par des virgules. Un scope que le fournisseur n'accorde pas fait échouer la connexion (403) |
 | `tock_keycloak_proxy_host` | | Hôte du proxy HTTP utilisé pour joindre Keycloak |
 | `tock_keycloak_proxy_port` | `0` | Port de ce proxy |
 | `tock_github_oauth_enabled` | `false` | Active l'authentification GitHub |
