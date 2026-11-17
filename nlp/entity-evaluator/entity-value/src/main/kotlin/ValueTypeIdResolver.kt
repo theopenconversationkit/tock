@@ -21,6 +21,9 @@ import com.fasterxml.jackson.databind.DatabindContext
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase
 import kotlin.reflect.KClass
+import tools.jackson.databind.DatabindContext as DatabindContext3
+import tools.jackson.databind.JavaType as JavaType3
+import tools.jackson.databind.jsontype.impl.TypeIdResolverBase as TypeIdResolverBase3
 
 /**
  * The [TypeIdResolver] for any [Value] type.
@@ -40,6 +43,32 @@ class ValueTypeIdResolver : TypeIdResolverBase() {
         value: Any,
         suggestedType: Class<*>,
     ): String = idFromValue(value)
+
+    override fun getMechanism(): JsonTypeInfo.Id = JsonTypeInfo.Id.NAME
+}
+
+/**
+ * The [ValueTypeIdResolver] of the Mongo mapping, which uses Jackson 3.
+ */
+class ValueTypeIdResolver3 : TypeIdResolverBase3() {
+    override fun typeFromId(
+        context: DatabindContext3,
+        id: String,
+    ): JavaType3 = context.constructType(ValueResolverRepository.getType(id).java)
+
+    override fun idFromValue(
+        context: DatabindContext3,
+        value: Any,
+    ): String {
+        @Suppress("UNCHECKED_CAST")
+        return ValueResolverRepository.getId(value::class as KClass<Value>)
+    }
+
+    override fun idFromValueAndType(
+        context: DatabindContext3,
+        value: Any,
+        suggestedType: Class<*>,
+    ): String = idFromValue(context, value)
 
     override fun getMechanism(): JsonTypeInfo.Id = JsonTypeInfo.Id.NAME
 }

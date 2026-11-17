@@ -22,9 +22,9 @@ import ai.tock.nlp.front.shared.user.UserNamespace_.Companion.Current
 import ai.tock.nlp.front.shared.user.UserNamespace_.Companion.Login
 import ai.tock.nlp.front.shared.user.UserNamespace_.Companion.Namespace
 import ai.tock.nlp.front.shared.user.UserNamespace_.Companion.Owner
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.kotlin.client.MongoCollection
 import org.bson.conversions.Bson
 import org.litote.kmongo.and
 import org.litote.kmongo.ensureIndex

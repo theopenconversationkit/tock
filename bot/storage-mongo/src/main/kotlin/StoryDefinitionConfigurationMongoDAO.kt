@@ -60,6 +60,7 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.ascending
 import org.litote.kmongo.contains
+import org.litote.kmongo.coroutine.getCollectionOfName
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.document
 import org.litote.kmongo.eq
@@ -76,10 +77,8 @@ import org.litote.kmongo.max
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
 import org.litote.kmongo.projection
-import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.regex
 import org.litote.kmongo.save
-import org.litote.kmongo.withDocumentClass
 import java.time.Instant
 import java.time.ZonedDateTime
 

@@ -12,6 +12,13 @@ The complete list of changes (pull requests, contributors) is available in the
 Tock versions follow the `YY.M.patch` scheme: `26.3.x` is the release line started in March 2026.
 Artifacts are published on [Maven Central](https://central.sonatype.com/namespace/ai.tock) under the `ai.tock` group.
 
+## 26.9.2 (unreleased)
+
+* NLP: reading a `CustomValueWrapper` is fixed; only the classes registered with
+  `ValueResolverRepository.registerCustomValueType` are read, the other values are ignored
+* Mongo: the mapping moves to Jackson 3 (kmongo-dsl), the rest of Tock stays on Jackson 2; an extension that provides
+  a Jackson 2 module with `JacksonModuleServiceLoader` must now implement `Jackson2ModuleServiceLoader`
+
 ## 26.9.1 (2026-11-02)
 
 * Removed connectors: Alexa, Google Assistant, Twitter, Apple Business Chat and Rocket.Chat,

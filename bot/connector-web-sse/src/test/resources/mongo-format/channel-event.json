@@ -1,0 +1,32 @@
+{
+  "appId": "app",
+  "recipientId": "recipient",
+  "webConnectorResponse": {
+    "responses": [
+      {
+        "text": "text",
+        "buttons": [],
+        "deepLink": null,
+        "card": null,
+        "carousel": null,
+        "widget": null,
+        "image": null,
+        "version": "1",
+        "footnotes": [],
+        "actionId": null
+      }
+    ],
+    "metadata": {
+      "key": "value"
+    }
+  },
+  "status": {
+    "$numberInt": "1"
+  },
+  "enqueuedAt": {
+    "$date": {
+      "$numberLong": "1793873730123"
+    }
+  },
+  "_id": "id"
+}

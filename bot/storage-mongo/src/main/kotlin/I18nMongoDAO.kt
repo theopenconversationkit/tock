@@ -55,12 +55,15 @@ import org.bson.conversions.Bson
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
 import org.litote.kmongo.combine
+import org.litote.kmongo.coroutine.getCollection
 import org.litote.kmongo.currentDate
 import org.litote.kmongo.deleteOne
+import org.litote.kmongo.distinct
 import org.litote.kmongo.elemMatch
 import org.litote.kmongo.eq
 import org.litote.kmongo.excludeId
 import org.litote.kmongo.fields
+import org.litote.kmongo.filterNotNull
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.gte
@@ -70,13 +73,12 @@ import org.litote.kmongo.nin
 import org.litote.kmongo.not
 import org.litote.kmongo.or
 import org.litote.kmongo.projection
-import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.regex
 import org.litote.kmongo.setValue
 import org.litote.kmongo.toId
+import org.litote.kmongo.toSet
 import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
-import org.litote.kmongo.withDocumentClass
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
@@ -277,6 +279,7 @@ internal object I18nMongoDAO : I18nDAO {
                     I18nLabelStat_.Namespace eq namespace,
                     I18nLabelStat_.LastUpdate gte timeMarker,
                 ),
-            ).distinct()
+            ).filterNotNull()
+            .distinct()
             .toSet()
 }

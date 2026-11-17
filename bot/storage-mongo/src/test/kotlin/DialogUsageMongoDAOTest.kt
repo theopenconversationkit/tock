@@ -22,11 +22,10 @@ import ai.tock.bot.admin.dialog.DialogUsageStats
 import ai.tock.bot.connector.ConnectorType
 import com.mongodb.ExplainVerbosity
 import com.mongodb.client.model.Filters.eq
-import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.runBlocking
 import org.bson.Document
 import org.junit.jupiter.api.Test
-import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.coroutine.toList
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.Date
@@ -56,7 +55,7 @@ class DialogUsageMongoDAOTest : AbstractTest() {
     fun `real DAO resolves connectors and reads dialog usage including empty configurations`() =
         runBlocking {
             val namespace = "usage_" + UUID.randomUUID().toString()
-            val collection = MongoBotConfiguration.asyncDatabase.coroutine.getCollection<Document>("dialog")
+            val collection = MongoBotConfiguration.asyncDatabase.getCollection<Document>("dialog")
             val from = ZonedDateTime.parse("2030-03-01T00:00:00Z")
             val query = DialogStatsQuery(namespace, "model", from, from.plusDays(1))
 
@@ -98,7 +97,7 @@ class DialogUsageMongoDAOTest : AbstractTest() {
     fun `action date index reduces examined documents on selective periods`() =
         runBlocking {
             val namespace = "usage_index_" + UUID.randomUUID().toString()
-            val collection = MongoBotConfiguration.asyncDatabase.coroutine.getCollection<Document>("dialog")
+            val collection = MongoBotConfiguration.asyncDatabase.getCollection<Document>("dialog")
             val from = ZonedDateTime.parse("2030-03-01T00:00:00Z")
             val query = DialogStatsQuery(namespace, "model", from, from.plusDays(1))
             try {
@@ -124,25 +123,19 @@ class DialogUsageMongoDAOTest : AbstractTest() {
                         collection
                             .aggregate<Document>(pipeline)
                             .hint(baselineIndex)
-                            .publisher
-                            .explain(ExplainVerbosity.EXECUTION_STATS)
-                            .awaitFirst(),
+                            .explain(ExplainVerbosity.EXECUTION_STATS),
                     )
                 val indexedPlan =
                     collection
                         .aggregate<Document>(pipeline)
                         .hint(DialogUsageAggregation.index)
-                        .publisher
                         .explain(ExplainVerbosity.EXECUTION_STATS)
-                        .awaitFirst()
                 val indexed = examined(indexedPlan)
                 val selected =
                     examined(
                         collection
                             .aggregate<Document>(pipeline)
-                            .publisher
-                            .explain(ExplainVerbosity.EXECUTION_STATS)
-                            .awaitFirst(),
+                            .explain(ExplainVerbosity.EXECUTION_STATS),
                     )
                 assertTrue(indexed < baseline, "Indexed=$indexed, baseline=$baseline: ${indexedPlan.toJson()}")
                 assertEquals(10, collection.aggregate<Document>(pipeline.take(1)).toList().size)

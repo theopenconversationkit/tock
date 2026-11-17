@@ -23,11 +23,11 @@ import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
 import org.litote.kmongo.Id
+import org.litote.kmongo.coroutine.getCollectionOfName
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
 
 internal object BotDocumentCompressorConfigurationMongoDAO : BotDocumentCompressorConfigurationDAO {

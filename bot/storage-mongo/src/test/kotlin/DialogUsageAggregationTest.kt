@@ -37,7 +37,7 @@ class DialogUsageAggregationTest : AbstractTest(false) {
     fun `counts messages and feedback with exact period application and namespace isolation`() {
         val database = getDatabase("dashboard_usage_test_" + UUID.randomUUID().toString().replace("-", ""))
         try {
-            val collection = database.getCollection("dialog")
+            val collection = database.getCollection<Document>("dialog")
             // DST starts on this day: midnight in Paris is 23:00 UTC the day before.
             val from = "2026-03-28T23:00:00Z"
             val to = "2026-03-29T22:00:00Z"

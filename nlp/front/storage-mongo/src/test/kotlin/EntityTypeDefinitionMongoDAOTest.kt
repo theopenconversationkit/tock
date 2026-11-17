@@ -24,6 +24,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.litote.kmongo.newId
 import java.util.Locale.ENGLISH
 import kotlin.test.assertEquals
 
@@ -55,6 +56,19 @@ internal class EntityTypeDefinitionMongoDAOTest : AbstractTest() {
     @AfterEach
     fun cleanup() {
         entityTypeDAO.deleteEntityTypeByName(entityType.name)
+    }
+
+    @Test
+    fun `save an entity type with an existing name and a new id keeps the stored id`() {
+        entityTypeDAO.save(entityType)
+        val storedId = entityTypeDAO.getEntityTypeByName(entityType.name)?._id
+
+        // concurrent startups of several services create the same built-in entity type with different ids
+        entityTypeDAO.save(entityType.copy(description = "other", _id = newId()))
+
+        val stored = entityTypeDAO.getEntityTypeByName(entityType.name)
+        assertEquals(storedId, stored?._id)
+        assertEquals("other", stored?.description)
     }
 
     @Test

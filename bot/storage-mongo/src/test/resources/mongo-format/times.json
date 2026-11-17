@@ -1,0 +1,18 @@
+{
+  "duration": {
+    "$numberDecimal": "90.500000000"
+  },
+  "period": "P1Y2M3D",
+  "zoneId": "Europe/Paris",
+  "zoneOffset": "+02:00",
+  "instant": {
+    "$date": {
+      "$numberLong": "1793873730123"
+    }
+  },
+  "zonedDateTime": {
+    "$date": {
+      "$numberLong": "1793873730123"
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "currentIntent": {
+    "name": "test"
+  },
+  "entityValues": {
+    "role": {
+      "value": {
+        "start": {
+          "$numberInt": "0"
+        },
+        "end": {
+          "$numberInt": "1"
+        },
+        "entity": {
+          "entityType": {
+            "name": "type",
+            "subEntities": [],
+            "dictionary": false,
+            "obfuscated": false
+          },
+          "role": "role"
+        },
+        "content": "content",
+        "value": {
+          "@type": "number",
+          "value": {
+            "$numberInt": "3"
+          }
+        },
+        "evaluated": false,
+        "subEntities": [],
+        "probability": {
+          "$numberDouble": "1.0"
+        },
+        "mergeSupport": false
+      },
+      "lastUpdate": {
+        "$date": {
+          "$numberLong": "1793873730123"
+        }
+      },
+      "id": "state"
+    }
+  },
+  "context": {
+    "key": {
+      "klass": "ai.tock.bot.mongo.MongoFormatTest$Custom",
+      "value": {
+        "name": "custom",
+        "date": {
+          "$date": {
+            "$numberLong": "1793873730123"
+          }
+        }
+      }
+    },
+    "empty": null
+  },
+  "userLocation": {
+    "lat": {
+      "$numberDouble": "1.0"
+    },
+    "lng": {
+      "$numberDouble": "2.0"
+    }
+  },
+  "nextActionState": {
+    "intentsQualifiers": [
+      {
+        "intent": "test",
+        "modifier": {
+          "$numberDouble": "0.0"
+        }
+      }
+    ],
+    "referenceDate": {
+      "$date": {
+        "$numberLong": "1793873730123"
+      }
+    },
+    "referenceTimezone": "Europe/Paris",
+    "states": null
+  }
+}

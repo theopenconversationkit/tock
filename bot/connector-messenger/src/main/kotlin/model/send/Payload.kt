@@ -17,10 +17,13 @@
 package ai.tock.bot.connector.messenger.model.send
 
 import ai.tock.bot.connector.messenger.json.send.PayloadDeserializer
+import ai.tock.bot.connector.messenger.json.send.PayloadMongoDeserializer
 import ai.tock.bot.engine.message.GenericMessage
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import tools.jackson.databind.annotation.JsonDeserialize as JsonDeserialize3
 
 @JsonDeserialize(using = PayloadDeserializer::class)
+@JsonDeserialize3(using = PayloadMongoDeserializer::class)
 abstract class Payload {
     open fun toGenericMessage(): GenericMessage? = null
 

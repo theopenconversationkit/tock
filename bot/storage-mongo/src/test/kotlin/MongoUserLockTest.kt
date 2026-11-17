@@ -26,8 +26,8 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.reactivestreams.getCollection
+import org.litote.kmongo.coroutine.findOneById
+import org.litote.kmongo.coroutine.getCollection
 import java.util.concurrent.Executors
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -83,7 +83,7 @@ class MongoUserLockTest : AbstractTest() {
 
     // the following tests rely on the default lock timeout (5s), so the heartbeat runs every 2.5s
 
-    private val lockCol by lazy { MongoBotConfiguration.asyncDatabase.getCollection<MongoUserLock.UserLock>().coroutine }
+    private val lockCol by lazy { MongoBotConfiguration.asyncDatabase.getCollection<MongoUserLock.UserLock>() }
 
     private suspend fun currentLock(): MongoUserLock.UserLock? = lockCol.findOneById(userId)
 

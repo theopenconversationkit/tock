@@ -26,12 +26,17 @@ import ai.tock.bot.mongo.Feature_.Companion._id
 import ai.tock.bot.mongo.ai.tock.bot.mongo.FeatureCache
 import ai.tock.shared.error
 import ai.tock.shared.internalDefaultZoneId
-import com.mongodb.reactivestreams.client.MongoCollection
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
-import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.coroutine.deleteOneById
+import org.litote.kmongo.coroutine.find
+import org.litote.kmongo.coroutine.findOne
+import org.litote.kmongo.coroutine.save
+import org.litote.kmongo.coroutine.toList
 import org.litote.kmongo.eq
+import org.litote.kmongo.toList
 import java.time.ZonedDateTime
 import kotlin.math.abs
 
@@ -52,7 +57,7 @@ internal class FeatureMongoDAO(
     private val cache: FeatureCache,
     asyncCol: MongoCollection<Feature>,
 ) : FeatureDAO {
-    private val col = asyncCol.coroutine
+    private val col = asyncCol
     private val logger = KotlinLogging.logger {}
 
     private fun calculateId(

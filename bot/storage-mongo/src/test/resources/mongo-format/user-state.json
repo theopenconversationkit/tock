@@ -1,0 +1,23 @@
+{
+  "creationDate": {
+    "$date": {
+      "$numberLong": "1793873730123"
+    }
+  },
+  "lastUpdateDate": {
+    "$date": {
+      "$numberLong": "1793873730123"
+    }
+  },
+  "flags": {
+    "flag": {
+      "encrypted": false,
+      "value": "value",
+      "expirationDate": {
+        "$date": {
+          "$numberLong": "1793873730123"
+        }
+      }
+    }
+  }
+}

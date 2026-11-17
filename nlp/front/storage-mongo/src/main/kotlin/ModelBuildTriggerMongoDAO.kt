@@ -25,7 +25,7 @@ import ai.tock.nlp.front.shared.build.ModelBuildTrigger_.Companion.OnlyIfModelNo
 import ai.tock.nlp.front.shared.build.ModelBuild_
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.ensureIndex
-import com.mongodb.client.MongoCollection
+import com.mongodb.kotlin.client.MongoCollection
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteMany

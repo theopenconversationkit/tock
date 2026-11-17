@@ -1,0 +1,28 @@
+{
+  "values": [
+    {
+      "@type": "string",
+      "value": "text",
+      "candidates": []
+    },
+    {
+      "@type": "number",
+      "value": {
+        "$numberInt": "3"
+      }
+    },
+    {
+      "@type": "email",
+      "value": "a@b.c"
+    },
+    {
+      "@type": "dateEntity",
+      "date": {
+        "$date": {
+          "$numberLong": "1793873730123"
+        }
+      },
+      "grain": "day"
+    }
+  ]
+}

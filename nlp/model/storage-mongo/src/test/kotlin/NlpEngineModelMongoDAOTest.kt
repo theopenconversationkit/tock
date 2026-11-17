@@ -26,8 +26,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import com.mongodb.client.MongoDatabase
 import com.mongodb.client.gridfs.GridFSBuckets
+import com.mongodb.kotlin.client.MongoDatabase
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -45,7 +45,7 @@ internal class NlpEngineModelMongoDAOTest {
             Kodein {
                 import(sharedTestModule)
                 bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-                bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with
+                bind<com.mongodb.kotlin.client.coroutine.MongoDatabase>(MONGO_DATABASE) with
                     provider { getAsyncDatabase(MONGO_DATABASE) }
             },
         )
@@ -60,7 +60,7 @@ internal class NlpEngineModelMongoDAOTest {
     fun `getIntentModelInputStream returns the last uploaded model while the previous version is not removed yet`() {
         // saveModel uploads the new version, then removes the previous ones:
         // in between, the change stream listeners already reload the model
-        val bucket = GridFSBuckets.create(MongoModelConfiguration.database, "fs_intent")
+        val bucket = GridFSBuckets.create(MongoModelConfiguration.javaDatabase, "fs_intent")
         bucket.uploadFromStream(key.id(), "previous".byteInputStream())
         Thread.sleep(10)
         bucket.uploadFromStream(key.id(), "last".byteInputStream())

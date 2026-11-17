@@ -39,7 +39,9 @@ object IndicatorMongoDAO : IndicatorDAO {
             )
         }
 
-    override fun save(indicator: Indicator) = col.save(indicator)
+    override fun save(indicator: Indicator) {
+        col.save(indicator)
+    }
 
     override fun existByNameAndBotId(
         name: String,

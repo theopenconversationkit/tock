@@ -79,7 +79,7 @@
         </dependency>
         <dependency>
             <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo</artifactId>
+            <artifactId>kmongo-dsl-sync-jackson</artifactId>
         </dependency>
     </dependencies>
 

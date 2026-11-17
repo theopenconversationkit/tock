@@ -25,8 +25,8 @@ import ai.tock.bot.orchestration.shared.SecondaryBotAction
 import ai.tock.shared.TOCK_BOT_DATABASE
 import ai.tock.shared.injector
 import ai.tock.shared.provide
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.MongoCollection
+import com.mongodb.kotlin.client.MongoDatabase
 import org.litote.kmongo.Id
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
