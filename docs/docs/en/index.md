@@ -71,7 +71,7 @@ or models hosted on [AWS SageMaker](https://aws.amazon.com/sagemaker/)
 [Kotlin](https://kotlinlang.org/), [Javascript/Nodejs](https://nodejs.org/), [Python](https://www.python.org/)
 and any-language _REST API_ (see [_Bot API_](develop/bot-api.md))
 * Numerous text/voice integrations available with [Messenger](https://www.messenger.com/), [WhatsApp](https://www.whatsapp.com/), 
-[Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/),
+[Teams](https://www.microsoft.com/microsoft-teams/), [Slack](https://slack.com/), [Google Chat](https://workspace.google.com/products/chat/), [Mattermost](https://mattermost.com/), [iAdvize](https://www.iadvize.com/en/),
 [Alcmeon](https://www.alcmeon.com/), OpenAI-compatible clients,
 a Web connector with [React](https://reactjs.org) and [Vue](https://vuejs.org/) kits... (see [channels](channels/index.md))
 * _Cloud_ or _on-premise_ setups, with or without [Docker](https://www.docker.com/), on [Kubernetes](operate/kubernetes.md),
