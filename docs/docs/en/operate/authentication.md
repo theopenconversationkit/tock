@@ -133,6 +133,8 @@ It is however not necessary to define tock_keycloak_access_token_path, tock_keyc
 
 If tock_custom_namespace_mapping is not set or the attribute is not found, the default "app" namespace is used.
 
+The attribute named by tock_keycloak_user_role_attribute must contain the names of the Tock roles of the user (`nlpUser`, `botUser`, `admin`, `technicalAdmin`), either as a multivalued claim or as a comma-separated string. Other values are ignored, and a user without any Tock role is refused (401).
+
 ## OAuth/GitHub Implementation
 
 This rather simplistic implementation is used as an example, as well as for the public demo platform
