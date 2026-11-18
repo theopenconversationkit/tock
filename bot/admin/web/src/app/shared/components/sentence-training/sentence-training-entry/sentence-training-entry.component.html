@@ -58,8 +58,11 @@
 
       <div class="font-size-small text-muted unselectable d-flex justify-content-end align-items-center mt-auto pr-3">
         <div>
-          <time>{{ sentence.creationDate | date: 'd MMMM yyyy':undefined:dateLocale }}</time>
-          <span class="sentence-status text-uppercase mx-1" [nbTooltip]="'shared.sentence-training-entry.sentence-status' | transloco">
+          <time>{{ sentence.creationDate | date: 'd MMMM yyyy HH:mm:ss':undefined:dateLocale }}</time>
+          <span
+            class="sentence-status text-uppercase mx-1"
+            [nbTooltip]="'shared.sentence-training-entry.sentence-status' | transloco"
+          >
             {{ sentence.statusDisplayed() | transloco }}
           </span>
           <span [nbTooltip]="'shared.sentence-training-entry.sentence-configuration' | transloco">{{ sentence.configuration }}</span>
@@ -70,19 +73,23 @@
       </div>
     </div>
 
-
     <div class="tools-panel">
-
       <div class="config-section d-flex flex-column gap-1">
         <div class="d-flex">
-          <nb-form-field class="mb-0 flex-grow-1" [nbTooltip]="'shared.sentence-training-entry.intent-association' | transloco">
-            <nb-icon nbPrefix icon="compass"></nb-icon>
+          <nb-form-field
+            class="mb-0 flex-grow-1"
+            [nbTooltip]="'shared.sentence-training-entry.intent-association' | transloco"
+          >
+            <nb-icon
+              nbPrefix
+              icon="compass"
+            ></nb-icon>
             <input
               #sentenceIntentInput
               nbInput
               fullWidth
               type="text"
-              placeholder="{{ getSentenceAttribut('intentLabel') }}"
+              [placeholder]="getSentenceAttribut('intentLabel')"
               (focus)="onFocus()"
               (blur)="onBlur($event)"
               (keyup.escape)="onBlur($event)"
@@ -122,7 +129,11 @@
             ></nb-icon>
           </button>
 
-          <nb-autocomplete size="tiny" #intentsAutocomplete (selectedChange)="addIntentToSentence($event)">
+          <nb-autocomplete
+            size="tiny"
+            #intentsAutocomplete
+            (selectedChange)="addIntentToSentence($event)"
+          >
             @for (group of filteredIntentGroups | async; track group) {
             <nb-option-group [title]="group.category">
               @for (intent of group.intents; track intent) {
@@ -185,9 +196,19 @@
         </div>
         }
 
-        <nb-form-field [nbTooltip]="'shared.sentence-training-entry.set-sentence-language' | transloco" class="w-100">
-          <nb-icon nbPrefix icon="globe2"></nb-icon>
-          <nb-select [(ngModel)]="sentence.language" [placeholder]="'shared.sentence-training-entry.sentence-language' | transloco" fullWidth>
+        <nb-form-field
+          [nbTooltip]="'shared.sentence-training-entry.set-sentence-language' | transloco"
+          class="w-100"
+        >
+          <nb-icon
+            nbPrefix
+            icon="globe2"
+          ></nb-icon>
+          <nb-select
+            [(ngModel)]="sentence.language"
+            [placeholder]="'shared.sentence-training-entry.sentence-language' | transloco"
+            fullWidth
+          >
             @for (l of state.currentApplication.supportedLocales; track l) {
             <nb-option [value]="l">
               {{ state.localeName(l) }}
@@ -243,7 +264,9 @@
           nbButton
           [nbTooltip]="'shared.sentence-training-entry.exclude-from-rag' | transloco"
           status="warning"
-          [ngClass]="{ 'action-button-active': isActionButtonSuggested(Action.RAGEXCLUDED) || isActionButtonHighlighted(Action.RAGEXCLUDED) }"
+          [ngClass]="{
+            'action-button-active': isActionButtonSuggested(Action.RAGEXCLUDED) || isActionButtonHighlighted(Action.RAGEXCLUDED)
+          }"
           [ghost]="!isActionButtonHighlighted(Action.RAGEXCLUDED)"
           [outline]="isActionButtonSuggested(Action.RAGEXCLUDED)"
           shape="round"
@@ -288,9 +311,7 @@
         >
           <nb-icon icon="chat-left-text"></nb-icon>
         </button>
-        }
-
-        @if (!standAlone) {
+        } @if (!standAlone) {
         <button
           nbButton
           [nbTooltip]="'shared.sentence-training-entry.show-dialog' | transloco"
@@ -304,7 +325,6 @@
         </button>
         }
       </div>
-
     </div>
   </nb-card-body>
 </nb-card>

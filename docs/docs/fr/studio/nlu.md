@@ -64,7 +64,7 @@ ou encore d'une conversation via la page _Test_ > _Test_ dans _Tock Studio_.
 
 Les boutons et commandes sous chaque phrase sont identiques à ceux de l'onglet _New sentence_ (voir ci-dessus).
 
-## L'onglet _Search sentences_
+## L'onglet _All sentences_
 
 Cet écran permet de faire des recherches dans l'ensemble des phrases : _Inbox sentences_ mais aussi phrases qualifiées 
 enregistrées dans le modèle.
