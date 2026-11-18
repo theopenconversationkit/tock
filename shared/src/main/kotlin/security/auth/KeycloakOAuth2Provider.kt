@@ -77,13 +77,17 @@ internal class KeycloakOAuth2Provider(
     companion object {
         private val logger = KotlinLogging.logger {}
         private val userNamespaceAttribute = property("tock_custom_namespace_mapping", "tock_namespace")
+        private val scopes = listProperty("tock_keycloak_scopes", emptyList()).map { it.trim() }.filter { it.isNotEmpty() }
         private val userRoleAttribute = property("tock_keycloak_user_role_attribute", "tock_roles")
         private val defaultBaseUrl = property("tock_bot_admin_rest_default_base_url", "http://localhost:8080")
     }
 
     private val executor: Executor get() = injector.provide()
 
-    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler = OAuth2AuthHandler.create(vertx, oauth2, "$defaultBaseUrl/rest/callback")
+    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler {
+        val authHandler = OAuth2AuthHandler.create(vertx, oauth2, "$defaultBaseUrl/rest/callback")
+        return if (scopes.isEmpty()) authHandler else authHandler.withScopes(scopes)
+    }
 
     override fun protectPaths(
         verticle: WebVerticle,

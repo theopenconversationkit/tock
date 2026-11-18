@@ -89,6 +89,7 @@ sont définis par les propriétés `tock_users`, `tock_passwords`, `tock_organiz
 | `tock_oauth2_access_token_path` | | Chemin relatif de l'endpoint de token |
 | `tock_oauth2_authorize_path` | | Chemin relatif de l'endpoint d'autorisation |
 | `tock_oauth2_userinfo_path` | | Chemin relatif de l'endpoint d'informations utilisateur |
+| `tock_oauth2_scopes` | | Scopes demandés au fournisseur OAuth2, séparés par des virgules (remplace les scopes par défaut) |
 | `tock_oauth2_supported_grant_types` | | Types de _grant_ supportés |
 | `tock_oauth2_user_role_attribute` | `custom:roles` | Attribut des informations utilisateur contenant les rôles |
 | `tock_oauth2_proxy_host` | | Hôte du proxy HTTP utilisé pour joindre le fournisseur OAuth2 ou GitHub |
@@ -105,6 +106,7 @@ sont définis par les propriétés `tock_users`, `tock_passwords`, `tock_organiz
 | `tock_keycloak_access_token_path` | `/protocol/openid-connect/token` | Chemin relatif de l'endpoint de token |
 | `tock_keycloak_authorize_path` | `/protocol/openid-connect/auth` | Chemin relatif de l'endpoint d'autorisation |
 | `tock_keycloak_userinfo_path` | `/protocol/openid-connect/userinfo` | Chemin relatif de l'endpoint d'informations utilisateur |
+| `tock_keycloak_scopes` | | Scopes demandés à Keycloak, séparés par des virgules (remplace les scopes par défaut) |
 | `tock_keycloak_grant_types` | | Types de _grant_ supportés |
 | `tock_keycloak_user_role_attribute` | `tock_roles` | Attribut contenant les rôles |
 | `tock_keycloak_proxy_host` | | Hôte du proxy HTTP utilisé pour joindre Keycloak |

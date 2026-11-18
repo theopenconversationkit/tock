@@ -91,6 +91,7 @@ Voici les propriétés, avec des exemples de valeurs :
 | `tock_oauth2_access_token_path` | `/oauth2/token` | Chemin relatif pour récupérer l'access token |
 | `tock_oauth2_authorize_path` | `/oauth2/authorize` | Chemin relatif pour récupérer l'authorize |
 | `tock_oauth2_userinfo_path` | `/oauth2/userInfo` | Chemin relatif pour récupérer les userinfo |
+| `tock_oauth2_scopes` | `openid,email,profile` | Scopes demandés au fournisseur OAuth2, séparés par des virgules. Si la propriété est absente ou vide, les scopes par défaut sont conservés. |
 | `tock_oauth2_proxy_host` |  | Hôte du proxy (ne pas indiquer si pas de proxy) |
 | `tock_oauth2_proxy_port` |  | Port optionnel du proxy |
 | `tock_oauth2_user_role_attribute` | `custom:roles` | Attribut lu dans le token pour le mapping du rôle |
@@ -123,6 +124,7 @@ Voici les propriétés et leurs valeurs proposées :
 | `tock_keycloak_proxy_port`          |                                     | port optionnel du proxy                         |
 | `tock_custom_namespace_mapping`     | `tock_namespace`                    | Attribut lu dans le token pour le namespace     |
 | `tock_keycloak_user_role_attribute` | `tock_roles`                        | Attribut lu dans le token pour les roles        |
+| `tock_keycloak_scopes`              | `openid,email,profile`              | Scopes demandés à Keycloak, séparés par des virgules. Si la propriété est absente ou vide, les scopes par défaut sont conservés. |
 
 Il est nécessaire d'indiquer en callback url `https://[host admin]/rest/callback`.
 

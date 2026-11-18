@@ -89,6 +89,7 @@ defined by the `tock_users`, `tock_passwords`, `tock_organizations` and `tock_ro
 | `tock_oauth2_access_token_path` | | Relative path of the token endpoint |
 | `tock_oauth2_authorize_path` | | Relative path of the authorization endpoint |
 | `tock_oauth2_userinfo_path` | | Relative path of the user info endpoint |
+| `tock_oauth2_scopes` | | Comma-separated scopes requested from the OAuth2 provider (replaces the default scopes) |
 | `tock_oauth2_supported_grant_types` | | Supported grant types |
 | `tock_oauth2_user_role_attribute` | `custom:roles` | Attribute of the user info holding the roles |
 | `tock_oauth2_proxy_host` | | Host of the HTTP proxy used to reach the OAuth2 or GitHub provider |
@@ -105,6 +106,7 @@ defined by the `tock_users`, `tock_passwords`, `tock_organizations` and `tock_ro
 | `tock_keycloak_access_token_path` | `/protocol/openid-connect/token` | Relative path of the token endpoint |
 | `tock_keycloak_authorize_path` | `/protocol/openid-connect/auth` | Relative path of the authorization endpoint |
 | `tock_keycloak_userinfo_path` | `/protocol/openid-connect/userinfo` | Relative path of the user info endpoint |
+| `tock_keycloak_scopes` | | Comma-separated scopes requested from Keycloak (replaces the default scopes) |
 | `tock_keycloak_grant_types` | | Supported grant types |
 | `tock_keycloak_user_role_attribute` | `tock_roles` | Attribute holding the roles |
 | `tock_keycloak_proxy_host` | | Host of the HTTP proxy used to reach Keycloak |
