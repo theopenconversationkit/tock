@@ -23,6 +23,7 @@ import ai.tock.genai.orchestratorclient.requests.CompletionRequest
 import ai.tock.genai.orchestratorclient.responses.CompletionResponse
 import ai.tock.genai.orchestratorclient.responses.SentenceCompletionResponse
 import ai.tock.genai.orchestratorclient.services.CompletionService
+import ai.tock.genai.orchestratorclient.services.CompletionStreamListener
 import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -65,6 +66,37 @@ object CompletionService {
                             )?.setting,
                 ),
             )
+
+    /**
+     * Generate an answer and stream it token by token (Playground streaming mode).
+     * @param request [PlaygroundRequest] : the playground request
+     * @param namespace [String] : the namespace
+     * @param botId [String] : the bot id
+     * @param listener [CompletionStreamListener] : notified as streaming events arrive
+     */
+    fun generateStream(
+        request: PlaygroundRequest,
+        namespace: String,
+        botId: String,
+        listener: CompletionStreamListener,
+    ) = completionService.generateStream(
+        CompletionRequest(
+            llmSetting =
+                LLMSettingMapper.toEntity(
+                    dto = request.llmSetting,
+                    rawByForce = true,
+                ),
+            prompt = request.prompt,
+            observabilitySetting =
+                ObservabilityService
+                    .getObservabilityConfiguration(
+                        namespace,
+                        botId,
+                        enabled = true,
+                    )?.setting,
+        ),
+        listener,
+    )
 
     /**
      * Generate sentences

@@ -177,7 +177,6 @@ Le LLM doit renvoyer exactement la structure suivante :
 {
   "status": "<STATUS>",
   "answer": "<TEXTUAL_ANSWER>",
-  "display_answer": true,
   "confidence_score": "<CONFIDENCE_SCORE>",
   "topic": "<TOPIC>",
   "suggested_topics": ["<SUGGESTION_1>"],
@@ -215,13 +214,6 @@ La réponse textuelle finale affichée à l'utilisateur, rédigée dans la langu
 
 - Doit respecter strictement les règles RAG.
 - Son contenu dépend du `status` (voir les [règles de cohérence](#regles-de-coherence)).
-
-#### `display_answer`
-
-Booléen indiquant si la réponse est affichée dans l'interface.
-
-- Par défaut : `true`
-- Ne peut être modifié que par les règles de cohérence.
 
 #### `confidence_score`
 

@@ -42,3 +42,12 @@ class GenAIOrchestratorParsingError(
     override val message: String = "Generative AI Orchestrator parsing error",
     val detail: String,
 ) : Exception(message)
+
+/**
+ * Raised when a streaming call (RAG or completion) receives no terminal event within the request timeout.
+ * Distinct from [GenAIOrchestratorParsingError] so callers can tell a timeout from a malformed payload.
+ */
+class GenAIOrchestratorStreamTimeoutError(
+    override val message: String = "Generative AI Orchestrator stream timeout",
+    val detail: String,
+) : Exception(message)

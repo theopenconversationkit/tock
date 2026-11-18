@@ -14,8 +14,10 @@
 #
 """Module for the Completion Service"""
 
+import json
 import logging
 import time
+from typing import AsyncGenerator
 
 from langchain_core.output_parsers import (
     NumberedListOutputParser,
@@ -36,6 +38,9 @@ from gen_ai_orchestrator.routers.requests.requests import CompletionRequest
 from gen_ai_orchestrator.routers.responses.responses import (
     PlaygroundResponse,
     SentenceGenerationResponse,
+)
+from gen_ai_orchestrator.services.langchain.callbacks.completion_callback_handler import (
+    CompletionCallbackHandler,
 )
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     create_observability_callback_handler,
@@ -105,6 +110,84 @@ async def generate(
             ObservabilityTrace.PLAYGROUND.value,
         ),
     )
+
+
+@aws_bedrock_exception_handler(provider='AwsBedrock')
+@openai_exception_handler(provider='OpenAI or AzureOpenAIService')
+async def generate_stream(
+    request: CompletionRequest,
+) -> AsyncGenerator[dict, None]:
+    """
+    Generate an answer using a language model and stream it via Server-Sent Events.
+
+    Emits:
+      - one 'token' event per new fragment of the answer text;
+      - a final 'answer' event carrying the complete PlaygroundResponse (JSON),
+        including the time-to-first-token (ttft).
+
+    :param request: A CompletionRequest object containing the llm setting and prompt.
+    """
+    logger.info('Prompt completion (Playground, stream) - Start of execution...')
+    start_time = time.time()
+
+    logger.info('Prompt completion (Playground, stream) - template validation')
+    validate_prompt_template(request.prompt, 'Playground prompt')
+
+    parser = StrOutputParser()
+    prompt = LangChainPromptTemplate.from_template(
+        template=request.prompt.template,
+        template_format=request.prompt.formatter.value,
+    )
+    model = get_llm_factory(request.llm_setting).get_language_model()
+
+    chain = prompt | model | parser
+
+    # TTFT measurement callback (fires on the first streamed token).
+    completion_handler = CompletionCallbackHandler()
+    callbacks: list = [completion_handler]
+
+    observability_handler = None
+    if request.observability_setting is not None:
+        observability_handler = create_observability_callback_handler(
+            observability_setting=request.observability_setting,
+            trace_name=ObservabilityTrace.PLAYGROUND.value,
+            session_id=None,
+            user_id=None,
+            tags=None,
+        )
+        callbacks.append(observability_handler)
+
+    config = {'callbacks': callbacks}
+
+    full_answer = ''
+    async for chunk in chain.astream(request.prompt.inputs, config=config):
+        if chunk:
+            full_answer += chunk
+            yield {
+                'event': 'token',
+                'data': json.dumps(
+                    {'type': 'token', 'content': chunk}, ensure_ascii=False
+                ),
+            }
+
+    logger.info(
+        'Prompt completion (Playground, stream) - End of execution. '
+        '(Duration : %.2f seconds)',
+        time.time() - start_time,
+    )
+
+    response = PlaygroundResponse(
+        answer=full_answer,
+        observability_info=get_observability_info(
+            observability_handler,
+            ObservabilityTrace.PLAYGROUND.value,
+        ),
+        ttft=completion_handler.ttft,
+    )
+    yield {
+        'event': 'answer',
+        'data': response.model_dump_json(exclude_none=True),
+    }
 
 
 @aws_bedrock_exception_handler(provider='AwsBedrock')

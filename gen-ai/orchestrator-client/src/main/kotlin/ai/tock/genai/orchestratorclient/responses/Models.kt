@@ -27,7 +27,6 @@ data class LLMAnswer(
     val status: String?,
     val answer: String?,
     val confidenceScore: Double? = null,
-    val displayAnswer: Boolean? = true,
     val topic: String? = null,
     val suggestedTopics: List<String>? = null,
     val understanding: String? = null,

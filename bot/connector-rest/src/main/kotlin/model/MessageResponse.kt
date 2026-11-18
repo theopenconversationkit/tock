@@ -33,6 +33,7 @@ internal data class MessageResponse(
     val userActionId: String = Dice.newId(),
     val userLocale: Locale? = null,
     val hasNlpStats: Boolean = false,
+    val ragDebug: Any? = null,
 ) : ConnectorMessage {
     override val connectorType: ConnectorType = ConnectorType.rest
 

@@ -15,6 +15,7 @@
  */
 
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { RestService } from '../core-nlp/rest/rest.service';
 import { StateService } from '../core-nlp/state.service';
 import {
@@ -26,17 +27,69 @@ import {
   XRayPlanExecutionResult,
   XRayTestPlan
 } from './model/test';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { SseParser } from '../shared/utils/sse-parser';
+
+export interface SSEEvent {
+  event?: string;
+  data?: string;
+}
 
 @Injectable()
 export class TestService {
-  constructor(private rest: RestService, private state: StateService) {}
+  constructor(private rest: RestService, private state: StateService, private http: HttpClient) {}
 
   talk(query: BotDialogRequest, debug = false, sourceWithContent = false): Observable<BotDialogResponse> {
     let params: { debug?: boolean; sourceWithContent?: boolean } = {};
     if (debug) params.debug = true;
     if (sourceWithContent) params.sourceWithContent = true;
     return this.rest.post('/test/talk', query, BotDialogResponse.fromJSON, null, false, params);
+  }
+
+  talkStream(query: BotDialogRequest, debug = false, sourceWithContent = false): Observable<SSEEvent> {
+    return new Observable(observer => {
+      let params = new URLSearchParams();
+      if (debug) params.set('debug', 'true');
+      if (sourceWithContent) params.set('sourceWithContent', 'true');
+
+      const url = this.rest.url + '/test/talk/stream' + (params.toString() ? '?' + params : '');
+      const postData = JSON.stringify(query);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.withCredentials = true;
+
+      let lastProcessedIndex = 0;
+      const parser = new SseParser();
+
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState >= 3 && xhr.responseText.length > lastProcessedIndex) {
+          const newData = xhr.responseText.substring(lastProcessedIndex);
+          lastProcessedIndex = xhr.responseText.length;
+          parser.push(newData).forEach((event) => observer.next(event));
+        }
+
+        if (xhr.readyState === 4) {
+          parser.flush().forEach((event) => observer.next(event));
+          if (xhr.status === 200) {
+            observer.complete();
+          } else {
+            observer.error(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
+          }
+        }
+      };
+
+      xhr.onerror = () => {
+        observer.error(new Error('Network error'));
+      };
+
+      xhr.send(postData);
+
+      return () => {
+        xhr.abort();
+      };
+    });
   }
 
   getTestPlans(): Observable<TestPlan[]> {

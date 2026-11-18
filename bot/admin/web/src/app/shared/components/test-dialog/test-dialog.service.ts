@@ -16,6 +16,7 @@
 
 import { Injectable } from '@angular/core';
 import { NbWindowRef, NbWindowService, NbWindowState } from '@nebular/theme';
+import { makeWindowFloating } from './floating-window';
 import { TestDialogComponent } from './test-dialog.component';
 import { TestMessage } from '../../../test/model/test';
 import { Subject } from 'rxjs';
@@ -56,7 +57,16 @@ export class TestDialogService {
         initialState: NbWindowState.MAXIMIZED
       });
 
+      const floating = makeWindowFloating(this.windowRef.componentRef.location.nativeElement, {
+        onLeaveMaximized: () => this.windowRef?.maximize()
+      });
+      this.windowRef.stateChange.subscribe((change) => {
+        floating.setMode(
+          change.newState === NbWindowState.MINIMIZED ? 'collapsed' : change.newState === NbWindowState.FULL_SCREEN ? 'maximized' : 'normal'
+        );
+      });
       this.windowRef.onClose.subscribe(() => {
+        floating.dispose();
         this.messages = undefined;
         this.windowRef = undefined;
         delete this.replayDialogStack;

@@ -29,10 +29,23 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import okio.BufferedSource
 import retrofit2.Response
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.time.Duration
 import java.util.Locale
+
+/**
+ * Simple representation of a Server-Sent Event
+ */
+data class ServerSentEvent(
+    val event: String? = null,
+    val data: String? = null,
+    val id: String? = null,
+    val retry: Long? = null,
+)
 
 /**
  *
@@ -75,4 +88,82 @@ class ConnectorRestClient(
         locale: Locale,
         query: ClientMessageRequest,
     ): Response<ClientMessageResponse> = getService(path).talk(locale.toLanguageTag(), query).execute()
+
+    /**
+     * Stream the bot response as Server-Sent Events.
+     */
+    fun talkStream(
+        path: String,
+        locale: Locale,
+        query: ClientMessageRequest,
+    ): Flow<ServerSentEvent> =
+        flow {
+            val response = getService(path).talkStream(locale.toLanguageTag(), query).execute()
+            if (!response.isSuccessful) {
+                throw IllegalStateException("Failed to stream response: ${response.code()} ${response.message()}")
+            }
+            val body = response.body() ?: throw IllegalStateException("Empty response body")
+            body.source().use { source ->
+                // Spec-compliant SSE parsing (https://html.spec.whatwg.org/multipage/server-sent-events.html):
+                // accumulate fields until a blank line dispatches the event. Tolerates comments
+                // (':' lines, e.g. keep-alive pings), multi-line 'data:', and unknown fields.
+                var eventType: String? = null
+                var id: String? = null
+                val data = StringBuilder()
+
+                suspend fun dispatch() {
+                    // A blank line with no field set is just a keep-alive separator: skip it.
+                    if (eventType == null && id == null && data.isEmpty()) return
+                    emit(
+                        ServerSentEvent(
+                            event = eventType ?: "message",
+                            data = data.toString().removeSuffix("\n"),
+                            id = id,
+                        ),
+                    )
+                    eventType = null
+                    id = null
+                    data.setLength(0)
+                }
+
+                while (!source.exhausted()) {
+                    val line = source.readUtf8LineStrict()
+                    when {
+                        // Blank line: dispatch the buffered event.
+                        line.isEmpty() -> {
+                            dispatch()
+                        }
+
+                        // Comment line: ignore.
+                        line.startsWith(":") -> {}
+
+                        else -> {
+                            val colon = line.indexOf(':')
+                            val field = if (colon >= 0) line.substring(0, colon) else line
+                            // A single leading space after the colon is part of the delimiter.
+                            var value = if (colon >= 0) line.substring(colon + 1) else ""
+                            if (value.startsWith(" ")) value = value.substring(1)
+                            when (field) {
+                                "event" -> {
+                                    eventType = value
+                                }
+
+                                "data" -> {
+                                    data.append(value).append('\n')
+                                }
+
+                                "id" -> {
+                                    id = value
+                                }
+
+                                // "retry" and unknown fields are ignored.
+                                else -> {}
+                            }
+                        }
+                    }
+                }
+                // Flush a trailing event not terminated by a blank line.
+                dispatch()
+            }
+        }
 }

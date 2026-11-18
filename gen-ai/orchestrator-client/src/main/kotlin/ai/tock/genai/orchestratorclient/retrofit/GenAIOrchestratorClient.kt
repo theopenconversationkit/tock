@@ -36,10 +36,14 @@ import java.util.concurrent.TimeUnit
  *  Wraps calls to Generative AI Orchestrator Server.
  */
 object GenAIOrchestratorClient {
-    private val baseUrl: String = property("tock_gen_ai_orchestrator_server_url", "http://localhost:8000")
-    private val timeout: Long = longProperty("tock_gen_ai_orchestrator_client_request_timeout_ms", 55000)
+    /** Base URL of the Gen AI Orchestrator server (shared with the streaming client). */
+    val serverBaseUrl: String = property("tock_gen_ai_orchestrator_server_url", "http://localhost:8000")
 
-    private val jsonObjectMapper: ObjectMapper =
+    /** Request timeout in ms (shared with the streaming client). */
+    val requestTimeoutMs: Long = longProperty("tock_gen_ai_orchestrator_client_request_timeout_ms", 55000)
+
+    /** Jackson mapper (snake_case) shared with the streaming client so (de)serialization matches. */
+    val objectMapper: ObjectMapper =
         jacksonObjectMapper()
             .findAndRegisterModules()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
@@ -50,7 +54,7 @@ object GenAIOrchestratorClient {
     private var client: OkHttpClient =
         OkHttpClient
             .Builder()
-            .addInterceptor(GenAIOrchestratorInterceptor(jsonObjectMapper))
+            .addInterceptor(GenAIOrchestratorInterceptor(objectMapper))
             .addInterceptor(
                 // adapt log level to use specific log interceptors
                 HttpLoggingInterceptor().setLevel(
@@ -60,17 +64,17 @@ object GenAIOrchestratorClient {
                         ).toString(),
                     ),
                 ),
-            ).readTimeout(timeout, TimeUnit.MILLISECONDS)
-            .connectTimeout(timeout, TimeUnit.MILLISECONDS)
-            .writeTimeout(timeout, TimeUnit.MILLISECONDS)
+            ).readTimeout(requestTimeoutMs, TimeUnit.MILLISECONDS)
+            .connectTimeout(requestTimeoutMs, TimeUnit.MILLISECONDS)
+            .writeTimeout(requestTimeoutMs, TimeUnit.MILLISECONDS)
             .build()
 
     private val retrofit: Retrofit =
         Retrofit
             .Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(serverBaseUrl)
             .client(client)
-            .addJacksonConverter(jsonObjectMapper)
+            .addJacksonConverter(objectMapper)
             .build()
 
     fun getClient() = retrofit

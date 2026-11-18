@@ -177,7 +177,6 @@ The LLM must return exactly the following structure:
 {
   "status": "<STATUS>",
   "answer": "<TEXTUAL_ANSWER>",
-  "display_answer": true,
   "confidence_score": "<CONFIDENCE_SCORE>",
   "topic": "<TOPIC>",
   "suggested_topics": ["<SUGGESTION_1>"],
@@ -215,13 +214,6 @@ The final textual response shown to the user, written in `{{ locale }}`.
 
 - Must strictly comply with RAG rules.
 - Content varies based on `status` (see [Consistency Rules](#consistency-rules)).
-
-#### `display_answer`
-
-Boolean flag controlling whether the answer is displayed in the UI.
-
-- Default: `true`
-- Can only be overridden by Consistency Rules.
 
 #### `confidence_score`
 

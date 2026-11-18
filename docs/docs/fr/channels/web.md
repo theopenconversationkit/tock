@@ -71,6 +71,35 @@ sont alors streamées directement sur la même requête.
 Quand le bot streame ses réponses (par exemple les réponses RAG générées par un LLM), les morceaux streamés sont
 regroupés dans la réponse finale (`tock_web_connector_merge_stream_response`, `true` par défaut).
 
+### Streaming progressif des réponses RAG
+
+Avec `tock_web_sse=true`, si le client a ouvert le canal `<chemin>/sse?userid=<id>` (et que ce canal est connecté à
+l'instance qui traite le message), les réponses RAG sont envoyées progressivement sur ce canal pendant leur génération.
+Aucune autre variable n'est nécessaire. Sans canal SSE connecté, le comportement est inchangé : la réponse complète est
+renvoyée dans la réponse du `POST`.
+
+Contrat (identique pour `tock-react-kit` et `tock-vue-kit`) :
+
+- chaque trame est un événement `message` dont les métadonnées contiennent `RESPONSE_ID` et `TOCK_STREAM_RESPONSE=true` ;
+- les trames partielles portent aussi `TOCK_STREAM_PARTIAL=true` ; le client remplace le message portant le même
+  `RESPONSE_ID` par le contenu de la trame ;
+- la réponse finale (avec notes de bas de page, etc.) est envoyée après toutes les trames partielles. Le premier
+  message avec un texte porte `TOCK_STREAM_REPLACE=<actionId>` et remplace le message streamé ; s'il n'y en a pas,
+  `TOCK_STREAM_DISCARD=true` demande au client de le retirer ;
+- le client peut envoyer un `requestId` dans le corps de la requête : il est repris en `TOCK_REQUEST_ID` sur chaque
+  trame et dans la réponse du `POST`, ce qui permet d'ignorer les trames d'une autre requête.
+
+Par défaut, chaque trame contient le texte cumulé déjà rendu. Pour limiter le volume transféré, le client peut demander
+le mode delta en ajoutant `"streamMode": "delta"` dans le corps de la requête (option `streamMode` de `tock-react-kit`
+et `preferences.messages.streamMode` de `tock-vue-kit`). Les trames partielles portent alors les métadonnées
+`TOCK_STREAM_MODE=delta` et `TOCK_STREAM_KEEP=N` : le client conserve les `N` premiers caractères du message courant et
+leur ajoute le texte de la trame. La réponse finale est toujours complète.
+
+Pour l'architecture détaillée, voir [Streaming des réponses RAG](../develop/internals/rag-streaming.md).
+
+> Le moteur sélectionne le streaming RAG quand l'action utilisateur porte `metadata.streamedResponse=true`. Le
+> connecteur web positionne ce flag lui-même quand un canal SSE est connecté ; il n'a pas à être renseigné par le client.
+
 ### Messages push
 
 Quand le SSE est activé, le bot peut envoyer des messages push avec la méthode `notify`. Contrairement aux applications

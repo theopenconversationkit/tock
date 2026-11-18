@@ -298,8 +298,17 @@ fun HttpServerResponse.sendSsePing(): CompositeFuture =
         write("data: 1\n\n"),
     )
 
-fun HttpServerResponse.sendSseMessage(data: String): CompositeFuture =
+fun HttpServerResponse.sendSseMessage(data: String): CompositeFuture = sendSseEvent("message", data)
+
+/**
+ * Write a named Server-Sent Event frame (`event: <event>\ndata: <data>\n\n`).
+ * Shared by every connector that streams SSE so the wire format stays in one place.
+ */
+fun HttpServerResponse.sendSseEvent(
+    event: String,
+    data: String,
+): CompositeFuture =
     Future.all(
-        write("event: message\n"),
+        write("event: $event\n"),
         write("data: $data\n\n"),
     )

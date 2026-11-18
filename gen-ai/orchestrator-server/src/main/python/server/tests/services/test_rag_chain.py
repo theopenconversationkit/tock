@@ -12,6 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import json
 import os
 from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
@@ -175,7 +176,6 @@ async def test_execute_rag_chain_matches_footnotes_with_composite_chunk_id(
             'answer': {
                 'status': 'found_in_context',
                 'answer': 'Use the intranet page.',
-                'display_answer': True,
                 'context_usage': [
                     {
                         'chunk': 'doc-1:2/5',
@@ -662,6 +662,14 @@ def test_get_condensing_llm_answer_from_raw_with_text_around_json():
     assert llm_answer.key_words == ['deploy']
 
 
+@pytest.mark.parametrize('raw', [None, '', '  ', 'not json at all'])
+def test_get_condensing_llm_answer_from_raw_falls_back_to_the_original_question(raw):
+    llm_answer = get_condensing_llm_answer_from_raw(raw, 'How to deploy Tock?')
+
+    assert llm_answer.condensed_question == 'How to deploy Tock?'
+    assert llm_answer.key_words is None
+
+
 def test_rag_chain_with_compressor_applies_compression_to_documents():
     """Test that RunnablePassthrough.assign correctly applies compressor to documents."""
     from langchain_core.runnables import RunnableLambda, RunnablePassthrough
@@ -697,3 +705,144 @@ def test_rag_chain_with_compressor_applies_compression_to_documents():
     # Verify other fields are preserved
     assert result['question'] == 'test question'
     assert result['chat_history'] == []
+
+
+async def _fake_astream_events(*_args, **_kwargs):
+    """Mimic LangChain astream_events(v2): incremental parser dicts then root chain end."""
+    partials = [
+        {},
+        {'status': 'found_in_context'},
+        {'status': 'found_in_context', 'answer': 'Bonjour'},
+        {'status': 'found_in_context', 'answer': 'Bonjour, voici'},
+        {'status': 'found_in_context', 'answer': 'Bonjour, voici la reponse.'},
+    ]
+    for partial in partials:
+        yield {
+            'event': 'on_parser_stream',
+            'name': 'rag_chain_output',
+            'data': {'chunk': partial},
+        }
+    # The answer chain end carries the fully parsed LLMAnswer dict.
+    yield {
+        'event': 'on_chain_end',
+        'name': 'RunnableSequence',
+        'parent_ids': [],
+        'data': {
+            'output': {
+                'status': 'found_in_context',
+                'answer': 'Bonjour, voici la reponse.',
+            }
+        },
+    }
+
+
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.create_rag_chain_parts')
+@pytest.mark.asyncio
+async def test_execute_rag_chain_stream_emits_token_deltas_then_answer(
+    mocked_create_rag_chain_parts,
+):
+    from gen_ai_orchestrator.services.langchain.rag_chain import (
+        execute_rag_chain_stream,
+    )
+
+    # rag_inputs runs eagerly (ainvoke); answer_chain is streamed.
+    mocked_rag_inputs = MagicMock()
+    mocked_rag_inputs.ainvoke = AsyncMock(
+        return_value={'documents': [], 'chat_history': []}
+    )
+    mocked_answer_chain = MagicMock()
+    mocked_answer_chain.astream_events = _fake_astream_events
+    mocked_create_rag_chain_parts.return_value = (
+        mocked_rag_inputs,
+        mocked_answer_chain,
+    )
+
+    events = [event async for event in execute_rag_chain_stream(_rag_request(), debug=False)]
+
+    token_events = [e for e in events if e['event'] == 'token']
+    answer_events = [e for e in events if e['event'] == 'answer']
+
+    # Only non-empty incremental deltas are streamed, concatenating to the full answer.
+    contents = [json.loads(e['data'])['content'] for e in token_events]
+    assert ''.join(contents) == 'Bonjour, voici la reponse.'
+
+    # Exactly one final answer event carrying the assembled RAGResponse.
+    assert len(answer_events) == 1
+    final = json.loads(answer_events[0]['data'])
+    assert final['answer']['answer'] == 'Bonjour, voici la reponse.'
+
+
+def _stream_events(partials, final):
+    async def _events(*_args, **_kwargs):
+        for partial in partials:
+            yield {
+                'event': 'on_parser_stream',
+                'name': 'rag_chain_output',
+                'data': {'chunk': partial},
+            }
+        yield {
+            'event': 'on_chain_end',
+            'name': 'RunnableSequence',
+            'parent_ids': [],
+            'data': {'output': final},
+        }
+
+    return _events
+
+
+async def _run_stream(partials, final):
+    from gen_ai_orchestrator.services.langchain.rag_chain import (
+        execute_rag_chain_stream,
+    )
+
+    with patch(
+        'gen_ai_orchestrator.services.langchain.rag_chain.create_rag_chain_parts'
+    ) as parts:
+        rag_inputs = MagicMock()
+        rag_inputs.ainvoke = AsyncMock(
+            return_value={'documents': [], 'chat_history': []}
+        )
+        answer_chain = MagicMock()
+        answer_chain.astream_events = _stream_events(partials, final)
+        parts.return_value = (rag_inputs, answer_chain)
+        events = [e async for e in execute_rag_chain_stream(_rag_request(), False)]
+    tokens = [json.loads(e['data'])['content'] for e in events if e['event'] == 'token']
+    answers = [json.loads(e['data']) for e in events if e['event'] == 'answer']
+    return tokens, answers
+
+
+@pytest.mark.asyncio
+async def test_stream_always_streams_the_answer_text():
+    final = {'status': 'found_in_context', 'answer': 'Bonjour'}
+    tokens, answers = await _run_stream(
+        [{'status': 'found_in_context', 'answer': 'Bon'}, final], final
+    )
+    assert tokens == ['Bon', 'jour']
+    assert answers[0]['answer']['answer'] == 'Bonjour'
+
+
+@pytest.mark.asyncio
+async def test_stream_streams_not_found_in_context():
+    final = {'status': 'not_found_in_context', 'answer': 'Rien'}
+    tokens, answers = await _run_stream(
+        [{'status': 'not_found_in_context', 'answer': 'Ri'}, final], final
+    )
+    assert tokens == ['Ri', 'en']
+    assert answers[0]['answer']['answer'] == 'Rien'
+
+
+@pytest.mark.asyncio
+async def test_stream_has_no_duplicates_when_status_arrives_late():
+    final = {'status': 'found_in_context', 'answer': 'Bonjour le monde'}
+    tokens, answers = await _run_stream(
+        [
+            {'answer': 'Bon'},
+            {'answer': 'Bonjour'},
+            {'status': 'found_in_context', 'answer': 'Bonjour'},
+            {'status': 'found_in_context', 'answer': 'Bonjour le'},
+            final,
+        ],
+        final,
+    )
+    assert tokens == ['Bon', 'jour', ' le', ' monde']
+    assert answers[0]['answer']['answer'] == 'Bonjour le monde'

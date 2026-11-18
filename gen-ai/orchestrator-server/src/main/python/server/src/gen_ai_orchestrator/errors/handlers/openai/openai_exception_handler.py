@@ -14,6 +14,7 @@
 #
 """Module of the OpenAI handlers"""
 
+import inspect
 import logging
 
 from openai import (
@@ -53,36 +54,49 @@ def openai_exception_handler(provider: str):
     def decorator(func):
         """A decorator of handler function"""
 
+        if inspect.isasyncgenfunction(func):
+
+            async def wrapper(*args, **kwargs):
+                """Exception handling logic for async generators"""
+                try:
+                    async for item in func(*args, **kwargs):
+                        yield item
+                except OpenAIError as exc:
+                    _translate_openai_error(exc, provider)
+
+            return wrapper
+
         async def wrapper(*args, **kwargs):
             """Exception handling logic"""
 
             try:
                 return await func(*args, **kwargs)
-            except APIConnectionError as exc:
-                logger.error(exc)
-                raise GenAIConnectionErrorException(
-                    create_error_info_openai(exc, provider)
-                )
-            except AuthenticationError as exc:
-                logger.error(exc)
-                raise GenAIAuthenticationException(
-                    create_error_info_openai(exc, provider)
-                )
-            except NotFoundError as exc:
-                logger.error(exc)
-                _manage_not_found_error(exc, provider)
-            except BadRequestError as exc:
-                logger.error(exc)
-                _manage_bad_request_error(exc, provider)
-            except APIError as exc:
-                logger.error(exc)
-                raise AIProviderAPIErrorException(
-                    create_error_info_openai(exc, provider)
-                )
+            except OpenAIError as exc:
+                _translate_openai_error(exc, provider)
 
         return wrapper
 
     return decorator
+
+
+def _translate_openai_error(exc: OpenAIError, provider: str):
+    """Map an OpenAI error to the matching GenAI orchestrator exception.
+
+    Re-raises the original error if it matches no known case. Subtype order
+    matters: the most specific OpenAI errors are tested before APIError.
+    """
+    logger.error(exc)
+    if isinstance(exc, APIConnectionError):
+        raise GenAIConnectionErrorException(create_error_info_openai(exc, provider))
+    if isinstance(exc, AuthenticationError):
+        raise GenAIAuthenticationException(create_error_info_openai(exc, provider))
+    if isinstance(exc, NotFoundError):
+        _manage_not_found_error(exc, provider)
+    if isinstance(exc, BadRequestError):
+        _manage_bad_request_error(exc, provider)
+    if isinstance(exc, APIError):
+        raise AIProviderAPIErrorException(create_error_info_openai(exc, provider))
+    raise exc
 
 
 def create_error_info_openai(exc: OpenAIError, provider: str) -> ErrorInfo:

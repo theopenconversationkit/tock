@@ -59,7 +59,7 @@ class _Settings(BaseSettings):
     llm_provider_timeout: int = 30
     llm_provider_max_retries: int = 0
     """ Enable or not the rate limit for the LLM call"""
-    llm_rate_limits: bool = True
+    llm_rate_limits: bool = False
     em_provider_timeout: int = 4
     compressor_provider_timeout: int = 7
     compressor_vllm_max_input_tokens: int = 8192

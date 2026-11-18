@@ -85,7 +85,7 @@ object TestTalkService {
 
             if (response.isSuccessful) {
                 response.body()?.run {
-                    BotDialogResponse(messages, userLocale, userActionId, hasNlpStats)
+                    BotDialogResponse(messages, userLocale, userActionId, hasNlpStats, this.ragDebug)
                 } ?: BotDialogResponse(emptyList())
             } else {
                 logger.error { "error with $conf : ${response.errorBody()?.string()}" }
@@ -126,4 +126,22 @@ object TestTalkService {
         }
         return conf
     }
+
+    fun buildClientRequest(
+        conf: BotApplicationConfiguration,
+        language: Locale?,
+        userIdModifier: String,
+        message: Message,
+        debugEnabled: Boolean,
+        sourceWithContent: Boolean,
+    ): ClientMessageRequest =
+        ClientMessageRequest(
+            buildTestPlayerId(conf._id, language, userIdModifier),
+            buildTestBotId(conf._id, language),
+            message.toClientMessage(),
+            conf.targetConnectorType.toClientConnectorType(),
+            test = true,
+            debugEnabled = debugEnabled,
+            sourceWithContent = sourceWithContent,
+        )
 }

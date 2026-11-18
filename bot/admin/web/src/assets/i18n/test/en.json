@@ -6,6 +6,8 @@
     "debugTooltip": "Get debug infos",
     "sourcesContentTooltip": "Get text content of RAG sources",
     "sourcesContent": "Sources content",
+    "streamingTooltip": "Stream responses in real-time",
+    "streaming": "Streaming",
     "viewNlpStatsTooltip": "View NLP Stats",
     "userMessagePlaceholder": "Type some text",
     "goButton": "GO",

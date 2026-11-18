@@ -105,6 +105,21 @@ internal class SseChannels(
         }
     }
 
+    fun isConnected(
+        appId: String,
+        recipientId: String,
+    ): Boolean = channelsByUser[recipientId]?.any { it.appId == appId } == true
+
+    /**
+     * Sends a response only to channels connected to this instance.
+     * Nothing is persisted: used for partial streamed responses that must not be replayed.
+     */
+    fun sendTransient(
+        appId: String,
+        recipientId: String,
+        response: WebConnectorResponseContract,
+    ): Future<Boolean> = process(appId, recipientId, response)
+
     fun send(
         appId: String,
         recipientId: String,

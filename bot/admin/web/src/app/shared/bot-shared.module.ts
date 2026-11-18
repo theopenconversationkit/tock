@@ -103,6 +103,7 @@ import { ScrollComponent } from '../scroll/scroll.component';
 import { SortByOrderPipe } from './pipes/sort-by-order.pipe';
 import { ResilientDatePipe } from './pipes/resilient-date.pipe';
 import { TranslocoModule } from '@jsverse/transloco';
+import { TestService } from '../test/test.service';
 
 @NgModule({
   imports: [
@@ -230,6 +231,6 @@ import { TranslocoModule } from '@jsverse/transloco';
     JsonViewerDialogComponent,
     IntentDialogComponent
   ],
-  providers: [BotSharedService, SortByOrderPipe, AnalyticsService, ResilientDatePipe, DatePipe]
+  providers: [BotSharedService, TestService, SortByOrderPipe, AnalyticsService, ResilientDatePipe, DatePipe]
 })
 export class BotSharedModule {}

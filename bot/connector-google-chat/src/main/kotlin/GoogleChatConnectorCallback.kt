@@ -38,6 +38,9 @@ data class GoogleChatConnectorCallback(
 ) : ConnectorCallbackBase(applicationId, googleChatConnectorType) {
     private val logger = KotlinLogging.logger {}
     var processingMessageName: String? = null
+    private val tokenBuffer = StringBuilder()
+    private var lastFlushTime = System.currentTimeMillis()
+    private val flushIntervalMs = 1000L
 
     fun initializeProcessingMessage() {
         processingMessageName =
@@ -159,4 +162,24 @@ data class GoogleChatConnectorCallback(
         } else {
             feedback.addButtons(this, actionId)
         }
+
+    override fun sendStreamedToken(content: String) {
+        tokenBuffer.append(content)
+        val now = System.currentTimeMillis()
+        if (now - lastFlushTime >= flushIntervalMs) {
+            flushTokenBuffer()
+        }
+    }
+
+    private fun flushTokenBuffer() {
+        val name = processingMessageName ?: return
+        val text = tokenBuffer.toString()
+        if (text.isBlank()) return
+        lastFlushTime = System.currentTimeMillis()
+        try {
+            patchGoogleMessage(name, GoogleChatConnectorTextMessageOut(text))
+        } catch (e: Exception) {
+            logger.warn(e) { "Failed to patch message during streaming" }
+        }
+    }
 }
