@@ -43,8 +43,7 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-compiler</artifactId>
-            <version>2.3.20</version>
+            <artifactId>kotlin-compiler-embeddable</artifactId>
         </dependency>
 
         <dependency>
@@ -71,6 +70,12 @@
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 
 </project>

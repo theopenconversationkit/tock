@@ -31,12 +31,5 @@ object TockKotlinCompiler {
     fun compile(
         script: String,
         fileName: String,
-    ): CompilationResult {
-        val sourceCode = mapOf(fileName to script)
-        val errors = KotlinCompiler.getErrors(sourceCode).getValue(fileName)
-        if (errors.isNotEmpty()) {
-            throw KotlinCompilationException(errors)
-        }
-        return KotlinCompiler.compileCorrectFiles(sourceCode, fileName, false)
-    }
+    ): CompilationResult = KotlinCompiler.compile(mapOf(fileName to script), fileName)
 }

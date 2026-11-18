@@ -21,4 +21,4 @@ package ai.tock.bot.admin.kotlin.compiler
  */
 class KotlinCompilationException(
     val errors: List<CompileError>,
-) : RuntimeException()
+) : RuntimeException(errors.joinToString("\n"))
