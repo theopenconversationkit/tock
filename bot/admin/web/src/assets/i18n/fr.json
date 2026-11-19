@@ -114,7 +114,7 @@
   "menu-items": {
     "new-sentence": "Nouvelle phrase",
     "inbox-sentences": "Phrases à entrainer",
-    "search-sentences": "Toutes les phrases",
+    "all-sentences": "Toutes les phrases",
     "unknown-sentences": "Phrases inconnues",
     "intents": "Intentions",
     "entities": "Entités",

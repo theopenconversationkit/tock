@@ -114,7 +114,7 @@
   "menu-items": {
     "new-sentence": "New sentence",
     "inbox-sentences": "Inbox sentences",
-    "search-sentences": "All sentences",
+    "all-sentences": "All sentences",
     "unknown-sentences": "Unknown sentences",
     "intents": "Intents",
     "entities": "Entities",

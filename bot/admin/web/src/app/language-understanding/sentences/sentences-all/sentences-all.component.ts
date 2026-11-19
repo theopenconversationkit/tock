@@ -19,7 +19,7 @@ import { SentenceTrainingMode } from '../../../shared/components/sentence-traini
 import { SentenceTrainingComponent } from '../../../shared/components';
 
 @Component({
-  selector: 'tock-sentences-search',
+  selector: 'tock-sentences-all',
   templateUrl: './sentences-all.component.html',
   styleUrls: ['./sentences-all.component.scss'],
   standalone: false

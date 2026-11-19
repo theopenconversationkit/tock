@@ -15,7 +15,7 @@
     "empty-state-message": "Results will appear here once you analyze a sentence.",
     "empty-query-error": "Please enter a non-empty query"
   },
-  "sentences-search": {
+  "sentences-all": {
     "title": "All sentences",
     "download-tooltip": "Download a dump of the matching sentences",
     "refresh-tooltip": "Refresh sentences"
