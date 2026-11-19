@@ -15,8 +15,8 @@
     "empty-state-message": "Les résultats s'afficheront ici une fois que vous aurez analysé une phrase.",
     "empty-query-error": "Veuillez saisir une requête non vide"
   },
-  "sentences-search": {
-    "title": "Rechercher des phrases",
+  "sentences-all": {
+    "title": "Toutes les phrases",
     "download-tooltip": "Télécharger un export des phrases correspondantes",
     "refresh-tooltip": "Rafraîchir les phrases"
   },

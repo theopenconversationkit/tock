@@ -65,6 +65,11 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
 
   getSentenceId = getSentenceId;
 
+  // Maps the active transloco language to an Angular locale, so dates (e.g. creation date) render localized
+  get dateLocale(): string {
+    return this.transloco.getActiveLang() === 'fr' ? 'fr' : 'en-US';
+  }
+
   constructor(
     public state: StateService,
     private nlp: NlpService,

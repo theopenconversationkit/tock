@@ -195,7 +195,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
             icon: 'inboxes'
           },
           {
-            title: t('menu-items.search-sentences'),
+            title: t('menu-items.all-sentences'),
             link: '/language-understanding/search',
             icon: 'search'
           },

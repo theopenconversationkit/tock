@@ -35,12 +35,16 @@ import {
   NbTimepickerModule
 } from '@nebular/theme';
 
-import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
+import { APP_BASE_HREF, PlatformLocation, registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
 import { BotService } from './bot/bot-service';
 import { BotAdminAppRoutingModule } from './bot-admin-app-routing.module';
 import { NlpService } from './core-nlp/nlp.service';
 import { TranslocoRootModule } from './transloco-root.module';
 import { EnvBannerComponent } from './shared/env-banner/env-banner.component';
+
+// Registers the 'fr' locale so date/number pipes can render localized values when the UI language is switched to French
+registerLocaleData(localeFr, 'fr');
 
 @NgModule({
   declarations: [BotAdminAppComponent],

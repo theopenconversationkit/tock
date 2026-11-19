@@ -401,29 +401,16 @@ export class Sentence extends EntityContainer {
   statusDisplayed(): string {
     switch (this.status) {
       case SentenceStatus.deleted:
-        return 'Deleted';
-      case SentenceStatus.inbox:
-        return 'Inbox';
-      case SentenceStatus.model:
-        return 'Included in model';
-      case SentenceStatus.validated:
-        return 'Validated';
-    }
-    return 'unknown';
-  }
 
-  statusColor(): string {
-    switch (this.status) {
-      case SentenceStatus.deleted:
-        return 'red';
+        return 'shared.sentence-training-entry.status.deleted';
       case SentenceStatus.inbox:
-        return 'lightblue';
+        return 'shared.sentence-training-entry.status.inbox';
       case SentenceStatus.model:
-        return '#00d68f';
+        return 'shared.sentence-training-entry.status.model';
       case SentenceStatus.validated:
-        return 'mediumspringgreen ';
+        return 'shared.sentence-training-entry.status.validated';
     }
-    return 'orange';
+    return 'shared.sentence-training-entry.status.unknown';
   }
 
   clone(): Sentence {
