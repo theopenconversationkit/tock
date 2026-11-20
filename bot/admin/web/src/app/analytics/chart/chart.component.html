@@ -69,12 +69,13 @@
             status="primary"
             style="min-width: 15rem; max-width: 20rem"
             size="small"
-            [(selected)]="seriesSelectionList"
-            (selectedChange)="updateGraph()"
+            [selected]="seriesSelectModel"
+            (selectedChange)="onSeriesSelectionChange($event)"
           >
             <nb-select-label>
               {{ 'analytics.chart.nbSelectedLabel' | transloco: { count: seriesSelectionList.length } }}
             </nb-select-label>
+            <nb-option [value]="ALL_SERIES">{{ 'analytics.chart.selectAllOption' | transloco }}</nb-option>
             @for (c of data.connectorsType; track c; let i = $index) {
             <nb-option [value]="i">{{ c }}</nb-option>
             }

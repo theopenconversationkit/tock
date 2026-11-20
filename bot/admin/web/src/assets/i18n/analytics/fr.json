@@ -85,6 +85,7 @@
     "pieChartTooltip": "Camembert",
     "lineChartTooltip": "Courbe",
     "nbSelectedLabel": "Nb sélectionnés : {{ count }}",
+    "selectAllOption": "Tout sélectionner",
     "intentPlaceholder": "Intention",
     "allIntentsOption": "Toutes les intentions",
     "showTableTooltip": "Afficher le tableau",

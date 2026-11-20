@@ -59,6 +59,12 @@ export class ChartComponent implements OnChanges {
   @Input()
   seriesSelectionList: number[] = [];
 
+  /** Value of the "select all" option of the series selector. */
+  readonly ALL_SERIES = -1;
+
+  /** Model of the series selector: the selected series, plus [ALL_SERIES] when they are all selected. */
+  seriesSelectModel: number[] = [];
+
   mainChart: ChartData;
   altChart: ChartData;
   isFlipped = false;
@@ -121,8 +127,39 @@ export class ChartComponent implements OnChanges {
 
   initSelectionList() {
     if (this.seriesSelectionList.length == 0 && this.data.connectorsType.length > 5) {
-      this.seriesSelectionList = Array.from({ length: 5 }, (v, k) => k);
+      this.seriesSelectionList = this.defaultSelectionList();
     }
+    this.syncSeriesSelectModel();
+  }
+
+  private defaultSelectionList(): number[] {
+    return Array.from({ length: 5 }, (v, k) => k);
+  }
+
+  allSeriesSelected(): boolean {
+    const seriesCount = this.data?.connectorsType?.length ?? 0;
+    return seriesCount > 0 && this.seriesSelectionList.length === seriesCount;
+  }
+
+  private syncSeriesSelectModel() {
+    this.seriesSelectModel = this.allSeriesSelected() ? [this.ALL_SERIES, ...this.seriesSelectionList] : [...this.seriesSelectionList];
+  }
+
+  onSeriesSelectionChange(selected: number[]) {
+    const allWasSelected = this.allSeriesSelected();
+    const allIsSelected = selected.includes(this.ALL_SERIES);
+    if (allIsSelected && !allWasSelected) {
+      // "select all" checked: every series
+      this.seriesSelectionList = Array.from({ length: this.data.connectorsType.length }, (v, k) => k);
+    } else if (!allIsSelected && allWasSelected) {
+      // "select all" unchecked: back to the default selection (an empty selection is reset to it anyway)
+      this.seriesSelectionList = this.defaultSelectionList();
+    } else {
+      this.seriesSelectionList = selected.filter((i) => i !== this.ALL_SERIES);
+    }
+    this.updateGraph();
+    // rebuild() only goes through initSelectionList() for some chart types (not the calendar one)
+    this.syncSeriesSelectModel();
   }
 
   updateGraph() {
