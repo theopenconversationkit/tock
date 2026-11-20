@@ -31,6 +31,10 @@ import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCardDescriptor
 import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaMessage
+import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotDefinitionTest
 import ai.tock.bot.engine.action.SendSentence
@@ -685,5 +689,126 @@ class ConfiguredStoryHandlerTest {
 
         verify(exactly = 0) { configuration.saveMetric(any()) }
         verify(exactly = 1) { configuration.saveMetrics(any()) }
+    }
+
+    private fun stepTargetIntentBus(
+        configurationStep: StoryDefinitionConfigurationStep,
+        configuration: StoryDefinitionConfiguration,
+        targetStory: StoryDefinition?,
+    ): BotBus {
+        val connector =
+            mockk<Connector>(relaxed = true) {
+                every { toConnectorMessage(any()) } returns { listOf(mockk()) }
+                every { addSuggestions(any<CharSequence>(), any()) } returns { null }
+                every { hasFeature(any(), any()) } returns true
+            }
+        val unknown = mockk<StoryDefinition>()
+        val botDef =
+            mockk<BotDefinition>(relaxed = true) {
+                every { findStoryDefinition("target", "appId") } returns (targetStory ?: unknown)
+                every { unknownStory } returns unknown
+            }
+        return mockk(relaxed = true) {
+            every { targetConnectorType } returns ConnectorType("a")
+            every { botId } returns PlayerId("botId")
+            every { userId } returns PlayerId("userId")
+            every { userTimeline } returns UserTimeline(userId)
+            every { connectorId } returns "appId"
+            every { currentAnswerIndex } returns 1
+            every { botDefinition } returns botDef
+            every { step } returns configurationStep.toStoryStep(configuration)
+            justRun { this@mockk.step = any() }
+            every { dialog.stories } returns mutableListOf()
+            every { dialog.lastAction } returns null
+            every { translate(any()) } answers { RawString(it.invocation.args[0].toString()) }
+            every { underlyingConnector } returns connector
+            every { end(messages = any(), initialDelay = any()) } returns mockk()
+            every { send(messages = any(), initialDelay = any()) } returns mockk()
+            every { story } returns
+                mockk {
+                    every { definition } returns
+                        mockk {
+                            every { steps } returns setOf(mockk())
+                        }
+                }
+            every { intent } returns null
+            every { getBusContextValue<Any>(any<String>()) } returns null
+            justRun { setBusContextValue(any<String>(), any<Any>()) }
+            justRun { handleAndSwitchStory(any<StoryDefinition>(), any()) }
+        }
+    }
+
+    private fun stepWithTargetIntent(children: List<StoryDefinitionConfigurationStep>): StoryDefinitionConfigurationStep =
+        StoryDefinitionConfigurationStep(
+            name = "stepName",
+            intent = IntentWithoutNamespace("step"),
+            targetIntent = IntentWithoutNamespace("target"),
+            answers =
+                listOf(
+                    SimpleAnswerConfiguration(
+                        answers =
+                            listOf(
+                                SimpleAnswer(
+                                    key = I18nLabelValue(I18nLabel(_id = "id".toId(), category = "category", i18n = LinkedHashSet())),
+                                    delay = -1,
+                                ),
+                            ),
+                    ),
+                ),
+            currentType = AnswerConfigurationType.simple,
+            children = children,
+        )
+
+    private fun storyConfigurationWithStep(): StoryDefinitionConfiguration =
+        mockk {
+            every { namespace } returns "app"
+            every { mandatoryEntities } returns emptyList()
+            every { nextIntentsQualifiers } returns emptyList()
+            every { findEnabledEndWithStoryId(any()) } returns null
+            every { steps } returns emptyList()
+            every { findNextSteps(any(), any()) } returns emptyList()
+            justRun { saveMetric(any()) }
+            justRun { saveMetrics(any()) }
+        }
+
+    @Test
+    fun `GIVEN a step with children and a target intent WHEN the step is reached THEN its answer is not the last one and the target story is handled`() {
+        val child = stepWithTargetIntent(emptyList()).copy(name = "child", intent = IntentWithoutNamespace("child"), targetIntent = null)
+        val step = stepWithTargetIntent(listOf(child))
+        val configuration = storyConfigurationWithStep()
+        val targetStory = mockk<StoryDefinition>()
+        val bus = stepTargetIntentBus(step, configuration, targetStory)
+
+        ConfiguredStoryHandler(BotDefinitionWrapper(BotDefinitionTest()), configuration).handle(bus)
+
+        verify(exactly = 1) { bus.send(messages = any(), initialDelay = any()) }
+        verify(exactly = 0) { bus.end(messages = any(), initialDelay = any()) }
+        verify(exactly = 1) { bus.handleAndSwitchStory(targetStory, Intent("target")) }
+    }
+
+    @Test
+    fun `GIVEN a step with children and an unknown target intent WHEN the step is reached THEN its answer is the last one`() {
+        val child = stepWithTargetIntent(emptyList()).copy(name = "child", intent = IntentWithoutNamespace("child"), targetIntent = null)
+        val step = stepWithTargetIntent(listOf(child))
+        val configuration = storyConfigurationWithStep()
+        val bus = stepTargetIntentBus(step, configuration, null)
+
+        ConfiguredStoryHandler(BotDefinitionWrapper(BotDefinitionTest()), configuration).handle(bus)
+
+        verify(exactly = 1) { bus.end(messages = any(), initialDelay = any()) }
+        verify(exactly = 0) { bus.handleAndSwitchStory(any<StoryDefinition>(), any()) }
+    }
+
+    @Test
+    fun `GIVEN a step without children and a target intent WHEN the step is reached THEN the target story is handled`() {
+        val step = stepWithTargetIntent(emptyList())
+        val configuration = storyConfigurationWithStep()
+        val targetStory = mockk<StoryDefinition>()
+        val bus = stepTargetIntentBus(step, configuration, targetStory)
+
+        ConfiguredStoryHandler(BotDefinitionWrapper(BotDefinitionTest()), configuration).handle(bus)
+
+        verify(exactly = 0) { bus.end(messages = any(), initialDelay = any()) }
+        verify(exactly = 1) { bus.handleAndSwitchStory(targetStory, Intent("target")) }
     }
 }

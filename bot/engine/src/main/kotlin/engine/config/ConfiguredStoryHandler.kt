@@ -130,15 +130,10 @@ internal class ConfiguredStoryHandler(
                                 ?.wrappedIntent()
                                 ?.name
                         )
-                bus.botDefinition
-                    .takeIf { targetIntent != null }
-                    ?.findStoryDefinition(targetIntent, bus.connectorId)
-                    ?.takeUnless { it == bus.botDefinition.unknownStory }
-                    ?.takeUnless { bus.viewedStories.contains(it) }
-                    ?.apply {
-                        bus.switchConfiguredStory(this, targetIntent ?: error("targetIntent is null??"))
-                        return@handle
-                    }
+                bus.findSwitchableStory(targetIntent)?.apply {
+                    bus.switchConfiguredStory(this, targetIntent ?: error("targetIntent is null??"))
+                    return@handle
+                }
                 if (step.hasCurrentAnswer()) {
                     switchStoryIfEnding(step, bus)
                     return@handle
@@ -289,6 +284,15 @@ internal class ConfiguredStoryHandler(
         }
     }
 
+    /**
+     * The story of [intentName] if the bus can switch to it: a known story not already handled for this sentence.
+     */
+    private fun BotBus.findSwitchableStory(intentName: String?): StoryDefinition? =
+        intentName
+            ?.let { botDefinition.findStoryDefinition(it, connectorId) }
+            ?.takeUnless { it == botDefinition.unknownStory }
+            ?.takeUnless { viewedStories.contains(it) }
+
     private val BotBus.viewedStories: Set<StoryDefinition>
         get() =
             getBusContextValue<Set<StoryDefinition>>(VIEWED_STORIES_BUS_KEY) ?: emptySet()
@@ -356,6 +360,8 @@ internal class ConfiguredStoryHandler(
                     it.last().apply {
                         val currentStep = (step as? Step)?.configuration
                         val endingStoryRule = configuration.findEnabledEndWithStoryId(connectorId) != null
+                        // the step switches to the story of its target intent after this answer: it is not the last one
+                        val switchToTargetIntent = currentStep?.targetIntent?.let { t -> findSwitchableStory(t.name) } != null
                         send(
                             container,
                             this,
@@ -364,10 +370,10 @@ internal class ConfiguredStoryHandler(
                                 (!steps && !endingStoryRule) ||
                                 // Steps not started
                                 (steps && currentStep == null) ||
-                                // Steps started with children
-                                (currentStep?.hasNoChildren == false) ||
+                                // Steps started with children, no target intent
+                                (currentStep?.hasNoChildren == false && !switchToTargetIntent) ||
                                 // Steps started with no children, no target intent, no ending story
-                                (currentStep?.hasNoChildren == true && currentStep?.targetIntent == null && !endingStoryRule),
+                                (currentStep?.hasNoChildren == true && !switchToTargetIntent && !endingStoryRule),
                         )
                     }
                 }
