@@ -61,6 +61,30 @@ See [`run_vectorisation.example.json`](scripts/indexing/vectorisation/run_vector
 | `ignore_source`              | When `true`, the `source` column is not stored as document source                                                                                                                            |
 | `append_doc_title_and_chunk` | When `true`, the document title is prepended to each chunk before vectorisation (can improve semantic search)                                                                                |
 
+### Secrets
+
+The configuration file holds secrets: the API key of the embedding model (`em_setting.api_key`) and the password of the vector store (`vector_store_setting.password`).
+
+- **Do not commit it.** The JSON files of this project are ignored by the repository `.gitignore` (`tock-llm-indexing-tools/**/*.json`). `run_vectorisation.example.json` matches this pattern too, but it was force-added, so git tracks every change made to it: never put real secrets in the example file, copy it to a new file instead. Keep your configuration file in this folder (where it is ignored) or outside any repository, and never use `git add -f` on it.
+- **Prefer a secret manager to raw values.** Each secret is an object whose `type` selects where the value is read from:
+
+| `type`              | Field         | Value read from                                                                                                                   |
+|---------------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `Raw`               | `secret`      | The field itself (plain text in the file)                                                                                         |
+| `AwsSecretsManager` | `secret_name` | AWS Secrets Manager, with the usual AWS credentials and region of the environment (`AWS_PROFILE`, `AWS_REGION`, ...)              |
+| `GcpSecretManager`  | `secret_name` | GCP Secret Manager, in the project set by the `tock_gcp_project_id` environment variable, with the application default credentials |
+
+In AWS or GCP, the secret value is a JSON object: `{"secret": "<the key or password>"}`. For instance:
+
+```json
+"api_key": {
+  "type": "AwsSecretsManager",
+  "secret_name": "my-bot/em-api-key"
+}
+```
+
+See [Secret keys](../server/src/gen_ai_orchestrator/models/security/security_types.py) for the models.
+
 ### Indexed metadata
 
 Each chunk is indexed with the following metadata:
