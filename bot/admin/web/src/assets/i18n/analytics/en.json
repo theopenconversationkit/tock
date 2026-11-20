@@ -85,6 +85,7 @@
     "pieChartTooltip": "Pie chart",
     "lineChartTooltip": "Line chart",
     "nbSelectedLabel": "Nb selected: {{ count }}",
+    "selectAllOption": "Select all",
     "intentPlaceholder": "Intent",
     "allIntentsOption": "All intents",
     "showTableTooltip": "Show Table",
