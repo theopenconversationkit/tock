@@ -554,6 +554,27 @@ Pour récupérer les paramètres du bouton sur lequel on a cliqué :
     val nextOrigin : Locality = action.jsonChoice(nextResultOrigin)
 ```
 
+### Redémarrer la conversation
+
+Un utilisateur peut redémarrer la conversation en envoyant le mot-clé `_restart_` (configurable avec la propriété `tock_bot_restart_keyword`),
+par exemple depuis un bouton « nouvelle conversation » du client web.
+
+Un nouveau dialogue est alors démarré : il n'y a plus de story ni d'intention en cours, les valeurs d'entités sont réinitialisées
+et l'historique envoyé au RAG repart de zéro. L'identifiant, les préférences et l'état de l'utilisateur (flags, profil...) sont conservés,
+pour ne perdre ni les statistiques ni les consentements enregistrés dans l'état de l'utilisateur. Le bot répond avec le libellé
+`conversation restarted` (catégorie `keywords`), modifiable dans _Tock Studio_.
+
+Pour réinitialiser aussi les données que le bot stocke ailleurs, implémentez `ai.tock.bot.engine.dialog.RestartListener`
+et déclarez-le dans `META-INF/services/ai.tock.bot.engine.dialog.RestartListener` :
+
+```kotlin
+class MyRestartListener : RestartListener {
+    override fun onRestart(bus: BotBus, previousDialog: Dialog) {
+        myCartService.clear(bus.userId)
+    }
+}
+```
+
 ### Tests Unitaires
 
 La page [Tests Unitaires](test.md) présente le framework fourni pour réaliser des TUs  avec Tock.

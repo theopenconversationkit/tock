@@ -223,6 +223,7 @@ Keywords sent as a user message to act on the conversation, mostly used for the 
 | `tock_bot_disable_keyword` | `_disable_user_` | Disables the bot for the user |
 | `tock_bot_test_context_keyword` | `_test_` | Starts a test context |
 | `tock_bot_end_test_context_keyword` | `_end_test_` | Ends the test context |
+| `tock_bot_restart_keyword` | `_restart_` | Restarts the conversation: a new dialog is started (no current story, intent, entity values or RAG history), the user and its state are kept. See [Restarting the conversation](../develop/kotlin-bot.md#restarting-the-conversation) |
 | `tock_bot_test_first_name` | `Joe` | First name of the test user |
 | `tock_bot_test_last_name` | `Hisaishi` | Last name of the test user |
 

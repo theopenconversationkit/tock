@@ -223,6 +223,7 @@ Mots-clés envoyés comme message utilisateur pour agir sur la conversation, sur
 | `tock_bot_disable_keyword` | `_disable_user_` | Désactive le bot pour l'utilisateur |
 | `tock_bot_test_context_keyword` | `_test_` | Démarre un contexte de test |
 | `tock_bot_end_test_context_keyword` | `_end_test_` | Termine le contexte de test |
+| `tock_bot_restart_keyword` | `_restart_` | Redémarre la conversation : un nouveau dialogue est démarré (sans story, intention, valeurs d'entités ni historique RAG en cours), l'utilisateur et son état sont conservés. Voir [Redémarrer la conversation](../develop/kotlin-bot.md#redemarrer-la-conversation) |
 | `tock_bot_test_first_name` | `Joe` | Prénom de l'utilisateur de test |
 | `tock_bot_test_last_name` | `Hisaishi` | Nom de l'utilisateur de test |
 

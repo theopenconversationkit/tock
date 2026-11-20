@@ -26,8 +26,10 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.config.RAGAnswerHandler
 import ai.tock.bot.engine.dialog.Dialog
+import ai.tock.bot.engine.dialog.restartListeners
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener.deleteKeyword
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener.endTestContextKeyword
+import ai.tock.bot.engine.nlp.BuiltInKeywordListener.restartKeyword
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener.testContextKeyword
 import ai.tock.bot.engine.nlp.keywordServices
 import ai.tock.shared.Executor
@@ -159,6 +161,35 @@ open class BotDefinitionBase(
         }
 
         /**
+         * The default handler used to restart the conversation.
+         *
+         * A new [Dialog] is started: the current story, intent, entity values and RAG history are reset.
+         * The user id, preferences and state (flags, profile...) are kept. The [ai.tock.bot.engine.dialog.RestartListener]s
+         * are then called.
+         */
+        fun restartKeywordHandler(
+            bus: BotBus,
+            sendEnd: Boolean = true,
+        ) {
+            val previousDialog = bus.dialog
+            bus.userTimeline.dialogs.add(
+                Dialog(
+                    setOf(bus.userId, bus.botId),
+                ),
+            )
+            restartListeners.forEach {
+                try {
+                    it.onRestart(bus, previousDialog)
+                } catch (e: Exception) {
+                    logger.error(e)
+                }
+            }
+            if (sendEnd) {
+                bus.end(bus.baseI18nValue("conversation restarted"))
+            }
+        }
+
+        /**
          * The default handler used to delete the current user.
          */
         fun deleteKeywordHandler(
@@ -224,6 +255,7 @@ open class BotDefinitionBase(
                                 deleteKeyword -> deleteKeywordHandler(bus)
                                 testContextKeyword -> testContextKeywordHandler(bus)
                                 endTestContextKeyword -> endTestContextKeywordHandler(bus)
+                                restartKeyword -> restartKeywordHandler(bus)
                                 else -> bus.end(bus.baseI18nValue("unknown keyword : {0}", text))
                             }
                         }
