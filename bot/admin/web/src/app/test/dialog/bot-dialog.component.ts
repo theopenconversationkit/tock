@@ -217,24 +217,39 @@ export class BotDialogComponent implements OnInit, OnDestroy {
       return;
     }
     m = m.trim();
-    this.talk(new Sentence(0, [], m));
+    this.talk(new Sentence(0, [], m), true);
   }
 
   canSaveSentences(): boolean {
     return this.state.hasRole(UserRole.nlpUser);
   }
 
-  private saveSentenceInInbox(message: BotMessage): void {
-    const text = message instanceof Sentence ? message.text?.trim() : null;
-    if (!this.saveSentences || !this.canSaveSentences() || !text) {
+  /**
+   * The built-in keywords (_test_, _end_test_, _restart_, _xray_ ...) act on the conversation: they are not user sentences.
+   */
+  private static readonly KEYWORD = /^_[^\s_]\S*_(\s|$)/;
+
+  /**
+   * Parses [text] with the NLP admin, which registers it in the Inbox, in the locale detected by the bot when it is
+   * supported by the application.
+   */
+  private saveSentenceInInbox(text: string, userLocale?: string): void {
+    if (!this.saveSentences || !this.canSaveSentences() || !text || BotDialogComponent.KEYWORD.test(text)) {
       return;
     }
     const app = this.state.currentApplication;
-    this.nlp.parse(new ParseQuery(app.namespace, app.name, this.state.currentLocale, text, true)).subscribe();
+    const locale = userLocale && app.supportedLocales.includes(userLocale) ? userLocale : this.state.currentLocale;
+    this.nlp.parse(new ParseQuery(app.namespace, app.name, locale, text, true), true).subscribe({
+      error: () =>
+        this.toastrService.warning(
+          this.transloco.translate('test.bot-dialog.saveSentenceError', { sentence: text }),
+          this.transloco.translate('test.bot-dialog.saveSentences'),
+          { duration: 5000 }
+        )
+    });
   }
 
-  private talk(message: BotMessage): void {
-    this.saveSentenceInInbox(message);
+  private talk(message: BotMessage, saveInInbox = false): void {
     this.userMessageAutocompleteValues = of([]);
     const userAction = new TestMessage(false, message);
     this.messages.push(userAction);
@@ -258,6 +273,9 @@ export class BotDialogComponent implements OnInit, OnDestroy {
         userAction.locale = r.userLocale;
         userAction.hasNlpStats = r.hasNlpStats;
         userAction.actionId = r.userActionId;
+        if (saveInInbox && message instanceof Sentence) {
+          this.saveSentenceInInbox(message.text, r.userLocale);
+        }
         r.messages.forEach((m) => {
           this.messages.push(new TestMessage(true, m, undefined, undefined, undefined));
 

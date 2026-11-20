@@ -8,6 +8,7 @@
     "sourcesContent": "Contenu des sources",
     "saveSentences": "Enregistrer dans l'Inbox",
     "saveSentencesTooltip": "Enregistrer aussi les phrases dans l'Inbox du modèle NLP (sinon, les phrases envoyées en mode test ne sont pas enregistrées)",
+    "saveSentenceError": "La phrase « {{ sentence }} » n'a pas pu être enregistrée dans l'Inbox",
     "viewNlpStatsTooltip": "Voir les statistiques NLP",
     "userMessagePlaceholder": "Saisir un texte",
     "goButton": "OK",

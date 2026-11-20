@@ -8,6 +8,7 @@
     "sourcesContent": "Sources content",
     "saveSentences": "Save in Inbox",
     "saveSentencesTooltip": "Also save the sentences in the Inbox of the NLP model (sentences sent in test mode are not saved otherwise)",
+    "saveSentenceError": "The sentence \"{{ sentence }}\" could not be saved in the Inbox",
     "viewNlpStatsTooltip": "View NLP Stats",
     "userMessagePlaceholder": "Type some text",
     "goButton": "GO",

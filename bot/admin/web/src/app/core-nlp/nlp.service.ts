@@ -54,8 +54,12 @@ export class NlpService {
     this.getEntityTypes().subscribe((types) => this.state.entityTypes.next(types));
   }
 
-  parse(parseQuery: ParseQuery): Observable<Sentence> {
-    return this.rest.post('/parse', parseQuery, Sentence.fromJSON);
+  /**
+   * Parses a sentence with the NLP model (and registers it in the Inbox).
+   * When [silent] is true, the errors are not displayed: the caller handles them.
+   */
+  parse(parseQuery: ParseQuery, silent = false): Observable<Sentence> {
+    return this.rest.postWithOptions('/parse', parseQuery, { parseFunction: Sentence.fromJSON, silent });
   }
 
   saveIntent(intent: Intent): Observable<Intent> {

@@ -43,7 +43,8 @@ _View Nlp Stats_ you can see the details of the model's response: intent, entiti
 
 The sentences sent from this screen are not saved in the _Inbox_ of the NLP model: they do not pollute the sentences of the real users.
 To qualify them anyway, enable the _Save in Inbox_ toggle (for the users with the `nlpUser` role): each sentence typed is then
-also parsed and saved, as from _Language Understanding_ > _New sentence_.
+also parsed and saved, as from _Language Understanding_ > _New sentence_, in the language detected by the bot.
+The built-in keywords (`_test_`, `_restart_`, `_xray_`...) and the buttons clicked are not saved.
 
 ## The _Test Plans_ tab
 
