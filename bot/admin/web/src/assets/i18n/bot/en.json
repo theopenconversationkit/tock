@@ -313,6 +313,7 @@
     "removeAlternativeTooltip": "Remove alternative",
     "validateLabelTooltip": "Validate label (for exports/imports)",
     "noStatsTooltip": "No stats",
+    "emptyLabelHint": "An empty label is never sent as is: Tock uses a non-empty label of the same language for another channel type, or else the default label (translated when a translation service is configured). To leave out a word in one language only, put the variable part in the label with a pattern: \"à {0}\" in French, \"{0}\" in English.",
     "deleteOnlyTooltip": "Delete-only since locale is not supported by current application",
     "addSpecificLabelTooltip": "Add specific label for connector {{ connectorId }}",
     "textChannelTooltip": "Answer in Text Channels",
