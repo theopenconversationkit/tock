@@ -14,7 +14,46 @@ In the root directory of the project, run
 etc/deploySnapshot.sh
 ```
 
-## How to release and deploy a release
+## How to release from GitHub Actions
+
+The [Release workflow](../.github/workflows/release.yml) releases, in this order:
+
+1. tock (Maven Central), then commits the versions displayed in the documentation;
+2. [tock-corenlp](https://github.com/theopenconversationkit/tock-corenlp),
+   [tock-bot-open-data](https://github.com/theopenconversationkit/tock-bot-open-data) and
+   [tock-bot-demo](https://github.com/theopenconversationkit/tock-bot-demo), in parallel (Maven Central);
+3. [tock-docker](https://github.com/theopenconversationkit/tock-docker): tag, then the images on Docker Hub,
+   in parallel (tags `<version>`, `<major>` and `latest`), then `TAG` of its `.env`.
+
+```sh
+# dry run (default, and on each pull request that changes the release): commits and tags stay on the runners,
+# nothing is published
+gh workflow run release.yml --ref master
+# release, once the dry run succeeded; version and next-version are optional
+gh workflow run release.yml --ref master -f dry-run=false -f version=26.9.2 -f next-version=26.9.3-SNAPSHOT
+```
+
+- The release requires a successful [E2E](../.github/workflows/e2e.yml) run on the released commit (`skip-e2e` bypasses it),
+  and the approval of a reviewer of the `release-approval` environment.
+- The tests are not run again: the release builds each project once.
+- Each job hands its artifacts over to the next ones, so that they do not wait for Maven Central.
+- After a failure, fix the cause, then use **Re-run failed jobs**: the jobs that succeeded (and published) are not run
+  again. A job that failed after pushing its tag (in `release:perform`, for instance) resumes from the tag, and does not
+  publish again a release already on Maven Central. If the release was published but is not synced on Maven Central
+  yet, wait for the sync before re-running the job. The steps run by each job are in
+  [release/release.sh](release/release.sh), and can be run locally.
+
+Prerequisites:
+
+- A GitHub App with the *Contents: read & write* permission, installed on the five repositories, and allowed to bypass
+  the protection rules of their `master` branch and of their tags.
+- An environment `release-approval`, with required reviewers.
+- An environment `release`, restricted to `master`, with the secrets `RELEASE_APP_ID`, `RELEASE_APP_PRIVATE_KEY`,
+  `CENTRAL_USERNAME`, `CENTRAL_TOKEN` (Maven Central user token), `GPG_PRIVATE_KEY` (armored) and `GPG_PASSPHRASE`.
+- An environment `release-docker`, restricted to `master`, with the secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`,
+  used by the image jobs only.
+
+## How to release and deploy a release locally
 
 In the root directory of the project, run
 

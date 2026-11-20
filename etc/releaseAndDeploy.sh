@@ -18,19 +18,8 @@
 # The e2e scenario (.github/workflows/e2e.yml) must have succeeded on the released commit.
 # SKIP_E2E=1 bypasses this check.
 if [ "${SKIP_E2E:-}" != "1" ]; then
-  sha="$(git rev-parse HEAD)"
-  if ! run="$(gh run list --repo theopenconversationkit/tock --workflow e2e.yml --commit "$sha" --status success \
-    --limit 1 --json url --jq '.[0].url // empty')"; then
-    echo "Unable to check the e2e runs with the GitHub CLI (gh auth login?)" >&2
-    exit 1
-  fi
-  if [ -z "$run" ]; then
-    echo "No successful e2e run on $sha: run it, then release again once it succeeded:" >&2
-    echo "  gh workflow run e2e.yml --repo theopenconversationkit/tock --ref $(git branch --show-current)" >&2
-    echo "  gh run watch --repo theopenconversationkit/tock" >&2
-    exit 1
-  fi
-  echo "e2e OK on $sha: $run"
+  GITHUB_REPOSITORY=theopenconversationkit/tock E2E_REF="$(git branch --show-current)" \
+    "$(dirname "$0")/check-e2e.sh" || exit 1
 fi
 
 mvn release:clean release:prepare -Ddeploy

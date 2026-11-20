@@ -43,9 +43,11 @@ The documentation is built with [MkDocs](https://www.mkdocs.org/) from the [`doc
 
 ## Release
 
+Tock and its satellite repositories are released by the Release workflow: see [etc/README.md](etc/README.md).
+
 After each release:
 
-1. Update the versions displayed in the documentation:
+1. Update the versions displayed in the documentation (the Release workflow already commits them):
    ```sh
    etc/update-doc-version.sh            # uses the latest tock-* git tag
    etc/update-doc-version.sh 26.9.1     # or an explicit version
