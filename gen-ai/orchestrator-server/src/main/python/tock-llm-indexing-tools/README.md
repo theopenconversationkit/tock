@@ -65,7 +65,7 @@ See [`run_vectorisation.example.json`](scripts/indexing/vectorisation/run_vector
 
 The configuration file holds secrets: the API key of the embedding model (`em_setting.api_key`) and the password of the vector store (`vector_store_setting.password`).
 
-- **Do not commit it.** The JSON files of this project are ignored by the repository `.gitignore` (`tock-llm-indexing-tools/**/*.json`), except `run_vectorisation.example.json`. Keep your configuration file in this folder (where it is ignored) or outside any repository, and never use `git add -f` on it.
+- **Do not commit it.** The JSON files of this project are ignored by the repository `.gitignore` (`tock-llm-indexing-tools/**/*.json`). `run_vectorisation.example.json` matches this pattern too, but it was force-added, so git tracks every change made to it: never put real secrets in the example file, copy it to a new file instead. Keep your configuration file in this folder (where it is ignored) or outside any repository, and never use `git add -f` on it.
 - **Prefer a secret manager to raw values.** Each secret is an object whose `type` selects where the value is read from:
 
 | `type`              | Field         | Value read from                                                                                                                   |
