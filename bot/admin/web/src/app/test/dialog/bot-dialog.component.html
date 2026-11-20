@@ -49,6 +49,17 @@
         >
           {{ 'test.bot-dialog.sourcesContent' | transloco }}
         </nb-toggle>
+
+        @if (canSaveSentences()) {
+        <nb-toggle
+          [nbTooltip]="'test.bot-dialog.saveSentencesTooltip' | transloco"
+          labelPosition="start"
+          [(ngModel)]="saveSentences"
+          class="nb-toggle-reset-label-margin"
+        >
+          {{ 'test.bot-dialog.saveSentences' | transloco }}
+        </nb-toggle>
+        }
       </div>
     </div>
   </nb-card-header>

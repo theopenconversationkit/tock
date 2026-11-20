@@ -41,6 +41,10 @@ in the generic _Tock Studio_ interface :
 For each message exchange with the bot, the detected language is indicated. By clicking on
 _View Nlp Stats_ you can see the details of the model's response: intent, entities, scores, etc.
 
+The sentences sent from this screen are not saved in the _Inbox_ of the NLP model: they do not pollute the sentences of the real users.
+To qualify them anyway, enable the _Save in Inbox_ toggle (for the users with the `nlpUser` role): each sentence typed is then
+also parsed and saved, as from _Language Understanding_ > _New sentence_.
+
 ## The _Test Plans_ tab
 
 This tool allows you to create and track the execution of automated conversation tests, in order to automatically and regularly check the non-regression of the bot.

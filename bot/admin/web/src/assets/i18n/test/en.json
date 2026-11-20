@@ -6,6 +6,8 @@
     "debugTooltip": "Get debug infos",
     "sourcesContentTooltip": "Get text content of RAG sources",
     "sourcesContent": "Sources content",
+    "saveSentences": "Save in Inbox",
+    "saveSentencesTooltip": "Also save the sentences in the Inbox of the NLP model (sentences sent in test mode are not saved otherwise)",
     "viewNlpStatsTooltip": "View NLP Stats",
     "userMessagePlaceholder": "Type some text",
     "goButton": "GO",

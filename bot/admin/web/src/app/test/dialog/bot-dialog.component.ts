@@ -10,7 +10,8 @@ import { Observable, of, Subject, take, takeUntil } from 'rxjs';
 
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 
-import { SearchQuery, SentenceStatus } from '../../model/nlp';
+import { ParseQuery, SearchQuery, SentenceStatus } from '../../model/nlp';
+import { UserRole } from '../../model/auth';
 import { ChatUiComponent, SelectBotEvent } from '../../shared/components';
 import { NlpService } from '../../core-nlp/nlp.service';
 import { NlpStatsDisplayComponent } from './nlp-stats-display/nlp-stats-display.component';
@@ -110,6 +111,23 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     return this._sourceWithContent;
   }
 
+  _saveSentences: boolean = false;
+
+  /**
+   * Sentences sent in test mode are not registered by the bot. When enabled, the text sentences are also parsed
+   * by the NLP admin, which registers them (as "New Sentence" does): they are then listed in the Inbox.
+   */
+  set saveSentences(value: boolean) {
+    this._saveSentences = value;
+    this.shared.session_storage = {
+      ...this.shared.session_storage,
+      ...{ test: { ...this.shared.session_storage?.test, saveSentences: value } }
+    };
+  }
+  get saveSentences() {
+    return this._saveSentences;
+  }
+
   @ViewChild('chatUi') private chatUi: ChatUiComponent;
 
   constructor(
@@ -142,6 +160,10 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
     if (this.shared.session_storage?.test?.sourceWithContent) {
       this._sourceWithContent = this.shared.session_storage.test.sourceWithContent;
+    }
+
+    if (this.shared.session_storage?.test?.saveSentences) {
+      this._saveSentences = this.shared.session_storage.test.saveSentences;
     }
   }
 
@@ -198,7 +220,21 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     this.talk(new Sentence(0, [], m));
   }
 
+  canSaveSentences(): boolean {
+    return this.state.hasRole(UserRole.nlpUser);
+  }
+
+  private saveSentenceInInbox(message: BotMessage): void {
+    const text = message instanceof Sentence ? message.text?.trim() : null;
+    if (!this.saveSentences || !this.canSaveSentences() || !text) {
+      return;
+    }
+    const app = this.state.currentApplication;
+    this.nlp.parse(new ParseQuery(app.namespace, app.name, this.state.currentLocale, text, true)).subscribe();
+  }
+
   private talk(message: BotMessage): void {
+    this.saveSentenceInInbox(message);
     this.userMessageAutocompleteValues = of([]);
     const userAction = new TestMessage(false, message);
     this.messages.push(userAction);
