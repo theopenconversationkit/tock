@@ -5,12 +5,20 @@ name: Release
 #
 # - The artifacts released by a job are handed over to the next ones (artifacts maven-*): no wait for Maven Central.
 # - After a failure, "Re-run failed jobs" resumes from the failed job: the released jobs are not run again.
-# - In dry run (the default), the commits and tags stay on the runner, nothing is published and no secret is used.
+# - In dry run (the default, and always on pull requests), the commits and tags stay on the runner, nothing is
+#   published and no secret is used. A release needs a manual run with dry-run unchecked.
 #
 # Prerequisites (see etc/README.md): a GitHub App that can push to the five repositories, and the environments
 # release-approval (required reviewers) and release (secrets).
 
 on:
+  # dry run of the pull requests that change the release
+  pull_request:
+    branches: [master]
+    paths:
+      - '.github/workflows/release.yml'
+      - '.github/actions/release-setup/**'
+      - 'etc/release/**'
   workflow_dispatch:
     inputs:
       version:
@@ -36,12 +44,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: release
+  # one release at a time; a dry run never takes the place of a pending release
+  group: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release' || format('release-dry-run-{0}', github.ref) }}
   cancel-in-progress: false
 
 env:
   MAVEN_ARGS: -B -ntp -Daether.connector.http.retryHandler.count=5
-  DRY_RUN: ${{ inputs.dry-run }}
+  # a release needs a manual run with dry-run unchecked: the pull requests and the other runs are dry runs
+  DRY_RUN: ${{ github.event_name != 'workflow_dispatch' || inputs.dry-run }}
   RELEASE_DIR: ${{ github.workspace }}
 
 jobs:
@@ -50,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # the reviewers of release-approval approve the release, only once
-    environment: ${{ !inputs.dry-run && 'release-approval' || '' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release-approval' || '' }}
     permissions:
       contents: read
       actions: read
@@ -61,7 +71,7 @@ jobs:
       sha: ${{ github.sha }}
     steps:
       - name: Release from master only
-        if: ${{ !inputs.dry-run && github.ref != 'refs/heads/master' }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && github.ref != 'refs/heads/master' }}
         run: |
           echo "::error::A release runs on master only (dry runs run on any branch)"
           exit 1
@@ -80,7 +90,7 @@ jobs:
         run: tock/etc/release/release.sh versions | tee -a "$GITHUB_OUTPUT"
 
       - name: Check the e2e scenario
-        if: ${{ !inputs.dry-run && !inputs.skip-e2e }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && !inputs.skip-e2e }}
         working-directory: tock
         env:
           GH_TOKEN: ${{ github.token }}
@@ -92,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     # one build of the whole project, with the front and dokka, without the tests
     timeout-minutes: 240
-    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release' || '' }}
     env:
       VERSION: ${{ needs.check.outputs.version }}
       NEXT_VERSION: ${{ needs.check.outputs.next }}
@@ -102,7 +112,7 @@ jobs:
 
       - name: Create the token of the release App
         id: app-token
-        if: ${{ !inputs.dry-run }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) }}
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
           app-id: ${{ secrets.RELEASE_APP_ID }}
@@ -115,7 +125,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           path: tock
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.ref }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -132,7 +142,7 @@ jobs:
       - name: Setup
         uses: ./tock/.github/actions/release-setup
         with:
-          dry-run: ${{ inputs.dry-run }}
+          dry-run: ${{ env.DRY_RUN }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           app-token: ${{ steps.app-token.outputs.token }}
           app-slug: ${{ steps.app-token.outputs.app-slug }}
@@ -161,7 +171,7 @@ jobs:
     needs: [check, tock]
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release' || '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -178,7 +188,7 @@ jobs:
     steps:
       - name: Create the token of the release App
         id: app-token
-        if: ${{ !inputs.dry-run }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) }}
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
           app-id: ${{ secrets.RELEASE_APP_ID }}
@@ -205,7 +215,7 @@ jobs:
       - name: Setup
         uses: ./tock/.github/actions/release-setup
         with:
-          dry-run: ${{ inputs.dry-run }}
+          dry-run: ${{ env.DRY_RUN }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           app-token: ${{ steps.app-token.outputs.token }}
           app-slug: ${{ steps.app-token.outputs.app-slug }}
@@ -234,14 +244,14 @@ jobs:
     needs: [check, satellites]
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release' || '' }}
     env:
       VERSION: ${{ needs.check.outputs.version }}
       NEXT_VERSION: ${{ needs.check.outputs.next }}
     steps:
       - name: Create the token of the release App
         id: app-token
-        if: ${{ !inputs.dry-run }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) }}
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
           app-id: ${{ secrets.RELEASE_APP_ID }}
@@ -268,7 +278,7 @@ jobs:
       - name: Setup
         uses: ./tock/.github/actions/release-setup
         with:
-          dry-run: ${{ inputs.dry-run }}
+          dry-run: ${{ env.DRY_RUN }}
           app-token: ${{ steps.app-token.outputs.token }}
           app-slug: ${{ steps.app-token.outputs.app-slug }}
 
@@ -289,7 +299,7 @@ jobs:
     needs: [check, docker-prepare]
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release' || '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -341,7 +351,7 @@ jobs:
           name: tock-release
 
       - name: Log in to Docker Hub
-        if: ${{ !inputs.dry-run }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) }}
         uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -360,7 +370,7 @@ jobs:
     needs: [check, docker-prepare]
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 120
-    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release' || '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -409,7 +419,7 @@ jobs:
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
       - name: Log in to Docker Hub
-        if: ${{ !inputs.dry-run }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) }}
         uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -422,7 +432,7 @@ jobs:
           context: tock-docker/${{ matrix.module }}
           platforms: ${{ matrix.platform }}
           no-cache: true
-          outputs: type=image,name=tock/${{ matrix.module }},push-by-digest=true,name-canonical=true,push=${{ !inputs.dry-run }}
+          outputs: type=image,name=tock/${{ matrix.module }},push-by-digest=true,name-canonical=true,push=${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) }}
 
       - name: Export the digest
         env:
@@ -449,7 +459,7 @@ jobs:
     needs: [check, docker-python]
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release' || '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -463,11 +473,11 @@ jobs:
           path: ${{ runner.temp }}/digests
 
       - name: Setup Docker Buildx
-        if: ${{ !inputs.dry-run }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) }}
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
       - name: Log in to Docker Hub
-        if: ${{ !inputs.dry-run }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) }}
         uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -494,7 +504,7 @@ jobs:
     needs: [check, docker-jvm, docker-python-merge]
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release' || '' }}
     env:
       VERSION: ${{ needs.check.outputs.version }}
       NEXT_VERSION: ${{ needs.check.outputs.next }}
@@ -502,7 +512,7 @@ jobs:
     steps:
       - name: Create the token of the release App
         id: app-token
-        if: ${{ !inputs.dry-run }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) }}
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
           app-id: ${{ secrets.RELEASE_APP_ID }}
@@ -528,7 +538,7 @@ jobs:
       - name: Configure git
         uses: ./tock/.github/actions/release-setup
         with:
-          dry-run: ${{ inputs.dry-run }}
+          dry-run: ${{ env.DRY_RUN }}
           app-token: ${{ steps.app-token.outputs.token }}
           app-slug: ${{ steps.app-token.outputs.app-slug }}
           download-artifacts: 'false'

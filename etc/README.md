@@ -26,7 +26,8 @@ The [Release workflow](../.github/workflows/release.yml) releases, in this order
    in parallel (tags `<version>`, `<major>` and `latest`), then `TAG` of its `.env`.
 
 ```sh
-# dry run (default): commits and tags stay on the runners, nothing is published
+# dry run (default, and on each pull request that changes the release): commits and tags stay on the runners,
+# nothing is published
 gh workflow run release.yml --ref master
 # release, once the dry run succeeded; version and next-version are optional
 gh workflow run release.yml --ref master -f dry-run=false -f version=26.9.2 -f next-version=26.9.3-SNAPSHOT
