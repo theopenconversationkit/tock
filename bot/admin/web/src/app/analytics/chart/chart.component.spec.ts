@@ -29,8 +29,8 @@ describe('ChartComponent series selection', () => {
         [1, 2, 3, 4, 5, 6, 7]
       ]
     } as unknown as UserAnalyticsQueryResult;
-    // the graph itself is not under test
-    spyOn(component, 'rebuild').and.callFake(() => component.initSelectionList());
+    // the graph itself is not under test; rebuild() does not call initSelectionList() for every chart type
+    spyOn(component, 'rebuild').and.stub();
     component.initSelectionList();
   });
 

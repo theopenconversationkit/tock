@@ -133,7 +133,7 @@ export class ChartComponent implements OnChanges {
   }
 
   private defaultSelectionList(): number[] {
-    return Array.from({ length: Math.min(5, this.data.connectorsType.length) }, (v, k) => k);
+    return Array.from({ length: 5 }, (v, k) => k);
   }
 
   allSeriesSelected(): boolean {
@@ -158,6 +158,8 @@ export class ChartComponent implements OnChanges {
       this.seriesSelectionList = selected.filter((i) => i !== this.ALL_SERIES);
     }
     this.updateGraph();
+    // rebuild() only goes through initSelectionList() for some chart types (not the calendar one)
+    this.syncSeriesSelectModel();
   }
 
   updateGraph() {
