@@ -4377,6 +4377,10 @@ in the generic <em>Tock Studio</em> interface :</p>
 <p><img alt="Test the bot" src="../img/test.png" title="Test the bot" /></p>
 <p>For each message exchange with the bot, the detected language is indicated. By clicking on
 <em>View Nlp Stats</em> you can see the details of the model's response: intent, entities, scores, etc.</p>
+<p>The sentences sent from this screen are not saved in the <em>Inbox</em> of the NLP model: they do not pollute the sentences of the real users.
+To qualify them anyway, enable the <em>Save in Inbox</em> toggle (for the users with the <code>nlpUser</code> role): each sentence typed is then
+also parsed and saved, as from <em>Language Understanding</em> &gt; <em>New sentence</em>, in the language detected by the bot.
+The built-in keywords (<code>_test_</code>, <code>_restart_</code>, <code>_xray_</code>...) and the buttons clicked are not saved.</p>
 <h2 id="the-test-plans-tab">The <em>Test Plans</em> tab</h2>
 <p>This tool allows you to create and track the execution of automated conversation tests, in order to automatically and regularly check the non-regression of the bot.</p>
 <ol>
@@ -4681,7 +4685,7 @@ expected dialog and the last answer actually received.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 9, 2026 16:17:42 UTC">October 9, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 20, 2026 12:52:40 UTC">November 20, 2026</span>
   </span>
 
     
