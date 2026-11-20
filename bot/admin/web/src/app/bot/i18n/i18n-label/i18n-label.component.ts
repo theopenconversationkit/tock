@@ -43,6 +43,10 @@ export class I18nLabelComponent implements OnInit {
 
   @Output() fillLabels = new EventEmitter();
 
+  /** Labels that had a value before the user emptied them: only those show the empty label hint. */
+  private emptiedLabels = new WeakSet<I18nLocalizedLabel>();
+  private labelValuesOnFocus = new WeakMap<I18nLocalizedLabel, string>();
+
   constructor(
     public state: StateService,
     private botService: BotService,
@@ -96,6 +100,22 @@ export class I18nLabelComponent implements OnInit {
     });
 
     this.labelDeleted.emit(this.i18nLabel);
+  }
+
+  rememberLabelValue(label: I18nLocalizedLabel) {
+    this.labelValuesOnFocus.set(label, label.label);
+  }
+
+  updateEmptiedState(label: I18nLocalizedLabel) {
+    if (label.label?.trim()) {
+      this.emptiedLabels.delete(label);
+    } else if (this.labelValuesOnFocus.get(label)?.trim()) {
+      this.emptiedLabels.add(label);
+    }
+  }
+
+  showEmptyLabelHint(label: I18nLocalizedLabel): boolean {
+    return this.isSupportedLocale(label) && this.emptiedLabels.has(label) && !label.label?.trim();
   }
 
   save() {
