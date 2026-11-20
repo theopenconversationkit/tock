@@ -27,12 +27,18 @@ inputs:
 runs:
   using: composite
   steps:
+    # the version of a cache depends on its path as written: setup-java writes it absolute
+    - name: Locate the Maven repository
+      id: m2
+      shell: bash
+      run: echo "repository=$HOME/.m2/repository" >> "$GITHUB_OUTPUT"
+
     # the Maven cache of the CI (keys of setup-java), restored only: a release job does not save the released artifacts
     # into the cache shared with the CI
     - name: Restore the Maven cache
       uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
-        path: ~/.m2/repository
+        path: ${{ steps.m2.outputs.repository }}
         key: setup-java-${{ runner.os }}-${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}-maven-release
         restore-keys: setup-java-${{ runner.os }}-${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}-maven-
 
