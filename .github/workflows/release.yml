@@ -1,0 +1,553 @@
+name: Release
+
+# Releases tock, then tock-corenlp, tock-bot-open-data and tock-bot-demo, then the images of tock-docker.
+# The steps are in etc/release/release.sh, and the setup of the jobs in .github/actions/release-setup.
+#
+# - The artifacts released by a job are handed over to the next ones (artifacts maven-*): no wait for Maven Central.
+# - After a failure, "Re-run failed jobs" resumes from the failed job: the released jobs are not run again.
+# - In dry run (the default), the commits and tags stay on the runner, nothing is published and no secret is used.
+#
+# Prerequisites (see etc/README.md): a GitHub App that can push to the five repositories, and the environments
+# release-approval (required reviewers) and release (secrets).
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Released version (default: the version of the tock pom without -SNAPSHOT)'
+        required: false
+        default: ''
+      next-version:
+        description: 'Next development version (default: the next patch, as a SNAPSHOT)'
+        required: false
+        default: ''
+      dry-run:
+        description: 'Dry run: nothing is pushed nor published'
+        type: boolean
+        required: false
+        default: true
+      skip-e2e:
+        description: 'Do not require a successful e2e run on the released commit'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  MAVEN_ARGS: -B -ntp -Daether.connector.http.retryHandler.count=5
+  DRY_RUN: ${{ inputs.dry-run }}
+  RELEASE_DIR: ${{ github.workspace }}
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # the reviewers of release-approval approve the release, only once
+    environment: ${{ !inputs.dry-run && 'release-approval' || '' }}
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      version: ${{ steps.versions.outputs.version }}
+      major: ${{ steps.versions.outputs.major }}
+      next: ${{ steps.versions.outputs.next }}
+      sha: ${{ github.sha }}
+    steps:
+      - name: Release from master only
+        if: ${{ !inputs.dry-run && github.ref != 'refs/heads/master' }}
+        run: |
+          echo "::error::A release runs on master only (dry runs run on any branch)"
+          exit 1
+
+      - name: Checkout tock
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          path: tock
+          persist-credentials: false
+
+      - name: Compute the versions
+        id: versions
+        env:
+          VERSION: ${{ inputs.version }}
+          NEXT_VERSION: ${{ inputs.next-version }}
+        run: tock/etc/release/release.sh versions | tee -a "$GITHUB_OUTPUT"
+
+      - name: Check the e2e scenario
+        if: ${{ !inputs.dry-run && !inputs.skip-e2e }}
+        working-directory: tock
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: etc/check-e2e.sh "$GITHUB_SHA"
+
+  tock:
+    name: tock
+    needs: check
+    runs-on: ubuntu-latest
+    # one build of the whole project, with the front and dokka, without the tests
+    timeout-minutes: 240
+    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+      NEXT_VERSION: ${{ needs.check.outputs.next }}
+    steps:
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+
+      - name: Create the token of the release App
+        id: app-token
+        if: ${{ !inputs.dry-run }}
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          repositories: tock
+
+      # the branch, not the commit: the release plugin commits and pushes on it
+      - name: Checkout tock
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          path: tock
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check that the branch did not move
+        working-directory: tock
+        env:
+          CHECKED_SHA: ${{ needs.check.outputs.sha }}
+        run: |
+          if [ "$(git rev-parse HEAD)" != "$CHECKED_SHA" ]; then
+            echo "::error::The branch moved since the release was started ($CHECKED_SHA): start it again"
+            exit 1
+          fi
+
+      - name: Setup
+        uses: ./tock/.github/actions/release-setup
+        with:
+          dry-run: ${{ inputs.dry-run }}
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          app-token: ${{ steps.app-token.outputs.token }}
+          app-slug: ${{ steps.app-token.outputs.app-slug }}
+          download-artifacts: 'false'
+
+      - name: Release tock
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: tock/etc/release/release.sh tock
+
+      - name: Hand over the artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: maven-tock
+          path: |
+            ~/.m2/repository/ai/tock/*/${{ needs.check.outputs.version }}/
+            !**/*-sources.jar
+            !**/*-javadoc.jar
+          if-no-files-found: error
+          retention-days: 7
+
+  satellites:
+    name: ${{ matrix.repository }}
+    needs: [check, tock]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - step: corenlp
+            repository: tock-corenlp
+          - step: open-data
+            repository: tock-bot-open-data
+          - step: demo
+            repository: tock-bot-demo
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+      NEXT_VERSION: ${{ needs.check.outputs.next }}
+    steps:
+      - name: Create the token of the release App
+        id: app-token
+        if: ${{ !inputs.dry-run }}
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          repositories: ${{ matrix.repository }}
+
+      - name: Checkout tock
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          path: tock
+          ref: ${{ needs.check.outputs.sha }}
+          persist-credentials: false
+
+      - name: Checkout ${{ matrix.repository }}
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          repository: theopenconversationkit/${{ matrix.repository }}
+          ref: master
+          path: ${{ matrix.repository }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup
+        uses: ./tock/.github/actions/release-setup
+        with:
+          dry-run: ${{ inputs.dry-run }}
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          app-token: ${{ steps.app-token.outputs.token }}
+          app-slug: ${{ steps.app-token.outputs.app-slug }}
+
+      - name: Release ${{ matrix.repository }}
+        env:
+          STEP: ${{ matrix.step }}
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: tock/etc/release/release.sh "$STEP"
+
+      - name: Hand over the artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: maven-${{ matrix.step }}
+          path: |
+            ~/.m2/repository/ai/tock/*/${{ needs.check.outputs.version }}/
+            !**/*-sources.jar
+            !**/*-javadoc.jar
+          if-no-files-found: error
+          retention-days: 7
+
+  docker-prepare:
+    name: tock-docker (tag)
+    needs: [check, satellites]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+      NEXT_VERSION: ${{ needs.check.outputs.next }}
+    steps:
+      - name: Create the token of the release App
+        id: app-token
+        if: ${{ !inputs.dry-run }}
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          repositories: tock-docker
+
+      - name: Checkout tock
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          path: tock
+          ref: ${{ needs.check.outputs.sha }}
+          persist-credentials: false
+
+      - name: Checkout tock-docker
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          repository: theopenconversationkit/tock-docker
+          ref: master
+          path: tock-docker
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup
+        uses: ./tock/.github/actions/release-setup
+        with:
+          dry-run: ${{ inputs.dry-run }}
+          app-token: ${{ steps.app-token.outputs.token }}
+          app-slug: ${{ steps.app-token.outputs.app-slug }}
+
+      - name: Tag tock-docker
+        run: tock/etc/release/release.sh docker-prepare "$RUNNER_TEMP/tock-docker.tar"
+
+      - name: Hand over the sources of the tag
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: tock-docker-sources
+          path: ${{ runner.temp }}/tock-docker.tar
+          if-no-files-found: error
+          retention-days: 7
+
+  # the JVM images only copy jars on top of the base image: QEMU builds their arm64 variant quickly
+  docker-jvm:
+    name: image ${{ matrix.module }}
+    needs: [check, docker-prepare]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - duckling
+          - nlp-build-model-worker
+          - nlp-admin
+          - nlp-api
+          - bot-admin
+          - bot-api
+          - bot-api-webhook
+          - bot-api-web
+          - bot-open-data
+          - bot-admin-open-data
+          - kotlin-compiler
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+      NEXT_VERSION: ${{ needs.check.outputs.next }}
+      MAJOR: ${{ needs.check.outputs.major }}
+      BUILDX_BUILDER: tock-release
+    steps:
+      - name: Checkout tock
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          path: tock
+          ref: ${{ needs.check.outputs.sha }}
+          persist-credentials: false
+
+      - name: Download the sources of the tag
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: tock-docker-sources
+          path: ${{ runner.temp }}
+
+      - name: Extract the sources of the tag
+        run: mkdir tock-docker && tar -xf "$RUNNER_TEMP/tock-docker.tar" -C tock-docker
+
+      - name: Setup
+        uses: ./tock/.github/actions/release-setup
+        with:
+          dry-run: 'true' # no commit nor signature in this job
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        with:
+          name: tock-release
+
+      - name: Log in to Docker Hub
+        if: ${{ !inputs.dry-run }}
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build the image
+        working-directory: tock-docker
+        env:
+          MODULE: ${{ matrix.module }}
+        run: ../tock/etc/release/release.sh docker-image "$MODULE"
+
+  # the Python images install packages: each platform is built on a native runner, without QEMU,
+  # pushed by digest, then the digests are merged into one multi-platform image by docker-python-merge
+  docker-python:
+    name: image ${{ matrix.module }} (${{ matrix.platform }})
+    needs: [check, docker-prepare]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [gen-ai-orchestrator-server, llm-indexing-tools]
+        platform: [linux/amd64, linux/arm64]
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            arch: amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            arch: arm64
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+      MAJOR: ${{ needs.check.outputs.major }}
+    steps:
+      - name: Checkout tock
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          path: tock
+          ref: ${{ needs.check.outputs.sha }}
+          persist-credentials: false
+
+      - name: Download the sources of the tag
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: tock-docker-sources
+          path: ${{ runner.temp }}
+
+      - name: Extract the sources of the tag
+        run: mkdir tock-docker && tar -xf "$RUNNER_TEMP/tock-docker.tar" -C tock-docker
+
+      - name: Setup
+        uses: ./tock/.github/actions/release-setup
+        with:
+          dry-run: 'true' # no commit nor signature in this job
+
+      # unpacks the sources of the orchestrator in target/, used by the Dockerfile
+      - name: Prepare the build context
+        working-directory: tock-docker
+        env:
+          MODULE: ${{ matrix.module }}
+        run: mvn -pl "$MODULE" -am package -Dtock="$VERSION" -Dmajor="$MAJOR" -Dlatest=latest
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Log in to Docker Hub
+        if: ${{ !inputs.dry-run }}
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build the image
+        id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: tock-docker/${{ matrix.module }}
+          platforms: ${{ matrix.platform }}
+          no-cache: true
+          outputs: type=image,name=tock/${{ matrix.module }},push-by-digest=true,name-canonical=true,push=${{ !inputs.dry-run }}
+
+      - name: Export the digest
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/digests"
+          if [ -z "$DIGEST" ]; then
+            [ "$DRY_RUN" = "true" ] || { echo "::error::No digest for the pushed image"; exit 1; }
+            DIGEST="dry-run-$ARCH"
+          fi
+          touch "$RUNNER_TEMP/digests/${DIGEST#sha256:}"
+
+      - name: Hand over the digest
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: digest-${{ matrix.module }}-${{ matrix.arch }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  docker-python-merge:
+    name: image ${{ matrix.module }}
+    needs: [check, docker-python]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [gen-ai-orchestrator-server, llm-indexing-tools]
+    steps:
+      - name: Download the digests
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: digest-${{ matrix.module }}-*
+          merge-multiple: true
+          path: ${{ runner.temp }}/digests
+
+      - name: Setup Docker Buildx
+        if: ${{ !inputs.dry-run }}
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Log in to Docker Hub
+        if: ${{ !inputs.dry-run }}
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Merge the platforms
+        working-directory: ${{ runner.temp }}/digests
+        env:
+          IMAGE: tock/${{ matrix.module }}
+          VERSION: ${{ needs.check.outputs.version }}
+          MAJOR: ${{ needs.check.outputs.major }}
+        run: |
+          sources=()
+          for digest in *; do sources+=("$IMAGE@sha256:$digest"); done
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "Dry run: $IMAGE:$VERSION, $IMAGE:$MAJOR and $IMAGE:latest would merge ${sources[*]}"
+            exit 0
+          fi
+          docker buildx imagetools create -t "$IMAGE:$VERSION" -t "$IMAGE:$MAJOR" -t "$IMAGE:latest" "${sources[@]}"
+          docker buildx imagetools inspect "$IMAGE:$VERSION"
+
+  docker-finish:
+    name: tock-docker (.env)
+    needs: [check, docker-jvm, docker-python-merge]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: ${{ !inputs.dry-run && 'release' || '' }}
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+      NEXT_VERSION: ${{ needs.check.outputs.next }}
+      MAJOR: ${{ needs.check.outputs.major }}
+    steps:
+      - name: Create the token of the release App
+        id: app-token
+        if: ${{ !inputs.dry-run }}
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          repositories: tock-docker
+
+      - name: Checkout tock
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          path: tock
+          ref: ${{ needs.check.outputs.sha }}
+          persist-credentials: false
+
+      - name: Checkout tock-docker
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          repository: theopenconversationkit/tock-docker
+          ref: master
+          path: tock-docker
+          persist-credentials: false
+
+      - name: Configure git
+        uses: ./tock/.github/actions/release-setup
+        with:
+          dry-run: ${{ inputs.dry-run }}
+          app-token: ${{ steps.app-token.outputs.token }}
+          app-slug: ${{ steps.app-token.outputs.app-slug }}
+          download-artifacts: 'false'
+
+      - name: Update tock-docker/.env
+        run: tock/etc/release/release.sh docker-finish
+
+      - name: Summary
+        run: |
+          {
+            if [ "$DRY_RUN" = "true" ]; then echo "## Dry run of Tock $VERSION"; else echo "## Tock $VERSION released"; fi
+            echo
+            echo "| Repository | Tag |"
+            echo "|---|---|"
+            echo "| tock | tock-$VERSION |"
+            echo "| tock-corenlp | tock-$VERSION |"
+            echo "| tock-bot-open-data | bot-open-data-$VERSION |"
+            echo "| tock-bot-demo | bot-api-demo-$VERSION |"
+            echo "| tock-docker | tock-$VERSION |"
+            echo
+            echo "Docker images tagged $VERSION, $MAJOR and latest. Next development version: $NEXT_VERSION."
+          } >> "$GITHUB_STEP_SUMMARY"
