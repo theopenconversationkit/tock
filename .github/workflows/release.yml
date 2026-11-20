@@ -148,6 +148,16 @@ jobs:
           app-slug: ${{ steps.app-token.outputs.app-slug }}
           download-artifacts: 'false'
 
+      # the orchestrator build exports the requirements.txt of the Python projects with poetry
+      - name: Setup Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+
+      # Poetry 1.8, as for the lock files, with its bundled export plugin
+      - name: Install Poetry
+        run: pipx install poetry==1.8.3
+
       - name: Release tock
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
