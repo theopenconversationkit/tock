@@ -552,6 +552,27 @@ To retrieve the parameters of the button that was clicked:
     val nextDate = choice(nextResultDate)
     val nextOrigin : Locality = action.jsonChoice(nextResultOrigin)
 ```
+### Restarting the conversation
+
+A user can restart the conversation by sending the `_restart_` keyword (configurable with the `tock_bot_restart_keyword` property),
+for instance from a "new conversation" button of the web client.
+
+A new dialog is then started: there is no more current story or intent, the entity values are reset,
+and the history sent to the RAG starts again. The user id, preferences and state (flags, profile...) are kept,
+so that the analytics and the consents stored in the user state are not lost. The bot answers with the
+`conversation restarted` label (category `keywords`), which can be changed in _Tock Studio_.
+
+To also reset the data that the bot stores elsewhere, implement `ai.tock.bot.engine.dialog.RestartListener`
+and declare it in `META-INF/services/ai.tock.bot.engine.dialog.RestartListener`:
+
+```kotlin
+class MyRestartListener : RestartListener {
+    override fun onRestart(bus: BotBus, previousDialog: Dialog) {
+        myCartService.clear(bus.userId)
+    }
+}
+```
+
 ### Unit Tests
 
 The [Unit Tests](test.md) page presents the framework provided to write unit tests with Tock.

@@ -31,6 +31,12 @@ object BuiltInKeywordListener : NlpListener {
     val endTestContextKeyword = property("tock_bot_end_test_context_keyword", "_end_test_")
 
     /**
+     * Restarts the conversation: a new dialog is started (no current story, intent, entity values or RAG history),
+     * the user, its preferences and its state are kept.
+     */
+    val restartKeyword = property("tock_bot_restart_keyword", "_restart_")
+
+    /**
      * The keyword to listen.
      */
     val keywords: MutableSet<String> =
@@ -41,6 +47,7 @@ object BuiltInKeywordListener : NlpListener {
                 disableKeyword,
                 testContextKeyword,
                 endTestContextKeyword,
+                restartKeyword,
             ),
         )
 
