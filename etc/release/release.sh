@@ -59,18 +59,54 @@ require_versions() {
 # The perform build checks out the local clone, so that it needs no remote access.
 # In dry run, the commits and the tag stay local, and the artifacts are neither signed nor published (but installed).
 # The goals and preparationGoals set in a pom take precedence over these defaults.
+#
+# Usage: release <dir> <tag> prepare|perform [arguments of the release build]
+#
+# A re-run resumes the release: when the tag exists, release:prepare already pushed it, and only release:perform runs,
+# from the tag. When the release is already on Maven Central, it is built from the tag but not published again, so that
+# the job still hands its artifacts over.
 release() {
-  local dir="$1" goals="$2"
-  shift 2
-  local push=true arguments="-DskipTests $*"
+  local dir="$1" tag="$2" until="$3"
+  shift 3
+  local push=true arguments="-DskipTests $*" goals
   if dry_run; then
     push=false
     arguments="$arguments -DskipPublishing=true -Dgpg.skip=true"
   fi
-  # shellcheck disable=SC2086 # one word per goal
-  (cd "$dir" && mvn $goals -Ddeploy \
-    -DreleaseVersion="$VERSION" -DdevelopmentVersion="$NEXT_VERSION" \
-    -DpreparationGoals=validate -DlocalCheckout=true -DpushChanges="$push" -Darguments="$arguments")
+  if ! tagged "$dir" "$tag"; then
+    goals="release:clean release:prepare"
+    [ "$until" = perform ] && goals="$goals release:perform"
+    # shellcheck disable=SC2086 # one word per goal
+    (cd "$dir" && mvn $goals -Ddeploy \
+      -DreleaseVersion="$VERSION" -DdevelopmentVersion="$NEXT_VERSION" \
+      -DpreparationGoals=validate -DlocalCheckout=true -DpushChanges="$push" -Darguments="$arguments")
+  elif [ "$until" = perform ]; then
+    echo "$dir: $tag exists, resuming the release with release:perform"
+    if ! dry_run && published "$dir"; then
+      echo "$dir: $VERSION is already on Maven Central, built from $tag without publishing it"
+      arguments="$arguments -DskipPublishing=true -Dgpg.skip=true"
+    fi
+    # release:perform reads the tag from release.properties, as written by release:prepare (it removes the file once done)
+    (cd "$dir" && printf 'scm.url=scm:git:file://%s\nscm.tag=%s\n' "$(pwd)" "$tag" >release.properties \
+      && mvn release:perform -Ddeploy -DlocalCheckout=true -Darguments="$arguments")
+  else
+    echo "$dir: $tag exists, release:prepare already done"
+  fi
+}
+
+# Whether a repository has the tag of the release (the clones of the workflow fetch all the tags)
+tagged() {
+  git -C "$1" rev-parse -q --verify "refs/tags/$2" >/dev/null
+}
+
+# Whether the pom of the root project of a repository is on Maven Central at $VERSION.
+# A release published but not yet synced is not seen: wait for the sync before re-running the job, or Central refuses
+# the second deployment.
+published() {
+  local group artifact
+  group="$(cd "$1" && mvn -q -N help:evaluate -Dexpression=project.groupId -DforceStdout)"
+  artifact="$(cd "$1" && mvn -q -N help:evaluate -Dexpression=project.artifactId -DforceStdout)"
+  curl -sfI "https://repo1.maven.org/maven2/${group//.//}/$artifact/$VERSION/$artifact-$VERSION.pom" >/dev/null
 }
 
 # Commits the changes of a repository, when there are any, and pushes them unless in dry run
@@ -117,7 +153,7 @@ case "$step" in
 
   tock)
     require_versions
-    release "$tock_dir" "release:clean release:prepare release:perform" "-T 1C"
+    release "$tock_dir" "tock-$VERSION" perform "-T 1C"
     "$tock_dir/etc/update-doc-version.sh" "$VERSION"
     commit_and_push "$tock_dir" "doc $VERSION"
     ;;
@@ -125,30 +161,40 @@ case "$step" in
   corenlp)
     require_versions
     dir="$RELEASE_DIR/tock-corenlp"
-    # the first <version> after <parent> is the version of the tock parent
-    perl -0pi -e "s{(<parent>.*?<version>)[^<]*(</version>)}{\${1}$VERSION\${2}}s" "$dir/pom.xml"
-    commit_and_push "$dir" "tock $VERSION"
-    release "$dir" "release:clean release:prepare release:perform"
+    if ! tagged "$dir" "tock-$VERSION"; then
+      # the first <version> after <parent> is the version of the tock parent
+      perl -0pi -e "s{(<parent>.*?<version>)[^<]*(</version>)}{\${1}$VERSION\${2}}s" "$dir/pom.xml"
+      commit_and_push "$dir" "tock $VERSION"
+    fi
+    release "$dir" "tock-$VERSION" perform
     ;;
 
   open-data | demo)
     require_versions
-    [ "$step" = open-data ] && dir="$RELEASE_DIR/tock-bot-open-data" || dir="$RELEASE_DIR/tock-bot-demo"
-    set_property "$dir/pom.xml" tock "$VERSION"
-    commit_and_push "$dir" "tock $VERSION"
-    release "$dir" "release:clean release:prepare release:perform"
+    if [ "$step" = open-data ]; then
+      dir="$RELEASE_DIR/tock-bot-open-data" tag="bot-open-data-$VERSION"
+    else
+      dir="$RELEASE_DIR/tock-bot-demo" tag="bot-api-demo-$VERSION"
+    fi
+    if ! tagged "$dir" "$tag"; then
+      set_property "$dir/pom.xml" tock "$VERSION"
+      commit_and_push "$dir" "tock $VERSION"
+    fi
+    release "$dir" "$tag" perform
     ;;
 
   docker-prepare)
     require_versions
     tar="${1:?Usage: $0 docker-prepare <tar>}"
     dir="$RELEASE_DIR/tock-docker"
-    for property in tock bot-open-data stanford demo; do
-      set_property "$dir/pom.xml" "$property" "$VERSION"
-    done
-    commit_and_push "$dir" "Update Tock to $VERSION"
+    if ! tagged "$dir" "tock-$VERSION"; then
+      for property in tock bot-open-data stanford demo; do
+        set_property "$dir/pom.xml" "$property" "$VERSION"
+      done
+      commit_and_push "$dir" "Update Tock to $VERSION"
+    fi
     # the images are built from the tag by the docker-image step, in parallel: no release:perform
-    release "$dir" "release:clean release:prepare"
+    release "$dir" "tock-$VERSION" prepare
     git -C "$dir" archive --format=tar --output="$(realpath "$tar")" "tock-$VERSION"
     ;;
 

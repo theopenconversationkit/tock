@@ -18,7 +18,8 @@
 # The e2e scenario (.github/workflows/e2e.yml) must have succeeded on the released commit.
 # SKIP_E2E=1 bypasses this check.
 if [ "${SKIP_E2E:-}" != "1" ]; then
-  GITHUB_REPOSITORY=theopenconversationkit/tock "$(dirname "$0")/check-e2e.sh" || exit 1
+  GITHUB_REPOSITORY=theopenconversationkit/tock E2E_REF="$(git branch --show-current)" \
+    "$(dirname "$0")/check-e2e.sh" || exit 1
 fi
 
 mvn release:clean release:prepare -Ddeploy

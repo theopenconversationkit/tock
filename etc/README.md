@@ -38,7 +38,10 @@ gh workflow run release.yml --ref master -f dry-run=false -f version=26.9.2 -f n
 - The tests are not run again: the release builds each project once.
 - Each job hands its artifacts over to the next ones, so that they do not wait for Maven Central.
 - After a failure, fix the cause, then use **Re-run failed jobs**: the jobs that succeeded (and published) are not run
-  again. The steps run by each job are in [release/release.sh](release/release.sh), and can be run locally.
+  again. A job that failed after pushing its tag (in `release:perform`, for instance) resumes from the tag, and does not
+  publish again a release already on Maven Central. If the release was published but is not synced on Maven Central
+  yet, wait for the sync before re-running the job. The steps run by each job are in
+  [release/release.sh](release/release.sh), and can be run locally.
 
 Prerequisites:
 
@@ -46,8 +49,9 @@ Prerequisites:
   the protection rules of their `master` branch and of their tags.
 - An environment `release-approval`, with required reviewers.
 - An environment `release`, restricted to `master`, with the secrets `RELEASE_APP_ID`, `RELEASE_APP_PRIVATE_KEY`,
-  `CENTRAL_USERNAME`, `CENTRAL_TOKEN` (Maven Central user token), `GPG_PRIVATE_KEY` (armored), `GPG_PASSPHRASE`,
-  `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`.
+  `CENTRAL_USERNAME`, `CENTRAL_TOKEN` (Maven Central user token), `GPG_PRIVATE_KEY` (armored) and `GPG_PASSPHRASE`.
+- An environment `release-docker`, restricted to `master`, with the secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`,
+  used by the image jobs only.
 
 ## How to release and deploy a release locally
 

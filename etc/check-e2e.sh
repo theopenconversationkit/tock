@@ -19,6 +19,7 @@
 #
 # Usage: etc/check-e2e.sh [sha]   (HEAD by default)
 # The repository is $GITHUB_REPOSITORY when defined (GitHub Actions), theopenconversationkit/tock otherwise.
+# E2E_REF is the branch suggested to run the scenario on (master by default).
 
 set -euo pipefail
 
@@ -32,7 +33,7 @@ if ! run="$(gh run list --repo "$repo" --workflow e2e.yml --commit "$sha" --stat
 fi
 if [ -z "$run" ]; then
   echo "No successful e2e run on $sha: run it, then release again once it succeeded:" >&2
-  echo "  gh workflow run e2e.yml --repo $repo --ref master" >&2
+  echo "  gh workflow run e2e.yml --repo $repo --ref ${E2E_REF:-master}" >&2
   echo "  gh run watch --repo $repo" >&2
   exit 1
 fi

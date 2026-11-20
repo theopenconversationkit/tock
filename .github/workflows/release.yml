@@ -4,12 +4,15 @@ name: Release
 # The steps are in etc/release/release.sh, and the setup of the jobs in .github/actions/release-setup.
 #
 # - The artifacts released by a job are handed over to the next ones (artifacts maven-*): no wait for Maven Central.
-# - After a failure, "Re-run failed jobs" resumes from the failed job: the released jobs are not run again.
+# - After a failure, "Re-run failed jobs" resumes from the failed job: the released jobs are not run again, and a job
+#   whose tag was already pushed resumes with release:perform from the tag (see release() in release.sh).
 # - In dry run (the default, and always on pull requests), the commits and tags stay on the runner, nothing is
 #   published and no secret is used. A release needs a manual run with dry-run unchecked.
+#   The secrets are only read by a release: the steps that use them are skipped, and the variables are empty.
 #
 # Prerequisites (see etc/README.md): a GitHub App that can push to the five repositories, and the environments
-# release-approval (required reviewers) and release (secrets).
+# release-approval (required reviewers), release (secrets of the App, Maven Central and GPG) and release-docker
+# (secrets of Docker Hub, for the image jobs only).
 
 on:
   # dry run of the pull requests that change the release
@@ -129,28 +132,33 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      # on a re-run after release:prepare, the branch moved by the release commits: the tag follows the checked commit
       - name: Check that the branch did not move
         working-directory: tock
         env:
           CHECKED_SHA: ${{ needs.check.outputs.sha }}
         run: |
-          if [ "$(git rev-parse HEAD)" != "$CHECKED_SHA" ]; then
-            echo "::error::The branch moved since the release was started ($CHECKED_SHA): start it again"
-            exit 1
+          [ "$(git rev-parse HEAD)" = "$CHECKED_SHA" ] && exit 0
+          if tag="$(git rev-parse -q --verify "refs/tags/tock-$VERSION^{commit}")" \
+            && [ "$(git rev-parse "$tag^")" = "$CHECKED_SHA" ] && git merge-base --is-ancestor "$tag" HEAD; then
+            echo "tock-$VERSION already tagged on $CHECKED_SHA: resuming the release"
+            exit 0
           fi
+          echo "::error::The branch moved since the release was started ($CHECKED_SHA): start it again"
+          exit 1
 
       - name: Setup
         uses: ./tock/.github/actions/release-setup
         with:
           dry-run: ${{ env.DRY_RUN }}
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-private-key: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && secrets.GPG_PRIVATE_KEY || '' }}
           app-token: ${{ steps.app-token.outputs.token }}
           app-slug: ${{ steps.app-token.outputs.app-slug }}
           download-artifacts: 'false'
 
       # the orchestrator build exports the requirements.txt of the Python projects with poetry
       - name: Setup Python 3.13
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.13'
 
@@ -160,9 +168,9 @@ jobs:
 
       - name: Release tock
         env:
-          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          CENTRAL_USERNAME: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && secrets.CENTRAL_USERNAME || '' }}
+          CENTRAL_TOKEN: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && secrets.CENTRAL_TOKEN || '' }}
+          MAVEN_GPG_PASSPHRASE: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && secrets.GPG_PASSPHRASE || '' }}
         run: tock/etc/release/release.sh tock
 
       - name: Hand over the artifacts
@@ -226,16 +234,16 @@ jobs:
         uses: ./tock/.github/actions/release-setup
         with:
           dry-run: ${{ env.DRY_RUN }}
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-private-key: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && secrets.GPG_PRIVATE_KEY || '' }}
           app-token: ${{ steps.app-token.outputs.token }}
           app-slug: ${{ steps.app-token.outputs.app-slug }}
 
       - name: Release ${{ matrix.repository }}
         env:
           STEP: ${{ matrix.step }}
-          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          CENTRAL_USERNAME: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && secrets.CENTRAL_USERNAME || '' }}
+          CENTRAL_TOKEN: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && secrets.CENTRAL_TOKEN || '' }}
+          MAVEN_GPG_PASSPHRASE: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && secrets.GPG_PASSPHRASE || '' }}
         run: tock/etc/release/release.sh "$STEP"
 
       - name: Hand over the artifacts
@@ -309,7 +317,7 @@ jobs:
     needs: [check, docker-prepare]
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release' || '' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release-docker' || '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -380,7 +388,7 @@ jobs:
     needs: [check, docker-prepare]
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 120
-    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release' || '' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release-docker' || '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -469,7 +477,7 @@ jobs:
     needs: [check, docker-python]
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release' || '' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run == false) && 'release-docker' || '' }}
     strategy:
       fail-fast: false
       matrix:
