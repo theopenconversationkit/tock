@@ -41,6 +41,11 @@ Voici un autre exemple avec une conversation comprenant des composants riches du
 Pour chaque échange de messages avec le bot, la langue détectée est indiquée. En cliquant sur 
  _View Nlp Stats_ vous pouvez voir le détail de la réponse du modèle : intention, entités, scores, etc.
 
+Les phrases envoyées depuis cet écran ne sont pas enregistrées dans l'_Inbox_ du modèle NLP : elles ne se mélangent pas aux phrases des vrais utilisateurs.
+Pour les qualifier malgré tout, activez l'option _Enregistrer dans l'Inbox_ (pour les utilisateurs ayant le rôle `nlpUser`) : chaque phrase saisie est alors
+aussi analysée et enregistrée, comme depuis _Language Understanding_ > _New sentence_, dans la langue détectée par le bot.
+Les mots-clés intégrés (`_test_`, `_restart_`, `_xray_`...) et les boutons cliqués ne sont pas enregistrés.
+
 ## L'onglet _Test Plans_
 
 Cet outil permet de créer et de suivre l'exécution de tests de conversations automatisés, afin de vérifier

@@ -10,7 +10,8 @@ import { Observable, of, Subject, take, takeUntil } from 'rxjs';
 
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 
-import { SearchQuery, SentenceStatus } from '../../model/nlp';
+import { ParseQuery, SearchQuery, SentenceStatus } from '../../model/nlp';
+import { UserRole } from '../../model/auth';
 import { ChatUiComponent, SelectBotEvent } from '../../shared/components';
 import { NlpService } from '../../core-nlp/nlp.service';
 import { NlpStatsDisplayComponent } from './nlp-stats-display/nlp-stats-display.component';
@@ -110,6 +111,23 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     return this._sourceWithContent;
   }
 
+  _saveSentences: boolean = false;
+
+  /**
+   * Sentences sent in test mode are not registered by the bot. When enabled, the text sentences are also parsed
+   * by the NLP admin, which registers them (as "New Sentence" does): they are then listed in the Inbox.
+   */
+  set saveSentences(value: boolean) {
+    this._saveSentences = value;
+    this.shared.session_storage = {
+      ...this.shared.session_storage,
+      ...{ test: { ...this.shared.session_storage?.test, saveSentences: value } }
+    };
+  }
+  get saveSentences() {
+    return this._saveSentences;
+  }
+
   @ViewChild('chatUi') private chatUi: ChatUiComponent;
 
   constructor(
@@ -142,6 +160,10 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
     if (this.shared.session_storage?.test?.sourceWithContent) {
       this._sourceWithContent = this.shared.session_storage.test.sourceWithContent;
+    }
+
+    if (this.shared.session_storage?.test?.saveSentences) {
+      this._saveSentences = this.shared.session_storage.test.saveSentences;
     }
   }
 
@@ -195,10 +217,39 @@ export class BotDialogComponent implements OnInit, OnDestroy {
       return;
     }
     m = m.trim();
-    this.talk(new Sentence(0, [], m));
+    this.talk(new Sentence(0, [], m), true);
   }
 
-  private talk(message: BotMessage): void {
+  canSaveSentences(): boolean {
+    return this.state.hasRole(UserRole.nlpUser);
+  }
+
+  /**
+   * The built-in keywords (_test_, _end_test_, _restart_, _xray_ ...) act on the conversation: they are not user sentences.
+   */
+  private static readonly KEYWORD = /^_[^\s_]\S*_(\s|$)/;
+
+  /**
+   * Parses [text] with the NLP admin, which registers it in the Inbox, in the locale detected by the bot when it is
+   * supported by the application.
+   */
+  private saveSentenceInInbox(text: string, userLocale?: string): void {
+    if (!this.saveSentences || !this.canSaveSentences() || !text || BotDialogComponent.KEYWORD.test(text)) {
+      return;
+    }
+    const app = this.state.currentApplication;
+    const locale = userLocale && app.supportedLocales.includes(userLocale) ? userLocale : this.state.currentLocale;
+    this.nlp.parse(new ParseQuery(app.namespace, app.name, locale, text, true), true).subscribe({
+      error: () =>
+        this.toastrService.warning(
+          this.transloco.translate('test.bot-dialog.saveSentenceError', { sentence: text }),
+          this.transloco.translate('test.bot-dialog.saveSentences'),
+          { duration: 5000 }
+        )
+    });
+  }
+
+  private talk(message: BotMessage, saveInInbox = false): void {
     this.userMessageAutocompleteValues = of([]);
     const userAction = new TestMessage(false, message);
     this.messages.push(userAction);
@@ -222,6 +273,9 @@ export class BotDialogComponent implements OnInit, OnDestroy {
         userAction.locale = r.userLocale;
         userAction.hasNlpStats = r.hasNlpStats;
         userAction.actionId = r.userActionId;
+        if (saveInInbox && message instanceof Sentence) {
+          this.saveSentenceInInbox(message.text, r.userLocale);
+        }
         r.messages.forEach((m) => {
           this.messages.push(new TestMessage(true, m, undefined, undefined, undefined));
 
