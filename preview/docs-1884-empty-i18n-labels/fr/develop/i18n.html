@@ -4532,9 +4532,11 @@ en java. Cela inclut le support de <a href="https://docs.oracle.com/en/java/java
 </ol>
 <p>Une valeur vide ne permet donc pas d'omettre un mot dans une seule langue. Par exemple, une heure est précédée de « à » en français (« à 13h24 ») mais de rien en anglais (« 1:24 PM ») : un libellé <code>"à "</code> en français et <code>""</code> en anglais suivi de l'heure ne donnerait pas la réponse attendue en anglais.</p>
 <p>Intégrez plutôt la partie variable au libellé, avec le <a href="#format-des-messages">format des messages</a> :</p>
-<div class="highlight"><pre><span></span><code><span class="n">send</span><span class="p">(</span><span class="n">i18nKey</span><span class="p">(</span><span class="s">"departure_time"</span><span class="p">,</span><span class="w"> </span><span class="s">"à {0}"</span><span class="p">,</span><span class="w"> </span><span class="n">setOf</span><span class="p">(</span><span class="n">I18nLocalizedLabel</span><span class="p">(</span><span class="n">Locale</span><span class="p">.</span><span class="na">ENGLISH</span><span class="p">,</span><span class="w"> </span><span class="n">textChat</span><span class="p">,</span><span class="w"> </span><span class="s">"{0}"</span><span class="p">)),</span><span class="w"> </span><span class="n">departureTime</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">timeFormat</span><span class="p">))</span>
+<div class="highlight"><pre><span></span><code><span class="n">send</span><span class="p">(</span><span class="n">i18nKey</span><span class="p">(</span><span class="s">"departure_time"</span><span class="p">,</span><span class="w"> </span><span class="s">"{0}"</span><span class="p">,</span><span class="w"> </span><span class="n">setOf</span><span class="p">(</span><span class="n">I18nLocalizedLabel</span><span class="p">(</span><span class="n">Locale</span><span class="p">.</span><span class="na">FRENCH</span><span class="p">,</span><span class="w"> </span><span class="n">textChat</span><span class="p">,</span><span class="w"> </span><span class="s">"à {0}"</span><span class="p">)),</span><span class="w"> </span><span class="n">departureTime</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">timeFormat</span><span class="p">))</span>
 </code></pre></div>
-<p>Le libellé français est alors <code>à {0}</code> et le libellé anglais <code>{0}</code>. Le même motif peut être saisi dans <em>Tock Studio</em>.</p>
+<p>Si l'anglais est la locale par défaut du bot, le libellé anglais est alors <code>{0}</code> et le libellé français <code>à {0}</code>.
+Le même motif peut être saisi dans <em>Tock Studio</em>. Voir <a href="#specification-des-localisations-programmatiquement">Spécification des localisations programmatiquement</a>
+pour les paramètres de <code>i18nKey</code> et le moment où ces valeurs s'appliquent à une clé existante.</p>
 <h2 id="locale-utilisateur">Locale utilisateur</h2>
 <p>Voir <a href="../studio/i18n.html">Bot multilingue</a>.</p>
 <h2 id="points-dattention">Points d'attention</h2>
@@ -4873,7 +4875,7 @@ pour ensuite indiquer la <a href="https://github.com/theopenconversationkit/tock
     <span class="md-icon" title="Dernière mise à jour">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="20 novembre 2026 07:09:39 UTC">20 novembre 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="20 novembre 2026 10:23:56 UTC">20 novembre 2026</span>
   </span>
 
     
