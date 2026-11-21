@@ -42,6 +42,7 @@ import ai.tock.nlp.front.shared.config.FaqDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration
 import ai.tock.nlp.front.shared.user.UserNamespace
+import ai.tock.shared.InternalTockApi
 import ai.tock.shared.injector
 import ai.tock.shared.namespace
 import ai.tock.shared.namespaceAndName
@@ -218,13 +219,7 @@ object ApplicationConfigurationService :
     }
 
     override fun getIntentIdByQualifiedName(name: String): Id<IntentDefinition>? =
-        if (name == UNKNOWN_INTENT_NAME) {
-            UNKNOWN_INTENT_NAME.toId()
-        } else if (name == RAG_EXCLUDED_INTENT_NAME) {
-            RAG_EXCLUDED_INTENT_NAME.toId()
-        } else {
-            name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)?._id }
-        }
+        intentIdByQualifiedName(name) { namespace, intentName -> intentDAO.getIntentByNamespaceAndName(namespace, intentName) }
 
     override fun getSupportedNlpEngineTypes(): Set<NlpEngineType> = core.supportedNlpEngineTypes()
 
@@ -408,3 +403,21 @@ object ApplicationConfigurationService :
             ClassifiedSentenceStatus.model,
         )
 }
+
+/**
+ * The id of the intent named `namespace:name`, found with [find], or the id of the reserved intents (unknown,
+ * excluded from RAG): the rule of [ApplicationConfigurationService.getIntentIdByQualifiedName], for the
+ * other implementations of [ai.tock.nlp.front.shared.ApplicationRuntimeConfiguration].
+ */
+@InternalTockApi
+fun intentIdByQualifiedName(
+    name: String,
+    find: (namespace: String, name: String) -> IntentDefinition?,
+): Id<IntentDefinition>? =
+    if (name == UNKNOWN_INTENT_NAME) {
+        UNKNOWN_INTENT_NAME.toId()
+    } else if (name == RAG_EXCLUDED_INTENT_NAME) {
+        RAG_EXCLUDED_INTENT_NAME.toId()
+    } else {
+        name.namespaceAndName().run { find(first, second)?._id }
+    }

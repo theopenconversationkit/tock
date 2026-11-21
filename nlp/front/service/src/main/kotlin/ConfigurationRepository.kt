@@ -23,7 +23,11 @@ import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityType
 import ai.tock.nlp.core.Intent
 import ai.tock.nlp.core.NlpCore
-import ai.tock.nlp.front.service.ApplicationCodecService.config
+import ai.tock.nlp.front.service.storage.ApplicationDefinitionRuntimeDAO
+import ai.tock.nlp.front.service.storage.EntityTypeDefinitionRuntimeDAO
+import ai.tock.nlp.front.service.storage.IntentDefinitionRuntimeDAO
+import ai.tock.nlp.front.service.storage.NamespaceConfigurationRuntimeDAO
+import ai.tock.nlp.front.shared.ApplicationRuntimeConfiguration
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
@@ -39,6 +43,13 @@ import java.util.concurrent.ConcurrentHashMap
  * A configuration cache to improve performance on critical path.
  */
 internal object ConfigurationRepository {
+    // the runtime parts of the DAOs and of the configuration: a storage that only serves the NLP API binds them
+    private val applicationDAO: ApplicationDefinitionRuntimeDAO get() = ApplicationDefinitionRuntimeDAO.fromInjector()
+    private val intentDAO: IntentDefinitionRuntimeDAO get() = IntentDefinitionRuntimeDAO.fromInjector()
+    private val entityTypeDAO: EntityTypeDefinitionRuntimeDAO get() = EntityTypeDefinitionRuntimeDAO.fromInjector()
+    private val namespaceConfigurationDAO: NamespaceConfigurationRuntimeDAO get() = NamespaceConfigurationRuntimeDAO.fromInjector()
+    private val config: ApplicationRuntimeConfiguration get() = ApplicationRuntimeConfiguration.fromInjector()
+
     private val logger = KotlinLogging.logger {}
 
     private val core: NlpCore get() = injector.provide()

@@ -27,8 +27,10 @@ import ai.tock.nlp.core.NlpCore
 import ai.tock.nlp.front.service.ConfigurationRepository.toApplication
 import ai.tock.nlp.front.service.selector.IntentSelectorService
 import ai.tock.nlp.front.service.selector.IntentSelectorService.isValidClassifiedSentence
-import ai.tock.nlp.front.service.storage.ParseRequestLogDAO
+import ai.tock.nlp.front.service.storage.ClassifiedSentenceRuntimeDAO
+import ai.tock.nlp.front.service.storage.ParseRequestLogRuntimeDAO
 import ai.tock.nlp.front.shared.ApplicationConfiguration
+import ai.tock.nlp.front.shared.ApplicationRuntimeConfiguration
 import ai.tock.nlp.front.shared.Parser
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
@@ -75,11 +77,12 @@ object ParserService : Parser {
     private val validateSentenceTest = booleanProperty("tock_parser_validate_sentence_test", false)
 
     private val executor: Executor get() = injector.provide()
-    private val logDAO: ParseRequestLogDAO get() = injector.provide()
+    private val logDAO: ParseRequestLogRuntimeDAO get() = ParseRequestLogRuntimeDAO.fromInjector()
     private val core: NlpCore get() = injector.provide()
     private val modelCore: ModelCore get() = injector.provide()
 
-    private val config: ApplicationConfiguration get() = injector.provide()
+    private val config: ApplicationRuntimeConfiguration get() = ApplicationRuntimeConfiguration.fromInjector()
+    private val sentenceDAO: ClassifiedSentenceRuntimeDAO get() = ClassifiedSentenceRuntimeDAO.fromInjector()
 
     init {
         if (booleanProperty("tock_nlp_model_fill_cache", false)) {
