@@ -124,6 +124,18 @@ object I18nDynamoDAO : I18nDAO {
                 defaultI18n = withDefault.defaultI18n ?: existing?.defaultI18n ?: emptySet(),
                 version = withDefault.version ?: existing?.version ?: 0,
             )
+        write(stored, existing)
+    }
+
+    /** Stores [label] as it is, as published by the admin. */
+    fun publish(label: I18nLabel) {
+        write(label, getLabelById(label._id))
+    }
+
+    private fun write(
+        stored: I18nLabel,
+        existing: I18nLabel?,
+    ) {
         val document = b(DocumentCodec.encode(stored))
         DynamoStore.transactWrite(
             listOfNotNull(
