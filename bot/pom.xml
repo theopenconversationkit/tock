@@ -53,6 +53,7 @@
 
         <module>dialogflow</module>
 
+        <module>storage-model</module>
         <module>storage-mongo</module>
 
         <module>toolkit-base</module>

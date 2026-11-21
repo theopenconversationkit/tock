@@ -62,6 +62,7 @@ import org.litote.kmongo.ascending
 import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.getCollectionOfName
 import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.div
 import org.litote.kmongo.document
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
@@ -106,7 +107,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         try {
             col.ensureIndex(Namespace, BotId)
             historyCol.ensureIndex(Date)
-            historyCol.ensureIndex(Conf.namespace, Conf.storyId, Date)
+            historyCol.ensureIndex((Conf / StoryDefinitionConfiguration::namespace), (Conf / StoryDefinitionConfiguration::storyId), Date)
             try {
                 col.ensureUniqueIndex(Namespace, BotId, Intent.name_)
             } catch (e: Exception) {
@@ -215,9 +216,9 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         val dateById =
             historyCol
                 .aggregate<DateProjection>(
-                    match(Conf.namespace eq request.namespace),
+                    match((Conf / StoryDefinitionConfiguration::namespace) eq request.namespace),
                     group(
-                        document(Namespace from Conf.namespace, StoryId from Conf.storyId),
+                        document(Namespace from (Conf / StoryDefinitionConfiguration::namespace), StoryId from (Conf / StoryDefinitionConfiguration::storyId)),
                         Date.max(Date),
                     ),
                 ).toList()

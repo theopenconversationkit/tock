@@ -26,7 +26,7 @@ private val __LastUpdateDate: KProperty1<SnapshotCol, Instant?>
 private val __Snapshots: KProperty1<SnapshotCol, List<Snapshot>?>
   get() = SnapshotCol::snapshots
 
-internal class SnapshotCol_<T>(
+public class SnapshotCol_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, SnapshotCol?>,
 ) : KPropertyPath<T, SnapshotCol?>(previous, property) {
@@ -51,7 +51,7 @@ internal class SnapshotCol_<T>(
   }
 }
 
-internal class SnapshotCol_Col<T>(
+public class SnapshotCol_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<SnapshotCol?>?>,
 ) : KCollectionPropertyPath<T, SnapshotCol?, SnapshotCol_<T>>(previous, property) {
@@ -67,7 +67,7 @@ internal class SnapshotCol_Col<T>(
   override fun memberWithAdditionalPath(additionalPath: String): SnapshotCol_<T> = SnapshotCol_(this, customProperty(this, additionalPath))
 }
 
-internal class SnapshotCol_Map<T, K>(
+public class SnapshotCol_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, SnapshotCol?>?>,
 ) : KMapPropertyPath<T, K, SnapshotCol?, SnapshotCol_<T>>(previous, property) {

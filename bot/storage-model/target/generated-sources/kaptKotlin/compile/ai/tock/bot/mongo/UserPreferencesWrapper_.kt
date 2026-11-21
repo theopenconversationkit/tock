@@ -44,7 +44,7 @@ private val __Test: KProperty1<UserTimelineCol.UserPreferencesWrapper, Boolean?>
 private val __Timezone: KProperty1<UserTimelineCol.UserPreferencesWrapper, ZoneId?>
   get() = UserTimelineCol.UserPreferencesWrapper::timezone
 
-internal class UserPreferencesWrapper_<T>(
+public class UserPreferencesWrapper_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, UserTimelineCol.UserPreferencesWrapper?>,
 ) : KPropertyPath<T, UserTimelineCol.UserPreferencesWrapper?>(previous, property) {
@@ -111,7 +111,7 @@ internal class UserPreferencesWrapper_<T>(
   }
 }
 
-internal class UserPreferencesWrapper_Col<T>(
+public class UserPreferencesWrapper_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<UserTimelineCol.UserPreferencesWrapper?>?>,
 ) : KCollectionPropertyPath<T, UserTimelineCol.UserPreferencesWrapper?, UserPreferencesWrapper_<T>>(previous, property) {
@@ -148,7 +148,7 @@ internal class UserPreferencesWrapper_Col<T>(
   override fun memberWithAdditionalPath(additionalPath: String): UserPreferencesWrapper_<T> = UserPreferencesWrapper_(this, customProperty(this, additionalPath))
 }
 
-internal class UserPreferencesWrapper_Map<T, K>(
+public class UserPreferencesWrapper_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, UserTimelineCol.UserPreferencesWrapper?>?>,
 ) : KMapPropertyPath<T, K, UserTimelineCol.UserPreferencesWrapper?, UserPreferencesWrapper_<T>>(previous, property) {

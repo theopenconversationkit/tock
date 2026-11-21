@@ -23,7 +23,7 @@ private val __Flags:
 private val __LastUpdateDate: KProperty1<UserTimelineCol.UserStateWrapper, Instant?>
   get() = UserTimelineCol.UserStateWrapper::lastUpdateDate
 
-internal class UserStateWrapper_<T>(
+public class UserStateWrapper_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, UserTimelineCol.UserStateWrapper?>,
 ) : KPropertyPath<T, UserTimelineCol.UserStateWrapper?>(previous, property) {
@@ -49,7 +49,7 @@ internal class UserStateWrapper_<T>(
   }
 }
 
-internal class UserStateWrapper_Col<T>(
+public class UserStateWrapper_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<UserTimelineCol.UserStateWrapper?>?>,
 ) : KCollectionPropertyPath<T, UserTimelineCol.UserStateWrapper?, UserStateWrapper_<T>>(previous, property) {
@@ -65,7 +65,7 @@ internal class UserStateWrapper_Col<T>(
   override fun memberWithAdditionalPath(additionalPath: String): UserStateWrapper_<T> = UserStateWrapper_(this, customProperty(this, additionalPath))
 }
 
-internal class UserStateWrapper_Map<T, K>(
+public class UserStateWrapper_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, UserTimelineCol.UserStateWrapper?>?>,
 ) : KMapPropertyPath<T, K, UserTimelineCol.UserStateWrapper?, UserStateWrapper_<T>>(previous, property) {

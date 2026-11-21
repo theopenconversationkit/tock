@@ -54,7 +54,7 @@ private val __Stories: KProperty1<DialogCol, List<DialogCol.StoryMongoWrapper>?>
 private val __Test: KProperty1<DialogCol, Boolean?>
   get() = DialogCol::test
 
-internal class DialogCol_<T>(
+public class DialogCol_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, DialogCol?>,
 ) : KPropertyPath<T, DialogCol?>(previous, property) {
@@ -127,7 +127,7 @@ internal class DialogCol_<T>(
   }
 }
 
-internal class DialogCol_Col<T>(
+public class DialogCol_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<DialogCol?>?>,
 ) : KCollectionPropertyPath<T, DialogCol?, DialogCol_<T>>(previous, property) {
@@ -167,7 +167,7 @@ internal class DialogCol_Col<T>(
   override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this, customProperty(this, additionalPath))
 }
 
-internal class DialogCol_Map<T, K>(
+public class DialogCol_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, DialogCol?>?>,
 ) : KMapPropertyPath<T, K, DialogCol?, DialogCol_<T>>(previous, property) {

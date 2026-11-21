@@ -46,7 +46,7 @@ private val __RecipientId: KProperty1<DialogCol.ActionMongoWrapper, PlayerId?>
 private val __State: KProperty1<DialogCol.ActionMongoWrapper, EventState?>
   get() = DialogCol.ActionMongoWrapper::state
 
-internal open class ActionMongoWrapper_<T>(
+public open class ActionMongoWrapper_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, DialogCol.ActionMongoWrapper?>,
 ) : KPropertyPath<T, DialogCol.ActionMongoWrapper?>(previous, property) {
@@ -101,7 +101,7 @@ internal open class ActionMongoWrapper_<T>(
   }
 }
 
-internal open class ActionMongoWrapper_Col<T>(
+public open class ActionMongoWrapper_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<DialogCol.ActionMongoWrapper?>?>,
 ) : KCollectionPropertyPath<T, DialogCol.ActionMongoWrapper?, ActionMongoWrapper_<T>>(previous, property) {
@@ -132,7 +132,7 @@ internal open class ActionMongoWrapper_Col<T>(
   override fun memberWithAdditionalPath(additionalPath: String): ActionMongoWrapper_<T> = ActionMongoWrapper_(this, customProperty(this, additionalPath))
 }
 
-internal open class ActionMongoWrapper_Map<T, K>(
+public open class ActionMongoWrapper_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, DialogCol.ActionMongoWrapper?>?>,
 ) : KMapPropertyPath<T, K, DialogCol.ActionMongoWrapper?, ActionMongoWrapper_<T>>(previous, property) {

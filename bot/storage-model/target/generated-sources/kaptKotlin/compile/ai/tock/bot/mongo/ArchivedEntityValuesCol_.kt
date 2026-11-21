@@ -24,7 +24,7 @@ private val __Values:
     KProperty1<ArchivedEntityValuesCol, List<ArchivedEntityValuesCol.ArchivedEntityValueWrapper>?>
   get() = ArchivedEntityValuesCol::values
 
-internal class ArchivedEntityValuesCol_<T>(
+public class ArchivedEntityValuesCol_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, ArchivedEntityValuesCol?>,
 ) : KPropertyPath<T, ArchivedEntityValuesCol?>(previous, property) {
@@ -49,7 +49,7 @@ internal class ArchivedEntityValuesCol_<T>(
   }
 }
 
-internal class ArchivedEntityValuesCol_Col<T>(
+public class ArchivedEntityValuesCol_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<ArchivedEntityValuesCol?>?>,
 ) : KCollectionPropertyPath<T, ArchivedEntityValuesCol?, ArchivedEntityValuesCol_<T>>(previous, property) {
@@ -65,7 +65,7 @@ internal class ArchivedEntityValuesCol_Col<T>(
   override fun memberWithAdditionalPath(additionalPath: String): ArchivedEntityValuesCol_<T> = ArchivedEntityValuesCol_(this, customProperty(this, additionalPath))
 }
 
-internal class ArchivedEntityValuesCol_Map<T, K>(
+public class ArchivedEntityValuesCol_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, ArchivedEntityValuesCol?>?>,
 ) : KMapPropertyPath<T, K, ArchivedEntityValuesCol?, ArchivedEntityValuesCol_<T>>(previous, property) {

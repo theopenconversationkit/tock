@@ -24,7 +24,7 @@ private val __Date: KProperty1<ConnectorMessageCol, Instant?>
 private val __Messages: KProperty1<ConnectorMessageCol, List<AnyValueWrapper?>?>
   get() = ConnectorMessageCol::messages
 
-internal class ConnectorMessageCol_<T>(
+public class ConnectorMessageCol_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, ConnectorMessageCol?>,
 ) : KPropertyPath<T, ConnectorMessageCol?>(previous, property) {
@@ -49,7 +49,7 @@ internal class ConnectorMessageCol_<T>(
   }
 }
 
-internal class ConnectorMessageCol_Col<T>(
+public class ConnectorMessageCol_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<ConnectorMessageCol?>?>,
 ) : KCollectionPropertyPath<T, ConnectorMessageCol?, ConnectorMessageCol_<T>>(previous, property) {
@@ -65,7 +65,7 @@ internal class ConnectorMessageCol_Col<T>(
   override fun memberWithAdditionalPath(additionalPath: String): ConnectorMessageCol_<T> = ConnectorMessageCol_(this, customProperty(this, additionalPath))
 }
 
-internal class ConnectorMessageCol_Map<T, K>(
+public class ConnectorMessageCol_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, ConnectorMessageCol?>?>,
 ) : KMapPropertyPath<T, K, ConnectorMessageCol?, ConnectorMessageCol_<T>>(previous, property) {

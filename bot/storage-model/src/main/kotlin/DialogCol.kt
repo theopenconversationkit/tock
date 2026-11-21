@@ -43,6 +43,7 @@ import ai.tock.bot.engine.message.DebugMessage
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserLocation
+import ai.tock.shared.InternalTockApi
 import ai.tock.shared.checkMaxLengthAllowed
 import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
@@ -68,9 +69,10 @@ import tools.jackson.databind.annotation.JsonDeserialize as JsonDeserialize3
 /**
  *
  */
-@Data(internal = true)
-@JacksonData(internal = true)
-internal data class DialogCol(
+@Data
+@JacksonData
+@InternalTockApi
+data class DialogCol(
     val playerIds: Set<PlayerId>,
     var _id: Id<Dialog>,
     val state: DialogStateMongoWrapper,
@@ -147,7 +149,7 @@ internal data class DialogCol(
                             emptyMap()
                         } else {
                             runBlocking {
-                                UserTimelineMongoDAO.loadConnectorMessages(connectorMessageColIds)
+                                DialogDataLoader.current.loadConnectorMessages(connectorMessageColIds)
                             }
                         }
 
@@ -274,8 +276,8 @@ internal data class DialogCol(
             )
     }
 
-    @Data(internal = true)
-    @JacksonData(internal = true)
+    @Data
+    @JacksonData
     data class StoryMongoWrapper(
         val storyDefinitionId: String,
         var currentIntent: Intent?,
@@ -310,7 +312,7 @@ internal data class DialogCol(
         JsonSubTypes.Type(value = SendLocationMongoWrapper::class, name = "location"),
         JsonSubTypes.Type(value = SendDebugMongoWrapper::class, name = "debug"),
     )
-    @Data(internal = true)
+    @Data
     abstract class ActionMongoWrapper {
         lateinit var id: Id<Action>
         lateinit var date: Instant
@@ -525,8 +527,8 @@ internal data class DialogCol(
     }
 }
 
-@Data(internal = true)
-@JacksonData(internal = true)
+@Data
+@JacksonData
 data class ParseRequestSatisfactionStatCol(
     val rating: Double,
     val count: Int = 1,

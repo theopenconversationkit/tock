@@ -50,7 +50,7 @@ private val __UserPreferences: KProperty1<UserTimelineCol, UserTimelineCol.UserP
 private val __UserState: KProperty1<UserTimelineCol, UserTimelineCol.UserStateWrapper?>
   get() = UserTimelineCol::userState
 
-internal class UserTimelineCol_<T>(
+public class UserTimelineCol_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, UserTimelineCol?>,
 ) : KPropertyPath<T, UserTimelineCol?>(previous, property) {
@@ -123,7 +123,7 @@ internal class UserTimelineCol_<T>(
   }
 }
 
-internal class UserTimelineCol_Col<T>(
+public class UserTimelineCol_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<UserTimelineCol?>?>,
 ) : KCollectionPropertyPath<T, UserTimelineCol?, UserTimelineCol_<T>>(previous, property) {
@@ -163,7 +163,7 @@ internal class UserTimelineCol_Col<T>(
   override fun memberWithAdditionalPath(additionalPath: String): UserTimelineCol_<T> = UserTimelineCol_(this, customProperty(this, additionalPath))
 }
 
-internal class UserTimelineCol_Map<T, K>(
+public class UserTimelineCol_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, UserTimelineCol?>?>,
 ) : KMapPropertyPath<T, K, UserTimelineCol?, UserTimelineCol_<T>>(previous, property) {

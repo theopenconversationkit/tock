@@ -25,7 +25,7 @@ private val __Date: KProperty1<NlpStatsCol, Instant?>
 private val __Stats: KProperty1<NlpStatsCol, NlpCallStats?>
   get() = NlpStatsCol::stats
 
-internal class NlpStatsCol_<T>(
+public class NlpStatsCol_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, NlpStatsCol?>,
 ) : KPropertyPath<T, NlpStatsCol?>(previous, property) {
@@ -56,7 +56,7 @@ internal class NlpStatsCol_<T>(
   }
 }
 
-internal class NlpStatsCol_Col<T>(
+public class NlpStatsCol_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<NlpStatsCol?>?>,
 ) : KCollectionPropertyPath<T, NlpStatsCol?, NlpStatsCol_<T>>(previous, property) {
@@ -75,7 +75,7 @@ internal class NlpStatsCol_Col<T>(
   override fun memberWithAdditionalPath(additionalPath: String): NlpStatsCol_<T> = NlpStatsCol_(this, customProperty(this, additionalPath))
 }
 
-internal class NlpStatsCol_Map<T, K>(
+public class NlpStatsCol_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, NlpStatsCol?>?>,
 ) : KMapPropertyPath<T, K, NlpStatsCol?, NlpStatsCol_<T>>(previous, property) {

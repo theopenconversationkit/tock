@@ -414,6 +414,11 @@
             </dependency>
             <dependency>
                 <groupId>ai.tock</groupId>
+                <artifactId>tock-bot-storage-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-bot-storage-mongo</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -4,7 +4,6 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.ConnectorType_
 import ai.tock.bot.definition.DialogFlowStateTransitionType
 import java.time.LocalDateTime
 import java.util.Locale
@@ -74,8 +73,8 @@ internal class DialogFlowStateTransitionStatDateAggregationCol_<T>(
   public val configurationName: KPropertyPath<T, String?>
     get() = KPropertyPath(this, __ConfigurationName)
 
-  public val connectorType: ConnectorType_<T>
-    get() = ConnectorType_(this, __ConnectorType)
+  public val connectorType: KPropertyPath<T, ConnectorType?>
+    get() = KPropertyPath(this, __ConnectorType)
 
   public val count: KPropertyPath<T, Long?>
     get() = KPropertyPath(this, __Count)
@@ -114,8 +113,9 @@ internal class DialogFlowStateTransitionStatDateAggregationCol_<T>(
         KProperty1<DialogFlowStateTransitionStatDateAggregationCol, String?>
       get() = __ConfigurationName
 
-    public val ConnectorType: ConnectorType_<DialogFlowStateTransitionStatDateAggregationCol>
-      get() = ConnectorType_(null, __ConnectorType)
+    public val ConnectorType:
+        KProperty1<DialogFlowStateTransitionStatDateAggregationCol, ConnectorType?>
+      get() = __ConnectorType
 
     public val Count: KProperty1<DialogFlowStateTransitionStatDateAggregationCol, Long?>
       get() = __Count
@@ -157,8 +157,8 @@ internal class DialogFlowStateTransitionStatDateAggregationCol_Col<T>(
   public val configurationName: KPropertyPath<T, String?>
     get() = KPropertyPath(this, __ConfigurationName)
 
-  public val connectorType: ConnectorType_<T>
-    get() = ConnectorType_(this, __ConnectorType)
+  public val connectorType: KPropertyPath<T, ConnectorType?>
+    get() = KPropertyPath(this, __ConnectorType)
 
   public val count: KPropertyPath<T, Long?>
     get() = KPropertyPath(this, __Count)
@@ -200,8 +200,8 @@ internal class DialogFlowStateTransitionStatDateAggregationCol_Map<T, K>(
   public val configurationName: KPropertyPath<T, String?>
     get() = KPropertyPath(this, __ConfigurationName)
 
-  public val connectorType: ConnectorType_<T>
-    get() = ConnectorType_(this, __ConnectorType)
+  public val connectorType: KPropertyPath<T, ConnectorType?>
+    get() = KPropertyPath(this, __ConnectorType)
 
   public val count: KPropertyPath<T, Long?>
     get() = KPropertyPath(this, __Count)

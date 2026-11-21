@@ -28,6 +28,7 @@ import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.user.PlayerId
+import ai.tock.shared.InternalTockApi
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelStat
 import org.litote.jackson.data.JacksonDataRegistry
@@ -69,4 +70,5 @@ import org.litote.kmongo.DataRegistry
         ConnectorType::class,
     ],
 )
-internal object BotDataRegistry
+@InternalTockApi
+object BotDataRegistry

@@ -4,7 +4,6 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.ConnectorType_
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Iterable
@@ -46,8 +45,8 @@ internal class GroupById_<T>(
   public val configuration: KPropertyPath<T, String?>
     get() = KPropertyPath(this, __Configuration)
 
-  public val connectorType: ConnectorType_<T>
-    get() = ConnectorType_(this, __ConnectorType)
+  public val connectorType: KPropertyPath<T, ConnectorType?>
+    get() = KPropertyPath(this, __ConnectorType)
 
   public val date: KPropertyPath<T, String?>
     get() = KPropertyPath(this, __Date)
@@ -68,8 +67,8 @@ internal class GroupById_<T>(
     public val Configuration: KProperty1<GroupById, String?>
       get() = __Configuration
 
-    public val ConnectorType: ConnectorType_<GroupById>
-      get() = ConnectorType_(null, __ConnectorType)
+    public val ConnectorType: KProperty1<GroupById, ConnectorType?>
+      get() = __ConnectorType
 
     public val Date: KProperty1<GroupById, String?>
       get() = __Date
@@ -95,8 +94,8 @@ internal class GroupById_Col<T>(
   public val configuration: KPropertyPath<T, String?>
     get() = KPropertyPath(this, __Configuration)
 
-  public val connectorType: ConnectorType_<T>
-    get() = ConnectorType_(this, __ConnectorType)
+  public val connectorType: KPropertyPath<T, ConnectorType?>
+    get() = KPropertyPath(this, __ConnectorType)
 
   public val date: KPropertyPath<T, String?>
     get() = KPropertyPath(this, __Date)
@@ -123,8 +122,8 @@ internal class GroupById_Map<T, K>(
   public val configuration: KPropertyPath<T, String?>
     get() = KPropertyPath(this, __Configuration)
 
-  public val connectorType: ConnectorType_<T>
-    get() = ConnectorType_(this, __ConnectorType)
+  public val connectorType: KPropertyPath<T, ConnectorType?>
+    get() = KPropertyPath(this, __ConnectorType)
 
   public val date: KPropertyPath<T, String?>
     get() = KPropertyPath(this, __Date)

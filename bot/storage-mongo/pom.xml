@@ -31,6 +31,11 @@
     <dependencies>
         <dependency>
             <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-storage-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-engine</artifactId>
         </dependency>
         <dependency>
@@ -141,6 +146,11 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
+                        <configuration>
+                            <args>
+                                <arg>-opt-in=ai.tock.shared.InternalTockApi</arg>
+                            </args>
+                        </configuration>
                     </execution>
 
                     <execution>
@@ -149,6 +159,11 @@
                         <goals>
                             <goal>test-compile</goal>
                         </goals>
+                        <configuration>
+                            <args>
+                                <arg>-opt-in=ai.tock.shared.InternalTockApi</arg>
+                            </args>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

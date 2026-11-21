@@ -27,6 +27,7 @@ import ai.tock.bot.engine.user.TimeBoxedFlag
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserState
 import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.shared.InternalTockApi
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.defaultZoneId
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
@@ -49,9 +50,10 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Locale
 
-@Data(internal = true)
-@JacksonData(internal = true)
-internal data class UserTimelineCol(
+@Data
+@JacksonData
+@InternalTockApi
+data class UserTimelineCol(
     val _id: Id<UserTimelineCol>,
     val playerId: PlayerId,
     val userPreferences: UserPreferencesWrapper,
@@ -123,8 +125,8 @@ internal data class UserTimelineCol(
         )
     }
 
-    @Data(internal = true)
-    @JacksonData(internal = true)
+    @Data
+    @JacksonData
     data class UserPreferencesWrapper(
         val firstName: String? = null,
         val lastName: String? = null,
@@ -167,7 +169,7 @@ internal data class UserTimelineCol(
             )
     }
 
-    @Data(internal = true)
+    @Data
     class UserStateWrapper(
         val creationDate: Instant = Instant.now(),
         val lastUpdateDate: Instant = creationDate,
@@ -181,7 +183,7 @@ internal data class UserTimelineCol(
                 state.flags.mapValues {
                     TimeBoxedFlagWrapper(
                         it.value,
-                        MongoBotConfiguration.hasToEncryptFlag(it.key),
+                        EncryptedFlags.hasToEncryptFlag(it.key),
                     )
                 },
             )

@@ -25,6 +25,7 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.user.PlayerId
+import ai.tock.shared.InternalTockApi
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -34,7 +35,8 @@ import java.time.Instant
 /**
  *
  */
-internal class SendSentenceNotYetLoaded(
+@InternalTockApi
+class SendSentenceNotYetLoaded(
     val dialogId: Id<Dialog>,
     playerId: PlayerId,
     applicationId: String,
@@ -52,7 +54,8 @@ internal class SendSentenceNotYetLoaded(
         private val logger = KotlinLogging.logger {}
     }
 
-    internal var messageLoaded = !hasCustomMessage
+    @InternalTockApi
+    var messageLoaded = !hasCustomMessage
     private val loadedMessages: MutableList<ConnectorMessage> = mutableListOf()
 
     internal fun setLoadedMessages(messages: List<ConnectorMessage>) {
@@ -66,12 +69,13 @@ internal class SendSentenceNotYetLoaded(
             if (!messageLoaded) {
                 logger.debug { "load message for $id" }
                 messageLoaded = true
-                loadedMessages.addAll(runBlocking { UserTimelineMongoDAO.loadConnectorMessage(toActionId(), dialogId) })
+                loadedMessages.addAll(runBlocking { DialogDataLoader.current.loadConnectorMessage(toActionId(), dialogId) })
             }
             return loadedMessages
         }
 
-    internal var nlpStatsLoaded = !hasNlpStats
+    @InternalTockApi
+    var nlpStatsLoaded = !hasNlpStats
     private var loadedNlpStats: NlpCallStats? = null
 
     override var nlpStats: NlpCallStats?
@@ -79,7 +83,7 @@ internal class SendSentenceNotYetLoaded(
             if (!nlpStatsLoaded) {
                 logger.debug { "load nlpStats for $id" }
                 nlpStatsLoaded = true
-                loadedNlpStats = runBlocking { UserTimelineMongoDAO.loadNlpStats(toActionId(), dialogId) }
+                loadedNlpStats = runBlocking { DialogDataLoader.current.loadNlpStats(toActionId(), dialogId) }
             }
             return loadedNlpStats
         }

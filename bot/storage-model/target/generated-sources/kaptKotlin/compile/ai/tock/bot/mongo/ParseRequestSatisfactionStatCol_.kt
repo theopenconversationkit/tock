@@ -19,7 +19,7 @@ private val __Count: KProperty1<ParseRequestSatisfactionStatCol, Int?>
 private val __Rating: KProperty1<ParseRequestSatisfactionStatCol, Double?>
   get() = ParseRequestSatisfactionStatCol::rating
 
-internal class ParseRequestSatisfactionStatCol_<T>(
+public class ParseRequestSatisfactionStatCol_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, ParseRequestSatisfactionStatCol?>,
 ) : KPropertyPath<T, ParseRequestSatisfactionStatCol?>(previous, property) {
@@ -38,7 +38,7 @@ internal class ParseRequestSatisfactionStatCol_<T>(
   }
 }
 
-internal class ParseRequestSatisfactionStatCol_Col<T>(
+public class ParseRequestSatisfactionStatCol_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<ParseRequestSatisfactionStatCol?>?>,
 ) : KCollectionPropertyPath<T, ParseRequestSatisfactionStatCol?, ParseRequestSatisfactionStatCol_<T>>(previous, property) {
@@ -51,7 +51,7 @@ internal class ParseRequestSatisfactionStatCol_Col<T>(
   override fun memberWithAdditionalPath(additionalPath: String): ParseRequestSatisfactionStatCol_<T> = ParseRequestSatisfactionStatCol_(this, customProperty(this, additionalPath))
 }
 
-internal class ParseRequestSatisfactionStatCol_Map<T, K>(
+public class ParseRequestSatisfactionStatCol_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, ParseRequestSatisfactionStatCol?>?>,
 ) : KMapPropertyPath<T, K, ParseRequestSatisfactionStatCol?, ParseRequestSatisfactionStatCol_<T>>(previous, property) {

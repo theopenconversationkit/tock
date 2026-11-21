@@ -16,21 +16,35 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
-import ai.tock.bot.engine.dialog.Snapshot
+import ai.tock.bot.engine.nlp.NlpCallStats
+import ai.tock.bot.engine.nlp.NlpStats
+import ai.tock.shared.InternalTockApi
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.time.Instant
-import java.time.Instant.now
+
+@Data
+@JacksonData
+@InternalTockApi
+data class NlpStatsColId(
+    val actionId: Id<Action>,
+    val dialogId: Id<Dialog>,
+)
 
 /**
  *
  */
-@Data(internal = true)
-@JacksonData(internal = true)
-internal data class SnapshotCol(
-    val _id: Id<Dialog>,
-    val snapshots: List<Snapshot>,
-    val lastUpdateDate: Instant = now(),
-)
+@Data
+@JacksonData
+@InternalTockApi
+data class NlpStatsCol(
+    val _id: NlpStatsColId,
+    val stats: NlpCallStats,
+    val appNamespace: String,
+    val date: Instant = Instant.now(),
+) {
+    fun toNlpStats(): NlpStats = NlpStats(_id.dialogId, _id.actionId, stats, appNamespace, date)
+}

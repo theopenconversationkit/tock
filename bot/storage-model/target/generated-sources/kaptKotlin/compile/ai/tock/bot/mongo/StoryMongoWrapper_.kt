@@ -26,7 +26,7 @@ private val __CurrentStep: KProperty1<DialogCol.StoryMongoWrapper, String?>
 private val __StoryDefinitionId: KProperty1<DialogCol.StoryMongoWrapper, String?>
   get() = DialogCol.StoryMongoWrapper::storyDefinitionId
 
-internal class StoryMongoWrapper_<T>(
+public class StoryMongoWrapper_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, DialogCol.StoryMongoWrapper?>,
 ) : KPropertyPath<T, DialogCol.StoryMongoWrapper?>(previous, property) {
@@ -57,7 +57,7 @@ internal class StoryMongoWrapper_<T>(
   }
 }
 
-internal class StoryMongoWrapper_Col<T>(
+public class StoryMongoWrapper_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<DialogCol.StoryMongoWrapper?>?>,
 ) : KCollectionPropertyPath<T, DialogCol.StoryMongoWrapper?, StoryMongoWrapper_<T>>(previous, property) {
@@ -76,7 +76,7 @@ internal class StoryMongoWrapper_Col<T>(
   override fun memberWithAdditionalPath(additionalPath: String): StoryMongoWrapper_<T> = StoryMongoWrapper_(this, customProperty(this, additionalPath))
 }
 
-internal class StoryMongoWrapper_Map<T, K>(
+public class StoryMongoWrapper_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, DialogCol.StoryMongoWrapper?>?>,
 ) : KMapPropertyPath<T, K, DialogCol.StoryMongoWrapper?, StoryMongoWrapper_<T>>(previous, property) {

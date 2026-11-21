@@ -20,6 +20,7 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.ArchivedEntityValue
 import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.EntityValue
+import ai.tock.shared.InternalTockApi
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
@@ -30,9 +31,10 @@ import java.time.Instant
 /**
  *
  */
-@Data(internal = true)
-@JacksonData(internal = true)
-internal data class ArchivedEntityValuesCol(
+@Data
+@JacksonData
+@InternalTockApi
+data class ArchivedEntityValuesCol(
     val _id: Id<ArchivedEntityValuesCol>,
     val values: List<ArchivedEntityValueWrapper>,
     val lastUpdateDate: Instant = Instant.now(),
@@ -40,8 +42,8 @@ internal data class ArchivedEntityValuesCol(
     constructor(values: List<ArchivedEntityValue>, id: Id<EntityStateValue>?) :
         this(id?.toString()?.toId() ?: newId(), values.map { ArchivedEntityValueWrapper(it) })
 
-    @JacksonData(internal = true)
-    internal class ArchivedEntityValueWrapper(
+    @JacksonData
+    class ArchivedEntityValueWrapper(
         val entityValue: EntityValue?,
         val actionId: Id<Action>?,
         val date: Instant = Instant.now(),
