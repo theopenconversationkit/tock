@@ -106,6 +106,25 @@ interface Executor : Executor {
         runnable: () -> Unit,
     ): Long
 
+    /**
+     * Schedules a named periodic task.
+     *
+     * The name identifies the task when the process does not run continuously: a serverless runtime exposes it
+     * so that an external scheduler triggers it, instead of a timer that would never fire in a frozen process.
+     * In a long-running process, it is the same as the unnamed [setPeriodic].
+     *
+     * @param name the name of the task, unique in the process
+     * @param initialDelay the delay before first call
+     * @param delay the delay between each other call
+     * @param runnable the task to run
+     */
+    fun setPeriodic(
+        name: String,
+        initialDelay: Duration,
+        delay: Duration,
+        runnable: () -> Unit,
+    ): Long = setPeriodic(initialDelay, delay, runnable)
+
     override fun execute(command: Runnable) {
         executeBlocking { command.run() }
     }
