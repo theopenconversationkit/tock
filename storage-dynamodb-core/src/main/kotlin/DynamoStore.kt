@@ -16,6 +16,7 @@
 
 package ai.tock.storage.dynamodb
 
+import ai.tock.shared.InternalTockApi
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
@@ -80,7 +81,7 @@ const val DOC = "doc"
 const val TTL = "ttl"
 
 /**
- * DynamoDB access shared by the spike DAOs: client, tables, document codec and capacity metrics.
+ * DynamoDB access shared by the DAOs of the bots and of the NLP: client, tables, document codec and capacity metrics.
  *
  * Properties:
  * - `tock_dynamodb_endpoint`: endpoint override (DynamoDB Local), unset on AWS
@@ -148,19 +149,19 @@ object DynamoStore {
 
     fun consumedWriteUnits(): Double = writeUnits.sum()
 
-    internal fun recordRead(capacity: ConsumedCapacity?) {
+    fun recordRead(capacity: ConsumedCapacity?) {
         capacity?.capacityUnits()?.let { readUnits.add(it) }
     }
 
-    internal fun recordRead(capacities: List<ConsumedCapacity>?) {
+    fun recordRead(capacities: List<ConsumedCapacity>?) {
         capacities?.forEach { recordRead(it) }
     }
 
-    internal fun recordWrite(capacity: ConsumedCapacity?) {
+    fun recordWrite(capacity: ConsumedCapacity?) {
         capacity?.capacityUnits()?.let { writeUnits.add(it) }
     }
 
-    internal fun recordWrite(capacities: List<ConsumedCapacity>?) {
+    fun recordWrite(capacities: List<ConsumedCapacity>?) {
         capacities?.forEach { recordWrite(it) }
     }
 
@@ -244,7 +245,7 @@ object DynamoStore {
     }
 
     /** Runs a query and follows the pagination until the end. */
-    internal fun queryAll(request: QueryRequest): List<Map<String, AttributeValue>> {
+    fun queryAll(request: QueryRequest): List<Map<String, AttributeValue>> {
         val items = mutableListOf<Map<String, AttributeValue>>()
         var startKey: Map<String, AttributeValue>? = null
         do {
@@ -263,7 +264,7 @@ object DynamoStore {
         return items
     }
 
-    internal fun queryPartition(
+    fun queryPartition(
         table: String,
         pk: String,
         skPrefix: String? = null,
@@ -287,7 +288,7 @@ object DynamoStore {
                 }.build(),
         )
 
-    internal fun queryIndex(
+    fun queryIndex(
         table: String,
         index: String,
         pkName: String,
@@ -313,7 +314,7 @@ object DynamoStore {
                 }.build(),
         )
 
-    internal fun getItem(
+    fun getItem(
         table: String,
         pk: String,
         sk: String,
@@ -330,7 +331,7 @@ object DynamoStore {
                 response.item().takeIf { response.hasItem() && it.isNotEmpty() }
             }
 
-    internal fun putItem(
+    fun putItem(
         table: String,
         item: Map<String, AttributeValue>,
     ) {
@@ -339,7 +340,7 @@ object DynamoStore {
             .also { recordWrite(it.consumedCapacity()) }
     }
 
-    internal fun deleteItem(
+    fun deleteItem(
         table: String,
         pk: String,
         sk: String,
@@ -350,7 +351,7 @@ object DynamoStore {
     }
 
     /** Puts [item] only if no item has its key: false if one exists. */
-    internal fun putIfAbsent(
+    fun putIfAbsent(
         table: String,
         item: Map<String, AttributeValue>,
     ): Boolean =
@@ -370,7 +371,7 @@ object DynamoStore {
         }
 
     /** Writes [items] in one transaction (100 items at most): false if a condition failed. */
-    internal fun transactWrite(items: List<TransactWriteItem>): Boolean =
+    fun transactWrite(items: List<TransactWriteItem>): Boolean =
         try {
             client
                 .transactWriteItems { it.transactItems(items).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL) }
@@ -381,7 +382,7 @@ object DynamoStore {
             false
         }
 
-    internal fun transactPut(
+    fun transactPut(
         table: String,
         item: Map<String, AttributeValue>,
         condition: String? = null,
@@ -404,7 +405,7 @@ object DynamoStore {
                     }.build(),
             ).build()
 
-    internal fun transactDelete(
+    fun transactDelete(
         table: String,
         key: Map<String, AttributeValue>,
     ): TransactWriteItem =
@@ -419,7 +420,7 @@ object DynamoStore {
             ).build()
 
     /** Batch writes (25 items per request), retrying the unprocessed items. */
-    internal fun batchWrite(
+    fun batchWrite(
         table: String,
         puts: List<Map<String, AttributeValue>> = emptyList(),
         deleteKeys: List<Map<String, AttributeValue>> = emptyList(),
@@ -450,7 +451,7 @@ object DynamoStore {
     }
 
     /** Deletes every item of a partition. */
-    internal fun deletePartition(
+    fun deletePartition(
         table: String,
         pk: String,
     ): Int {
@@ -459,27 +460,34 @@ object DynamoStore {
         return keys.size
     }
 
-    internal fun keyOf(item: Map<String, AttributeValue>): Map<String, AttributeValue> = mapOf(PK to item.getValue(PK), SK to item.getValue(SK))
+    fun keyOf(item: Map<String, AttributeValue>): Map<String, AttributeValue> = mapOf(PK to item.getValue(PK), SK to item.getValue(SK))
 
-    internal fun key(
+    fun key(
         pk: String,
         sk: String,
     ): Map<String, AttributeValue> = mapOf(PK to s(pk), SK to s(sk))
 }
 
-internal fun s(value: String): AttributeValue = AttributeValue.fromS(value)
+@InternalTockApi
+fun s(value: String): AttributeValue = AttributeValue.fromS(value)
 
-internal fun n(value: Number): AttributeValue = AttributeValue.fromN(value.toString())
+@InternalTockApi
+fun n(value: Number): AttributeValue = AttributeValue.fromN(value.toString())
 
-internal fun b(value: ByteArray): AttributeValue = AttributeValue.fromB(SdkBytes.fromByteArray(value))
+@InternalTockApi
+fun b(value: ByteArray): AttributeValue = AttributeValue.fromB(SdkBytes.fromByteArray(value))
 
-internal fun bool(value: Boolean): AttributeValue = AttributeValue.fromBool(value)
+@InternalTockApi
+fun bool(value: Boolean): AttributeValue = AttributeValue.fromBool(value)
 
-internal fun Map<String, AttributeValue>.str(name: String): String? = get(name)?.s()
+@InternalTockApi
+fun Map<String, AttributeValue>.str(name: String): String? = get(name)?.s()
 
-internal fun Map<String, AttributeValue>.long(name: String): Long? = get(name)?.n()?.toLong()
+@InternalTockApi
+fun Map<String, AttributeValue>.long(name: String): Long? = get(name)?.n()?.toLong()
 
-internal fun Map<String, AttributeValue>.bytes(name: String): ByteArray = getValue(name).b().asByteArray()
+@InternalTockApi
+fun Map<String, AttributeValue>.bytes(name: String): ByteArray = getValue(name).b().asByteArray()
 
 /**
  * Names `_id` the property `_id`: Jackson 3 does not keep it, KMongo has the same introspector.

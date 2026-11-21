@@ -47,22 +47,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>dynamodb</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>netty-nio-client</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>apache-client</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>url-connection-client</artifactId>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-storage-dynamodb-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- the DAOs of the connectors, bound only when the connector is in the classpath -->

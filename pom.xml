@@ -78,6 +78,7 @@
         <module>bom</module>
         <module>shared-core</module>
         <module>shared</module>
+        <module>storage-dynamodb-core</module>
         <module>util</module>
         <module>stt</module>
         <module>translator</module>
