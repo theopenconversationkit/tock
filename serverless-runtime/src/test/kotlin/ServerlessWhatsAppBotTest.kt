@@ -35,6 +35,7 @@ import ai.tock.bot.definition.bot
 import ai.tock.bot.definition.story
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.ArchivedEntityValue
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
@@ -48,6 +49,9 @@ import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.serverless.queue.BackgroundRequestQueue
 import ai.tock.serverless.queue.RequestQueueing
+import ai.tock.storage.dynamodb.BotApplicationConfigurationDynamoDAO
+import ai.tock.storage.dynamodb.UserTimelineDynamoDAO
+import ai.tock.storage.dynamodb.botDynamoModule
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelContract
 import ai.tock.translator.I18nRuntimeDAO
@@ -57,11 +61,14 @@ import com.github.salomonbrys.kodein.provider
 import com.sun.net.httpserver.HttpServer
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.litote.kmongo.Id
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.Wait
 import java.net.InetSocketAddress
 import java.net.URI
 import java.net.http.HttpClient
@@ -86,7 +93,6 @@ class ServerlessWhatsAppBotTest {
     private lateinit var graphApi: HttpServer
     private lateinit var server: ServerlessHttpServer
 
-    private val timelines = ConcurrentHashMap<PlayerId, UserTimeline>()
     private val labels = ConcurrentHashMap<Id<I18nLabel>, I18nLabel>()
 
     private val botDefinition: BotDefinition =
@@ -115,14 +121,8 @@ class ServerlessWhatsAppBotTest {
 
     private val storage =
         Kodein.Module(allowSilentOverride = true) {
-            bind<UserTimelineRuntimeDAO>() with provider { timelineDAO }
-            bind<BotApplicationConfigurationRuntimeDAO>() with
-                provider {
-                    mockk<BotApplicationConfigurationRuntimeDAO>(relaxed = true).apply {
-                        every { getConfigurations() } returns listOf(configuration)
-                        every { save(any<BotApplicationConfiguration>()) } answers { firstArg() }
-                    }
-                }
+            // the timelines and the bot configurations are stored in DynamoDB (DynamoDB Local)
+            import(botDynamoModule, allowOverride = true)
             bind<StoryDefinitionConfigurationRuntimeDAO>() with provider { mockk(relaxed = true) }
             bind<FeatureRuntimeDAO>() with provider { mockk(relaxed = true) }
             bind<MetricRuntimeDAO>() with provider { mockk(relaxed = true) }
@@ -152,37 +152,6 @@ class ServerlessWhatsAppBotTest {
                             NlpResult(intent = "greetings", intentNamespace = "app", language = Locale.FRENCH, retainedQuery = "hello")
                     }
                 }
-        }
-
-    private val timelineDAO =
-        object : UserTimelineRuntimeDAO by mockk(relaxed = true) {
-            override suspend fun loadWithLastValidDialog(
-                namespace: String,
-                userId: PlayerId,
-                priorUserId: PlayerId?,
-                groupId: String?,
-                storyDefinitionProvider: (String) -> StoryDefinition,
-            ): UserTimeline = timelines.getOrPut(userId) { UserTimeline(userId) }
-
-            override suspend fun loadWithoutDialogs(
-                namespace: String,
-                userId: PlayerId,
-            ): UserTimeline = timelines.getOrPut(userId) { UserTimeline(userId) }
-
-            override suspend fun save(
-                userTimeline: UserTimeline,
-                botDefinition: BotDefinition,
-                asynchronousProcess: Boolean,
-            ) {
-                timelines[userTimeline.playerId] = userTimeline
-            }
-
-            override suspend fun getSnapshots(dialogId: Id<Dialog>): List<Snapshot> = emptyList()
-
-            override suspend fun getArchivedEntityValues(
-                stateValueId: Id<EntityStateValue>,
-                oldActionsMap: Map<Id<Action>, Action>,
-            ): List<ArchivedEntityValue> = emptyList()
         }
 
     private val i18nDAO =
@@ -227,8 +196,16 @@ class ServerlessWhatsAppBotTest {
             override suspend fun releaseLock(userId: String) = Unit
         }
 
+    private val dynamo = GenericContainer("amazon/dynamodb-local:2.6.1").withExposedPorts(8000).waitingFor(Wait.forListeningPort())
+
     @BeforeAll
     fun start() {
+        dynamo.start()
+        System.setProperty("tock_dynamodb_endpoint", "http://${dynamo.host}:${dynamo.getMappedPort(8000)}")
+        System.setProperty("aws.accessKeyId", "x")
+        System.setProperty("aws.secretAccessKey", "x")
+        BotApplicationConfigurationDynamoDAO.save(configuration)
+
         graphApi =
             HttpServer.create(InetSocketAddress(0), 0).apply {
                 createContext("/") { exchange ->
@@ -260,6 +237,7 @@ class ServerlessWhatsAppBotTest {
     fun stop() {
         server.stop()
         graphApi.stop(0)
+        dynamo.stop()
     }
 
     private val client = HttpClient.newHttpClient()
@@ -307,6 +285,9 @@ class ServerlessWhatsAppBotTest {
         assertEquals(200, response.statusCode())
         // the webhook answered after the work it started: the answer is already sent
         assertTrue(graphApiRequests.any { it.contains("/phone/messages") && it.contains("world") }, graphApiRequests.joinToString("\n"))
+        // the dialog is stored in DynamoDB
+        val timeline = runBlocking { UserTimelineDynamoDAO.loadWithLastValidDialog("app", PlayerId("bsuid1")) { botDefinition.stories.first() } }
+        assertEquals(listOf("hello", "world"), timeline.currentDialog?.allActions()?.map { (it as? SendSentence)?.stringText })
     }
 
     @Test

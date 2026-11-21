@@ -58,7 +58,8 @@ class SendSentenceNotYetLoaded(
     var messageLoaded = !hasCustomMessage
     private val loadedMessages: MutableList<ConnectorMessage> = mutableListOf()
 
-    internal fun setLoadedMessages(messages: List<ConnectorMessage>) {
+    @InternalTockApi
+    fun setLoadedMessages(messages: List<ConnectorMessage>) {
         loadedMessages.clear()
         loadedMessages.addAll(messages)
         messageLoaded = true
