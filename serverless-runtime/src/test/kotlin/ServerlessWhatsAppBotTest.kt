@@ -46,6 +46,8 @@ import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.model.NlpResult
+import ai.tock.serverless.queue.BackgroundRequestQueue
+import ai.tock.serverless.queue.RequestQueueing
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelContract
 import ai.tock.translator.I18nRuntimeDAO
@@ -305,5 +307,47 @@ class ServerlessWhatsAppBotTest {
         assertEquals(200, response.statusCode())
         // the webhook answered after the work it started: the answer is already sent
         assertTrue(graphApiRequests.any { it.contains("/phone/messages") && it.contains("world") }, graphApiRequests.joinToString("\n"))
+    }
+
+    @Test
+    fun `GIVEN queued webhooks WHEN a message is posted twice THEN the webhook is acknowledged at once and the answer is sent once`() {
+        val queueing =
+            RequestQueueing(
+                queue = BackgroundRequestQueue { ServerlessRequestHandler.queueing!! },
+                queuedPaths = setOf("/whatsapp"),
+                secret = "the secret of the test queue",
+            )
+        ServerlessRequestHandler.configure(queueing)
+        graphApiRequests.clear()
+        try {
+            val webhook =
+                """
+                {"object":"whatsapp_business_account","entry":[{"id":"account","changes":[{"field":"messages","value":{
+                "messaging_product":"whatsapp","metadata":{"display_phone_number":"33100000000","phone_number_id":"phone"},
+                "contacts":[{"profile":{"name":"Julien"},"wa_id":"33600000000","user_id":"bsuid1"}],
+                "messages":[{"from":"33600000000","from_user_id":"bsuid1","id":"wamid.queued","timestamp":"1700000001","type":"text","text":{"body":"hello"}}]}}]}]}
+                """.trimIndent()
+            val post = { HttpRequest.newBuilder(URI("http://localhost:${server.port}/whatsapp")).POST(HttpRequest.BodyPublishers.ofString(webhook)).build() }
+
+            val start = System.currentTimeMillis()
+            val response = client.send(post(), BodyHandlers.ofString())
+            val elapsed = System.currentTimeMillis() - start
+            // Meta retries a webhook that is not acknowledged quickly
+            client.send(post(), BodyHandlers.ofString())
+
+            assertEquals(200, response.statusCode())
+            assertTrue(elapsed < 500, "acknowledged in $elapsed ms")
+            assertTrue(graphApiRequests.none { it.contains("world") }, "the answer is sent after the acknowledgment")
+
+            val deadline = System.currentTimeMillis() + 10_000
+            while (graphApiRequests.none { it.contains("world") } && System.currentTimeMillis() < deadline) {
+                Thread.sleep(50)
+            }
+            // let a duplicate processing, if any, send its answer
+            Thread.sleep(1_500)
+            assertEquals(1, graphApiRequests.count { it.contains("/phone/messages") && it.contains("world") }, graphApiRequests.joinToString("\n"))
+        } finally {
+            ServerlessRequestHandler.configure(null)
+        }
     }
 }

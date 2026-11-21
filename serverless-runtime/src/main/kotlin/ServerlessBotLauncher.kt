@@ -18,6 +18,7 @@ package ai.tock.serverless
 
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.botModule
+import ai.tock.serverless.queue.RequestQueueing
 import ai.tock.shared.Executor
 import ai.tock.shared.Loader
 import ai.tock.shared.injector
@@ -72,11 +73,14 @@ object ServerlessBotLauncher {
     /**
      * Installs the registered bots, then starts the HTTP server on [port] (`tock_serverless_port`, or `PORT`
      * as set by Cloud Run and the Lambda Web Adapter, 8080 by default).
+     * With [queueing], the webhooks are acknowledged at once and processed when the queue delivers them.
      */
     fun start(
         port: Int = intProperty("tock_serverless_port", System.getenv("PORT")?.toIntOrNull() ?: 8080),
         createApplicationIfNotExists: Boolean = false,
+        queueing: RequestQueueing? = null,
     ): ServerlessHttpServer {
+        ServerlessRequestHandler.configure(queueing)
         BotRepository.installBots(emptyList(), createApplicationIfNotExists)
         return ServerlessHttpServer(port).start().also {
             logger.info { "serverless bots listening on ${it.port}: ${ServerlessBotServer.serviceIdentifiers}" }

@@ -85,6 +85,8 @@
         <module>bot</module>
         <module>gen-ai</module>
         <module>serverless-runtime</module>
+        <module>serverless-sqs</module>
+        <module>serverless-pubsub</module>
     </modules>
 
     <dependencies>

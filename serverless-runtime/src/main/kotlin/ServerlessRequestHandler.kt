@@ -17,6 +17,7 @@
 package ai.tock.serverless
 
 import ai.tock.serverless.RequestWork.Companion.runTracked
+import ai.tock.serverless.queue.RequestQueueing
 import ai.tock.shared.Executor
 import ai.tock.shared.http.HttpMethod
 import ai.tock.shared.http.HttpRequest
@@ -47,7 +48,38 @@ object ServerlessRequestHandler {
     private val executor: TrackingExecutor
         get() = injector.provide<Executor>() as? TrackingExecutor ?: error("the Executor of a serverless process must be a TrackingExecutor")
 
+    private val queuePath = property("tock_serverless_queue_path", "/_queue")
+
+    /** The acknowledgment of the webhooks: null when they are processed by the request that receives them. */
+    @Volatile
+    var queueing: RequestQueueing? = null
+        private set
+
+    /**
+     * Acknowledges at once the webhooks of [queueing], and processes them when the queue delivers them,
+     * on `POST <tock_serverless_queue_path>/sqs` (SQS) or `/pubsub` (a Pub/Sub push subscription).
+     */
+    fun configure(queueing: RequestQueueing?) {
+        queueing?.process = ::process
+        this.queueing = queueing
+    }
+
     fun handle(request: HttpRequest): HttpResponse {
+        val queueing = queueing
+        return when {
+            queueing == null -> process(request)
+            queueing.isQueued(request) -> queueing.acknowledge(request)
+            request.method == HttpMethod.POST && request.path == "$queuePath/sqs" -> queueing.processSqsEvent(request)
+            request.method == HttpMethod.POST && request.path == "$queuePath/pubsub" -> queueing.processPubSubPush(request)
+            else -> process(request)
+        }
+    }
+
+    /**
+     * Dispatches [request] to the routes of the connectors, or runs a periodic task, then waits for the work
+     * it started.
+     */
+    fun process(request: HttpRequest): HttpResponse {
         val work = RequestWork()
         val response =
             work.runTracked {
