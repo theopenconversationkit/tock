@@ -268,6 +268,12 @@ object UserTimelineDynamoDAO : UserTimelineRuntimeDAO {
         )
     }
 
+    /**
+     * The document of the dialog [dialogId], reassembled from its chunks, and its namespace: the replication to
+     * the MongoDB of the admin stores it as it is.
+     */
+    fun loadDialogDocument(dialogId: String): Pair<DialogCol, String>? = loadStoredDialog(dialogId)?.let { it.col to it.namespace }
+
     /** A dialog partition, without the snapshots. */
     private class StoredDialog(
         val col: DialogCol,

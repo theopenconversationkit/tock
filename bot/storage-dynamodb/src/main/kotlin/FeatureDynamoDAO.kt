@@ -25,6 +25,7 @@ import ai.tock.storage.dynamodb.DynamoStore.configTable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
@@ -237,22 +238,34 @@ object FeatureDynamoDAO : FeatureDAO {
         io { DynamoStore.queryPartition(configTable, pk(botId, namespace), consistentRead = true) }
             .mapNotNull { item ->
                 try {
-                    val feature = DocumentCodec.decode<Feature>(item.bytes(DOC))
-                    val sk = item.str(SK)!!
-                    val index = feature.key.lastIndexOf(',')
-                    val applicationIndex = sk.lastIndexOf('+')
-                    FeatureState(
-                        category = if (index == -1) "" else feature.key.substring(0, index),
-                        name = if (index == -1) feature.key else feature.key.substring(index + 1),
-                        enabled = feature.enabled,
-                        startDate = feature.startDate,
-                        endDate = feature.endDate,
-                        applicationId = if (applicationIndex == -1) null else sk.substring(applicationIndex + 1),
-                        graduation = feature.graduation,
-                    )
+                    featureOf(item).third
                 } catch (e: Exception) {
                     logger.error(e) { "invalid feature ${item.str(SK)}" }
                     null
                 }
             }
+
+    /** True if [item] (an item of the configuration table) is a feature. */
+    fun isFeature(item: Map<String, AttributeValue>): Boolean = item.str(PK)?.startsWith("FEAT#") == true && item.containsKey(DOC)
+
+    /** The bot id, the namespace and the state of a feature item: the replication to MongoDB reads the stream items. */
+    fun featureOf(item: Map<String, AttributeValue>): Triple<String, String, FeatureState> {
+        val feature = DocumentCodec.decode<Feature>(item.bytes(DOC))
+        val sk = item.str(SK)!!
+        val index = feature.key.lastIndexOf(',')
+        val applicationIndex = sk.lastIndexOf('+')
+        return Triple(
+            feature.botId,
+            feature.namespace,
+            FeatureState(
+                category = if (index == -1) "" else feature.key.substring(0, index),
+                name = if (index == -1) feature.key else feature.key.substring(index + 1),
+                enabled = feature.enabled,
+                startDate = feature.startDate,
+                endDate = feature.endDate,
+                applicationId = if (applicationIndex == -1) null else sk.substring(applicationIndex + 1),
+                graduation = feature.graduation,
+            ),
+        )
+    }
 }

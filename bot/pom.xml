@@ -57,6 +57,7 @@
         <module>storage-mongo</module>
         <module>storage-dynamodb</module>
         <module>storage-dynamodb-publication</module>
+        <module>storage-dynamodb-replication</module>
 
         <module>toolkit-base</module>
         <module>toolkit</module>

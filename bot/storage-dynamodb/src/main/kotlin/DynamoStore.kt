@@ -45,10 +45,13 @@ import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException
 import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType
+import software.amazon.awssdk.services.dynamodb.model.StreamSpecification
+import software.amazon.awssdk.services.dynamodb.model.StreamViewType
 import software.amazon.awssdk.services.dynamodb.model.TimeToLiveSpecification
 import software.amazon.awssdk.services.dynamodb.model.TransactWriteItem
 import software.amazon.awssdk.services.dynamodb.model.TransactionCanceledException
 import software.amazon.awssdk.services.dynamodb.model.WriteRequest
+import software.amazon.awssdk.services.dynamodb.streams.DynamoDbStreamsClient
 import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.json.JsonMapper
@@ -64,7 +67,9 @@ private val logger = KotlinLogging.logger {}
 /** Generic attribute names: every table has a `pk`/`sk` primary key. */
 const val PK = "pk"
 const val SK = "sk"
-internal const val DOC = "doc"
+
+/** The attribute of the documents (JSON, gzip). */
+const val DOC = "doc"
 
 /** The expiration of an item, in epoch seconds: the attribute of the DynamoDB TTL of every table. */
 const val TTL = "ttl"
@@ -77,6 +82,8 @@ const val TTL = "ttl"
  * - `tock_dynamodb_region`: region (default eu-west-3)
  * - `tock_dynamodb_table_prefix`: table name prefix (default `tock_`)
  * - `tock_dynamodb_create_tables`: create the tables at startup (default true)
+ * - `tock_dynamodb_streams_enabled`: enable the DynamoDB Streams of the tables (default true), read by the
+ *   replication of the runtime writes to the MongoDB of the admin
  */
 object DynamoStore {
     val tablePrefix: String = property("tock_dynamodb_table_prefix", "tock_")
@@ -101,6 +108,27 @@ object DynamoStore {
             .build()
             .also { if (booleanProperty("tock_dynamodb_create_tables", true)) createTables(it) }
     }
+
+    private val streamsEnabled = booleanProperty("tock_dynamodb_streams_enabled", true)
+
+    /** The client of the DynamoDB Streams of the tables. */
+    val streamsClient: DynamoDbStreamsClient by lazy {
+        // the tables, and their streams, exist once the client has created them
+        client
+        DynamoDbStreamsClient
+            .builder()
+            .httpClient(UrlConnectionHttpClient.create())
+            .region(Region.of(property("tock_dynamodb_region", "eu-west-3")))
+            .apply { propertyOrNull("tock_dynamodb_endpoint")?.let { endpointOverride(URI(it)) } }
+            .build()
+    }
+
+    private val streamSpecification: StreamSpecification =
+        StreamSpecification
+            .builder()
+            .streamEnabled(true)
+            .streamViewType(StreamViewType.NEW_AND_OLD_IMAGES)
+            .build()
 
     /** Capacity units consumed since the last [resetMetrics] (read, write), to measure the cost. */
     private val readUnits = DoubleAdder()
@@ -183,6 +211,7 @@ object DynamoStore {
                     .attributeDefinitions(attributes)
                     .keySchema(key(PK, KeyType.HASH), key(SK, KeyType.RANGE))
                     .apply { if (indexes.isNotEmpty()) globalSecondaryIndexes(indexes) }
+                    .apply { if (streamsEnabled) streamSpecification(streamSpecification) }
             }
             client.waiter().waitUntilTableExists { it.tableName(name) }
             client.updateTimeToLive {
@@ -197,6 +226,15 @@ object DynamoStore {
             logger.info { "DynamoDB table $name created" }
         } catch (_: ResourceInUseException) {
             logger.debug { "DynamoDB table $name already exists" }
+            if (streamsEnabled && client
+                    .describeTable { it.tableName(name) }
+                    .table()
+                    .streamSpecification()
+                    ?.streamEnabled() != true
+            ) {
+                client.updateTable { it.tableName(name).streamSpecification(streamSpecification) }
+                logger.info { "DynamoDB stream of the table $name enabled" }
+            }
         }
     }
 
