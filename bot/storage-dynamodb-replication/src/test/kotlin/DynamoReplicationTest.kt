@@ -121,7 +121,8 @@ class DynamoReplicationTest {
         replication = newReplication()
     }
 
-    private fun newReplication() = DynamoReplication(database, injector.provide<BotApplicationConfigurationDAO>(), stories, features, labels, Duration.ofHours(1))
+    private fun newReplication() =
+        DynamoReplication(database, injector.provide<BotApplicationConfigurationDAO>(), stories, features, labels, injector.provide<ai.tock.bot.admin.indicators.IndicatorDAO>(), Duration.ofHours(1))
 
     private fun newUser() = PlayerId("user_${UUID.randomUUID()}", PlayerType.user)
 
@@ -223,6 +224,33 @@ class DynamoReplicationTest {
             )
         StoryDefinitionConfigurationDynamoDAO.createBuiltInStoriesIfNotExist(listOf(builtin))
         runBlocking { FeatureDynamoDAO.isEnabled("bot_$suffix", namespace, "category", "registered", default = true) }
+        val indicator =
+            ai.tock.bot.admin.indicators.Indicator(
+                name = "satisfaction",
+                label = "Satisfaction",
+                namespace = namespace,
+                botId = "bot_$suffix",
+                values =
+                    setOf(
+                        ai.tock.bot.admin.indicators
+                            .IndicatorValue("yes", "Yes"),
+                    ),
+            )
+        ai.tock.storage.dynamodb.IndicatorDynamoDAO
+            .save(indicator)
+        val metric =
+            ai.tock.bot.admin.indicators.metric.Metric(
+                type = ai.tock.bot.admin.indicators.metric.MetricType.STORY_HANDLED,
+                emitterStoryId = "builtin",
+                trackedStoryId = "builtin",
+                playerIds = setOf(PlayerId("user")),
+                dialogId = newId(),
+                applicationId = "app",
+                botId = "bot_$suffix",
+                namespace = namespace,
+            )
+        ai.tock.storage.dynamodb.MetricDynamoDAO
+            .save(metric)
         val labelId = newId<I18nLabel>()
         repeat(2) { I18nDynamoDAO.incrementLabelStat(I18nLabelStat(labelId, namespace, Locale.ENGLISH, textChat, null, count = 3)) }
 
@@ -247,6 +275,11 @@ class DynamoReplicationTest {
         assertEquals(builtin, stories.getStoryDefinitionById(builtin._id))
         assertEquals(listOf("registered" to true), runBlocking { features.getFeatures("bot_$suffix", namespace) }.map { it.name to it.enabled })
         assertEquals(6, labels.getLabelStats(namespace).single().count)
+        assertEquals(indicator, injector.provide<ai.tock.bot.admin.indicators.IndicatorDAO>().findByNameAndBotId("satisfaction", namespace, "bot_$suffix"))
+        assertEquals(
+            metric.copy(creationDate = metric.creationDate.truncatedTo(ChronoUnit.MILLIS)),
+            database.getCollection<ai.tock.bot.admin.indicators.metric.Metric>("metric").findOneById(metric._id),
+        )
     }
 
     @Test

@@ -108,7 +108,29 @@ class DynamoPublicationTest {
             }
         }
 
-    private val publication = DynamoPublication(applicationDAO, storyDAO, featureDAO, i18nDAO, interval = Duration.ofHours(1), debounce = Duration.ofMillis(100))
+    private val businessRules = CopyOnWriteArrayList<ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfiguration>()
+    private val indicators = CopyOnWriteArrayList<ai.tock.bot.admin.indicators.Indicator>()
+    private val businessRulesDAO =
+        mockk<ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfigurationDAO> {
+            every { findByNamespaceAndBotId(any(), any()) } answers { businessRules.firstOrNull { it.namespace == firstArg() && it.botId == secondArg() } }
+            every { listenChanges(any()) } answers { listeners += firstArg<() -> Unit>() }
+        }
+    private val indicatorDAO =
+        mockk<ai.tock.bot.admin.indicators.IndicatorDAO> {
+            every { findAllByBotId(any(), any()) } answers { indicators.filter { it.namespace == firstArg() && it.botId == secondArg() } }
+        }
+
+    private val publication =
+        DynamoPublication(
+            applicationDAO,
+            storyDAO,
+            featureDAO,
+            i18nDAO,
+            settings = BotSettingsSources(businessRules = businessRulesDAO),
+            indicators = indicatorDAO,
+            interval = Duration.ofHours(1),
+            debounce = Duration.ofMillis(100),
+        )
 
     @BeforeAll
     fun start() {
@@ -124,7 +146,7 @@ class DynamoPublicationTest {
     @AfterEach
     fun cleanup() {
         publication.stop()
-        listOf(applications, bots, stories, features, labels, listeners).forEach { it.clear() }
+        listOf(applications, bots, stories, features, labels, listeners, businessRules, indicators).forEach { it.clear() }
         DynamoStore.client.listTables().tableNames().forEach { table ->
             DynamoStore.client.scanPaginator { it.tableName(table) }.items().forEach { item ->
                 DynamoStore.client.deleteItem { it.tableName(table).key(mapOf(PK to item.getValue(PK), SK to item.getValue(SK))) }
@@ -291,6 +313,53 @@ class DynamoPublicationTest {
     fun `GIVEN the publication disabled WHEN the modules are injected THEN nothing is added`() {
         assertNull(System.getProperty("tock_dynamodb_publication_enabled"))
         assertEquals(emptySet(), DynamoPublicationModulesService().customModules())
+    }
+
+    @Test
+    fun `GIVEN bot settings and indicators in the admin WHEN they are published THEN the runtime reads them, and their deletion follows`() {
+        givenAnAdmin()
+        val rules =
+            ai.tock.bot.admin.bot.businessrules
+                .BotBusinessRulesConfiguration(org.litote.kmongo.newId(), "app", "bot", coveredTopics = listOf("trains"))
+        businessRules += rules
+        val indicator =
+            ai.tock.bot.admin.indicators.Indicator(
+                name = "satisfaction",
+                label = "Satisfaction",
+                namespace = "app",
+                botId = "bot",
+                values =
+                    setOf(
+                        ai.tock.bot.admin.indicators
+                            .IndicatorValue("yes", "Yes"),
+                    ),
+            )
+        indicators += indicator
+
+        publication.publishAll()
+        assertEquals(
+            rules,
+            ai.tock.storage.dynamodb.BotBusinessRulesConfigurationDynamoDAO
+                .findByNamespaceAndBotId("app", "bot"),
+        )
+        assertEquals(
+            indicator,
+            ai.tock.storage.dynamodb.IndicatorDynamoDAO
+                .findByNameAndBotId("satisfaction", "app", "bot"),
+        )
+        assertTrue(publication.publishAll().isEmpty)
+
+        businessRules.clear()
+        indicators.clear()
+        publication.publishAll()
+        assertNull(
+            ai.tock.storage.dynamodb.BotBusinessRulesConfigurationDynamoDAO
+                .findByNamespaceAndBotId("app", "bot"),
+        )
+        assertNull(
+            ai.tock.storage.dynamodb.IndicatorDynamoDAO
+                .findByNameAndBotId("satisfaction", "app", "bot"),
+        )
     }
 
     private fun waitUntil(condition: () -> Boolean) {

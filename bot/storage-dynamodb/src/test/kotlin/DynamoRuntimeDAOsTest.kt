@@ -284,4 +284,94 @@ class DynamoRuntimeDAOsTest {
         PayloadWhatsAppCloudDynamoDAO.save(PayloadWhatsAppCloud(expired, "expired", Date.from(Instant.now().minusSeconds(11L * 24 * 3600))))
         assertNull(PayloadWhatsAppCloudDynamoDAO.getPayloadById(expired))
     }
+
+    // ---------------------------------------------------------------- bot settings, indicators, metrics
+
+    @Test
+    fun `GIVEN a RAG configuration WHEN it is stored THEN the runtime reads its LLM settings and secrets, when it is enabled`() {
+        val botId = "bot_${unique()}"
+        val llm =
+            ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting<ai.tock.shared.security.key.SecretKey>(
+                apiKey =
+                    ai.tock.shared.security.key
+                        .RawSecretKey("apiKey"),
+                model = "model",
+                temperature = "1F",
+                baseUrl = "https://api.openai.com/v1",
+            )
+        val configuration =
+            ai.tock.bot.admin.bot.rag.BotRAGConfiguration(
+                newId(),
+                "app",
+                botId,
+                true,
+                questionCondensingLlmSetting = llm,
+                questionCondensingPrompt =
+                    ai.tock.genai.orchestratorclient.requests
+                        .PromptTemplate(template = "condense"),
+                questionAnsweringLlmSetting = llm,
+                questionAnsweringPrompt =
+                    ai.tock.genai.orchestratorclient.requests
+                        .PromptTemplate(template = "answer"),
+                emSetting =
+                    ai.tock.genai.orchestratorcore.models.em.OpenAIEMSetting<ai.tock.shared.security.key.SecretKey>(
+                        apiKey =
+                            ai.tock.shared.security.key
+                                .RawSecretKey("apiKey"),
+                        model = "embeddings",
+                        baseUrl = "https://api.openai.com/v1",
+                    ),
+            )
+        BotRAGConfigurationDynamoDAO.store.save(configuration)
+
+        assertEquals(configuration, BotRAGConfigurationDynamoDAO.findByNamespaceAndBotIdAndEnabled("app", botId, true))
+        assertNull(BotRAGConfigurationDynamoDAO.findByNamespaceAndBotIdAndEnabled("app", botId, false))
+        assertNull(BotRAGConfigurationDynamoDAO.findByNamespaceAndBotIdAndEnabled("other", botId, true))
+
+        BotRAGConfigurationDynamoDAO.store.delete("app", botId)
+        assertNull(BotRAGConfigurationDynamoDAO.findByNamespaceAndBotIdAndEnabled("app", botId, true))
+    }
+
+    @Test
+    fun `GIVEN indicators and metrics WHEN they are saved THEN the indicators are read back and the metrics are stored`() {
+        val botId = "bot_${unique()}"
+        val indicator =
+            ai.tock.bot.admin.indicators.Indicator(
+                name = "satisfaction",
+                label = "Satisfaction",
+                namespace = "app",
+                botId = botId,
+                values =
+                    setOf(
+                        ai.tock.bot.admin.indicators
+                            .IndicatorValue("yes", "Yes"),
+                    ),
+            )
+        IndicatorDynamoDAO.save(indicator)
+        assertEquals(indicator, IndicatorDynamoDAO.findByNameAndBotId("satisfaction", "app", botId))
+        assertNull(IndicatorDynamoDAO.findByNameAndBotId("satisfaction", "other", botId))
+        assertEquals(listOf(indicator), IndicatorDynamoDAO.findAllByBotId("app", botId))
+
+        val dialogId = newId<ai.tock.bot.engine.dialog.Dialog>()
+        val metrics =
+            (1..30).map {
+                ai.tock.bot.admin.indicators.metric.Metric(
+                    type = ai.tock.bot.admin.indicators.metric.MetricType.STORY_HANDLED,
+                    emitterStoryId = "story$it",
+                    trackedStoryId = "story$it",
+                    playerIds =
+                        setOf(
+                            ai.tock.bot.engine.user
+                                .PlayerId("user"),
+                        ),
+                    dialogId = dialogId,
+                    applicationId = "app",
+                    botId = botId,
+                    namespace = "app",
+                )
+            }
+        MetricDynamoDAO.saveAll(metrics)
+        val stored = DynamoStore.queryPartition(DynamoStore.runtimeTable, "METRIC#$dialogId", consistentRead = true)
+        assertEquals(metrics.toSet(), stored.map { DocumentCodec.decode<ai.tock.bot.admin.indicators.metric.Metric>(it.bytes(DOC)) }.toSet())
+    }
 }

@@ -19,6 +19,9 @@ package ai.tock.storage.dynamodb.replication
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.indicators.Indicator
+import ai.tock.bot.admin.indicators.IndicatorDAO
+import ai.tock.bot.admin.indicators.metric.Metric
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.engine.dialog.Dialog
@@ -83,6 +86,7 @@ internal data class DialogTextDocument(
  * - the configuration created by the runtime (built-in stories, registered features, created labels, bot
  *   configurations created at the installation) is added through the admin DAOs, only if the admin does not have
  *   it: what the admin publishes comes back through the stream and is ignored;
+ * - the metrics are stored as they are, for the analytics of the Studio;
  * - the label statistics are increments: the difference between the new and the old counter is added.
  *
  * The expirations of the DynamoDB TTL are not replicated (MongoDB has its own TTL indexes), nor the deletions of
@@ -94,6 +98,7 @@ internal class MongoReplication(
     private val stories: StoryDefinitionConfigurationDAO,
     private val features: FeatureDAO,
     private val labels: I18nDAO,
+    private val indicators: IndicatorDAO? = null,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -105,6 +110,7 @@ internal class MongoReplication(
     private val nlpStatsCol = database.getCollection<NlpStatsCol>("action_nlp_stats")
     private val snapshotCol = database.getCollection<SnapshotCol>("dialog_snapshot")
     private val archivedEntityValuesCol = database.getCollection<ArchivedEntityValuesCol>("archived_entity_values")
+    private val metricCol = database.getCollection<Metric>("metric")
 
     private fun Map<String, AttributeValue>.str(name: String): String? = get(name)?.s()
 
@@ -132,6 +138,11 @@ internal class MongoReplication(
 
             pk.startsWith("AEV#") && !removed -> {
                 archivedEntityValuesCol.save(image.document<ArchivedEntityValuesCol>())
+            }
+
+            // the analytics of the Studio read the metrics in MongoDB
+            pk.startsWith("METRIC#") && !removed -> {
+                metricCol.save(image.document<Metric>())
             }
 
             pk.startsWith("I18NSTAT#") && !removed -> {
@@ -250,6 +261,13 @@ internal class MongoReplication(
                     if (existing.none { it.category == state.category && it.name == state.name && it.applicationId == state.applicationId }) {
                         features.addFeature(botId, namespace, state.enabled, state.category, state.name, state.startDate, state.endDate, state.applicationId, state.graduation)
                     }
+                }
+            }
+
+            pk.startsWith("IND#") && indicators != null -> {
+                val indicator = image.document<Indicator>()
+                if (indicators.findByNameAndBotId(indicator.name, indicator.namespace, indicator.botId) == null) {
+                    indicators.save(indicator)
                 }
             }
 

@@ -17,6 +17,7 @@
 package ai.tock.storage.dynamodb.replication
 
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.indicators.IndicatorDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.storage.dynamodb.DynamoStore
@@ -43,11 +44,12 @@ class DynamoReplication(
     stories: StoryDefinitionConfigurationDAO,
     features: FeatureDAO,
     labels: I18nDAO,
+    indicators: IndicatorDAO? = null,
     private val interval: Duration = Duration.ofSeconds(5),
 ) {
     private val logger = KotlinLogging.logger {}
 
-    private val replication = MongoReplication(database, applications, stories, features, labels)
+    private val replication = MongoReplication(database, applications, stories, features, labels, indicators)
     private val checkpoints = database.getCollection<StreamCheckpoint>("dynamodb_stream_checkpoint")
 
     private val readers =

@@ -19,6 +19,8 @@ package ai.tock.storage.dynamodb.publication
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.indicators.Indicator
+import ai.tock.bot.admin.indicators.IndicatorDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.engine.feature.FeatureDAO
@@ -26,6 +28,7 @@ import ai.tock.bot.engine.feature.FeatureState
 import ai.tock.storage.dynamodb.BotApplicationConfigurationDynamoDAO
 import ai.tock.storage.dynamodb.FeatureDynamoDAO
 import ai.tock.storage.dynamodb.I18nDynamoDAO
+import ai.tock.storage.dynamodb.IndicatorDynamoDAO
 import ai.tock.storage.dynamodb.StoryDefinitionConfigurationDynamoDAO
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
@@ -41,8 +44,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Publishes the configuration of the admin, read from its DAOs (MongoDB), to the DynamoDB storage of the
- * serverless runtime: the bot application configurations, the bot configurations, the stories, the features
- * and the labels.
+ * serverless runtime: the bot application configurations, the bot configurations, the stories, the features,
+ * the labels, the RAG, vector store, observability, document compressor and business rules configurations, and
+ * the indicators.
  *
  * - a publication compares each item with its DynamoDB version and writes only the changed ones;
  * - it deletes only the items it has published (see [PublicationManifest]): the writes of the runtime are kept;
@@ -57,13 +61,15 @@ class DynamoPublication(
     private val stories: StoryDefinitionConfigurationDAO,
     private val features: FeatureDAO,
     private val labels: I18nDAO,
+    private val settings: BotSettingsSources = BotSettingsSources(),
+    private val indicators: IndicatorDAO? = null,
     private val interval: Duration = Duration.ofMinutes(5),
     private val debounce: Duration = Duration.ofSeconds(1),
 ) {
     private val logger = KotlinLogging.logger {}
 
     /** The kinds of published items, in the order of a publication: the scopes of the next ones come from the first ones. */
-    enum class Kind { APPLICATION, BOT, STORY, FEATURE, LABEL }
+    enum class Kind { APPLICATION, BOT, STORY, FEATURE, LABEL, SETTINGS, INDICATOR }
 
     /** The result of a publication, by kind. */
     data class Report(
@@ -101,6 +107,8 @@ class DynamoPublication(
                     Kind.STORY -> publishStories(counters)
                     Kind.FEATURE -> publishFeatures(counters)
                     Kind.LABEL -> publishLabels(counters)
+                    Kind.SETTINGS -> publishSettings(counters)
+                    Kind.INDICATOR -> publishIndicators(counters)
                 }
             } catch (e: Exception) {
                 logger.error(e) { "the publication of the ${kind.name.lowercase()} items to DynamoDB failed" }
@@ -362,6 +370,55 @@ class DynamoPublication(
             ref = { mapOf("namespace" to it.namespace) },
             write = { label: I18nLabel -> I18nDynamoDAO.publish(label) },
             delete = { key, ref -> I18nDynamoDAO.deleteByNamespaceAndId(ref.getValue("namespace"), key.toId()) },
+        )
+    }
+
+    private data class PublishedSettings(
+        val source: BotSettingsSource<*>,
+        val bot: Bot,
+        val settings: Any,
+    ) {
+        val key: String get() = "${source.kind}#${bot.namespace}#${bot.botId}"
+    }
+
+    private fun publishSettings(counters: Counters) {
+        val bots = bots(Kind.SETTINGS)
+
+        fun read(fromAdmin: Boolean) =
+            settings.all
+                .flatMap { source ->
+                    bots.mapNotNull { bot ->
+                        (if (fromAdmin) source.admin(bot.namespace, bot.botId) else source.runtime(bot.namespace, bot.botId))
+                            ?.let { PublishedSettings(source, bot, it) }
+                    }
+                }.associateBy { it.key }
+        sync(
+            Kind.SETTINGS,
+            counters,
+            source = read(fromAdmin = true),
+            target = read(fromAdmin = false),
+            ref = { mapOf("kind" to it.source.kind, "namespace" to it.bot.namespace, "botId" to it.bot.botId) },
+            write = { it.source.publish(it.settings) },
+            delete = { _, ref -> settings.all.firstOrNull { it.kind == ref["kind"] }?.delete(ref.getValue("namespace"), ref.getValue("botId")) },
+            same = { a, b -> a.settings == b.settings },
+        )
+    }
+
+    private fun Indicator.key() = "$namespace#$botId#$name"
+
+    private fun publishIndicators(counters: Counters) {
+        val dao = indicators ?: return
+        val bots = bots(Kind.INDICATOR)
+        sync(
+            Kind.INDICATOR,
+            counters,
+            source = bots.flatMap { dao.findAllByBotId(it.namespace, it.botId) }.associateBy { it.key() },
+            target = bots.flatMap { IndicatorDynamoDAO.findAllByBotId(it.namespace, it.botId) }.associateBy { it.key() },
+            ref = { mapOf("namespace" to it.namespace, "botId" to it.botId, "name" to it.name) },
+            write = { IndicatorDynamoDAO.save(it) },
+            delete = { _, ref ->
+                IndicatorDynamoDAO.findByNameAndBotId(ref.getValue("name"), ref.getValue("namespace"), ref.getValue("botId"))?.let { IndicatorDynamoDAO.delete(it) }
+            },
         )
     }
 }

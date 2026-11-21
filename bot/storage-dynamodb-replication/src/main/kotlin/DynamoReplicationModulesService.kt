@@ -22,6 +22,7 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.service.BotAdditionalModulesService
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.instanceOrNull
 import mu.KotlinLogging
 import java.time.Duration
 
@@ -49,6 +50,7 @@ class DynamoReplicationModulesService : BotAdditionalModulesService {
                                     stories = instance(),
                                     features = instance(),
                                     labels = instance(),
+                                    indicators = instanceOrNull(),
                                     interval = Duration.ofMillis(longProperty("tock_dynamodb_replication_interval_in_ms", 5000)),
                                 ).also { it.start() }
                         } catch (e: Exception) {

@@ -54,6 +54,11 @@ import software.amazon.awssdk.services.dynamodb.model.WriteRequest
 import software.amazon.awssdk.services.dynamodb.streams.DynamoDbStreamsClient
 import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.JsonNode
+import tools.jackson.databind.PropertyName
+import tools.jackson.databind.cfg.MapperConfig
+import tools.jackson.databind.introspect.Annotated
+import tools.jackson.databind.introspect.AnnotationIntrospectorPair
+import tools.jackson.databind.introspect.NopAnnotationIntrospector
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.kotlin.KotlinModule
 import java.io.ByteArrayOutputStream
@@ -477,6 +482,30 @@ internal fun Map<String, AttributeValue>.long(name: String): Long? = get(name)?.
 internal fun Map<String, AttributeValue>.bytes(name: String): ByteArray = getValue(name).b().asByteArray()
 
 /**
+ * Names `_id` the property `_id`: Jackson 3 does not keep it, KMongo has the same introspector.
+ */
+private object MongoIdIntrospector : NopAnnotationIntrospector() {
+    private val ID = PropertyName.construct("_id")
+
+    private fun isId(a: Annotated): Boolean =
+        when (val member = a.annotated) {
+            is java.lang.reflect.Field -> member.name == "_id"
+            is java.lang.reflect.Method -> member.name == "get_id" || member.name == "set_id"
+            else -> false
+        }
+
+    override fun findNameForSerialization(
+        config: MapperConfig<*>,
+        a: Annotated,
+    ): PropertyName? = if (isId(a)) ID else null
+
+    override fun findNameForDeserialization(
+        config: MapperConfig<*>,
+        a: Annotated,
+    ): PropertyName? = if (isId(a)) ID else null
+}
+
+/**
  * Serializes the storage model (the *Col classes of tock-bot-storage-model) in JSON, then gzip.
  *
  * The (de)serializers are the ones the MongoDB storage uses, generated from the same classes: only the
@@ -489,7 +518,17 @@ object DocumentCodec {
             .registerModulesFromServiceLoader()
             .addModule(KotlinModule.Builder().build())
             .addModule(IdJacksonModule())
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            // the classes without generated (de)serializers keep their _id, as with KMongo
+            .annotationIntrospector(
+                AnnotationIntrospectorPair(
+                    MongoIdIntrospector,
+                    JsonMapper
+                        .builder()
+                        .build()
+                        .serializationConfig()
+                        .annotationIntrospector,
+                ),
+            ).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .build()
 
     fun encode(value: Any): ByteArray = gzip(mapper.writeValueAsBytes(value))

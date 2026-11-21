@@ -17,14 +17,6 @@
 package ai.tock.serverless
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
-import ai.tock.bot.admin.bot.BotApplicationConfigurationRuntimeDAO
-import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfigurationRuntimeDAO
-import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationRuntimeDAO
-import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationRuntimeDAO
-import ai.tock.bot.admin.bot.rag.BotRAGConfigurationRuntimeDAO
-import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationRuntimeDAO
-import ai.tock.bot.admin.indicators.IndicatorRuntimeDAO
-import ai.tock.bot.admin.indicators.metric.MetricRuntimeDAO
 import ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudConnectorType
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.BotProvider
@@ -40,7 +32,6 @@ import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.Snapshot
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserTimeline
-import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.serverless.queue.BackgroundRequestQueue
@@ -111,26 +102,8 @@ class ServerlessWhatsAppBotTest {
 
     private val storage =
         Kodein.Module(allowSilentOverride = true) {
-            // the timelines, the configurations, the stories, the features, the labels, the user lock and the
-            // WhatsApp payloads are stored in DynamoDB (DynamoDB Local)
+            // everything is stored in DynamoDB (DynamoDB Local): only the NLP is mocked
             import(botDynamoModule, allowOverride = true)
-            bind<MetricRuntimeDAO>() with provider { mockk(relaxed = true) }
-            bind<IndicatorRuntimeDAO>() with
-                provider { mockk<IndicatorRuntimeDAO>(relaxed = true).apply { every { findByNameAndBotId(any(), any(), any()) } returns null } }
-            bind<BotRAGConfigurationRuntimeDAO>() with
-                provider { mockk<BotRAGConfigurationRuntimeDAO>(relaxed = true).apply { every { findByNamespaceAndBotIdAndEnabled(any(), any(), any()) } returns null } }
-            bind<BotVectorStoreConfigurationRuntimeDAO>() with
-                provider { mockk<BotVectorStoreConfigurationRuntimeDAO>(relaxed = true).apply { every { findByNamespaceAndBotIdAndEnabled(any(), any(), any()) } returns null } }
-            bind<BotObservabilityConfigurationRuntimeDAO>() with
-                provider { mockk<BotObservabilityConfigurationRuntimeDAO>(relaxed = true).apply { every { findByNamespaceAndBotIdAndEnabled(any(), any(), any()) } returns null } }
-            bind<BotDocumentCompressorConfigurationRuntimeDAO>() with
-                provider {
-                    mockk<BotDocumentCompressorConfigurationRuntimeDAO>(relaxed = true).apply {
-                        every { findByNamespaceAndBotIdAndEnabled(any(), any(), any()) } returns null
-                    }
-                }
-            bind<BotBusinessRulesConfigurationRuntimeDAO>() with
-                provider { mockk<BotBusinessRulesConfigurationRuntimeDAO>(relaxed = true).apply { every { findByNamespaceAndBotId(any(), any()) } returns null } }
             bind<NlpClient>() with
                 provider {
                     mockk<NlpClient>(relaxed = true).apply {

@@ -17,6 +17,13 @@
 package ai.tock.storage.dynamodb
 
 import ai.tock.bot.admin.bot.BotApplicationConfigurationRuntimeDAO
+import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfigurationRuntimeDAO
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationRuntimeDAO
+import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationRuntimeDAO
+import ai.tock.bot.admin.bot.rag.BotRAGConfigurationRuntimeDAO
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationRuntimeDAO
+import ai.tock.bot.admin.indicators.IndicatorRuntimeDAO
+import ai.tock.bot.admin.indicators.metric.MetricRuntimeDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationRuntimeDAO
 import ai.tock.bot.engine.feature.FeatureRuntimeDAO
 import ai.tock.bot.engine.feature.asRuntimeDAO
@@ -51,6 +58,13 @@ val botDynamoModule =
         bind<FeatureRuntimeDAO>() with provider { featureRuntimeDAO }
         bind<I18nRuntimeDAO>() with provider { i18nRuntimeDAO }
         bind<UserLock>() with provider { DynamoUserLock }
+        bind<BotRAGConfigurationRuntimeDAO>() with provider { BotRAGConfigurationDynamoDAO }
+        bind<BotVectorStoreConfigurationRuntimeDAO>() with provider { BotVectorStoreConfigurationDynamoDAO }
+        bind<BotObservabilityConfigurationRuntimeDAO>() with provider { BotObservabilityConfigurationDynamoDAO }
+        bind<BotDocumentCompressorConfigurationRuntimeDAO>() with provider { BotDocumentCompressorConfigurationDynamoDAO }
+        bind<BotBusinessRulesConfigurationRuntimeDAO>() with provider { BotBusinessRulesConfigurationDynamoDAO }
+        bind<IndicatorRuntimeDAO>() with provider { IndicatorDynamoDAO }
+        bind<MetricRuntimeDAO>() with provider { MetricDynamoDAO }
         if (isInClasspath("ai.tock.bot.connector.whatsapp.cloud.database.repository.PayloadWhatsAppCloudDAO")) {
             import(whatsAppCloudDynamoModule, allowOverride = true)
         }
