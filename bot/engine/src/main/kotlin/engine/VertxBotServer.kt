@@ -18,6 +18,8 @@ package ai.tock.bot.engine
 
 import ai.tock.shared.coroutines.CoroutineExecutionScope
 import ai.tock.shared.coroutines.ExecutionScope
+import ai.tock.shared.http.HttpRoutes
+import ai.tock.shared.vertx.http.install
 import ai.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
@@ -45,6 +47,18 @@ internal class VertxBotServer(
                 it.response().end()
             }
             installer(router)
+        }
+
+    override fun registerConnectorRoutes(
+        serviceIdentifier: String,
+        routes: HttpRoutes,
+    ): ServiceRegistration =
+        verticle.registerServices(serviceIdentifier) { router ->
+            // healthcheck
+            router.get("$serviceIdentifier/healthcheck").handler {
+                it.response().end()
+            }
+            router.install(routes, verticle)
         }
 
     override fun unregisterServices(registration: ServiceRegistration) {

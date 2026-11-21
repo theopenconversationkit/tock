@@ -48,10 +48,12 @@ import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.error
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.listProperty
-import ai.tock.shared.security.RequestFilter
+import ai.tock.shared.security.HttpRequestFilter
 import ai.tock.shared.security.sha256Uuid
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
@@ -65,7 +67,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
     private val metaApplicationId: String?,
     private val path: String,
     private val verifyToken: String?,
-    private val requestFilter: RequestFilter,
+    private val requestFilter: HttpRequestFilter,
     client: WhatsAppCloudApiClient,
 ) : ConnectorBase(whatsAppCloudConnectorType) {
     companion object {
@@ -94,73 +96,8 @@ class WhatsAppConnectorCloudConnector internal constructor(
     private val messageQueue = ConnectorQueue(executor)
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path) { router ->
-            logger.info("deploy rest whatsapp connector cloud services for root path $path ")
-
-            router.get(path).handler { context ->
-                try {
-                    val queryParams = context.queryParams()
-                    val modeHub = queryParams.get("hub.mode")
-                    val verifyTokenMeta = queryParams.get("hub.verify_token")
-                    val challenge = queryParams.get("hub.challenge")
-                    if (modeHub == WEBHOOK_SUBSCRIBE_MODE && verifyToken == verifyTokenMeta) {
-                        logger.info { "WhatsApp Cloud API webhook verified for $connectorId" }
-                        context.response().setStatusCode(200).end(challenge)
-                    } else {
-                        context.response().end("Invalid verify token")
-                    }
-                } catch (e: Throwable) {
-                    logger.error(e)
-                    context.fail(500)
-                }
-            }
-
-            router.post(path).handler { context ->
-                if (!requestFilter.accept(context.request())) {
-                    context.response().setStatusCode(403).end()
-                    return@handler
-                }
-                val requestTimerData = BotRepository.requestTimer.start("whatsapp_cloud_webhook")
-                try {
-                    val body = context.body().asString()
-                    val requestBody = mapper.readValue<WebHookEventReceiveMessage>(body)
-
-                    handleWebHook(requestBody, controller)
-                } catch (e: Throwable) {
-                    logger.logError(e, requestTimerData)
-                } finally {
-                    try {
-                        BotRepository.requestTimer.end(requestTimerData)
-                        context.response().end()
-                    } catch (e: Throwable) {
-                        logger.error(e)
-                    }
-                }
-            }
-            router.post("/create_template").handler { context ->
-                if (!requestFilter.accept(context.request())) {
-                    context.response().setStatusCode(403).end()
-                    return@handler
-                }
-                val requestTimerData = BotRepository.requestTimer.start("whatsapp_cloud_create_template")
-                try {
-                    val body = context.body().asString()
-                    logger.debug { "creating template: $body" }
-                    val requestBody = mapper.readValue<WhatsappTemplate>(body)
-
-                    whatsAppCloudApiService.createOrUpdateTemplate(requestBody)
-                } catch (e: Throwable) {
-                    logger.logError(e, requestTimerData)
-                } finally {
-                    try {
-                        BotRepository.requestTimer.end(requestTimerData)
-                        context.response().end()
-                    } catch (e: Throwable) {
-                        logger.error(e)
-                    }
-                }
-            }
-        }
+        logger.info("deploy rest whatsapp connector cloud services for root path $path ")
+        controller.registerRoutes(path, routes(controller))
 
         if (syncTemplates && metaApplicationId != null) {
             executor.executeBlocking {
@@ -175,6 +112,75 @@ class WhatsAppConnectorCloudConnector internal constructor(
             }
         }
     }
+
+    /**
+     * The webhook routes: the verification of the subscription, the messages, and the creation of templates.
+     * They answer as the former Vert.x handlers did: a body without content type, 403 for a refused request,
+     * 500 when the verification fails.
+     */
+    internal fun routes(controller: ConnectorController): HttpRoutes =
+        HttpRoutes {
+            get(path) { request ->
+                try {
+                    val modeHub = request.queryParameter("hub.mode")
+                    val verifyTokenMeta = request.queryParameter("hub.verify_token")
+                    val challenge = request.queryParameter("hub.challenge")
+                    if (modeHub == WEBHOOK_SUBSCRIBE_MODE && verifyToken == verifyTokenMeta) {
+                        logger.info { "WhatsApp Cloud API webhook verified for $connectorId" }
+                        HttpResponse(200, body = checkNotNull(challenge).toByteArray())
+                    } else {
+                        HttpResponse(body = "Invalid verify token".toByteArray())
+                    }
+                } catch (e: Throwable) {
+                    logger.error(e)
+                    HttpResponse.status(500)
+                }
+            }
+
+            post(path) { request ->
+                if (!requestFilter.accept(request)) {
+                    return@post HttpResponse.status(403)
+                }
+                val requestTimerData = BotRepository.requestTimer.start("whatsapp_cloud_webhook")
+                try {
+                    val requestBody = mapper.readValue<WebHookEventReceiveMessage>(request.bodyAsString)
+
+                    handleWebHook(requestBody, controller)
+                } catch (e: Throwable) {
+                    logger.logError(e, requestTimerData)
+                } finally {
+                    try {
+                        BotRepository.requestTimer.end(requestTimerData)
+                    } catch (e: Throwable) {
+                        logger.error(e)
+                    }
+                }
+                HttpResponse.status()
+            }
+
+            post("/create_template") { request ->
+                if (!requestFilter.accept(request)) {
+                    return@post HttpResponse.status(403)
+                }
+                val requestTimerData = BotRepository.requestTimer.start("whatsapp_cloud_create_template")
+                try {
+                    val body = request.bodyAsString
+                    logger.debug { "creating template: $body" }
+                    val requestBody = mapper.readValue<WhatsappTemplate>(body)
+
+                    whatsAppCloudApiService.createOrUpdateTemplate(requestBody)
+                } catch (e: Throwable) {
+                    logger.logError(e, requestTimerData)
+                } finally {
+                    try {
+                        BotRepository.requestTimer.end(requestTimerData)
+                    } catch (e: Throwable) {
+                        logger.error(e)
+                    }
+                }
+                HttpResponse.status()
+            }
+        }
 
     private fun generateAndSyncTemplates(context: TemplateGenerationContext) {
         for (templateName in gatherDeletedTemplates(context)) {

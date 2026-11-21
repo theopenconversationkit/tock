@@ -18,7 +18,9 @@ package ai.tock.bot.connector
 
 import ai.tock.bot.connector.ConnectorTypeConfiguration.Companion.ALLOWED_IPS_FIELD
 import ai.tock.bot.connector.ConnectorTypeConfiguration.Companion.X_AUTH_TOKEN_FIELD
+import ai.tock.shared.security.HttpRequestFilter
 import ai.tock.shared.security.RequestFilter
+import ai.tock.shared.security.createHttpRequestFilter
 import kotlin.reflect.KClass
 
 /**
@@ -76,6 +78,16 @@ interface ConnectorProvider {
      */
     fun createRequestFilter(connectorConfiguration: ConnectorConfiguration): RequestFilter =
         ai.tock.shared.security.createRequestFilter(
+            connectorConfiguration.parameters[ALLOWED_IPS_FIELD]?.split(",")?.toSet(),
+            connectorConfiguration.parameters[X_AUTH_TOKEN_FIELD],
+        )
+
+    /**
+     * Creates an [HttpRequestFilter] from the current configuration: the same rules as [createRequestFilter],
+     * for the connectors that declare [ai.tock.shared.http.HttpRoutes].
+     */
+    fun createHttpRequestFilter(connectorConfiguration: ConnectorConfiguration): HttpRequestFilter =
+        createHttpRequestFilter(
             connectorConfiguration.parameters[ALLOWED_IPS_FIELD]?.split(",")?.toSet(),
             connectorConfiguration.parameters[X_AUTH_TOKEN_FIELD],
         )

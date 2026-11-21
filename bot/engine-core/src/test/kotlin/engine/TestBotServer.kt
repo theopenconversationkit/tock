@@ -18,6 +18,7 @@ package ai.tock.bot.engine
 
 import ai.tock.shared.coroutines.CoroutineExecutionScope
 import ai.tock.shared.coroutines.ExecutionScope
+import ai.tock.shared.http.HttpRoutes
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import kotlinx.coroutines.CoroutineScope
@@ -31,6 +32,7 @@ class TestBotServer(
 ) : BotServer {
     class Registration(
         val serviceIdentifier: String,
+        val routes: HttpRoutes? = null,
     ) : ServiceRegistration
 
     val registrations: MutableList<Registration> = mutableListOf()
@@ -48,6 +50,11 @@ class TestBotServer(
         serviceIdentifier: String,
         installer: CoroutineRouterSupport.(Router) -> Unit,
     ): ServiceRegistration = Registration(serviceIdentifier).also { registrations += it }
+
+    override fun registerConnectorRoutes(
+        serviceIdentifier: String,
+        routes: HttpRoutes,
+    ): ServiceRegistration = Registration(serviceIdentifier, routes).also { registrations += it }
 
     override fun unregisterServices(registration: ServiceRegistration) {
         registrations.remove(registration)

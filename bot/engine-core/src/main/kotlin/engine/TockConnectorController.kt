@@ -40,6 +40,7 @@ import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.error
+import ai.tock.shared.http.HttpRoutes
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
 import ai.tock.shared.longProperty
@@ -315,6 +316,15 @@ internal class TockConnectorController(
     ) {
         server
             .registerConnectorServices(serviceIdentifier, installer)
+            .also { serviceInstallers.add(it) }
+    }
+
+    override fun registerRoutes(
+        serviceIdentifier: String,
+        routes: HttpRoutes,
+    ) {
+        server
+            .registerConnectorRoutes(serviceIdentifier, routes)
             .also { serviceInstallers.add(it) }
     }
 

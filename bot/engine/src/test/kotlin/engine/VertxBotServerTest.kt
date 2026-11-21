@@ -16,15 +16,21 @@
 
 package ai.tock.bot.engine
 
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
 import io.mockk.every
 import io.mockk.invoke
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import io.vertx.core.Vertx
+import io.vertx.core.http.HttpMethod.GET
+import io.vertx.core.http.HttpMethod.POST
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 /**
  *
@@ -54,5 +60,32 @@ class VertxBotServerTest {
 
         verify { router.get("/path/healthcheck") }
         verify { installer.invoke(routerSupport, router) }
+    }
+
+    @Test
+    fun `GIVEN server independent routes WHEN they are registered THEN the healthcheck and the routes are mounted on the router`() {
+        val botVerticle: BotVerticle = mockk()
+        val capturedInstaller = slot<CoroutineRouterSupport.(Router) -> Any?>()
+        every { botVerticle.registerServices(any(), capture(capturedInstaller)) } returns mockk()
+        val routes =
+            HttpRoutes {
+                post("/path") { HttpResponse.status() }
+                get("/path/:id") { HttpResponse.status() }
+            }
+
+        VertxBotServer(botVerticle).registerConnectorRoutes("/path", routes)
+
+        val vertx = Vertx.vertx()
+        try {
+            val router = Router.router(vertx)
+            capturedInstaller.captured.invoke(mockk(), router)
+
+            assertEquals(
+                listOf("/path/healthcheck" to setOf(GET), "/path" to setOf(POST), "/path/:id" to setOf(GET)),
+                router.routes.map { (it.path ?: it.toString()) to it.methods() },
+            )
+        } finally {
+            vertx.close()
+        }
     }
 }

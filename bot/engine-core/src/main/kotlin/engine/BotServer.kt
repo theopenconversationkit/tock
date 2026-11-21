@@ -18,6 +18,7 @@ package ai.tock.bot.engine
 
 import ai.tock.shared.InternalTockApi
 import ai.tock.shared.coroutines.ExecutionScope
+import ai.tock.shared.http.HttpRoutes
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import java.util.ServiceLoader
@@ -50,6 +51,14 @@ interface BotServer {
     fun registerConnectorServices(
         serviceIdentifier: String,
         installer: CoroutineRouterSupport.(Router) -> Unit,
+    ): ServiceRegistration
+
+    /**
+     * Registers the server independent routes of a connector, with a `<serviceIdentifier>/healthcheck` route.
+     */
+    fun registerConnectorRoutes(
+        serviceIdentifier: String,
+        routes: HttpRoutes,
     ): ServiceRegistration
 
     /**

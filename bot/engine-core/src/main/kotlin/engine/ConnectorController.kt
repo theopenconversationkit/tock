@@ -30,6 +30,7 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
+import ai.tock.shared.http.HttpRoutes
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 
@@ -127,6 +128,15 @@ interface ConnectorController {
         serviceIdentifier: String,
         installer: CoroutineRouterSupport.(Router) -> Unit,
     )
+
+    /**
+     * Registers routes declared independently of the server: unlike [registerServices], they also run where
+     * there is no Vert.x router (a serverless function). A `<serviceIdentifier>/healthcheck` route is added.
+     */
+    fun registerRoutes(
+        serviceIdentifier: String,
+        routes: HttpRoutes,
+    ): Unit = throw UnsupportedOperationException("${javaClass.name} does not support HttpRoutes")
 
     /**
      * Unregister services when [Connector] is unregistered.
