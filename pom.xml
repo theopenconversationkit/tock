@@ -84,6 +84,7 @@
         <module>nlp</module>
         <module>bot</module>
         <module>gen-ai</module>
+        <module>serverless-runtime</module>
     </modules>
 
     <dependencies>

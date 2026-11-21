@@ -34,6 +34,7 @@ import ai.tock.shared.booleanProperty
 import ai.tock.shared.create
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
+import ai.tock.shared.property
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
@@ -57,9 +58,10 @@ import retrofit2.http.Streaming
 import retrofit2.http.Url
 import java.io.IOException
 
-private const val WHATSAPP_API_BASE_URL = "https://graph.facebook.com"
+// configurable to reach a test double of the Graph API
+private val WHATSAPP_API_BASE_URL = property("tock_whatsappcloud_api_base_url", "https://graph.facebook.com")
 private const val VERSION = "22.0"
-private const val WHATSAPP_API_URL = "$WHATSAPP_API_BASE_URL/v$VERSION"
+private val WHATSAPP_API_URL = "$WHATSAPP_API_BASE_URL/v$VERSION"
 
 class WhatsAppCloudApiClient(
     private val token: String,
