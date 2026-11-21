@@ -34,6 +34,18 @@
             <artifactId>tock-bot-storage-model</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- the Jackson 3 module of the engine (subtypes of the answers and of the messages), loaded by DocumentCodec -->
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-engine-jackson</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ai.tock</groupId>
+                    <artifactId>tock-bot-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>dynamodb</artifactId>
@@ -51,6 +63,21 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>url-connection-client</artifactId>
+        </dependency>
+
+        <!-- the DAOs of the connectors, bound only when the connector is in the classpath -->
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-whatsapp-cloud</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+            <!-- only its DAO interface and model: the connector brings its own dependencies -->
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- the public signatures of tock-bot-engine-core that expose Vert.x types -->

@@ -30,19 +30,24 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.BatchWriteItemRequest
 import software.amazon.awssdk.services.dynamodb.model.BillingMode
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException
 import software.amazon.awssdk.services.dynamodb.model.ConsumedCapacity
+import software.amazon.awssdk.services.dynamodb.model.Delete
 import software.amazon.awssdk.services.dynamodb.model.DeleteRequest
 import software.amazon.awssdk.services.dynamodb.model.GlobalSecondaryIndex
 import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement
 import software.amazon.awssdk.services.dynamodb.model.KeyType
 import software.amazon.awssdk.services.dynamodb.model.Projection
 import software.amazon.awssdk.services.dynamodb.model.ProjectionType
+import software.amazon.awssdk.services.dynamodb.model.Put
 import software.amazon.awssdk.services.dynamodb.model.PutRequest
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException
 import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType
 import software.amazon.awssdk.services.dynamodb.model.TimeToLiveSpecification
+import software.amazon.awssdk.services.dynamodb.model.TransactWriteItem
+import software.amazon.awssdk.services.dynamodb.model.TransactionCanceledException
 import software.amazon.awssdk.services.dynamodb.model.WriteRequest
 import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.JsonNode
@@ -300,6 +305,75 @@ object DynamoStore {
             .deleteItem { it.tableName(table).key(key(pk, sk)).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL) }
             .also { recordWrite(it.consumedCapacity()) }
     }
+
+    /** Puts [item] only if no item has its key: false if one exists. */
+    internal fun putIfAbsent(
+        table: String,
+        item: Map<String, AttributeValue>,
+    ): Boolean =
+        try {
+            client
+                .putItem {
+                    it
+                        .tableName(table)
+                        .item(item)
+                        .conditionExpression("attribute_not_exists(#pk)")
+                        .expressionAttributeNames(mapOf("#pk" to PK))
+                        .returnConsumedCapacity(ReturnConsumedCapacity.TOTAL)
+                }.also { recordWrite(it.consumedCapacity()) }
+            true
+        } catch (_: ConditionalCheckFailedException) {
+            false
+        }
+
+    /** Writes [items] in one transaction (100 items at most): false if a condition failed. */
+    internal fun transactWrite(items: List<TransactWriteItem>): Boolean =
+        try {
+            client
+                .transactWriteItems { it.transactItems(items).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL) }
+                .also { recordWrite(it.consumedCapacity()) }
+            true
+        } catch (e: TransactionCanceledException) {
+            if (e.cancellationReasons().none { it.code() == "ConditionalCheckFailed" }) throw e
+            false
+        }
+
+    internal fun transactPut(
+        table: String,
+        item: Map<String, AttributeValue>,
+        condition: String? = null,
+        names: Map<String, String> = emptyMap(),
+        values: Map<String, AttributeValue> = emptyMap(),
+    ): TransactWriteItem =
+        TransactWriteItem
+            .builder()
+            .put(
+                Put
+                    .builder()
+                    .tableName(table)
+                    .item(item)
+                    .apply {
+                        if (condition != null) {
+                            conditionExpression(condition)
+                            if (names.isNotEmpty()) expressionAttributeNames(names)
+                            if (values.isNotEmpty()) expressionAttributeValues(values)
+                        }
+                    }.build(),
+            ).build()
+
+    internal fun transactDelete(
+        table: String,
+        key: Map<String, AttributeValue>,
+    ): TransactWriteItem =
+        TransactWriteItem
+            .builder()
+            .delete(
+                Delete
+                    .builder()
+                    .tableName(table)
+                    .key(key)
+                    .build(),
+            ).build()
 
     /** Batch writes (25 items per request), retrying the unprocessed items. */
     internal fun batchWrite(
