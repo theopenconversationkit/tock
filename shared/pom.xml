@@ -44,6 +44,9 @@
                             <goal>compile</goal>
                         </goals>
                         <configuration>
+                            <args>
+                                <arg>-opt-in=ai.tock.shared.InternalTockApi</arg>
+                            </args>
                             <compilerPlugins>
                                 <plugin>kotlinx-serialization</plugin>
                             </compilerPlugins>
@@ -56,6 +59,9 @@
                             <goal>test-compile</goal>
                         </goals>
                         <configuration>
+                            <args>
+                                <arg>-opt-in=ai.tock.shared.InternalTockApi</arg>
+                            </args>
                             <compilerPlugins>
                                 <plugin>kotlinx-serialization</plugin>
                             </compilerPlugins>
@@ -105,6 +111,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-shared-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
             <artifactId>vertx-pac4j</artifactId>

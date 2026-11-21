@@ -16,12 +16,14 @@
 
 package ai.tock.shared.cache
 
+import ai.tock.shared.InternalTockApi
 import org.litote.kmongo.Id
 
 /**
- *
+ * Cache used by tock: public only so that tock-shared can implement it.
  */
-internal interface TockCache {
+@InternalTockApi
+interface TockCache {
     fun <T> get(
         id: Id<T>,
         type: String,

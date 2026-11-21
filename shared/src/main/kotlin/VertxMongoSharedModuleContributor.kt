@@ -31,10 +31,8 @@ import ai.tock.shared.vertx.WebSecurityEncryptedCookiesHandler
 import ai.tock.shared.vertx.WebSecurityPassthroughHandler
 import ai.tock.shared.vertx.vertxExecutor
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import com.github.salomonbrys.kodein.providerOrNull
 import com.github.salomonbrys.kodein.singleton
 import com.mongodb.kotlin.client.MongoClient
 import mu.KotlinLogging
@@ -42,40 +40,11 @@ import mu.KotlinLogging
 private val logger = KotlinLogging.logger {}
 
 /**
- * Internal injector - reset only for tests.
+ * The Vert.x and MongoDB bindings of [sharedModule].
+ * The module opts in to [InternalTockApi] with a compiler argument: kapt stubs do not resolve the annotation.
  */
-var tockInternalInjector = KodeinInjector()
-
-/**
- * Main Tock injector.
- */
-val injector: KodeinInjector get() = tockInternalInjector
-
-/**
- * Extension function for Ioc. Pattern:
- * <code>val core: NlpCore get() = injector.provide()</code>
- */
-inline fun <reified T : Any> KodeinInjector.provide(tag: Any? = null): T = injector.provider<T>(tag).value.invoke()
-
-/**
- * Extension function for Ioc. Pattern:
- * <code>val core: NlpCore get() = injector.provideOrDefault() { ... }</code>
- */
-inline fun <reified T : Any> KodeinInjector.provideOrDefault(
-    tag: Any? = null,
-    defaultValueProvider: () -> T,
-): T =
-    try {
-        injector.providerOrNull<T>(tag).value?.invoke() ?: defaultValueProvider.invoke()
-    } catch (_: KodeinInjector.UninjectedException) {
-        defaultValueProvider.invoke()
-    }
-
-/**
- * IOC of shared module.
- */
-val sharedModule =
-    Kodein.Module {
+internal class VertxMongoSharedModuleContributor : SharedModuleContributor {
+    override fun Kodein.Builder.contribute() {
         bind<Executor>() with provider { vertxExecutor() }
         bind<TockCache>() with provider { MongoCache }
         bind<VertxProvider>() with provider { TockVertxProvider }
@@ -97,3 +66,4 @@ val sharedModule =
             logger.warn { e.message }
         }
     }
+}

@@ -16,6 +16,7 @@
 
 package ai.tock.shared.security.auth
 
+import ai.tock.shared.InternalTockApi
 import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.create
 import ai.tock.shared.longProperty
@@ -26,9 +27,10 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 
 /**
- *
+ * Github API client: public only so that tock-shared can use it.
  */
-internal object RetrofitGithubClient {
+@InternalTockApi
+object RetrofitGithubClient {
     data class GithubUser(
         val login: String,
     )
