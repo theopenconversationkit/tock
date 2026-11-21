@@ -35,6 +35,7 @@ import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
@@ -127,7 +128,7 @@ internal class TockConnectorController(
 
     private val executor: Executor by injector.instance()
     private val userLock: UserLock by injector.instance()
-    private val userTimelineDAO: UserTimelineDAO by injector.instance()
+    private val userTimelineDAO: UserTimelineRuntimeDAO by lazy { UserTimelineRuntimeDAO.fromInjector() }
 
     private val serviceInstallers: MutableList<ServiceRegistration> = CopyOnWriteArrayList()
 

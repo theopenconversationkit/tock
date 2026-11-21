@@ -17,6 +17,7 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
+import ai.tock.bot.admin.bot.rag.BotRAGConfigurationRuntimeDAO
 import ai.tock.bot.engine.Bot
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
@@ -29,7 +30,7 @@ import java.util.concurrent.CopyOnWriteArraySet
 internal object BotRAGConfigurationMonitor {
     private val logger = KotlinLogging.logger {}
 
-    private val ragConfigurationDAO: BotRAGConfigurationDAO by injector.instance()
+    private val ragConfigurationDAO: BotRAGConfigurationRuntimeDAO by lazy { BotRAGConfigurationRuntimeDAO.fromInjector() }
     private val botsToMonitor: MutableSet<Bot> = CopyOnWriteArraySet()
 
     init {

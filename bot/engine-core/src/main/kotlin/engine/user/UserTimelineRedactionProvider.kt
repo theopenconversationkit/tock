@@ -22,7 +22,7 @@ import ai.tock.shared.service.RedactionResult
 import ai.tock.shared.service.UserDataRedactionProvider
 
 class UserTimelineRedactionProvider : UserDataRedactionProvider {
-    private val userTimelineDAO: UserTimelineDAO get() = injector.provide()
+    private val userTimelineDAO: UserTimelineRuntimeDAO get() = UserTimelineRuntimeDAO.fromInjector()
 
     override val name: String = "user_timeline"
 

@@ -23,6 +23,7 @@ import ai.tock.bot.engine.config.ProactiveConversationStatus.CLOSED
 import ai.tock.bot.engine.config.ProactiveConversationStatus.LUNCHED
 import ai.tock.bot.engine.config.ProactiveConversationStatus.STARTED
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
@@ -31,7 +32,7 @@ import mu.KotlinLogging
 
 private const val PROACTIVE_CONVERSATION_STATUS: String = "PROACTIVE_CONVERSATION_STATUS"
 private val executor: Executor by injector.instance()
-private val userTimelineDAO: UserTimelineDAO by injector.instance()
+private val userTimelineDAO: UserTimelineRuntimeDAO by lazy { UserTimelineRuntimeDAO.fromInjector() }
 private val logger = KotlinLogging.logger {}
 
 interface AbstractProactiveAnswerHandler {

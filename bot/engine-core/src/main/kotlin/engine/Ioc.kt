@@ -15,6 +15,9 @@
  */
 package ai.tock.bot.engine
 
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationRuntimeDAO
+import ai.tock.bot.admin.story.asRuntimeDAO
 import ai.tock.bot.definition.ConnectorHandlerProvider
 import ai.tock.bot.definition.DefaultConnectorHandlerProvider
 import ai.tock.bot.engine.config.StoryConfigurationMonitor
@@ -43,6 +46,7 @@ import ai.tock.nlp.api.client.TockNlpClient
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.instanceOrNull
 import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
 
@@ -63,5 +67,11 @@ val botModule =
         bind<KnowledgeBaseIndexingService>() with singleton { KnowledgeBaseIndexingServiceImpl() }
         bind<VectorStoreInspectionService>() with singleton { VectorStoreInspectionServiceImpl() }
         bind<DocumentCompressorProviderService>() with singleton { DocumentCompressorProviderServiceImpl() }
-        bind<StoryConfigurationMonitor>() with singleton { StoryConfigurationMonitor(instance()) }
+        bind<StoryConfigurationMonitor>() with
+            singleton {
+                StoryConfigurationMonitor(
+                    instanceOrNull<StoryDefinitionConfigurationRuntimeDAO>()
+                        ?: instance<StoryDefinitionConfigurationDAO>().asRuntimeDAO(),
+                )
+            }
     }

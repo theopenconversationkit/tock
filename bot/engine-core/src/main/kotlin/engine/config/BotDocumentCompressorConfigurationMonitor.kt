@@ -17,6 +17,7 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationRuntimeDAO
 import ai.tock.bot.engine.Bot
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
@@ -29,7 +30,7 @@ import java.util.concurrent.CopyOnWriteArraySet
 internal object BotDocumentCompressorConfigurationMonitor {
     private val logger = KotlinLogging.logger {}
 
-    private val documentCompressorConfigurationDAO: BotDocumentCompressorConfigurationDAO by injector.instance()
+    private val documentCompressorConfigurationDAO: BotDocumentCompressorConfigurationRuntimeDAO by lazy { BotDocumentCompressorConfigurationRuntimeDAO.fromInjector() }
     private val botsToMonitor: MutableSet<Bot> = CopyOnWriteArraySet()
 
     init {

@@ -44,6 +44,7 @@ import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import ai.tock.shared.injector
@@ -64,7 +65,7 @@ internal class ConfiguredStoryHandler(
         private const val VIEWED_STORIES_BUS_KEY = "_viewed_stories_tock_switch"
     }
 
-    private val userTimelineDAO: UserTimelineDAO by injector.instance()
+    private val userTimelineDAO: UserTimelineRuntimeDAO by lazy { UserTimelineRuntimeDAO.fromInjector() }
 
     override fun handle(bus: BotBus) {
         configurationStoryHandler?.handle(bus)

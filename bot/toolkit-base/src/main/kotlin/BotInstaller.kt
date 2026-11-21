@@ -29,6 +29,7 @@ import ai.tock.shared.resource
 import ai.tock.shared.resourceAsStream
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
+import ai.tock.translator.I18nRuntimeDAO
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
@@ -151,7 +152,7 @@ fun importI18nDump(
     path: String,
     replaceAllLabels: Boolean = false,
 ) {
-    val i18n: I18nDAO by injector.instance()
+    val i18n: I18nRuntimeDAO by lazy { I18nRuntimeDAO.fromInjector() }
     val labels: List<I18nLabel> = mapper.readValue(resource(path))
 
     if (replaceAllLabels) {

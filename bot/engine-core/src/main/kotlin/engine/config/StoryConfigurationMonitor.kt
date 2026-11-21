@@ -17,6 +17,7 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationRuntimeDAO
 import ai.tock.bot.engine.Bot
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArraySet
@@ -25,7 +26,7 @@ import java.util.concurrent.CopyOnWriteArraySet
  *
  */
 internal class StoryConfigurationMonitor(
-    private val storyDAO: StoryDefinitionConfigurationDAO,
+    private val storyDAO: StoryDefinitionConfigurationRuntimeDAO,
 ) {
     private val logger = KotlinLogging.logger {}
 

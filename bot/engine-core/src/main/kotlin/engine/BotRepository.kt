@@ -19,13 +19,17 @@ package ai.tock.bot.engine
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
+import ai.tock.bot.admin.bot.BotApplicationConfigurationRuntimeDAO
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.indicators.Indicator
 import ai.tock.bot.admin.indicators.IndicatorDAO
+import ai.tock.bot.admin.indicators.IndicatorRuntimeDAO
 import ai.tock.bot.admin.indicators.metric.Metric
 import ai.tock.bot.admin.indicators.metric.MetricDAO
+import ai.tock.bot.admin.indicators.metric.MetricRuntimeDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationRuntimeDAO
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.connector.ConnectorProvider
@@ -57,6 +61,7 @@ import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.bot.engine.nlp.NlpListener
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.shared.Executor
 import ai.tock.shared.InternalTockApi
@@ -91,10 +96,10 @@ object BotRepository {
 
     // load only specified configuration ids (dev mode)
     private val restrictedConfigurationIds: List<String> = listProperty("tock_restricted_configuration_id", emptyList())
-    private val statsMetricDAO: MetricDAO get() = injector.provide()
-    private val indicatorDAO: IndicatorDAO get() = injector.provide()
-    private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
-    private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
+    private val statsMetricDAO: MetricRuntimeDAO get() = MetricRuntimeDAO.fromInjector()
+    private val indicatorDAO: IndicatorRuntimeDAO get() = IndicatorRuntimeDAO.fromInjector()
+    private val botConfigurationDAO: BotApplicationConfigurationRuntimeDAO get() = BotApplicationConfigurationRuntimeDAO.fromInjector()
+    private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationRuntimeDAO get() = StoryDefinitionConfigurationRuntimeDAO.fromInjector()
     private val storyConfigurationMonitor: StoryConfigurationMonitor get() = injector.provide()
     internal val botProviders: MutableMap<BotProviderId, BotProvider> = ConcurrentHashMap()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = CopyOnWriteArrayList()
@@ -102,7 +107,7 @@ object BotRepository {
     internal val nlpClient: NlpClient get() = injector.provide()
     private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()
-    private val userTimelineDAO: UserTimelineDAO get() = injector.provide()
+    private val userTimelineDAO: UserTimelineRuntimeDAO get() = UserTimelineRuntimeDAO.fromInjector()
     internal val botAnswerInterceptors: MutableList<BotAnswerInterceptor> = CopyOnWriteArrayList()
     private val connectorServices: MutableSet<ConnectorService> =
         CopyOnWriteArraySet(ServiceLoader.load(ConnectorService::class.java).toList())

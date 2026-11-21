@@ -29,6 +29,7 @@ import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.feature.FeatureDAO
+import ai.tock.bot.engine.feature.FeatureRuntimeDAO
 import ai.tock.bot.engine.feature.FeatureType
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.bot.engine.message.MessagesList.Companion.toMessageList
@@ -66,7 +67,7 @@ open class AsyncBotBus(
     val botBus get() = syncBus
 
     private val executor: Executor get() = injector.provide()
-    private val featureDao: FeatureDAO get() = injector.provide()
+    private val featureDao: FeatureRuntimeDAO get() = FeatureRuntimeDAO.fromInjector()
 
     override val connectorId: String
         get() = syncBus.connectorId

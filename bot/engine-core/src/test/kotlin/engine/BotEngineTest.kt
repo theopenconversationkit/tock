@@ -24,6 +24,7 @@ import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.asRuntimeDAO
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorConfiguration
@@ -92,7 +93,7 @@ abstract class BotEngineTest {
     val botObservabilityConfigurationDAO: BotObservabilityConfigurationDAO = mockk(relaxed = true)
     val botDocumentCompressorConfigurationDAO: BotDocumentCompressorConfigurationDAO = mockk(relaxed = true)
     val botBusinessRulesConfigurationDAO: BotBusinessRulesConfigurationDAO = mockk(relaxed = true)
-    internal val storyConfigurationMonitor: StoryConfigurationMonitor = spyk(StoryConfigurationMonitor(storyDefinitionConfigurationDAO))
+    internal val storyConfigurationMonitor: StoryConfigurationMonitor = spyk(StoryConfigurationMonitor(storyDefinitionConfigurationDAO.asRuntimeDAO()))
 
     val entityA = Entity(EntityType("a"), "a")
     val entityAValue = NlpEntityValue(0, 1, entityA, null, false)

@@ -19,6 +19,7 @@ package ai.tock.bot.engine.config
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.asRuntimeDAO
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.SimpleBotDefinition
@@ -37,7 +38,7 @@ class StoryConfigurationMonitorTest {
         val storyId = "test-story"
         val unregisteredStoryId = "unregistered-builtin-story"
         val dao: StoryDefinitionConfigurationDAO = mockk(relaxed = true)
-        val monitor = StoryConfigurationMonitor(dao)
+        val monitor = StoryConfigurationMonitor(dao.asRuntimeDAO())
         val botApplication =
             BotApplicationConfiguration(
                 applicationId = "test-app",

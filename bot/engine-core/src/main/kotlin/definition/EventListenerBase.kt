@@ -28,6 +28,7 @@ import ai.tock.bot.engine.event.PassThreadControlEvent
 import ai.tock.bot.engine.event.StartConversationEvent
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
 import kotlinx.coroutines.runBlocking
@@ -94,7 +95,7 @@ open class EventListenerBase : EventListener {
         event: FeedbackEvent,
     ): Boolean {
         with(controller.botDefinition) {
-            val userTimelineDAO: UserTimelineDAO by injector.instance()
+            val userTimelineDAO: UserTimelineRuntimeDAO by lazy { UserTimelineRuntimeDAO.fromInjector() }
             runBlocking {
                 val timeline =
                     userTimelineDAO.loadWithLastValidDialog(
@@ -127,7 +128,7 @@ open class EventListenerBase : EventListener {
         event: PassThreadControlEvent,
     ): Boolean {
         with(controller.botDefinition) {
-            val userTimelineDAO: UserTimelineDAO by injector.instance()
+            val userTimelineDAO: UserTimelineRuntimeDAO by lazy { UserTimelineRuntimeDAO.fromInjector() }
             runBlocking {
                 val timeline = userTimelineDAO.loadWithoutDialogs(namespace, event.userId)
                 timeline.userState.botDisabled = false

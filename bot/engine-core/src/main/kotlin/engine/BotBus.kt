@@ -47,6 +47,7 @@ import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.feature.FeatureDAO
+import ai.tock.bot.engine.feature.FeatureRuntimeDAO
 import ai.tock.bot.engine.feature.FeatureType
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.MessagesList
@@ -624,8 +625,8 @@ interface BotBus :
         feature: FeatureType,
         default: Boolean = false,
     ) = runBlocking {
-        injector
-            .provide<FeatureDAO>()
+        FeatureRuntimeDAO
+            .fromInjector()
             .isEnabled(botDefinition.botId, botDefinition.namespace, feature, connectorId, default, userId.id)
     }
 

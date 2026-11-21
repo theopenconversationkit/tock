@@ -19,6 +19,7 @@ package ai.tock.bot.engine.dialog
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import kotlinx.coroutines.runBlocking
@@ -107,7 +108,7 @@ data class Dialog(
     /**
      * The [Snapshots] of the dialog.
      */
-    val snapshots: List<Snapshot> by lazy { runBlocking { injector.provide<UserTimelineDAO>().getSnapshots(id) } }
+    val snapshots: List<Snapshot> by lazy { runBlocking { UserTimelineRuntimeDAO.fromInjector().getSnapshots(id) } }
 
     /**
      * Current number of actions in dialog history.

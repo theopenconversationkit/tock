@@ -18,6 +18,7 @@ package ai.tock.bot.engine.dialog
 
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.entity.Value
 import ai.tock.shared.injector
@@ -90,7 +91,7 @@ data class EntityStateValue(
             loaded = true
             val old =
                 stateValueId?.let {
-                    runBlocking { injector.provide<UserTimelineDAO>().getArchivedEntityValues(stateValueId, oldActionsMap) }
+                    runBlocking { UserTimelineRuntimeDAO.fromInjector().getArchivedEntityValues(stateValueId, oldActionsMap) }
                 }
                     ?: emptyList()
             currentHistory.addAll(0, old)

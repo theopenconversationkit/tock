@@ -18,6 +18,7 @@ package ai.tock.bot.api.service
 
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationRuntimeDAO
 import ai.tock.bot.api.model.BotResponse
 import ai.tock.bot.api.model.UserRequest
 import ai.tock.bot.api.model.configuration.ClientConfiguration
@@ -51,6 +52,7 @@ import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.api.client.model.EntityType
 import ai.tock.shared.injector
@@ -70,8 +72,8 @@ internal class BotApiHandler(
         private const val VIEWED_STORIES_BUS_KEY = "_viewed_stories_tock_switch"
     }
 
-    private val storyDAO: StoryDefinitionConfigurationDAO by injector.instance()
-    private val userTimelineDAO: UserTimelineDAO by injector.instance()
+    private val storyDAO: StoryDefinitionConfigurationRuntimeDAO by lazy { StoryDefinitionConfigurationRuntimeDAO.fromInjector() }
+    private val userTimelineDAO: UserTimelineRuntimeDAO by lazy { UserTimelineRuntimeDAO.fromInjector() }
 
     fun configuration(handler: (ClientConfiguration?) -> Unit): Unit = clientController.configuration(handler)
 
