@@ -68,7 +68,7 @@ def build(tree: Path):
     """Packages every module and writes its runtime dependencies to target/api-compat-deps.txt."""
     run(
         [
-            "mvn", "-B", "-ntp", "-q", "package", "dependency:list",
+            "mvn", "-B", "-ntp", "-q", "clean", "package", "dependency:list",
             "-DskipTests", "-Dskip.npm", "-Dexec.skip",
             "-DincludeScope=runtime", "-DoutputAbsoluteArtifactFilename=true",
             f"-DoutputFile={DEPS_FILE}", "-DappendOutput=false",
@@ -168,11 +168,39 @@ def internal_api(class_name, jars):
     return False
 
 
-def incompatibilities(xml_report: Path, new_jars):
+KOTLIN_PACKAGE = re.compile(r"^package\s+([\w.]+)", re.M)
+KOTLIN_INTERNAL_CLASS = re.compile(
+    r"^\s*internal\s+(?:(?:data|abstract|open|sealed|enum|inner|value|annotation|fun)\s+)*"
+    r"(?:class|object|interface)\s+(\w+)",
+    re.M,
+)
+
+
+def kotlin_internal_classes(tree: Path):
+    """The (package, simple name) of the classes, objects and interfaces declared internal in the Kotlin sources."""
+    found = set()
+    for source in tree.rglob("*.kt"):
+        if IGNORED_DIRS.intersection(source.relative_to(tree).parts):
+            continue
+        text = source.read_text(errors="replace")
+        package = KOTLIN_PACKAGE.search(text)
+        for name in KOTLIN_INTERNAL_CLASS.findall(text):
+            found.add((package.group(1) if package else "", name))
+    return found
+
+
+def is_kotlin_internal(class_name, internal_classes):
+    """True when the class, or one of its enclosing classes, is internal: no project can use it."""
+    package, _, simple = class_name.rpartition(".")
+    return any((package, name) in internal_classes for name in simple.split("$"))
+
+
+def incompatibilities(xml_report: Path, new_jars, internal_classes=frozenset()):
     """
     Reads the japicmp XML report and returns the binary incompatibilities that matter for a project.
 
-    japicmp does not know the Kotlin visibilities, hence the two filters:
+    japicmp does not know the Kotlin visibilities, hence the filters:
+    - a class declared internal in the baseline sources (or nested in one) can not be used by a project;
     - a member whose JVM name contains $ is internal (name mangled with the module name, which changes
       when the declaration moves to another module) or synthetic;
     - a class reported as removed while it is still in the new jars, annotated with @InternalTockApi, or a
@@ -185,6 +213,8 @@ def incompatibilities(xml_report: Path, new_jars):
         if c.get("binaryCompatible") != "false":
             continue
         name = c.get("fullyQualifiedName")
+        if is_kotlin_internal(name, internal_classes):
+            continue
         if c.get("changeStatus") == "REMOVED" and name in new_classes and internal_api(name, new_jars):
             continue
         for element in c.iter():
@@ -211,7 +241,7 @@ def incompatibilities(xml_report: Path, new_jars):
     return sorted(set(found))
 
 
-def check_api(old, new, report_dir: Path):
+def check_api(old, new, report_dir: Path, baseline_tree: Path):
     old_jars, old_deps = old
     new_jars, new_deps = new
     report_dir.mkdir(parents=True, exist_ok=True)
@@ -232,7 +262,7 @@ def check_api(old, new, report_dir: Path):
     if result.returncode != 0:
         print(result.stderr[-5000:], file=sys.stderr)
         raise SystemExit(f"japicmp failed with exit code {result.returncode}")
-    found = incompatibilities(xml_report, list(new_jars.values()))
+    found = incompatibilities(xml_report, list(new_jars.values()), kotlin_internal_classes(baseline_tree))
     if found:
         print(f"Binary API: {len(found)} incompatible changes (report: {report_dir / 'api-compat.html'})")
         for f in found:
@@ -240,6 +270,32 @@ def check_api(old, new, report_dir: Path):
         return False
     print("Binary API: no incompatible change")
     return True
+
+
+def duplicate_classes(jars):
+    """The classes found in more than one jar, with their artifacts."""
+    owners = {}
+    for artifact_id, jar in jars.items():
+        for name in jar_classes([jar]):
+            if "module-info" not in name:
+                owners.setdefault(name, []).append(artifact_id)
+    return {name: sorted(artifacts) for name, artifacts in owners.items() if len(artifacts) > 1}
+
+
+def check_duplicates(old, new):
+    """
+    A class in two published jars: a move between modules left a copy behind (stale target/classes...).
+    Only the duplicates that the baseline did not have fail the check.
+    """
+    already = duplicate_classes(old[0])
+    added = {name: jars for name, jars in duplicate_classes(new[0]).items() if name not in already}
+    for name, jars in sorted(already.items()):
+        print(f"Duplicate class (already in the baseline): {name} in {', '.join(jars)}")
+    for name, jars in sorted(added.items()):
+        print(f"Duplicate class: {name} in {', '.join(jars)}")
+    if not added:
+        print("Duplicate classes: no new one")
+    return not added
 
 
 def check_deps(old, new):
@@ -288,8 +344,8 @@ def main():
         if not args.skip_current_build:
             build(ROOT)
         new = collect(ROOT)
-        api_ok = check_api(old, new, ROOT / "target" / "api-compat")
-        deps_ok = check_deps(old, new)
+        api_ok = check_api(old, new, ROOT / "target" / "api-compat", baseline_dir)
+        deps_ok = check_deps(old, new) and check_duplicates(old, new)
     finally:
         if not keep:
             run(["git", "worktree", "remove", "--force", str(baseline_dir)], ROOT)
