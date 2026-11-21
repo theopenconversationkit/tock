@@ -17,6 +17,7 @@
 package ai.tock.bot.engine
 
 import ai.tock.shared.Executor
+import ai.tock.shared.InternalTockApi
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -46,11 +47,13 @@ object WebSocketController {
         authorizedKeys.add(key)
     }
 
-    internal fun isAuthorizedKey(key: String?): Boolean = key != null && authorizedKeys.contains(key)
+    @InternalTockApi
+    fun isAuthorizedKey(key: String?): Boolean = key != null && authorizedKeys.contains(key)
 
     private val handlers: MutableMap<String, Handler> = ConcurrentHashMap()
 
-    internal fun setPushHandler(
+    @InternalTockApi
+    fun setPushHandler(
         id: String,
         handler: ((String) -> Unit),
     ) {
@@ -77,7 +80,8 @@ object WebSocketController {
 
     fun getReceiveHandler(id: String): ((String) -> Unit)? = handlers[id]?.receiveHandler
 
-    internal fun removePushHandler(id: String) {
+    @InternalTockApi
+    fun removePushHandler(id: String) {
         handlers[id]?.pushHandler = null
     }
 }

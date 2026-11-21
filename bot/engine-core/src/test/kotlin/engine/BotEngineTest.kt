@@ -69,7 +69,7 @@ import org.junit.jupiter.api.BeforeEach
 /**
  *
  */
-internal abstract class BotEngineTest {
+abstract class BotEngineTest {
     val userLock: UserLock = mockk()
     val userTimelineDAO: UserTimelineDAO = mockk(relaxed = true)
     val userId = PlayerId("id")
@@ -92,7 +92,7 @@ internal abstract class BotEngineTest {
     val botObservabilityConfigurationDAO: BotObservabilityConfigurationDAO = mockk(relaxed = true)
     val botDocumentCompressorConfigurationDAO: BotDocumentCompressorConfigurationDAO = mockk(relaxed = true)
     val botBusinessRulesConfigurationDAO: BotBusinessRulesConfigurationDAO = mockk(relaxed = true)
-    val storyConfigurationMonitor: StoryConfigurationMonitor = spyk(StoryConfigurationMonitor(storyDefinitionConfigurationDAO))
+    internal val storyConfigurationMonitor: StoryConfigurationMonitor = spyk(StoryConfigurationMonitor(storyDefinitionConfigurationDAO))
 
     val entityA = Entity(EntityType("a"), "a")
     val entityAValue = NlpEntityValue(0, 1, entityA, null, false)
@@ -182,7 +182,7 @@ internal abstract class BotEngineTest {
         TockConnectorController(
             bot,
             connector,
-            BotVerticle(false, false),
+            TestBotServer(),
             botDefinition,
             connectorConfiguration,
         )

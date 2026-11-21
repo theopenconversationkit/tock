@@ -68,7 +68,7 @@ private val asynchronousMode = booleanProperty("tock_timeline_persistence_asynch
 internal class TockConnectorController(
     val bot: Bot,
     override val connector: Connector,
-    private val verticle: BotVerticle,
+    private val server: BotServer,
     override val botDefinition: BotDefinition,
     private val configuration: ConnectorConfiguration,
 ) : ConnectorController {
@@ -110,10 +110,10 @@ internal class TockConnectorController(
         internal fun register(
             connector: Connector,
             bot: Bot,
-            verticle: BotVerticle,
+            server: BotServer,
             configuration: BotApplicationConfiguration,
         ): TockConnectorController =
-            TockConnectorController(bot, connector, verticle, bot.botDefinition, ConnectorConfiguration(configuration))
+            TockConnectorController(bot, connector, server, bot.botDefinition, ConnectorConfiguration(configuration))
                 .apply {
                     logger.info { "Register connector $connector for bot $bot" }
                     connector.register(this)
@@ -129,7 +129,7 @@ internal class TockConnectorController(
     private val userLock: UserLock by injector.instance()
     private val userTimelineDAO: UserTimelineDAO by injector.instance()
 
-    private val serviceInstallers: MutableList<BotVerticle.ServiceInstaller> = CopyOnWriteArrayList()
+    private val serviceInstallers: MutableList<ServiceRegistration> = CopyOnWriteArrayList()
 
     fun getBaseUrl(): String = configuration.getBaseUrl()
 
@@ -147,7 +147,7 @@ internal class TockConnectorController(
         event: Event,
         data: ConnectorData,
     ) {
-        verticle.launch {
+        server.executionScope.launch {
             handleUserEvent(event, data)
         }
     }
@@ -312,18 +312,13 @@ internal class TockConnectorController(
         serviceIdentifier: String,
         installer: CoroutineRouterSupport.(Router) -> Unit,
     ) {
-        verticle
-            .registerServices(serviceIdentifier) { router ->
-                // healthcheck
-                router.get("$serviceIdentifier/healthcheck").handler {
-                    it.response().end()
-                }
-                installer(router)
-            }.also { serviceInstallers.add(it) }
+        server
+            .registerConnectorServices(serviceIdentifier, installer)
+            .also { serviceInstallers.add(it) }
     }
 
     override fun unregisterServices() {
-        serviceInstallers.forEach { verticle.unregisterServices(it) }
+        serviceInstallers.forEach { server.unregisterServices(it) }
     }
 
     internal fun send(

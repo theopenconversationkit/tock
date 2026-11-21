@@ -30,6 +30,7 @@
     <description>Root project for Tock Bot</description>
 
     <modules>
+        <module>engine-core</module>
         <module>engine</module>
         <module>engine-jackson</module>
         <module>connector-rest</module>

@@ -56,7 +56,7 @@ internal class BotVerticle(
         @Volatile
         var installed: Boolean = false,
         val registrationDate: Instant = Instant.now(),
-    ) {
+    ) : ServiceRegistration {
         fun install() {
             if (!installed) {
                 installed = true

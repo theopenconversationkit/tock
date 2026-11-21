@@ -59,6 +59,7 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.shared.Executor
+import ai.tock.shared.InternalTockApi
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
@@ -66,7 +67,6 @@ import ai.tock.shared.injector
 import ai.tock.shared.jackson.addConstrainedTypes
 import ai.tock.shared.listProperty
 import ai.tock.shared.provide
-import ai.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
@@ -107,7 +107,8 @@ object BotRepository {
     private val connectorServices: MutableSet<ConnectorService> =
         CopyOnWriteArraySet(ServiceLoader.load(ConnectorService::class.java).toList())
 
-    internal val detailedHealthcheckTasks: MutableList<Pair<String, () -> Boolean>> =
+    @InternalTockApi
+    val detailedHealthcheckTasks: MutableList<Pair<String, () -> Boolean>> =
         mutableListOf(Pair("nlp_client") { nlpClient.healthcheck() })
 
     internal val connectorProviders: MutableSet<ConnectorProvider> =
@@ -127,7 +128,8 @@ object BotRepository {
         ConcurrentHashMap<BotApplicationConfigurationKey, BotApplicationConfiguration> = ConcurrentHashMap()
 
     @Volatile
-    internal var botsInstalled: Boolean = false
+    @InternalTockApi
+    var botsInstalled: Boolean = false
 
     /**
      * Request timer for connectors.
@@ -135,45 +137,32 @@ object BotRepository {
     @Volatile
     var requestTimer: RequestTimer = object : RequestTimer {}
 
+    /**
+     * The healthcheck handler, created on first use by [VertxHealthchecks]: its Vert.x types are only loaded
+     * by the Vert.x server.
+     */
     @Volatile
-    private var realHealthCheckHandler: (RoutingContext) -> Unit = {
-        if (!botsInstalled) {
-            it.response().setStatusCode(500).end()
-        } else {
-            executor.executeBlocking {
-                it.response().setStatusCode(if (nlpClient.healthcheck()) 200 else 500).end()
-            }
-        }
-    }
+    private var realHealthCheckHandler: ((RoutingContext) -> Unit)? = null
 
     /**
      * healthcheck handler to answer to GET /healthcheck.
      */
     var healthcheckHandler: (RoutingContext) -> Unit
-        get() = realHealthCheckHandler
+        get() = realHealthCheckHandler ?: VertxHealthchecks.defaultHandler().also { realHealthCheckHandler = it }
         set(h) {
-            realHealthCheckHandler = {
-                if (!botsInstalled) {
-                    it.response().setStatusCode(500).end()
-                } else {
-                    try {
-                        h.invoke(it)
-                    } catch (t: Throwable) {
-                        logger.error(t)
-                        try {
-                            it.response().setStatusCode(500).end()
-                        } catch (t: Throwable) {
-                            logger.error(t)
-                        }
-                    }
-                }
-            }
+            realHealthCheckHandler = VertxHealthchecks.wrap(h)
         }
 
     @Volatile
     var botAPI: Boolean = false
 
-    private val verticle by lazy { BotVerticle() }
+    /**
+     * The server of the bots: the Vert.x verticle of tock-bot-engine, unless [botServerFactory] is replaced (tests).
+     */
+    @Volatile
+    internal var botServerFactory: () -> BotServer = { BotServerFactory.load() }
+
+    private val server: BotServer by lazy { botServerFactory() }
 
     /**
      * Calls the specified [action] for each registered [NlpListener].
@@ -278,7 +267,8 @@ object BotRepository {
     /**
      * Registers a new [ConnectorProvider].
      */
-    internal fun registerConnectorProvider(connectorProvider: ConnectorProvider) {
+    @InternalTockApi
+    fun registerConnectorProvider(connectorProvider: ConnectorProvider) {
         connectorProviders.add(connectorProvider)
     }
 
@@ -428,13 +418,13 @@ object BotRepository {
 
         // register services
         routerHandlers.forEachIndexed { index, handler ->
-            verticle.registerServices("_handler_$index", handler)
+            server.registerServices("_handler_$index", handler)
         }
 
-        // deploy verticle
+        // deploy the server
         if (botsInstalled) {
             logger.warn { "bot already installed - try to configure new confs" }
-            verticle.configure()
+            server.configure()
         } else {
             val lockFree =
                 try {
@@ -444,15 +434,15 @@ object BotRepository {
                     false
                 }
             if (lockFree) {
-                vertx.deployVerticle(verticle).onComplete {
-                    if (it.succeeded()) {
+                server.deploy { failure ->
+                    if (failure == null) {
                         logger.info { "Bots installed" }
                         botsInstalled = true
                         // listen future changes
                         botConfigurationDAO.listenChanges { checkAsyncBotConfigurations() }
                         botConfigurationDAO.listenBotChanges { checkAsyncBotConfigurations() }
                     } else {
-                        logger.error("Bots installation failure", it.cause() ?: IllegalArgumentException())
+                        logger.error("Bots installation failure", failure)
                     }
                 }
             } else {
@@ -551,7 +541,7 @@ object BotRepository {
 
         if (!startup) {
             // register new confs
-            verticle.configure()
+            server.configure()
         }
         logger.debug { "end check configurations" }
     }
@@ -611,7 +601,7 @@ object BotRepository {
         return botConfigurationDAO
             .save(conf)
             .apply {
-                val controller = TockConnectorController.register(connector, bot, verticle, conf)
+                val controller = TockConnectorController.register(connector, bot, server, conf)
                 // install connector services
                 connectorServices.forEach { connectorService ->
                     connectorService.install(controller, conf)

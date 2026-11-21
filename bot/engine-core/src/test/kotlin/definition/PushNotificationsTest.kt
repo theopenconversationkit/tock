@@ -27,6 +27,7 @@ import ai.tock.bot.connector.NotifyBotStateModifier.KEEP_CURRENT_STATE
 import ai.tock.bot.engine.BotEngineTest
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
+import ai.tock.bot.engine.TestBotServer
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.event.SkippedEventException
 import ai.tock.bot.engine.user.LockAcquisitionException
@@ -86,6 +87,7 @@ internal class PushNotificationsTest : BotEngineTest() {
         val appSlot: CapturingSlot<BotApplicationConfiguration> = slot()
         every { botConfDAO.save(capture(appSlot)) } answers { appSlot.captured }
 
+        BotRepository.botServerFactory = { TestBotServer() }
         BotRepository.installBots(emptyList())
     }
 

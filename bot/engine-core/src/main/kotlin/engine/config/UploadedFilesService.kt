@@ -21,6 +21,7 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.TockBotBus
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.file
+import ai.tock.shared.InternalTockApi
 import ai.tock.shared.cache.getFromCache
 import ai.tock.shared.cache.putInCache
 import ai.tock.shared.property
@@ -140,7 +141,8 @@ object UploadedFilesService {
             }
         }
 
-    internal fun configure(): CoroutineRouterSupport.(Router) -> Unit =
+    @InternalTockApi
+    fun configure(): CoroutineRouterSupport.(Router) -> Unit =
         { router ->
             router.get("$basePath*").blocking { context ->
                 val id =

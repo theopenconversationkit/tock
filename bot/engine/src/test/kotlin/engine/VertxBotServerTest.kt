@@ -29,32 +29,30 @@ import org.junit.jupiter.api.Test
 /**
  *
  */
-class TockConnectorControllerTest {
+class VertxBotServerTest {
     @Test
-    fun `test registerService install healthcheck`() {
+    fun `test registerConnectorServices install healthcheck`() {
         val botVerticle: BotVerticle = mockk()
         val serviceInstaller: BotVerticle.ServiceInstaller = mockk()
         val capturedInstaller = slot<CoroutineRouterSupport.(Router) -> Unit>()
         every { botVerticle.registerServices(any(), capture(capturedInstaller)) } returns serviceInstaller
 
-        val installer: (Router) -> Unit = mockk()
-        every { installer.invoke(any()) } returns Unit
-        val bot: Bot = mockk()
-        every { bot.configuration } returns mockk()
-        val controller = TockConnectorController(bot, mockk(), botVerticle, mockk(), mockk())
+        val installer: CoroutineRouterSupport.(Router) -> Unit = mockk()
+        every { installer.invoke(any(), any()) } returns Unit
 
-        controller.registerServices("/path", installer)
+        VertxBotServer(botVerticle).registerConnectorServices("/path", installer)
 
-        verify { botVerticle.registerServices(any(), any()) }
+        verify { botVerticle.registerServices("/path", any()) }
 
         val router: Router = mockk()
         val route: Route = mockk()
         every { router.get(any()) } returns route
         every { route.handler(any()) } returns route
 
-        capturedInstaller.invoke(mockk(), router)
+        val routerSupport: CoroutineRouterSupport = mockk()
+        capturedInstaller.invoke(routerSupport, router)
 
         verify { router.get("/path/healthcheck") }
-        verify { installer.invoke(router) }
+        verify { installer.invoke(routerSupport, router) }
     }
 }

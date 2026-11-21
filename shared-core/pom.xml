@@ -78,6 +78,17 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <executions>
                     <execution>
@@ -97,6 +108,7 @@
                                     </excludes>
                                     <includes>
                                         <include>org.litote.kmongo:kmongo-dsl-id</include>
+                                        <include>org.mongodb:bson</include>
                                         <include>org.litote.kmongo:kmongo-dsl-jackson-module-loader</include>
                                         <include>org.litote.kmongo:kmongo-dsl-jackson-data</include>
                                     </includes>
@@ -168,6 +180,12 @@
         </dependency>
 
         <!-- optional features: the projects that use them bring the libraries -->
+        <dependency>
+            <!-- Dice.newId uses ObjectId when it is on the classpath, a UUID otherwise -->
+            <groupId>org.mongodb</groupId>
+            <artifactId>bson</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
