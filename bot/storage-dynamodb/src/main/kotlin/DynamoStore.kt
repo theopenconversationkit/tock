@@ -57,10 +57,12 @@ import java.util.zip.GZIPOutputStream
 private val logger = KotlinLogging.logger {}
 
 /** Generic attribute names: every table has a `pk`/`sk` primary key. */
-internal const val PK = "pk"
-internal const val SK = "sk"
+const val PK = "pk"
+const val SK = "sk"
 internal const val DOC = "doc"
-internal const val TTL = "ttl"
+
+/** The expiration of an item, in epoch seconds: the attribute of the DynamoDB TTL of every table. */
+const val TTL = "ttl"
 
 /**
  * DynamoDB access shared by the spike DAOs: client, tables, document codec and capacity metrics.

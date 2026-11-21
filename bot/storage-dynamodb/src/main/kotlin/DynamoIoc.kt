@@ -17,13 +17,14 @@
 package ai.tock.storage.dynamodb
 
 import ai.tock.bot.admin.bot.BotApplicationConfigurationRuntimeDAO
+import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 
 /**
- * The runtime DAOs stored in DynamoDB, for a serverless process (see tock-serverless-runtime). The tables are
+ * The runtime DAOs and the user lock stored in DynamoDB, for a serverless process (see tock-serverless-runtime). The tables are
  * prefixed by `tock_dynamodb_table_prefix`, created when `tock_dynamodb_create_tables` is true (the default);
  * `tock_dynamodb_endpoint` targets DynamoDB Local.
  */
@@ -31,4 +32,5 @@ val botDynamoModule =
     Kodein.Module(allowSilentOverride = true) {
         bind<UserTimelineRuntimeDAO>() with provider { UserTimelineDynamoDAO }
         bind<BotApplicationConfigurationRuntimeDAO>() with provider { BotApplicationConfigurationDynamoDAO }
+        bind<UserLock>() with provider { DynamoUserLock }
     }

@@ -32,7 +32,8 @@ import java.util.Base64
  * @property queue where the webhooks are queued
  * @property queuedPaths the POST routes acknowledged at once and queued (the webhooks of the connectors)
  * @property secret signs the queued messages, see [SignedQueuedRequest]
- * @property deduplication remembers the processed requests: it must be shared by the instances (DynamoDB...)
+ * @property deduplication remembers the processed requests: it must be shared by the instances, see the
+ * `DynamoDeduplicationStore` of tock-serverless-dynamodb
  * @property deduplicationTtl how long a processed request is remembered
  * @property groupId the group of a request: the FIFO queues deliver the requests of a group in order. By default,
  * the path: all the webhooks of a connector are processed one after the other. A group per user is enough to keep

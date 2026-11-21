@@ -16,35 +16,17 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.engine.user.LockAcquisitionException
-import ai.tock.bot.engine.user.LockLostException
-import ai.tock.bot.engine.user.UserLock
+import ai.tock.bot.engine.user.LeasedUserLock
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.UserLock_.Companion.Date
 import ai.tock.bot.mongo.UserLock_.Companion.Locked
 import ai.tock.bot.mongo.UserLock_.Companion._id
 import ai.tock.shared.error
-import ai.tock.shared.intProperty
 import ai.tock.shared.longProperty
 import com.mongodb.MongoWriteException
 import com.mongodb.client.model.IndexOptions
-import io.github.resilience4j.core.IntervalFunction
-import io.github.resilience4j.kotlin.retry.RetryConfig
-import io.github.resilience4j.kotlin.retry.executeSuspendFunction
-import io.github.resilience4j.retry.Retry
-import io.github.resilience4j.retry.RetryConfig
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
@@ -63,17 +45,12 @@ import org.litote.kmongo.toId
 import org.litote.kmongo.upsert
 import java.time.Instant
 import java.time.Instant.now
-import java.util.UUID
 import java.util.concurrent.TimeUnit.HOURS
-import kotlin.random.Random
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.TimeSource
 
 /**
- *
+ * The [LeasedUserLock] of MongoDB: one document per user, whose date is the start of the lease.
  */
-internal object MongoUserLock : UserLock {
+internal object MongoUserLock : LeasedUserLock() {
     @Data(internal = true)
     @JacksonData(internal = true)
     data class UserLock(
@@ -86,45 +63,6 @@ internal object MongoUserLock : UserLock {
     private val logger = KotlinLogging.logger {}
 
     private val col = asyncDatabase.getCollection<UserLock>()
-
-    private val lockTimeout = longProperty("tock_bot_lock_timeout_in_ms", 5000)
-
-    /** Interval at which to refresh a lease for an ongoing operation;
-     short enough to never expire under normal conditions. */
-    private val lockHeartbeatInterval = lockTimeout / 2
-
-    private val lockRetryDelay = longProperty("tock_bot_locked_attempts_wait_in_ms", 500)
-
-    private val lockRetryJitter = longProperty("tock_bot_lock_retry_jitter_in_ms", 20)
-
-    private val lockRetryIntervalFunction =
-        IntervalFunction { lockRetryDelay + Random.nextLong(0, lockRetryJitter + 1) }
-
-    /** withLock() fails with an exception past this number of acquisition attempts */
-    private val lockMaxAcquireAttempts = intProperty("tock_bot_max_locked_attempts", 10)
-
-    /** Log a single warning once a caller has retried this many times without acquiring
-     the lock, to surface potentially stuck locks. */
-    private val lockAcquireWarnAttempts = longProperty("tock_bot_warn_after_locked_attempts", 5)
-
-    private val lockRetryConfig: RetryConfig =
-        RetryConfig<Boolean> {
-            maxAttempts(lockMaxAcquireAttempts)
-            retryOnResult { acquired -> !acquired }
-            intervalFunction(lockRetryIntervalFunction)
-            failAfterMaxAttempts(true)
-        }
-    private val retry =
-        Retry.of("mongo-user-lock", lockRetryConfig).apply {
-            eventPublisher
-                .onRetry { event ->
-                    if (event.numberOfRetryAttempts.toLong() == lockAcquireWarnAttempts) {
-                        logger.warn { "still waiting for lock after ${event.numberOfRetryAttempts} attempts - possible stuck lock" }
-                    }
-                }.onError {
-                    throw LockAcquisitionException("failed to acquire lock after ${it.numberOfRetryAttempts} attempts")
-                }
-        }
 
     init {
         try {
@@ -144,13 +82,11 @@ internal object MongoUserLock : UserLock {
         }
     }
 
-    override suspend fun tryLock(userId: String): Boolean = lock(userId, lockId = null)
-
-    private suspend fun lock(
+    override suspend fun acquire(
         userId: String,
-        lockId: UUID?,
+        lockId: String?,
     ): Boolean {
-        val lock = UserLock(userId.toId(), lockId = lockId?.toString())
+        val lock = UserLock(userId.toId(), lockId = lockId)
         val validLockDatesLimit = now().minusMillis(lockTimeout)
 
         try {
@@ -184,6 +120,8 @@ internal object MongoUserLock : UserLock {
             col.updateOne(query, lock, upsert())
 
             return true
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             // lock could not be acquired
             if (e is MongoWriteException && e.code == 11000) {
@@ -196,40 +134,20 @@ internal object MongoUserLock : UserLock {
         }
     }
 
-    override suspend fun releaseLock(userId: String) {
-        releaseLock(userId, null)
+    override suspend fun release(
+        userId: String,
+        lockId: String?,
+    ): Boolean {
+        val query = and(_id eq userId.toId(), UserLock::lockId eq lockId)
+        return col.updateOne(query, setValue(Locked, false)).modifiedCount > 0
     }
 
-    private suspend fun releaseLock(
+    override suspend fun renew(
         userId: String,
-        lockId: UUID?,
-    ) {
-        try {
-            logger.debug { "release lock for user : $userId" }
-            // Only release the lock if it is still owned by lockId, so that we never release
-            // a lock that has since been taken over by another owner (e.g. after expiration).
-            val query = and(_id eq userId.toId(), UserLock::lockId eq lockId?.toString())
-            val r = col.updateOne(query, setValue(Locked, false))
-            if (r.modifiedCount == 0L) {
-                logger.warn { "lock already released or taken over by another owner : $userId" }
-            }
-        } catch (e: Exception) {
-            logger.error(e)
-        }
-    }
-
-    /**
-     * Touches the lock lease (resets its date) as long as [lockId] still owns it.
-     * Returns false if the lease has already been taken over by another owner,
-     * meaning the caller no longer holds a valid lock, and null if this could not be determined
-     * (e.g. transient Mongo error).
-     */
-    private suspend fun renewLock(
-        userId: String,
-        lockId: UUID,
+        lockId: String,
     ): Boolean? =
         try {
-            val query = and(_id eq userId.toId(), UserLock::lockId eq lockId.toString())
+            val query = and(_id eq userId.toId(), UserLock::lockId eq lockId)
             col.updateOne(query, setValue(Date, now())).modifiedCount > 0
         } catch (e: CancellationException) {
             throw e
@@ -238,118 +156,19 @@ internal object MongoUserLock : UserLock {
             null
         }
 
-    /**
-     * Checks, without touching the lease date, whether [lockId] still owns the lock for [userId].
-     * Returns false if another owner has since taken over, meaning the caller no longer holds a
-     * valid lock. Used instead of [renewLock] once the lease is no longer renewed, so that
-     * ownership loss is still detected (and abortOnLockLoss still honored) even though the lease
-     * itself is left to expire on its own. Returns null if this could not be determined (e.g. transient Mongo error).
-     */
-    private suspend fun isStillOwner(
+    override suspend fun isOwner(
         userId: String,
-        lockId: UUID,
+        lockId: String,
     ): Boolean? =
         try {
             val lock = col.findOneById(userId)
-            lock != null && lock.locked && lock.lockId == lockId.toString()
+            lock != null && lock.locked && lock.lockId == lockId
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             logger.error(e) { "unable to check the lock ownership for user $userId" }
             null
         }
-
-    /**
-     * @throws LockAcquisitionException if the lock could not be acquired after [lockMaxAcquireAttempts] attempts.
-     */
-    private suspend fun acquireLock(
-        userId: String,
-        lockId: UUID,
-    ) {
-        retry.executeSuspendFunction { lock(userId, lockId) }
-    }
-
-    override suspend fun <T> withLock(
-        userId: String,
-        abortOnLockLoss: Boolean,
-        postLockRelease: (() -> Unit)?,
-        maxLeaseRenewal: Duration,
-        op: suspend () -> T,
-    ): T {
-        val lockId = UUID.randomUUID()
-        acquireLock(userId, lockId)
-        // computed before launching op(), so that a delayed heartbeat cannot extend the renewal budget
-        val renewalDeadline = if (maxLeaseRenewal.isInfinite()) null else TimeSource.Monotonic.markNow() + maxLeaseRenewal
-
-        return try {
-            coroutineScope {
-                val opJob = async { op() }
-                // The lease is renewed during at most maxLeaseRenewal, then left to expire on its own,
-                // so that a stuck op() cannot hold the lock forever (see #2119). When abortOnLockLoss is requested,
-                // ownership keeps being checked after renewal stops, so that op() is aborted once the lock is taken over.
-                // The heartbeat does not block (reactive Mongo driver): it runs on its own dispatcher, so that a blocking
-                // op() or a saturated op() dispatcher (e.g. worker pool full of blocking turns) cannot delay the renewal.
-                val heartbeatJob =
-                    launch(Dispatchers.Default) {
-                        monitorLockOwnership(userId, lockId, abortOnLockLoss, maxLeaseRenewal, renewalDeadline, opJob)
-                    }
-                try {
-                    opJob.await()
-                } catch (e: CancellationException) {
-                    // unwrap our own LockLostException, leave other cancellation causes as-is
-                    // (the whole cause chain is searched, as coroutine stack trace recovery may wrap the exception)
-                    throw generateSequence<Throwable>(e) { it.cause }.filterIsInstance<LockLostException>().firstOrNull() ?: e
-                } finally {
-                    heartbeatJob.cancel()
-                }
-            }
-        } finally {
-            // the caller may have been cancelled: release the lock anyway
-            withContext(NonCancellable) {
-                releaseLock(userId, lockId)
-            }
-            postLockRelease?.invoke()
-        }
-    }
-
-    private suspend fun <T> CoroutineScope.monitorLockOwnership(
-        userId: String,
-        lockId: UUID,
-        abortOnLockLoss: Boolean,
-        maxLeaseRenewal: Duration,
-        renewalDeadline: TimeSource.Monotonic.ValueTimeMark?,
-        opJob: Deferred<T>,
-    ) {
-        var renewalStopped = false
-        while (isActive) {
-            delay(lockHeartbeatInterval.milliseconds)
-            val renew = renewalDeadline?.hasNotPassedNow() ?: true
-            if (!renew && !renewalStopped) {
-                renewalStopped = true
-                if (maxLeaseRenewal.isPositive()) {
-                    logger.warn { "operation still running after $maxLeaseRenewal for user $userId - lock lease is no longer renewed" }
-                }
-                if (!abortOnLockLoss) {
-                    // nothing more to do: the lease will expire on its own, and op() is never aborted
-                    break
-                }
-            }
-            val stillOwned = if (renew) renewLock(userId, lockId) else isStillOwner(userId, lockId)
-            // null: unknown (e.g. transient Mongo error), try again at the next interval
-            if (stillOwned == false) {
-                logger.warn { "lock for user $userId was taken over by another owner while running" }
-                if (abortOnLockLoss) {
-                    opJob.cancel(
-                        CancellationException(
-                            "lock for user $userId expired while op() was running",
-                            LockLostException("lock for user $userId expired while op() was running"),
-                        ),
-                    )
-                }
-                break
-            }
-        }
-    }
 
     suspend fun deleteLock(userId: String) {
         try {

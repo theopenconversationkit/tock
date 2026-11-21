@@ -78,7 +78,7 @@ import java.util.UUID
  * The Mongo indexes on arrays (playerIds, temporaryIds, client user ids) become pointer items,
  * because a DynamoDB index cannot index the elements of a set.
  *
- * Not ported in the spike: dialog_text, dialog flow stats, evaluations cleanup, user lock cleanup,
+ * Not ported in the spike: dialog_text, dialog flow stats, evaluations cleanup,
  * and the [ai.tock.bot.admin.user.UserReportDAO] / [ai.tock.bot.admin.dialog.DialogReportDAO] interfaces.
  */
 object UserTimelineDynamoDAO : UserTimelineRuntimeDAO {
@@ -489,7 +489,7 @@ object UserTimelineDynamoDAO : UserTimelineRuntimeDAO {
                 )
             }
             if (clearLock) {
-                logger.debug { "spike: the user lock is not stored in DynamoDB, nothing to clear" }
+                DynamoUserLock.deleteLockItem(playerId.id)
             }
             (if (timeline != null) 1L else 0L) + dialogIds.size
         }

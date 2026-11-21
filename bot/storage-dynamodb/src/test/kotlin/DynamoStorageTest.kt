@@ -33,12 +33,9 @@ import ai.tock.shared.bytecode.BytecodeDependencies
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.containers.wait.strategy.Wait
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
@@ -56,8 +53,6 @@ data class TestConnectorMessage(
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DynamoStorageTest {
-    private val dynamo = GenericContainer("amazon/dynamodb-local:2.6.1").withExposedPorts(8000).waitingFor(Wait.forListeningPort())
-
     private val user = PlayerId("user", PlayerType.user)
     private val bot = PlayerId("bot", PlayerType.bot)
     private val greetings: StoryDefinition = story("greetings") {}
@@ -65,16 +60,7 @@ class DynamoStorageTest {
 
     @BeforeAll
     fun start() {
-        dynamo.start()
-        System.setProperty("tock_dynamodb_endpoint", "http://${dynamo.host}:${dynamo.getMappedPort(8000)}")
-        System.setProperty("aws.accessKeyId", "x")
-        System.setProperty("aws.secretAccessKey", "x")
-        System.setProperty("tock_dynamodb_table_prefix", "test_")
-    }
-
-    @AfterAll
-    fun stop() {
-        dynamo.stop()
+        DynamoLocal.start()
     }
 
     private fun timelineWithDialog(player: PlayerId = user): UserTimeline {

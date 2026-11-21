@@ -87,6 +87,7 @@
         <module>serverless-runtime</module>
         <module>serverless-sqs</module>
         <module>serverless-pubsub</module>
+        <module>serverless-dynamodb</module>
     </modules>
 
     <dependencies>
