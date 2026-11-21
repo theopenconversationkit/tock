@@ -176,16 +176,27 @@ KOTLIN_INTERNAL_CLASS = re.compile(
 )
 
 
+KOTLIN_INTERNAL_CONSTRUCTOR = re.compile(r"\bclass\s+(\w+)\s*(?:<[^>]*>)?\s*internal\s+constructor\b")
+KOTLIN_PUBLIC_SECONDARY_CONSTRUCTOR = re.compile(r"^\s*(?:public\s+)?constructor\s*\(", re.M)
+
+
 def kotlin_internal_classes(tree: Path):
-    """The (package, simple name) of the classes, objects and interfaces declared internal in the Kotlin sources."""
+    """
+    The (package, simple name) of the classes, objects and interfaces declared internal in the Kotlin sources,
+    and of the classes whose only constructor is internal, as ("ctor", package, simple name).
+    """
     found = set()
     for source in tree.rglob("*.kt"):
         if IGNORED_DIRS.intersection(source.relative_to(tree).parts):
             continue
         text = source.read_text(errors="replace")
         package = KOTLIN_PACKAGE.search(text)
+        package = package.group(1) if package else ""
         for name in KOTLIN_INTERNAL_CLASS.findall(text):
-            found.add((package.group(1) if package else "", name))
+            found.add((package, name))
+        if not KOTLIN_PUBLIC_SECONDARY_CONSTRUCTOR.search(text):
+            for name in KOTLIN_INTERNAL_CONSTRUCTOR.findall(text):
+                found.add(("ctor", package, name))
     return found
 
 
@@ -200,7 +211,8 @@ def incompatibilities(xml_report: Path, new_jars, internal_classes=frozenset()):
     Reads the japicmp XML report and returns the binary incompatibilities that matter for a project.
 
     japicmp does not know the Kotlin visibilities, hence the filters:
-    - a class declared internal in the baseline sources (or nested in one) can not be used by a project;
+    - a class declared internal in the baseline sources (or nested in one) can not be used by a project, nor
+      the constructors of a class whose only constructor is internal;
     - a member whose JVM name contains $ is internal (name mangled with the module name, which changes
       when the declaration moves to another module) or synthetic;
     - a class reported as removed while it is still in the new jars, annotated with @InternalTockApi, or a
@@ -227,6 +239,8 @@ def incompatibilities(xml_report: Path, new_jars, internal_classes=frozenset()):
             if not changes:
                 continue
             if element.tag in ("method", "field") and "$" in (element.get("name") or ""):
+                continue
+            if element.tag == "constructor" and ("ctor", *name.rpartition(".")[::2]) in internal_classes:
                 continue
             if element.tag in ("interface", "superclass"):
                 parent = element.get("fullyQualifiedName") or element.get("superclassOld") or ""
