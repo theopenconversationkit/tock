@@ -15,7 +15,7 @@ import { SentenceExtended } from '../sentence-training.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { StateService } from '../../../../core-nlp/state.service';
-import { Observable, Subject, lastValueFrom, of, takeUntil } from 'rxjs';
+import { Observable, Subject, finalize, lastValueFrom, of, takeUntil } from 'rxjs';
 import { Intent, IntentsCategory, nameFromQualifiedName, SentenceStatus } from '../../../../model/nlp';
 import { SentenceReviewRequestComponent } from '../sentence-review-request/sentence-review-request.component';
 import { Action, SentenceTrainingMode } from '../models';
@@ -64,6 +64,12 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
   Action: typeof Action = Action;
 
   getSentenceId = getSentenceId;
+
+  /**
+   * True while an intent created from this sentence is being saved: the sentence is not yet associated with it,
+   * so the actions that save the sentence are disabled (they would save it with its previous intent).
+   */
+  savingIntent = false;
 
   constructor(
     public state: StateService,
@@ -154,6 +160,7 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
   }
 
   async handleAction(action: Action, clearSentence = true): Promise<void> {
+    if (this.savingIntent) return;
     const actionTitle = this.getActionTitle(action);
     this.setSentenceAccordingToAction(action);
 
@@ -399,9 +406,16 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
   }
 
   private saveIntent(name: string, label: string, description: string, category: string) {
+    this.savingIntent = true;
     this.nlp
       .saveIntent(
         new Intent(name, this.state.user.organization, [], [this.state.currentApplication._id], [], [], label, description, category)
+      )
+      .pipe(
+        finalize(() => {
+          this.savingIntent = false;
+          this.cd.markForCheck();
+        })
       )
       .subscribe({
         next: (intent) => {
