@@ -36,6 +36,11 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-front-storage-dynamodb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-storage-mongo</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -63,6 +68,12 @@
         <dependency>
             <groupId>org.litote.kmongo</groupId>
             <artifactId>kmongo-dsl-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-front-storage-mongo</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

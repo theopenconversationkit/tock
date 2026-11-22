@@ -36,6 +36,15 @@ import ai.tock.bot.mongo.NlpStatsCol
 import ai.tock.bot.mongo.NlpStatsColId
 import ai.tock.bot.mongo.SnapshotCol
 import ai.tock.bot.mongo.UserTimelineCol
+import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
+import ai.tock.nlp.front.service.storage.ParseRequestLogDAO
+import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.inbox
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
+import ai.tock.nlp.front.shared.config.SentencesQuery
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLog
+import ai.tock.nlp.front.storage.dynamodb.ClassifiedSentenceDynamoDAO
 import ai.tock.storage.dynamodb.DOC
 import ai.tock.storage.dynamodb.DocumentCodec
 import ai.tock.storage.dynamodb.FeatureDynamoDAO
@@ -89,6 +98,12 @@ internal data class DialogTextDocument(
  * - the metrics are stored as they are, for the analytics of the Studio;
  * - the label statistics are increments: the difference between the new and the old counter is added.
  *
+ * With [nlp], the writes of the NLP:
+ * - the parse logs, saved through the admin DAO (it also counts the usages of the sentences);
+ * - the sentences of the inbox, unless the admin has a validated sentence with the same text (validated in the
+ *   Studio while the runtime was parsing it);
+ * - the unknown counters of the sentences, as increments.
+ *
  * The expirations of the DynamoDB TTL are not replicated (MongoDB has its own TTL indexes), nor the deletions of
  * the configuration (the admin owns it).
  */
@@ -99,6 +114,7 @@ internal class MongoReplication(
     private val features: FeatureDAO,
     private val labels: I18nDAO,
     private val indicators: IndicatorDAO? = null,
+    private val nlp: NlpTargets? = null,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -143,6 +159,10 @@ internal class MongoReplication(
             // the analytics of the Studio read the metrics in MongoDB
             pk.startsWith("METRIC#") && !removed -> {
                 metricCol.save(image.document<Metric>())
+            }
+
+            pk.startsWith("PARSELOG#") && record.eventName() == OperationType.INSERT && nlp != null -> {
+                nlp.logs.save(image.document<ParseRequestLog>())
             }
 
             pk.startsWith("I18NSTAT#") && !removed -> {
@@ -288,4 +308,54 @@ internal class MongoReplication(
             }
         }
     }
+
+    fun applySentence(record: Record) {
+        val targets = nlp ?: return
+        if (record.eventName() == OperationType.REMOVE) return
+        val image = record.dynamodb().newImage() ?: return
+        if (!image.containsKey(DOC)) return
+        val sentence = image.document<ClassifiedSentence>()
+        if (image.str(ClassifiedSentenceDynamoDAO.STATUS) == inbox.name && !image.containsKey(ClassifiedSentenceDynamoDAO.FINGERPRINT) &&
+            record.dynamodb().oldImage()?.get(DOC) != image[DOC]
+        ) {
+            val existing =
+                targets.sentences
+                    .search(
+                        SentencesQuery(
+                            sentence.applicationId,
+                            sentence.language,
+                            search = sentence.text,
+                            onlyExactMatch = true,
+                            notStatus = null,
+                        ),
+                    ).sentences
+                    .firstOrNull()
+            if (existing?.status != validated && existing?.status != model) {
+                targets.sentences.save(sentence)
+            }
+        }
+        val count = image[ClassifiedSentenceDynamoDAO.UNKNOWN_COUNT]?.n()?.toLong() ?: 0
+        val previous =
+            record
+                .dynamodb()
+                .oldImage()
+                ?.get(ClassifiedSentenceDynamoDAO.UNKNOWN_COUNT)
+                ?.n()
+                ?.toLong() ?: 0
+        // a publication replaces the item without its counter: the decrease is not replicated
+        repeat((count - previous).coerceIn(0, MAX_UNKNOWN_INCREMENTS).toInt()) {
+            targets.sentences.incrementUnknownStat(sentence.applicationId, sentence.language, sentence.text)
+        }
+    }
+
+    private companion object {
+        /** A record is one increment: more is a stream that restarted from an old image. */
+        const val MAX_UNKNOWN_INCREMENTS = 100L
+    }
 }
+
+/** The NLP DAOs of the admin (MongoDB), written by the replication. */
+class NlpTargets(
+    val sentences: ClassifiedSentenceDAO,
+    val logs: ParseRequestLogDAO,
+)

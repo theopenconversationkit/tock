@@ -40,6 +40,7 @@ import ai.tock.storage.dynamodb.DynamoStore.GSI1_SK
 import ai.tock.storage.dynamodb.DynamoStore.configTable
 import ai.tock.storage.dynamodb.DynamoStore.runtimeTable
 import ai.tock.storage.dynamodb.DynamoStore.sentenceTable
+import ai.tock.storage.dynamodb.PK
 import ai.tock.storage.dynamodb.SK
 import ai.tock.storage.dynamodb.TTL
 import ai.tock.storage.dynamodb.b
@@ -49,7 +50,10 @@ import ai.tock.storage.dynamodb.s
 import ai.tock.storage.dynamodb.str
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException
+import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest
 import java.time.Instant
 import java.util.Locale
 import java.util.UUID
@@ -141,10 +145,21 @@ object NamespaceConfigurationDynamoDAO : NamespaceConfigurationRuntimeDAO {
  *
  * Only the exact search of the parser runs on DynamoDB: the search of the Studio stays in the admin, on MongoDB.
  * The unknown counter is an attribute incremented by an atomic `ADD`, replicated as increments.
+ *
+ * The admin publishes its validated sentences ([publish]), with the fingerprint of their published content in
+ * the attribute [FINGERPRINT]; the runtime writes the sentences of the inbox ([save]), and never replaces a
+ * published sentence.
  */
 object ClassifiedSentenceDynamoDAO : ClassifiedSentenceRuntimeDAO {
-    private const val STATUS = "status"
+    const val STATUS = "status"
     const val UNKNOWN_COUNT = "unknownCount"
+    const val FINGERPRINT = "fp"
+
+    /** The key of a sentence in the sentence table. */
+    data class SentenceKey(
+        val pk: String,
+        val sk: String,
+    )
 
     private fun textKey(text: String): String = if (text.length > 512) text.substring(0, min(512, text.length)) else text
 
@@ -159,21 +174,74 @@ object ClassifiedSentenceDynamoDAO : ClassifiedSentenceRuntimeDAO {
         text: String,
     ) = "SENTN#$applicationId#$language#${text.normalize(language)}"
 
+    fun keyOf(sentence: ClassifiedSentence): SentenceKey = SentenceKey(pk(sentence.applicationId, sentence.language), textKey(sentence.text))
+
+    private fun item(sentence: ClassifiedSentence): Map<String, AttributeValue> =
+        keyOf(sentence).let { DynamoStore.key(it.pk, it.sk) } +
+            mapOf(
+                DOC to b(DocumentCodec.encode(sentence)),
+                STATUS to s(sentence.status.name),
+                GSI1_PK to s(normalizedPk(sentence.applicationId, sentence.language, sentence.text)),
+                GSI1_SK to s(textKey(sentence.text)),
+            )
+
+    /**
+     * Saves a sentence of the runtime (the inbox), unless the admin has published a sentence with the same text:
+     * the parser has read the sentence before the publication, the published one is kept.
+     */
     fun save(sentence: ClassifiedSentence) {
-        DynamoStore.putItem(
-            sentenceTable,
-            DynamoStore.key(pk(sentence.applicationId, sentence.language), textKey(sentence.text)) +
-                mapOf(
-                    DOC to b(DocumentCodec.encode(sentence)),
-                    STATUS to s(sentence.status.name),
-                    GSI1_PK to s(normalizedPk(sentence.applicationId, sentence.language, sentence.text)),
-                    GSI1_SK to s(textKey(sentence.text)),
-                ),
-        )
+        try {
+            DynamoStore.client
+                .putItem {
+                    it
+                        .tableName(sentenceTable)
+                        .item(item(sentence))
+                        .conditionExpression("attribute_not_exists(#fp)")
+                        .expressionAttributeNames(mapOf("#fp" to FINGERPRINT))
+                        .returnConsumedCapacity(ReturnConsumedCapacity.TOTAL)
+                }.also { DynamoStore.recordWrite(it.consumedCapacity()) }
+        } catch (_: ConditionalCheckFailedException) {
+            logger.debug { "the sentence ${sentence.text} is published by the admin: not replaced" }
+        }
     }
 
     fun delete(sentence: ClassifiedSentence) {
         DynamoStore.deleteItem(sentenceTable, pk(sentence.applicationId, sentence.language), textKey(sentence.text))
+    }
+
+    /** Publishes sentences of the admin, with the fingerprints of their content, in batches. */
+    fun publish(sentences: List<Pair<ClassifiedSentence, String>>) {
+        DynamoStore.batchWrite(sentenceTable, puts = sentences.map { (sentence, fingerprint) -> item(sentence) + (FINGERPRINT to s(fingerprint)) })
+    }
+
+    /** Deletes published sentences, in batches. */
+    fun unpublish(keys: Collection<SentenceKey>) {
+        DynamoStore.batchWrite(sentenceTable, deleteKeys = keys.map { DynamoStore.key(it.pk, it.sk) })
+    }
+
+    /** The fingerprints of the published sentences, by key: a scan of the table, read when the admin starts. */
+    fun publishedFingerprints(): Map<SentenceKey, String> {
+        val fingerprints = mutableMapOf<SentenceKey, String>()
+        var startKey: Map<String, AttributeValue>? = null
+        do {
+            val response =
+                DynamoStore.client.scan(
+                    ScanRequest
+                        .builder()
+                        .tableName(sentenceTable)
+                        .consistentRead(true)
+                        .filterExpression("attribute_exists(#fp)")
+                        .projectionExpression("#pk, #sk, #fp")
+                        .expressionAttributeNames(mapOf("#pk" to PK, "#sk" to SK, "#fp" to FINGERPRINT))
+                        .returnConsumedCapacity(ReturnConsumedCapacity.TOTAL)
+                        .apply { if (startKey != null) exclusiveStartKey(startKey) }
+                        .build(),
+                )
+            DynamoStore.recordRead(response.consumedCapacity())
+            response.items().forEach { item -> fingerprints[SentenceKey(item.getValue(PK).s(), item.getValue(SK).s())] = item.getValue(FINGERPRINT).s() }
+            startKey = response.lastEvaluatedKey().takeIf { response.hasLastEvaluatedKey() && it.isNotEmpty() }
+        } while (startKey != null)
+        return fingerprints
     }
 
     /** The sentence whose text is [text] (or whose normalized text is the one of [text]), if its status is in [status]. */

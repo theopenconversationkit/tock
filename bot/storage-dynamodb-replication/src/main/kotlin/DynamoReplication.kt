@@ -33,7 +33,8 @@ import java.util.concurrent.TimeUnit
 /**
  * Replicates the writes of the serverless runtime to the MongoDB of the admin, from the DynamoDB streams of the
  * runtime and configuration tables: the dialogs appear in the Studio, and the configuration created by the
- * runtime (built-in stories, registered features, created labels) in the admin.
+ * runtime (built-in stories, registered features, created labels) in the admin; with [nlp], the parse logs, the
+ * inbox and the unknown counters of the NLP, from the stream of the sentence table too.
  *
  * [start] polls the streams every [interval]. The positions are stored in the MongoDB collection
  * `dynamodb_stream_checkpoint`: a restarted admin goes on where it stopped, within the 24 hours that a stream keeps.
@@ -46,17 +47,19 @@ class DynamoReplication(
     labels: I18nDAO,
     indicators: IndicatorDAO? = null,
     private val interval: Duration = Duration.ofSeconds(5),
+    nlp: NlpTargets? = null,
 ) {
     private val logger = KotlinLogging.logger {}
 
-    private val replication = MongoReplication(database, applications, stories, features, labels, indicators)
+    private val replication = MongoReplication(database, applications, stories, features, labels, indicators, nlp)
     private val checkpoints = database.getCollection<StreamCheckpoint>("dynamodb_stream_checkpoint")
 
     private val readers =
         listOf(
             DynamoStreamReader(DynamoStore.runtimeTable, checkpoints) { replication.applyRuntime(it) },
             DynamoStreamReader(DynamoStore.configTable, checkpoints) { replication.applyConfiguration(it) },
-        )
+        ) +
+            listOfNotNull(nlp?.let { DynamoStreamReader(DynamoStore.sentenceTable, checkpoints) { replication.applySentence(it) } })
 
     private var scheduler: ScheduledExecutorService? = null
 

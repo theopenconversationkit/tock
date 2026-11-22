@@ -28,6 +28,21 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
+import ai.tock.nlp.core.DictionaryData
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.nlp.front.shared.config.Classification
+import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.inbox
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
+import ai.tock.nlp.front.shared.config.EntityTypeDefinition
+import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.nlp.front.shared.config.SentencesQuery
+import ai.tock.nlp.front.shared.config.SentencesQueryResult
+import ai.tock.nlp.front.storage.dynamodb.ClassifiedSentenceDynamoDAO
+import ai.tock.nlp.front.storage.dynamodb.DynamoApplicationRuntimeConfiguration
+import ai.tock.nlp.front.storage.dynamodb.EntityTypeDefinitionDynamoDAO
 import ai.tock.shared.service.BotAdditionalModulesService
 import ai.tock.storage.dynamodb.BotApplicationConfigurationDynamoDAO
 import ai.tock.storage.dynamodb.DynamoStore
@@ -58,6 +73,7 @@ import org.litote.kmongo.toId
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import java.time.Duration
+import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.Locale
 import java.util.ServiceLoader
@@ -132,6 +148,59 @@ class DynamoPublicationTest {
             debounce = Duration.ofMillis(100),
         )
 
+    // the NLP of the admin
+    private val nlpApplications = CopyOnWriteArrayList<ApplicationDefinition>()
+    private val intents = CopyOnWriteArrayList<IntentDefinition>()
+    private val entityTypes = CopyOnWriteArrayList<EntityTypeDefinition>()
+    private val dictionaries = CopyOnWriteArrayList<DictionaryData>()
+    private val sentences = CopyOnWriteArrayList<ClassifiedSentence>()
+    private val nlpSources =
+        NlpSources(
+            applications =
+                mockk {
+                    every { getApplications() } answers { nlpApplications.toList() }
+                    every { listenApplicationDefinitionChanges(any()) } answers { listeners += firstArg<() -> Unit>() }
+                },
+            intents =
+                mockk {
+                    every { getIntentsByApplicationId(any()) } answers { intents.filter { firstArg<Id<ApplicationDefinition>>() in it.applications } }
+                    every { listenIntentDefinitionChanges(any()) } answers { listeners += firstArg<() -> Unit>() }
+                },
+            entityTypes =
+                mockk {
+                    every { getEntityTypes() } answers { entityTypes.toList() }
+                    every { getAllDictionaryData() } answers { dictionaries.toList() }
+                    every { listenEntityTypeChanges(any()) } answers { listeners += firstArg<() -> Unit>() }
+                    every { listenDictionaryDataChanges(any()) } answers { listeners += firstArg<() -> Unit>() }
+                },
+            sentences =
+                mockk {
+                    every { getSentences(null, null, any()) } answers { sentences.filter { it.status == thirdArg() } }
+                    // the incremental publication: the sentences of an application modified after a date
+                    every { search(any()) } answers {
+                        val query = firstArg<SentencesQuery>()
+                        val result =
+                            sentences.filter { sentence ->
+                                sentence.applicationId == query.applicationId &&
+                                    query.modifiedAfter?.let { sentence.updateDate.isAfter(it.toInstant()) } != false
+                            }
+                        SentencesQueryResult(result.size.toLong(), result)
+                    }
+                },
+        )
+
+    private val nlpPublication =
+        DynamoPublication(
+            applicationDAO,
+            storyDAO,
+            featureDAO,
+            i18nDAO,
+            nlp = nlpSources,
+            interval = Duration.ofHours(1),
+            debounce = Duration.ofMillis(100),
+            sentenceCompleteInterval = Duration.ofHours(1),
+        )
+
     @BeforeAll
     fun start() {
         dynamo.start()
@@ -146,7 +215,9 @@ class DynamoPublicationTest {
     @AfterEach
     fun cleanup() {
         publication.stop()
+        nlpPublication.stop()
         listOf(applications, bots, stories, features, labels, listeners, businessRules, indicators).forEach { it.clear() }
+        listOf(nlpApplications, intents, entityTypes, dictionaries, sentences).forEach { it.clear() }
         DynamoStore.client.listTables().tableNames().forEach { table ->
             DynamoStore.client.scanPaginator { it.tableName(table) }.items().forEach { item ->
                 DynamoStore.client.deleteItem { it.tableName(table).key(mapOf(PK to item.getValue(PK), SK to item.getValue(SK))) }
@@ -368,5 +439,118 @@ class DynamoPublicationTest {
             check(System.currentTimeMillis() < deadline) { "timeout" }
             Thread.sleep(50)
         }
+    }
+
+    // ---------------------------------------------------------------- NLP
+
+    private val nlpApplication = ApplicationDefinition("nlp", namespace = "app", supportedLocales = setOf(Locale.FRENCH))
+
+    private fun sentence(
+        text: String,
+        status: ClassifiedSentenceStatus = validated,
+        intent: String = "greetings",
+        updateDate: Instant = Instant.now(),
+    ) = ClassifiedSentence(
+        text = text,
+        language = Locale.FRENCH,
+        applicationId = nlpApplication._id,
+        creationDate = updateDate,
+        updateDate = updateDate,
+        status = status,
+        classification = Classification(intent.toId(), emptyList()),
+        lastIntentProbability = 1.0,
+        lastEntityProbability = 1.0,
+    )
+
+    private fun exact(text: String) =
+        DynamoApplicationRuntimeConfiguration
+            .search(SentencesQuery(nlpApplication._id, Locale.FRENCH, search = text, status = setOf(validated, model), onlyExactMatch = true))
+            .sentences
+            .singleOrNull()
+
+    @Test
+    fun `GIVEN an NLP configuration in the admin WHEN it is published THEN the runtime reads it, keeps its own entity types, and follows the deletions`() {
+        nlpApplications += nlpApplication
+        val intent = IntentDefinition("greetings", "app", setOf(nlpApplication._id), emptySet())
+        intents += intent
+        intents += IntentDefinition("other_app", "app", setOf("other".toId()), emptySet())
+        entityTypes += EntityTypeDefinition("app:city", "a city")
+        dictionaries += DictionaryData("app", "city", onlyValues = true)
+        // created by the runtime
+        EntityTypeDefinitionDynamoDAO.save(EntityTypeDefinition("app:runtime", "created by the runtime"))
+
+        val report = nlpPublication.publishAll()
+        assertEquals(emptyMap(), report.failed)
+        assertEquals(listOf(nlpApplication), DynamoApplicationRuntimeConfiguration.getApplications())
+        assertEquals(listOf(intent), DynamoApplicationRuntimeConfiguration.getIntentsByApplicationId(nlpApplication._id))
+        assertEquals(intent._id, DynamoApplicationRuntimeConfiguration.getIntentIdByQualifiedName("app:greetings"))
+        assertEquals(setOf("app:city", "app:runtime"), EntityTypeDefinitionDynamoDAO.getEntityTypes().map { it.name }.toSet())
+        assertEquals(dictionaries.toList(), EntityTypeDefinitionDynamoDAO.getAllDictionaryData())
+        assertTrue(nlpPublication.publishAll().isEmpty)
+
+        intents.clear()
+        entityTypes.clear()
+        dictionaries.clear()
+        nlpPublication.publishAll()
+        assertEquals(emptyList(), DynamoApplicationRuntimeConfiguration.getIntentsByApplicationId(nlpApplication._id))
+        assertEquals(listOf("app:runtime"), EntityTypeDefinitionDynamoDAO.getEntityTypes().map { it.name })
+        assertEquals(emptyList(), EntityTypeDefinitionDynamoDAO.getAllDictionaryData())
+    }
+
+    @Test
+    fun `GIVEN validated sentences in the admin WHEN they are published THEN the parser finds them, and the inbox of the runtime does not replace them`() {
+        nlpApplications += nlpApplication
+        sentences += sentence("bonjour")
+        sentences += sentence("salut", model)
+        sentences += sentence("dans l'inbox", inbox)
+
+        val report = nlpPublication.publishAll()
+        assertEquals(2, report.written[DynamoPublication.Kind.NLP_SENTENCE])
+        assertEquals("bonjour", exact("bonjour")?.text)
+        assertEquals("salut", exact("salut")?.text)
+        assertNull(exact("dans l'inbox"))
+        assertNull(DynamoStore.getItem(DynamoStore.sentenceTable, ClassifiedSentenceDynamoDAO.keyOf(sentences[2]).pk, "dans l'inbox"))
+
+        // the parser had not found it before the publication
+        DynamoApplicationRuntimeConfiguration.save(sentence("bonjour", inbox, intent = "unknown"), null)
+        assertEquals(validated, exact("bonjour")?.status)
+        assertEquals("greetings", exact("bonjour")?.classification?.intentId?.toString())
+
+        // nothing changed: nothing is written, even by a new admin that reads the fingerprints in DynamoDB
+        assertEquals(null, nlpPublication.publishAll().written[DynamoPublication.Kind.NLP_SENTENCE])
+        val restarted = DynamoPublication(applicationDAO, storyDAO, featureDAO, i18nDAO, nlp = nlpSources)
+        assertEquals(null, restarted.publishAll().written[DynamoPublication.Kind.NLP_SENTENCE])
+    }
+
+    @Test
+    fun `GIVEN published sentences WHEN they are modified in the admin THEN the incremental publication follows, and the complete one finds the deletions`() {
+        nlpApplications += nlpApplication
+        val old = Instant.now().minusSeconds(3600)
+        sentences += sentence("bonjour", updateDate = old)
+        sentences += sentence("salut", updateDate = old)
+        sentences += sentence("au revoir", updateDate = old)
+        sentences += sentence("supprimée", updateDate = old)
+        nlpPublication.publishAll()
+
+        // the usage counters do not change the published content
+        sentences.replaceAll { if (it.text == "salut") it.copy(usageCount = 10, updateDate = Instant.now()) else it }
+        // another intent, and back to the inbox
+        sentences.replaceAll { if (it.text == "bonjour") it.copy(classification = Classification("goodbye".toId(), emptyList()), updateDate = Instant.now()) else it }
+        sentences.replaceAll { if (it.text == "au revoir") it.copy(status = inbox, updateDate = Instant.now()) else it }
+        // deleted from MongoDB, without a trace for the incremental publication
+        sentences.removeIf { it.text == "supprimée" }
+
+        val incremental = nlpPublication.publish(setOf(DynamoPublication.Kind.NLP_SENTENCE))
+        assertEquals(1, incremental.written[DynamoPublication.Kind.NLP_SENTENCE])
+        assertEquals(1, incremental.deleted[DynamoPublication.Kind.NLP_SENTENCE])
+        assertEquals("goodbye", exact("bonjour")?.classification?.intentId?.toString())
+        assertNull(exact("au revoir"))
+        assertNotNull(exact("supprimée"))
+
+        // a deleted intent or entity: the next publication of the sentences is complete
+        nlpPublication.start()
+        listeners.forEach { it() }
+        waitUntil { exact("supprimée") == null }
+        assertNotNull(exact("salut"))
     }
 }

@@ -37,6 +37,22 @@ import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.bot.mongo.DialogCol
 import ai.tock.bot.mongo.MONGO_DATABASE
 import ai.tock.bot.mongo.botMongoModule
+import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.nlp.front.shared.config.Classification
+import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.inbox
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
+import ai.tock.nlp.front.shared.config.SentencesQuery
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLog
+import ai.tock.nlp.front.shared.parser.ParseQuery
+import ai.tock.nlp.front.shared.parser.QueryContext
+import ai.tock.nlp.front.storage.dynamodb.ClassifiedSentenceDynamoDAO
+import ai.tock.nlp.front.storage.dynamodb.DynamoApplicationRuntimeConfiguration
+import ai.tock.nlp.front.storage.dynamodb.ParseRequestLogDynamoDAO
+import ai.tock.nlp.front.storage.mongo.frontMongoModule
+import ai.tock.shared.getDatabase
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.sharedTestModule
@@ -60,6 +76,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.litote.kmongo.Id
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
@@ -69,6 +86,7 @@ import org.litote.kmongo.toId
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import java.time.Duration
+import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 import java.util.UUID
@@ -102,6 +120,7 @@ class DynamoReplicationTest {
     private val labels: I18nDAO get() = injector.provide()
     private val stories: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val features: FeatureDAO get() = injector.provide()
+    private val sentences: ClassifiedSentenceDAO get() = injector.provide()
 
     @BeforeAll
     fun start() {
@@ -116,13 +135,23 @@ class DynamoReplicationTest {
             Kodein {
                 import(sharedTestModule)
                 import(botMongoModule)
+                import(frontMongoModule)
             },
         )
         replication = newReplication()
     }
 
     private fun newReplication() =
-        DynamoReplication(database, injector.provide<BotApplicationConfigurationDAO>(), stories, features, labels, injector.provide<ai.tock.bot.admin.indicators.IndicatorDAO>(), Duration.ofHours(1))
+        DynamoReplication(
+            database,
+            injector.provide<BotApplicationConfigurationDAO>(),
+            stories,
+            features,
+            labels,
+            injector.provide<ai.tock.bot.admin.indicators.IndicatorDAO>(),
+            Duration.ofHours(1),
+            NlpTargets(sentences, injector.provide()),
+        )
 
     private fun newUser() = PlayerId("user_${UUID.randomUUID()}", PlayerType.user)
 
@@ -301,5 +330,65 @@ class DynamoReplicationTest {
             System.clearProperty("tock_dynamodb_replication_enabled")
         }
         assertEquals(emptySet(), DynamoReplicationModulesService().customModules())
+    }
+
+    // ---------------------------------------------------------------- NLP
+
+    private fun sentence(
+        applicationId: Id<ApplicationDefinition>,
+        text: String,
+        status: ClassifiedSentenceStatus,
+        intent: String = "greetings",
+    ) = ClassifiedSentence(
+        text = text,
+        language = Locale.FRENCH,
+        applicationId = applicationId,
+        creationDate = Instant.now(),
+        updateDate = Instant.now(),
+        status = status,
+        classification = Classification(intent.toId(), emptyList()),
+        lastIntentProbability = 0.5,
+        lastEntityProbability = 1.0,
+    )
+
+    private fun inMongo(
+        applicationId: Id<ApplicationDefinition>,
+        text: String,
+    ) = sentences
+        .search(SentencesQuery(applicationId, Locale.FRENCH, search = text, onlyExactMatch = true, notStatus = null))
+        .sentences
+        .singleOrNull()
+
+    @Test
+    fun `GIVEN sentences of the inbox and unknown counts in the runtime WHEN they are replicated THEN the Studio reads them, and the validated sentences of the admin are kept`() {
+        val applicationId = newId<ApplicationDefinition>()
+        DynamoApplicationRuntimeConfiguration.save(sentence(applicationId, "dans l'inbox", inbox), null)
+        repeat(2) { ClassifiedSentenceDynamoDAO.incrementUnknownStat(applicationId, Locale.FRENCH, "dans l'inbox") }
+        // validated in the Studio while the runtime was parsing it
+        sentences.save(sentence(applicationId, "validée", validated))
+        DynamoApplicationRuntimeConfiguration.save(sentence(applicationId, "validée", inbox, intent = "unknown"), null)
+
+        replication.replicate()
+
+        val replicated = assertNotNull(inMongo(applicationId, "dans l'inbox"))
+        assertEquals(inbox, replicated.status)
+        assertEquals("greetings", replicated.classification.intentId.toString())
+        assertEquals(2, replicated.unknownCount)
+        val kept = assertNotNull(inMongo(applicationId, "validée"))
+        assertEquals(validated, kept.status)
+        assertEquals("greetings", kept.classification.intentId.toString())
+    }
+
+    @Test
+    fun `GIVEN a parse log of the runtime WHEN it is replicated THEN it is saved by the DAO of the admin`() {
+        val applicationId = newId<ApplicationDefinition>()
+        ParseRequestLogDynamoDAO.save(
+            ParseRequestLog(applicationId, ParseQuery(listOf("bonjour"), "app", "nlp", QueryContext(Locale.FRENCH)), null, 12),
+        )
+
+        replication.replicate()
+
+        val logs = getDatabase(ai.tock.nlp.front.storage.mongo.MONGO_DATABASE).getCollection<org.bson.Document>("parse_request_log")
+        assertEquals(1, logs.countDocuments(org.bson.Document("applicationId", applicationId.toString())))
     }
 }

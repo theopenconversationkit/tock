@@ -26,12 +26,17 @@
 
     <artifactId>tock-bot-storage-dynamodb-publication</artifactId>
     <name>Tock Bot Storage DynamoDB Publication</name>
-    <description>Publishes the configuration of the admin (stories, features, labels, bot configurations) to the DynamoDB storage of the serverless runtime</description>
+    <description>Publishes the configuration of the admin (stories, features, labels, bot configurations, NLP applications and validated sentences) to the DynamoDB storage of the serverless runtime</description>
 
     <dependencies>
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-storage-dynamodb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-front-storage-dynamodb</artifactId>
             <version>${project.version}</version>
         </dependency>
 

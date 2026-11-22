@@ -25,6 +25,10 @@ import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
+import ai.tock.nlp.core.DictionaryData
+import ai.tock.nlp.front.storage.dynamodb.ApplicationDefinitionDynamoDAO
+import ai.tock.nlp.front.storage.dynamodb.EntityTypeDefinitionDynamoDAO
+import ai.tock.nlp.front.storage.dynamodb.IntentDefinitionDynamoDAO
 import ai.tock.storage.dynamodb.BotApplicationConfigurationDynamoDAO
 import ai.tock.storage.dynamodb.FeatureDynamoDAO
 import ai.tock.storage.dynamodb.I18nDynamoDAO
@@ -45,8 +49,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * Publishes the configuration of the admin, read from its DAOs (MongoDB), to the DynamoDB storage of the
  * serverless runtime: the bot application configurations, the bot configurations, the stories, the features,
- * the labels, the RAG, vector store, observability, document compressor and business rules configurations, and
- * the indicators.
+ * the labels, the RAG, vector store, observability, document compressor and business rules configurations, the
+ * indicators, and, with [nlp], the NLP applications, intents, entity types, dictionaries and validated sentences
+ * (see [SentencePublication]).
  *
  * - a publication compares each item with its DynamoDB version and writes only the changed ones;
  * - it deletes only the items it has published (see [PublicationManifest]): the writes of the runtime are kept;
@@ -63,13 +68,19 @@ class DynamoPublication(
     private val labels: I18nDAO,
     private val settings: BotSettingsSources = BotSettingsSources(),
     private val indicators: IndicatorDAO? = null,
+    private val nlp: NlpSources? = null,
     private val interval: Duration = Duration.ofMinutes(5),
     private val debounce: Duration = Duration.ofSeconds(1),
+    sentenceCompleteInterval: Duration = Duration.ofHours(1),
 ) {
     private val logger = KotlinLogging.logger {}
 
     /** The kinds of published items, in the order of a publication: the scopes of the next ones come from the first ones. */
-    enum class Kind { APPLICATION, BOT, STORY, FEATURE, LABEL, SETTINGS, INDICATOR }
+    enum class Kind { APPLICATION, BOT, STORY, FEATURE, LABEL, SETTINGS, INDICATOR, NLP_APPLICATION, NLP_INTENT, NLP_ENTITY_TYPE, NLP_DICTIONARY, NLP_SENTENCE }
+
+    private val nlpKinds = setOf(Kind.NLP_APPLICATION, Kind.NLP_INTENT, Kind.NLP_ENTITY_TYPE, Kind.NLP_DICTIONARY, Kind.NLP_SENTENCE)
+
+    private val sentences = nlp?.let { SentencePublication(it, sentenceCompleteInterval) }
 
     /** The result of a publication, by kind. */
     data class Report(
@@ -109,6 +120,11 @@ class DynamoPublication(
                     Kind.LABEL -> publishLabels(counters)
                     Kind.SETTINGS -> publishSettings(counters)
                     Kind.INDICATOR -> publishIndicators(counters)
+                    Kind.NLP_APPLICATION -> publishNlpApplications(counters)
+                    Kind.NLP_INTENT -> publishNlpIntents(counters)
+                    Kind.NLP_ENTITY_TYPE -> publishNlpEntityTypes(counters)
+                    Kind.NLP_DICTIONARY -> publishNlpDictionaries(counters)
+                    Kind.NLP_SENTENCE -> publishSentences(counters)
                 }
             } catch (e: Exception) {
                 logger.error(e) { "the publication of the ${kind.name.lowercase()} items to DynamoDB failed" }
@@ -130,6 +146,17 @@ class DynamoPublication(
         listen("bot configurations") { applicationConfigurations.listenBotChanges { request(Kind.entries.toSet()) } }
         listen("stories") { stories.listenChanges { request(setOf(Kind.STORY)) } }
         listen("labels") { labels.listenI18n { request(setOf(Kind.LABEL)) } }
+        if (nlp != null) {
+            // a deleted intent or entity changes the sentences without changing their update date
+            val structure = {
+                sentences?.requestComplete()
+                request(nlpKinds)
+            }
+            listen("NLP applications") { nlp.applications.listenApplicationDefinitionChanges(structure) }
+            listen("intents") { nlp.intents.listenIntentDefinitionChanges(structure) }
+            listen("entity types") { nlp.entityTypes.listenEntityTypeChanges(structure) }
+            listen("dictionaries") { nlp.entityTypes.listenDictionaryDataChanges { request(setOf(Kind.NLP_DICTIONARY)) } }
+        }
         logger.info { "publication of the admin configuration to DynamoDB started" }
     }
 
@@ -420,5 +447,80 @@ class DynamoPublication(
                 IndicatorDynamoDAO.findByNameAndBotId(ref.getValue("name"), ref.getValue("namespace"), ref.getValue("botId"))?.let { IndicatorDynamoDAO.delete(it) }
             },
         )
+    }
+
+    // ---------------------------------------------------------------- NLP
+
+    private fun publishNlpApplications(counters: Counters) {
+        val sources = nlp ?: return
+        sync(
+            Kind.NLP_APPLICATION,
+            counters,
+            source = sources.applications.getApplications().associateBy { it._id.toString() },
+            target = ApplicationDefinitionDynamoDAO.getApplications().associateBy { it._id.toString() },
+            ref = { mapOf("namespace" to it.namespace, "name" to it.name) },
+            write = { application ->
+                // an application of the runtime with the same name is replaced
+                ApplicationDefinitionDynamoDAO
+                    .getApplications()
+                    .filter { it._id != application._id && it.namespace == application.namespace && it.name == application.name }
+                    .forEach { ApplicationDefinitionDynamoDAO.documents.delete(it._id.toString()) }
+                ApplicationDefinitionDynamoDAO.documents.save(application)
+            },
+            delete = { key, _ -> ApplicationDefinitionDynamoDAO.documents.delete(key) },
+        )
+    }
+
+    private fun publishNlpIntents(counters: Counters) {
+        val sources = nlp ?: return
+        sync(
+            Kind.NLP_INTENT,
+            counters,
+            // an intent can be shared by several applications
+            source =
+                sources.applications
+                    .getApplications()
+                    .flatMap { sources.intents.getIntentsByApplicationId(it._id) }
+                    .associateBy { it._id.toString() },
+            target = IntentDefinitionDynamoDAO.documents.all().associateBy { it._id.toString() },
+            ref = { mapOf("namespace" to it.namespace, "name" to it.name) },
+            write = { IntentDefinitionDynamoDAO.documents.save(it) },
+            delete = { key, _ -> IntentDefinitionDynamoDAO.documents.delete(key) },
+        )
+    }
+
+    private fun publishNlpEntityTypes(counters: Counters) {
+        val sources = nlp ?: return
+        sync(
+            Kind.NLP_ENTITY_TYPE,
+            counters,
+            source = sources.entityTypes.getEntityTypes().associateBy { it.name },
+            target = EntityTypeDefinitionDynamoDAO.getEntityTypes().associateBy { it.name },
+            ref = { emptyMap() },
+            write = { EntityTypeDefinitionDynamoDAO.save(it) },
+            delete = { key, _ -> EntityTypeDefinitionDynamoDAO.entityTypes.delete(key) },
+        )
+    }
+
+    private fun DictionaryData.key() = "$namespace:$entityName"
+
+    private fun publishNlpDictionaries(counters: Counters) {
+        val sources = nlp ?: return
+        sync(
+            Kind.NLP_DICTIONARY,
+            counters,
+            source = sources.entityTypes.getAllDictionaryData().associateBy { it.key() },
+            target = EntityTypeDefinitionDynamoDAO.getAllDictionaryData().associateBy { it.key() },
+            ref = { emptyMap() },
+            write = { EntityTypeDefinitionDynamoDAO.save(it) },
+            delete = { key, _ -> EntityTypeDefinitionDynamoDAO.dictionaries.delete(key) },
+        )
+    }
+
+    private fun publishSentences(counters: Counters) {
+        val publication = sentences ?: return
+        val result = publication.publish()
+        if (result.written > 0) counters.written.merge(Kind.NLP_SENTENCE, result.written, Int::plus)
+        if (result.deleted > 0) counters.deleted.merge(Kind.NLP_SENTENCE, result.deleted, Int::plus)
     }
 }

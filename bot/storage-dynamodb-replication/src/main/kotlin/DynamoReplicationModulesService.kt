@@ -17,6 +17,8 @@
 package ai.tock.storage.dynamodb.replication
 
 import ai.tock.bot.mongo.MONGO_DATABASE
+import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
+import ai.tock.nlp.front.service.storage.ParseRequestLogDAO
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.longProperty
 import ai.tock.shared.service.BotAdditionalModulesService
@@ -51,6 +53,10 @@ class DynamoReplicationModulesService : BotAdditionalModulesService {
                                     features = instance(),
                                     labels = instance(),
                                     indicators = instanceOrNull(),
+                                    nlp =
+                                        instanceOrNull<ClassifiedSentenceDAO>()?.let { sentences ->
+                                            instanceOrNull<ParseRequestLogDAO>()?.let { NlpTargets(sentences, it) }
+                                        },
                                     interval = Duration.ofMillis(longProperty("tock_dynamodb_replication_interval_in_ms", 5000)),
                                 ).also { it.start() }
                         } catch (e: Exception) {
