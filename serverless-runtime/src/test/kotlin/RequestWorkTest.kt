@@ -78,6 +78,28 @@ class RequestWorkTest {
         Thread.sleep(1_500)
 
         assertEquals(0, runs)
-        assertTrue("i18n_stats" in executor.periodicTasks && "periodic_1" in executor.periodicTasks, executor.periodicTasks.keys.toString())
+        // the unnamed one is named after its caller: the same name at each start
+        assertTrue(
+            "i18n_stats" in executor.periodicTasks && "requestworktest_given_periodic_tasks_when_they_are_scheduled_then_they_are_registered_by_name_instead_of_being_run" in executor.periodicTasks,
+            executor.periodicTasks.keys.toString(),
+        )
+    }
+
+    private class LazyTask(
+        executor: TrackingExecutor,
+    ) {
+        val cache: Int by lazy {
+            executor.setPeriodic(Duration.ofSeconds(10)) { }
+            0
+        }
+    }
+
+    @Test
+    fun `GIVEN unnamed periodic tasks registered by a lazy member WHEN they are registered twice THEN they are named after the member`() {
+        val executor = TrackingExecutor(threads = 1)
+        LazyTask(executor).cache
+        LazyTask(executor).cache
+
+        assertEquals(setOf("lazytask_cache", "lazytask_cache_2"), executor.periodicTasks.keys)
     }
 }

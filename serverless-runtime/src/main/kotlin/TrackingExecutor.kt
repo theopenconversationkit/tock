@@ -45,9 +45,12 @@ class TrackingExecutor(
             Thread(runnable, "tock-serverless-${threadCount.incrementAndGet()}").apply { isDaemon = true }
         }
 
-    /** The periodic tasks, by name: the unnamed ones are named `periodic_<n>`. */
+    /**
+     * The periodic tasks, by name. The unnamed ones are named after the class and the method that register them
+     * (`translator_statscache`, `messengerconnector_registercheckwebhook`), with `_2`, `_3`... for the next ones of the same caller:
+     * the name stays the same from one start to the next, so that an external scheduler can trigger it.
+     */
     val periodicTasks: MutableMap<String, () -> Unit> = ConcurrentHashMap()
-    private val periodicCount = AtomicInteger()
 
     override fun executeBlocking(
         delay: Duration,
@@ -94,7 +97,45 @@ class TrackingExecutor(
         initialDelay: Duration,
         delay: Duration,
         runnable: () -> Unit,
-    ): Long = setPeriodic("periodic_${periodicCount.incrementAndGet()}", initialDelay, delay, runnable)
+    ): Long = setPeriodic(callerName(), initialDelay, delay, runnable)
+
+    /** The name of an unnamed periodic task: its caller, outside of the executor. */
+    private fun callerName(): String {
+        val caller =
+            StackWalker.getInstance().walk { frames ->
+                frames
+                    .filter { frame -> frame.className != TrackingExecutor::class.java.name && !frame.className.startsWith("ai.tock.shared.Executor") }
+                    .findFirst()
+                    .orElse(null)
+            }
+        val base =
+            if (caller == null) {
+                "periodic"
+            } else {
+                // Translator$statsCache$2.invoke: the lambda of a member (lower case) is named after the member
+                val parts =
+                    caller.className
+                        .substringAfterLast('.')
+                        .split('$')
+                        .dropLastWhile { it.isEmpty() || it.all(Char::isDigit) }
+                val last = parts.last()
+                val (owner, member) =
+                    if (parts.size > 1 && last.first().isLowerCase()) {
+                        parts[parts.size - 2] to last
+                    } else {
+                        last to
+                            caller.methodName
+                                .removePrefix("<")
+                                .removeSuffix(">")
+                                .substringBefore('$')
+                                // the lambda of a lazy property compiled by K2: <property>_delegate$lambda$0
+                                .removeSuffix("_delegate")
+                                .ifEmpty { "lambda" }
+                    }
+                "${owner}_$member".lowercase().replace(Regex("[^a-z0-9_]"), "_")
+            }
+        return generateSequence(1) { it + 1 }.map { if (it == 1) base else "${base}_$it" }.first { it !in periodicTasks }
+    }
 
     override fun setPeriodic(
         name: String,
