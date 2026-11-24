@@ -29,6 +29,7 @@ import ai.tock.bot.engine.feature.FeatureRuntimeDAO
 import ai.tock.bot.engine.feature.asRuntimeDAO
 import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
+import ai.tock.shared.cache.TockCache
 import ai.tock.translator.I18nRuntimeDAO
 import ai.tock.translator.asRuntimeDAO
 import com.github.salomonbrys.kodein.Kodein
@@ -67,6 +68,7 @@ val botDynamoModule =
         bind<BotBusinessRulesConfigurationRuntimeDAO>() with provider { BotBusinessRulesConfigurationDynamoDAO }
         bind<IndicatorRuntimeDAO>() with provider { IndicatorDynamoDAO }
         bind<MetricRuntimeDAO>() with provider { MetricDynamoDAO }
+        bind<TockCache>() with provider { DynamoTockCache }
         if (isInClasspath("ai.tock.bot.connector.whatsapp.cloud.database.repository.PayloadWhatsAppCloudDAO")) {
             import(whatsAppCloudDynamoModule, allowOverride = true)
         }

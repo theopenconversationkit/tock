@@ -5,7 +5,7 @@
 | Branche | Worktree | Commits | Contenu |
 |---|---|---|---|
 | `refactor/serverless-core-split` | `~/dev/tock-split` | 21 | Découpage cœur / façades (étapes 0 à 6) et runtime serverless sur DynamoDB (étape 7) |
-| `feat/s3-storage` | `~/dev/tock-s3` | 1 | Modèles NLP et fichiers uploadés sur S3 |
+| `feat/s3-storage` | `~/dev/tock-s3` | 1 | Modèles NLP et fichiers uploadés sur S3 ; reporté sur `refactor/serverless-core-split` (lot C) |
 | `feat/poll-change-detection` | `~/dev/tock-versions` | 1 | Mode `poll` : `tock_versions` et vérification des modèles à l'usage |
 | `spike/dynamodb` | `~/dev/tock-dynamo-spike` | 1 | Spike de port DynamoDB de 3 DAO ; repris et dépassé par `refactor/serverless-core-split`, à abandonner |
 
@@ -161,7 +161,7 @@ Branche `refactor/serverless-core-split`, un commit par étape ou par tranche.
 
 ## Autres branches
 
-### `feat/s3-storage`
+### `feat/s3-storage` (reporté sur `refactor/serverless-core-split`)
 
 - `util/aws-tools` : `S3Bucket` et `S3Clients`, configurés par `tock_s3_endpoint`, `tock_s3_region` et `tock_s3_path_style`.
 - `nlp/model/storage-s3` : activé par `tock_nlp_model_storage=s3` et `tock_nlp_model_s3_bucket`. Date de mise à jour conservée à la milliseconde dans une métadonnée ; changements détectés par un listing périodique, uniquement en mode `stream`.
@@ -205,9 +205,14 @@ Les DAO DynamoDB n'ont pas de change stream : sans ce lot, une instance chaude n
 - Trouvé au passage : le lanceur serverless n'appelait ni `initEncryptor()` (qui charge aussi les obfuscateurs) ni `initTranslator()`, contrairement à `BotVerticle`. Corrigé.
 - Tests : `DynamoChangesTest` (4), un test de publication (seul le canal modifié est notifié, une seule fois), et un test de bout en bout WhatsApp : un libellé en cache, republié avec un nouveau texte, apparaît dans la réponse suivante. Contrôles positifs faits : sans l'écriture du compteur, 3 tests unitaires sur 4 et le test de bout en bout échouent.
 
-### C. Modèles NLP et fichiers hors de Mongo
+### C. Modèles NLP et fichiers hors de Mongo (fait)
 
-Porter `feat/s3-storage` sur `refactor/serverless-core-split` (conflits attendus : `UploadedFilesStorage` est dans bot/engine, déplacé vers `tock-bot-engine-core`). La détection des nouveaux modèles par listing ne marche qu'en mode `stream` : en serverless, vérifier à l'usage comme `NlpModelRepository` en mode `poll`, ou par l'item de version du lot B.
+- Le commit de `feat/s3-storage` est reporté sur cette branche : `UploadedFilesStorage` est dans `tock-bot-engine-core`.
+- `tock-bot-storage-s3` dépend de `tock-bot-engine-core`, et les deux modules S3 excluent `tock-shared` de `tock-aws-tools` (`S3Bucket` n'utilise que le cœur). Verrouillés par l'enforcer : ni Vert.x, ni Netty, ni Mongo, ni `tock-shared` à l'exécution.
+- Modèles : le listing des modèles est une tâche nommée (`nlp_model_s3_poll`) et une vérification `ChangeChecks`, au plus une fois par `tock_nlp_model_s3_refresh_interval_seconds` : un runtime gelé entre ses requêtes voit les nouveaux modèles à la requête suivante.
+- `DynamoTockCache` (`tock-storage-dynamodb-core`, lié par `botDynamoModule`) : le cache Tock du runtime (pièces jointes Messenger, fichiers uploadés par défaut), partition `CACHE#<type>` de la table d'exécution, non recopié. Un item DynamoDB fait au plus 400 Ko : en serverless, les fichiers uploadés passent par S3 (`tock_bot_files_storage=s3`).
+- Le runtime serverless sert les fichiers uploadés (`/f/*`, `tock_bot_serve_files`) par une route neutre, `UploadedFilesService.routes()` : redirection présignée, contenu ou 404, comme la route Vert.x.
+- Tests : les 19 tests S3, plus un test de la vérification à l'entrée des requêtes (contrôle positif fait), `DynamoTockCacheTest`, et un fichier uploadé puis téléchargé dans le test de bout en bout serverless.
 
 ### D. Runtime NLP serverless et déploiement
 

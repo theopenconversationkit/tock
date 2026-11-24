@@ -34,6 +34,7 @@
         <module>service</module>
         <module>client</module>
         <module>storage-mongo</module>
+        <module>storage-s3</module>
         <module>opennlp</module>
         <module>rasa</module>
         <module>sagemaker</module>

@@ -18,9 +18,11 @@ package ai.tock.serverless
 
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.botModule
+import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.serverless.queue.RequestQueueing
 import ai.tock.shared.Executor
 import ai.tock.shared.Loader
+import ai.tock.shared.booleanProperty
 import ai.tock.shared.changes.ChangeChecks
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
@@ -89,6 +91,9 @@ object ServerlessBotLauncher {
         // the state of the storages without change stream, before the bots load their configuration
         ChangeChecks.prepareAll()
         initTranslator()
+        if (booleanProperty("tock_bot_serve_files", true) && "serve_files" !in ServerlessBotServer.serviceIdentifiers) {
+            ServerlessBotServer.registerRoutes("serve_files", UploadedFilesService.routes())
+        }
         BotRepository.installBots(emptyList(), createApplicationIfNotExists)
         return ServerlessHttpServer(port).start().also {
             logger.info { "serverless bots listening on ${it.port}: ${ServerlessBotServer.serviceIdentifiers}" }

@@ -22,27 +22,29 @@ import ai.tock.bot.engine.TockBotBus
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.file
 import ai.tock.shared.InternalTockApi
-import ai.tock.shared.cache.getFromCache
-import ai.tock.shared.cache.putInCache
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
+import ai.tock.shared.injector
 import ai.tock.shared.property
+import ai.tock.shared.provideOrDefault
 import ai.tock.shared.vertx.blocking
 import ai.tock.translator.I18nLabel
 import io.vertx.core.buffer.Buffer
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
-import org.litote.kmongo.toId
 import java.util.UUID
 
 /**
  * To manage uploaded files.
  */
 object UploadedFilesService {
-    private const val UPLOADED_TYPE = "_uploaded"
     private val basePath = property("tock_bot_serve_files_path", "/f/")
     private val imagesTypes = setOf("png", "jpg", "jpeg", "svg", "gif")
     private val audioTypes = setOf("ogg", "mp3", "oga")
     private val videoTypes = setOf("ogv", "mp4")
+
+    private val storage: UploadedFilesStorage get() = injector.provideOrDefault<UploadedFilesStorage> { TockCacheUploadedFilesStorage }
 
     fun attachmentType(url: String): AttachmentType =
         if (url.length > 2) {
@@ -73,7 +75,7 @@ object UploadedFilesService {
 
         val suffix = name.substring(lastDot + 1)
         val fileId = "$id.$suffix"
-        putInCache(fileId.toId(), UPLOADED_TYPE, bytes)
+        storage.save(fileId, guessContentType(fileId), bytes)
 
         return MediaFileDescriptor(suffix, fileName, id, description = description)
     }
@@ -95,7 +97,7 @@ object UploadedFilesService {
         bus: BotBus,
         id: String,
         suffix: String,
-    ): String = (bus as? TockBotBus)?.connector?.getBaseUrl() + basePath + fileId(id, suffix)
+    ): String = fileId(id, suffix).let { fileId -> storage.publicUrl(fileId) ?: ((bus as? TockBotBus)?.connector?.getBaseUrl() + basePath + fileId) }
 
     fun getFileContentFromUrl(url: String): ByteArray? =
         url.run {
@@ -107,12 +109,17 @@ object UploadedFilesService {
             }
         }
 
-    internal fun getFileContentFromId(id: String): ByteArray? = getFromCache(id.toId(), UPLOADED_TYPE) as? ByteArray
+    internal fun getFileContentFromId(id: String): ByteArray? = storage.load(id)
 
     private fun downloadFile(
         context: RoutingContext,
         id: String,
     ) {
+        val redirectUrl = storage.redirectUrl(id)
+        if (redirectUrl != null) {
+            context.redirect(redirectUrl)
+            return
+        }
         val bytes: ByteArray? = getFileContentFromId(id)
         if (bytes != null) {
             context
@@ -140,6 +147,23 @@ object UploadedFilesService {
                 else -> "application/octet-stream"
             }
         }
+
+    /** The download route of the files, for the servers without Vert.x (the serverless runtime). */
+    @InternalTockApi
+    fun routes(): HttpRoutes =
+        HttpRoutes {
+            get("$basePath*") { request -> download(request.path.substring(basePath.length).lowercase()) }
+        }
+
+    private fun download(id: String): HttpResponse {
+        val redirectUrl = storage.redirectUrl(id)
+        if (redirectUrl != null) {
+            return HttpResponse(302, mapOf("Location" to listOf(redirectUrl)))
+        }
+        return getFileContentFromId(id)
+            ?.let { HttpResponse(200, mapOf("Content-Type" to listOf(guessContentType(id))), it) }
+            ?: HttpResponse.status(404)
+    }
 
     @InternalTockApi
     fun configure(): CoroutineRouterSupport.(Router) -> Unit =

@@ -26,6 +26,7 @@ import ai.tock.bot.definition.story
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.dialog.ArchivedEntityValue
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
@@ -62,8 +63,10 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
 import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -298,5 +301,20 @@ class ServerlessWhatsAppBotTest {
             I18nDynamoDAO.publish(label)
             DynamoChanges.changed(listOf(DynamoChanges.LABEL))
         }
+    }
+
+    @Test
+    fun `GIVEN an uploaded file WHEN it is downloaded THEN the runtime serves it from the cache in DynamoDB`() {
+        val file = assertNotNull(UploadedFilesService.uploadFile("app", "image.png", byteArrayOf(1, 2, 3)))
+
+        val response =
+            client.send(
+                HttpRequest.newBuilder(URI("http://localhost:${server.port}/f/${file.id}.png")).build(),
+                BodyHandlers.ofByteArray(),
+            )
+
+        assertEquals(200, response.statusCode())
+        assertEquals("image/png", response.headers().firstValue("Content-Type").orElse(null))
+        assertContentEquals(byteArrayOf(1, 2, 3), response.body())
     }
 }

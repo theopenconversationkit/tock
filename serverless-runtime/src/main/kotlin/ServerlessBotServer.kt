@@ -69,6 +69,12 @@ object ServerlessBotServer : BotServer {
             .also { registrations += it }
     }
 
+    /** Registers [routes], without healthcheck: the services of the runtime itself (the uploaded files). */
+    fun registerRoutes(
+        serviceIdentifier: String,
+        routes: HttpRoutes,
+    ): ServiceRegistration = Registration(serviceIdentifier, routes).also { registrations += it }
+
     override fun unregisterServices(registration: ServiceRegistration) {
         registrations.remove(registration)
     }

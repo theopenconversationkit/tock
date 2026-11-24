@@ -58,6 +58,7 @@
         <module>storage-dynamodb</module>
         <module>storage-dynamodb-publication</module>
         <module>storage-dynamodb-replication</module>
+        <module>storage-s3</module>
 
         <module>toolkit-base</module>
         <module>toolkit</module>
