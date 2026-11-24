@@ -207,6 +207,7 @@ nav:
       - operate/authentication.md
       - operate/supervision.md
       - operate/cloud.md
+      - operate/serverless.md
       - operate/troubleshooting.md
   - Project:
       - project/index.md

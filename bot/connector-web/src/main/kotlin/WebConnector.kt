@@ -30,7 +30,6 @@ import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
-import ai.tock.bot.connector.web.sse.SseEndpoint
 import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryStepDef
@@ -120,9 +119,6 @@ class WebConnector internal constructor(
                         // Fallback to previous property name for backward compatibility
                         ?: propertyOrNull("allow_markdown").toBoolean(),
             )
-
-        /** The server-sent events of tock-bot-connector-web-sse: created only when they are enabled. */
-        internal val sseEndpoint by lazy { SseEndpoint(webMapper) }
 
         /** The mapper of the responses (SseEndpoint.webMapper, without loading the Vert.x endpoint). */
         internal val webMapper: ObjectMapper =

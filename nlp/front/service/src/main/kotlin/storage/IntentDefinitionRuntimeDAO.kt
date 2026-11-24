@@ -34,6 +34,9 @@ interface IntentDefinitionRuntimeDAO {
 
     fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition>
 
+    /** The intents of [namespace]: the intents shared with the applications that import it. */
+    fun getIntentsByNamespace(namespace: String): List<IntentDefinition>
+
     companion object {
         /**
          * The bound [IntentDefinitionRuntimeDAO], or the bound [IntentDefinitionDAO] adapted to it.
@@ -53,4 +56,6 @@ private class IntentDefinitionRuntimeDAOAdapter(
     override fun listenIntentDefinitionChanges(listener: () -> Unit) = dao.listenIntentDefinitionChanges(listener)
 
     override fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> = dao.getIntentsByApplicationId(applicationId)
+
+    override fun getIntentsByNamespace(namespace: String): List<IntentDefinition> = dao.getIntentsByNamespace(namespace)
 }

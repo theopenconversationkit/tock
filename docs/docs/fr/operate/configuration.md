@@ -347,6 +347,61 @@ Voir [Messenger](../channels/messenger.md).
 | `tock_iadvize_secret_manager_provider` | `ENV` | iAdvize : gestionnaire de secrets contenant les identifiants |
 | `tock_iadvize_credentials_secret_name` | `iadvize_credentials` | iAdvize : nom du secret contenant les identifiants |
 
+### Stockage S3 des fichiers et des modèles
+
+Les fichiers uploadés et les modèles NLP peuvent être stockés dans AWS S3 ou dans tout stockage compatible S3
+(MinIO, GCS...), à la place de MongoDB : ajoutez `tock-bot-storage-s3` (fichiers) ou `tock-nlp-model-storage-s3`
+(modèles) au classpath. Les modèles doivent être stockés par tous les composants qui les lisent ou les écrivent
+(`bot_admin`, `nlp_api`, `build_worker`).
+
+| Propriété | Défaut | Description |
+|-----------|--------|-------------|
+| `tock_s3_endpoint` | | Point d'accès d'un stockage compatible S3. AWS S3 si absent |
+| `tock_s3_region` | défaut AWS | Région du bucket |
+| `tock_s3_path_style` | `true` avec un point d'accès | Accès par chemin (`<point d'accès>/<bucket>/<clé>`), nécessaire à la plupart des stockages compatibles S3 |
+| `tock_bot_files_storage` | | `s3` pour stocker les fichiers uploadés dans S3 |
+| `tock_bot_files_s3_bucket` | | Bucket des fichiers uploadés (obligatoire) |
+| `tock_bot_files_s3_prefix` | `tock/files/` | Préfixe de leurs clés |
+| `tock_bot_files_s3_public_base_url` | | URL publique des fichiers (un CDN...), donnée aux connecteurs à la place de l'URL du bot |
+| `tock_bot_files_s3_presigned_url_minutes` | `60` | Validité des URL présignées vers lesquelles le bot redirige les téléchargements |
+| `tock_bot_files_s3_copy_from_cache` | `true` | Recopie dans S3, à sa lecture, un fichier encore stocké dans MongoDB |
+| `tock_nlp_model_storage` | | `s3` pour stocker les modèles NLP dans S3 |
+| `tock_nlp_model_s3_bucket` | | Bucket des modèles (obligatoire) |
+| `tock_nlp_model_s3_prefix` | `tock/models/` | Préfixe de leurs clés |
+| `tock_nlp_model_s3_refresh_interval_seconds` | `60` | Intervalle entre deux vérifications des nouveaux modèles |
+
+### Runtime serverless
+
+Voir [Serverless](serverless.md).
+
+| Propriété | Défaut | Description |
+|-----------|--------|-------------|
+| `tock_serverless_port` | `PORT`, ou `8080` | Port du serveur HTTP (Cloud Run, Lambda Web Adapter) |
+| `tock_serverless_request_work_timeout_ms` | `120000` | Attente maximale, avant de répondre, du travail lancé par une requête |
+| `tock_serverless_tasks_path` | `/_tasks` | Chemin des tâches périodiques déclenchées par un ordonnanceur (`POST <chemin>/<nom de la tâche>`) |
+| `tock_serverless_tasks_token` | | `X-Auth-Token` de la route des tâches. La route est désactivée s'il est absent |
+| `tock_serverless_queue_path` | `/_queue` | Chemin des consommateurs de file (`<chemin>/sqs`, `<chemin>/pubsub`) |
+| `tock_serverless_pubsub_endpoint` | `https://pubsub.googleapis.com` | Point d'accès de l'API Pub/Sub |
+| `tock_dynamodb_region` | `eu-west-3` | Région des tables DynamoDB |
+| `tock_dynamodb_endpoint` | | Point d'accès de DynamoDB (DynamoDB Local...) |
+| `tock_dynamodb_table_prefix` | `tock_` | Préfixe des tables (`config`, `runtime`, `nlp_sentence`) |
+| `tock_dynamodb_create_tables` | `true` | Crée les tables absentes au démarrage |
+| `tock_dynamodb_streams_enabled` | `true` | Active les DynamoDB Streams des tables, lus par la recopie vers MongoDB |
+| `tock_dynamodb_billing_mode` | `on_demand` | Capacité des tables créées : `on_demand`, ou `provisioned` (couverte par l'offre gratuite de DynamoDB) |
+| `tock_dynamodb_read_capacity_units` | `4` | Unités de lecture provisionnées de chaque table et de chaque index (3 tables, 3 index) |
+| `tock_dynamodb_write_capacity_units` | `4` | Unités d'écriture provisionnées de chaque table et de chaque index |
+| `tock_dynamodb_change_check_interval_ms` | `10000` | Intervalle minimal entre deux vérifications de la configuration publiée par l'admin |
+| `tock_dynamodb_feature_cache_ttl_in_ms` | `30000` | Cache des features lues par le runtime |
+| `tock_dynamodb_user_lock_ttl_hours` | `6` | Rétention des verrous utilisateur |
+| `tock_dynamodb_metric_ttl_days` | `7` | Rétention des métriques dans DynamoDB, avant leur recopie dans MongoDB |
+| `tock_dynamodb_parse_log_ttl_days` | `7` | Rétention des journaux d'analyse NLP dans DynamoDB, avant leur recopie dans MongoDB |
+| `tock_dynamodb_publication_enabled` | `false` | Publie la configuration de l'admin dans DynamoDB (`tock-bot-storage-dynamodb-publication` dans `bot_admin`) |
+| `tock_dynamodb_publication_interval_in_s` | `300` | Intervalle des publications complètes, en plus de la publication de chaque modification |
+| `tock_dynamodb_publication_sentences_complete_interval_in_min` | `60` | Intervalle des publications complètes des phrases validées |
+| `tock_dynamodb_replication_enabled` | `false` | Recopie les écritures du runtime dans le MongoDB de l'admin (`tock-bot-storage-dynamodb-replication` dans `bot_admin`) |
+| `tock_dynamodb_replication_interval_in_ms` | `5000` | Intervalle entre deux lectures des DynamoDB Streams |
+| `tock_whatsappcloud_api_base_url` | `https://graph.facebook.com` | URL de base de l'API WhatsApp Cloud (tests) |
+
 ## _Tock Studio_
 
 Ces propriétés sont lues par le service `bot_admin`.

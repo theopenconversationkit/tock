@@ -112,6 +112,34 @@ jobs:
           name: api-compat-report
           path: target/api-compat/api-compat.html
 
+  serverless-deps:
+    name: Serverless classpath
+    runs-on: ubuntu-latest
+    needs: changes
+    timeout-minutes: 30
+    if: ${{ needs.changes.outputs.kotlin == 'true' || needs.changes.outputs.gha == 'true' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Java JDK 21
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build the serverless starters
+        run: mvn -B -ntp install -DskipTests -Dskip.npm -Dexec.skip -pl serverless-bot,serverless-nlp -am
+
+      - name: Check that the serverless jars only reference classes of their classpath
+        run: |
+          python3 scripts/serverless-deps --module serverless-bot
+          python3 scripts/serverless-deps --module serverless-nlp
+
   front:
     name: Admin Front
     runs-on: ubuntu-latest

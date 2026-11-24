@@ -30,6 +30,9 @@ import ai.tock.shared.provideOrDefault
 interface NamespaceConfigurationRuntimeDAO {
     fun listenNamespaceConfigurationChanges(listener: () -> Unit)
 
+    /** The configuration of [namespace]: the namespaces whose intents it imports. */
+    fun getNamespaceConfiguration(namespace: String): NamespaceConfiguration?
+
     companion object {
         /**
          * The bound [NamespaceConfigurationRuntimeDAO], or the bound [NamespaceConfigurationDAO] adapted to it.
@@ -47,4 +50,6 @@ private class NamespaceConfigurationRuntimeDAOAdapter(
     private val dao: NamespaceConfigurationDAO,
 ) : NamespaceConfigurationRuntimeDAO {
     override fun listenNamespaceConfigurationChanges(listener: () -> Unit) = dao.listenNamespaceConfigurationChanges(listener)
+
+    override fun getNamespaceConfiguration(namespace: String): NamespaceConfiguration? = dao.getNamespaceConfiguration(namespace)
 }

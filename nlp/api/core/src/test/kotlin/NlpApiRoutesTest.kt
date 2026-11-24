@@ -20,7 +20,10 @@ import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.service.UnknownApplicationException
 import ai.tock.nlp.front.shared.ApplicationConfiguration
 import ai.tock.nlp.front.shared.ApplicationMonitor
+import ai.tock.nlp.front.shared.ApplicationRuntimeConfiguration
 import ai.tock.nlp.front.shared.Parser
+import ai.tock.nlp.front.shared.codec.CreateApplicationQuery
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.monitoring.MarkAsUnknownQuery
 import ai.tock.nlp.front.shared.parser.ParseQuery
 import ai.tock.nlp.front.shared.parser.ParseResult
@@ -99,6 +102,28 @@ class NlpApiRoutesTest {
         every { configuration.getApplicationByNamespaceAndName("ns", "app") } returns null
         assertEquals(204, get("/application", mapOf("namespace" to "ns", "name" to "app")).status)
         assertEquals("[]", String(get("/intents", mapOf("namespace" to "ns", "name" to "app")).body))
+    }
+
+    @Test
+    fun `GIVEN the runtime configuration only WHEN an application is created or the logs counted THEN the answer is a 501, and the intents are read`() {
+        val runtimeConfiguration: ApplicationRuntimeConfiguration = mockk()
+        val application = ApplicationDefinition("app", "app", "ns")
+        every { runtimeConfiguration.getApplicationByNamespaceAndName("ns", "app") } returns application
+        every { runtimeConfiguration.getIntentsByApplicationId(application._id) } returns emptyList()
+        val runtimeRoutes = NlpApiRoutes.routes("/rest/nlp", parser, runtimeConfiguration)
+
+        fun post(
+            path: String,
+            body: Any,
+        ) = runBlocking { runtimeRoutes.handle(HttpRequest(HttpMethod.POST, "/rest/nlp$path", body = mapper.writeValueAsBytes(body))) }
+
+        assertEquals(501, post("/application/create", CreateApplicationQuery("app2", null, "ns", Locale.FRENCH)).status)
+        assertEquals(501, post("/logs/count", mapOf("namespace" to "ns", "applicationName" to "app", "language" to "fr")).status)
+        val intents =
+            runBlocking {
+                runtimeRoutes.handle(HttpRequest(HttpMethod.GET, "/rest/nlp/intents", queryParameters = mapOf("namespace" to listOf("ns"), "name" to listOf("app"))))
+            }
+        assertEquals("[]", String(intents.body))
     }
 
     @Test

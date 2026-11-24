@@ -108,7 +108,7 @@ internal object ConfigurationRepository {
         applicationDAO
             .getApplications()
             .forEach { app ->
-                val sharedIntents = ApplicationConfigurationService.getModelSharedIntents(app.namespace)
+                val sharedIntents = modelSharedIntents(app.namespace)
                 if (sharedIntents.isEmpty()) {
                     byApplicationId[app._id] = intentsByApplicationId[app._id] ?: emptyList()
                 } else {
@@ -118,6 +118,15 @@ internal object ConfigurationRepository {
 
         intentsSharedNamespaceByApplicationId = HashMap(byApplicationId)
     }
+
+    /** The rule of [ApplicationConfigurationService.getModelSharedIntents], on the runtime DAOs. */
+    private fun modelSharedIntents(namespace: String): List<IntentDefinition> =
+        namespaceConfigurationDAO
+            .getNamespaceConfiguration(namespace)
+            ?.namespaceImportConfiguration
+            ?.filterValues { it.model }
+            ?.flatMap { intentDAO.getIntentsByNamespace(it.key) }
+            ?: emptyList()
 
     private fun loadEntityTypes(): ConcurrentHashMap<String, EntityType?> {
         logger.debug { "load entity types" }

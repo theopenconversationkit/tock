@@ -347,6 +347,60 @@ See [Messenger](../channels/messenger.md).
 | `tock_iadvize_secret_manager_provider` | `ENV` | iAdvize: secret manager holding the credentials |
 | `tock_iadvize_credentials_secret_name` | `iadvize_credentials` | iAdvize: name of the secret holding the credentials |
 
+### S3 storage of the files and models
+
+The uploaded files and the NLP models can be stored in AWS S3 or in any S3 compatible storage (MinIO, GCS...),
+instead of MongoDB: add `tock-bot-storage-s3` (files) or `tock-nlp-model-storage-s3` (models) to the classpath.
+The models must be stored by every component that reads or writes them (`bot_admin`, `nlp_api`, `build_worker`).
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `tock_s3_endpoint` | | Endpoint of an S3 compatible storage. AWS S3 when undefined |
+| `tock_s3_region` | AWS default | Region of the bucket |
+| `tock_s3_path_style` | `true` with an endpoint | Path-style access (`<endpoint>/<bucket>/<key>`), needed by most S3 compatible storages |
+| `tock_bot_files_storage` | | `s3` to store the uploaded files in S3 |
+| `tock_bot_files_s3_bucket` | | Bucket of the uploaded files (required) |
+| `tock_bot_files_s3_prefix` | `tock/files/` | Prefix of their keys |
+| `tock_bot_files_s3_public_base_url` | | Public URL of the files (a CDN...), given to the connectors instead of the URL of the bot |
+| `tock_bot_files_s3_presigned_url_minutes` | `60` | Validity of the presigned URLs the bot redirects the downloads to |
+| `tock_bot_files_s3_copy_from_cache` | `true` | Copies to S3, when it is read, a file still stored in MongoDB |
+| `tock_nlp_model_storage` | | `s3` to store the NLP models in S3 |
+| `tock_nlp_model_s3_bucket` | | Bucket of the models (required) |
+| `tock_nlp_model_s3_prefix` | `tock/models/` | Prefix of their keys |
+| `tock_nlp_model_s3_refresh_interval_seconds` | `60` | Interval between two checks of the new models |
+
+### Serverless runtime
+
+See [Serverless](serverless.md).
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `tock_serverless_port` | `PORT`, or `8080` | Port of the HTTP server (Cloud Run, Lambda Web Adapter) |
+| `tock_serverless_request_work_timeout_ms` | `120000` | Maximum wait, before answering, for the work started by a request |
+| `tock_serverless_tasks_path` | `/_tasks` | Path of the periodic tasks triggered by a scheduler (`POST <path>/<task name>`) |
+| `tock_serverless_tasks_token` | | `X-Auth-Token` of the task route. The route is disabled when undefined |
+| `tock_serverless_queue_path` | `/_queue` | Path of the queue consumers (`<path>/sqs`, `<path>/pubsub`) |
+| `tock_serverless_pubsub_endpoint` | `https://pubsub.googleapis.com` | Endpoint of the Pub/Sub API |
+| `tock_dynamodb_region` | `eu-west-3` | Region of the DynamoDB tables |
+| `tock_dynamodb_endpoint` | | Endpoint of DynamoDB (DynamoDB Local...) |
+| `tock_dynamodb_table_prefix` | `tock_` | Prefix of the tables (`config`, `runtime`, `nlp_sentence`) |
+| `tock_dynamodb_create_tables` | `true` | Creates the missing tables at startup |
+| `tock_dynamodb_streams_enabled` | `true` | Enables the DynamoDB Streams of the tables, read by the replication to MongoDB |
+| `tock_dynamodb_billing_mode` | `on_demand` | Capacity of the created tables: `on_demand`, or `provisioned` (covered by the free tier of DynamoDB) |
+| `tock_dynamodb_read_capacity_units` | `4` | Provisioned read units of each table and of each index (3 tables, 3 indexes) |
+| `tock_dynamodb_write_capacity_units` | `4` | Provisioned write units of each table and of each index |
+| `tock_dynamodb_change_check_interval_ms` | `10000` | Minimum interval between two checks of the configuration published by the admin |
+| `tock_dynamodb_feature_cache_ttl_in_ms` | `30000` | Cache of the features read by the runtime |
+| `tock_dynamodb_user_lock_ttl_hours` | `6` | Retention of the user locks |
+| `tock_dynamodb_metric_ttl_days` | `7` | Retention of the metrics in DynamoDB, before their copy to MongoDB |
+| `tock_dynamodb_parse_log_ttl_days` | `7` | Retention of the NLP parse logs in DynamoDB, before their copy to MongoDB |
+| `tock_dynamodb_publication_enabled` | `false` | Publishes the configuration of the admin to DynamoDB (`tock-bot-storage-dynamodb-publication` in `bot_admin`) |
+| `tock_dynamodb_publication_interval_in_s` | `300` | Interval of the complete publications, in addition to the publication of each change |
+| `tock_dynamodb_publication_sentences_complete_interval_in_min` | `60` | Interval of the complete publications of the validated sentences |
+| `tock_dynamodb_replication_enabled` | `false` | Copies the writes of the runtime to the MongoDB of the admin (`tock-bot-storage-dynamodb-replication` in `bot_admin`) |
+| `tock_dynamodb_replication_interval_in_ms` | `5000` | Interval between two reads of the DynamoDB Streams |
+| `tock_whatsappcloud_api_base_url` | `https://graph.facebook.com` | Base URL of the WhatsApp Cloud API (tests) |
+
 ## _Tock Studio_
 
 These properties are read by the `bot_admin` service.

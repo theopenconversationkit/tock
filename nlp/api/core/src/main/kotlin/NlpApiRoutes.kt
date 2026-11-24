@@ -19,7 +19,9 @@ package ai.tock.nlp.api
 import ai.tock.nlp.front.service.UnknownApplicationException
 import ai.tock.nlp.front.shared.ApplicationConfiguration
 import ai.tock.nlp.front.shared.ApplicationMonitor
+import ai.tock.nlp.front.shared.ApplicationRuntimeConfiguration
 import ai.tock.nlp.front.shared.Parser
+import ai.tock.nlp.front.shared.asRuntimeConfiguration
 import ai.tock.nlp.front.shared.codec.CreateApplicationQuery
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
@@ -60,13 +62,28 @@ object NlpApiRoutes {
     private fun badRequest(message: String): Nothing = throw ClientException(400, message)
 
     /**
-     * The routes, under [rootPath] (`tock_nlp_root`, `/rest/nlp` by default).
+     * The routes, under [rootPath] (`tock_nlp_root`, `/rest/nlp` by default), on the complete configuration of a
+     * process that also runs the admin.
      */
     fun routes(
         rootPath: String,
         parser: Parser,
         configuration: ApplicationConfiguration,
         monitor: ApplicationMonitor,
+    ): HttpRoutes = routes(rootPath, parser, configuration.asRuntimeConfiguration(), { configuration.save(it) }, monitor)
+
+    /**
+     * The routes, under [rootPath], on the runtime part of the configuration (a serverless process).
+     *
+     * Without [createApplication], the applications are created in the admin only, and `application/create`
+     * answers 501. Without [monitor], `logs/count` answers 501: the logs are searched in the admin.
+     */
+    fun routes(
+        rootPath: String,
+        parser: Parser,
+        configuration: ApplicationRuntimeConfiguration,
+        createApplication: ((ApplicationDefinition) -> ApplicationDefinition)? = null,
+        monitor: ApplicationMonitor? = null,
     ): HttpRoutes =
         HttpRoutes {
             post(
@@ -111,8 +128,11 @@ object NlpApiRoutes {
             post(
                 "$rootPath/application/create",
                 json<CreateApplicationQuery> { query ->
+                    if (createApplication == null) {
+                        throw ClientException(501, "the applications are created in the admin")
+                    }
                     if (configuration.getApplicationByNamespaceAndName(query.namespace, query.name) == null) {
-                        configuration.save(
+                        createApplication(
                             ApplicationDefinition(
                                 query.name,
                                 query.label ?: query.name,
@@ -129,6 +149,9 @@ object NlpApiRoutes {
             post(
                 "$rootPath/logs/count",
                 json<ParseRequestLogCountQueryModel> { query ->
+                    if (monitor == null) {
+                        throw ClientException(501, "the logs are searched in the admin")
+                    }
                     try {
                         val app = configuration.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
                         if (app == null) {

@@ -33,11 +33,16 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserLocation
+import ai.tock.shared.injector
+import ai.tock.shared.provideOrDefault
 import mu.KotlinLogging
 
 internal object WebhookActionConverter {
     private val logger = KotlinLogging.logger {}
-    private val payloadWhatsApp: PayloadWhatsAppCloudDAO = PayloadWhatsAppCloudMongoDAO
+
+    // the bound DAO (the MongoDB one of WhatsAppCloudConnectorModule, unless a storage replaces it)
+    private val payloadWhatsApp: PayloadWhatsAppCloudDAO
+        get() = injector.provideOrDefault<PayloadWhatsAppCloudDAO> { PayloadWhatsAppCloudMongoDAO }
 
     fun toEvent(
         message: WhatsAppCloudMessage,

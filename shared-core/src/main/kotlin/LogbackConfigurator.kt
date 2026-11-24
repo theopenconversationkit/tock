@@ -46,6 +46,23 @@ internal class LogbackConfigurator :
             ),
         )
 
+    /**
+     * Loggers kept at INFO when the default level is DEBUG: the HTTP clients log every byte they send or receive
+     * (the AWS SDK and Testcontainers both use the Apache HttpClient).
+     */
+    private val quietLoggers =
+        listOf(
+            "org.mongodb.driver",
+            "io.netty",
+            "okhttp3",
+            "io.mockk",
+            "org.apache.hc",
+            "org.apache.http",
+            "software.amazon.awssdk",
+            "com.github.dockerjava",
+            "org.testcontainers",
+        )
+
     override fun configure(loggerContext: LoggerContext): ExecutionStatus {
         if (booleanProperty("tock_logback_enabled", true)) {
             val c = context
@@ -91,28 +108,12 @@ internal class LogbackConfigurator :
             appender.start()
 
             if (defaultLevel.toInt() <= Level.INFO.toInt()) {
-                loggerContext.getLogger("org.mongodb.driver").apply {
-                    level = Level.INFO
-                    isAdditive = false
-                    addAppender(appender)
-                }
-
-                loggerContext.getLogger("io.netty").apply {
-                    level = Level.INFO
-                    isAdditive = false
-                    addAppender(appender)
-                }
-
-                loggerContext.getLogger("okhttp3").apply {
-                    level = Level.INFO
-                    isAdditive = false
-                    addAppender(appender)
-                }
-
-                loggerContext.getLogger("io.mockk").apply {
-                    level = Level.INFO
-                    isAdditive = false
-                    addAppender(appender)
+                quietLoggers.forEach { name ->
+                    loggerContext.getLogger(name).apply {
+                        level = Level.INFO
+                        isAdditive = false
+                        addAppender(appender)
+                    }
                 }
             }
 

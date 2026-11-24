@@ -63,7 +63,7 @@ class DeferredHttpResponse {
         if (streaming || response.isCompleted) return
         streaming = true
         response.complete(
-            HttpResponse(status, headers) { writer ->
+            HttpResponse(status, headers) { writer: HttpBodyWriter ->
                 prelude?.let { writer.write(it.toByteArray(StandardCharsets.UTF_8)) }
                 while (true) {
                     val chunk =

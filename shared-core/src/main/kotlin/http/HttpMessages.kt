@@ -88,11 +88,25 @@ fun interface HttpBodyWriter {
  * cannot stream (a buffered AWS Lambda response) send all the chunks at its end
  */
 class HttpResponse(
-    val status: Int = 200,
-    val headers: Map<String, List<String>> = emptyMap(),
-    val body: ByteArray = ByteArray(0),
-    val stream: (suspend (HttpBodyWriter) -> Unit)? = null,
+    val status: Int,
+    val headers: Map<String, List<String>>,
+    val body: ByteArray,
+    val stream: (suspend (HttpBodyWriter) -> Unit)?,
 ) {
+    /** A response with a body (the constructor of the responses that are not streamed). */
+    constructor(
+        status: Int = 200,
+        headers: Map<String, List<String>> = emptyMap(),
+        body: ByteArray = ByteArray(0),
+    ) : this(status, headers, body, null)
+
+    /** A streamed response. */
+    constructor(
+        status: Int,
+        headers: Map<String, List<String>>,
+        stream: suspend (HttpBodyWriter) -> Unit,
+    ) : this(status, headers, ByteArray(0), stream)
+
     /** A copy of this response with one more header value. */
     fun withHeader(
         name: String,
@@ -102,7 +116,7 @@ class HttpResponse(
     /** A copy of this response whose [stream] runs [after] once it has ended (or failed). */
     fun afterStream(after: suspend () -> Unit): HttpResponse =
         stream?.let { original ->
-            HttpResponse(status, headers, body) { writer ->
+            HttpResponse(status, headers) { writer: HttpBodyWriter ->
                 try {
                     original(writer)
                 } finally {

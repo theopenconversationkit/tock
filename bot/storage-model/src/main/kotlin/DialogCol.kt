@@ -47,7 +47,7 @@ import ai.tock.shared.InternalTockApi
 import ai.tock.shared.checkMaxLengthAllowed
 import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
-import ai.tock.shared.transformData
+import ai.tock.shared.transformDocumentData
 import ai.tock.translator.UserInterfaceType.textChat
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -405,7 +405,7 @@ data class DialogCol(
             this(
                 sentence.text.toString(),
                 sentence.footnotes,
-                transformData(sentence.ragDebug),
+                transformDocumentData(sentence.ragDebug),
             ) {
             assignFrom(sentence)
         }
@@ -422,7 +422,7 @@ data class DialogCol(
                 state,
                 botMetadata,
                 annotation,
-                transformData(ragDebug),
+                transformDocumentData(ragDebug),
             )
     }
 
@@ -434,7 +434,7 @@ data class DialogCol(
         constructor(debug: SendDebug) :
             this(
                 debug.text,
-                transformData(debug.data),
+                transformDocumentData(debug.data),
             ) {
             assignFrom(debug)
         }
@@ -445,7 +445,7 @@ data class DialogCol(
                 applicationId,
                 recipientId,
                 text,
-                transformData(data),
+                transformDocumentData(data),
                 id,
                 date,
                 state,

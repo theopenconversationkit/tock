@@ -17,6 +17,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.shared.bytecode.BytecodeDependencies
+import ai.tock.shared.vertx.WebVerticle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -31,6 +32,21 @@ class StorageModelBytecodeTest {
             BytecodeDependencies.violations(
                 BytecodeDependencies.locationOf(DialogCol::class.java),
                 forbidden = { it.startsWith("com/mongodb/") || it.startsWith("org/bson/") || it.startsWith("org/litote/kmongo/property/") },
+                allowed = { from -> from.substringAfterLast('/').substringBefore('$').contains('_') },
+            )
+
+        assertEquals("", violations.joinToString("\n"))
+    }
+
+    @Test
+    fun `the storage model references no class of tock-shared, which the serverless runtime has not`() {
+        val sharedOnly = BytecodeDependencies.classesOf(BytecodeDependencies.locationOf(WebVerticle::class.java))
+
+        val violations =
+            BytecodeDependencies.violations(
+                BytecodeDependencies.locationOf(DialogCol::class.java),
+                forbidden = { it in sharedOnly },
+                // the query DSL is loaded by the MongoDB storage only
                 allowed = { from -> from.substringAfterLast('/').substringBefore('$').contains('_') },
             )
 

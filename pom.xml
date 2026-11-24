@@ -78,12 +78,19 @@
         <module>bom</module>
         <module>shared-core</module>
         <module>shared</module>
+        <module>storage-dynamodb-core</module>
         <module>util</module>
         <module>stt</module>
         <module>translator</module>
         <module>nlp</module>
         <module>bot</module>
         <module>gen-ai</module>
+        <module>serverless-runtime</module>
+        <module>serverless-nlp</module>
+        <module>serverless-bot</module>
+        <module>serverless-sqs</module>
+        <module>serverless-pubsub</module>
+        <module>serverless-dynamodb</module>
     </modules>
 
     <dependencies>

@@ -33,6 +33,7 @@
         <module>shared</module>
         <module>service</module>
         <module>storage-mongo</module>
+        <module>storage-dynamodb</module>
         <module>client</module>
         <module>ioc</module>
     </modules>

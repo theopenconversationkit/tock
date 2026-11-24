@@ -22,7 +22,6 @@ import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
-import io.vertx.core.json.JsonArray
 import mu.KotlinLogging
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -77,7 +76,7 @@ internal object DucklingClient {
     }
 
     object JacksonJsonArrayConverter : Converter<ResponseBody, JSONValue> {
-        override fun convert(value: ResponseBody): JSONValue = JSONValue(JsonArray(value.string()))
+        override fun convert(value: ResponseBody): JSONValue = JSONValue.parseArray(value.string())
     }
 
     object RawJsonBodyConverterFactory : Converter.Factory() {
