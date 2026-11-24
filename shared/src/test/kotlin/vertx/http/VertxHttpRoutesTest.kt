@@ -16,6 +16,7 @@
 
 package ai.tock.shared.vertx.http
 
+import ai.tock.shared.http.DeferredHttpResponse
 import ai.tock.shared.http.HttpResponse
 import ai.tock.shared.http.HttpRoutes
 import io.vertx.core.Vertx
@@ -31,6 +32,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class VertxHttpRoutesTest {
     private lateinit var vertx: Vertx
@@ -48,6 +50,16 @@ class VertxHttpRoutesTest {
                     ).withHeader("X-Tock", "1")
             }
             get("/failure") { error("boom") }
+            get("/stream") {
+                val response = DeferredHttpResponse()
+                response.startStream(prelude = "first\n")
+                Thread {
+                    Thread.sleep(500)
+                    response.write("second\n")
+                    response.close()
+                }.start()
+                response.await()
+            }
         }
 
     @BeforeEach
@@ -100,5 +112,17 @@ class VertxHttpRoutesTest {
             client.send(HttpRequest.newBuilder(URI("http://localhost:$port/failure")).build(), BodyHandlers.ofString())
 
         assertEquals(500, response.statusCode())
+    }
+
+    @Test
+    fun `GIVEN a streamed response WHEN it is read THEN each chunk reaches the client when it is written`() {
+        val start = System.currentTimeMillis()
+        val response = client.send(HttpRequest.newBuilder(URI("http://localhost:$port/stream")).build(), BodyHandlers.ofInputStream())
+        val reader = response.body().bufferedReader()
+
+        assertEquals("first", reader.readLine())
+        val first = System.currentTimeMillis() - start
+        assertEquals("second", reader.readLine())
+        assertTrue(first < 400, "first chunk after $first ms")
     }
 }

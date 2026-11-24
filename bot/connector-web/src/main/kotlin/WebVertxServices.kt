@@ -18,6 +18,7 @@ package ai.tock.bot.connector.web
 
 import ai.tock.bot.connector.web.WebConnector.Companion.CONNECTOR_ID_CONTEXT_KEY
 import ai.tock.bot.connector.web.WebConnector.Companion.CONNECTOR_PUBLIC_PATH_CONTEXT_KEY
+import ai.tock.bot.connector.web.sse.SseEndpoint
 import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.shared.injector
@@ -40,6 +41,9 @@ import mu.KotlinLogging
  */
 internal object WebVertxServices {
     private val logger = KotlinLogging.logger {}
+
+    /** The server-sent events of tock-bot-connector-web-sse: created only when they are enabled. */
+    private val sseEndpoint by lazy { SseEndpoint(WebConnector.webMapper) }
 
     private val tockHandlers = setOf(WebSecurityCookiesHandler::class, WebSecurityEncryptedCookiesHandler::class, WebSecurityPassthroughHandler::class)
 
@@ -65,7 +69,7 @@ internal object WebVertxServices {
         recipientId: String,
         response: WebConnectorResponseContract,
     ) {
-        WebConnector.sseEndpoint.sendResponse(connectorId, recipientId, response)
+        sseEndpoint.sendResponse(connectorId, recipientId, response)
     }
 
     private fun boundHandler(mode: WebSecurityMode): WebSecurityHandler? =
@@ -120,7 +124,7 @@ internal object WebVertxServices {
                 }
 
             if (WebConnector.sseEnabled) {
-                WebConnector.sseEndpoint.configureRoute(router, "$path/sse", connector.connectorId, webSecurityHandler)
+                sseEndpoint.configureRoute(router, "$path/sse", connector.connectorId, webSecurityHandler)
             }
 
             if (WebConnector.directSseEnabled) {

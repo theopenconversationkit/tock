@@ -102,6 +102,76 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- and an OpenAI API bot, with its streamed chat completions -->
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-open-ai</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>ai.tock</groupId>
+                    <artifactId>tock-shared</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ai.tock</groupId>
+                    <artifactId>tock-bot-engine</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.vertx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.litote.kmongo</groupId>
+                    <artifactId>kmongo-dsl-sync-jackson</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.litote.kmongo</groupId>
+                    <artifactId>kmongo-dsl-coroutine-jackson</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- the end to end test runs a web bot too: its routes are server independent -->
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-web</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>ai.tock</groupId>
+                    <artifactId>tock-shared</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ai.tock</groupId>
+                    <artifactId>tock-bot-engine</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ai.tock</groupId>
+                    <artifactId>tock-bot-connector-web-sse</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.vertx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.litote.kmongo</groupId>
+                    <artifactId>kmongo-dsl-sync-jackson</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.litote.kmongo</groupId>
+                    <artifactId>kmongo-dsl-coroutine-jackson</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-storage-dynamodb</artifactId>

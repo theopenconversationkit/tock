@@ -46,6 +46,16 @@ ALLOWED = [
     (r"ai\.tock\.serverless\.ServerlessBotServer\b.*", r"io\.vertx\..*"),
     # ConnectorProvider.createRequestFilter: called by the Vert.x connectors only
     (r"ai\.tock\.bot\.connector\..*", r"ai\.tock\.shared\.security\.RequestFilter(Kt)?"),
+    # the classes the connectors keep for their Vert.x routes (a security handler of the project, a Vert.x request
+    # filter...) and their former constructors: the same exceptions as their bytecode tests
+    (r"ai\.tock\.bot\.connector\..*\.(\w*VertxServices|Vertx\w*Responder|\w*AuthorisationHandler)(\$.*)?", r".*"),
+    (r"ai\.tock\.bot\.connector\..*Security\$Vertx", r".*"),
+    (r"ai\.tock\.bot\.connector\.alcmeon\.AlcmeonConnector(Callback)?(\$.*)?", r"io\.vertx\..*"),
+    (r"ai\.tock\.bot\.connector\.iadvize\.(IadvizeConnectorCallback|IadvizeSecurity|CustomRequest|model\.request\.RequestIds)(\$.*)?", r"(io\.vertx|ai\.tock\.shared\.exception)\..*"),
+    (r"ai\.tock\.bot\.connector\.openai\.OpenAIConnectorCallback", r"io\.vertx\..*"),
+    (r"ai\.tock\.bot\.connector\.web\.(WebRequestInfos|WebOrchestration)(\$.*)?", r"io\.vertx\..*"),
+    # the orchestration of bots runs on Vert.x and MongoDB: it is not supported by the serverless runtime
+    (r"ai\.tock\.bot\.orchestration\..*", r".*"),
     # the MongoDB DAOs replaced by the DynamoDB ones, and the BSON annotations (ignored when missing)
     (r"ai\.tock\.bot\.connector\.whatsapp\.cloud\.database\..*", r"(com\.mongodb|org\.litote\.kmongo|org\.bson)\..*"),
     # frontModule (and its TockUserListener of the admin): the serverless NLP binds its own modules
@@ -116,10 +126,24 @@ def main():
                 if not any(re.fullmatch(s, source) and re.fullmatch(m, missing) for s, m in ALLOWED):
                     violations.append(f"{jar.name}: {source} -> {missing}")
 
+    # jdeps does not see everything: a lambda compiled with invokedynamic loads the classes of its signature when
+    # its class is initialized. The connectors, their providers and their callbacks are initialized for real.
+    names = []
+    for jar in tock_jars:
+        if "connector" not in jar.name:
+            continue
+        for entry in subprocess.run(["jar", "tf", str(jar)], capture_output=True, text=True).stdout.splitlines():
+            simple = entry.rsplit("/", 1)[-1]
+            if entry.endswith(".class") and "$" not in simple and re.search(r"(Connector|ConnectorProvider|Callback)\.class$", simple):
+                names.append(entry[: -len(".class")].replace("/", "."))
+    loader = ROOT / "scripts" / "serverless-deps-loader" / "LoadClasses.java"
+    loaded = subprocess.run(["java", "-cp", joined, str(loader)], input="\n".join(names), capture_output=True, text=True)
+    violations += [f"initialization: {line[len('MISSING '):]}" for line in loaded.stdout.splitlines() if line.startswith("MISSING ")]
+
     if violations:
         print("\n".join(sorted(set(violations))[:200]))
         sys.exit(f"{len(set(violations))} references to classes missing from the classpath of {args.module}")
-    print(f"{len(tock_jars)} Tock jars of {args.module}: no reference to a missing class")
+    print(f"{len(tock_jars)} Tock jars of {args.module}: no reference to a missing class, {len(names)} connector classes initialized")
 
 
 if __name__ == "__main__":

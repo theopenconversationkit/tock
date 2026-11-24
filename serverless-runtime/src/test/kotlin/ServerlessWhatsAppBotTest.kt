@@ -17,6 +17,8 @@
 package ai.tock.serverless
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.bot.connector.openai.openAIConnectorType
+import ai.tock.bot.connector.web.webConnectorType
 import ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudConnectorType
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.BotProvider
@@ -54,6 +56,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.litote.kmongo.newId
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import java.net.InetSocketAddress
@@ -128,6 +131,12 @@ class ServerlessWhatsAppBotTest {
         System.setProperty("aws.accessKeyId", "x")
         System.setProperty("aws.secretAccessKey", "x")
         BotApplicationConfigurationDynamoDAO.save(configuration)
+        BotApplicationConfigurationDynamoDAO.save(
+            configuration.copy(_id = newId(), applicationId = "web", connectorType = webConnectorType, path = "/web", parameters = emptyMap()),
+        )
+        BotApplicationConfigurationDynamoDAO.save(
+            configuration.copy(_id = newId(), applicationId = "openai", connectorType = openAIConnectorType, path = "/openai", parameters = emptyMap()),
+        )
         // the labels of the answers are read and created in DynamoDB
         Translator.enabled = true
 
@@ -316,5 +325,40 @@ class ServerlessWhatsAppBotTest {
         assertEquals(200, response.statusCode())
         assertEquals("image/png", response.headers().firstValue("Content-Type").orElse(null))
         assertContentEquals(byteArrayOf(1, 2, 3), response.body())
+    }
+
+    @Test
+    fun `GIVEN a web connector WHEN a message is posted THEN the answer of the bot is the JSON response, without Vert_x nor web-sse`() {
+        assertFailsWith<ClassNotFoundException> { Class.forName("ai.tock.bot.connector.web.sse.SseEndpoint") }
+
+        val response =
+            client.send(
+                HttpRequest
+                    .newBuilder(URI("http://localhost:${server.port}/web"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString("""{"query":"hello","userId":"webuser","locale":"fr"}"""))
+                    .build(),
+                BodyHandlers.ofString(),
+            )
+
+        assertEquals(200, response.statusCode(), response.body())
+        assertTrue(response.body().contains("world"), response.body())
+    }
+
+    @Test
+    fun `GIVEN an OpenAI API connector WHEN a streamed chat completion is posted THEN the answer of the bot is streamed as server-sent events`() {
+        val response =
+            client.send(
+                HttpRequest
+                    .newBuilder(URI("http://localhost:${server.port}/openai/chat/completions"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString("""{"model":"tock","stream":true,"messages":[{"role":"user","content":"hello"}]}"""))
+                    .build(),
+                BodyHandlers.ofString(),
+            )
+
+        assertEquals(200, response.statusCode(), response.body())
+        assertEquals("text/event-stream;charset=UTF-8", response.headers().firstValue("Content-Type").orElse(null))
+        assertTrue(response.body().contains("world"), response.body())
     }
 }
