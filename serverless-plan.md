@@ -1,0 +1,223 @@
+# Tock serverless, à coût nul quand il n'est pas utilisé
+
+État au 24/11/2026. Quatre branches locales, non poussées :
+
+| Branche | Worktree | Commits | Contenu |
+|---|---|---|---|
+| `refactor/serverless-core-split` | `~/dev/tock-split` | 21 | Découpage cœur / façades (étapes 0 à 6) et runtime serverless sur DynamoDB (étape 7) |
+| `feat/s3-storage` | `~/dev/tock-s3` | 1 | Modèles NLP et fichiers uploadés sur S3 |
+| `feat/poll-change-detection` | `~/dev/tock-versions` | 1 | Mode `poll` : `tock_versions` et vérification des modèles à l'usage |
+| `spike/dynamodb` | `~/dev/tock-dynamo-spike` | 1 | Spike de port DynamoDB de 3 DAO ; repris et dépassé par `refactor/serverless-core-split`, à abandonner |
+
+Les quatre partent d'`origin/master` (1fee3fcca). Ce fichier n'est commité sur aucune d'elles.
+
+## Décisions
+
+- **Base de données** (révisé le 21/11) : l'admin reste sur MongoDB, les services exposés passent sur DynamoDB.
+  - L'admin est un back-office sans problème de charge : il garde Mongo et ses recherches (Atlas M0 gratuit, puis Atlas Flex de 8 à 30 $/mois).
+  - bot-api, nlp-api et les connecteurs n'utilisent que des accès par clé (par `userId`, par application, par texte exact) : c'est le terrain de DynamoDB. La recherche du Studio, qui ne passe pas à l'échelle sur Dynamo, reste côté admin.
+  - Le port complet DynamoDB (environ 4 à 5 mois-personne) reste écarté : on ne porte que les méthodes d'exécution des DAO.
+  - DocumentDB est écarté : plancher de 30 à 60 $/mois, VPC donc NAT, pas de collation.
+- **Échanges admin ↔ exécution** : l'admin publie sa configuration dans DynamoDB, l'exécution y écrit ses données, et l'admin les recopie dans Mongo depuis les DynamoDB Streams. Aucun des deux ne lit la base de l'autre.
+  - Publication automatique (change streams + passage complet périodique), sans bouton « publier » : une modification du Studio s'applique comme aujourd'hui. **Choix à confirmer.**
+- **Binaires hors de Mongo** pour tenir dans M0 : modèles NLP (GridFS) et fichiers uploadés (collection `cache`), stockés sur S3 ou tout stockage compatible S3 (dont GCS).
+- **Cible** :
+  - GCP Cloud Run en facturation par instance, avec un minimum de 0 instance, est le plus tolérant : le CPU reste disponible tant que l'instance vit.
+  - AWS Lambda impose le mode serverless complet (traitement dans la requête, file d'attente, tâches déclenchées de l'extérieur).
+- **Vert.x** (révisé le 21/11) : conservé pour l'existant et pour l'admin, retiré de la version serverless. Les artefacts actuels deviennent des façades « cœur + Vert.x/Mongo », sans aucun changement pour les projets existants.
+
+## Architecture des modules
+
+Principe : extraire vers le bas. Le code sans Vert.x ni Mongo descend dans des modules `*-core`. Les artefacts existants gardent leurs coordonnées, leurs packages et leurs dépendances transitives, et dépendent du cœur. La version serverless assemble le cœur et de nouveaux adaptateurs.
+
+```
+tock-shared ──────────► tock-shared-core ◄──────────── tock-serverless-runtime
+(vertx/*, Mongos,        (Properties, IOC, Executor,    (exécuteur lié à la requête, serveur JDK,
+ vertxExecutor lié)       SPI HTTP neutre,               file d'attente, dédup, /_tasks)
+                          ExecutionScope, LeasedUserLock)   ▲   ▲   ▲
+                                                            │   │   └ tock-serverless-dynamodb (dédup)
+                                                            │   └──── tock-serverless-sqs
+                                                            └──────── tock-serverless-pubsub
+tock-bot-engine ──────► tock-bot-engine-core ◄──────── tock-bot-storage-dynamodb (DAO d'exécution)
+(BotVerticle,            (BotRepository, BotBus,
+ VertxBotServer,          XxxRuntimeDAO, BotServer)
+ NlpProxy)
+tock-bot-storage-mongo ─► tock-bot-storage-model ◄──── tock-bot-storage-dynamodb
+                          (documents *Col, sans pilote)
+tock-bot-connector-* ─► tock-bot-engine-core (WhatsApp Cloud et Messenger migrés)
+tock-nlp-api-service ─► tock-nlp-api-core ◄─────────── tock-nlp-front-storage-dynamodb
+tock-storage-dynamodb-core (DynamoStore, DocumentCodec) : partagé par les stockages Dynamo bot et NLP
+admin : + tock-bot-storage-dynamodb-publication (Mongo → Dynamo)
+        + tock-bot-storage-dynamodb-replication (Streams → Mongo)
+```
+
+Un POM de démarrage `tock-serverless-bot` assemblera la version serverless, verrouillé par `maven-enforcer` (`bannedDependencies` sur `io.vertx:*`, `org.mongodb:*`, `org.litote.kmongo:*`). Il n'existe pas encore.
+
+### Décisions d'interface
+
+1. **Connecteurs** : `ConnectorController.registerRoutes(id, HttpRoutes)` neutre, en plus des méthodes `Router` gardées (défaut : `UnsupportedOperationException`). En mode classique, `VertxBotServer` monte les routes neutres sur le `Router`. Le runtime serverless refuse au démarrage tout connecteur qui utilise encore `registerServices(Router)`.
+2. **`ExecutionScope`** remplace `verticle.launch` dans `TockConnectorController.handle` : verticle en classique, exécution attendue dans la requête en serverless.
+3. **`setPeriodic` nommé** : le runtime serverless expose les tâches sur `POST /_tasks/{name}` (EventBridge Scheduler, Cloud Scheduler). La variante sans nom reste.
+4. **DAO séparés par composition** (révisé, l'héritage prévu au départ est écarté) : interfaces `XxxRuntimeDAO` avec les seules méthodes d'exécution ; le code d'exécution appelle `XxxRuntimeDAO.fromInjector()`, qui renvoie le DAO d'exécution lié, sinon `XxxDAO.asRuntimeDAO()`. Une redéfinition ne peut pas garder les valeurs par défaut des paramètres, or les projets compilés appellent les méthodes `…$default` des DAO complets : ceux-ci restent inchangés.
+5. **Liaisons par défaut inchangées** : `sharedModule` lie toujours `vertxExecutor()`. Les nouveaux comportements ne s'activent que par un nouveau module ou une nouvelle propriété.
+
+### Règles de compatibilité
+
+- Mêmes groupId, artifactId, packages et noms complets de classes.
+- Fonction de premier niveau déplacée de fichier : `@file:JvmName` pour garder sa classe `XxxKt`.
+- `internal` utilisé des deux côtés d'une coupure : `public` + `@InternalTockApi` (opt-in de niveau `ERROR`).
+- Contrôles en CI (`scripts/api-compat`, job `api-compat`) : japicmp et diff des dépendances runtime de chaque module, contre le merge-base avec la branche cible. La 26.9.1 ne peut pas servir de référence : master a déjà cassé l'API Mongo (Jackson 3 / kmongo-dsl). S'y ajoutent les tests de bytecode des modules `*-core`, les suites existantes, les samples et l'e2e tock-docker.
+
+### Étapes
+
+| # | Étape | Risque pour l'existant | État |
+|---|---|---|---|
+| 0 | Contrôles CI : japicmp, diff des dépendances, règle d'architecture | nul | fait |
+| 1 | `tock-shared-core` ; `tock-shared` devient une façade | faible | fait |
+| 2 | SPI HTTP neutre, `ExecutionScope`, `setPeriodic` nommé ; adaptateurs Vert.x dans `tock-shared` | faible | fait |
+| 3 | `tock-bot-engine-core` ; `tock-bot-engine` devient une façade | moyen (83 déclarations `internal`) | fait |
+| 4 | DAO séparés exécution / admin | faible | fait |
+| 5 | Connecteurs un par un vers la SPI neutre | faible à moyen (classpath transitif, vérifié par le diff) | 2 sur 12 (WhatsApp Cloud, Messenger) |
+| 6 | `tock-nlp-api-core` | faible | fait, sauf 3 routes |
+| 7 | Runtime serverless, stockage DynamoDB ×2, publication, recopie Streams → Mongo, POM de démarrage | nul (ajout seul), sauf l'extraction de `tock-bot-storage-model` | côté bot : fait ; NLP : stockage, publication et recopie faits, runtime à faire |
+
+Les étapes 0 à 6 se mergent sur master sans changement de comportement. Dernier état vérifié (8a54079da) : `mvn clean verify` passe sur tout le dépôt, 1 181 tests, 0 échec ; `api-compat` ne trouve aucune incompatibilité binaire, aucune dépendance perdue et aucune nouvelle classe en double.
+
+## Avancement détaillé
+
+Branche `refactor/serverless-core-split`, un commit par étape ou par tranche.
+
+### Étape 0 : contrôles CI
+
+- `scripts/api-compat` : japicmp sur l'union des jars publiés, et diff des dépendances runtime de chaque module. Référence réutilisable par `--baseline-dir`.
+- Filtres pour Kotlin : `internal` est public en bytecode, et le nom JVM d'un membre `internal` porte le nom du module. Les classes `internal` sont repérées dans les sources de la référence (y compris celles générées par kapt), et les constructeurs des classes dont le seul constructeur est `internal` sont ignorés.
+- `clean` avant de construire, et échec sur toute nouvelle classe en double (`CompilationResult` était déjà en double sur master, avec le compilateur K2).
+- Vérifié dans les deux sens : un arbre inchangé passe, et une méthode supprimée comme une dépendance passée en `provided` sont détectées.
+
+### Étape 1 : `tock-shared-core`
+
+- Verrouillé par l'enforcer (ni Vert.x, ni Netty, ni pilote Mongo). `IOCs.kt` est entier dans le cœur ; les liaisons Vert.x et Mongo de `sharedModule` sont ajoutées par `tock-shared` via `ServiceLoader`.
+- Restent dans `tock-shared` : les exceptions REST (`HttpResponseStatus` de Netty), `TockUserListener` (`User` de Vert.x) et `Dice` (`ObjectId` de bson).
+- Limite connue : un projet qui exclut toutes les dépendances transitives de `tock-shared` (`*:*`) doit ajouter `tock-shared-core`. C'était le cas de `nlp-api-client`, passé à `tock-shared-core`.
+
+### Étape 2 : SPI HTTP et exécution
+
+- `ai.tock.shared.http` : `HttpRequest`, `HttpResponse` et `HttpRoutes`, avec des handlers `suspend`. Chemins à la syntaxe de Vert.x (`:param`, `*` final). `find` et `handle` servent au runtime qui n'a pas de routeur.
+- `ExecutionScope` et `CoroutineExecutionScope` : l'abstraction de `verticle.launch`.
+- `Executor.setPeriodic(name, …)` : méthode par défaut qui délègue à la variante sans nom. Les appels existants ne sont pas renommés : un mock mockk strict d'`Executor` dans un projet ne les intercepterait plus.
+- Adaptateur Vert.x : `Router.install(routes, scope)` renvoie les `Route` créées, pour pouvoir les désinstaller.
+
+### Étape 3 : `tock-bot-engine-core`
+
+- `tock-bot-engine` ne garde que `BotVerticle`, `NlpProxyBotService` et `VertxBotServer`. `BotRepository` et `TockConnectorController` passent par l'interface `BotServer`, chargée par `ServiceLoader`.
+- Le cœur compile contre Vert.x et `tock-shared` en `provided`, pour les signatures publiques qui exposent leurs types. L'enforcer interdit ces dépendances en `compile` et en `runtime`.
+- `BotEngineCoreBytecodeTest` n'autorise de références qu'à cinq classes, utilisées par le serveur Vert.x : `ConnectorProvider`, `TockConnectorController`, `VertxHealthchecks`, `WebSocketController` et `UploadedFilesService`. Le healthcheck par défaut est sorti dans `VertxHealthchecks`, sinon l'initialisation de `BotRepository` aurait lié `RoutingContext` via `invokedynamic`.
+- Vérifié avec `jdeps` : `translator-core`, `stt-core`, `nlp-api-client` et les modules gen-ai n'utilisent aucune classe propre à `tock-shared`. Le cœur peut donc les exclure.
+
+### Étape 4 : DAO d'exécution du bot
+
+- 12 interfaces `XxxRuntimeDAO` : timeline utilisateur, configurations des bots et des stories, les cinq configurations suivies par les moniteurs, features, métriques, indicateurs et i18n. Méthodes repérées par analyse, confirmées par le compilateur.
+- Les stockages existants, `bot/test-base` et les projets qui lient leurs propres DAO fonctionnent sans changement.
+
+### Étape 5 : connecteurs
+
+- `ConnectorController.registerRoutes(id, HttpRoutes)`, `ConnectorProvider.createHttpRequestFilter` et le filtre neutre `HttpRequestFilter` (mêmes règles que `RequestFilter` : IP directe ou dernière de `X-Forwarded-For`, en-tête `X-Auth-Token`).
+- WhatsApp Cloud et Messenger migrés, avec des réponses identiques : pas de `Content-Type`, 500 si la vérification échoue, 403 ou 200 selon le cas. Messenger traite les événements avec l'`Executor` (même pool de workers Vert.x, sans ordre garanti, comme avant). Un test de bytecode par connecteur vérifie qu'il ne référence plus Vert.x.
+- Les dépendances des connecteurs ne changent pas (le diff de classpath l'interdit) : le POM de démarrage serverless devra exclure `tock-bot-engine` et Vert.x.
+
+### Étape 6 : `tock-nlp-api-core`
+
+- `NlpApiRoutes` expose les routes d'exécution de nlp-api en `HttpRoutes` (parse, evaluate, merge, unknown, intents, application, application/create, logs/count), avec les mêmes codes et corps JSON qu'`endJson`, sans authentification ni import de dumps. `NlpVerticle` est inchangé.
+- Parent `tock-nlp` : le parent `tock-nlp-api` ramènerait `tock-shared` via `tock-aws-tools`.
+- `ParserService` et `ConfigurationRepository` passent par `ApplicationRuntimeConfiguration` (7 méthodes de la façade) et par 6 `XxxRuntimeDAO` NLP, chacun avec un adaptateur vers l'objet complet. Les tests existants passent sans modification.
+
+### Étape 7 : runtime serverless
+
+- **Runtime** (`tock-serverless-runtime`) : `TrackingExecutor` et `TrackingExecutionScope` (travail suivi par un `ThreadLocal`, propagé aux coroutines), `RequestWork.awaitIdle` (la requête attend tout ce travail), `ServerlessBotServer`, `ServerlessHttpServer` (serveur HTTP du JDK), `ServerlessBotLauncher`, `POST /_tasks/{name}` (seulement si `tock_serverless_tasks_token` est défini).
+- **Ack et file d'attente** : les webhooks des chemins configurés sont mis en file puis acquittés par une 200 ; le consommateur les rejoue sur les mêmes routes, en attendant tout le travail. Messages signés (HMAC-SHA256, `tock_serverless_queue_secret`). Déduplication par empreinte du chemin et du corps. Consommateurs sans SDK : SQS (files standard et FIFO, échecs partiels de lot) et push Pub/Sub.
+- **Modèle de persistance** (`tock-bot-storage-model`) : les documents `*Col` et `BotDataRegistry`, avec les mêmes (dé)sérialiseurs générés (`MongoFormatTest`). Seul le DSL de requête généré référence le pilote, en `provided`. `jasypt` devient une dépendance du modèle.
+- **DAO DynamoDB du bot** (`tock-bot-storage-dynamodb`) : timelines, configurations d'application et de bot, stories, features (cache de 30 s), i18n, payloads WhatsApp, configurations RAG, magasin de vecteurs, observabilité, compresseur, règles métier, indicateurs, métriques. Format : JSON Jackson 3 compressé, mêmes (dé)sérialiseurs que Mongo.
+- **Verrou et déduplication partagés** : `LeasedUserLock` (cœur), `MongoUserLock` et `DynamoUserLock` dessus ; `DynamoDeduplicationStore` dans `tock-serverless-dynamodb`.
+- **DAO DynamoDB du NLP** (`tock-nlp-front-storage-dynamodb`) : applications, intentions, types d'entités, dictionnaires, phrases (recherche exacte seule), journaux d'analyse ; `DynamoStore` et `DocumentCodec` partagés dans `tock-storage-dynamodb-core`.
+- **Publication admin → DynamoDB** (`tock-bot-storage-dynamodb-publication`, `tock_dynamodb_publication_enabled`) : démarrée par `BotAdditionalModulesService`, aucun changement dans l'admin. Lit Mongo par les interfaces des DAO. N'écrit que ce qui diffère ; ne supprime que ce qu'elle a publié (manifeste `PUB`) ; l'admin gagne sur les clés uniques.
+  - NLP : même mécanisme pour applications, intentions, types d'entités et dictionnaires. Phrases validées : cache d'empreintes en mémoire, passage incrémental toutes les 5 min sur `updateDate`, passage complet au démarrage, toutes les heures et sur changement d'application, d'intention ou de type d'entité. L'inbox de l'exécution n'écrase jamais une phrase publiée (`attribute_not_exists(fp)`).
+- **Recopie Streams → Mongo** (`tock-bot-storage-dynamodb-replication`, `tock_dynamodb_replication_enabled`) : lecture des Streams par l'API toutes les 5 s, points de reprise dans Mongo. Dialogues recopiés tels quels ; configuration créée par l'exécution ajoutée seulement si l'admin ne l'a pas ; compteurs en différences. NLP : inbox (sauf phrase déjà validée dans Mongo), compteur d'inconnus, journaux d'analyse via `ParseRequestLogDAO`.
+- **Test de bout en bout WhatsApp Cloud** : un vrai bot sur DynamoDB Local, classpath sans Vert.x, `tock-shared` ni `tock-bot-engine` (vérifié par le test) ; ne simule plus que le NLP.
+- Contrôles positifs faits sur chaque garantie (attente du travail, déduplication, condition du verrou, suppression limitée au manifeste, remplacement sur clé unique, condition de l'inbox, recopie de l'inbox).
+
+### Limites connues
+
+- Au rejeu d'un enregistrement de Stream (perte d'un point de reprise), les compteurs (statistiques des libellés, phrases inconnues) et les journaux d'analyse sont comptés deux fois.
+- Au premier démarrage de la recopie, seules les 24 h que garde un Stream sont recopiées.
+- Non recopiés : expirations du TTL DynamoDB, suppressions de configuration, statistiques de flux de dialogue, identifiants client.
+- Les DAO DynamoDB n'ont pas de change stream : leurs `listen…` ne font rien. **Une instance chaude ne voit pas une publication de l'admin** avant son prochain démarrage à froid, sauf les features (cache de 30 s). Voir lot B ci-dessous.
+
+## Chiffres du spike DynamoDB
+
+- 59 tests de contrat verts ; test différentiel Mongo/Dynamo : 2 400 requêtes sur 2 400 identiques.
+- Tour de bot : 11 RCU + 16 WCU au tour 100, sans compter le NLP (lecture de la phrase validée et écriture de l'inbox, environ +1 RCU et +3 WCU).
+- Recherche du Studio sur 50 000 phrases : environ 3 140 RCU et 4 s (Mongo : 3 à 60 ms). D'où la recherche gardée dans l'admin.
+- Recopie : une table et un shard font environ 0,5 M requêtes `GetRecords` par mois ; 2,5 M sont gratuites.
+- Bug Mongo trouvé : l'index unique sur `bot_configuration.path` n'accepte qu'une seule configuration dont le `path` est null.
+
+## Autres branches
+
+### `feat/s3-storage`
+
+- `util/aws-tools` : `S3Bucket` et `S3Clients`, configurés par `tock_s3_endpoint`, `tock_s3_region` et `tock_s3_path_style`.
+- `nlp/model/storage-s3` : activé par `tock_nlp_model_storage=s3` et `tock_nlp_model_s3_bucket`. Date de mise à jour conservée à la milliseconde dans une métadonnée ; changements détectés par un listing périodique, uniquement en mode `stream`.
+- `bot/storage-s3` et l'interface `UploadedFilesStorage` dans bot/engine : activés par `tock_bot_files_storage=s3`. Téléchargements redirigés vers une URL présignée (URL publique optionnelle) ; un fichier absent de S3 est recopié depuis le cache Mongo à la lecture.
+- 19 tests sur `adobe/s3mock:5.2.3` (les images MinIO ne sont plus disponibles).
+- Corrigé au passage : `provideOrDefault { Impl }` déduisait le type `Impl` au lieu de l'interface.
+
+### `feat/poll-change-detection`
+
+- `tock_change_detection_mode` vaut `stream` (défaut) ou `poll` ; intervalle `tock_change_detection_interval_seconds` (10 par défaut).
+- Écriture : un `CommandListener` sur les clients Mongo incrémente `tock_versions` pour les 17 collections marquées `trackChanges()`, seulement si `n > 0` ; actif aussi en mode `stream`, désactivable par `tock_mongo_track_changes=false`.
+- Lecture : `MongoChangePoller`, vérifié à l'entrée de chaque requête (`WebVerticle`) et par une tâche de fond. En mode `poll`, `NlpModelRepository` vérifie `get*ModelLastUpdate` à l'usage, au plus une fois par intervalle.
+- 5 tests sur Mongo réel et 5 tests du dépôt de modèles. Pas encore testé de bout en bout : le hook de `WebVerticle` et l'enregistrement dans `watch`.
+- Utile à l'admin s'il tourne lui-même à 0 instance (Cloud Run), et modèle à reprendre pour le lot B.
+
+## Reste à faire
+
+Dans l'ordre proposé. Les lots A à D rendent un bot WhatsApp Cloud utilisable en serverless de bout en bout ; E et F l'élargissent.
+
+### A. Merger le découpage sur master
+
+PR successives depuis `origin/master`, chacune sans changement de comportement, `api-compat` vert :
+
+1. `api-compat` et son job CI (9141cae7e, ea3e411ef, 57ecd54e2, 7ca180c87).
+2. `tock-shared-core` (36b1c9ba5), puis la SPI HTTP et `ExecutionScope` (06697adca).
+3. `tock-bot-engine-core` (dfd96cc49), puis les DAO d'exécution (6c8579546).
+4. Les routes neutres des connecteurs (9281c48f3) et `tock-nlp-api-core` (074fb0a48).
+5. `tock-bot-storage-model` (0c3553119) : seule extraction qui touche le stockage Mongo existant, couverte par `MongoFormatTest` ; à valider aussi par l'e2e tock-docker.
+6. L'étape 7 (ajouts seuls) : une PR, ou plusieurs selon la taille acceptable en revue.
+
+Avant d'ouvrir : lancer les contrôles IntelliJ sur les fichiers modifiés (le worktree n'était pas ouvert dans l'IDE) et l'e2e tock-docker.
+
+### B. Détection des publications par l'exécution
+
+Une instance chaude doit voir une modification publiée par l'admin. Proposition : la publication incrémente un item de version par type de configuration (même principe que `tock_versions`) ; le runtime le lit au plus une fois par intervalle, à l'entrée de la requête, et appelle les listeners enregistrés par `listen…`. Coût : une lecture d'item par intervalle et par instance.
+
+### C. Modèles NLP et fichiers hors de Mongo
+
+Porter `feat/s3-storage` sur `refactor/serverless-core-split` (conflits attendus : `UploadedFilesStorage` est dans bot/engine, déplacé vers `tock-bot-engine-core`). La détection des nouveaux modèles par listing ne marche qu'en mode `stream` : en serverless, vérifier à l'usage comme `NlpModelRepository` en mode `poll`, ou par l'item de version du lot B.
+
+### D. Runtime NLP serverless et déploiement
+
+1. Lanceur NLP serverless sur `tock-nlp-api-core`, et passage de `intents`, `application` et `application/create` sur l'interface d'exécution. Pièges connus : `frontModule` lie `TockUserListener` (Vert.x), et le client Duckling utilise le `JsonArray` de Vert.x.
+2. POM de démarrage `tock-serverless-bot`, verrouillé par l'enforcer, excluant `tock-bot-engine` et Vert.x des connecteurs.
+3. Nommer les appels existants de `setPeriodic` (workers de build et de nettoyage des modèles, crawler de TTL des phrases, file Messenger, datasets, base de connaissances) et les déclencher par EventBridge Scheduler ou Cloud Scheduler.
+4. Images tock-docker : ajouter les modules de publication et de recopie (le stockage NLP Dynamo suit automatiquement) et les modules S3 à l'image de l'admin ; créer l'image du runtime serverless.
+5. Adaptateur Lambda natif, ou Lambda Web Adapter devant `ServerlessHttpServer`, avec SnapStart.
+6. Essai réel sur Cloud Run (facturation par instance, minimum 0) et sur Lambda, puis relancer `SpikeBenchmark` contre un vrai AWS.
+
+### E. Autres connecteurs
+
+Migrer vers `registerRoutes` : alcmeon, slack, whatsapp, teams, web (et SSE), open-ai, google-chat, iadvize, mattermost et rest. Websocket bot_api : n'autoriser que le mode webhook en serverless.
+
+### F. Profil « free tier » et documentation
+
+- TTL réduites : `tock_nlp_classified_sentences_index_ttl_days` pour l'inbox, statistiques et flux à 30–90 jours.
+- `maxPoolSize` réduit, et idéalement un seul `MongoClient` par processus (limite de connexions de M0).
+- Documenter toutes les nouvelles propriétés (`tock_dynamodb_*`, `tock_serverless_*`, `tock_s3_*`, `tock_change_detection_*`) et l'architecture admin / exécution.
