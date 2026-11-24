@@ -207,6 +207,7 @@
           [outline]="isActionButtonSuggested(Action.VALIDATE)"
           shape="round"
           size="large"
+          [disabled]="savingIntent"
           (click)="handleAction(Action.VALIDATE)"
         >
           <nb-icon icon="check-circle-fill"></nb-icon>
@@ -219,6 +220,7 @@
           [ghost]="!isActionButtonHighlighted('review')"
           shape="round"
           size="large"
+          [disabled]="savingIntent"
           (click)="askForReview()"
         >
           <nb-icon icon="search"></nb-icon>
@@ -234,6 +236,7 @@
           [outline]="isActionButtonSuggested(Action.UNKNOWN)"
           shape="round"
           size="large"
+          [disabled]="savingIntent"
           (click)="handleAction(Action.UNKNOWN)"
         >
           <nb-icon icon="question-circle"></nb-icon>
@@ -250,6 +253,7 @@
           [outline]="isActionButtonSuggested(Action.RAGEXCLUDED)"
           shape="round"
           size="large"
+          [disabled]="savingIntent"
           (click)="handleAction(Action.RAGEXCLUDED)"
         >
           <nb-icon icon="lightbulb-off"></nb-icon>
@@ -263,6 +267,7 @@
           ghost
           shape="round"
           size="large"
+          [disabled]="savingIntent"
           (click)="handleAction(Action.DELETE)"
         >
           <nb-icon icon="trash"></nb-icon>
