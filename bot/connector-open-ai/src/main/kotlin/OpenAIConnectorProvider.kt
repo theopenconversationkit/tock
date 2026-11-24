@@ -25,12 +25,36 @@ import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.ConnectorTypeConfigurationField
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import ai.tock.shared.provideOrDefault
 import ai.tock.shared.resourceAsString
-import ai.tock.shared.security.auth.spi.WebSecurityHandler
+import ai.tock.shared.security.auth.spi.HttpWebSecurity
 import ai.tock.shared.security.auth.spi.WebSecurityMode
 import kotlin.reflect.KClass
 
 private const val WEB_SECURITY_MODE_PARAM = "web_security_mode"
+
+private val vertxAvailable: Boolean =
+    try {
+        Class.forName("ai.tock.shared.vertx.WebVerticle")
+        true
+    } catch (_: ClassNotFoundException) {
+        false
+    }
+
+/**
+ * The security of the connector: the Vert.x routes when the project binds its own Vert.x handler for [mode], the
+ * server independent routes otherwise.
+ */
+internal fun openAIConnectorSecurity(mode: WebSecurityMode): OpenAIConnectorSecurity {
+    if (vertxAvailable) {
+        OpenAIVertxServices.security(mode)?.let { return it }
+    }
+    val security =
+        injector.provideOrDefault<HttpWebSecurity>(tag = mode.name) {
+            HttpWebSecurity.default(mode) ?: error("no HttpWebSecurity bound for the web security mode $mode")
+        }
+    return OpenAIConnectorSecurity.Http(security)
+}
 
 internal class OpenAIConnectorProvider : ConnectorProvider {
     override val connectorType: ConnectorType get() = openAIConnectorType
@@ -39,11 +63,7 @@ internal class OpenAIConnectorProvider : ConnectorProvider {
         with(connectorConfiguration) {
             val webSecurityType = WebSecurityMode.find(parameters[WEB_SECURITY_MODE_PARAM])
 
-            return OpenAIConnector(
-                connectorId,
-                path,
-                injector.provide<WebSecurityHandler>(tag = webSecurityType.name),
-            )
+            return OpenAIConnector(connectorId, path, openAIConnectorSecurity(webSecurityType))
         }
     }
 
