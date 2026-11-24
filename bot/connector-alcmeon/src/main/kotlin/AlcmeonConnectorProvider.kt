@@ -43,7 +43,7 @@ internal object AlcmeonConnectorProvider : ConnectorProvider {
                 description =
                     parameters[SUB_BOT_DESCRIPTION_FIELD]
                         ?: error("Alcmeon subbot description should be provided"),
-                authorisationHandler = AlcmeonAuthorisationHandler(applicationSecret),
+                signatureVerifier = AlcmeonSignatureVerifier(applicationSecret),
             )
         }
     }

@@ -16,6 +16,7 @@
 
 package ai.tock.bot.connector.alcmeon
 
+import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.engine.action.Action
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -23,27 +24,59 @@ import io.vertx.core.http.HttpHeaders
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 
-data class AlcmeonConnectorCallback(
+/**
+ * The callback of an Alcmeon webhook: the answer of the bot is the response of the webhook.
+ */
+interface AlcmeonCallback : ConnectorCallback {
+    /** The channel of the conversation. */
+    val backend: AlcmeonBackend
+
+    fun addAction(
+        action: Action,
+        delay: Long,
+    )
+
+    fun sendResponseWithoutExit()
+
+    fun sendResponseWithExit(
+        exitReason: String,
+        delayInMs: Long,
+    )
+}
+
+/** The JSON response of the webhook. */
+internal fun alcmeonResponse(
+    actions: List<DelayedAction>,
+    backend: AlcmeonBackend,
+    exitReason: String?,
+    delayInMs: Long,
+): String = jacksonObjectMapper().writeValueAsString(AlcmeonMessageConverter.toMessageOut(actions, backend, exitReason, delayInMs))
+
+/**
+ * The callback of a connector with server independent routes: [respond] sends the JSON response.
+ */
+class AlcmeonHttpConnectorCallback(
     override val applicationId: String,
-    val backend: AlcmeonBackend,
-    val context: RoutingContext,
-) : ConnectorCallbackBase(applicationId, alcmeonConnectorType) {
+    override val backend: AlcmeonBackend,
+    private val respond: (String) -> Unit,
+) : ConnectorCallbackBase(applicationId, alcmeonConnectorType),
+    AlcmeonCallback {
     private val logger = KotlinLogging.logger {}
 
     private val actions = mutableListOf<DelayedAction>()
 
-    fun addAction(
+    override fun addAction(
         action: Action,
         delay: Long,
     ) {
         actions.add(DelayedAction(action, delay))
     }
 
-    fun sendResponseWithoutExit() {
+    override fun sendResponseWithoutExit() {
         sendResponse()
     }
 
-    fun sendResponseWithExit(
+    override fun sendResponseWithExit(
         exitReason: String,
         delayInMs: Long,
     ) {
@@ -54,8 +87,48 @@ data class AlcmeonConnectorCallback(
         exitReason: String? = null,
         delayInMs: Long = 0L,
     ) {
-        val response = AlcmeonMessageConverter.toMessageOut(actions, backend, exitReason, delayInMs)
-        val serializedResponse = jacksonObjectMapper().writeValueAsString(response)
+        val serializedResponse = alcmeonResponse(actions, backend, exitReason, delayInMs)
+        logger.info { "Alcmeon connector callback response : $serializedResponse" }
+        respond(serializedResponse)
+    }
+}
+
+/**
+ * The callback of a connector with Vert.x routes.
+ */
+data class AlcmeonConnectorCallback(
+    override val applicationId: String,
+    override val backend: AlcmeonBackend,
+    val context: RoutingContext,
+) : ConnectorCallbackBase(applicationId, alcmeonConnectorType),
+    AlcmeonCallback {
+    private val logger = KotlinLogging.logger {}
+
+    private val actions = mutableListOf<DelayedAction>()
+
+    override fun addAction(
+        action: Action,
+        delay: Long,
+    ) {
+        actions.add(DelayedAction(action, delay))
+    }
+
+    override fun sendResponseWithoutExit() {
+        sendResponse()
+    }
+
+    override fun sendResponseWithExit(
+        exitReason: String,
+        delayInMs: Long,
+    ) {
+        sendResponse(exitReason, delayInMs)
+    }
+
+    private fun sendResponse(
+        exitReason: String? = null,
+        delayInMs: Long = 0L,
+    ) {
+        val serializedResponse = alcmeonResponse(actions, backend, exitReason, delayInMs)
         logger.info { "Alcmeon connector callback response : $serializedResponse" }
         context
             .response()
