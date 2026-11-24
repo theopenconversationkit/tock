@@ -53,6 +53,7 @@ object DynamoChanges {
     const val NLP_INTENT = "nlp_intent"
     const val NLP_ENTITY_TYPE = "nlp_entity_type"
     const val NLP_DICTIONARY = "nlp_dictionary"
+    const val NLP_NAMESPACE = "nlp_namespace"
 
     private const val VERSION_PK = "VERSION"
     private const val VERSION_SK = "V"

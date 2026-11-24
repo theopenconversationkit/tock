@@ -40,9 +40,12 @@ import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.nlp.front.shared.config.SentencesQueryResult
+import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration
+import ai.tock.nlp.front.shared.namespace.NamespaceSharingConfiguration
 import ai.tock.nlp.front.storage.dynamodb.ClassifiedSentenceDynamoDAO
 import ai.tock.nlp.front.storage.dynamodb.DynamoApplicationRuntimeConfiguration
 import ai.tock.nlp.front.storage.dynamodb.EntityTypeDefinitionDynamoDAO
+import ai.tock.nlp.front.storage.dynamodb.NamespaceConfigurationDynamoDAO
 import ai.tock.shared.service.BotAdditionalModulesService
 import ai.tock.storage.dynamodb.BotApplicationConfigurationDynamoDAO
 import ai.tock.storage.dynamodb.DynamoChanges
@@ -155,6 +158,7 @@ class DynamoPublicationTest {
     private val entityTypes = CopyOnWriteArrayList<EntityTypeDefinition>()
     private val dictionaries = CopyOnWriteArrayList<DictionaryData>()
     private val sentences = CopyOnWriteArrayList<ClassifiedSentence>()
+    private val namespaceConfigurations = CopyOnWriteArrayList<NamespaceConfiguration>()
     private val nlpSources =
         NlpSources(
             applications =
@@ -188,6 +192,11 @@ class DynamoPublicationTest {
                         SentencesQueryResult(result.size.toLong(), result)
                     }
                 },
+            namespaces =
+                mockk {
+                    every { getNamespaceConfiguration(any()) } answers { namespaceConfigurations.firstOrNull { it.namespace == firstArg() } }
+                    every { listenNamespaceConfigurationChanges(any()) } answers { listeners += firstArg<() -> Unit>() }
+                },
         )
 
     private val nlpPublication =
@@ -218,7 +227,7 @@ class DynamoPublicationTest {
         publication.stop()
         nlpPublication.stop()
         listOf(applications, bots, stories, features, labels, listeners, businessRules, indicators).forEach { it.clear() }
-        listOf(nlpApplications, intents, entityTypes, dictionaries, sentences).forEach { it.clear() }
+        listOf(nlpApplications, intents, entityTypes, dictionaries, sentences, namespaceConfigurations).forEach { it.clear() }
         DynamoStore.client.listTables().tableNames().forEach { table ->
             DynamoStore.client.scanPaginator { it.tableName(table) }.items().forEach { item ->
                 DynamoStore.client.deleteItem { it.tableName(table).key(mapOf(PK to item.getValue(PK), SK to item.getValue(SK))) }
@@ -501,6 +510,9 @@ class DynamoPublicationTest {
         intents += IntentDefinition("other_app", "app", setOf("other".toId()), emptySet())
         entityTypes += EntityTypeDefinition("app:city", "a city")
         dictionaries += DictionaryData("app", "city", onlyValues = true)
+        // the application imports the model intents of another namespace
+        val namespaceConfiguration = NamespaceConfiguration("app", namespaceImportConfiguration = mapOf("shared" to NamespaceSharingConfiguration(model = true)))
+        namespaceConfigurations += namespaceConfiguration
         // created by the runtime
         EntityTypeDefinitionDynamoDAO.save(EntityTypeDefinition("app:runtime", "created by the runtime"))
 
@@ -511,8 +523,10 @@ class DynamoPublicationTest {
         assertEquals(intent._id, DynamoApplicationRuntimeConfiguration.getIntentIdByQualifiedName("app:greetings"))
         assertEquals(setOf("app:city", "app:runtime"), EntityTypeDefinitionDynamoDAO.getEntityTypes().map { it.name }.toSet())
         assertEquals(dictionaries.toList(), EntityTypeDefinitionDynamoDAO.getAllDictionaryData())
+        assertEquals(namespaceConfiguration, NamespaceConfigurationDynamoDAO.getNamespaceConfiguration("app"))
         assertTrue(nlpPublication.publishAll().isEmpty)
 
+        namespaceConfigurations.clear()
         intents.clear()
         entityTypes.clear()
         dictionaries.clear()
@@ -520,6 +534,7 @@ class DynamoPublicationTest {
         assertEquals(emptyList(), DynamoApplicationRuntimeConfiguration.getIntentsByApplicationId(nlpApplication._id))
         assertEquals(listOf("app:runtime"), EntityTypeDefinitionDynamoDAO.getEntityTypes().map { it.name })
         assertEquals(emptyList(), EntityTypeDefinitionDynamoDAO.getAllDictionaryData())
+        assertEquals(null, NamespaceConfigurationDynamoDAO.getNamespaceConfiguration("app"))
     }
 
     @Test

@@ -216,7 +216,16 @@ Les DAO DynamoDB n'ont pas de change stream : sans ce lot, une instance chaude n
 
 ### D. Runtime NLP serverless et déploiement
 
-1. Lanceur NLP serverless sur `tock-nlp-api-core`, et passage de `intents`, `application` et `application/create` sur l'interface d'exécution. Pièges connus : `frontModule` lie `TockUserListener` (Vert.x), et le client Duckling utilise le `JsonArray` de Vert.x.
+1. **Runtime NLP serverless (fait).**
+   - Module `tock-serverless-nlp` : `ServerlessNlpLauncher` (`setup`, `install`, `start`) compose le cœur NLP, le service de modèles et le parseur sur les DAO d'exécution, sans `frontModule` ni `ApplicationConfigurationService` (qui délègue à des DAO complets dès son initialisation). `install()` peut aussi servir dans un process qui fait tourner des bots.
+   - `NlpApiRoutes` passe sur `ApplicationRuntimeConfiguration` : `intents` et `application` y sont ; `application/create` et `logs/count` deviennent optionnels et répondent 501 sans création d'application ni moniteur (les deux restent dans l'admin). La signature sur l'`ApplicationConfiguration` complète est gardée.
+   - Configuration des moteurs : le DAO S3 des modèles stocke maintenant la configuration NLP de chaque modèle à côté de lui (`configuration/intent/<id>`), écrite par l'admin au moment du build ; le runtime n'a pas de DAO de configuration (lecture : aucune, écriture : refusée). Les modèles plus anciens retombent sur le DAO de configuration.
+   - Corrigé (reste de l'étape 6) : `ConfigurationRepository` calculait les intentions partagées par `ApplicationConfigurationService`. Il passe par `NamespaceConfigurationRuntimeDAO.getNamespaceConfiguration` et `IntentDefinitionRuntimeDAO.getIntentsByNamespace`, ajoutées aux interfaces d'exécution. Les configurations de namespace sont publiées dans DynamoDB (partition `NLPNS`, canal `nlp_namespace`).
+   - `initializeRuntimeConfiguration()` (`tock-nlp-front-service`) : le chargement du cache du parseur sans les DAO de l'admin.
+   - Duckling : `JSONValue` et le client passent de `JsonArray`/`JsonObject` de Vert.x à Jackson (mêmes types décodés, test ajouté) ; la dépendance `vertx-core` du POM est gardée, pour ne pas changer le classpath.
+   - jasypt devient une dépendance du runtime NLP (`initEncryptor`, comme `NlpVerticle`).
+   - Test de bout en bout (DynamoDB Local, classpath sans Vert.x, Mongo ni `tock-shared`) : parse d'une phrase validée, types d'entités de Duckling enregistrés, et application supprimée par l'admin inconnue à la requête suivante (contrôle positif fait : sans notification, le cache la sert encore).
+   - Limites : sans modèle publié dans S3, seules les phrases validées sont reconnues ; le NLP et les bots dans un même process s'appellent encore par HTTP.
 2. POM de démarrage `tock-serverless-bot`, verrouillé par l'enforcer, excluant `tock-bot-engine` et Vert.x des connecteurs.
 3. Nommer les appels existants de `setPeriodic` (workers de build et de nettoyage des modèles, crawler de TTL des phrases, file Messenger, datasets, base de connaissances) et les déclencher par EventBridge Scheduler ou Cloud Scheduler.
 4. Images tock-docker : ajouter les modules de publication et de recopie (le stockage NLP Dynamo suit automatiquement) et les modules S3 à l'image de l'admin ; créer l'image du runtime serverless.

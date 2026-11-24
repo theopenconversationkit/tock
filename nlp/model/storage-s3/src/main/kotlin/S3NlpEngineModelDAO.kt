@@ -17,6 +17,7 @@
 package ai.tock.nlp.model.service.storage.s3
 
 import ai.tock.aws.s3.S3Bucket
+import ai.tock.nlp.core.configuration.NlpApplicationConfiguration
 import ai.tock.nlp.model.ClassifierContextKey
 import ai.tock.nlp.model.EntityContextKey
 import ai.tock.nlp.model.IntentContext.IntentContextKey
@@ -24,11 +25,14 @@ import ai.tock.nlp.model.service.storage.NlpApplicationConfigurationDAO
 import ai.tock.nlp.model.service.storage.NlpEngineModelDAO
 import ai.tock.nlp.model.service.storage.NlpModelStream
 import ai.tock.shared.changes.ChangeChecks
+import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
 import java.io.InputStream
 import java.nio.file.Files
 import java.time.Duration
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -52,6 +56,9 @@ internal class S3NlpEngineModelDAO(
         internal const val UPDATE_DATE_METADATA = "tock-update-date"
         internal const val INTENT_FOLDER = "intent/"
         internal const val ENTITY_FOLDER = "entity/"
+
+        /** The NLP configuration of each model, at `<prefix>configuration/intent/<key id>`... */
+        internal const val CONFIGURATION_FOLDER = "configuration/"
     }
 
     private val logger = KotlinLogging.logger {}
@@ -72,6 +79,8 @@ internal class S3NlpEngineModelDAO(
 
         fun path(key: ClassifierContextKey): String = folder + key.id()
 
+        fun configurationPath(id: String): String = CONFIGURATION_FOLDER + folder + id
+
         fun save(
             key: ClassifierContextKey,
             stream: InputStream,
@@ -80,11 +89,47 @@ internal class S3NlpEngineModelDAO(
             val file = Files.createTempFile("tock-model-", ".bin")
             try {
                 Files.newOutputStream(file).use { stream.copyTo(it) }
-                bucket.put(path(key), file, "application/octet-stream", mapOf(UPDATE_DATE_METADATA to Instant.now().toEpochMilli().toString()))
+                // the precision of the metadata: the configuration is read with the date the runtimes read
+                val date = Instant.now().truncatedTo(ChronoUnit.MILLIS)
+                bucket.put(path(key), file, "application/octet-stream", mapOf(UPDATE_DATE_METADATA to date.toEpochMilli().toString()))
+                saveConfiguration(key, date)
             } finally {
                 Files.deleteIfExists(file)
             }
         }
+
+        /**
+         * Stores the NLP configuration of the model next to it: a runtime without the configuration DAO of the
+         * admin (the serverless one) loads the model with it.
+         */
+        private fun saveConfiguration(
+            key: ClassifierContextKey,
+            date: Instant,
+        ) {
+            try {
+                val configuration = configurationDAO().loadLastConfiguration(key.applicationName, key.engineType, date)
+                if (configuration == null) {
+                    bucket.delete(configurationPath(key.id()))
+                } else {
+                    bucket.put(configurationPath(key.id()), mapper.writeValueAsBytes(configuration), "application/json")
+                }
+            } catch (e: Exception) {
+                logger.error(e) { "the NLP configuration of the model $key is not stored: the runtimes read it from the configuration DAO" }
+            }
+        }
+
+        /** The configuration stored with the model, or the one of the configuration DAO for the older models. */
+        private fun configuration(
+            key: ClassifierContextKey,
+            date: Instant,
+        ): NlpApplicationConfiguration? =
+            bucket.getBytes(configurationPath(key.id()))?.let { mapper.readValue<NlpApplicationConfiguration>(it) }
+                ?: try {
+                    configurationDAO().loadLastConfiguration(key.applicationName, key.engineType, date)
+                } catch (e: Exception) {
+                    logger.warn(e) { "no NLP configuration for the model $key: the default one is used" }
+                    null
+                }
 
         fun inputStream(key: ClassifierContextKey): NlpModelStream? =
             bucket.get(path(key))?.let { stream ->
@@ -92,7 +137,7 @@ internal class S3NlpEngineModelDAO(
                 NlpModelStream(
                     stream,
                     date,
-                    configurationDAO().loadLastConfiguration(key.applicationName, key.engineType, date),
+                    configuration(key, date),
                 )
             }
 
@@ -100,14 +145,14 @@ internal class S3NlpEngineModelDAO(
 
         fun delete(key: ClassifierContextKey) {
             logger.debug { "remove model $key" }
-            bucket.delete(path(key))
+            bucket.delete(listOf(path(key), configurationPath(key.id())))
         }
 
         fun deleteNotIn(keys: List<ClassifierContextKey>) {
             val ids = keys.map { it.id() }.toSet()
             val removed = ids().keys.filterNot { ids.contains(it) }
             logger.debug { "remove models $removed" }
-            bucket.delete(removed.map { folder + it })
+            bucket.delete(removed.flatMap { listOf(folder + it, configurationPath(it)) })
         }
 
         /**

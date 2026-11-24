@@ -20,6 +20,7 @@ import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
+import ai.tock.nlp.front.service.storage.NamespaceConfigurationDAO
 import ai.tock.nlp.front.shared.config.Classification
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
@@ -43,6 +44,8 @@ class NlpSources(
     val intents: IntentDefinitionDAO,
     val entityTypes: EntityTypeDefinitionDAO,
     val sentences: ClassifiedSentenceDAO,
+    /** The namespace configurations: the intents imported by the applications of a namespace. */
+    val namespaces: NamespaceConfigurationDAO? = null,
 )
 
 /**

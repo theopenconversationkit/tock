@@ -86,6 +86,7 @@
         <module>bot</module>
         <module>gen-ai</module>
         <module>serverless-runtime</module>
+        <module>serverless-nlp</module>
         <module>serverless-sqs</module>
         <module>serverless-pubsub</module>
         <module>serverless-dynamodb</module>

@@ -20,6 +20,7 @@ import ai.tock.aws.s3.S3Bucket
 import ai.tock.nlp.core.EntityType
 import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.core.configuration.NlpApplicationConfiguration
+import ai.tock.nlp.core.configuration.NlpModelConfiguration
 import ai.tock.nlp.model.EntityContextKey
 import ai.tock.nlp.model.IntentContext.IntentContextKey
 import ai.tock.nlp.model.service.storage.NlpApplicationConfigurationDAO
@@ -32,6 +33,7 @@ import java.io.InputStream
 import java.time.Duration
 import java.time.Instant
 import java.util.Locale
+import java.util.Properties
 import java.util.Random
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.test.assertContentEquals
@@ -186,9 +188,29 @@ internal class S3NlpEngineModelDAOTest {
     }
 
     @Test
+    fun `GIVEN a model saved by the admin WHEN a runtime without the configuration DAO loads it THEN it has the configuration of the model`() {
+        val properties = Properties().apply { setProperty("cutoff", "3") }
+        val custom = NlpApplicationConfiguration(intentConfiguration = NlpModelConfiguration(properties))
+        every { configurationDAO.loadLastConfiguration(any(), any(), any()) } returns custom
+        dao.saveIntentModel(intentKey, "model".byteInputStream())
+
+        val runtime = S3NlpEngineModelDAO(bucket, Duration.ofSeconds(42), { error("no configuration DAO in the runtime") }, { _, _ -> })
+        val stream = assertNotNull(runtime.getIntentModelInputStream(intentKey))
+
+        assertEquals(custom, stream.configuration)
+        assertEquals("model", stream.inputStream.text())
+
+        dao.deleteIntentModel(intentKey)
+        assertEquals(emptyList(), bucket.list().map { it.key() }.toList(), "the configuration is deleted with its model")
+    }
+
+    @Test
     fun `the keys are stored under the prefix`() {
         dao.saveIntentModel(intentKey, "model".byteInputStream())
 
-        assertEquals(listOf("test/models/intent/${intentKey.id()}"), bucket.list().map { it.key() }.toList())
+        assertEquals(
+            listOf("test/models/configuration/intent/${intentKey.id()}", "test/models/intent/${intentKey.id()}"),
+            bucket.list().map { it.key() }.toList(),
+        )
     }
 }

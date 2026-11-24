@@ -20,6 +20,7 @@ import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
+import ai.tock.nlp.front.service.storage.NamespaceConfigurationDAO
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.longProperty
 import ai.tock.shared.service.BotAdditionalModulesService
@@ -83,7 +84,7 @@ class DynamoPublicationModulesService : BotAdditionalModulesService {
         val intents = instanceOrNull<IntentDefinitionDAO>() ?: return null
         val entityTypes = instanceOrNull<EntityTypeDefinitionDAO>() ?: return null
         val sentences = instanceOrNull<ClassifiedSentenceDAO>() ?: return null
-        return NlpSources(applications, intents, entityTypes, sentences)
+        return NlpSources(applications, intents, entityTypes, sentences, instanceOrNull<NamespaceConfigurationDAO>())
     }
 
     companion object {

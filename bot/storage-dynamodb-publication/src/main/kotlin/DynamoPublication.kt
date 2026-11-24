@@ -29,6 +29,7 @@ import ai.tock.nlp.core.DictionaryData
 import ai.tock.nlp.front.storage.dynamodb.ApplicationDefinitionDynamoDAO
 import ai.tock.nlp.front.storage.dynamodb.EntityTypeDefinitionDynamoDAO
 import ai.tock.nlp.front.storage.dynamodb.IntentDefinitionDynamoDAO
+import ai.tock.nlp.front.storage.dynamodb.NamespaceConfigurationDynamoDAO
 import ai.tock.storage.dynamodb.BotApplicationConfigurationDynamoDAO
 import ai.tock.storage.dynamodb.DynamoChanges
 import ai.tock.storage.dynamodb.FeatureDynamoDAO
@@ -78,9 +79,9 @@ class DynamoPublication(
     private val logger = KotlinLogging.logger {}
 
     /** The kinds of published items, in the order of a publication: the scopes of the next ones come from the first ones. */
-    enum class Kind { APPLICATION, BOT, STORY, FEATURE, LABEL, SETTINGS, INDICATOR, NLP_APPLICATION, NLP_INTENT, NLP_ENTITY_TYPE, NLP_DICTIONARY, NLP_SENTENCE }
+    enum class Kind { APPLICATION, BOT, STORY, FEATURE, LABEL, SETTINGS, INDICATOR, NLP_APPLICATION, NLP_INTENT, NLP_ENTITY_TYPE, NLP_DICTIONARY, NLP_NAMESPACE, NLP_SENTENCE }
 
-    private val nlpKinds = setOf(Kind.NLP_APPLICATION, Kind.NLP_INTENT, Kind.NLP_ENTITY_TYPE, Kind.NLP_DICTIONARY, Kind.NLP_SENTENCE)
+    private val nlpKinds = setOf(Kind.NLP_APPLICATION, Kind.NLP_INTENT, Kind.NLP_ENTITY_TYPE, Kind.NLP_DICTIONARY, Kind.NLP_NAMESPACE, Kind.NLP_SENTENCE)
 
     private val sentences = nlp?.let { SentencePublication(it, sentenceCompleteInterval) }
 
@@ -126,6 +127,7 @@ class DynamoPublication(
                     Kind.NLP_INTENT -> publishNlpIntents(counters)
                     Kind.NLP_ENTITY_TYPE -> publishNlpEntityTypes(counters)
                     Kind.NLP_DICTIONARY -> publishNlpDictionaries(counters)
+                    Kind.NLP_NAMESPACE -> publishNlpNamespaces(counters)
                     Kind.NLP_SENTENCE -> publishSentences(counters)
                 }
             } catch (e: Exception) {
@@ -154,6 +156,7 @@ class DynamoPublication(
                     Kind.NLP_INTENT -> DynamoChanges.NLP_INTENT
                     Kind.NLP_ENTITY_TYPE -> DynamoChanges.NLP_ENTITY_TYPE
                     Kind.NLP_DICTIONARY -> DynamoChanges.NLP_DICTIONARY
+                    Kind.NLP_NAMESPACE -> DynamoChanges.NLP_NAMESPACE
                     Kind.FEATURE, Kind.INDICATOR, Kind.NLP_SENTENCE -> null
                 }
             }
@@ -187,6 +190,7 @@ class DynamoPublication(
             listen("intents") { nlp.intents.listenIntentDefinitionChanges(structure) }
             listen("entity types") { nlp.entityTypes.listenEntityTypeChanges(structure) }
             listen("dictionaries") { nlp.entityTypes.listenDictionaryDataChanges { request(setOf(Kind.NLP_DICTIONARY)) } }
+            nlp.namespaces?.let { namespaces -> listen("namespace configurations") { namespaces.listenNamespaceConfigurationChanges { request(setOf(Kind.NLP_NAMESPACE)) } } }
         }
         logger.info { "publication of the admin configuration to DynamoDB started" }
     }
@@ -545,6 +549,26 @@ class DynamoPublication(
             ref = { emptyMap() },
             write = { EntityTypeDefinitionDynamoDAO.save(it) },
             delete = { key, _ -> EntityTypeDefinitionDynamoDAO.dictionaries.delete(key) },
+        )
+    }
+
+    /** The configurations of the namespaces of the applications: the imports of their intents. */
+    private fun publishNlpNamespaces(counters: Counters) {
+        val sources = nlp ?: return
+        val dao = sources.namespaces ?: return
+        val namespaces =
+            sources.applications
+                .getApplications()
+                .map { it.namespace }
+                .toSet()
+        sync(
+            Kind.NLP_NAMESPACE,
+            counters,
+            source = namespaces.mapNotNull { dao.getNamespaceConfiguration(it) }.associateBy { it.namespace },
+            target = NamespaceConfigurationDynamoDAO.documents.all().associateBy { it.namespace },
+            ref = { emptyMap() },
+            write = { NamespaceConfigurationDynamoDAO.documents.save(it) },
+            delete = { key, _ -> NamespaceConfigurationDynamoDAO.documents.delete(key) },
         )
     }
 

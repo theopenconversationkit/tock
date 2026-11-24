@@ -16,21 +16,29 @@
 
 package ai.tock.duckling.client
 
-import io.vertx.core.json.JsonArray
-import io.vertx.core.json.JsonObject
+import com.fasterxml.jackson.databind.ObjectMapper
 
+/**
+ * A value of the JSON answered by Duckling: the lists, maps, strings, numbers and booleans decoded by Jackson,
+ * the types Vert.x decoded before.
+ */
 internal class JSONValue(
     val value: Any?,
 ) {
     companion object {
         val NULL_VALUE = JSONValue(null)
+
+        private val mapper = ObjectMapper()
+
+        /** Decodes a JSON array. */
+        fun parseArray(json: String): JSONValue = JSONValue(mapper.readValue(json, List::class.java))
     }
 
     operator fun get(i: Int): JSONValue =
         if (isNull()) {
             NULL_VALUE
-        } else if (value is JsonArray) {
-            JSONValue(value.getValue(i))
+        } else if (value is List<*>) {
+            JSONValue(value[i])
         } else {
             throw IllegalArgumentException("supported only for array but is $value")
         }
@@ -38,8 +46,6 @@ internal class JSONValue(
     operator fun get(name: String): JSONValue =
         if (isNull()) {
             NULL_VALUE
-        } else if (value is JsonObject) {
-            JSONValue(value.getValue(name))
         } else if (value is Map<*, *>) {
             JSONValue(value.get(name))
         } else {
@@ -52,15 +58,15 @@ internal class JSONValue(
 
     fun number(): Number = value as Number
 
-    fun array(): JsonArray = value as JsonArray
+    fun array(): List<*> = value as List<*>
 
-    fun isEmpty(): Boolean = (value as JsonArray).isEmpty
+    fun isEmpty(): Boolean = (value as List<*>).isEmpty()
 
     fun isNull(): Boolean = value == null
 
     fun isNotNull(): Boolean = value != null
 
-    fun iterable(): Iterable<JSONValue> = (value as JsonArray).list.map { JSONValue(it) }
+    fun iterable(): Iterable<JSONValue> = (value as List<*>).map { JSONValue(it) }
 
     override fun toString(): String = string()
 }

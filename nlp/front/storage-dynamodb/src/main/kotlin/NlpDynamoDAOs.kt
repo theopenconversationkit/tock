@@ -29,6 +29,7 @@ import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLog
+import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration
 import ai.tock.shared.longProperty
 import ai.tock.shared.normalize
 import ai.tock.storage.dynamodb.DOC
@@ -110,6 +111,8 @@ object IntentDefinitionDynamoDAO : IntentDefinitionRuntimeDAO {
 
     override fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> = documents.all().filter { applicationId in it.applications }
 
+    override fun getIntentsByNamespace(namespace: String): List<IntentDefinition> = documents.all().filter { it.namespace == namespace }
+
     fun getIntentById(id: Id<IntentDefinition>): IntentDefinition? = documents.get(id.toString())
 
     fun getIntentByNamespaceAndName(
@@ -136,9 +139,11 @@ object EntityTypeDefinitionDynamoDAO : EntityTypeDefinitionRuntimeDAO {
 }
 
 object NamespaceConfigurationDynamoDAO : NamespaceConfigurationRuntimeDAO {
-    override fun listenNamespaceConfigurationChanges(listener: () -> Unit) {
-        logger.info { "no change stream on DynamoDB: the namespace configuration changes are not pushed" }
-    }
+    val documents = NlpDocuments("NLPNS", NamespaceConfiguration::class.java) { it.namespace }
+
+    override fun listenNamespaceConfigurationChanges(listener: () -> Unit) = documents.listen(DynamoChanges.NLP_NAMESPACE, listener)
+
+    override fun getNamespaceConfiguration(namespace: String): NamespaceConfiguration? = documents.get(namespace)
 }
 
 /**
