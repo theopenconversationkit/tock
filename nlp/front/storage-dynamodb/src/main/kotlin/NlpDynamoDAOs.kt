@@ -33,6 +33,7 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.normalize
 import ai.tock.storage.dynamodb.DOC
 import ai.tock.storage.dynamodb.DocumentCodec
+import ai.tock.storage.dynamodb.DynamoChanges
 import ai.tock.storage.dynamodb.DynamoStore
 import ai.tock.storage.dynamodb.DynamoStore.GSI1
 import ai.tock.storage.dynamodb.DynamoStore.GSI1_PK
@@ -82,15 +83,17 @@ class NlpDocuments<T : Any>(
         DynamoStore.deleteItem(configTable, partition, key)
     }
 
-    fun listen(name: String) {
-        logger.info { "no change stream on DynamoDB: the $name changes are not pushed" }
-    }
+    /** Listens to the publications of the admin ([DynamoChanges]). */
+    fun listen(
+        channel: String,
+        listener: () -> Unit,
+    ) = DynamoChanges.listen(channel, listener)
 }
 
 object ApplicationDefinitionDynamoDAO : ApplicationDefinitionRuntimeDAO {
     val documents = NlpDocuments("NLPAPP", ApplicationDefinition::class.java) { it._id.toString() }
 
-    override fun listenApplicationDefinitionChanges(listener: () -> Unit) = documents.listen("application")
+    override fun listenApplicationDefinitionChanges(listener: () -> Unit) = documents.listen(DynamoChanges.NLP_APPLICATION, listener)
 
     override fun getApplications(): List<ApplicationDefinition> = documents.all()
 
@@ -103,7 +106,7 @@ object ApplicationDefinitionDynamoDAO : ApplicationDefinitionRuntimeDAO {
 object IntentDefinitionDynamoDAO : IntentDefinitionRuntimeDAO {
     val documents = NlpDocuments("NLPINT", IntentDefinition::class.java) { it._id.toString() }
 
-    override fun listenIntentDefinitionChanges(listener: () -> Unit) = documents.listen("intent")
+    override fun listenIntentDefinitionChanges(listener: () -> Unit) = documents.listen(DynamoChanges.NLP_INTENT, listener)
 
     override fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> = documents.all().filter { applicationId in it.applications }
 
@@ -119,7 +122,7 @@ object EntityTypeDefinitionDynamoDAO : EntityTypeDefinitionRuntimeDAO {
     val entityTypes = NlpDocuments("NLPENT", EntityTypeDefinition::class.java) { it.name }
     val dictionaries = NlpDocuments("NLPDICT", DictionaryData::class.java) { "${it.namespace}:${it.entityName}" }
 
-    override fun listenEntityTypeChanges(listener: () -> Unit) = entityTypes.listen("entity type")
+    override fun listenEntityTypeChanges(listener: () -> Unit) = entityTypes.listen(DynamoChanges.NLP_ENTITY_TYPE, listener)
 
     override fun save(entityType: EntityTypeDefinition) = entityTypes.save(entityType)
 
@@ -129,7 +132,7 @@ object EntityTypeDefinitionDynamoDAO : EntityTypeDefinitionRuntimeDAO {
 
     override fun getAllDictionaryData(): List<DictionaryData> = dictionaries.all()
 
-    override fun listenDictionaryDataChanges(listener: () -> Unit) = dictionaries.listen("dictionary")
+    override fun listenDictionaryDataChanges(listener: () -> Unit) = dictionaries.listen(DynamoChanges.NLP_DICTIONARY, listener)
 }
 
 object NamespaceConfigurationDynamoDAO : NamespaceConfigurationRuntimeDAO {

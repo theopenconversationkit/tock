@@ -38,8 +38,8 @@ import software.amazon.awssdk.services.dynamodb.model.TransactionCanceledExcepti
  *   in the partition `BAC_UQ`, written in the same transaction as the document;
  * - [BotConfiguration] uses its natural key (namespace, botId, name) as sort key, so the Mongo upsert is a put.
  *
- * Change streams are not available: [listenChanges] and [listenBotChanges] do nothing (lot A of the plan:
- * version check at request time).
+ * Change streams are not available: [listenChanges] and [listenBotChanges] listen to the publications of the
+ * admin ([DynamoChanges]).
  */
 object BotApplicationConfigurationDynamoDAO : BotApplicationConfigurationRuntimeDAO {
     private val logger = KotlinLogging.logger {}
@@ -49,13 +49,9 @@ object BotApplicationConfigurationDynamoDAO : BotApplicationConfigurationRuntime
     private const val BOT_PK = "BOT"
     private const val OWNER = "owner"
 
-    override fun listenChanges(listener: () -> Unit) {
-        logger.info { "no change stream on DynamoDB: bot application configuration changes are not pushed" }
-    }
+    override fun listenChanges(listener: () -> Unit) = DynamoChanges.listen(DynamoChanges.BOT_APPLICATION, listener)
 
-    override fun listenBotChanges(listener: () -> Unit) {
-        logger.info { "no change stream on DynamoDB: bot configuration changes are not pushed" }
-    }
+    override fun listenBotChanges(listener: () -> Unit) = DynamoChanges.listen(DynamoChanges.BOT_CONFIGURATION, listener)
 
     private fun configurations(): List<BotApplicationConfiguration> =
         DynamoStore

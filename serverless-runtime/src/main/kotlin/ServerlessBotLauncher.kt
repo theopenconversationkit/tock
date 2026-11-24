@@ -21,11 +21,14 @@ import ai.tock.bot.engine.botModule
 import ai.tock.serverless.queue.RequestQueueing
 import ai.tock.shared.Executor
 import ai.tock.shared.Loader
+import ai.tock.shared.changes.ChangeChecks
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
+import ai.tock.shared.security.initEncryptor
 import ai.tock.shared.service.BotAdditionalModulesService
 import ai.tock.shared.sharedModule
 import ai.tock.stt.noop.noOpSTTModule
+import ai.tock.translator.Translator.initTranslator
 import ai.tock.translator.noop.noOpTranslatorModule
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
@@ -81,6 +84,11 @@ object ServerlessBotLauncher {
         queueing: RequestQueueing? = null,
     ): ServerlessHttpServer {
         ServerlessRequestHandler.configure(queueing)
+        // as BotVerticle: the obfuscators, and the labels of the default namespace in the cache of the translator
+        initEncryptor()
+        // the state of the storages without change stream, before the bots load their configuration
+        ChangeChecks.prepareAll()
+        initTranslator()
         BotRepository.installBots(emptyList(), createApplicationIfNotExists)
         return ServerlessHttpServer(port).start().also {
             logger.info { "serverless bots listening on ${it.port}: ${ServerlessBotServer.serviceIdentifiers}" }

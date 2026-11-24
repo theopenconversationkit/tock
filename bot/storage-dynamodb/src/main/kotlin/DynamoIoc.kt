@@ -52,6 +52,8 @@ private fun isInClasspath(className: String): Boolean =
  */
 val botDynamoModule =
     Kodein.Module(allowSilentOverride = true) {
+        // the runtime reads the versions of the published configuration before it loads it
+        DynamoChanges.register()
         bind<UserTimelineRuntimeDAO>() with provider { UserTimelineDynamoDAO }
         bind<BotApplicationConfigurationRuntimeDAO>() with provider { BotApplicationConfigurationDynamoDAO }
         bind<StoryDefinitionConfigurationRuntimeDAO>() with provider { StoryDefinitionConfigurationDynamoDAO }

@@ -30,6 +30,7 @@ import ai.tock.nlp.front.storage.dynamodb.ApplicationDefinitionDynamoDAO
 import ai.tock.nlp.front.storage.dynamodb.EntityTypeDefinitionDynamoDAO
 import ai.tock.nlp.front.storage.dynamodb.IntentDefinitionDynamoDAO
 import ai.tock.storage.dynamodb.BotApplicationConfigurationDynamoDAO
+import ai.tock.storage.dynamodb.DynamoChanges
 import ai.tock.storage.dynamodb.FeatureDynamoDAO
 import ai.tock.storage.dynamodb.I18nDynamoDAO
 import ai.tock.storage.dynamodb.IndicatorDynamoDAO
@@ -55,7 +56,8 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * - a publication compares each item with its DynamoDB version and writes only the changed ones;
  * - it deletes only the items it has published (see [PublicationManifest]): the writes of the runtime are kept;
- * - an item of the admin replaces the item of the runtime that has the same unique key (the intent of a story).
+ * - an item of the admin replaces the item of the runtime that has the same unique key (the intent of a story);
+ * - the runtimes are notified of the kinds that have changed (see [DynamoChanges]).
  *
  * [start] publishes everything, then publishes again when the admin DAOs report a change (MongoDB change streams,
  * debounced), and every [interval] in any case: the features have no change listener, and a change stream
@@ -131,7 +133,36 @@ class DynamoPublication(
                 counters.failed.merge(kind, 1, Int::plus)
             }
         }
-        return counters.report().also { if (!it.isEmpty) logger.info { "published to DynamoDB: $it" } }
+        return counters.report().also { report ->
+            if (!report.isEmpty) logger.info { "published to DynamoDB: $report" }
+            notifyRuntimes(report)
+        }
+    }
+
+    /** Lets the runtimes reload the kinds that have changed (see [DynamoChanges]). */
+    private fun notifyRuntimes(report: Report) {
+        // the features are cached for a short time, the indicators and the sentences are read at each use
+        val channels =
+            (report.written.keys + report.deleted.keys).mapNotNull { kind ->
+                when (kind) {
+                    Kind.APPLICATION -> DynamoChanges.BOT_APPLICATION
+                    Kind.BOT -> DynamoChanges.BOT_CONFIGURATION
+                    Kind.STORY -> DynamoChanges.STORY
+                    Kind.LABEL -> DynamoChanges.LABEL
+                    Kind.SETTINGS -> DynamoChanges.SETTINGS
+                    Kind.NLP_APPLICATION -> DynamoChanges.NLP_APPLICATION
+                    Kind.NLP_INTENT -> DynamoChanges.NLP_INTENT
+                    Kind.NLP_ENTITY_TYPE -> DynamoChanges.NLP_ENTITY_TYPE
+                    Kind.NLP_DICTIONARY -> DynamoChanges.NLP_DICTIONARY
+                    Kind.FEATURE, Kind.INDICATOR, Kind.NLP_SENTENCE -> null
+                }
+            }
+        try {
+            DynamoChanges.changed(channels)
+        } catch (e: Exception) {
+            // the next publication of these kinds notifies the runtimes
+            logger.error(e) { "the runtimes cannot be notified of the publication of $channels" }
+        }
     }
 
     /** Publishes everything in background, then the changes, and everything every [interval]. */

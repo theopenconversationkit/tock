@@ -33,6 +33,7 @@ import mu.KotlinLogging
 import org.litote.kmongo.Id
 import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity
 import java.time.Instant
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * The labels, their statistics and the alternatives already used.
@@ -44,7 +45,9 @@ import java.time.Instant
  * - the alternatives used in a context are items of the runtime table, `I18NALT#<context>|<label>|...` / `<index>`,
  *   expired after `tock_bot_alternative_index_ttl_hours` (1), as the Mongo TTL index does.
  *
- * No change stream: [listenI18n] does nothing.
+ * No change stream: [listenI18n] listens to the publications of the admin ([DynamoChanges]). A publication does
+ * not say which labels changed: the listener is called for every label returned by [getLabels], the only ones the
+ * `Translator` caches.
  */
 object I18nDynamoDAO : I18nDAO {
     private val logger = KotlinLogging.logger {}
@@ -59,9 +62,13 @@ object I18nDynamoDAO : I18nDAO {
 
     private fun namespacePk(namespace: String) = "I18NS#$namespace"
 
-    override fun listenI18n(listener: (Id<I18nLabel>) -> Unit) {
-        logger.info { "no change stream on DynamoDB: label changes are not pushed" }
-    }
+    /** The labels returned by [getLabels]: the ones that a listener may have cached. */
+    private val returnedLabelIds: MutableSet<Id<I18nLabel>> = ConcurrentHashMap.newKeySet()
+
+    override fun listenI18n(listener: (Id<I18nLabel>) -> Unit) =
+        DynamoChanges.listen(DynamoChanges.LABEL) {
+            returnedLabelIds.toList().forEach(listener)
+        }
 
     private fun sortLabels(list: List<I18nLabel>): List<I18nLabel> = list.sortedWith(compareBy({ it.category }, { it.findLabel(defaultLocale, null)?.label ?: "" }))
 
@@ -78,6 +85,7 @@ object I18nDynamoDAO : I18nDAO {
             DynamoStore
                 .queryPartition(configTable, namespacePk(namespace), consistentRead = true)
                 .map { DocumentCodec.decode<I18nLabel>(it.bytes(DOC)) }
+        labels.forEach { returnedLabelIds += it._id }
         val recentlyUsed = filter?.notUsedSince?.let { getLabelIdsFromStats(namespace, it) }
         return sortLabels(if (filter == null) labels else labels.filter { filter.matches(it, recentlyUsed) })
     }

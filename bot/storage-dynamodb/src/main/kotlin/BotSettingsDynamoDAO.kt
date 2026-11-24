@@ -27,7 +27,6 @@ import ai.tock.bot.admin.bot.rag.BotRAGConfigurationRuntimeDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationRuntimeDAO
 import ai.tock.storage.dynamodb.DynamoStore.configTable
-import mu.KotlinLogging
 
 /**
  * A configuration of a bot that MongoDB keeps unique by (namespace, botId): one item,
@@ -39,16 +38,13 @@ class BotSettingsDynamoStore<T : Any>(
     private val namespaceOf: (T) -> String,
     private val botIdOf: (T) -> String,
 ) {
-    private val logger = KotlinLogging.logger {}
-
     private fun pk(
         namespace: String,
         botId: String,
     ) = "BOTCONF#$kind#$namespace#$botId"
 
-    fun listenChanges() {
-        logger.info { "no change stream on DynamoDB: the $kind configuration changes are not pushed" }
-    }
+    /** Listens to the publications of the admin: one channel for every kind of settings. */
+    fun listenChanges(listener: () -> Unit) = DynamoChanges.listen(DynamoChanges.SETTINGS, listener)
 
     fun find(
         namespace: String,
@@ -76,7 +72,7 @@ class BotSettingsDynamoStore<T : Any>(
 object BotRAGConfigurationDynamoDAO : BotRAGConfigurationRuntimeDAO {
     val store = BotSettingsDynamoStore("rag", BotRAGConfiguration::class.java, { it.namespace }, { it.botId })
 
-    override fun listenChanges(listener: () -> Unit) = store.listenChanges()
+    override fun listenChanges(listener: () -> Unit) = store.listenChanges(listener)
 
     override fun findByNamespaceAndBotIdAndEnabled(
         namespace: String,
@@ -88,7 +84,7 @@ object BotRAGConfigurationDynamoDAO : BotRAGConfigurationRuntimeDAO {
 object BotVectorStoreConfigurationDynamoDAO : BotVectorStoreConfigurationRuntimeDAO {
     val store = BotSettingsDynamoStore("vectorstore", BotVectorStoreConfiguration::class.java, { it.namespace }, { it.botId })
 
-    override fun listenChanges(listener: () -> Unit) = store.listenChanges()
+    override fun listenChanges(listener: () -> Unit) = store.listenChanges(listener)
 
     override fun findByNamespaceAndBotIdAndEnabled(
         namespace: String,
@@ -100,7 +96,7 @@ object BotVectorStoreConfigurationDynamoDAO : BotVectorStoreConfigurationRuntime
 object BotObservabilityConfigurationDynamoDAO : BotObservabilityConfigurationRuntimeDAO {
     val store = BotSettingsDynamoStore("observability", BotObservabilityConfiguration::class.java, { it.namespace }, { it.botId })
 
-    override fun listenChanges(listener: () -> Unit) = store.listenChanges()
+    override fun listenChanges(listener: () -> Unit) = store.listenChanges(listener)
 
     override fun findByNamespaceAndBotIdAndEnabled(
         namespace: String,
@@ -112,7 +108,7 @@ object BotObservabilityConfigurationDynamoDAO : BotObservabilityConfigurationRun
 object BotDocumentCompressorConfigurationDynamoDAO : BotDocumentCompressorConfigurationRuntimeDAO {
     val store = BotSettingsDynamoStore("compressor", BotDocumentCompressorConfiguration::class.java, { it.namespace }, { it.botId })
 
-    override fun listenChanges(listener: () -> Unit) = store.listenChanges()
+    override fun listenChanges(listener: () -> Unit) = store.listenChanges(listener)
 
     override fun findByNamespaceAndBotIdAndEnabled(
         namespace: String,
@@ -124,7 +120,7 @@ object BotDocumentCompressorConfigurationDynamoDAO : BotDocumentCompressorConfig
 object BotBusinessRulesConfigurationDynamoDAO : BotBusinessRulesConfigurationRuntimeDAO {
     val store = BotSettingsDynamoStore("businessrules", BotBusinessRulesConfiguration::class.java, { it.namespace }, { it.botId })
 
-    override fun listenChanges(listener: () -> Unit) = store.listenChanges()
+    override fun listenChanges(listener: () -> Unit) = store.listenChanges(listener)
 
     override fun findByNamespaceAndBotId(
         namespace: String,

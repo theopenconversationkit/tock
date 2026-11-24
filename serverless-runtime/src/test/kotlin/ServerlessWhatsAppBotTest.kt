@@ -37,6 +37,7 @@ import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.serverless.queue.BackgroundRequestQueue
 import ai.tock.serverless.queue.RequestQueueing
 import ai.tock.storage.dynamodb.BotApplicationConfigurationDynamoDAO
+import ai.tock.storage.dynamodb.DynamoChanges
 import ai.tock.storage.dynamodb.I18nDynamoDAO
 import ai.tock.storage.dynamodb.UserTimelineDynamoDAO
 import ai.tock.storage.dynamodb.botDynamoModule
@@ -117,6 +118,8 @@ class ServerlessWhatsAppBotTest {
 
     @BeforeAll
     fun start() {
+        // the publications of the admin are checked at each request
+        System.setProperty("tock_dynamodb_change_check_interval_ms", "0")
         dynamo.start()
         System.setProperty("tock_dynamodb_endpoint", "http://${dynamo.host}:${dynamo.getMappedPort(8000)}")
         System.setProperty("aws.accessKeyId", "x")
@@ -251,6 +254,49 @@ class ServerlessWhatsAppBotTest {
             assertEquals(1, graphApiRequests.count { it.contains("/phone/messages") && it.contains("world") }, graphApiRequests.joinToString("\n"))
         } finally {
             ServerlessRequestHandler.configure(null)
+        }
+    }
+
+    @Test
+    fun `GIVEN a label in the cache of the translator WHEN the admin publishes a new text THEN the next answer has the new text`() {
+        fun post(messageId: String) =
+            client.send(
+                HttpRequest
+                    .newBuilder(URI("http://localhost:${server.port}/whatsapp"))
+                    .POST(
+                        HttpRequest.BodyPublishers.ofString(
+                            """
+                            {"object":"whatsapp_business_account","entry":[{"id":"account","changes":[{"field":"messages","value":{
+                            "messaging_product":"whatsapp","metadata":{"display_phone_number":"33100000000","phone_number_id":"phone"},
+                            "contacts":[{"profile":{"name":"Julien"},"wa_id":"33600000001","user_id":"bsuid2"}],
+                            "messages":[{"from":"33600000001","from_user_id":"bsuid2","id":"$messageId","timestamp":"1700000002","type":"text","text":{"body":"hello"}}]}}]}]}
+                            """.trimIndent(),
+                        ),
+                    ).build(),
+                BodyHandlers.ofString(),
+            )
+        // the first answer creates the label; a new instance would load it in the cache of the translator at startup
+        post("wamid.label1")
+        Translator.initTranslator()
+        val label = I18nDynamoDAO.getLabels("app").first { it.defaultLabel == "world" }
+
+        // the admin publishes a new text
+        I18nDynamoDAO.publish(
+            label.copy(
+                defaultLabel = "le monde",
+                i18n = label.i18n.map { it.copy(label = "le monde", validated = true) }.toCollection(LinkedHashSet()),
+            ),
+        )
+        DynamoChanges.changed(listOf(DynamoChanges.LABEL))
+        graphApiRequests.clear()
+        try {
+            post("wamid.label2")
+
+            assertTrue(graphApiRequests.any { it.contains("/phone/messages") && it.contains("le monde") }, graphApiRequests.joinToString("\n"))
+        } finally {
+            // the other tests expect the first text
+            I18nDynamoDAO.publish(label)
+            DynamoChanges.changed(listOf(DynamoChanges.LABEL))
         }
     }
 }

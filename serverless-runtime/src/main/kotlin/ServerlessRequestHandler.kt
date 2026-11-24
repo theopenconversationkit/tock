@@ -19,6 +19,7 @@ package ai.tock.serverless
 import ai.tock.serverless.RequestWork.Companion.runTracked
 import ai.tock.serverless.queue.RequestQueueing
 import ai.tock.shared.Executor
+import ai.tock.shared.changes.ChangeChecks
 import ai.tock.shared.http.HttpMethod
 import ai.tock.shared.http.HttpRequest
 import ai.tock.shared.http.HttpResponse
@@ -76,14 +77,16 @@ object ServerlessRequestHandler {
     }
 
     /**
-     * Dispatches [request] to the routes of the connectors, or runs a periodic task, then waits for the work
-     * it started.
+     * Checks the changes of the storages without change stream ([ChangeChecks]), dispatches [request] to the
+     * routes of the connectors, or runs a periodic task, then waits for the work it started.
      */
     fun process(request: HttpRequest): HttpResponse {
         val work = RequestWork()
         val response =
             work.runTracked {
                 runBlocking(RequestWork.current.asContextElement(work)) {
+                    // the storages without change stream: the configuration published since the last request
+                    ChangeChecks.runAll()
                     if (request.path.startsWith("$tasksPath/") && request.method == HttpMethod.POST) {
                         runTask(request)
                     } else {

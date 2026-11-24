@@ -79,7 +79,7 @@ Un POM de démarrage `tock-serverless-bot` assemblera la version serverless, ver
 | 4 | DAO séparés exécution / admin | faible | fait |
 | 5 | Connecteurs un par un vers la SPI neutre | faible à moyen (classpath transitif, vérifié par le diff) | 2 sur 12 (WhatsApp Cloud, Messenger) |
 | 6 | `tock-nlp-api-core` | faible | fait, sauf 3 routes |
-| 7 | Runtime serverless, stockage DynamoDB ×2, publication, recopie Streams → Mongo, POM de démarrage | nul (ajout seul), sauf l'extraction de `tock-bot-storage-model` | côté bot : fait ; NLP : stockage, publication et recopie faits, runtime à faire |
+| 7 | Runtime serverless, stockage DynamoDB ×2, publication, recopie Streams → Mongo, POM de démarrage | nul (ajout seul), sauf l'extraction de `tock-bot-storage-model` | côté bot : fait, y compris la détection des publications ; NLP : stockage, publication et recopie faits, runtime à faire |
 
 Les étapes 0 à 6 se mergent sur master sans changement de comportement. Dernier état vérifié (8a54079da) : `mvn clean verify` passe sur tout le dépôt, 1 181 tests, 0 échec ; `api-compat` ne trouve aucune incompatibilité binaire, aucune dépendance perdue et aucune nouvelle classe en double.
 
@@ -150,7 +150,6 @@ Branche `refactor/serverless-core-split`, un commit par étape ou par tranche.
 - Au rejeu d'un enregistrement de Stream (perte d'un point de reprise), les compteurs (statistiques des libellés, phrases inconnues) et les journaux d'analyse sont comptés deux fois.
 - Au premier démarrage de la recopie, seules les 24 h que garde un Stream sont recopiées.
 - Non recopiés : expirations du TTL DynamoDB, suppressions de configuration, statistiques de flux de dialogue, identifiants client.
-- Les DAO DynamoDB n'ont pas de change stream : leurs `listen…` ne font rien. **Une instance chaude ne voit pas une publication de l'admin** avant son prochain démarrage à froid, sauf les features (cache de 30 s). Voir lot B ci-dessous.
 
 ## Chiffres du spike DynamoDB
 
@@ -195,9 +194,16 @@ PR successives depuis `origin/master`, chacune sans changement de comportement, 
 
 Avant d'ouvrir : lancer les contrôles IntelliJ sur les fichiers modifiés (le worktree n'était pas ouvert dans l'IDE) et l'e2e tock-docker.
 
-### B. Détection des publications par l'exécution
+### B. Détection des publications par l'exécution (fait)
 
-Une instance chaude doit voir une modification publiée par l'admin. Proposition : la publication incrémente un item de version par type de configuration (même principe que `tock_versions`) ; le runtime le lit au plus une fois par intervalle, à l'entrée de la requête, et appelle les listeners enregistrés par `listen…`. Coût : une lecture d'item par intervalle et par instance.
+Les DAO DynamoDB n'ont pas de change stream : sans ce lot, une instance chaude ne voyait une publication de l'admin qu'à son démarrage à froid suivant.
+
+- `DynamoChanges` (`tock-storage-dynamodb-core`) : la publication incrémente un compteur par canal (`ADD`) dans l'item `VERSION` de la table de configuration, pour les sortes d'items qu'elle a écrites ou supprimées. Canaux : configurations d'application et de bot, stories, libellés, réglages du bot (un seul canal), applications, intentions, types d'entités et dictionnaires NLP. Les features (cache de 30 s), les indicateurs et les phrases (lus à chaque usage) n'en ont pas besoin.
+- Le runtime lit cet item au plus toutes les 10 s (`tock_dynamodb_change_check_interval_ms`), à l'entrée de chaque requête, et appelle les listeners enregistrés par les `listen…` des DAO pour les canaux dont le compteur a changé. Coût : une lecture d'item par intervalle et par instance active. Une tâche périodique nommée (`dynamodb_change_check`) fait la même vérification dans un process non gelé, ou depuis un ordonnanceur externe.
+- Registre neutre `ChangeChecks` (`tock-shared-core`) : le runtime serverless appelle `prepareAll()` avant de charger les bots (lecture des compteurs de départ, pour ne pas rater une publication faite pendant le chargement) et `runAll()` à l'entrée de chaque requête. `botDynamoModule` et `nlpDynamoModule` y enregistrent DynamoDB, sans lecture. Le mode `poll` de Mongo (`MongoChangePoller`) pourra s'y enregistrer aussi.
+- Libellés : la publication ne dit pas quels libellés ont changé. `I18nDynamoDAO` garde les identifiants renvoyés par `getLabels`, seuls libellés que le cache de `Translator` contient, et appelle le listener pour chacun.
+- Trouvé au passage : le lanceur serverless n'appelait ni `initEncryptor()` (qui charge aussi les obfuscateurs) ni `initTranslator()`, contrairement à `BotVerticle`. Corrigé.
+- Tests : `DynamoChangesTest` (4), un test de publication (seul le canal modifié est notifié, une seule fois), et un test de bout en bout WhatsApp : un libellé en cache, republié avec un nouveau texte, apparaît dans la réponse suivante. Contrôles positifs faits : sans l'écriture du compteur, 3 tests unitaires sur 4 et le test de bout en bout échouent.
 
 ### C. Modèles NLP et fichiers hors de Mongo
 

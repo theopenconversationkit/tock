@@ -31,7 +31,7 @@ import mu.KotlinLogging
  * | `I#<intent>`    | the guard of the Mongo unique index (namespace, botId, intent): its owner |
  *
  * The admin keeps the history of the stories: [save] stores the published version as it is.
- * No change stream: [listenChanges] does nothing.
+ * No change stream: [listenChanges] listens to the publications of the admin ([DynamoChanges]).
  */
 object StoryDefinitionConfigurationDynamoDAO : StoryDefinitionConfigurationRuntimeDAO {
     private val logger = KotlinLogging.logger {}
@@ -49,9 +49,7 @@ object StoryDefinitionConfigurationDynamoDAO : StoryDefinitionConfigurationRunti
 
     private fun guardKey(story: StoryDefinitionConfiguration) = DynamoStore.key(pk(story), "I#${story.intent.name}")
 
-    override fun listenChanges(listener: () -> Unit) {
-        logger.info { "no change stream on DynamoDB: story changes are not pushed" }
-    }
+    override fun listenChanges(listener: () -> Unit) = DynamoChanges.listen(DynamoChanges.STORY, listener)
 
     override fun getStoryDefinitionsByNamespaceAndBotId(
         namespace: String,

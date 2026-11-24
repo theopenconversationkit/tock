@@ -30,6 +30,7 @@ import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.nlp.front.shared.config.SentencesQueryResult
 import ai.tock.shared.security.UserLogin
+import ai.tock.storage.dynamodb.DynamoChanges
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
@@ -86,6 +87,8 @@ object DynamoApplicationRuntimeConfiguration : ApplicationRuntimeConfiguration {
  */
 val nlpDynamoModule =
     Kodein.Module(allowSilentOverride = true) {
+        // the runtime reads the versions of the published configuration before it loads it
+        DynamoChanges.register()
         bind<ApplicationRuntimeConfiguration>() with provider { DynamoApplicationRuntimeConfiguration }
         bind<ApplicationDefinitionRuntimeDAO>() with provider { ApplicationDefinitionDynamoDAO }
         bind<IntentDefinitionRuntimeDAO>() with provider { IntentDefinitionDynamoDAO }

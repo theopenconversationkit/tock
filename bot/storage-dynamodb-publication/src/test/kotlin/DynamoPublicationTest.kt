@@ -45,6 +45,7 @@ import ai.tock.nlp.front.storage.dynamodb.DynamoApplicationRuntimeConfiguration
 import ai.tock.nlp.front.storage.dynamodb.EntityTypeDefinitionDynamoDAO
 import ai.tock.shared.service.BotAdditionalModulesService
 import ai.tock.storage.dynamodb.BotApplicationConfigurationDynamoDAO
+import ai.tock.storage.dynamodb.DynamoChanges
 import ai.tock.storage.dynamodb.DynamoStore
 import ai.tock.storage.dynamodb.FeatureDynamoDAO
 import ai.tock.storage.dynamodb.I18nDynamoDAO
@@ -330,6 +331,30 @@ class DynamoPublicationTest {
             setOf("enabled", "registered"),
             runBlocking { FeatureDynamoDAO.getFeatures("bot", "app") }.map { it.name }.toSet(),
         )
+    }
+
+    @Test
+    fun `GIVEN a listening runtime WHEN a story changes in the admin THEN the runtime is notified of the stories only, once`() {
+        givenAnAdmin()
+        publication.publishAll()
+        DynamoChanges.reset()
+        val notified = CopyOnWriteArrayList<String>()
+        listOf(DynamoChanges.BOT_APPLICATION, DynamoChanges.BOT_CONFIGURATION, DynamoChanges.STORY, DynamoChanges.LABEL).forEach { channel ->
+            DynamoChanges.listen(channel) { notified += channel }
+        }
+        try {
+            stories.replaceAll { if (it.storyId == "greetings") it.copy(name = "renamed") else it }
+            publication.publishAll()
+            DynamoChanges.check(force = true)
+            assertEquals(listOf(DynamoChanges.STORY), notified)
+
+            // nothing changed: the runtime is not notified
+            publication.publishAll()
+            DynamoChanges.check(force = true)
+            assertEquals(listOf(DynamoChanges.STORY), notified)
+        } finally {
+            DynamoChanges.reset()
+        }
     }
 
     @Test
