@@ -341,28 +341,7 @@ fun isDocumentDB(): Boolean = isDocumentDB
  * Transform json data to prevent AWS DocumentDB field name restrictions
  * Amazon DocumentDB does not support dots “.” in a document field name
  */
-fun transformData(data: Any?): Any? =
-    if (isDocumentDB()) {
-        data?.let {
-            when (it) {
-                is Map<*, *> -> {
-                    it
-                        .mapKeys { (key, _) -> key.toString().replace(".", "_DOT_") }
-                        .mapValues { (_, value) -> transformData(value) }
-                }
-
-                is List<*> -> {
-                    it.map { elem -> transformData(elem) }
-                }
-
-                else -> {
-                    it
-                }
-            }
-        }
-    } else {
-        data
-    }
+fun transformData(data: Any?): Any? = transformDocumentData(data)
 
 /**
  * Generate and return an index matching DocumentDB limits (32 characters maximum in a compound index) with the given document keys and options

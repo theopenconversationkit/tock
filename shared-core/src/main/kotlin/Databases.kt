@@ -35,3 +35,23 @@ const val TOCK_MODEL_DATABASE: String = "tock_model_mongo_db"
  * Tock cache database name property
  */
 const val TOCK_CACHE_DATABASE: String = "tock_cache_mongo_db"
+
+private val documentDbOn = booleanProperty("tock_document_db_on", false)
+
+/**
+ * Replaces the dots of the keys of [data] (maps and lists, recursively) when the MongoDB storage is AWS DocumentDB
+ * (`tock_document_db_on`), which does not support dots in a field name. The documents of the storages use it:
+ * they are also stored without MongoDB, by the serverless runtime.
+ */
+fun transformDocumentData(data: Any?): Any? =
+    if (documentDbOn) {
+        data?.let {
+            when (it) {
+                is Map<*, *> -> it.mapKeys { (key, _) -> key.toString().replace(".", "_DOT_") }.mapValues { (_, value) -> transformDocumentData(value) }
+                is List<*> -> it.map { elem -> transformDocumentData(elem) }
+                else -> it
+            }
+        }
+    } else {
+        data
+    }
