@@ -259,4 +259,3 @@ Les DAO DynamoDB n'ont pas de change stream : sans ce lot, une instance chaude n
 
 - TTL réduites : `tock_nlp_classified_sentences_index_ttl_days` pour l'inbox, statistiques et flux à 30–90 jours.
 - `maxPoolSize` réduit, et idéalement un seul `MongoClient` par processus (limite de connexions de M0).
-- Documenter toutes les nouvelles propriétés (`tock_dynamodb_*`, `tock_serverless_*`, `tock_s3_*`, `tock_change_detection_*`) et l'architecture admin / exécution.

@@ -63,6 +63,7 @@ class ServerlessHttpServer(
                             path = exchange.requestURI.rawPath,
                             headers = exchange.requestHeaders.mapValues { it.value.toList() },
                             queryParameters = queryParameters(exchange.requestURI.rawQuery),
+                            rawQuery = exchange.requestURI.rawQuery,
                             body = exchange.requestBody.use { it.readAllBytes() },
                             remoteAddress = exchange.remoteAddress?.address?.hostAddress,
                         ),

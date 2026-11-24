@@ -40,9 +40,10 @@ data class QueuedRequest(
     val remoteAddress: String?,
     val groupId: String,
     val deduplicationKey: String,
+    val rawQuery: String? = null,
 ) {
     /** The request to replay. */
-    fun toHttpRequest(): HttpRequest = HttpRequest(method, path, headers, queryParameters, body = Base64.getDecoder().decode(body), remoteAddress = remoteAddress)
+    fun toHttpRequest(): HttpRequest = HttpRequest(method, path, headers, queryParameters, body = Base64.getDecoder().decode(body), remoteAddress = remoteAddress, rawQuery = rawQuery)
 
     /** The JSON sent in the queue. */
     fun toJson(): String = mapper.writeValueAsString(this)
@@ -68,6 +69,7 @@ data class QueuedRequest(
                 remoteAddress = request.remoteAddress,
                 groupId = groupId,
                 deduplicationKey = sha256(request.path.toByteArray() + 0 + request.body),
+                rawQuery = request.rawQuery,
             )
 
         private fun sha256(bytes: ByteArray): String = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }

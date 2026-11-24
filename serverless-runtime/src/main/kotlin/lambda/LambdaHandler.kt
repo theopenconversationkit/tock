@@ -112,6 +112,7 @@ class LambdaHandler {
             path = event.path("rawPath").asText("/"),
             headers = headers,
             queryParameters = queryParameters(event.path("rawQueryString").asText("")),
+            rawQuery = event.path("rawQueryString").asText("").ifEmpty { null },
             body = body,
             remoteAddress = http.path("sourceIp").takeIf { it.isTextual }?.asText(),
         )
