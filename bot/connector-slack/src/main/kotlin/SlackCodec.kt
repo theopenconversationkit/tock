@@ -16,24 +16,22 @@
 
 package ai.tock.bot.connector.slack
 
-import io.vertx.core.json.JsonObject
-import io.vertx.ext.web.RoutingContext
+import ai.tock.shared.jackson.mapper
 import mu.KotlinLogging
 import java.net.URLDecoder
 
 private val logger = KotlinLogging.logger {}
 
-internal fun RoutingContext.convertUrlEncodedStringToJson(): String = parseJson(body().asString())
-
 internal fun parseJson(body: String): String {
     val urlEncodedString = URLDecoder.decode(body, "UTF-8")
     logger.trace { "unparsed body from slack: $urlEncodedString" }
-    val jsonObject = JsonObject()
+    // the order of the keys, as the Vert.x JsonObject did
+    val jsonObject = linkedMapOf<String, String>()
     urlEncodedString.split("&").forEach { keyValue ->
         val keyValueList = keyValue.split("=")
         val key = keyValueList.first()
         val value = keyValueList[1]
-        jsonObject.put(key, value)
+        jsonObject[key] = value
     }
-    return jsonObject.toString()
+    return mapper.writeValueAsString(jsonObject)
 }

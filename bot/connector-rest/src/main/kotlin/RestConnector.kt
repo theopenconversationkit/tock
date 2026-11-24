@@ -41,21 +41,42 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.error
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.security.HttpRequestFilter
 import ai.tock.shared.security.RequestFilter
-import ai.tock.shared.vertx.blocking
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.util.Locale
 
 /**
  *
  */
-class RestConnector(
+class RestConnector private constructor(
     val applicationId: String,
     private val path: String,
-    private val requestFilter: RequestFilter,
+    private val requestFilter: RequestFilter?,
+    private val httpRequestFilter: HttpRequestFilter?,
 ) : ConnectorBase(rest) {
+    /** The connector with a Vert.x request filter: its routes are Vert.x ones. */
+    constructor(
+        applicationId: String,
+        path: String,
+        requestFilter: RequestFilter,
+    ) : this(applicationId, path, requestFilter, null)
+
+    /** The connector with server independent routes. */
+    constructor(
+        applicationId: String,
+        path: String,
+        requestFilter: HttpRequestFilter,
+    ) : this(applicationId, path, null, requestFilter)
+
     companion object {
         private val logger = KotlinLogging.logger {}
         private val disabled = booleanProperty("tock_rest_connector_disabled", false)
@@ -70,35 +91,85 @@ class RestConnector(
     override fun register(controller: ConnectorController) {
         if (!disabled) {
             logger.info { "deploy rest connector to $path" }
-            controller.registerServices(path) { router ->
-                router.post("$path/:locale").blocking { context ->
-                    if (!requestFilter.accept(context.request())) {
-                        context.response().setStatusCode(403).end()
-                        return@blocking
-                    }
-                    val message: MessageRequest = mapper.readValue(context.body().asString())
-                    val action = transformMessage(message)
-                    val locale = Locale.forLanguageTag(context.pathParam("locale"))
-                    action.state.sourceConnectorType = message.connectorType
-                    action.state.targetConnectorType = message.targetConnectorType
-                    action.metadata.debugEnabled = message.debugEnabled
-                    action.metadata.sourceWithContent = message.sourceWithContent
-                    controller.handle(
-                        action,
-                        ConnectorData(
-                            RestConnectorCallback(
-                                applicationId,
-                                message.targetConnectorType,
-                                context,
-                                if (message.test) controller.botDefinition.testBehaviour else null,
-                                locale,
-                                action,
-                            ),
-                        ),
-                    )
-                }
+            if (requestFilter != null) {
+                RestVertxServices.register(this, controller, path, requestFilter)
+            } else {
+                controller.registerRoutes(path, routes(controller, checkNotNull(httpRequestFilter)))
             }
         }
+    }
+
+    /**
+     * The route of the messages. It answers as the former Vert.x handler did: 403 for a refused request, the JSON
+     * of the answer once the bot has answered, and 500 when it has no answer.
+     */
+    internal fun routes(
+        controller: ConnectorController,
+        filter: HttpRequestFilter,
+    ): HttpRoutes =
+        HttpRoutes {
+            post("$path/:locale") { request ->
+                if (!filter.accept(request)) {
+                    return@post HttpResponse.status(403)
+                }
+                val response = CompletableDeferred<HttpResponse>()
+                try {
+                    // blocking, as the former Vert.x route: not on the event loop of the server
+                    withContext(Dispatchers.IO) {
+                        handleMessage(
+                            controller,
+                            request.bodyAsString,
+                            checkNotNull(request.pathParameter("locale")),
+                            object : RestResponder {
+                                override fun answer(json: String) {
+                                    response.complete(HttpResponse(body = json.toByteArray()))
+                                }
+
+                                override fun fail(throwable: Throwable) {
+                                    logger.error(throwable)
+                                    response.complete(internalServerError())
+                                }
+                            },
+                        )
+                    }
+                } catch (t: Throwable) {
+                    logger.error(t)
+                    response.complete(internalServerError())
+                }
+                response.await()
+            }
+        }
+
+    /** The answer of a failed Vert.x route. */
+    private fun internalServerError() = HttpResponse.text("Internal Server Error", 500)
+
+    /** Handles a message, and answers it with [responder]. */
+    internal fun handleMessage(
+        controller: ConnectorController,
+        body: String,
+        localeTag: String,
+        responder: RestResponder,
+    ) {
+        val message: MessageRequest = mapper.readValue(body)
+        val action = transformMessage(message)
+        val locale = Locale.forLanguageTag(localeTag)
+        action.state.sourceConnectorType = message.connectorType
+        action.state.targetConnectorType = message.targetConnectorType
+        action.metadata.debugEnabled = message.debugEnabled
+        action.metadata.sourceWithContent = message.sourceWithContent
+        controller.handle(
+            action,
+            ConnectorData(
+                RestConnectorCallback(
+                    applicationId,
+                    message.targetConnectorType,
+                    responder,
+                    if (message.test) controller.botDefinition.testBehaviour else null,
+                    locale,
+                    action,
+                ),
+            ),
+        )
     }
 
     private fun transformMessage(message: MessageRequest): Action =

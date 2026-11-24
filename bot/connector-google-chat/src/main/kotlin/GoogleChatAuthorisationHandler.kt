@@ -16,18 +16,10 @@
 
 package ai.tock.bot.connector.googlechat
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
-import com.google.api.client.googleapis.auth.oauth2.GooglePublicKeysManager
-import com.google.api.client.http.apache.v2.ApacheHttpTransport
-import com.google.api.client.json.JsonFactory
-import com.google.api.client.json.jackson2.JacksonFactory
 import io.vertx.core.Handler
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import org.apache.http.HttpStatus
-
-private const val BEARER_PREFIX = "Bearer "
 
 enum class VerificationFailure {
     NO_BEARER_AUTHORISATION,
@@ -36,51 +28,23 @@ enum class VerificationFailure {
     AUDIENCE_VERIFICATION_FAILED,
 }
 
+/**
+ * The Vert.x handler of the verification: the connector uses [GoogleChatTokenVerifier], which needs no server.
+ */
 class GoogleChatAuthorisationHandler(
-    private val audience: String,
+    audience: String,
 ) : Handler<RoutingContext> {
     private val logger = KotlinLogging.logger {}
 
-    private val jsonFactory: JsonFactory
-    private val verifier: GoogleIdTokenVerifier
-
-    init {
-        jsonFactory = JacksonFactory()
-        verifier =
-            GoogleIdTokenVerifier
-                .Builder(
-                    GooglePublicKeysManager
-                        .Builder(ApacheHttpTransport(), jsonFactory)
-                        .build(),
-                ).build()
-    }
+    /** The verification of the tokens. */
+    val verifier: GoogleChatTokenVerifier = GoogleChatTokenVerifier(audience)
 
     override fun handle(routingContext: RoutingContext) {
-        val token =
-            routingContext
-                .request()
-                .getHeader("Authorization")
-                ?.takeIf { it.startsWith(BEARER_PREFIX) }
-                ?.substringAfter(BEARER_PREFIX)
-        if (hasFailure(token)?.also { logger.error { "Token ($token) verification failed. Cause : $it" } } != null) {
+        val authorization = routingContext.request().getHeader("Authorization")
+        if (verifier.verify(authorization)?.also { logger.error { "Token ($authorization) verification failed. Cause : $it" } } != null) {
             routingContext.response().setStatusCode(HttpStatus.SC_FORBIDDEN).end()
         } else {
             routingContext.next()
-        }
-    }
-
-    private fun hasFailure(token: String?): VerificationFailure? {
-        val idToken: GoogleIdToken =
-            GoogleIdToken.parse(
-                jsonFactory,
-                token ?: return VerificationFailure.NO_BEARER_AUTHORISATION,
-            )
-                ?: return VerificationFailure.CANNOT_BE_PARSED
-
-        return when {
-            !verifier.verify(idToken) -> VerificationFailure.GLOBAL_VERIFICATION_FAILED
-            !idToken.verifyAudience(listOf(audience)) -> VerificationFailure.AUDIENCE_VERIFICATION_FAILED
-            else -> null
         }
     }
 }

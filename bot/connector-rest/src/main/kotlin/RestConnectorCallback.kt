@@ -29,10 +29,20 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.message.DebugMessage
 import ai.tock.bot.engine.message.Message
 import ai.tock.shared.jackson.mapper
-import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
+
+/**
+ * Sends the answer of a [RestConnector] request, whatever the server.
+ */
+internal interface RestResponder {
+    /** Answers the JSON of the [MessageResponse]. */
+    fun answer(json: String)
+
+    /** Fails the request: no answer is available. */
+    fun fail(throwable: Throwable)
+}
 
 /**
  * [ConnectorCallback] for [RestConnector].
@@ -40,7 +50,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 internal class RestConnectorCallback(
     applicationId: String,
     connectorType: ConnectorType,
-    val context: RoutingContext,
+    val responder: RestResponder,
     val testContext: TestBehaviour?,
     val locale: Locale,
     private val userAction: Action,
@@ -70,7 +80,7 @@ internal class RestConnectorCallback(
 
     private fun sendAnswer(throwable: Throwable? = null) {
         if (actions.isEmpty()) {
-            context.fail(throwable ?: IllegalStateException("no response available"))
+            responder.fail(throwable ?: IllegalStateException("no response available"))
         } else {
             val nlpStats = if (checkNlpStats) (userAction as? SendSentence)?.nlpStats else null
             val r =
@@ -84,7 +94,7 @@ internal class RestConnectorCallback(
                     ),
                 )
             logger.debug { "response : $r" }
-            context.response().end(r)
+            responder.answer(r)
         }
     }
 }
