@@ -13,7 +13,7 @@ Le runtime serverless n'a ni Vert.x ni MongoDB : il stocke ses données dans Dyn
 
 !!! warning
     Le runtime serverless est nouveau. Seuls les connecteurs qui déclarent des routes indépendantes du serveur y
-    tournent (voir [Connecteurs](#connecteurs)), et le mode websocket de _Bot API_ n'est pas pris en charge.
+    tournent (voir [Connecteurs](#connecteurs)).
 
 ## Architecture
 
@@ -150,9 +150,21 @@ Voir la [référence de configuration](configuration.md#runtime-serverless) pour
 
 ## Connecteurs
 
-Les connecteurs qui déclarent des routes indépendantes du serveur tournent dans le runtime serverless : WhatsApp
-Cloud, Messenger, WhatsApp, Slack, Google Chat, Teams, Mattermost, Alcmeon et REST. Les autres (web, web SSE,
-API OpenAI, iAdvize) ont encore besoin du serveur Vert.x.
+`tock-serverless-bot` apporte les connecteurs qui déclarent des routes indépendantes du serveur, sans leurs
+dépendances Vert.x : WhatsApp Cloud, Messenger, WhatsApp, Slack, Google Chat, Teams, Mattermost, Alcmeon, iAdvize,
+REST, web et API OpenAI.
+
+* **Web et API OpenAI.** Leurs réponses sont du JSON, ou des server-sent events pour les réponses en streaming
+  (`tock_web_direct_sse` pour le connecteur web, `"stream": true` pour une chat completion). Les événements arrivent
+  au client au fil de l'eau avec Cloud Run ; une réponse AWS Lambda mise en tampon les envoie tous à sa fin.
+* **Sécurité web.** Les utilisateurs sont authentifiés par une `HttpWebSecurity`, choisie par le
+  `web_security_mode` du connecteur : `PASSTHROUGH`, `COOKIES` et `COOKIES_ENCRYPTED` sont fournies, avec les cookies
+  des handlers Vert.x. Un projet qui lie son propre `WebSecurityHandler` Vert.x (un mode `JWT`...) garde les routes
+  Vert.x : pour tourner dans le runtime serverless, il lie à la place une `HttpWebSecurity` avec le tag de son mode.
+* **Non pris en charge :** les canaux de server-sent events de `tock-bot-connector-web-sse` (`tock_web_sse` :
+  connexions longues et file de messages entre les instances dans MongoDB), les notifications des connecteurs web et
+  API OpenAI (elles passent par ces canaux), l'orchestration de bots (`tock-bot-orchestration`) et le mode websocket
+  de _Bot API_.
 
 ## Limites
 

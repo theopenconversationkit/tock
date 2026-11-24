@@ -13,7 +13,7 @@ MongoDB.
 
 !!! warning
     The serverless runtime is new. Only the connectors that declare server independent routes run in it (see
-    [Connectors](#connectors)), and the websocket mode of _Bot API_ is not supported.
+    [Connectors](#connectors)).
 
 ## Architecture
 
@@ -148,9 +148,21 @@ See the [configuration reference](configuration.md#serverless-runtime) for the o
 
 ## Connectors
 
-The connectors that declare server independent routes run in the serverless runtime: WhatsApp Cloud,
-Messenger, WhatsApp, Slack, Google Chat, Teams, Mattermost, Alcmeon and REST. The other ones (web, web SSE,
-OpenAI API, iAdvize) still need the Vert.x server.
+`tock-serverless-bot` brings the connectors that declare server independent routes, without their Vert.x
+dependencies: WhatsApp Cloud, Messenger, WhatsApp, Slack, Google Chat, Teams, Mattermost, Alcmeon, iAdvize, REST,
+web and OpenAI API.
+
+* **Web and OpenAI API.** Their answers are JSON, or server-sent events for the streamed answers
+  (`tock_web_direct_sse` for the web connector, `"stream": true` for a chat completion). The events reach the client
+  as they are sent with Cloud Run; a buffered AWS Lambda response sends them all at its end.
+* **Web security.** The users are authenticated by an `HttpWebSecurity`, chosen by the `web_security_mode` of the
+  connector: `PASSTHROUGH`, `COOKIES` and `COOKIES_ENCRYPTED` are provided, with the cookies of the Vert.x handlers.
+  A project that binds its own Vert.x `WebSecurityHandler` (a `JWT` mode...) keeps the Vert.x routes: to run in the
+  serverless runtime, it binds an `HttpWebSecurity` with the tag of its mode instead.
+* **Not supported:** the server-sent events channels of `tock-bot-connector-web-sse` (`tock_web_sse`: long lived
+  connections and a queue of messages between the instances in MongoDB), the notifications of the web and OpenAI API
+  connectors (they need these channels), the orchestration of bots (`tock-bot-orchestration`) and the websocket mode
+  of _Bot API_.
 
 ## Limits
 
