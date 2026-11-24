@@ -23,6 +23,7 @@ import io.vertx.core.buffer.Buffer
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.kotlin.coroutines.coAwait
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ai.tock.shared.http.HttpMethod as TockHttpMethod
@@ -45,7 +46,7 @@ fun Router.install(
         route(VertxHttpMethod.valueOf(route.method.name), route.path).handler { context ->
             scope.launch {
                 try {
-                    context.send(route.handler(context.toHttpRequest()))
+                    context.sendStreamed(route.handler(context.toHttpRequest()))
                 } catch (t: Throwable) {
                     context.fail(t)
                 }
@@ -77,4 +78,19 @@ fun RoutingContext.send(response: HttpResponse) {
     val vertxResponse = response().setStatusCode(response.status)
     response.headers.forEach { (name, values) -> vertxResponse.putHeader(name, values) }
     vertxResponse.end(Buffer.buffer(response.body))
+}
+
+/**
+ * Sends a server independent [HttpResponse], whose [HttpResponse.stream] is written chunk by chunk.
+ */
+suspend fun RoutingContext.sendStreamed(response: HttpResponse) {
+    val stream = response.stream ?: return send(response)
+    val vertxResponse = response().setStatusCode(response.status)
+    vertxResponse.isChunked = true
+    response.headers.forEach { (name, values) -> vertxResponse.putHeader(name, values) }
+    try {
+        stream { chunk -> vertxResponse.write(Buffer.buffer(chunk)).coAwait() }
+    } finally {
+        if (!vertxResponse.ended() && !vertxResponse.closed()) vertxResponse.end()
+    }
 }

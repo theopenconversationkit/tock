@@ -74,18 +74,50 @@ class HttpRequest(
 }
 
 /**
+ * Writes the chunks of a streamed [HttpResponse] (server-sent events...).
+ */
+fun interface HttpBodyWriter {
+    /** Writes and flushes [chunk]: fails when the client is gone. */
+    suspend fun write(chunk: ByteArray)
+}
+
+/**
  * An HTTP response, independent of the server that sends it.
+ *
+ * @property stream when set, the body is streamed (chunked) by this function instead of [body]: the servers that
+ * cannot stream (a buffered AWS Lambda response) send all the chunks at its end
  */
 class HttpResponse(
     val status: Int = 200,
     val headers: Map<String, List<String>> = emptyMap(),
     val body: ByteArray = ByteArray(0),
+    val stream: (suspend (HttpBodyWriter) -> Unit)? = null,
 ) {
     /** A copy of this response with one more header value. */
     fun withHeader(
         name: String,
         value: String,
-    ): HttpResponse = HttpResponse(status, headers + (name to (headers[name].orEmpty() + value)), body)
+    ): HttpResponse = HttpResponse(status, headers + (name to (headers[name].orEmpty() + value)), body, stream)
+
+    /** A copy of this response whose [stream] runs [after] once it has ended (or failed). */
+    fun afterStream(after: suspend () -> Unit): HttpResponse =
+        stream?.let { original ->
+            HttpResponse(status, headers, body) { writer ->
+                try {
+                    original(writer)
+                } finally {
+                    after()
+                }
+            }
+        } ?: this
+
+    /** The body, or all the chunks of the [stream]. */
+    suspend fun bufferedBody(): ByteArray {
+        val original = stream ?: return body
+        val buffer = java.io.ByteArrayOutputStream()
+        original { chunk -> buffer.write(chunk) }
+        return buffer.toByteArray()
+    }
 
     companion object {
         /** An empty response with the given status, 200 by default. */
