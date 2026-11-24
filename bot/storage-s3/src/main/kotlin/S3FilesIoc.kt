@@ -33,11 +33,6 @@ import java.time.Duration
 private val logger = KotlinLogging.logger {}
 
 /**
- * Set to `s3` to store the uploaded files in S3 instead of the Tock cache.
- */
-private const val FILES_STORAGE_PROPERTY = "tock_bot_files_storage"
-
-/**
  * Binds an [UploadedFilesStorage] that stores the files in S3, configured with:
  * - `tock_bot_files_s3_bucket`: the bucket (required)
  * - `tock_bot_files_s3_prefix`: the prefix of the keys, `tock/files/` by default
@@ -73,5 +68,5 @@ val filesS3Module =
  * Declared in META-INF/services/ai.tock.shared.service.BotAdditionalModulesService.
  */
 class S3FilesModulesService : BotAdditionalModulesService {
-    override fun customModules(): Set<Kodein.Module> = if (propertyOrNull(FILES_STORAGE_PROPERTY).equals("s3", ignoreCase = true)) setOf(filesS3Module) else emptySet()
+    override fun customModules(): Set<Kodein.Module> = if (propertyOrNull("tock_bot_files_storage").equals("s3", ignoreCase = true)) setOf(filesS3Module) else emptySet()
 }

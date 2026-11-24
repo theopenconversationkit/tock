@@ -35,11 +35,6 @@ import java.time.Duration
 private val logger = KotlinLogging.logger {}
 
 /**
- * Set to `s3` to store the model files in S3 instead of Mongo GridFS.
- */
-private const val MODEL_STORAGE_PROPERTY = "tock_nlp_model_storage"
-
-/**
  * Binds an [NlpEngineModelDAO] that stores the model files in S3, configured with:
  * - `tock_nlp_model_s3_bucket`: the bucket (required)
  * - `tock_nlp_model_s3_prefix`: the prefix of the keys, `tock/models/` by default
@@ -71,5 +66,5 @@ val modelS3Module =
  * Declared in META-INF/services/ai.tock.shared.service.BotAdditionalModulesService.
  */
 class S3ModelModulesService : BotAdditionalModulesService {
-    override fun customModules(): Set<Kodein.Module> = if (propertyOrNull(MODEL_STORAGE_PROPERTY).equals("s3", ignoreCase = true)) setOf(modelS3Module) else emptySet()
+    override fun customModules(): Set<Kodein.Module> = if (propertyOrNull("tock_nlp_model_storage").equals("s3", ignoreCase = true)) setOf(modelS3Module) else emptySet()
 }
