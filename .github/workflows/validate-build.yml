@@ -133,7 +133,7 @@ jobs:
           cache: 'maven'
 
       - name: Build the serverless starters
-        run: mvn -B -ntp package -DskipTests -Dskip.npm -Dexec.skip -pl serverless-bot,serverless-nlp -am
+        run: mvn -B -ntp install -DskipTests -Dskip.npm -Dexec.skip -pl serverless-bot,serverless-nlp -am
 
       - name: Check that the serverless jars only reference classes of their classpath
         run: |

@@ -24,7 +24,7 @@ ALLOWED: the serverless runtime never calls them, and the JVM resolves a referen
 The Tock jars are taken from the target directories of this tree, not from the local Maven repository: the
 worktrees share it at the same version, and another branch may have installed older jars.
 
-Run after `mvn package` of the modules of the starter.
+Run after `mvn install` of the modules of the starter: Maven resolves its classpath outside the reactor.
 
 Usage: scripts/serverless-deps [--module serverless-bot] [--offline]
 """
@@ -69,7 +69,10 @@ ALLOWED = [
 
 
 def run(command, cwd=ROOT):
-    return subprocess.run(command, cwd=cwd, check=True, capture_output=True, text=True).stdout
+    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True)
+    if result.returncode != 0:
+        sys.exit(f"{' '.join(command)} failed:\n{result.stdout}{result.stderr}")
+    return result.stdout
 
 
 def reactor_jars():
@@ -104,7 +107,7 @@ def main():
         if "/ai/tock/" in entry and match:
             jar = built.get(match.group(1))
             if jar is None:
-                sys.exit(f"{path.name} is not built in this tree: run mvn package first")
+                sys.exit(f"{path.name} is not built in this tree: run mvn install first")
             resolved.append(str(jar))
             tock_jars.append(jar)
         else:
