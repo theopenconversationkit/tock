@@ -262,5 +262,7 @@ Les DAO DynamoDB n'ont pas de change stream : sans ce lot, une instance chaude n
 
 - **Documentation (faite)** : page `operate/serverless.md` (en, fr) et sections « S3 storage » et « Serverless runtime » de la référence de configuration ; `mkdocs build --strict` passe. `etc/list-doc-properties.py` découvre maintenant tous les modules (l'extraction de `tock-shared-core` lui faisait perdre leurs propriétés) ; toutes les propriétés de la branche sont documentées.
 
-- TTL réduites : `tock_nlp_classified_sentences_index_ttl_days` pour l'inbox, statistiques et flux à 30–90 jours.
-- `maxPoolSize` réduit, et idéalement un seul `MongoClient` par processus (limite de connexions de M0).
+- **Profil « offres gratuites » (fait)** : section « Free tier » de `operate/serverless.md`.
+  - DynamoDB : l'offre gratuite ne couvre que la capacité provisionnée (25 RCU/WCU), pas les tables à la demande. `tock_dynamodb_billing_mode=provisioned` (+ `tock_dynamodb_read/write_capacity_units`, 4 par table et par index : 3 + 3 = 24) à la création des tables ; intervalles de recopie (10 s : < 1 M de lectures de streams par mois sur 2,5 M) et de publication complète (30 min) allongés.
+  - Atlas M0 (0,5 Go, 500 connexions, 100 op/s) : TTL à 90 jours (timelines, flux, journaux utilisateur, statistiques NLP) et 30 jours pour l'inbox, sur tous les process Mongo (KMongo supprime et recrée l'index quand le TTL change). `maxPoolSize` dans `tock_mongo_url` (10) et `tock_async_mongo_url` (30 : une vingtaine de change streams dans l'admin).
+  - Un seul `MongoClient` par process : abandonné. Les clients synchrone et coroutine sont deux drivers distincts, sans pool commun ; leurs pools se règlent par leurs URL.

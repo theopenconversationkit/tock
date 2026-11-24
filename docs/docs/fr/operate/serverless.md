@@ -166,6 +166,69 @@ REST, web et API OpenAI.
   API OpenAI (elles passent par ces canaux), l'orchestration de bots (`tock-bot-orchestration`) et le mode websocket
   de _Bot API_.
 
+## Offres gratuites
+
+Un Tock pour quelques bots qui reçoivent peu de messages peut tourner dans les offres gratuites : le runtime sur
+Cloud Run ou Lambda, les tables dans DynamoDB, et le MongoDB de l'admin sur un cluster gratuit de MongoDB Atlas.
+Vérifiez les offres actuelles des fournisseurs : elles changent.
+
+### DynamoDB
+
+L'offre gratuite de DynamoDB couvre 25 Go, 25 unités de lecture et 25 unités d'écriture provisionnées, et 2,5
+millions de lectures de streams par mois : pas les requêtes des tables à la demande, que Tock crée par défaut. Créez
+les tables avec une capacité provisionnée :
+
+```
+tock_dynamodb_billing_mode=provisioned
+# pour chacune des 3 tables et des 3 index : 24 unités
+tock_dynamodb_read_capacity_units=4
+tock_dynamodb_write_capacity_units=4
+```
+
+Le mode s'applique à la création des tables : celui des tables existantes se change avec
+`aws dynamodb update-table --billing-mode PROVISIONED`. Une table provisionnée limite les requêtes au-delà de ses
+unités (le SDK les réessaie) : cela convient à des bots qui reçoivent au plus quelques messages par seconde.
+
+Sur l'admin, lisez les streams moins souvent, et comparez la publication aux tables moins souvent (chaque publication
+complète lit les éléments publiés) :
+
+```
+# 3 tables lues toutes les 10 s : moins d'un million de lectures de streams par mois
+tock_dynamodb_replication_interval_in_ms=10000
+tock_dynamodb_publication_interval_in_s=1800
+```
+
+### MongoDB Atlas
+
+Un cluster Atlas gratuit a 0,5 Go de stockage (données et index), 500 connexions, 100 opérations par seconde et 500
+collections.
+
+* **Stockage.** Réduisez la durée de conservation de ce qu'écrit le runtime, sur chaque process qui utilise MongoDB
+  (`bot_admin`, `build_worker`) : les index sont recréés quand leur durée change, et deux process avec des valeurs
+  différentes les recréeraient tour à tour.
+
+    ```
+    tock_bot_timeline_index_ttl_days=90
+    tock_bot_flow_stats_index_ttl_days=90
+    tock_user_log_index_ttl_days=90
+    tock_nlp_log_stats_index_ttl_days=90
+    # les phrases de l'inbox seulement : les phrases validées sont gardées
+    tock_nlp_classified_sentences_index_ttl_days=30
+    ```
+
+    Les dialogues (`tock_bot_dialog_index_ttl_days`) et les journaux d'analyse (`tock_nlp_log_index_ttl_days`) sont
+    gardés 7 jours par défaut.
+
+* **Connexions.** Chaque process a deux pools de connexions : les requêtes (`tock_mongo_url`) et les change streams
+  (`tock_async_mongo_url`, par défaut la même URL). Le driver MongoDB ouvre jusqu'à 100 connexions par pool et par
+  nœud. Limitez-les dans les URL ; l'admin écoute une vingtaine de change streams, qui gardent chacun une connexion
+  pendant leur attente :
+
+    ```
+    tock_mongo_url=mongodb+srv://user:password@cluster.mongodb.net/?retryWrites=true&maxPoolSize=10
+    tock_async_mongo_url=mongodb+srv://user:password@cluster.mongodb.net/?retryWrites=true&maxPoolSize=30
+    ```
+
 ## Limites
 
 * Les compteurs recopiés de DynamoDB vers MongoDB (statistiques des libellés, phrases inconnues) et les journaux

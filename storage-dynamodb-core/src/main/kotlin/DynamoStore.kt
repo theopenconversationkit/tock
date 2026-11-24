@@ -18,6 +18,7 @@ package ai.tock.storage.dynamodb
 
 import ai.tock.shared.InternalTockApi
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
 import mu.KotlinLogging
@@ -40,6 +41,7 @@ import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement
 import software.amazon.awssdk.services.dynamodb.model.KeyType
 import software.amazon.awssdk.services.dynamodb.model.Projection
 import software.amazon.awssdk.services.dynamodb.model.ProjectionType
+import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput
 import software.amazon.awssdk.services.dynamodb.model.Put
 import software.amazon.awssdk.services.dynamodb.model.PutRequest
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
@@ -90,6 +92,8 @@ const val TTL = "ttl"
  * - `tock_dynamodb_create_tables`: create the tables at startup (default true)
  * - `tock_dynamodb_streams_enabled`: enable the DynamoDB Streams of the tables (default true), read by the
  *   replication of the runtime writes to the MongoDB of the admin
+ * - `tock_dynamodb_billing_mode`: the capacity of the created tables, `on_demand` (default) or `provisioned`
+ *   (see [TableCapacity])
  */
 object DynamoStore {
     val tablePrefix: String = property("tock_dynamodb_table_prefix", "tock_")
@@ -116,6 +120,8 @@ object DynamoStore {
     }
 
     private val streamsEnabled = booleanProperty("tock_dynamodb_streams_enabled", true)
+
+    private val capacity: TableCapacity by lazy { TableCapacity.fromProperties() }
 
     /** The client of the DynamoDB Streams of the tables. */
     val streamsClient: DynamoDbStreamsClient by lazy {
@@ -166,15 +172,25 @@ object DynamoStore {
     }
 
     private fun createTables(client: DynamoDbClient) {
-        createTable(client, configTable)
+        createTables(client, tablePrefix, capacity)
+    }
+
+    /** Creates the tables of [prefix] that do not exist yet. */
+    internal fun createTables(
+        client: DynamoDbClient,
+        prefix: String,
+        capacity: TableCapacity,
+    ) {
+        createTable(client, "${prefix}config", capacity)
         // the runtime index only gives dialog ids: an ALL projection would copy each dialog header at each turn
-        createTable(client, runtimeTable, gsi1 = true, projection = ProjectionType.KEYS_ONLY)
-        createTable(client, sentenceTable, gsi1 = true, gsi2 = true)
+        createTable(client, "${prefix}runtime", capacity, gsi1 = true, projection = ProjectionType.KEYS_ONLY)
+        createTable(client, "${prefix}nlp_sentence", capacity, gsi1 = true, gsi2 = true)
     }
 
     private fun createTable(
         client: DynamoDbClient,
         name: String,
+        capacity: TableCapacity,
         gsi1: Boolean = false,
         gsi2: Boolean = false,
         projection: ProjectionType = ProjectionType.ALL,
@@ -197,6 +213,7 @@ object DynamoStore {
             .indexName(indexName)
             .keySchema(key(pk, KeyType.HASH), key(sk, KeyType.RANGE))
             .projection(Projection.builder().projectionType(projection).build())
+            .apply { capacity.throughput()?.let { provisionedThroughput(it) } }
             .build()
 
         val attributes =
@@ -213,7 +230,8 @@ object DynamoStore {
             client.createTable {
                 it
                     .tableName(name)
-                    .billingMode(BillingMode.PAY_PER_REQUEST)
+                    .billingMode(capacity.billingMode)
+                    .apply { capacity.throughput()?.let { provisionedThroughput(it) } }
                     .attributeDefinitions(attributes)
                     .keySchema(key(PK, KeyType.HASH), key(SK, KeyType.RANGE))
                     .apply { if (indexes.isNotEmpty()) globalSecondaryIndexes(indexes) }
@@ -229,7 +247,7 @@ object DynamoStore {
                         .build(),
                 )
             }
-            logger.info { "DynamoDB table $name created" }
+            logger.info { "DynamoDB table $name created (${capacity.billingMode})" }
         } catch (_: ResourceInUseException) {
             logger.debug { "DynamoDB table $name already exists" }
             if (streamsEnabled && client
@@ -563,4 +581,51 @@ object DocumentCodec {
         }
 
     private fun gunzip(bytes: ByteArray): ByteArray = GZIPInputStream(bytes.inputStream()).use { it.readBytes() }
+}
+
+/**
+ * The capacity of the tables created by Tock: [BillingMode.PAY_PER_REQUEST] by default, or provisioned with
+ * [readUnits] and [writeUnits] for each table and each index.
+ *
+ * The free tier of DynamoDB covers 25 provisioned read units and 25 provisioned write units, not the requests of
+ * the on-demand tables. Tock creates 3 tables and 3 indexes: the provisioned default (4 units each) uses 24 of them.
+ *
+ * Properties: `tock_dynamodb_billing_mode` (`on_demand` or `provisioned`), `tock_dynamodb_read_capacity_units` and
+ * `tock_dynamodb_write_capacity_units` (4).
+ */
+internal class TableCapacity(
+    val billingMode: BillingMode,
+    val readUnits: Long = 4,
+    val writeUnits: Long = 4,
+) {
+    init {
+        require(billingMode == BillingMode.PAY_PER_REQUEST || (readUnits > 0 && writeUnits > 0)) {
+            "the provisioned capacity units must be positive: $readUnits read units, $writeUnits write units"
+        }
+    }
+
+    /** The throughput of a table or of an index: none for an on-demand table. */
+    fun throughput(): ProvisionedThroughput? =
+        if (billingMode == BillingMode.PROVISIONED) {
+            ProvisionedThroughput
+                .builder()
+                .readCapacityUnits(readUnits)
+                .writeCapacityUnits(writeUnits)
+                .build()
+        } else {
+            null
+        }
+
+    companion object {
+        fun fromProperties(): TableCapacity =
+            TableCapacity(
+                when (val mode = property("tock_dynamodb_billing_mode", "on_demand").lowercase()) {
+                    "on_demand" -> BillingMode.PAY_PER_REQUEST
+                    "provisioned" -> BillingMode.PROVISIONED
+                    else -> error("unknown tock_dynamodb_billing_mode $mode: on_demand or provisioned")
+                },
+                longProperty("tock_dynamodb_read_capacity_units", 4),
+                longProperty("tock_dynamodb_write_capacity_units", 4),
+            )
+    }
 }

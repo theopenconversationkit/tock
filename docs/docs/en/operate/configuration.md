@@ -386,6 +386,9 @@ See [Serverless](serverless.md).
 | `tock_dynamodb_table_prefix` | `tock_` | Prefix of the tables (`config`, `runtime`, `nlp_sentence`) |
 | `tock_dynamodb_create_tables` | `true` | Creates the missing tables at startup |
 | `tock_dynamodb_streams_enabled` | `true` | Enables the DynamoDB Streams of the tables, read by the replication to MongoDB |
+| `tock_dynamodb_billing_mode` | `on_demand` | Capacity of the created tables: `on_demand`, or `provisioned` (covered by the free tier of DynamoDB) |
+| `tock_dynamodb_read_capacity_units` | `4` | Provisioned read units of each table and of each index (3 tables, 3 indexes) |
+| `tock_dynamodb_write_capacity_units` | `4` | Provisioned write units of each table and of each index |
 | `tock_dynamodb_change_check_interval_ms` | `10000` | Minimum interval between two checks of the configuration published by the admin |
 | `tock_dynamodb_feature_cache_ttl_in_ms` | `30000` | Cache of the features read by the runtime |
 | `tock_dynamodb_user_lock_ttl_hours` | `6` | Retention of the user locks |
