@@ -49,6 +49,8 @@ import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.Executor
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.warn
@@ -93,26 +95,31 @@ internal class TeamsConnector(
         tokenHandler.launchTokenCollector(connectorId)
         jwkHandler.launchJWKCollector(connectorId)
 
-        controller.registerServices(path) { router ->
+        controller.registerRoutes(path, routes(controller))
+    }
 
-            router.post(path).handler { context ->
+    /**
+     * The route of the activities. It answers as the former Vert.x handler did: an empty 200 (also for an activity
+     * that is not a message), 403 when the token is not valid, 500 when the activity cannot be read, and the
+     * messages are handled by the [Executor].
+     */
+    internal fun routes(controller: ConnectorController): HttpRoutes =
+        HttpRoutes {
+            post(path) { request ->
+                lateinit var response: HttpResponse
                 val timeElapsed =
                     measureTimeMillis {
-                        var responseSent = false
+                        response = HttpResponse.status()
                         val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
                         try {
-                            val body = context.body().asString()
+                            val body = request.bodyAsString
                             logger.debug { body }
                             val activity: Activity = mapper.readValue(body)
                             if (activity.type != ActivityTypes.MESSAGE) {
                                 throw NoMessageException("The activity received is not a message")
                             }
                             logger.debug { "check authentication..." }
-                            authenticateBotConnectorService.checkRequestValidity(
-                                jwkHandler,
-                                context.request().headers(),
-                                activity,
-                            )
+                            authenticateBotConnectorService.checkRequestValidity(jwkHandler, { request.header(it) }, activity)
                             logger.debug { "authentication checked" }
                             executor.executeBlocking {
                                 logger.debug { "sentence created..." }
@@ -132,30 +139,21 @@ internal class TeamsConnector(
                                 )
                             }
                         } catch (e: ForbiddenException) {
-                            context.fail(403)
-                            responseSent = true
+                            response = HttpResponse.text("Forbidden", 403)
                             logger.logError(e.message ?: "error", requestTimerData)
                         } catch (e: NoMessageException) {
                             logger.warn(e)
                         } catch (e: Throwable) {
-                            context.fail(500)
-                            responseSent = true
+                            response = HttpResponse.text("Internal Server Error", 500)
                             logger.logError(e, requestTimerData)
                         } finally {
                             BotRepository.requestTimer.end(requestTimerData)
-                            if (!responseSent) {
-                                try {
-                                    context.response().end()
-                                } catch (e: Throwable) {
-                                    logger.error(e)
-                                }
-                            }
                         }
                     }
                 logger.trace { "Time elapsed : $timeElapsed ms" }
+                response
             }
         }
-    }
 
     override fun loadProfile(
         callback: ConnectorCallback,

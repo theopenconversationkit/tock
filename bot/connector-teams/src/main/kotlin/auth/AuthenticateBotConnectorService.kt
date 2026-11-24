@@ -24,7 +24,6 @@ import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
-import io.vertx.core.MultiMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -57,7 +56,7 @@ internal class AuthenticateBotConnectorService(
      */
     fun checkRequestValidity(
         jwkHandler: JWKHandler,
-        headers: MultiMap,
+        headers: (String) -> String?,
         activity: Activity,
     ) {
         var isFromTheBotConnectorService = false
@@ -106,10 +105,10 @@ internal class AuthenticateBotConnectorService(
      */
     private fun checkTokenValidityFromEmulator(
         jwkHandler: JWKHandler,
-        headers: MultiMap,
+        headers: (String) -> String?,
     ): Boolean {
         logger.debug("Validating token from incoming request...")
-        val authorizationHeader = headers[AUTHORIZATION_HEADER]
+        val authorizationHeader = headers(AUTHORIZATION_HEADER) ?: ""
         try {
             if (!authorizationHeader.contains(BEARER_PREFIX)) throw ForbiddenException("Authorization Header does not contains the Bearer scheme")
             val token = authorizationHeader.removePrefix(BEARER_PREFIX)
@@ -141,11 +140,11 @@ internal class AuthenticateBotConnectorService(
      */
     private fun checkTokenValidityFromConnectorService(
         jwkHandler: JWKHandler,
-        headers: MultiMap,
+        headers: (String) -> String?,
         activity: Activity,
     ): Boolean {
         logger.debug("Validating token from incoming request...")
-        val authorizationHeader = headers[AUTHORIZATION_HEADER]
+        val authorizationHeader = headers(AUTHORIZATION_HEADER) ?: ""
         try {
             if (!authorizationHeader.contains(BEARER_PREFIX)) throw ForbiddenException("Authorization Header does not contains the Bearer scheme")
             val token = authorizationHeader.removePrefix(BEARER_PREFIX)
