@@ -21,6 +21,9 @@ import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import org.apache.http.HttpStatus
 
+/** Also keeps the file facade class of the former versions. */
+internal const val BEARER_PREFIX = "Bearer "
+
 enum class VerificationFailure {
     NO_BEARER_AUTHORISATION,
     CANNOT_BE_PARSED,

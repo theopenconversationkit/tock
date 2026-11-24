@@ -23,8 +23,6 @@ import com.google.api.client.http.apache.v2.ApacheHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
 
-private const val BEARER_PREFIX = "Bearer "
-
 /**
  * Verifies the bearer token that Google Chat sends with its events, independently of the server.
  */
