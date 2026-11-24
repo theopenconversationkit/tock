@@ -237,7 +237,7 @@ Les DAO DynamoDB n'ont pas de change stream : sans ce lot, une instance chaude n
    - À la place, `TrackingExecutor` nomme une tâche anonyme d'après la classe et le membre qui l'enregistrent, avec `_2`, `_3`... pour les suivantes : `translator_statscache` (vidage des statistiques i18n), `messengerconnector_registercheckwebhook` (abonnement du webhook Messenger). Le nom ne change pas d'un démarrage à l'autre, et un ordonnanceur externe le déclenche par `POST /_tasks/<nom>`. Les lambdas compilés par K2 (`<propriété>_delegate$lambda$0`) sont gérés (test).
    - Seules ces deux tâches sont sur le chemin d'exécution ; les workers de build, le nettoyage des modèles, le crawler de TTL des phrases, les datasets et la base de connaissances tournent dans l'admin ou les workers, qui restent sur Vert.x.
    - Limite : les statistiques i18n accumulées en mémoire sont perdues si l'instance est arrêtée avant le passage suivant de `translator_statscache`.
-4. Images tock-docker : ajouter les modules de publication et de recopie (le stockage NLP Dynamo suit automatiquement) et les modules S3 à l'image de l'admin ; créer l'image du runtime serverless.
+4. **Images tock-docker (en partie).** Branche locale `feat/serverless` de `~/dev/tock-docker` (30fa3dc) : modules de publication, de recopie et S3 dans l'image de l'admin, stockage S3 des modèles dans les images nlp-api et build worker, tous activés par propriété. tock-docker se construit contre la dernière release de Tock (`<tock>26.9.1</tock>`) : la branche ne se construira qu'avec une release qui contient ces modules (dépendances résolues avec `-Dtock=26.9.2-SNAPSHOT`). Pas d'image générique du runtime serverless : un bot est un projet, et le mode _Bot API_ n'est pas migré.
 5. **Point d'entrée Lambda natif (fait).**
    - `ai.tock.serverless.lambda.LambdaHandler::handleRequest(InputStream, OutputStream)`, sans les bibliothèques Lambda ni le Web Adapter : requêtes HTTP d'une function URL ou d'une API Gateway HTTP API (format 2.0, cookies, corps en base 64), lots SQS (rejeu par la file des webhooks, échecs partiels `batchItemFailures`), événements EventBridge Scheduler `{"tock_task": "<nom>"}` (tâche lancée sans jeton, l'appel étant authentifié par IAM, et attendue avant la réponse).
    - SPI `ServerlessApplication` (ServiceLoader) : le projet y compose son process ; elle est installée une fois, à l'initialisation de la classe, donc avant l'instantané SnapStart. `ServerlessBotLauncher.install()` et `ServerlessNlpLauncher.install()` installent sans serveur HTTP.
@@ -246,11 +246,16 @@ Les DAO DynamoDB n'ont pas de change stream : sans ce lot, une instance chaude n
    - Non fait : l'API Gateway REST (format 1.0), et les hooks CRaC de SnapStart (les connexions HTTP gardées dans l'instantané peuvent être fermées à la restauration ; à vérifier lors de l'essai réel).
 6. Essai réel sur Cloud Run (facturation par instance, minimum 0) et sur Lambda, puis relancer `SpikeBenchmark` contre un vrai AWS.
 
-### E. Autres connecteurs
+### E. Autres connecteurs (en partie)
 
-Migrer vers `registerRoutes` : alcmeon, slack, whatsapp, teams, web (et SSE), open-ai, google-chat, iadvize, mattermost et rest. Websocket bot_api : n'autoriser que le mode webhook en serverless.
+- **Migrés** (routes neutres, test des routes et test de bytecode pour chacun) : Slack, Google Chat, REST, Mattermost, Teams, Alcmeon, WhatsApp, en plus de WhatsApp Cloud et Messenger.
+- Compatibilité : quand un constructeur public prenait un type Vert.x (`RequestFilter` pour REST et WhatsApp, `Handler<RoutingContext>` pour Alcmeon, `GoogleChatAuthorisationHandler`), il est gardé et monte toujours les routes Vert.x, dans une classe interne séparée (`XxxVertxServices`) ; le nouveau constructeur, utilisé par le provider, prend un `HttpRequestFilter` ou un vérificateur neutre (`GoogleChatTokenVerifier`, `AlcmeonSignatureVerifier`). Alcmeon : interface publique `AlcmeonCallback`, implémentée par l'ancienne data class et par `AlcmeonHttpConnectorCallback`. `api-compat` ne trouve aucune incompatibilité ; il ignore désormais les fonctions `internal` de premier niveau.
+- Changements de comportement, voulus : Mattermost ne traite plus un message au jeton invalide (il répondait 400 mais le traitait) ; Alcmeon répond 400 à un message illisible (il ne répondait pas) ; le vérificateur Alcmeon crée un `Mac` par vérification (l'instance partagée n'était pas thread-safe).
+- **Restent** : open-ai, web, web-sse (réponses SSE en streaming, CORS, handlers de sécurité web de `tock-shared`) et iAdvize (une dizaine de handlers typés sur `RoutingContext`, sans streaming). Le streaming demande d'étendre `HttpResponse` (adaptateur Vert.x, serveur JDK, réponse mise en tampon pour Lambda). Websocket bot_api : n'autoriser que le mode webhook en serverless.
 
 ### F. Profil « free tier » et documentation
+
+- **Documentation (faite)** : page `operate/serverless.md` (en, fr) et sections « S3 storage » et « Serverless runtime » de la référence de configuration ; `mkdocs build --strict` passe. `etc/list-doc-properties.py` découvre maintenant tous les modules (l'extraction de `tock-shared-core` lui faisait perdre leurs propriétés) ; toutes les propriétés de la branche sont documentées.
 
 - TTL réduites : `tock_nlp_classified_sentences_index_ttl_days` pour l'inbox, statistiques et flux à 30–90 jours.
 - `maxPoolSize` réduit, et idéalement un seul `MongoClient` par processus (limite de connexions de M0).
