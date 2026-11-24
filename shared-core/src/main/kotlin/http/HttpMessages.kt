@@ -42,6 +42,8 @@ enum class HttpMethod {
  * @property pathParameters the parameters extracted from the route path (`/webhook/:id`)
  * @property body the raw body, empty when there is none
  * @property remoteAddress the address of the client, when known
+ * @property rawQuery the query string as received (undecoded), when known: the signatures of some webhooks are
+ * computed on it
  */
 class HttpRequest(
     val method: HttpMethod,
@@ -51,6 +53,7 @@ class HttpRequest(
     val pathParameters: Map<String, String> = emptyMap(),
     val body: ByteArray = ByteArray(0),
     val remoteAddress: String? = null,
+    val rawQuery: String? = null,
 ) {
     val headers: Map<String, List<String>> = TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER).apply { putAll(headers) }
 
@@ -67,7 +70,7 @@ class HttpRequest(
     fun pathParameter(name: String): String? = pathParameters[name]
 
     /** A copy of this request with the given path parameters. */
-    fun withPathParameters(parameters: Map<String, String>): HttpRequest = HttpRequest(method, path, headers, queryParameters, parameters, body, remoteAddress)
+    fun withPathParameters(parameters: Map<String, String>): HttpRequest = HttpRequest(method, path, headers, queryParameters, parameters, body, remoteAddress, rawQuery)
 }
 
 /**

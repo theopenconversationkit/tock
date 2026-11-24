@@ -16,6 +16,7 @@
 
 package ai.tock.bot.connector.iadvize.model.request
 
+import ai.tock.shared.http.HttpRequest
 import io.vertx.ext.web.RoutingContext
 
 data class RequestIds(
@@ -26,5 +27,11 @@ data class RequestIds(
         this(
             context.request().getParam("idConnectorVersion"),
             context.request().getParam("idWebsite"),
+        )
+
+    constructor(request: HttpRequest) :
+        this(
+            checkNotNull(request.queryParameter("idConnectorVersion")),
+            checkNotNull(request.queryParameter("idWebsite")),
         )
 }

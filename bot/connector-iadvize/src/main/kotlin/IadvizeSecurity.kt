@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.shared.exception.rest.BadRequestException
+import ai.tock.shared.http.HttpRequest
 import ai.tock.shared.jackson.mapper
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
@@ -48,19 +49,45 @@ class IadvizeSecurity(
                 // For POST, PUT... requests, hash signature is computed by hashing the raw body string
                 context.body().asString()
             } ?: ""
+        if (!isValid(payloads, context.request().getHeader(HEADER_NAME))) {
+            throw BadRequestException(ERROR_MESSAGE)
+        }
+    }
 
+    /**
+     * Validates the signature of [request].
+     *
+     * @throws IadvizeSignatureException if it is not valid
+     */
+    fun validatePayloads(request: HttpRequest) {
+        val payloads =
+            if (request.method == ai.tock.shared.http.HttpMethod.GET) {
+                // For GET requests, hash signature is computed by hashing the raw query string
+                request.rawQuery
+            } else {
+                // For POST, PUT... requests, hash signature is computed by hashing the raw body string
+                request.bodyAsString
+            } ?: ""
+        if (!isValid(payloads, request.header(HEADER_NAME))) {
+            throw IadvizeSignatureException(ERROR_MESSAGE)
+        }
+    }
+
+    private fun isValid(
+        payloads: String,
+        xIAdvizeSignatureHeader: String?,
+    ): Boolean {
         val xIAdvizeSignatureComputed = calculateHmacSha256(secretToken, payloads)
-        val xIAdvizeSignatureHeader = context.request().getHeader(HEADER_NAME)
-
         if (xIAdvizeSignatureComputed != xIAdvizeSignatureHeader) {
             val error =
                 mapper.writeValueAsString(
-                    Error(secretToken, payloads, xIAdvizeSignatureComputed, xIAdvizeSignatureHeader),
+                    Error(secretToken, payloads, xIAdvizeSignatureComputed, xIAdvizeSignatureHeader ?: ""),
                 )
 
             logger.error { "$ERROR_MESSAGE $error" }
-            throw BadRequestException(ERROR_MESSAGE)
+            return false
         }
+        return true
     }
 
     private fun calculateHmacSha256(
@@ -75,6 +102,11 @@ class IadvizeSecurity(
         return String.format("sha256=%064x", BigInteger(1, hmacSha256))
     }
 }
+
+/** The signature of a request is not valid: a 400. */
+class IadvizeSignatureException(
+    message: String,
+) : RuntimeException(message)
 
 data class Error(
     val secretToken: String,

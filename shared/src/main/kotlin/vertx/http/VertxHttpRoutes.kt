@@ -66,6 +66,7 @@ fun RoutingContext.toHttpRequest(): HttpRequest {
         pathParameters = pathParams().toMap(),
         body = body()?.buffer()?.bytes ?: ByteArray(0),
         remoteAddress = request.remoteAddress()?.host(),
+        rawQuery = request.query(),
     )
 }
 

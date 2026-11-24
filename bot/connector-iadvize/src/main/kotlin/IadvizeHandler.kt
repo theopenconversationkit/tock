@@ -17,6 +17,16 @@
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.engine.ConnectorController
+import ai.tock.shared.http.HttpRequest
 import io.vertx.ext.web.RoutingContext
 
 typealias IadvizeHandler = (RoutingContext, ConnectorController) -> Unit
+
+/** A request of iAdvize, and the way to answer it. */
+internal class IadvizeExchange(
+    val request: HttpRequest,
+    val responder: IadvizeResponder,
+)
+
+/** The handler of an iAdvize route, independent of the server. */
+internal typealias IadvizeHttpHandler = (IadvizeExchange, ConnectorController) -> Unit

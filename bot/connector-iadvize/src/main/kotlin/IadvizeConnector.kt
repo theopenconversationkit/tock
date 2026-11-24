@@ -53,17 +53,19 @@ import ai.tock.iadvize.client.graphql.IadvizeGraphQLClient
 import ai.tock.shared.Executor
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
-import ai.tock.shared.exception.rest.BadRequestException
+import ai.tock.shared.http.HttpMethod
+import ai.tock.shared.http.HttpRequest
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.propertyOrNull
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.github.salomonbrys.kodein.instance
-import io.vertx.core.Future
-import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
-import io.vertx.ext.web.Route
-import io.vertx.ext.web.RoutingContext
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.apache.commons.lang3.LocaleUtils
 import java.time.LocalDateTime
@@ -105,112 +107,108 @@ class IadvizeConnector internal constructor(
     private var proactiveParameters: Map<String, String> = emptyMap()
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path) { router ->
-            router
-                .get("$path/external-bots")
-                .handleAndCatchException(controller, handlerGetBots)
-
-            router
-                .get("$path/bots/:idOperator")
-                .handleAndCatchException(controller, handlerGetBot)
-
-            router
-                .put("$path/bots/:idOperator")
-                .handleAndCatchException(controller, handlerUpdateBot)
-
-            router
-                .get("$path/availability-strategies")
-                .handleAndCatchException(controller, handlerStrategies)
-
-            router
-                .get("$path/bots/:idOperator/conversation-first-messages")
-                .handleAndCatchException(controller, handlerFirstMessage)
-
-            router
-                .post("$path/conversations")
-                .handleAndCatchException(controller, handlerStartConversation)
-
-            router
-                .post("$path/conversations/:idConversation/messages")
-                .handleAndCatchException(controller, handlerConversation)
-
-            router
-                .get("$path/healthcheck")
-                .handleAndCatchException(controller, handlerHealthcheck)
-        }
+        controller.registerRoutes(path, routes(controller))
     }
 
-    /*
-     * when an exception is produced during the processing of the handler, it must be intercepted, logged,
-     *  then produce an error 500 without an explicit message to not expose vulnerabilities.
-     *
-     * iAdvizeHandler is wrapped in a FunctionalInterface Handler<RoutingContext>
-     *  and provided to the Route.handler(...) method
+    /**
+     * The routes of the iAdvize bot API. They answer as the former Vert.x handlers did: the JSON of the answer,
+     * 400 for an invalid signature, and 500 without an explicit message when the handler fails, so as not to
+     * expose vulnerabilities.
      */
-    private fun Route.handleAndCatchException(
-        controller: ConnectorController,
-        iadvizeHandler: IadvizeHandler,
-    ) {
-        handler { context ->
-            try {
-                logContextRequest(context)
+    internal fun routes(controller: ConnectorController): HttpRoutes =
+        HttpRoutes {
+            iadvizeRoute(HttpMethod.GET, "$path/external-bots", controller, handlerGetBots)
+            iadvizeRoute(HttpMethod.GET, "$path/bots/:idOperator", controller, handlerGetBot)
+            iadvizeRoute(HttpMethod.PUT, "$path/bots/:idOperator", controller, handlerUpdateBot)
+            iadvizeRoute(HttpMethod.GET, "$path/availability-strategies", controller, handlerStrategies)
+            iadvizeRoute(HttpMethod.GET, "$path/bots/:idOperator/conversation-first-messages", controller, handlerFirstMessage)
+            iadvizeRoute(HttpMethod.POST, "$path/conversations", controller, handlerStartConversation)
+            iadvizeRoute(HttpMethod.POST, "$path/conversations/:idConversation/messages", controller, handlerConversation)
+            iadvizeRoute(HttpMethod.GET, "$path/healthcheck", controller, handlerHealthcheck)
+        }
 
+    private fun HttpRoutes.iadvizeRoute(
+        method: HttpMethod,
+        routePath: String,
+        controller: ConnectorController,
+        iadvizeHandler: IadvizeHttpHandler,
+    ) {
+        route(method, routePath) { request ->
+            val response = CompletableDeferred<HttpResponse>()
+            val responder =
+                object : IadvizeResponder {
+                    override fun json(response: Any) {
+                        completeJson(response)
+                    }
+
+                    private fun completeJson(body: Any) {
+                        response.complete(HttpResponse(headers = mapOf("Content-Type" to listOf("application/json")), body = iadvizeJson(body).toByteArray()))
+                    }
+
+                    override fun end() {
+                        response.complete(HttpResponse.status())
+                    }
+
+                    override fun fail(throwable: Throwable) {
+                        logger.error(throwable)
+                        response.complete(HttpResponse.text("Internal Server Error", 500))
+                    }
+                }
+            try {
+                logRequest(request)
                 // Check payloads signature
                 if (!secretToken.isNullOrBlank()) {
-                    IadvizeSecurity(secretToken).validatePayloads(context)
+                    IadvizeSecurity(secretToken).validatePayloads(request)
                 }
-                // Invoke handler
-                iadvizeHandler.invoke(context, controller)
-            } catch (error: BadRequestException) {
+                // the handlers are blocking: not on the event loop of a Vert.x server
+                withContext(Dispatchers.IO) { iadvizeHandler(IadvizeExchange(request, responder), controller) }
+            } catch (error: IadvizeSignatureException) {
                 logger.error(error)
-                context.fail(400)
+                response.complete(HttpResponse.text("Bad Request", 400))
             } catch (error: Throwable) {
                 logger.error(error)
-                context.fail(500)
+                response.complete(HttpResponse.text("Internal Server Error", 500))
             }
+            response.await()
         }
     }
 
     /**
      * Trace the iadvize query
      */
-    private fun logContextRequest(context: RoutingContext) {
-        val requestAsString: String =
-            with(context) {
+    private fun logRequest(request: HttpRequest) {
+        logger.debug {
+            val body = runCatching { mapper.readTree(request.body) }.getOrNull()
+            "request : " +
                 mapper.writeValueAsString(
-                    CustomRequest(
-                        request().method().name(),
-                        request().path(),
-                        request().query(),
-                        body().asJsonObject(),
+                    mapOf(
+                        "method" to request.method.name,
+                        "path" to request.path,
+                        "query" to request.rawQuery,
+                        "body" to body,
                         // Get only iAdvize headers
-                        request()
-                            .headers()
-                            .filter { it.key.startsWith("X-") }
-                            .associate { it.key to it.value },
+                        "headers" to request.headers.filterKeys { it.startsWith("X-") }.mapValues { it.value.firstOrNull() },
                     ),
                 )
-            }
-
-        logger.debug { "request : $requestAsString" }
+        }
     }
 
-    private var handlerHealthcheck: IadvizeHandler = { context, _ ->
-        context.response().endWithJson(Healthcheck())
+    private var handlerHealthcheck: IadvizeHttpHandler = { exchange, _ ->
+        exchange.responder.json(Healthcheck())
     }
 
-    internal var handlerGetBots: IadvizeHandler = { context, controller ->
-        context.response().endWithJson(listOf(getBot(controller)))
+    internal var handlerGetBots: IadvizeHttpHandler = { exchange, controller ->
+        exchange.responder.json(listOf(getBot(controller)))
     }
 
-    internal var handlerGetBot: IadvizeHandler = { context, controller ->
-        val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
-        context.response().endWithJson(getBotUpdate(idOperator, controller))
+    internal var handlerGetBot: IadvizeHttpHandler = { exchange, controller ->
+        val idOperator: String = checkNotNull(exchange.request.pathParameter(QUERY_ID_OPERATOR))
+        exchange.responder.json(getBotUpdate(idOperator, controller))
     }
 
-    internal var handlerUpdateBot: IadvizeHandler = { context, controller ->
-        val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
-        context.response().endWithJson(getBotUpdate(idOperator, controller))
+    internal var handlerUpdateBot: IadvizeHttpHandler = { exchange, controller ->
+        val idOperator: String = checkNotNull(exchange.request.pathParameter(QUERY_ID_OPERATOR))
+        exchange.responder.json(getBotUpdate(idOperator, controller))
     }
 
     private fun getBotUpdate(
@@ -224,13 +222,13 @@ class IadvizeConnector internal constructor(
         return Bot(idBot = botId, name = botName, editorUrl = editorUrl)
     }
 
-    internal var handlerStrategies: IadvizeHandler = { context, _ ->
-        context.response().endWithJson(listOf(AvailabilityStrategies(strategy = customAvailability, availability = true)))
+    internal var handlerStrategies: IadvizeHttpHandler = { exchange, _ ->
+        exchange.responder.json(listOf(AvailabilityStrategies(strategy = customAvailability, availability = true)))
     }
 
-    internal var handlerFirstMessage: IadvizeHandler = { context, controller ->
+    internal var handlerFirstMessage: IadvizeHttpHandler = { exchange, controller ->
         val translator: I18nTranslator = controller.botDefinition.i18nTranslator(locale, iadvizeConnectorType)
-        context.response().endWithJson(
+        exchange.responder.json(
             RepliesResponse(
                 IadvizeMessage(
                     translator.translate(firstMessage as CharSequence).toString(),
@@ -239,17 +237,17 @@ class IadvizeConnector internal constructor(
         )
     }
 
-    internal var handlerStartConversation: IadvizeHandler = { context, controller ->
+    internal var handlerStartConversation: IadvizeHttpHandler = { exchange, controller ->
 
         val conversationRequest: ConversationsRequest =
-            mapper.readValue(context.body().asString(), ConversationsRequest::class.java)
+            mapper.readValue(exchange.request.bodyAsString, ConversationsRequest::class.java)
 
         val callback =
             IadvizeConnectorCallback(
                 applicationId,
                 controller,
                 localeCode?.let { getLocale(localeCode) } ?: defaultLocale,
-                context,
+                exchange.responder,
                 conversationRequest,
                 distributionRule,
                 distributionRuleUnavailableMessage,
@@ -257,14 +255,14 @@ class IadvizeConnector internal constructor(
         callback.answerWithResponse()
     }
 
-    internal var handlerConversation: IadvizeHandler = { context, controller ->
-        val idConversation: String = context.pathParam(QUERY_ID_CONVERSATION)
-        val iadvizeRequest: IadvizeRequest = mapRequest(idConversation, context)
+    internal var handlerConversation: IadvizeHttpHandler = { exchange, controller ->
+        val idConversation: String = checkNotNull(exchange.request.pathParameter(QUERY_ID_CONVERSATION))
+        val iadvizeRequest: IadvizeRequest = mapRequest(idConversation, exchange.request.bodyAsString)
         if (!isOperator(iadvizeRequest)) {
-            handleRequest(controller, context, iadvizeRequest)
+            handleRequest(controller, exchange.responder, iadvizeRequest)
         } else {
             // ignore message from operator
-            context.response().end()
+            exchange.responder.end()
         }
     }
 
@@ -278,30 +276,24 @@ class IadvizeConnector internal constructor(
 
     private fun mapRequest(
         idConversation: String,
-        context: RoutingContext,
+        body: String,
     ): IadvizeRequest {
-        val typeMessage: TypeMessage = mapper.readValue(context.body().asString(), TypeMessage::class.java)
+        val typeMessage: TypeMessage = mapper.readValue(body, TypeMessage::class.java)
         return when (typeMessage.type) {
             // json doesn't contain idConversation, to prevent null pointer,
             // we use the inner class MessageRequestJson to enhance the json.
             TYPE_TEXT -> {
                 val messageRequestJson: MessageRequestJson =
-                    mapper.readValue(context.body().asString(), MessageRequestJson::class.java)
+                    mapper.readValue(body, MessageRequestJson::class.java)
                 MessageRequest(messageRequestJson, idConversation)
             }
 
             else -> {
                 val unsupportedRequestJson: UnsupportedRequestJson =
-                    mapper.readValue(context.body().asString(), UnsupportedRequestJson::class.java)
+                    mapper.readValue(body, UnsupportedRequestJson::class.java)
                 UnsupportedRequest(unsupportedRequestJson, idConversation, typeMessage.type)
             }
         }
-    }
-
-    private fun <T> HttpServerResponse.endWithJson(response: T): Future<Void> {
-        val responseAsString: String = mapper.writeValueAsString(response)
-        logger.debug { "response : $responseAsString" }
-        return putHeader("Content-Type", "application/json").end(responseAsString)
     }
 
     override fun send(
@@ -478,7 +470,7 @@ class IadvizeConnector internal constructor(
 
     internal fun handleRequest(
         controller: ConnectorController,
-        context: RoutingContext,
+        responder: IadvizeResponder,
         iadvizeRequest: IadvizeRequest,
     ) {
         val callback =
@@ -486,7 +478,7 @@ class IadvizeConnector internal constructor(
                 applicationId,
                 controller,
                 localeCode?.let { getLocale(localeCode) } ?: defaultLocale,
-                context,
+                responder,
                 iadvizeRequest,
                 distributionRule,
                 distributionRuleUnavailableMessage,
