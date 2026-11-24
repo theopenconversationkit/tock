@@ -112,9 +112,12 @@ object ServerlessNlpLauncher {
     /**
      * Loads the NLP configuration and registers the routes of the NLP API, under `tock_nlp_root` (`/rest/nlp` by
      * default). A process that also runs bots calls it after [ServerlessBotLauncher.setup] (with [modules] and the
-     * NLP storage in its modules), and before [ServerlessBotLauncher.start].
+     * NLP storage in its modules), and before [ServerlessBotLauncher.start]; a function without HTTP server calls it
+     * from its [ai.tock.serverless.ServerlessApplication].
      */
     fun install(rootPath: String = property("tock_nlp_root", "/rest/nlp")) {
+        // as NlpVerticle: the obfuscators of the logs
+        initEncryptor()
         // the state of the storages without change stream, before the configuration is loaded
         ChangeChecks.prepareAll()
         // false also when there is no entity type yet (no publication, no built-in entity evaluator): the errors are logged
@@ -135,7 +138,6 @@ object ServerlessNlpLauncher {
      */
     fun start(port: Int = intProperty("tock_serverless_port", System.getenv("PORT")?.toIntOrNull() ?: 8080)): ServerlessHttpServer {
         ServerlessRequestHandler.configure(null)
-        initEncryptor()
         install()
         return ServerlessHttpServer(port).start().also {
             logger.info { "serverless NLP API listening on ${it.port}" }

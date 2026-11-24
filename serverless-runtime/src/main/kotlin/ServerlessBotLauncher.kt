@@ -76,15 +76,14 @@ object ServerlessBotLauncher {
     }
 
     /**
-     * Installs the registered bots, then starts the HTTP server on [port] (`tock_serverless_port`, or `PORT`
-     * as set by Cloud Run and the Lambda Web Adapter, 8080 by default).
+     * Installs the registered bots, without HTTP server: for a function runtime that calls
+     * [ServerlessRequestHandler] itself (see [ai.tock.serverless.lambda.LambdaHandler]).
      * With [queueing], the webhooks are acknowledged at once and processed when the queue delivers them.
      */
-    fun start(
-        port: Int = intProperty("tock_serverless_port", System.getenv("PORT")?.toIntOrNull() ?: 8080),
+    fun install(
         createApplicationIfNotExists: Boolean = false,
         queueing: RequestQueueing? = null,
-    ): ServerlessHttpServer {
+    ) {
         ServerlessRequestHandler.configure(queueing)
         // as BotVerticle: the obfuscators, and the labels of the default namespace in the cache of the translator
         initEncryptor()
@@ -95,6 +94,18 @@ object ServerlessBotLauncher {
             ServerlessBotServer.registerRoutes("serve_files", UploadedFilesService.routes())
         }
         BotRepository.installBots(emptyList(), createApplicationIfNotExists)
+    }
+
+    /**
+     * Installs the registered bots (see [install]), then starts the HTTP server on [port] (`tock_serverless_port`,
+     * or `PORT` as set by Cloud Run and the Lambda Web Adapter, 8080 by default).
+     */
+    fun start(
+        port: Int = intProperty("tock_serverless_port", System.getenv("PORT")?.toIntOrNull() ?: 8080),
+        createApplicationIfNotExists: Boolean = false,
+        queueing: RequestQueueing? = null,
+    ): ServerlessHttpServer {
+        install(createApplicationIfNotExists, queueing)
         return ServerlessHttpServer(port).start().also {
             logger.info { "serverless bots listening on ${it.port}: ${ServerlessBotServer.serviceIdentifiers}" }
         }

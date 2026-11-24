@@ -238,7 +238,12 @@ Les DAO DynamoDB n'ont pas de change stream : sans ce lot, une instance chaude n
    - Seules ces deux tâches sont sur le chemin d'exécution ; les workers de build, le nettoyage des modèles, le crawler de TTL des phrases, les datasets et la base de connaissances tournent dans l'admin ou les workers, qui restent sur Vert.x.
    - Limite : les statistiques i18n accumulées en mémoire sont perdues si l'instance est arrêtée avant le passage suivant de `translator_statscache`.
 4. Images tock-docker : ajouter les modules de publication et de recopie (le stockage NLP Dynamo suit automatiquement) et les modules S3 à l'image de l'admin ; créer l'image du runtime serverless.
-5. Adaptateur Lambda natif, ou Lambda Web Adapter devant `ServerlessHttpServer`, avec SnapStart.
+5. **Point d'entrée Lambda natif (fait).**
+   - `ai.tock.serverless.lambda.LambdaHandler::handleRequest(InputStream, OutputStream)`, sans les bibliothèques Lambda ni le Web Adapter : requêtes HTTP d'une function URL ou d'une API Gateway HTTP API (format 2.0, cookies, corps en base 64), lots SQS (rejeu par la file des webhooks, échecs partiels `batchItemFailures`), événements EventBridge Scheduler `{"tock_task": "<nom>"}` (tâche lancée sans jeton, l'appel étant authentifié par IAM, et attendue avant la réponse).
+   - SPI `ServerlessApplication` (ServiceLoader) : le projet y compose son process ; elle est installée une fois, à l'initialisation de la classe, donc avant l'instantané SnapStart. `ServerlessBotLauncher.install()` et `ServerlessNlpLauncher.install()` installent sans serveur HTTP.
+   - Tests : les trois types d'événements (contrôle de la route, de la tâche et du lot avec un rejeu en échec).
+   - Le Web Adapter devant `ServerlessHttpServer` reste possible, et c'est le mode de Cloud Run.
+   - Non fait : l'API Gateway REST (format 1.0), et les hooks CRaC de SnapStart (les connexions HTTP gardées dans l'instantané peuvent être fermées à la restauration ; à vérifier lors de l'essai réel).
 6. Essai réel sur Cloud Run (facturation par instance, minimum 0) et sur Lambda, puis relancer `SpikeBenchmark` contre un vrai AWS.
 
 ### E. Autres connecteurs

@@ -80,25 +80,49 @@ object ServerlessRequestHandler {
      * Checks the changes of the storages without change stream ([ChangeChecks]), dispatches [request] to the
      * routes of the connectors, or runs a periodic task, then waits for the work it started.
      */
-    fun process(request: HttpRequest): HttpResponse {
+    fun process(request: HttpRequest): HttpResponse =
+        tracked("${request.method} ${request.path}") {
+            if (request.path.startsWith("$tasksPath/") && request.method == HttpMethod.POST) {
+                runTask(request)
+            } else {
+                ServerlessBotServer.dispatch(request)
+            }
+        }
+
+    /**
+     * Runs the periodic task [name], triggered by a scheduler that the platform authenticates (an EventBridge
+     * Scheduler event of AWS Lambda): no token is checked. 404 if the task is unknown.
+     */
+    fun runScheduledTask(name: String): HttpResponse =
+        tracked("task $name") {
+            val task = executor.periodicTasks[name]
+            if (task == null) {
+                HttpResponse.status(404)
+            } else {
+                executor.executeBlocking(task)
+                HttpResponse.status(202)
+            }
+        }
+
+    /** Checks the changes, runs [block], then waits for the work it started. */
+    private fun tracked(
+        description: String,
+        block: suspend () -> HttpResponse,
+    ): HttpResponse {
         val work = RequestWork()
         val response =
             work.runTracked {
                 runBlocking(RequestWork.current.asContextElement(work)) {
                     // the storages without change stream: the configuration published since the last request
                     ChangeChecks.runAll()
-                    if (request.path.startsWith("$tasksPath/") && request.method == HttpMethod.POST) {
-                        runTask(request)
-                    } else {
-                        ServerlessBotServer.dispatch(request)
-                    }
+                    block()
                 }
             }
         return try {
             work.awaitIdle(workTimeoutMs)
             response
         } catch (e: TimeoutException) {
-            logger.error(e) { "the work of ${request.method} ${request.path} did not end in $workTimeoutMs ms" }
+            logger.error(e) { "the work of $description did not end in $workTimeoutMs ms" }
             response
         }
     }
