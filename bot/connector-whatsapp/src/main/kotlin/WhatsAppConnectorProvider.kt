@@ -43,7 +43,7 @@ internal object WhatsAppConnectorProvider : ConnectorProvider {
                 parameters.getValue(WHATS_APP_URL),
                 parameters.getValue(LOGIN),
                 parameters.getValue(PASSWORD),
-                createRequestFilter(connectorConfiguration),
+                createHttpRequestFilter(connectorConfiguration),
             )
         }
     }
