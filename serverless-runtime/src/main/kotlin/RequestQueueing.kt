@@ -22,6 +22,7 @@ import ai.tock.shared.http.HttpResponse
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.time.Duration
 import java.util.Base64
@@ -86,7 +87,8 @@ class RequestQueueing(
         }
         val processed =
             try {
-                process(request.toHttpRequest()).status < 500
+                // a streamed response is drained: its work is awaited at its end
+                process(request.toHttpRequest()).also { response -> if (response.stream != null) runBlocking { response.bufferedBody() } }.status < 500
             } catch (e: Exception) {
                 logger.error(e) { "${request.path} ${request.id} failed" }
                 false

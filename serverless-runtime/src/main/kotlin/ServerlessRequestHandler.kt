@@ -118,13 +118,19 @@ object ServerlessRequestHandler {
                     block()
                 }
             }
-        return try {
-            work.awaitIdle(workTimeoutMs)
-            response
-        } catch (e: TimeoutException) {
-            logger.error(e) { "the work of $description did not end in $workTimeoutMs ms" }
-            response
+        val awaitWork = {
+            try {
+                work.awaitIdle(workTimeoutMs)
+            } catch (e: TimeoutException) {
+                logger.error(e) { "the work of $description did not end in $workTimeoutMs ms" }
+            }
         }
+        // a streamed response is fed by the work: it is awaited once the stream has ended
+        if (response.stream != null) {
+            return response.afterStream { awaitWork() }
+        }
+        awaitWork()
+        return response
     }
 
     private fun runTask(request: HttpRequest): HttpResponse {

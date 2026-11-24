@@ -20,6 +20,7 @@ import ai.tock.shared.http.HttpMethod
 import ai.tock.shared.http.HttpRequest
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.net.InetSocketAddress
 import java.net.URLDecoder
@@ -70,7 +71,19 @@ class ServerlessHttpServer(
                     )
                 }
             response.headers.forEach { (name, values) -> values.forEach { exchange.responseHeaders.add(name, it) } }
-            if (response.body.isEmpty()) {
+            val stream = response.stream
+            if (stream != null) {
+                // chunked: each chunk is flushed, the server-sent events reach the client at once
+                exchange.sendResponseHeaders(response.status, 0)
+                exchange.responseBody.use { output ->
+                    runBlocking {
+                        stream { chunk ->
+                            output.write(chunk)
+                            output.flush()
+                        }
+                    }
+                }
+            } else if (response.body.isEmpty()) {
                 exchange.sendResponseHeaders(response.status, -1)
             } else {
                 exchange.sendResponseHeaders(response.status, response.body.size.toLong())

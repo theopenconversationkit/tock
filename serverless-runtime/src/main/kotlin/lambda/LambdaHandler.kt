@@ -25,6 +25,7 @@ import ai.tock.shared.http.HttpResponse
 import ai.tock.shared.property
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.io.InputStream
 import java.io.OutputStream
@@ -130,6 +131,8 @@ class LambdaHandler {
 
     /** The response of the payload format 2.0: the body in base 64, the header values joined. */
     internal fun toEvent(response: HttpResponse): Map<String, Any> {
+        // a buffered response: the chunks of a stream are sent at its end
+        val body = runBlocking { response.bufferedBody() }
         val setCookies =
             response.headers.entries
                 .filter { it.key.equals("Set-Cookie", ignoreCase = true) }
@@ -138,7 +141,7 @@ class LambdaHandler {
             "statusCode" to response.status,
             "headers" to response.headers.filterKeys { !it.equals("Set-Cookie", ignoreCase = true) }.mapValues { it.value.joinToString(",") },
             "cookies" to setCookies,
-            "body" to Base64.getEncoder().encodeToString(response.body),
+            "body" to Base64.getEncoder().encodeToString(body),
             "isBase64Encoded" to true,
         )
     }
