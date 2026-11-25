@@ -48,7 +48,7 @@ internal interface OpenAIResponder {
     /** Answers an empty 200. */
     fun empty()
 
-    /** Fails the request (500). */
+    /** Fails the request: a 500, or an aborted stream once it has started. */
     fun fail(throwable: Throwable)
 }
 
@@ -78,7 +78,7 @@ internal class HttpOpenAIResponder(
     }
 
     override fun fail(throwable: Throwable) {
-        response.complete(HttpResponse.text("Internal Server Error", 500))
+        response.fail(throwable)
     }
 }
 

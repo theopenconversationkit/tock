@@ -17,9 +17,11 @@
 package ai.tock.shared.http
 
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ClosedReceiveChannelException
-import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.channels.ChannelResult
+import kotlinx.coroutines.selects.onTimeout
+import kotlinx.coroutines.selects.select
 import java.nio.charset.StandardCharsets
 import java.time.Duration
 
@@ -28,7 +30,7 @@ import java.time.Duration
  * [startStream] opens a streamed response that [write] feeds and [close] ends. The route returns [await].
  *
  * The first call wins: a [complete] after [startStream] writes its body as the last chunk, as a Vert.x response
- * ended after its headers were sent.
+ * ended after its headers were sent, and a [fail] after [startStream] aborts the stream.
  */
 class DeferredHttpResponse {
     private val response = CompletableDeferred<HttpResponse>()
@@ -62,26 +64,41 @@ class DeferredHttpResponse {
     ) {
         if (streaming || response.isCompleted) return
         streaming = true
+        val keepAliveChunk = keepAlive?.toByteArray(StandardCharsets.UTF_8)
         response.complete(
             HttpResponse(status, headers) { writer ->
                 prelude?.let { writer.write(it.toByteArray(StandardCharsets.UTF_8)) }
                 while (true) {
-                    val chunk =
-                        try {
-                            if (keepAlive == null) {
-                                chunks.receive()
-                            } else {
-                                withTimeoutOrNull(keepAliveDelay.toMillis()) { chunks.receive() }
-                                    ?: keepAlive.toByteArray(StandardCharsets.UTF_8)
+                    val result =
+                        if (keepAliveChunk == null) {
+                            chunks.receiveCatching()
+                        } else {
+                            receiveOrKeepAlive(keepAliveDelay) ?: run {
+                                writer.write(keepAliveChunk)
+                                null
                             }
-                        } catch (_: ClosedReceiveChannelException) {
-                            break
-                        }
-                    writer.write(chunk)
+                        } ?: continue
+                    if (result.isClosed) {
+                        // a stream ended by fail: the server aborts the response
+                        result.exceptionOrNull()?.let { throw it }
+                        break
+                    }
+                    writer.write(result.getOrThrow())
                 }
             },
         )
     }
+
+    /**
+     * Waits for the next chunk, or for [delay] without chunk (null). Unlike a `receive` cancelled by a timeout,
+     * the select never drops a chunk that arrives as the delay expires.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun receiveOrKeepAlive(delay: Duration): ChannelResult<ByteArray>? =
+        select {
+            chunks.onReceiveCatching { it }
+            onTimeout(delay.toMillis()) { null }
+        }
 
     /** True once [startStream] has been called. */
     val isStreaming: Boolean get() = streaming
@@ -94,6 +111,22 @@ class DeferredHttpResponse {
     /** Ends the stream. */
     fun close() {
         chunks.close()
+    }
+
+    /**
+     * Fails the response: answers [failure] if nothing has been sent yet, or aborts the stream with [cause]
+     * (the client then sees an interrupted response rather than a normal end).
+     */
+    @Synchronized
+    fun fail(
+        cause: Throwable,
+        failure: HttpResponse = HttpResponse.text("Internal Server Error", 500),
+    ) {
+        if (streaming) {
+            chunks.close(cause)
+        } else {
+            response.complete(failure)
+        }
     }
 
     suspend fun await(): HttpResponse = response.await()

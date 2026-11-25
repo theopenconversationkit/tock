@@ -26,11 +26,13 @@ import kotlinx.coroutines.CoroutineScope
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.io.IOException
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class VertxHttpRoutesTest {
     private lateinit var vertx: Vertx
@@ -48,6 +50,12 @@ class VertxHttpRoutesTest {
                     ).withHeader("X-Tock", "1")
             }
             get("/failure") { error("boom") }
+            get("/stream-failure") {
+                HttpResponse(200) { writer ->
+                    writer.write("data: a\n\n".toByteArray())
+                    error("boom")
+                }
+            }
         }
 
     @BeforeEach
@@ -100,5 +108,12 @@ class VertxHttpRoutesTest {
             client.send(HttpRequest.newBuilder(URI("http://localhost:$port/failure")).build(), BodyHandlers.ofString())
 
         assertEquals(500, response.statusCode())
+    }
+
+    @Test
+    fun `GIVEN a stream that fails WHEN it is read THEN the response is interrupted rather than ended normally`() {
+        assertFailsWith<IOException> {
+            client.send(HttpRequest.newBuilder(URI("http://localhost:$port/stream-failure")).build(), BodyHandlers.ofString())
+        }
     }
 }

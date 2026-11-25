@@ -26,8 +26,11 @@ import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.coroutines.coAwait
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
 import ai.tock.shared.http.HttpMethod as TockHttpMethod
 import io.vertx.core.http.HttpMethod as VertxHttpMethod
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * Mounts [routes] on this router.
@@ -48,7 +51,12 @@ fun Router.install(
                 try {
                     context.sendStreamed(route.handler(context.toHttpRequest()))
                 } catch (t: Throwable) {
-                    context.fail(t)
+                    if (context.response().headWritten()) {
+                        // a failed stream: sendStreamed has already aborted the response
+                        logger.error(t) { "streamed response failed" }
+                    } else {
+                        context.fail(t)
+                    }
                 }
             }
         }
@@ -82,6 +90,7 @@ fun RoutingContext.send(response: HttpResponse) {
 
 /**
  * Sends a server independent [HttpResponse], whose [HttpResponse.stream] is written chunk by chunk.
+ * A stream that fails resets the connection, so that the client sees an interrupted response.
  */
 suspend fun RoutingContext.sendStreamed(response: HttpResponse) {
     val stream = response.stream ?: return send(response)
@@ -90,7 +99,9 @@ suspend fun RoutingContext.sendStreamed(response: HttpResponse) {
     response.headers.forEach { (name, values) -> vertxResponse.putHeader(name, values) }
     try {
         stream { chunk -> vertxResponse.write(Buffer.buffer(chunk)).coAwait() }
-    } finally {
-        if (!vertxResponse.ended() && !vertxResponse.closed()) vertxResponse.end()
+    } catch (t: Throwable) {
+        if (!vertxResponse.ended() && !vertxResponse.closed()) vertxResponse.reset()
+        throw t
     }
+    if (!vertxResponse.ended() && !vertxResponse.closed()) vertxResponse.end()
 }

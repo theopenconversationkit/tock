@@ -20,12 +20,14 @@ import ai.tock.shared.security.auth.spi.HttpWebSecurityContext
 import ai.tock.shared.security.web.HttpWebSecurityCookies
 import ai.tock.shared.security.web.HttpWebSecurityEncryptedCookies
 import ai.tock.shared.security.web.cookie
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -107,6 +109,38 @@ class HttpWebTest {
             streamed.complete(HttpResponse.text("end"))
             val text = body.await()
             assertTrue(text.startsWith("start;a;ping;") && text.endsWith("b;end"), text)
+        }
+    }
+
+    @Test
+    fun `GIVEN a stream whose keep-alive delay expires as chunks arrive WHEN it is read THEN no chunk is lost`() {
+        runBlocking {
+            val streamed = DeferredHttpResponse()
+            streamed.startStream(keepAlive = ".", keepAliveDelay = Duration.ofMillis(1))
+            val body = async(Dispatchers.Default) { String(streamed.await().bufferedBody()) }
+            val expected = (1..2000).map { "<$it>" }
+            for ((index, chunk) in expected.withIndex()) {
+                streamed.write(chunk)
+                if (index % 10 == 0) delay(1)
+            }
+            streamed.close()
+            val chunks = Regex("<\\d+>").findAll(body.await()).map { it.value }.toList()
+            assertEquals(expected, chunks)
+        }
+    }
+
+    @Test
+    fun `GIVEN a started stream WHEN the response fails THEN the stream is aborted`() {
+        runBlocking {
+            val streamed = DeferredHttpResponse()
+            streamed.startStream(prelude = "start;")
+            streamed.write("a;")
+            streamed.fail(IllegalStateException("bot failure"))
+            assertFailsWith<IllegalStateException> { streamed.await().bufferedBody() }
+
+            val notStarted = DeferredHttpResponse()
+            notStarted.fail(IllegalStateException("bot failure"))
+            assertEquals(500, notStarted.await().status)
         }
     }
 }

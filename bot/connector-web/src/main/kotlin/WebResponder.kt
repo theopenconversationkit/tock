@@ -37,7 +37,7 @@ internal interface WebResponder {
     /** Sends a server-sent event (and starts the events if needed). */
     fun sse(data: String)
 
-    /** Fails the request (500). */
+    /** Fails the request: a 500, or an aborted stream once it has started. */
     fun fail(throwable: Throwable)
 }
 
@@ -58,7 +58,7 @@ internal class HttpWebResponder(
 
     override fun fail(throwable: Throwable) {
         logger.error(throwable) { "web request failed" }
-        response.complete(HttpResponse.text("Internal Server Error", 500))
+        response.fail(throwable)
     }
 }
 
