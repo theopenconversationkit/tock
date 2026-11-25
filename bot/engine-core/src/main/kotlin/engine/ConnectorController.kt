@@ -132,11 +132,14 @@ interface ConnectorController {
     /**
      * Registers routes declared independently of the server: unlike [registerServices], they also run where
      * there is no Vert.x router (a serverless function). A `<serviceIdentifier>/healthcheck` route is added.
+     *
+     * By default, the routes are installed on the Vert.x router of [coRegisterServices], so that a controller
+     * written before this method keeps working with Vert.x.
      */
     fun registerRoutes(
         serviceIdentifier: String,
         routes: HttpRoutes,
-    ): Unit = throw UnsupportedOperationException("${javaClass.name} does not support HttpRoutes")
+    ): Unit = VertxRoutesFallback.register(this, serviceIdentifier, routes)
 
     /**
      * Unregister services when [Connector] is unregistered.

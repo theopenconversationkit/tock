@@ -31,6 +31,7 @@ class BotEngineCoreBytecodeTest {
         mapOf(
             "ai/tock/bot/connector/ConnectorProvider" to "createRequestFilter returns the Vert.x RequestFilter of tock-shared",
             "ai/tock/bot/engine/TockConnectorController" to "registerServices and coRegisterServices: the Router API of the connectors",
+            "ai/tock/bot/engine/VertxRoutesFallback" to "the default registerRoutes of the controllers that only have a Vert.x router",
             "ai/tock/bot/engine/VertxHealthchecks" to "the healthcheck handlers, loaded by the Vert.x server only",
             "ai/tock/bot/engine/WebSocketController" to "setPushHandler, called by the Vert.x server only",
             "ai/tock/bot/engine/config/UploadedFilesService" to "configure and the file download handler: Vert.x routes",
