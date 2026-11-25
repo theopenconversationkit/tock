@@ -22,6 +22,7 @@ import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.math.BigInteger
+import java.security.MessageDigest
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -52,16 +53,20 @@ class IadvizeSecurity(
         val xIAdvizeSignatureComputed = calculateHmacSha256(secretToken, payloads)
         val xIAdvizeSignatureHeader = context.request().getHeader(HEADER_NAME)
 
-        if (xIAdvizeSignatureComputed != xIAdvizeSignatureHeader) {
-            val error =
-                mapper.writeValueAsString(
-                    Error(secretToken, payloads, xIAdvizeSignatureComputed, xIAdvizeSignatureHeader),
-                )
+        if (!isSameSignature(xIAdvizeSignatureComputed, xIAdvizeSignatureHeader)) {
+            // neither the secret nor the expected signature are logged: whoever reads the logs could sign requests
+            val error = mapper.writeValueAsString(Error(payloads, xIAdvizeSignatureHeader))
 
             logger.error { "$ERROR_MESSAGE $error" }
             throw BadRequestException(ERROR_MESSAGE)
         }
     }
+
+    // compared in constant time, so that the response time does not reveal the expected signature
+    private fun isSameSignature(
+        computed: String,
+        received: String?,
+    ): Boolean = received != null && MessageDigest.isEqual(computed.toByteArray(Charsets.UTF_8), received.toByteArray(Charsets.UTF_8))
 
     private fun calculateHmacSha256(
         secretKey: String,
@@ -76,9 +81,10 @@ class IadvizeSecurity(
     }
 }
 
+/**
+ * What is logged when the signature of an iAdvize request is invalid.
+ */
 data class Error(
-    val secretToken: String,
     val payloads: String,
-    val xIAdvizeSignatureComputed: String,
-    val xIAdvizeSignatureHeader: String,
+    val xIAdvizeSignatureHeader: String?,
 )
