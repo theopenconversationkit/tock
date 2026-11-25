@@ -33,6 +33,7 @@ from gen_ai_orchestrator.services.vector_store_inspection.vector_store_inspectio
     _compress,
     _fallback_detail,
     _fallback_reason,
+    _result,
     search,
 )
 
@@ -64,6 +65,18 @@ def _document(document_id: str, chunk: str = '1/1') -> Document:
         page_content=f"{title}\n\nContent {document_id}",
         metadata={'id': document_id, 'chunk': chunk, 'title': title},
     )
+
+
+@pytest.mark.parametrize(('source_id', 'expected'), [('parent', 'parent'), ('', 'original'), (None, 'original')])
+def test_inspection_resolves_parent_without_changing_chunk_identifier(source_id, expected):
+    document = _document('original', '2/3')
+    if source_id is not None:
+        document.metadata['source_id'] = source_id
+
+    result = _result(Candidate(document=document), ChunkOutcome.KEPT, pinned=True)
+
+    assert result.document_id == expected
+    assert result.chunk_id == 'original:2/3'
 
 
 def test_search_request_rejects_hybrid_search_without_keywords():

@@ -98,6 +98,9 @@ from gen_ai_orchestrator.services.langchain.rag_response_builder import (
 RRF_K = 60
 NEAR_EMPTY_LENGTH = 50
 
+# Some indexes store the parent document ID separately from the chunk ID.
+DOCUMENT_ID_SQL = "COALESCE(NULLIF(e.cmetadata->>'source_id', ''), e.cmetadata->>'id')"
+
 CONTENT_SQL = """
 CASE
     WHEN COALESCE(e.cmetadata->>'title', '') <> ''
@@ -156,7 +159,7 @@ def _normalise_datetime(value: Optional[str]) -> str:
 
 
 def _document_id(document: Document) -> str:
-    return str(document.metadata.get('id') or '')
+    return str(document.metadata.get('source_id') or document.metadata.get('id') or '')
 
 
 def _pg_factory(setting, index_name: str, embedding_function) -> PGVectorFactory:
@@ -233,13 +236,12 @@ async def get_indexes(
     )
     rows = await _fetch_all(
         factory.pool.async_engine,
-        text("""
+        text(f"""
             SELECT
                 c.name AS index_name,
                 COALESCE(MAX(e.cmetadata->>'index_session_id'), '') AS index_session_id,
                 COALESCE(MAX(e.cmetadata->>'index_datetime'), '') AS index_datetime,
-                COUNT(DISTINCT e.cmetadata->>'id')
-                    FILTER (WHERE e.cmetadata->>'id' IS NOT NULL) AS document_count,
+                COUNT(DISTINCT {DOCUMENT_ID_SQL}) AS document_count,
                 COUNT(e.id) AS chunk_count
             FROM langchain_pg_collection c
             LEFT JOIN langchain_pg_embedding e ON e.collection_id = c.uuid
@@ -268,7 +270,7 @@ def _documents_page_statement() -> TextClause:
     return text(f"""
         WITH chunks AS (
             SELECT
-                e.cmetadata->>'id' AS document_id,
+                {DOCUMENT_ID_SQL} AS document_id,
                 COALESCE(e.cmetadata->>'title', '') AS title,
                 COALESCE(
                     NULLIF(e.cmetadata->>'source', ''),
@@ -280,7 +282,7 @@ def _documents_page_statement() -> TextClause:
             FROM langchain_pg_embedding e
             JOIN langchain_pg_collection c ON c.uuid = e.collection_id
             WHERE c.name = :index_name
-              AND e.cmetadata->>'id' IS NOT NULL
+              AND {DOCUMENT_ID_SQL} IS NOT NULL
         ), documents AS (
             SELECT
                 document_id,
@@ -332,7 +334,7 @@ def _stats_statement() -> TextClause:
     return text(f"""
         WITH chunks AS (
             SELECT
-                e.cmetadata->>'id' AS document_id,
+                {DOCUMENT_ID_SQL} AS document_id,
                 COALESCE(e.cmetadata->>'title', '') AS title,
                 COALESCE(
                     NULLIF(e.cmetadata->>'source', ''),
@@ -343,7 +345,7 @@ def _stats_statement() -> TextClause:
             FROM langchain_pg_embedding e
             JOIN langchain_pg_collection c ON c.uuid = e.collection_id
             WHERE c.name = :index_name
-              AND e.cmetadata->>'id' IS NOT NULL
+              AND {DOCUMENT_ID_SQL} IS NOT NULL
         ), documents AS (
             SELECT
                 document_id,
@@ -414,14 +416,14 @@ async def get_documents(
     document_ids = [row['document_id'] for row in page_rows]
     chunks_by_document: dict[str, list[InspectedChunk]] = {}
     if request.include_chunks and document_ids:
-        chunks_statement = text("""
+        chunks_statement = text(f"""
             SELECT e.id, e.document, e.cmetadata
             FROM langchain_pg_embedding e
             JOIN langchain_pg_collection c ON c.uuid = e.collection_id
             WHERE c.name = :index_name
-              AND e.cmetadata->>'id' IN :document_ids
+              AND {DOCUMENT_ID_SQL} IN :document_ids
             ORDER BY
-                e.cmetadata->>'id',
+                {DOCUMENT_ID_SQL},
                 CASE
                     WHEN e.cmetadata->>'chunk' ~ '^[0-9]+/'
                     THEN split_part(e.cmetadata->>'chunk', '/', 1)::int

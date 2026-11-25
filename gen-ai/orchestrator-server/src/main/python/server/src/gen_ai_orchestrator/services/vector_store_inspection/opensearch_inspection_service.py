@@ -31,6 +31,11 @@ from gen_ai_orchestrator.routers.responses.vector_store_inspection_responses imp
 )
 
 
+def _keyword_field(fields, key):
+    field = f"metadata.{key}"
+    return field if fields.get(key, {}).get("type") == "keyword" else f"{field}.keyword"
+
+
 async def indexes(factory, prefix):
     def read():
         from opensearchpy.exceptions import NotFoundError
@@ -41,55 +46,68 @@ async def indexes(factory, prefix):
 
         client = factory.get_vector_store().client
         try:
-            names = client.indices.get(index=prefix + '*')
+            names = client.indices.get(index=prefix + "*")
         except NotFoundError:
             return []
         rows = []
         for name in names:
             if not _is_allowed_index(name, prefix):
                 continue
-            id_mapping = (
+            fields = (
                 names[name]
-                .get('mappings', {})
-                .get('properties', {})
-                .get('metadata', {})
-                .get('properties', {})
-                .get('id', {})
+                .get("mappings", {})
+                .get("properties", {})
+                .get("metadata", {})
+                .get("properties", {})
             )
-            id_field = (
-                'metadata.id'
-                if id_mapping.get('type') == 'keyword'
-                else 'metadata.id.keyword'
-            )
+
+            cardinality = {"field": _keyword_field(fields, "id")}
+            if "source_id" in fields:
+                cardinality = {
+                    "script": {
+                        "source": """
+                        if (doc.containsKey(params.source) && doc[params.source].size() > 0) {
+                            String source = doc[params.source].value;
+                            if (!source.isEmpty()) return source;
+                        }
+                        return doc.containsKey(params.id) && doc[params.id].size() > 0
+                            ? doc[params.id].value : null;
+                    """,
+                        "params": {
+                            "source": _keyword_field(fields, "source_id"),
+                            "id": _keyword_field(fields, "id"),
+                        },
+                    }
+                }
             response = client.search(
                 index=name,
                 body={
-                    'size': 1,
-                    'track_total_hits': True,
-                    'aggs': {'documents': {'cardinality': {'field': id_field}}},
+                    "size": 1,
+                    "track_total_hits": True,
+                    "aggs": {"documents": {"cardinality": cardinality}},
                 },
             )
-            hits = response['hits']
-            total = hits['total']
-            count = total['value'] if isinstance(total, dict) else total
+            hits = response["hits"]
+            total = hits["total"]
+            count = total["value"] if isinstance(total, dict) else total
             metadata = (
-                hits['hits'][0]['_source'].get('metadata', {}) if hits['hits'] else {}
+                hits["hits"][0]["_source"].get("metadata", {}) if hits["hits"] else {}
             )
             rows.append(
                 VectorStoreIndexDescription(
                     index_name=name,
                     index_session_id=metadata.get(
-                        'index_session_id', name[len(prefix) :]
+                        "index_session_id", name[len(prefix) :]
                     ),
-                    index_datetime=str(metadata.get('index_datetime', '')),
-                    document_count=int(response['aggregations']['documents']['value']),
+                    index_datetime=str(metadata.get("index_datetime", "")),
+                    document_count=int(response["aggregations"]["documents"]["value"]),
                     chunk_count=int(count),
                 )
             )
         # Same order as the PGVector listing: most recently fed index first, undated ones last,
         # ties broken by name. Two stable sorts: name ascending, then datetime descending.
         rows.sort(key=lambda row: row.index_name)
-        rows.sort(key=lambda row: row.index_datetime or '', reverse=True)
+        rows.sort(key=lambda row: row.index_datetime or "", reverse=True)
         return rows
 
     return IndexListResponse(indexes=await asyncio.to_thread(read))
