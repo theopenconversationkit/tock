@@ -18,38 +18,22 @@ package ai.tock.bot.connector.alcmeon
 
 import io.vertx.core.Handler
 import io.vertx.ext.web.RoutingContext
-import org.apache.commons.codec.binary.Hex
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
 
+/**
+ * The Vert.x handler of the signature: the connector uses [AlcmeonSignatureVerifier], which needs no server.
+ */
 class AlcmeonAuthorisationHandler(
     secret: String,
 ) : Handler<RoutingContext> {
-    private val signingKey =
-        SecretKeySpec(
-            secret.toByteArray(),
-            "HmacSHA256",
-        )
-    private val mac = Mac.getInstance("HmacSHA256")
-
-    init {
-        mac.init(signingKey)
-    }
+    private val verifier = AlcmeonSignatureVerifier(secret)
 
     override fun handle(routingContext: RoutingContext) {
         val alcmeonWebhookSignature = routingContext.request().getHeader("X-Alcmeon-Webhook-Signature")
 
-        val normalisedPath = routingContext.normalizedPath()
-        val requestPayload = routingContext.body().asString()
-
-        val signature = calculateSignature("$normalisedPath $requestPayload")
-
-        if (alcmeonWebhookSignature == signature) {
+        if (verifier.verify(routingContext.normalizedPath(), routingContext.body().asString() ?: "", alcmeonWebhookSignature)) {
             routingContext.next()
         } else {
             routingContext.response().setStatusCode(403).end("Invalid Alcmeon webhook signature")
         }
     }
-
-    private fun calculateSignature(payload: String): String = String(Hex().encode(mac.doFinal(payload.toByteArray())))
 }

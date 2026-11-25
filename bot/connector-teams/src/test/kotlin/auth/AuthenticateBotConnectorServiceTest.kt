@@ -110,7 +110,7 @@ class AuthenticateBotConnectorServiceTest {
         val headers: MultiMap = MultiMap.caseInsensitiveMultiMap().add("Authorization", bearerAuthorization)
 
         // check that it does not fail
-        authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, activity)
+        authenticateBotConnectorService.checkRequestValidity(jwkHandler, { headers[it] }, activity)
     }
 
     @Test
@@ -118,7 +118,7 @@ class AuthenticateBotConnectorServiceTest {
         val headers: MultiMap = MultiMap.caseInsensitiveMultiMap()
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(jwkHandler, { headers[it] }, activity)
         }
     }
 
@@ -128,7 +128,7 @@ class AuthenticateBotConnectorServiceTest {
         val headers: MultiMap = MultiMap.caseInsensitiveMultiMap().add("Authorization", bearerAuthorization)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(jwkHandler, { headers[it] }, activity)
         }
     }
 
@@ -155,7 +155,7 @@ class AuthenticateBotConnectorServiceTest {
         val headers: MultiMap = MultiMap.caseInsensitiveMultiMap().add("Authorization", bearerAuthorization)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(jwkHandler, { headers[it] }, activity)
         }
     }
 
@@ -183,7 +183,7 @@ class AuthenticateBotConnectorServiceTest {
         val headers: MultiMap = MultiMap.caseInsensitiveMultiMap().add("Authorization", bearerAuthorization)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(jwkHandler, { headers[it] }, activity)
         }
     }
 
@@ -211,7 +211,7 @@ class AuthenticateBotConnectorServiceTest {
         val headers: MultiMap = MultiMap.caseInsensitiveMultiMap().add("Authorization", bearerAuthorization)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(jwkHandler, { headers[it] }, activity)
         }
     }
 
@@ -239,7 +239,7 @@ class AuthenticateBotConnectorServiceTest {
         val headers: MultiMap = MultiMap.caseInsensitiveMultiMap().add("Authorization", bearerAuthorization)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(jwkHandler, { headers[it] }, activity)
         }
     }
 
@@ -262,7 +262,7 @@ class AuthenticateBotConnectorServiceTest {
         val headers: MultiMap = MultiMap.caseInsensitiveMultiMap().add("Authorization", bearerAuthorization)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(jwkHandler, { headers[it] }, activity)
         }
     }
 
@@ -285,7 +285,7 @@ class AuthenticateBotConnectorServiceTest {
         val headers: MultiMap = MultiMap.caseInsensitiveMultiMap().add("Authorization", bearerAuthorization)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, otherActivity)
+            authenticateBotConnectorService.checkRequestValidity(jwkHandler, { headers[it] }, otherActivity)
         }
     }
 
@@ -303,7 +303,7 @@ class AuthenticateBotConnectorServiceTest {
         val headers: MultiMap = MultiMap.caseInsensitiveMultiMap().add("Authorization", bearerAuthorization)
 
         // check that it does not fail
-        authenticateBotConnectorService.checkRequestValidity(jwkHandler, headers, activity)
+        authenticateBotConnectorService.checkRequestValidity(jwkHandler, { headers[it] }, activity)
     }
 
     @AfterAll

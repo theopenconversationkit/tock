@@ -39,20 +39,22 @@ import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.defaultLocale
+import ai.tock.shared.http.DeferredHttpResponse
+import ai.tock.shared.http.HttpCors
+import ai.tock.shared.http.HttpMethod
+import ai.tock.shared.http.HttpRequest
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
 import ai.tock.shared.property
-import ai.tock.shared.security.auth.spi.WebSecurityHandler
+import ai.tock.shared.security.auth.spi.HttpWebSecurity
+import ai.tock.shared.security.auth.spi.HttpWebSecurityContext
+import ai.tock.shared.security.web.HttpWebSecurityCookies
 import ai.tock.shared.serialization.readJson
 import ai.tock.shared.serialization.writeJson
-import ai.tock.shared.vertx.WebSecurityCookiesHandler
-import ai.tock.shared.vertx.setupSSE
 import com.aallam.openai.api.model.Model
 import com.aallam.openai.api.model.ModelId
-import io.vertx.core.http.HttpHeaders
-import io.vertx.core.http.HttpMethod.GET
-import io.vertx.core.http.HttpMethod.OPTIONS
-import io.vertx.core.http.HttpMethod.POST
-import io.vertx.ext.web.RoutingContext
-import io.vertx.ext.web.handler.CorsHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.util.Locale
 
@@ -63,113 +65,125 @@ internal const val OPEN_AI_CONNECTOR_ID = "openai"
  */
 val openAIConnectorType = ConnectorType(OPEN_AI_CONNECTOR_ID)
 
-private val corsPattern = property("tock_web_cors_pattern", ".*")
 private val sseEnabled = booleanProperty("tock_web_sse", false)
-private val supportUnstreamed = booleanProperty("tock_openai_support_unstreamed", false)
+internal val supportUnstreamed = booleanProperty("tock_openai_support_unstreamed", false)
 
 class OpenAIConnector internal constructor(
     val connectorId: String,
     val path: String,
-    private val webSecurityHandler: WebSecurityHandler,
+    private val security: OpenAIConnectorSecurity,
 ) : ConnectorBase(openAIConnectorType, setOf(CAROUSEL)) {
     companion object {
         private val logger = KotlinLogging.logger {}
         internal val defaultModel = Model(id = ModelId("tock"))
+        internal val corsPattern = property("tock_web_cors_pattern", ".*")
+        internal val corsHeaders =
+            setOf(
+                "Access-Control-Allow-Origin",
+                "Content-Type",
+                "X-Requested-With",
+                "Accept-Language",
+                "X-OpenWebUI-Chat-Id",
+                "X-OpenWebUI-User-Name",
+                "X-OpenWebUI-User-Id",
+                "X-OpenWebUI-User-Email",
+                "X-OpenWebUI-User-Role",
+            )
     }
 
     override fun register(controller: ConnectorController) {
-        controller.coRegisterServices(path) { router ->
-            logger.debug("deploy Open API connector services for root path $path ")
+        when (security) {
+            is OpenAIConnectorSecurity.Vertx -> OpenAIVertxServices.register(this, controller, security)
+            is OpenAIConnectorSecurity.Http -> controller.registerRoutes(path, routes(controller, security.security))
+        }
+    }
 
-            val corsHandler =
-                CorsHandler
-                    .create()
-                    .addOriginWithRegex(corsPattern)
-                    .allowedMethods(setOf(OPTIONS, GET, POST))
-                    .allowedHeader("Access-Control-Allow-Origin")
-                    .allowedHeader("Content-Type")
-                    .allowedHeader("X-Requested-With")
-                    .allowedHeader("Accept-Language")
-                    .allowedHeader("X-OpenWebUI-Chat-Id")
-                    .allowedHeader("X-OpenWebUI-User-Name")
-                    .allowedHeader("X-OpenWebUI-User-Id")
-                    .allowedHeader("X-OpenWebUI-User-Email")
-                    .allowedHeader("X-OpenWebUI-User-Role")
-                    // browsers do not send or save cookies unless credentials are allowed
-                    .allowCredentials(webSecurityHandler is WebSecurityCookiesHandler)
+    /**
+     * The routes of the OpenAI API. They answer as the former Vert.x routes did: the CORS rules and the security on
+     * every path, the models, and the chat completions in JSON or in server-sent events.
+     */
+    internal fun routes(
+        controller: ConnectorController,
+        security: HttpWebSecurity,
+    ): HttpRoutes {
+        logger.debug("deploy Open API connector services for root path $path ")
+        val cors =
+            HttpCors(
+                corsPattern,
+                setOf(HttpMethod.OPTIONS, HttpMethod.GET, HttpMethod.POST),
+                corsHeaders,
+                // browsers do not send or save cookies unless credentials are allowed
+                allowCredentials = security is HttpWebSecurityCookies,
+            )
+        val securityContext = HttpWebSecurityContext(connectorId, path)
 
-            router
-                .route("$path*")
-                .handler(corsHandler)
-                .handler(webSecurityHandler)
-
-            router.get("$path/health").handler { context ->
-                context
-                    .response()
-                    .end()
+        fun HttpRoutes.secured(
+            method: HttpMethod,
+            routePath: String,
+            handler: suspend (HttpRequest) -> HttpResponse,
+        ) = route(method, routePath) { request ->
+            cors.handle(request) {
+                val authentication =
+                    try {
+                        withContext(Dispatchers.IO) { security.authenticate(request, securityContext) }
+                    } catch (t: Throwable) {
+                        logger.error(t) { "the authentication failed" }
+                        return@handle HttpResponse.text("Internal Server Error", 500)
+                    }
+                authentication.setCookies.fold(handler(request)) { response, cookie -> response.withHeader("Set-Cookie", cookie) }
             }
+        }
 
-            router.get("$path/models").handler { context ->
-                val response =
-                    listOf(
-                        defaultModel,
-                    )
-                context
-                    .response()
-                    .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                    .end(writeJson(response))
-            }
-
-            router.get("$path/models/:modelId").handler { context ->
-                context
-                    .response()
-                    .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                    .end(writeJson(defaultModel))
-            }
-
-            router.post("$path/chat/completions").coHandler { context ->
-                val body = context.body()?.asString()
-                if (body == null) {
+        return HttpRoutes {
+            // the preflight requests
+            listOf(path, "$path/*").forEach { route(HttpMethod.OPTIONS, it) { request -> cors.handle(request) { HttpResponse.status(404) } } }
+            secured(HttpMethod.GET, "$path/health") { HttpResponse.status() }
+            secured(HttpMethod.GET, "$path/models") { json(writeJson(listOf(defaultModel))) }
+            secured(HttpMethod.GET, "$path/models/:modelId") { json(writeJson(defaultModel)) }
+            secured(HttpMethod.POST, "$path/chat/completions") { request ->
+                val response = DeferredHttpResponse()
+                val body = request.bodyAsString
+                if (body.isEmpty()) {
                     logger.warn { "null body for chat completion" }
-                    context.fail(500)
+                    HttpResponse.text("Internal Server Error", 500)
                 } else {
-                    handleRequest(controller, context, body)
+                    handleRequest(controller, body, request.header("X-OpenWebUI-Chat-Id"), request.header("Accept-Language"), HttpOpenAIResponder(response))
+                    response.await()
                 }
             }
         }
     }
 
-    private suspend fun handleRequest(
+    private fun json(body: String) = HttpResponse(headers = mapOf("Content-Type" to listOf("application/json")), body = body.toByteArray())
+
+    /** Handles a chat completion: the answer is sent by [responder]. */
+    internal suspend fun handleRequest(
         controller: ConnectorController,
-        context: RoutingContext,
         body: String,
+        chatId: String?,
+        acceptLanguage: String?,
+        responder: OpenAIResponder,
     ) {
         val timerData = BotRepository.requestTimer.start("openai_webhook")
         try {
             logger.debug { "Open AI request input : $body" }
             val request: ChatCompletionRequestWithStream = readJson(body)
             if (request.stream) {
-                val response = context.response()
-                response.setupSSE(addEndHandler = true, keepAlive = false)
+                responder.startStream()
             } else {
                 if (!supportUnstreamed) {
                     // TODO Open WebUI send a not streamed system prompt - for now just ignore
                     logger.debug { "ignore unstreamed message" }
-                    context.end()
+                    responder.empty()
                     return
                 }
             }
-            val chatId = context.request().getHeader("X-OpenWebUI-Chat-Id")
-            val locale =
-                context
-                    .request()
-                    .getHeader("Accept-Language")
-                    ?.let { Locale.forLanguageTag(it) } ?: defaultLocale
+            val locale = acceptLanguage?.let { Locale.forLanguageTag(it) } ?: defaultLocale
             val event = request.toEvent(connectorId, chatId)
-            handleEvent(connectorId, locale, event, controller, context, emptyMap(), DialogContext.EMPTY)
+            handleEvent(connectorId, locale, event, controller, responder, emptyMap(), DialogContext.EMPTY)
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
-            context.fail(t)
+            responder.fail(t)
         } finally {
             BotRepository.requestTimer.end(timerData)
         }
@@ -180,7 +194,7 @@ class OpenAIConnector internal constructor(
         locale: Locale,
         event: Event,
         controller: ConnectorController,
-        context: RoutingContext?,
+        responder: OpenAIResponder?,
         headersMetadata: Map<String, String>,
         transientDialogContext: DialogContext,
     ) {
@@ -188,7 +202,7 @@ class OpenAIConnector internal constructor(
             OpenAIConnectorCallback(
                 applicationId = applicationId,
                 locale = locale,
-                context = context,
+                responder = responder,
                 eventId = event.id.toString(),
                 streamedResponse = (event as? Action)?.metadata?.streamedResponse == true,
             )
@@ -228,7 +242,7 @@ class OpenAIConnector internal constructor(
                     parameters,
                 ),
             controller = controller,
-            context = null,
+            responder = null,
             headersMetadata = emptyMap(),
             transientDialogContext = transientContext,
         )

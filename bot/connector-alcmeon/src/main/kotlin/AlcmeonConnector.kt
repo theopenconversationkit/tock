@@ -38,53 +38,93 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.shared.Executor
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import io.vertx.core.Handler
 import io.vertx.ext.web.RoutingContext
+import kotlinx.coroutines.CompletableDeferred
 import mu.KotlinLogging
 import ai.tock.bot.connector.messenger.nlpQuickReply as messengerNlpQuickReply
 import ai.tock.bot.connector.whatsapp.nlpQuickReply as whatsappNlpQuickReply
 
-class AlcmeonConnector(
-    private val connectorId: String,
+class AlcmeonConnector private constructor(
+    internal val connectorId: String,
     private val path: String,
     private val description: String,
-    private val authorisationHandler: Handler<RoutingContext>,
+    private val authorisationHandler: Handler<RoutingContext>?,
+    private val signatureVerifier: AlcmeonSignatureVerifier?,
 ) : ConnectorBase(AlcmeonConnectorProvider.connectorType) {
+    /** The connector with a Vert.x handler of the signature: its routes are Vert.x ones. */
+    constructor(
+        connectorId: String,
+        path: String,
+        description: String,
+        authorisationHandler: Handler<RoutingContext>,
+    ) : this(connectorId, path, description, authorisationHandler, null)
+
+    /** The connector with server independent routes. */
+    constructor(
+        connectorId: String,
+        path: String,
+        description: String,
+        signatureVerifier: AlcmeonSignatureVerifier,
+    ) : this(connectorId, path, description, null, signatureVerifier)
+
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path) { router ->
-            router
-                .get("$path/description")
-                .handler { context -> context.response().end(description) }
-            router
-                .post("$path/start")
-                .handler(authorisationHandler)
-                .handler { context -> handleMessage(context, controller) }
-            router
-                .post("$path/handle-event")
-                .handler(authorisationHandler)
-                .handler { context -> handleMessage(context, controller) }
+        if (authorisationHandler != null) {
+            AlcmeonVertxServices.register(this, controller, path, description, authorisationHandler)
+        } else {
+            controller.registerRoutes(path, routes(controller, checkNotNull(signatureVerifier)))
         }
     }
+
+    /**
+     * The routes of the sub bot. They answer as the former Vert.x handlers did: the description as text, 403 with
+     * a message for an invalid signature, and the JSON answer of the bot once it has answered.
+     */
+    internal fun routes(
+        controller: ConnectorController,
+        verifier: AlcmeonSignatureVerifier,
+    ): HttpRoutes =
+        HttpRoutes {
+            get("$path/description") { HttpResponse(body = description.toByteArray()) }
+            listOf("$path/start", "$path/handle-event").forEach { route ->
+                post(route) { request ->
+                    if (!verifier.verify(request.normalizedPath, request.bodyAsString, request.header("X-Alcmeon-Webhook-Signature"))) {
+                        return@post HttpResponse(403, body = "Invalid Alcmeon webhook signature".toByteArray())
+                    }
+                    val response = CompletableDeferred<HttpResponse>()
+                    val handled =
+                        handleMessage(request.bodyAsString, controller) { backend ->
+                            AlcmeonHttpConnectorCallback(connectorId, backend) { json ->
+                                response.complete(HttpResponse(headers = mapOf("Content-Type" to listOf("application/json")), body = json.toByteArray()))
+                            }
+                        }
+                    // the former handler did not answer a message it could not read: the sender timed out
+                    if (handled) response.await() else HttpResponse.status(400)
+                }
+            }
+        }
 
     override fun addSuggestions(
         text: CharSequence,
         suggestions: List<CharSequence>,
     ): BotBus.() -> ConnectorMessage? =
         {
-            if ((connectorData.callback as? AlcmeonConnectorCallback)?.backend == AlcmeonBackend.WHATSAPP) {
+            if ((connectorData.callback as? AlcmeonCallback)?.backend == AlcmeonBackend.WHATSAPP) {
                 if (suggestions.size > 3) {
                     listMessage(text, i18nKey("whatsapp_list_message_default_button", "Choose an answer"), suggestions.map { whatsappNlpQuickReply(it) })
                 } else {
                     replyButtonMessage(text, suggestions.map { whatsappNlpQuickReply(it) })
                 }
-            } else if ((connectorData.callback as? AlcmeonConnectorCallback)?.backend == AlcmeonBackend.FACEBOOK) {
+            } else if ((connectorData.callback as? AlcmeonCallback)?.backend == AlcmeonBackend.FACEBOOK) {
                 text(text, suggestions.map { messengerNlpQuickReply(it) })
             } else {
                 null
@@ -99,12 +139,15 @@ class AlcmeonConnector(
                 whatsAppConnectorType.id,
             )
 
-    private fun handleMessage(
-        context: RoutingContext,
+    /**
+     * Handles the message of [body] with the callback created by [callback]: false if it cannot be read.
+     */
+    internal fun handleMessage(
+        body: String,
         controller: ConnectorController,
-    ) {
+        callback: (AlcmeonBackend) -> AlcmeonCallback,
+    ): Boolean {
         try {
-            val body = context.body().asString()
             logger.info { "message received from Alcmeon: $body" }
             val message = mapper.readValue<AlcmeonConnectorMessageIn>(body)
 
@@ -145,17 +188,13 @@ class AlcmeonConnector(
             executor.executeBlocking {
                 controller.handle(
                     event,
-                    ConnectorData(
-                        AlcmeonConnectorCallback(
-                            connectorId,
-                            AlcmeonBackend.findBackend(message.backend),
-                            context,
-                        ),
-                    ),
+                    ConnectorData(callback(AlcmeonBackend.findBackend(message.backend))),
                 )
             }
+            return true
         } catch (e: Throwable) {
             logger.error { e }
+            return false
         }
     }
 
@@ -165,7 +204,7 @@ class AlcmeonConnector(
         delayInMs: Long,
     ) {
         logger.debug { "event: $event" }
-        callback as AlcmeonConnectorCallback
+        callback as AlcmeonCallback
         if (event is Action) {
             callback.addAction(event, delayInMs)
             if (event.metadata.lastAnswer) {
@@ -188,7 +227,7 @@ class AlcmeonConnector(
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
         {
-            when ((connectorData.callback as? AlcmeonConnectorCallback)?.backend) {
+            when ((connectorData.callback as? AlcmeonCallback)?.backend) {
                 AlcmeonBackend.WHATSAPP -> WhatsAppMediaConverter.toConnectorMessage(message)(this)
                 AlcmeonBackend.FACEBOOK -> MessengerMediaConverter.toConnectorMessage(message)(this)
                 else -> emptyList()

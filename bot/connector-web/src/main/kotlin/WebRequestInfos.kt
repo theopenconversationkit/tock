@@ -19,11 +19,13 @@ package ai.tock.bot.connector.web
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.web.send.WebCarousel
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.shared.http.HttpRequest
 import com.google.common.cache.CacheBuilder
 import io.vertx.core.MultiMap
 import io.vertx.core.http.Cookie
 import io.vertx.core.http.HttpServerRequest
 import mu.KotlinLogging
+import java.util.TreeMap
 import java.util.concurrent.TimeUnit
 
 object WebRequestInfosByEvent {
@@ -41,19 +43,69 @@ object WebRequestInfosByEvent {
     internal fun getOrPut(eventId: String): WebRequestInfos = get(eventId) ?: (WebRequestInfos().apply { put(eventId, this) })
 }
 
-data class WebRequestInfos(
-    private val headers: MultiMap = MultiMap.caseInsensitiveMultiMap(),
-    private val cookies: Set<Cookie> = emptySet(),
+/**
+ * The headers and the cookies of a web request, and the response being streamed.
+ *
+ * The values are stored without the Vert.x types: the constructors and [copy] that take them are the former API.
+ */
+class WebRequestInfos private constructor(
+    headers: Map<String, List<String>>,
+    private val cookies: Map<String, String>,
     @Volatile
-    private var streamedResponse: SendSentence? = null,
+    private var streamedResponse: SendSentence?,
+    @Suppress("UNUSED_PARAMETER") marker: Unit,
 ) {
+    private val headers: Map<String, List<String>> = TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER).apply { putAll(headers) }
+
+    constructor() : this(emptyMap(), emptyMap(), null, Unit)
+
+    constructor(
+        headers: MultiMap = MultiMap.caseInsensitiveMultiMap(),
+        cookies: Set<Cookie> = emptySet(),
+        streamedResponse: SendSentence? = null,
+    ) : this(
+        headers.names().associateWith { headers.getAll(it) },
+        cookies.associate { it.name to it.value },
+        streamedResponse,
+        Unit,
+    )
+
     internal constructor(request: HttpServerRequest) : this(request.headers(), request.cookies())
 
-    fun firstHeader(name: String): String? = headers.get(name)
+    internal companion object {
+        /** The infos of a request of a server independent route. */
+        fun of(request: HttpRequest): WebRequestInfos =
+            WebRequestInfos(
+                request.headers,
+                request.headers["Cookie"]
+                    .orEmpty()
+                    .flatMap { it.split(';') }
+                    .map { it.trim() }
+                    .filter { it.contains('=') }
+                    .associate { it.substringBefore('=') to it.substringAfter('=') },
+                null,
+                Unit,
+            )
+    }
 
-    fun headers(name: String): List<String> = headers.getAll(name) ?: emptyList()
+    fun firstHeader(name: String): String? = headers[name]?.firstOrNull()
 
-    fun firstCookie(name: String): String? = cookies.firstOrNull { it.name == name }?.value
+    fun headers(name: String): List<String> = headers[name] ?: emptyList()
+
+    fun firstCookie(name: String): String? = cookies[name]
+
+    /** The former copy of the data class. */
+    fun copy(
+        headers: MultiMap = MultiMap.caseInsensitiveMultiMap().apply { this@WebRequestInfos.headers.forEach { (name, values) -> add(name, values) } },
+        cookies: Set<Cookie> = this.cookies.map { (name, value) -> Cookie.cookie(name, value) }.toSet(),
+        streamedResponse: SendSentence? = this.streamedResponse,
+    ): WebRequestInfos = WebRequestInfos(headers, cookies, streamedResponse)
+
+    override fun equals(other: Any?): Boolean = other is WebRequestInfos && headers == other.headers && cookies == other.cookies && streamedResponse == other.streamedResponse
+
+    override fun hashCode(): Int = (headers.hashCode() * 31 + cookies.hashCode()) * 31 + streamedResponse.hashCode()
+
+    override fun toString(): String = "WebRequestInfos(headers=$headers, cookies=$cookies, streamedResponse=$streamedResponse)"
 
     internal fun addStreamedResponse(
         response: SendSentence,

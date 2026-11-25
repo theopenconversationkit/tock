@@ -16,27 +16,22 @@
 
 package ai.tock.bot.connector.slack
 
-import io.mockk.every
-import io.mockk.mockk
 import io.vertx.core.json.JsonObject
-import io.vertx.ext.web.RoutingContext
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class SlackEncoderTest {
-    private val context: RoutingContext = mockk(relaxed = true)
     private val urlEncodedString = "arg1=val1&arg2=val2&arg3=val3"
 
     @Test
     fun testConvertUrlEncodedStringToJson() {
-        every { context.body().asString() } returns urlEncodedString
-
         val expectedJson =
             JsonObject()
                 .put("arg1", "val1")
                 .put("arg2", "val2")
                 .put("arg3", "val3")
                 .toString()
-        assertEquals(expectedJson, context.convertUrlEncodedStringToJson())
+        // the JSON of the Vert.x JsonObject used before
+        assertEquals(expectedJson, parseJson(urlEncodedString))
     }
 }

@@ -38,7 +38,6 @@ import ai.tock.iadvize.client.graphql.IadvizeGraphQLClient
 import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.loadProperties
-import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.time.LocalDateTime
@@ -51,12 +50,30 @@ class IadvizeConnectorCallback(
     override val applicationId: String,
     controller: ConnectorController,
     val locale: Locale,
-    val context: RoutingContext,
+    private val responder: IadvizeResponder,
     val request: IadvizeRequest,
     distributionRule: String?,
     distributionRuleUnvailableMessage: String,
     val actions: MutableList<ActionWithDelay> = mutableListOf(),
 ) : ConnectorCallbackBase(applicationId, iadvizeConnectorType) {
+    /** The callback of a Vert.x route: the former constructor. */
+    constructor(
+        applicationId: String,
+        controller: ConnectorController,
+        locale: Locale,
+        context: RoutingContext,
+        request: IadvizeRequest,
+        distributionRule: String?,
+        distributionRuleUnvailableMessage: String,
+        actions: MutableList<ActionWithDelay> = mutableListOf(),
+    ) : this(applicationId, controller, locale, VertxIadvizeResponder(context), request, distributionRule, distributionRuleUnvailableMessage, actions) {
+        this.context = context
+    }
+
+    /** The Vert.x context of the former constructor, null otherwise. */
+    var context: RoutingContext? = null
+        private set
+
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -107,10 +124,12 @@ class IadvizeConnectorCallback(
             if (!answered) {
                 answered = true
 
-                response?.let {
-                    context.response().endWithJson(it)
+                if (response != null) {
+                    logger.debug { "iAdvize response : $response" }
+                    responder.json(response)
+                } else {
+                    responder.end()
                 }
-                    ?: context.response().end()
             }
         } catch (t: Throwable) {
             sendTechnicalError(t)
@@ -225,20 +244,6 @@ class IadvizeConnectorCallback(
 
     private fun sendTechnicalError(throwable: Throwable) {
         logger.error(throwable)
-        context.fail(throwable)
-    }
-
-    private fun <T> HttpServerResponse.endWithJson(response: T?) {
-        if (response != null) {
-            logger.debug { "iAdvize response : $response" }
-
-            val writeValueAsString = mapper.writeValueAsString(response)
-
-            logger.debug { "iAdvize json response: $writeValueAsString" }
-
-            putHeader("Content-Type", "application/json").end(writeValueAsString)
-        } else {
-            end()
-        }
+        responder.fail(throwable)
     }
 }

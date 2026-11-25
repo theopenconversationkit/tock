@@ -236,23 +236,3 @@ class NlpVerticle : WebVerticle() {
             ) + NlpClassifierService.healthcheck(),
         )
 }
-
-internal data class ParseRequestLogCountQueryModel(
-    val namespace: String,
-    val applicationName: String,
-    val language: Locale,
-    val intent: String? = null,
-    val minCount: Int = 1,
-    val start: Long = 0,
-    val size: Int = 1,
-) {
-    fun toParseRequestLogCountQuery(id: Id<ApplicationDefinition>): ParseRequestLogCountQuery =
-        ParseRequestLogCountQuery(
-            applicationId = id,
-            language = language,
-            intent = intent,
-            minCount = minCount,
-            start = start,
-            size = size,
-        )
-}

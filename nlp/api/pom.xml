@@ -30,6 +30,7 @@
     <description>Root project for Tock NLP API</description>
 
     <modules>
+        <module>core</module>
         <module>service</module>
         <module>client</module>
         <module>doc</module>

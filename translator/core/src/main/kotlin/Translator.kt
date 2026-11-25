@@ -63,7 +63,7 @@ object Translator {
 
     private val defaultInterface: UserInterfaceType = textChat
 
-    private val i18nDAO: I18nDAO get() = injector.provide()
+    private val i18nDAO: I18nRuntimeDAO get() = I18nRuntimeDAO.fromInjector()
     private val translator: TranslatorEngine get() = injector.provide()
 
     private val cache: MutableMap<String, I18nLabel> = ConcurrentHashMap()

@@ -18,6 +18,7 @@ package ai.tock.bot.api.service
 
 import ai.tock.bot.BotIoc
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.bot.BotApplicationConfigurationRuntimeDAO
 import ai.tock.bot.definition.BotProviderId
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.BotRepository.botAPI
@@ -31,7 +32,7 @@ private val logger = KotlinLogging.logger {}
 fun main() {
     Translator.enabled = true
     BotIoc.setup()
-    val dao: BotApplicationConfigurationDAO = injector.provide()
+    val dao: BotApplicationConfigurationRuntimeDAO = BotApplicationConfigurationRuntimeDAO.fromInjector()
     dao.getBotConfigurations().forEach {
         logger.info("register configuration ${it.name}")
         BotRepository.registerBotProvider(BotApiDefinitionProvider(it))

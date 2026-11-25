@@ -67,10 +67,11 @@ import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.property
-import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
@@ -134,56 +135,63 @@ class MessengerConnector internal constructor(
     private val queue: ConnectorQueue = ConnectorQueue(executor)
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path) { router ->
-            logger.info("deploy rest messenger connector services for root path $path ")
+        logger.info("deploy rest messenger connector services for root path $path ")
 
-            // Subscribe to an automatic webhook check
-            if (webhookSubscriptionCheckEnabled) {
-                logger.info { "Subscribe to automatic webhook check" }
-                registerCheckWebhook()
-            }
+        // Subscribe to an automatic webhook check
+        if (webhookSubscriptionCheckEnabled) {
+            logger.info { "Subscribe to automatic webhook check" }
+            registerCheckWebhook()
+        }
 
-            // see https://developers.facebook.com/docs/graph-api/webhooks
-            router.get(path).handler { context ->
+        controller.registerRoutes(path, routes(controller))
+        connectorIdConnectorControllerMap[connectorId] = controller
+    }
+
+    /**
+     * The webhook routes (see https://developers.facebook.com/docs/graph-api/webhooks): the verification of the
+     * subscription, and the events, processed by the [executor] once their signature is checked.
+     * They answer as the former Vert.x handlers did: a body without content type, 500 when the verification fails,
+     * 200 for the events, even when they are refused.
+     */
+    internal fun routes(controller: ConnectorController): HttpRoutes =
+        HttpRoutes {
+            get(path) { request ->
                 try {
                     logger.info { "get facebook Message" }
-                    if (verifyToken == null || verifyToken == context.request().getParam("hub.verify_token")) {
-                        context.response().end(context.request().getParam("hub.challenge"))
+                    if (verifyToken == null || verifyToken == request.queryParameter("hub.verify_token")) {
+                        HttpResponse(body = checkNotNull(request.queryParameter("hub.challenge")).toByteArray())
                     } else {
-                        context.response().end("Invalid verify token")
+                        HttpResponse(body = "Invalid verify token".toByteArray())
                     }
                 } catch (e: Throwable) {
                     logger.error(e)
-                    context.fail(500)
+                    HttpResponse.status(500)
                 }
             }
 
-            router.post(path).handler { context ->
+            post(path) { httpRequest ->
                 val requestTimerData = requestTimer.start("messenger_webhook")
                 try {
-                    val facebookHeader = context.request().getHeader("X-Hub-Signature")
+                    val facebookHeader = httpRequest.header("X-Hub-Signature")
                     logger.debug { "Facebook signature:  $facebookHeader" }
-                    logger.debug { "Facebook headers:  ${context.request().headers().entries()}" }
-                    val body = context.body().asString()
+                    logger.debug { "Facebook headers:  ${httpRequest.headers.entries}" }
+                    val body = httpRequest.bodyAsString
                     if (facebookHeader != null && isSignedByFacebook(body, facebookHeader)) {
                         try {
                             logger.debug { "Facebook request input : $body" }
                             val request = mapper.readValue<CallbackRequest>(body)
-                            vertx.executeBlocking(
-                                {
-                                    try {
-                                        MessengerConnectorHandler(
-                                            applicationId,
-                                            controller,
-                                            request,
-                                            requestTimerData,
-                                        ).handleRequest()
-                                    } catch (e: Throwable) {
-                                        logger.logError(e, requestTimerData)
-                                    }
-                                },
-                                false,
-                            )
+                            executor.executeBlocking {
+                                try {
+                                    MessengerConnectorHandler(
+                                        applicationId,
+                                        controller,
+                                        request,
+                                        requestTimerData,
+                                    ).handleRequest()
+                                } catch (e: Throwable) {
+                                    logger.logError(e, requestTimerData)
+                                }
+                            }
                         } catch (t: Throwable) {
                             logger.logError(t, requestTimerData)
                         }
@@ -195,15 +203,13 @@ class MessengerConnector internal constructor(
                 } finally {
                     try {
                         requestTimer.end(requestTimerData)
-                        context.response().end()
                     } catch (e: Throwable) {
                         logger.error(e)
                     }
                 }
+                HttpResponse.status()
             }
         }
-        connectorIdConnectorControllerMap[connectorId] = controller
-    }
 
     override fun unregister(controller: ConnectorController) {
         super.unregister(controller)

@@ -22,11 +22,6 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.event.hasStreamMetadata
 import ai.tock.shared.serialization.writeJson
-import ai.tock.shared.vertx.sendSseMessage
-import io.vertx.core.CompositeFuture
-import io.vertx.core.Future
-import io.vertx.core.http.HttpHeaders
-import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.util.Locale
@@ -36,15 +31,26 @@ import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 @OptIn(ExperimentalAtomicApi::class)
-class OpenAIConnectorCallback(
+class OpenAIConnectorCallback internal constructor(
     applicationId: String,
     val locale: Locale,
-    private val context: RoutingContext?,
+    private val responder: OpenAIResponder?,
     private val actions: MutableList<Action> = CopyOnWriteArrayList(),
     private val metadata: MutableMap<String, String> = ConcurrentHashMap(),
     private val eventId: String,
     internal val streamedResponse: Boolean,
 ) : ConnectorCallbackBase(applicationId, openAIConnectorType) {
+    /** The callback of a Vert.x route: the former constructor. */
+    constructor(
+        applicationId: String,
+        locale: Locale,
+        context: RoutingContext?,
+        actions: MutableList<Action> = CopyOnWriteArrayList(),
+        metadata: MutableMap<String, String> = ConcurrentHashMap(),
+        eventId: String,
+        streamedResponse: Boolean,
+    ) : this(applicationId, locale, context?.let { VertxOpenAIResponder(it) }, actions, metadata, eventId, streamedResponse)
+
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -99,33 +105,21 @@ class OpenAIConnectorCallback(
 
     fun sendResponse() {
         val messages = actions.mapNotNull { toOpenAI(it) }
-        context
-            ?.response()
-            ?.putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-            ?.end(writeJson(OpenAIConnectorResponse(messages).toOpenAIResponse()))
+        responder?.json(writeJson(OpenAIConnectorResponse(messages).toOpenAIResponse()))
     }
 
     fun sendStreamedResponse(action: Action) {
-        context?.response()?.apply {
-            sendSseResponse(createResponse(listOf(action)))
+        responder?.apply {
+            createResponse(listOf(action)).messages.forEach { message ->
+                sse(
+                    writeJson(message.toOpenAIChunk()).apply {
+                        logger.debug { "send to client: $this" }
+                    },
+                )
+            }
             if (action.metadata.lastAnswer) {
-                sendSseEnd()
+                end()
             }
         }
     }
-
-    private fun HttpServerResponse.sendSseEnd(): CompositeFuture =
-        Future.all(
-            write("data: [DONE]\n\n"),
-            end(),
-        )
-
-    private fun HttpServerResponse.sendSseResponse(webConnectorResponse: OpenAIConnectorResponse) =
-        webConnectorResponse.messages.forEach { message ->
-            sendSseMessage(
-                writeJson(message.toOpenAIChunk()).apply {
-                    logger.debug { "send to client: $this" }
-                },
-            )
-        }
 }

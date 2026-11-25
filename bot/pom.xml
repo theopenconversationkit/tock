@@ -30,6 +30,7 @@
     <description>Root project for Tock Bot</description>
 
     <modules>
+        <module>engine-core</module>
         <module>engine</module>
         <module>engine-jackson</module>
         <module>connector-rest</module>
@@ -52,6 +53,7 @@
 
         <module>dialogflow</module>
 
+        <module>storage-model</module>
         <module>storage-mongo</module>
 
         <module>toolkit-base</module>

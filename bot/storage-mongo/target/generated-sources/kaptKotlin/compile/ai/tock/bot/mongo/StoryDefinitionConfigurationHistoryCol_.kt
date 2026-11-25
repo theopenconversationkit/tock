@@ -3,7 +3,6 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.bot.admin.story.StoryDefinitionConfiguration_
 import java.time.Instant
 import kotlin.Boolean
 import kotlin.String
@@ -31,8 +30,8 @@ internal class StoryDefinitionConfigurationHistoryCol_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>,
 ) : KPropertyPath<T, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>(previous, property) {
-  public val conf: StoryDefinitionConfiguration_<T>
-    get() = StoryDefinitionConfiguration_(this, __Conf)
+  public val conf: KPropertyPath<T, StoryDefinitionConfiguration?>
+    get() = KPropertyPath(this, __Conf)
 
   public val date: KPropertyPath<T, Instant?>
     get() = KPropertyPath(this, __Date)
@@ -42,8 +41,8 @@ internal class StoryDefinitionConfigurationHistoryCol_<T>(
 
   public companion object {
     public val Conf:
-        StoryDefinitionConfiguration_<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>
-      get() = StoryDefinitionConfiguration_(null, __Conf)
+        KProperty1<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol, StoryDefinitionConfiguration?>
+      get() = __Conf
 
     public val Date:
         KProperty1<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol, Instant?>
@@ -59,8 +58,8 @@ internal class StoryDefinitionConfigurationHistoryCol_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>?>,
 ) : KCollectionPropertyPath<T, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?, StoryDefinitionConfigurationHistoryCol_<T>>(previous, property) {
-  public val conf: StoryDefinitionConfiguration_<T>
-    get() = StoryDefinitionConfiguration_(this, __Conf)
+  public val conf: KPropertyPath<T, StoryDefinitionConfiguration?>
+    get() = KPropertyPath(this, __Conf)
 
   public val date: KPropertyPath<T, Instant?>
     get() = KPropertyPath(this, __Date)
@@ -75,8 +74,8 @@ internal class StoryDefinitionConfigurationHistoryCol_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>?>,
 ) : KMapPropertyPath<T, K, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?, StoryDefinitionConfigurationHistoryCol_<T>>(previous, property) {
-  public val conf: StoryDefinitionConfiguration_<T>
-    get() = StoryDefinitionConfiguration_(this, __Conf)
+  public val conf: KPropertyPath<T, StoryDefinitionConfiguration?>
+    get() = KPropertyPath(this, __Conf)
 
   public val date: KPropertyPath<T, Instant?>
     get() = KPropertyPath(this, __Date)

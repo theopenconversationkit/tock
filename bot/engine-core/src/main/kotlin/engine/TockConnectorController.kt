@@ -1,0 +1,385 @@
+/*
+ * Copyright (C) 2017/2025 SNCF Connect & Tech
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package ai.tock.bot.engine
+
+import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.bot.connector.Connector
+import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.Intent
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.SendAttachment
+import ai.tock.bot.engine.action.SendAttachment.AttachmentType.audio
+import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.event.MetadataEvent
+import ai.tock.bot.engine.event.TypingOnEvent
+import ai.tock.bot.engine.user.LockAcquisitionException
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.UserLock
+import ai.tock.bot.engine.user.UserPreferences
+import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.engine.user.UserTimelineRuntimeDAO
+import ai.tock.shared.Executor
+import ai.tock.shared.booleanProperty
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
+import ai.tock.shared.error
+import ai.tock.shared.http.HttpRoutes
+import ai.tock.shared.injector
+import ai.tock.shared.intProperty
+import ai.tock.shared.longProperty
+import ai.tock.shared.provide
+import ai.tock.stt.STT
+import com.github.salomonbrys.kodein.instance
+import io.vertx.ext.web.Router
+import io.vertx.kotlin.coroutines.CoroutineRouterSupport
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import mu.KotlinLogging
+import java.net.URI
+import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.time.Duration.Companion.milliseconds
+
+@Deprecated("Use coroutine stories to perform asynchronous operations")
+private val synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
+
+@Deprecated("Use coroutine stories to perform asynchronous operations")
+private val asynchronousMode = booleanProperty("tock_timeline_persistence_asynchronous_mode", false)
+
+/**
+ *
+ */
+internal class TockConnectorController(
+    val bot: Bot,
+    override val connector: Connector,
+    private val server: BotServer,
+    override val botDefinition: BotDefinition,
+    private val configuration: ConnectorConfiguration,
+) : ConnectorController {
+    override val botConfiguration: BotApplicationConfiguration = bot.configuration
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+        private val parseAudioFileEnabled = booleanProperty("tock_bot_audio_nlp_enabled", true)
+        private val audioNlpFileLimit = intProperty("tock_bot_audio_nlp_max_size", 1024 * 1024)
+
+        // The audio file is downloaded while the user lock is held: without timeouts, an unresponsive server
+        // would block the turn (and its worker thread) forever.
+        private val audioDownloadTimeoutInMs = intProperty("tock_bot_audio_download_timeout_in_ms", 10_000)
+
+        /**
+         * Downloads the audio file at [url], with connection and read timeouts.
+         * Returns null if the file is not smaller than [maxSize], without reading it fully.
+         */
+        internal fun downloadAudioFile(
+            url: String,
+            maxSize: Int = audioNlpFileLimit,
+            timeoutInMs: Int = audioDownloadTimeoutInMs,
+        ): ByteArray? {
+            val connection =
+                URI(url).toURL().openConnection().apply {
+                    connectTimeout = timeoutInMs
+                    readTimeout = timeoutInMs
+                }
+            return connection.getInputStream().use { input ->
+                input.readNBytes(maxSize).takeIf { it.size < maxSize }
+            }
+        }
+
+        // The user lock lease is renewed while a turn is being processed (a turn can take longer than the lease,
+        // e.g. with LLM calls), but only up to this duration, so that a stuck turn cannot lock the user forever (see #2119).
+        private val userTurnLockMaxLeaseRenewal =
+            longProperty("tock_bot_user_turn_lock_max_lease_renewal_in_ms", 120_000).milliseconds
+
+        internal fun register(
+            connector: Connector,
+            bot: Bot,
+            server: BotServer,
+            configuration: BotApplicationConfiguration,
+        ): TockConnectorController =
+            TockConnectorController(bot, connector, server, bot.botDefinition, ConnectorConfiguration(configuration))
+                .apply {
+                    logger.info { "Register connector $connector for bot $bot" }
+                    connector.register(this)
+                }
+
+        internal fun unregister(controller: TockConnectorController) {
+            logger.info { "Unregister connector ${controller.connector} for bot ${controller.bot}" }
+            controller.connector.unregister(controller)
+        }
+    }
+
+    private val executor: Executor by injector.instance()
+    private val userLock: UserLock by injector.instance()
+    private val userTimelineDAO: UserTimelineRuntimeDAO by lazy { UserTimelineRuntimeDAO.fromInjector() }
+
+    private val serviceInstallers: MutableList<ServiceRegistration> = CopyOnWriteArrayList()
+
+    fun getBaseUrl(): String = configuration.getBaseUrl()
+
+    /**
+     * Handles an event sent by the connector.
+     *
+     * The actual processing is done asynchronously (see [handleUserEvent]),
+     * with this method returning immediately.
+     *
+     * @param event the event to handle
+     * @param data the optional additional data from the connector
+     */
+    @OptIn(ExperimentalTockCoroutines::class)
+    override fun handle(
+        event: Event,
+        data: ConnectorData,
+    ) {
+        server.executionScope.launch {
+            handleUserEvent(event, data)
+        }
+    }
+
+    /**
+     * Handles an event received by the connector.
+     *
+     * This method may be called from a vert.x event loop (connector routes, [handle]),
+     * but the processing calls blocking code (NLP client, profile loading, synchronous stories and listeners).
+     * So the whole processing is dispatched on the [Executor] worker pool.
+     * Suspending (coroutine) stories do not hold a worker thread while they are suspended.
+     */
+    @OptIn(ExperimentalTockCoroutines::class)
+    override suspend fun handleUserEvent(
+        event: Event,
+        data: ConnectorData,
+    ): Unit =
+        withContext(executor.asCoroutineDispatcher()) {
+            processUserEvent(event, data)
+        }
+
+    @OptIn(ExperimentalTockCoroutines::class)
+    private suspend fun processUserEvent(
+        event: Event,
+        data: ConnectorData,
+    ) {
+        if (event.state.sourceConnectorType == null) {
+            event.state.sourceConnectorType = connector.connectorType
+        }
+        if (event.state.targetConnectorType == null) {
+            event.state.targetConnectorType = connector.connectorType
+        }
+
+        val callback = data.callback
+        try {
+            if (!botDefinition.eventListener.listenEvent(this, data, event)) {
+                when (event) {
+                    is Action -> handleAction(event, data)
+                    else -> callback.eventSkipped(event)
+                }
+            } else {
+                callback.eventAnswered(event)
+            }
+        } catch (t: Throwable) {
+            callback.exceptionThrown(event, t)
+        }
+    }
+
+    private fun tryToParseVoiceAudio(
+        action: Action,
+        userTimeline: UserTimeline,
+    ): Action {
+        if (parseAudioFileEnabled && action is SendAttachment && action.type == audio) {
+            val bytes = downloadAudioFile(action.url)
+            if (bytes != null) {
+                val stt: STT = injector.provide()
+                val text = stt.parse(bytes, userTimeline.userPreferences.locale)
+                if (text != null) {
+                    return SendSentence(
+                        action.playerId,
+                        action.connectorId,
+                        action.recipientId,
+                        text,
+                    )
+                }
+            }
+        }
+        return action
+    }
+
+    @ExperimentalTockCoroutines
+    private suspend fun handleAction(
+        action: Action,
+        data: ConnectorData,
+    ) {
+        val callback = data.callback
+        val playerId = action.playerId
+        val id = playerId.id
+
+        try {
+            logger.debug { "try to lock $playerId" }
+            // Not aborting on lock loss to preserve old behavior
+            userLock.withLock(
+                userId = id,
+                postLockRelease = { callback.userLockReleased(action) },
+                abortOnLockLoss = false,
+                maxLeaseRenewal = userTurnLockMaxLeaseRenewal,
+            ) {
+                try {
+                    callback.userLocked(action)
+
+                    val userTimeline =
+                        userTimelineDAO.loadWithLastValidDialog(
+                            botDefinition.namespace,
+                            action.playerId,
+                            data.priorUserId,
+                            data.groupId,
+                            storyDefinitionLoader(action.connectorId),
+                        )
+
+                    // Notify callback that timeline has been loaded
+                    callback.initialUserTimelineLoaded(userTimeline)
+
+                    val transformedAction = tryToParseVoiceAudio(action, userTimeline)
+
+                    bot.handleAction(transformedAction, userTimeline, this, data)
+
+                    if (synchronousMode && data.saveTimeline) {
+                        userTimelineDAO.save(userTimeline, bot.botDefinition)
+                    } else if (asynchronousMode) {
+                        logger.warn { "Deprecated asynchronous timeline saving mode used, late writes will not be protected by the lock" }
+                    }
+                } catch (t: Throwable) {
+                    send(null, data, action, errorMessage(action.recipientId, action.connectorId, action.playerId))
+                    callback.exceptionThrown(action, t)
+                }
+            }
+        } catch (e: LockAcquisitionException) {
+            logger.debug(e) { "failed to acquire lock for $playerId - skip $action" }
+            callback.eventSkipped(action)
+        } catch (t: Throwable) {
+            callback.exceptionThrown(action, t)
+        }
+    }
+
+    override fun support(
+        action: Action,
+        data: ConnectorData,
+    ): Double {
+        if (action.state.targetConnectorType == null) {
+            action.state.targetConnectorType = connector.connectorType
+        }
+        val callback = data.callback
+        return runBlocking {
+            try {
+                val userTimeline =
+                    userTimelineDAO.loadWithLastValidDialog(
+                        botDefinition.namespace,
+                        action.playerId,
+                        data.priorUserId,
+                        data.groupId,
+                        storyDefinitionLoader(action.connectorId),
+                    )
+                bot.support(action, userTimeline, this@TockConnectorController, data)
+            } catch (t: Throwable) {
+                callback.exceptionThrown(action, t)
+                0.0
+            }
+        }
+    }
+
+    override fun registerServices(
+        serviceIdentifier: String,
+        installer: (Router) -> Unit,
+    ) {
+        coRegisterServices(serviceIdentifier) {
+            installer(it)
+        }
+    }
+
+    override fun coRegisterServices(
+        serviceIdentifier: String,
+        installer: CoroutineRouterSupport.(Router) -> Unit,
+    ) {
+        server
+            .registerConnectorServices(serviceIdentifier, installer)
+            .also { serviceInstallers.add(it) }
+    }
+
+    override fun registerRoutes(
+        serviceIdentifier: String,
+        routes: HttpRoutes,
+    ) {
+        server
+            .registerConnectorRoutes(serviceIdentifier, routes)
+            .also { serviceInstallers.add(it) }
+    }
+
+    override fun unregisterServices() {
+        serviceInstallers.forEach { server.unregisterServices(it) }
+    }
+
+    internal fun send(
+        userTimeline: UserTimeline?,
+        data: ConnectorData,
+        userAction: Action,
+        action: Action,
+        delay: Long = 0,
+    ) {
+        try {
+            logger.debug { "message sent to connector: $action" }
+            connector.send(action, data.callback, delay)
+        } catch (t: Throwable) {
+            logger.error(t)
+        } finally {
+            if (action.metadata.lastAnswer) {
+                if (asynchronousMode && data.saveTimeline && userTimeline != null) {
+                    runBlocking {
+                        userTimelineDAO.save(userTimeline, bot.botDefinition)
+                    }
+                }
+                data.callback.eventAnswered(userAction)
+            }
+        }
+    }
+
+    fun loadProfile(
+        data: ConnectorData,
+        playerId: PlayerId,
+    ): UserPreferences? = connector.loadProfile(data.callback, playerId)
+
+    fun refreshProfile(
+        data: ConnectorData,
+        playerId: PlayerId,
+    ): UserPreferences? = connector.refreshProfile(data.callback, playerId)
+
+    fun startTypingInAnswerTo(
+        action: Action,
+        data: ConnectorData,
+    ) {
+        connector.send(TypingOnEvent(action.playerId, action.connectorId), data.callback)
+    }
+
+    fun sendIntent(
+        intent: Intent,
+        applicationId: String,
+        data: ConnectorData,
+    ) {
+        connector.send(MetadataEvent.intent(intent, applicationId), data.callback)
+    }
+
+    override fun toString(): String = configuration.toString()
+}

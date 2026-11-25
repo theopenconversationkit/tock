@@ -32,13 +32,15 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.monitoring.logError
 import ai.tock.shared.Executor
 import ai.tock.shared.error
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
-import io.vertx.core.json.Json
-import io.vertx.core.json.JsonObject
 import mu.KotlinLogging
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import java.time.Duration
 
 class MattermostConnector(
@@ -58,34 +60,34 @@ class MattermostConnector(
     private val executor: Executor by injector.instance()
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path) { router ->
-            logger.info { "Register mattermost service $path" }
-            router.post(path).handler { context ->
-                logger.debug { "Handle mattermost request ${context.body().asString()}" }
+        logger.info { "Register mattermost service $path" }
+        controller.registerRoutes(path, routes(controller))
+    }
+
+    /**
+     * The route of the outgoing webhook. It answers as the former Vert.x handler did: an empty 200, and 400 for an
+     * invalid token, whose event is no longer handled (the former handler answered 400 but handled it).
+     */
+    internal fun routes(controller: ConnectorController): HttpRoutes =
+        HttpRoutes {
+            post(path) { request ->
+                logger.debug { "Handle mattermost request ${request.bodyAsString}" }
                 // see https://developers.mattermost.com/integrate/webhooks/outgoing/
                 val requestTimerData = BotRepository.requestTimer.start("mattermost_webhook")
                 try {
                     val body =
-                        when (context.request().getHeader("Content-Type")) {
-                            "application/x-www-form-urlencoded" -> {
-                                val metadata: JsonObject = JsonObject()
-                                for ((key, value) in context.request().formAttributes().entries()) {
-                                    metadata.put(key, value)
-                                }
-                                Json.encode(metadata)
-                            }
+                        when (request.header("Content-Type")) {
+                            "application/x-www-form-urlencoded" -> mapper.writeValueAsString(formAttributes(request.bodyAsString))
 
                             // else consider application/json
-                            else -> {
-                                context.body().asString()
-                            }
+                            else -> request.bodyAsString
                         }
 
                     val message: MattermostMessageIn = mapper.readValue(body)
 
                     if (message.token != outgoingToken) {
                         logger.error { "Failed to validate token : ${message.token}" }
-                        context.fail(400)
+                        return@post HttpResponse.status(400)
                     }
 
                     try {
@@ -99,14 +101,23 @@ class MattermostConnector(
                 } finally {
                     try {
                         BotRepository.requestTimer.end(requestTimerData)
-                        context.response().end()
                     } catch (e: Throwable) {
                         logger.error(e)
                     }
                 }
+                HttpResponse.status()
             }
         }
-    }
+
+    /** The attributes of an URL encoded form, in their order; the last value of an attribute wins, as with the former JsonObject. */
+    private fun formAttributes(body: String): Map<String, String> =
+        body
+            .split('&')
+            .filter { it.isNotEmpty() }
+            .associate { attribute ->
+                URLDecoder.decode(attribute.substringBefore('='), StandardCharsets.UTF_8) to
+                    URLDecoder.decode(attribute.substringAfter('=', ""), StandardCharsets.UTF_8)
+            }
 
     override fun send(
         event: Event,

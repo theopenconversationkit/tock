@@ -31,7 +31,6 @@ import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
 import ai.tock.bot.connector.web.sse.SseEndpoint
-import ai.tock.bot.connector.web.sse.SseEndpoint.Companion.webMapper
 import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryStepDef
@@ -45,50 +44,46 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
-import ai.tock.bot.engine.user.PlayerType.user
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserState
 import ai.tock.bot.orchestration.bot.secondary.OrchestrationCallback
-import ai.tock.bot.orchestration.bot.secondary.RestOrchestrationCallback
 import ai.tock.bot.orchestration.connector.OrchestrationConnector
 import ai.tock.bot.orchestration.connector.OrchestrationHandlers
-import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestratedBotRequest
-import ai.tock.bot.orchestration.shared.OrchestrationMetaData
-import ai.tock.bot.orchestration.shared.ResumeOrchestrationRequest
-import ai.tock.bot.orchestration.shared.SecondaryBotEligibilityResponse
-import ai.tock.shared.Dice
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.defaultLocale
+import ai.tock.shared.http.DeferredHttpResponse
+import ai.tock.shared.http.HttpCors
+import ai.tock.shared.http.HttpMethod
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
+import ai.tock.shared.http.ServerSentEvents
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.listProperty
 import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
-import ai.tock.shared.security.auth.spi.TOCK_USER_ID
-import ai.tock.shared.security.auth.spi.WebSecurityHandler
-import ai.tock.shared.vertx.WebSecurityCookiesHandler
-import ai.tock.shared.vertx.setupSSE
+import ai.tock.shared.security.auth.spi.HttpWebSecurity
+import ai.tock.shared.security.auth.spi.HttpWebSecurityContext
+import ai.tock.shared.security.web.HttpWebSecurityCookies
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.vertx.core.http.HttpMethod
-import io.vertx.core.json.JsonObject
-import io.vertx.ext.web.RoutingContext
-import io.vertx.ext.web.handler.CorsHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.util.Locale
 import java.util.UUID
 
 internal const val WEB_CONNECTOR_ID = "web"
 
+/** The key of the transient dialog context in the attributes of the security (WebSecurityHandler.TRANSIENT_DIALOG_CONTEXT_KEY). */
+internal const val TRANSIENT_DIALOG_CONTEXT_KEY = "tock_transient_dialog_context"
+
 /**
  * The web (REST) connector type.
  */
 val webConnectorType = ConnectorType(WEB_CONNECTOR_ID)
-
-private const val WILDCARD_CORS_PATTERN = ".*"
-private const val CORS_PATTERN_PROPERTY = "tock_web_cors_pattern"
-
-private val corsPattern = property(CORS_PATTERN_PROPERTY, WILDCARD_CORS_PATTERN)
-private val sseEnabled = booleanProperty("tock_web_sse", false)
-private val directSseEnabled = booleanProperty("tock_web_direct_sse", false)
 
 private val webConnectorBridgeEnabled = booleanProperty("tock_web_connector_bridge_enabled", false)
 
@@ -99,16 +94,23 @@ val webConnectorUseExtraHeadersAsMetadata: Boolean =
 class WebConnector internal constructor(
     val connectorId: String,
     val path: String,
-    private val webSecurityHandler: WebSecurityHandler,
-    private val publicPath: String,
+    private val security: WebConnectorSecurity,
+    internal val publicPath: String,
 ) : ConnectorBase(webConnectorType, setOf(CAROUSEL)),
     OrchestrationConnector {
     @Deprecated("Use the more aptly named connectorId field", ReplaceWith("connectorId"))
     val applicationId: String get() = connectorId
 
     companion object {
-        const val CONNECTOR_PUBLIC_PATH_CONTEXT_KEY = WebSecurityHandler.CONNECTOR_PUBLIC_PATH_CONTEXT_KEY
-        const val CONNECTOR_ID_CONTEXT_KEY = WebSecurityHandler.CONNECTOR_ID_CONTEXT_KEY
+        const val CONNECTOR_PUBLIC_PATH_CONTEXT_KEY = "tock_connector_public_path"
+        const val CONNECTOR_ID_CONTEXT_KEY = "tock_connector_id"
+
+        internal const val WILDCARD_CORS_PATTERN = ".*"
+        internal const val CORS_PATTERN_PROPERTY = "tock_web_cors_pattern"
+
+        internal val corsPattern = property(CORS_PATTERN_PROPERTY, WILDCARD_CORS_PATTERN)
+        internal val sseEnabled = booleanProperty("tock_web_sse", false)
+        internal val directSseEnabled = booleanProperty("tock_web_direct_sse", false)
 
         private val logger = KotlinLogging.logger {}
         private val messageProcessor =
@@ -118,100 +120,106 @@ class WebConnector internal constructor(
                         // Fallback to previous property name for backward compatibility
                         ?: propertyOrNull("allow_markdown").toBoolean(),
             )
-        private val sseEndpoint = SseEndpoint(webMapper)
+
+        /** The server-sent events of tock-bot-connector-web-sse: created only when they are enabled. */
+        internal val sseEndpoint by lazy { SseEndpoint(webMapper) }
+
+        /** The mapper of the responses (SseEndpoint.webMapper, without loading the Vert.x endpoint). */
+        internal val webMapper: ObjectMapper =
+            mapper.copy().registerModules(
+                SimpleModule().apply {
+                    // fallback for serializing CharSequence
+                    addSerializer(CharSequence::class.java, ToStringSerializer())
+                },
+            )
     }
 
     override fun register(controller: ConnectorController) {
-        controller.coRegisterServices(path) { router ->
-            logger.debug("deploy web connector services for root path $path ")
-
-            if (webSecurityHandler is WebSecurityCookiesHandler && corsPattern == WILDCARD_CORS_PATTERN) {
-                logger.warn { "CORS config is allowing any website, requests are susceptible to CSRF!! Please set $CORS_PATTERN_PROPERTY to match only the domains you trust." }
-            }
-
-            val corsHandler =
-                CorsHandler
-                    .create()
-                    .addOriginWithRegex(corsPattern)
-                    .allowedMethod(HttpMethod.POST)
-                    .run {
-                        if (sseEnabled || directSseEnabled) allowedMethod(HttpMethod.GET) else this
-                    }.allowedHeader("Access-Control-Allow-Origin")
-                    .allowedHeader("Content-Type")
-                    .allowedHeader("X-Requested-With")
-                    .apply {
-                        webConnectorExtraHeaders.forEach {
-                            this.allowedHeader(it)
-                        }
-                    }
-                    // browsers do not send or save cookies unless credentials are allowed
-                    .allowCredentials(webSecurityHandler is WebSecurityCookiesHandler)
-
-            router
-                .routeWithRegex("${Regex.escape(path)}(/.*)?")
-                .order(-10)
-                // Apply CORS Handler for all paths and all methods (OPTIONS handled automatically)
-                .handler(corsHandler)
-                // add context for additional handlers
-                .handler { context ->
-                    context.put(CONNECTOR_PUBLIC_PATH_CONTEXT_KEY, publicPath)
-                    context.put(CONNECTOR_ID_CONTEXT_KEY, connectorId)
-                    context.next()
-                }
-
-            if (sseEnabled) {
-                sseEndpoint.configureRoute(router, "$path/sse", connectorId, webSecurityHandler)
-            }
-
-            if (directSseEnabled) {
-                router
-                    .route("$path/sse/direct")
-                    .coHandler { context ->
-                        try {
-                            val body =
-                                context.request().getHeader("message")
-                                    ?: context.body().asString() ?: error("message is mandatory and is missing")
-                            context.response().setupSSE()
-
-                            handleRequest(controller, context, body, transientContext = DialogContext.EMPTY)
-                        } catch (t: Throwable) {
-                            context.fail(t)
-                        }
-                    }
-            }
-
-            // Main connector endpoint
-            router
-                .post(path)
-                .handler(webSecurityHandler)
-                .coHandler { context ->
-                    // Override the user on the request body
-                    val tockUserId: String? = context.get<String>(TOCK_USER_ID)
-                    val transientContext: DialogContext = context.get(WebSecurityHandler.TRANSIENT_DIALOG_CONTEXT_KEY) ?: DialogContext.EMPTY
-                    val body =
-                        tockUserId?.let {
-                            val jsonBody = context.body().asJsonObject() ?: JsonObject()
-                            jsonBody.put("userId", tockUserId)
-                            jsonBody.toString()
-                        } ?: context.body().asString()
-
-                    // Handle the request
-                    handleRequest(controller, context, body, transientContext)
-                }
+        when (security) {
+            is WebConnectorSecurity.Vertx -> WebVertxServices.register(this, controller, security)
+            is WebConnectorSecurity.Http -> controller.registerRoutes(path, routes(controller, security.security))
         }
     }
 
-    override fun getOrchestrationHandlers(): OrchestrationHandlers =
-        OrchestrationHandlers(
-            eligibilityHandler = this::handleEligibility,
-            proxyHandler = this::handleProxy,
-        )
-
-    private suspend fun handleRequest(
+    /**
+     * The routes of the connector. They answer as the former Vert.x routes did: the CORS rules on every path, the
+     * JSON answer of the bot, its server-sent events on `<path>/sse/direct` (`tock_web_direct_sse`), the cookies of
+     * the security, and 500 when the request cannot be handled.
+     */
+    internal fun routes(
         controller: ConnectorController,
-        context: RoutingContext,
+        security: HttpWebSecurity,
+    ): HttpRoutes {
+        val cookies = security is HttpWebSecurityCookies
+        if (cookies && corsPattern == WILDCARD_CORS_PATTERN) {
+            logger.warn { "CORS config is allowing any website, requests are susceptible to CSRF!! Please set $CORS_PATTERN_PROPERTY to match only the domains you trust." }
+        }
+        val cors =
+            HttpCors(
+                corsPattern,
+                setOfNotNull(HttpMethod.POST, HttpMethod.GET.takeIf { directSseEnabled }),
+                setOf("Access-Control-Allow-Origin", "Content-Type", "X-Requested-With") + webConnectorExtraHeaders,
+                // browsers do not send or save cookies unless credentials are allowed
+                allowCredentials = cookies,
+            )
+        val securityContext = HttpWebSecurityContext(connectorId, publicPath)
+        return HttpRoutes {
+            // the preflight requests
+            listOf(path, "$path/*").forEach { route(HttpMethod.OPTIONS, it) { request -> cors.handle(request) { HttpResponse.status(404) } } }
+
+            if (directSseEnabled) {
+                listOf(HttpMethod.GET, HttpMethod.POST).forEach { method ->
+                    route(method, "$path/sse/direct") { request ->
+                        cors.handle(request) {
+                            val body = request.header("message") ?: request.bodyAsString.ifEmpty { null }
+                            if (body == null) {
+                                logger.error { "message is mandatory and is missing" }
+                                HttpResponse.text("Internal Server Error", 500)
+                            } else {
+                                val response = DeferredHttpResponse()
+                                ServerSentEvents.start(response, keepAlive = true)
+                                handleRequest(controller, WebRequestInfos.of(request), body, DialogContext.EMPTY, HttpWebResponder(response))
+                                response.await()
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Main connector endpoint
+            post(path) { request ->
+                cors.handle(request) {
+                    val authentication =
+                        try {
+                            withContext(Dispatchers.IO) { security.authenticate(request, securityContext) }
+                        } catch (t: Throwable) {
+                            logger.error(t) { "the authentication failed" }
+                            return@handle HttpResponse.text("Internal Server Error", 500)
+                        }
+                    val transientContext = authentication.attributes[TRANSIENT_DIALOG_CONTEXT_KEY] as? DialogContext ?: DialogContext.EMPTY
+                    // Override the user on the request body
+                    val body =
+                        authentication.userId?.let { userId ->
+                            val json = runCatching { mapper.readTree(request.body) as? ObjectNode }.getOrNull() ?: mapper.createObjectNode()
+                            json.put("userId", userId).toString()
+                        } ?: request.bodyAsString
+                    val response = DeferredHttpResponse()
+                    handleRequest(controller, WebRequestInfos.of(request), body, transientContext, HttpWebResponder(response))
+                    authentication.setCookies.fold(response.await()) { answer, cookie -> answer.withHeader("Set-Cookie", cookie) }
+                }
+            }
+        }
+    }
+
+    override fun getOrchestrationHandlers(): OrchestrationHandlers = WebOrchestration.handlers(this)
+
+    /** Handles a web request: the answer is sent by [responder]. */
+    internal suspend fun handleRequest(
+        controller: ConnectorController,
+        requestInfos: WebRequestInfos,
         body: String,
         transientContext: DialogContext,
+        responder: WebResponder,
     ) {
         val timerData = BotRepository.requestTimer.start("web_webhook")
         try {
@@ -230,12 +238,11 @@ class WebConnector internal constructor(
                 }
 
             val event = request.toEvent(applicationId)
-            val requestInfos = WebRequestInfos(context.request())
             WebRequestInfosByEvent.put(event.id.toString(), requestInfos)
-            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos), transientDialogContext = transientContext, errorListener = null)
+            handleEvent(applicationId, request.locale, event, controller, responder, extraHeadersAsMetadata(requestInfos), transientDialogContext = transientContext, errorListener = null)
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
-            context.fail(t)
+            responder.fail(t)
         } finally {
             BotRepository.requestTimer.end(timerData)
         }
@@ -246,7 +253,7 @@ class WebConnector internal constructor(
         locale: Locale,
         event: Event,
         controller: ConnectorController,
-        context: RoutingContext?,
+        responder: WebResponder?,
         headersMetadata: Map<String, String>,
         errorListener: ((Throwable) -> Unit)?,
         transientDialogContext: DialogContext,
@@ -256,7 +263,7 @@ class WebConnector internal constructor(
                 applicationId = applicationId,
                 errorListener = errorListener,
                 locale = locale,
-                context = context,
+                responder = responder,
                 webMapper = webMapper,
                 eventId = event.id.toString(),
                 messageProcessor = messageProcessor,
@@ -302,7 +309,7 @@ class WebConnector internal constructor(
                     parameters,
                 ),
             controller = controller,
-            context = null,
+            responder = null,
             headersMetadata = emptyMap(),
             errorListener = errorListener,
             transientDialogContext = transientContext,
@@ -324,66 +331,6 @@ class WebConnector internal constructor(
             }
         }
         return metaDataExtraHeaders
-    }
-
-    private fun handleProxy(
-        controller: ConnectorController,
-        context: RoutingContext,
-    ) {
-        val timerData = BotRepository.requestTimer.start("web_webhook_orchestred")
-        try {
-            logger.debug { "Web proxy request input : ${context.body().asString()}" }
-            val request: ResumeOrchestrationRequest = mapper.readValue(context.body().asString())
-            val callback =
-                RestOrchestrationCallback(
-                    webConnectorType,
-                    applicationId = connectorId,
-                    context = context,
-                    orchestrationMapper = webMapper,
-                )
-
-            controller.handle(request.toAction(), ConnectorData(callback))
-        } catch (t: Throwable) {
-            RestOrchestrationCallback(webConnectorType, connectorId, context = context).sendError()
-            BotRepository.requestTimer.throwable(t, timerData)
-        } finally {
-            BotRepository.requestTimer.end(timerData)
-        }
-    }
-
-    private fun handleEligibility(
-        controller: ConnectorController,
-        context: RoutingContext,
-    ) {
-        val timerData = BotRepository.requestTimer.start("web_webhook_support")
-        try {
-            logger.debug { "Web support request input : ${context.body().asString()}" }
-            val request: AskEligibilityToOrchestratedBotRequest = mapper.readValue(context.body().asString())
-            val callback =
-                RestOrchestrationCallback(
-                    webConnectorType,
-                    connectorId,
-                    context = context,
-                    orchestrationMapper = webMapper,
-                )
-
-            val support = controller.support(request.toAction(connectorId), ConnectorData(callback))
-            val sendEligibility =
-                SecondaryBotEligibilityResponse(
-                    support,
-                    OrchestrationMetaData(
-                        playerId = PlayerId(connectorId, bot),
-                        applicationId = connectorId,
-                        recipientId = request.metadata?.playerId ?: PlayerId(Dice.newId(), user),
-                    ),
-                )
-            callback.sendResponse(sendEligibility)
-        } catch (t: Throwable) {
-            RestOrchestrationCallback(webConnectorType, connectorId, context = context).sendError()
-            BotRepository.requestTimer.throwable(t, timerData)
-        } finally {
-            BotRepository.requestTimer.end(timerData)
-        }
     }
 
     override fun send(
@@ -421,11 +368,7 @@ class WebConnector internal constructor(
         } else {
             callback.addAction(event)
             if (sseEnabled) {
-                sseEndpoint.sendResponse(
-                    event.connectorId,
-                    event.recipientId.id,
-                    callback.createResponse(listOf(event)),
-                )
+                WebVertxServices.sendSse(event.connectorId, event.recipientId.id, callback.createResponse(listOf(event)))
             }
             if (event.metadata.lastAnswer) {
                 callback.sendResponse()

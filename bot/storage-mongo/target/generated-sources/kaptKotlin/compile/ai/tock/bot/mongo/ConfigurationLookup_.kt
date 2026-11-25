@@ -3,7 +3,6 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
-import ai.tock.bot.admin.bot.BotApplicationConfiguration_
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Iterable
@@ -20,12 +19,12 @@ internal class ConfigurationLookup_<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, ConfigurationLookup?>,
 ) : KPropertyPath<T, ConfigurationLookup?>(previous, property) {
-  public val configuration: BotApplicationConfiguration_<T>
-    get() = BotApplicationConfiguration_(this, __Configuration)
+  public val configuration: KPropertyPath<T, BotApplicationConfiguration?>
+    get() = KPropertyPath(this, __Configuration)
 
   public companion object {
-    public val Configuration: BotApplicationConfiguration_<ConfigurationLookup>
-      get() = BotApplicationConfiguration_(null, __Configuration)
+    public val Configuration: KProperty1<ConfigurationLookup, BotApplicationConfiguration?>
+      get() = __Configuration
   }
 }
 
@@ -33,8 +32,8 @@ internal class ConfigurationLookup_Col<T>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Iterable<ConfigurationLookup?>?>,
 ) : KCollectionPropertyPath<T, ConfigurationLookup?, ConfigurationLookup_<T>>(previous, property) {
-  public val configuration: BotApplicationConfiguration_<T>
-    get() = BotApplicationConfiguration_(this, __Configuration)
+  public val configuration: KPropertyPath<T, BotApplicationConfiguration?>
+    get() = KPropertyPath(this, __Configuration)
 
   override fun memberWithAdditionalPath(additionalPath: String): ConfigurationLookup_<T> = ConfigurationLookup_(this, customProperty(this, additionalPath))
 }
@@ -43,8 +42,8 @@ internal class ConfigurationLookup_Map<T, K>(
   previous: KPropertyPath<T, *>?,
   `property`: KProperty1<*, Map<out K, ConfigurationLookup?>?>,
 ) : KMapPropertyPath<T, K, ConfigurationLookup?, ConfigurationLookup_<T>>(previous, property) {
-  public val configuration: BotApplicationConfiguration_<T>
-    get() = BotApplicationConfiguration_(this, __Configuration)
+  public val configuration: KPropertyPath<T, BotApplicationConfiguration?>
+    get() = KPropertyPath(this, __Configuration)
 
   override fun memberWithAdditionalPath(additionalPath: String): ConfigurationLookup_<T> = ConfigurationLookup_(this, customProperty(this, additionalPath))
 }

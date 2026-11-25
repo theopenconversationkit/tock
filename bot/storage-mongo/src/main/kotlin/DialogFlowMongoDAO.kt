@@ -88,6 +88,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.associateBy
 import org.litote.kmongo.dateToString
 import org.litote.kmongo.deleteMany
+import org.litote.kmongo.div
 import org.litote.kmongo.document
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
@@ -646,7 +647,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             group(
                 document(
                     Date from Date.kDateToString(),
-                    ConnectorType from ConnectorType.id,
+                    // the path is built with / since the DSL of ConnectorType is generated in tock-bot-storage-model
+                    ConnectorType from (ConnectorType / ai.tock.bot.connector.ConnectorType::id),
                 ),
                 Count sum Count.projection,
             )

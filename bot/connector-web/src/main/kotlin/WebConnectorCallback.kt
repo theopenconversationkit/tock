@@ -23,10 +23,7 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.event.hasStreamMetadata
 import ai.tock.shared.booleanProperty
-import ai.tock.shared.vertx.sendSseMessage
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.vertx.core.http.HttpHeaders
-import io.vertx.ext.web.RoutingContext
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -38,7 +35,7 @@ internal class WebConnectorCallback(
     applicationId: String,
     errorListener: ((Throwable) -> Unit)?,
     val locale: Locale,
-    private val context: RoutingContext?,
+    private val responder: WebResponder?,
     private val actions: MutableList<Action> = CopyOnWriteArrayList(),
     private val metadata: MutableMap<String, String> = ConcurrentHashMap(),
     private val webMapper: ObjectMapper,
@@ -74,16 +71,11 @@ internal class WebConnectorCallback(
 
     fun sendResponse() {
         WebRequestInfosByEvent.invalidate(eventId)
-        context
-            ?.response()
-            ?.putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-            ?.end(webMapper.writeValueAsString(createResponse(actions)))
+        responder?.json(webMapper.writeValueAsString(createResponse(actions)))
     }
 
     fun sendStreamedResponse(action: Action) {
-        context
-            ?.response()
-            ?.sendSseMessage(webMapper.writeValueAsString(createResponse(listOf(action))))
+        responder?.sse(webMapper.writeValueAsString(createResponse(listOf(action))))
     }
 
     override fun eventSkipped(event: Event) {

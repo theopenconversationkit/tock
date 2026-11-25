@@ -32,7 +32,7 @@
 
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-shared</artifactId>
+            <artifactId>tock-shared-core</artifactId>
             <scope>provided</scope>
             <!-- Just need to import some code from Retrofit.kt not the dependencies-->
             <exclusions>

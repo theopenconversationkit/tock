@@ -31,6 +31,8 @@ import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.event.Event
 import ai.tock.shared.Executor
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.databind.JsonNode
@@ -44,7 +46,7 @@ class GoogleChatConnector(
     private val connectorId: String,
     private val path: String,
     private val chatService: HangoutsChat,
-    private val authorisationHandler: GoogleChatAuthorisationHandler,
+    private val tokenVerifier: GoogleChatTokenVerifier,
     private val useCondensedFootnotes: Boolean,
     private val displaySourcesWithoutUrl: Boolean,
     private val introMessage: String? = null,
@@ -53,45 +55,78 @@ class GoogleChatConnector(
     private val waitingMessage: String,
     private val feedback: GoogleChatFeedback? = null,
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
+    /** The former constructor, with the Vert.x handler of the verification. */
+    constructor(
+        connectorId: String,
+        path: String,
+        chatService: HangoutsChat,
+        authorisationHandler: GoogleChatAuthorisationHandler,
+        useCondensedFootnotes: Boolean,
+        displaySourcesWithoutUrl: Boolean,
+        introMessage: String? = null,
+        useThread: Boolean = false,
+        sourcesLabel: String,
+        waitingMessage: String,
+        feedback: GoogleChatFeedback? = null,
+    ) : this(
+        connectorId,
+        path,
+        chatService,
+        authorisationHandler.verifier,
+        useCondensedFootnotes,
+        displaySourcesWithoutUrl,
+        introMessage,
+        useThread,
+        sourcesLabel,
+        waitingMessage,
+        feedback,
+    )
+
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path) { router ->
-            router
-                .post(path)
-                .handler(authorisationHandler)
-                .handler { context ->
-                    try {
-                        val body = context.body().asString()
-                        logger.debug { "message received from Google chat: $body" }
-
-                        // answer immediately
-                        context
-                            .response()
-                            .putHeader("Content-Type", "application/json; charset=UTF-8")
-                            .setStatusCode(200)
-                            .end("{}")
-                        val messageEvent: JsonNode = mapper.readTree(body)
-                        val chatEvent: JsonNode = messageEvent.required("chat")
-
-                        // https://developers.google.com/workspace/add-ons/concepts/event-objects#chat-payload
-                        if (chatEvent.has("messagePayload")) {
-                            handleMessage(chatEvent, controller)
-                        } else if (chatEvent.has("buttonClickedPayload") && feedback != null) {
-                            handleFeedback(messageEvent, chatEvent, controller)
-                        } else {
-                            logger.debug {
-                                "Unsupported Google Chat event skipped. " +
-                                    "Feedback button events are handled only when feedback is enabled."
-                            }
-                        }
-                    } catch (e: Throwable) {
-                        logger.error(e) { "Error while handling Google Chat event" }
-                    }
-                }
-        }
+        controller.registerRoutes(path, routes(controller))
     }
+
+    /**
+     * The route of the events. It answers as the former Vert.x handlers did: 403 when the token is not valid, `{}`
+     * at once otherwise, and the messages are processed by the [Executor].
+     */
+    internal fun routes(controller: ConnectorController): HttpRoutes =
+        HttpRoutes {
+            post(path) { request ->
+                val authorization = request.header("Authorization")
+                val failure = tokenVerifier.verify(authorization)
+                if (failure != null) {
+                    logger.error { "Token ($authorization) verification failed. Cause : $failure" }
+                    return@post HttpResponse.status(403)
+                }
+                try {
+                    val body = request.bodyAsString
+                    logger.debug { "message received from Google chat: $body" }
+
+                    val messageEvent: JsonNode = mapper.readTree(body)
+                    val chatEvent: JsonNode = messageEvent.required("chat")
+
+                    // https://developers.google.com/workspace/add-ons/concepts/event-objects#chat-payload
+                    if (chatEvent.has("messagePayload")) {
+                        handleMessage(chatEvent, controller)
+                    } else if (chatEvent.has("buttonClickedPayload") && feedback != null) {
+                        handleFeedback(messageEvent, chatEvent, controller)
+                    } else {
+                        logger.debug {
+                            "Unsupported Google Chat event skipped. " +
+                                "Feedback button events are handled only when feedback is enabled."
+                        }
+                    }
+                } catch (e: Throwable) {
+                    logger.error(e) { "Error while handling Google Chat event" }
+                }
+                // answer immediately
+                HttpResponse(200, mapOf("Content-Type" to listOf("application/json; charset=UTF-8")), "{}".toByteArray())
+            }
+        }
 
     private fun handleMessage(
         chatEvent: JsonNode,

@@ -104,6 +104,11 @@
             <!-- Tock artifacts -->
             <dependency>
                 <groupId>ai.tock</groupId>
+                <artifactId>tock-shared-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -284,6 +289,11 @@
             </dependency>
             <dependency>
                 <groupId>ai.tock</groupId>
+                <artifactId>tock-nlp-api-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-api-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -295,6 +305,11 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-api-doc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-bot-engine-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -395,6 +410,11 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-nlp-dialogflow</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-bot-storage-model</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

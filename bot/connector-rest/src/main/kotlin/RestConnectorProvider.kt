@@ -36,7 +36,7 @@ internal object RestConnectorProvider : ConnectorProvider {
         RestConnector(
             connectorConfiguration.connectorId,
             connectorConfiguration.path,
-            createRequestFilter(connectorConfiguration),
+            createHttpRequestFilter(connectorConfiguration),
         )
 
     override fun check(connectorConfiguration: ConnectorConfiguration): List<String> =

@@ -42,7 +42,7 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
                 metaApplicationId = parameters[META_APPLICATION_ID],
                 path = path,
                 verifyToken = parameters[VERIFY_TOKEN],
-                requestFilter = createRequestFilter(connectorConfiguration),
+                requestFilter = createHttpRequestFilter(connectorConfiguration),
                 client = createCloudApiClient(this),
             )
         }

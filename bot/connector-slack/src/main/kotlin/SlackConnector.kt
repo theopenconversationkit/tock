@@ -35,9 +35,11 @@ import ai.tock.bot.engine.monitoring.logError
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.error
+import ai.tock.shared.http.HttpRequest
+import ai.tock.shared.http.HttpResponse
+import ai.tock.shared.http.HttpRoutes
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
@@ -60,102 +62,98 @@ class SlackConnector(
     private val executor: Executor by injector.instance()
 
     override fun register(controller: ConnectorController) {
-        if (OLD_SLACK_API) {
-            oldApi(controller)
-        } else {
-            eventApi(controller)
+        controller.registerRoutes(path, routes(controller))
+    }
+
+    /**
+     * The webhook route, of the Events API or of the former API (`tock_slack_old_api_style`). It answers as the
+     * former Vert.x handler did: at once with an empty body, the challenge as text for an URL verification, and
+     * the events are processed by the [Executor].
+     */
+    internal fun routes(controller: ConnectorController): HttpRoutes =
+        HttpRoutes {
+            post(path) { request ->
+                if (OLD_SLACK_API) oldApi(controller, request) else eventApi(controller, request)
+            }
+        }
+
+    private fun eventApi(
+        controller: ConnectorController,
+        request: HttpRequest,
+    ): HttpResponse {
+        val requestTimerData = requestTimer.start("slack_webhook")
+        return try {
+            val body =
+                request.bodyAsString.let {
+                    if (it.startsWith("payload=")) {
+                        URLDecoder.decode(it.substring("payload=".length), "UTF-8")
+                    } else {
+                        it
+                    }
+                }
+            logger.info { "message received from slack: $body" }
+
+            val message: EventApiMessage = mapper.readValue(body)
+            if (message is UrlVerificationEvent) {
+                HttpResponse(headers = mapOf("Content-type" to listOf("text/plain")), body = message.challenge.toByteArray())
+            } else {
+                // answer to slack immediately
+                val event = SlackRequestConverter.toEvent(message, applicationId)
+                if (event != null) {
+                    executor.executeBlocking {
+                        controller.handle(event)
+                    }
+                } else {
+                    logger.debug { "skip message: $body" }
+                }
+                HttpResponse.status()
+            }
+        } catch (e: Throwable) {
+            logger.logError(e, requestTimerData)
+            HttpResponse.status()
+        } finally {
+            try {
+                requestTimer.end(requestTimerData)
+            } catch (e: Throwable) {
+                logger.error(e)
+            }
         }
     }
 
-    private fun eventApi(controller: ConnectorController) {
-        controller.registerServices(path) { router ->
-            router.post(path).handler { context ->
-                val requestTimerData = requestTimer.start("slack_webhook")
-                try {
-                    val body =
-                        context.body().asString().let {
-                            if (it.startsWith("payload=")) {
-                                URLDecoder.decode(it.substring("payload=".length), "UTF-8")
-                            } else {
-                                it
-                            }
-                        }
-                    logger.info { "message received from slack: $body" }
+    private fun oldApi(
+        controller: ConnectorController,
+        request: HttpRequest,
+    ): HttpResponse {
+        val requestTimerData = requestTimer.start("slack_webhook")
+        try {
+            val body = parseJson(request.bodyAsString)
+            logger.info { "message received from slack: $body" }
 
-                    val message: EventApiMessage = mapper.readValue(body)
-                    if (message is UrlVerificationEvent) {
-                        context
-                            .response()
-                            .putHeader("Content-type", "text/plain")
-                            .end(message.challenge)
-                    } else {
-                        // answer to slack immediately
-                        context.response().end()
+            val message = mapper.readValue<SlackMessageIn>(body, SlackMessageIn::class.java)
+            if (message.user_id != "USLACKBOT") {
+                executor.executeBlocking {
+                    try {
                         val event = SlackRequestConverter.toEvent(message, applicationId)
                         if (event != null) {
-                            executor.executeBlocking {
-                                controller.handle(event)
-                            }
+                            controller.handle(event)
                         } else {
-                            logger.debug { "skip message: $body" }
+                            logger.logError("unable to convert $message to event", requestTimerData)
                         }
-                    }
-                } catch (e: Throwable) {
-                    logger.logError(e, requestTimerData)
-                    try {
-                        context.response().end()
-                    } catch (e: Exception) {
-                        logger.error(e)
-                    }
-                } finally {
-                    try {
-                        requestTimer.end(requestTimerData)
                     } catch (e: Throwable) {
-                        logger.error(e)
+                        logger.logError(e, requestTimerData)
                     }
                 }
             }
-        }
-    }
-
-    private fun oldApi(controller: ConnectorController) {
-        controller.registerServices(path) { router ->
-            router.post(path).handler { context ->
-                val requestTimerData = requestTimer.start("slack_webhook")
-                try {
-                    val body = context.convertUrlEncodedStringToJson()
-                    logger.info { "message received from slack: $body" }
-
-                    val message = mapper.readValue<SlackMessageIn>(body, SlackMessageIn::class.java)
-                    if (message.user_id != "USLACKBOT") {
-                        vertx.executeBlocking(
-                            {
-                                try {
-                                    val event = SlackRequestConverter.toEvent(message, applicationId)
-                                    if (event != null) {
-                                        controller.handle(event)
-                                    } else {
-                                        logger.logError("unable to convert $message to event", requestTimerData)
-                                    }
-                                } catch (e: Throwable) {
-                                    logger.logError(e, requestTimerData)
-                                }
-                            },
-                            false,
-                        )
-                    }
-                } catch (e: Throwable) {
-                    logger.logError(e, requestTimerData)
-                } finally {
-                    try {
-                        requestTimer.end(requestTimerData)
-                        context.response().end()
-                    } catch (e: Throwable) {
-                        logger.error(e)
-                    }
-                }
+        } catch (e: Throwable) {
+            logger.logError(e, requestTimerData)
+        } finally {
+            try {
+                requestTimer.end(requestTimerData)
+            } catch (e: Throwable) {
+                logger.error(e)
             }
         }
+        return HttpResponse.status()
     }
 
     override fun send(

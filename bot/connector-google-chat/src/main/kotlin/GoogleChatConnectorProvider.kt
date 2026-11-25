@@ -116,8 +116,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                     ).setApplicationName(connectorId)
                     .build()
 
-            val authorisationHandler =
-                GoogleChatAuthorisationHandler(authenticationAudience)
+            val tokenVerifier = GoogleChatTokenVerifier(authenticationAudience)
 
             val introMessage =
                 connectorConfiguration.parameters[INTRO_MESSAGE_PARAMETER]?.takeIf { it.isNotBlank() }
@@ -149,7 +148,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 connectorId,
                 path,
                 chatService,
-                authorisationHandler,
+                tokenVerifier,
                 useCondensedFootnotes,
                 displaySourcesWithoutUrl,
                 introMessage,

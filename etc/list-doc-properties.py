@@ -29,7 +29,13 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SOURCES = ['bot', 'nlp', 'shared', 'gen-ai', 'stt', 'translator', 'util']
+# the top-level folders that hold Kotlin modules (shared-core, storage-dynamodb-core, serverless-*...): discovered,
+# so that a module extracted from another one keeps its properties listed
+SOURCES = sorted(
+    path.name
+    for path in ROOT.iterdir()
+    if path.is_dir() and path.name not in ('docs', 'etc', 'samples', 'target') and not path.name.startswith('.') and any(path.glob('**/src/main/kotlin'))
+)
 HELPERS = (
     'property|intProperty|longProperty|booleanProperty|listProperty|mapProperty|mapListProperty'
     '|propertyOrNull|propertyExists'
