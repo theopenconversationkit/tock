@@ -339,7 +339,7 @@ See [Messenger](../channels/messenger.md).
 | `tock_teams_request_timeout_ms` | `30000` | Teams: timeout of the calls to the Bot Framework API (formerly `tock_whatsapp_request_timeout_ms`, still read if the new property is not set) |
 | `tock_whatsapp_request_timeout_ms` | `30000` | WhatsApp (deprecated _On-Premise API_ connector): timeout of the calls to the WhatsApp API |
 | `tock_mattermost_request_timeout_ms` | `30000` | Mattermost: timeout of the calls to the Mattermost API |
-| `tock_slack_old_api_style` | `false` | Slack: uses the former format of the Slack API |
+| `tock_slack_old_api_style` | `false` | Slack: receives the messages of a legacy _Outgoing Webhook_ instead of the Events API (deprecated: Slack plans to remove the legacy custom integrations) |
 | `tock_api_google_chat_connector_test_send_intro_message` | `false` | Google Chat: sends an introduction message in test mode |
 | `tock_rest_connector_disabled` | `false` | Disables the REST connector used by the tests of _Tock Studio_ |
 | `tock_rest_connector_check_nlp_stats` | `false` | REST connector: returns the NLP statistics with the answer |

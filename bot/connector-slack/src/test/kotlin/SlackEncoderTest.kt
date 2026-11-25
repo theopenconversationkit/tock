@@ -39,4 +39,14 @@ class SlackEncoderTest {
                 .toString()
         assertEquals(expectedJson, context.convertUrlEncodedStringToJson())
     }
+
+    @Test
+    fun `GIVEN an outgoing webhook body whose text contains encoded separators WHEN it is converted THEN each value is kept whole`() {
+        val json = JsonObject(parseJson("user_id=U1&text=a%3Db+%26+c%25&trigger_word=bot&empty"))
+
+        assertEquals("U1", json.getString("user_id"))
+        assertEquals("a=b & c%", json.getString("text"))
+        assertEquals("bot", json.getString("trigger_word"))
+        assertEquals("", json.getString("empty"))
+    }
 }
