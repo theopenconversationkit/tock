@@ -21,6 +21,8 @@ import ai.tock.nlp.front.service.UnknownApplicationException
 import ai.tock.nlp.front.shared.ApplicationConfiguration
 import ai.tock.nlp.front.shared.ApplicationMonitor
 import ai.tock.nlp.front.shared.Parser
+import ai.tock.nlp.front.shared.codec.CreateApplicationQuery
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.monitoring.MarkAsUnknownQuery
 import ai.tock.nlp.front.shared.parser.ParseQuery
 import ai.tock.nlp.front.shared.parser.ParseResult
@@ -42,12 +44,37 @@ class NlpApiRoutesTest {
     private val parser: Parser = mockk()
     private val configuration: ApplicationConfiguration = mockk()
     private val monitor: ApplicationMonitor = mockk()
-    private val routes = NlpApiRoutes.routes("/rest/nlp", parser, configuration, monitor)
+    private val routes = NlpApiRoutes.routes("/rest/nlp", parser, configuration, monitor, NlpApiSecurity.Unprotected)
+
+    // the caller authenticated by its Authorization header is in the namespace of the same name
+    private val protectedRoutes =
+        NlpApiRoutes.routes(
+            "/rest/nlp",
+            parser,
+            configuration,
+            monitor,
+            NlpApiSecurity.Namespace { request -> request.header("Authorization") },
+        )
 
     private fun post(
         path: String,
         body: Any,
     ) = runBlocking { routes.handle(HttpRequest(HttpMethod.POST, "/rest/nlp$path", body = mapper.writeValueAsBytes(body))) }
+
+    private fun protectedPost(
+        path: String,
+        body: Any,
+        namespace: String?,
+    ) = runBlocking {
+        protectedRoutes.handle(
+            HttpRequest(
+                HttpMethod.POST,
+                "/rest/nlp$path",
+                headers = namespace?.let { mapOf("Authorization" to listOf(it)) } ?: emptyMap(),
+                body = mapper.writeValueAsBytes(body),
+            ),
+        )
+    }
 
     private fun get(
         path: String,
@@ -99,6 +126,30 @@ class NlpApiRoutesTest {
         every { configuration.getApplicationByNamespaceAndName("ns", "app") } returns null
         assertEquals(204, get("/application", mapOf("namespace" to "ns", "name" to "app")).status)
         assertEquals("[]", String(get("/intents", mapOf("namespace" to "ns", "name" to "app")).body))
+    }
+
+    @Test
+    fun `GIVEN protected routes WHEN the caller is not authenticated or in another namespace THEN the answer is a 401`() {
+        every { parser.parse(any()) } returns mockk(relaxed = true)
+
+        assertEquals(401, protectedPost("/parse", query(), null).status)
+        assertEquals(401, protectedPost("/parse", query(), "other").status)
+        assertEquals(200, protectedPost("/parse", query(), "ns").status)
+
+        assertEquals(401, protectedPost("/application/create", CreateApplicationQuery("app", null, "ns", Locale.FRENCH), "other").status)
+        val intents =
+            runBlocking {
+                protectedRoutes.handle(
+                    HttpRequest(
+                        HttpMethod.GET,
+                        "/rest/nlp/intents",
+                        headers = mapOf("Authorization" to listOf("other")),
+                        queryParameters = mapOf("namespace" to listOf("ns"), "name" to listOf("app")),
+                    ),
+                )
+            }
+        assertEquals(401, intents.status)
+        verify(exactly = 0) { configuration.save(any<ApplicationDefinition>()) }
     }
 
     @Test
