@@ -55,6 +55,7 @@ import ai.tock.shared.security.RequestFilter
 import ai.tock.shared.security.sha256Uuid
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
+import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.util.ServiceLoader
 
@@ -137,28 +138,12 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     }
                 }
             }
+            // under the path of the connector, so that each connector creates the templates of its own account
+            router.post("$path/create_template").handler { context -> createTemplate(context) }
+            // the former path, shared by all the connectors: the first registered connector answers it
             router.post("/create_template").handler { context ->
-                if (!requestFilter.accept(context.request())) {
-                    context.response().setStatusCode(403).end()
-                    return@handler
-                }
-                val requestTimerData = BotRepository.requestTimer.start("whatsapp_cloud_create_template")
-                try {
-                    val body = context.body().asString()
-                    logger.debug { "creating template: $body" }
-                    val requestBody = mapper.readValue<WhatsappTemplate>(body)
-
-                    whatsAppCloudApiService.createOrUpdateTemplate(requestBody)
-                } catch (e: Throwable) {
-                    logger.logError(e, requestTimerData)
-                } finally {
-                    try {
-                        BotRepository.requestTimer.end(requestTimerData)
-                        context.response().end()
-                    } catch (e: Throwable) {
-                        logger.error(e)
-                    }
-                }
+                logger.warn { "/create_template is deprecated, use $path/create_template" }
+                createTemplate(context)
             }
         }
 
@@ -172,6 +157,30 @@ class WhatsAppConnectorCloudConnector internal constructor(
                         whatsAppCloudApiService,
                     ),
                 )
+            }
+        }
+    }
+
+    private fun createTemplate(context: RoutingContext) {
+        if (!requestFilter.accept(context.request())) {
+            context.response().setStatusCode(403).end()
+            return
+        }
+        val requestTimerData = BotRepository.requestTimer.start("whatsapp_cloud_create_template")
+        try {
+            val body = context.body().asString()
+            logger.debug { "creating template: $body" }
+            val requestBody = mapper.readValue<WhatsappTemplate>(body)
+
+            whatsAppCloudApiService.createOrUpdateTemplate(requestBody)
+        } catch (e: Throwable) {
+            logger.logError(e, requestTimerData)
+        } finally {
+            try {
+                BotRepository.requestTimer.end(requestTimerData)
+                context.response().end()
+            } catch (e: Throwable) {
+                logger.error(e)
             }
         }
     }
