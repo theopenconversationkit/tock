@@ -20,20 +20,27 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 private val logger = KotlinLogging.logger {}
 
 internal fun RoutingContext.convertUrlEncodedStringToJson(): String = parseJson(body().asString())
 
+/**
+ * Converts the form-urlencoded body of a Slack outgoing webhook (`tock_slack_old_api_style`) to JSON.
+ * Each pair is split on its first `=` before its key and value are decoded, so that a decoded value
+ * may contain `&` or `=`; a key without `=` gets an empty value.
+ */
 internal fun parseJson(body: String): String {
-    val urlEncodedString = URLDecoder.decode(body, "UTF-8")
-    logger.trace { "unparsed body from slack: $urlEncodedString" }
+    logger.trace { "unparsed body from slack: $body" }
     val jsonObject = JsonObject()
-    urlEncodedString.split("&").forEach { keyValue ->
-        val keyValueList = keyValue.split("=")
-        val key = keyValueList.first()
-        val value = keyValueList[1]
-        jsonObject.put(key, value)
+    body.split("&").filter { it.isNotEmpty() }.forEach { pair ->
+        val separator = pair.indexOf('=')
+        val key = if (separator < 0) pair else pair.substring(0, separator)
+        val value = if (separator < 0) "" else pair.substring(separator + 1)
+        jsonObject.put(decode(key), decode(value))
     }
     return jsonObject.toString()
 }
+
+private fun decode(value: String): String = URLDecoder.decode(value, StandardCharsets.UTF_8)
