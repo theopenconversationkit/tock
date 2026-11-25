@@ -55,7 +55,6 @@ class HttpRoutesTest {
     @Test
     fun `GIVEN no matching route WHEN the request is handled THEN the response is 404`() =
         runBlocking {
-            assertEquals(404, routes.handle(request(HttpMethod.GET, "/webhook/messenger/42")).status)
             assertEquals(404, routes.handle(request(HttpMethod.POST, "/webhook/messenger")).status)
             assertEquals(404, routes.handle(request(HttpMethod.GET, "/healthcheck/more")).status)
         }
@@ -72,4 +71,33 @@ class HttpRoutesTest {
 
         assertEquals("sha1=abc", request.header("x-hub-signature"))
     }
+
+    @Test
+    fun `GIVEN a path that only matches routes of other methods WHEN it is handled THEN the response is 405 with the allowed methods`() =
+        runBlocking {
+            val response = routes.handle(request(HttpMethod.GET, "/webhook/messenger/42"))
+
+            assertEquals(405, response.status)
+            assertEquals("POST", response.headers["Allow"]?.single())
+            assertEquals("GET, HEAD", routes.handle(request(HttpMethod.POST, "/healthcheck")).headers["Allow"]?.single())
+        }
+
+    @Test
+    fun `GIVEN a GET route WHEN a HEAD request is handled THEN it gets the status and headers without body`() =
+        runBlocking {
+            val response = routes.handle(request(HttpMethod.HEAD, "/healthcheck"))
+
+            assertEquals(200, response.status)
+            assertEquals("text/plain; charset=utf-8", response.headers["Content-Type"]?.single())
+            assertEquals(0, response.body.size)
+        }
+
+    @Test
+    fun `GIVEN percent-encoded segments WHEN the path is matched THEN the path parameters are decoded, as with Vert_x`() =
+        runBlocking {
+            val response = routes.handle(request(HttpMethod.POST, "/webhook/zh%2DCN/op%20123+x", "hello"))
+
+            assertEquals("zh-CN op 123+x hello", String(response.body))
+            assertEquals("ok", String(routes.handle(request(HttpMethod.GET, "/health%63heck")).body))
+        }
 }
