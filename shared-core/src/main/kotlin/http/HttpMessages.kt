@@ -57,6 +57,13 @@ class HttpRequest(
 ) {
     val headers: Map<String, List<String>> = TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER).apply { putAll(headers) }
 
+    /**
+     * The path normalized as Vert.x `RoutingContext.normalizedPath` does (RFC 3986): the percent-encoded
+     * unreserved characters are decoded, the repeated slashes merged and the dot segments removed.
+     * The signatures of some webhooks are computed on it.
+     */
+    val normalizedPath: String get() = HttpPaths.normalize(path)
+
     /** The body decoded as UTF-8. */
     val bodyAsString: String get() = String(body, StandardCharsets.UTF_8)
 
@@ -71,6 +78,38 @@ class HttpRequest(
 
     /** A copy of this request with the given path parameters. */
     fun withPathParameters(parameters: Map<String, String>): HttpRequest = HttpRequest(method, path, headers, queryParameters, parameters, body, remoteAddress, rawQuery)
+}
+
+internal object HttpPaths {
+    private fun isUnreserved(c: Char): Boolean = c in 'a'..'z' || c in 'A'..'Z' || c in '0'..'9' || c == '-' || c == '.' || c == '_' || c == '~'
+
+    fun normalize(path: String): String {
+        val decoded = StringBuilder(path.length)
+        var i = 0
+        while (i < path.length) {
+            val c = path[i]
+            val escaped = if (c == '%' && i + 2 <= path.lastIndex) path.substring(i + 1, i + 3).toIntOrNull(16)?.toChar() else null
+            if (escaped != null && isUnreserved(escaped)) {
+                decoded.append(escaped)
+                i += 3
+            } else {
+                decoded.append(c)
+                i++
+            }
+        }
+        val output = ArrayDeque<String>()
+        val segments = decoded.split("/").filter { it.isNotEmpty() }
+        segments.forEach { segment ->
+            when (segment) {
+                "." -> Unit
+                ".." -> output.removeLastOrNull()
+                else -> output.addLast(segment)
+            }
+        }
+        val trailingSlash = decoded.endsWith("/") || segments.lastOrNull().let { it == "." || it == ".." }
+        val normalized = "/" + output.joinToString("/")
+        return if (trailingSlash && output.isNotEmpty()) "$normalized/" else normalized
+    }
 }
 
 /**

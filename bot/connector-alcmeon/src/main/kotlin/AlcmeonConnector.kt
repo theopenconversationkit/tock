@@ -97,7 +97,7 @@ class AlcmeonConnector private constructor(
             get("$path/description") { HttpResponse(body = description.toByteArray()) }
             listOf("$path/start", "$path/handle-event").forEach { route ->
                 post(route) { request ->
-                    if (!verifier.verify(request.path, request.bodyAsString, request.header("X-Alcmeon-Webhook-Signature"))) {
+                    if (!verifier.verify(request.normalizedPath, request.bodyAsString, request.header("X-Alcmeon-Webhook-Signature"))) {
                         return@post HttpResponse(403, body = "Invalid Alcmeon webhook signature".toByteArray())
                     }
                     val response = CompletableDeferred<HttpResponse>()
