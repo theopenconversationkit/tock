@@ -222,11 +222,10 @@ documents.
 }
 ```
 
-**Le regroupement par document se fait côté serveur.** La hiérarchie document →
-chunks n'existe pas dans le stock : il n'y a que des chunks portant
-`metadata.id` et `metadata.chunk = "n/N"`. Paginer les chunks en affichant des
-documents produirait des pages incohérentes. La pagination tourne donc sur
-`GROUP BY cmetadata->>'id'`, et `total` compte les groupes.
+**Le regroupement par document se fait côté serveur.** Chaque chunk porte la clé du document
+dans `metadata.source_id` ou, si ce champ est absent ou vide, dans
+`metadata.id` (Indexing Tools). La pagination et le total portent sur ces groupes.
+Le diagnostic identifie chaque chunk par le couple `metadata.id`, `metadata.chunk`.
 
 `stats` et `anomalies` décrivent **l'index entier**, jamais le sous-ensemble
 filtré : les compteurs des pastilles sont ce contre quoi l'utilisateur filtre.

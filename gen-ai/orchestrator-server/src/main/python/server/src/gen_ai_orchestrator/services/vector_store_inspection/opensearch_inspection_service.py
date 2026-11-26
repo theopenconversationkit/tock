@@ -31,6 +31,11 @@ from gen_ai_orchestrator.routers.responses.vector_store_inspection_responses imp
 )
 
 
+def _keyword_field(fields, key):
+    field = f"metadata.{key}"
+    return field if fields.get(key, {}).get('type') == 'keyword' else f"{field}.keyword"
+
+
 async def indexes(factory, prefix):
     def read():
         from opensearchpy.exceptions import NotFoundError
@@ -48,25 +53,38 @@ async def indexes(factory, prefix):
         for name in names:
             if not _is_allowed_index(name, prefix):
                 continue
-            id_mapping = (
+            fields = (
                 names[name]
                 .get('mappings', {})
                 .get('properties', {})
                 .get('metadata', {})
                 .get('properties', {})
-                .get('id', {})
             )
-            id_field = (
-                'metadata.id'
-                if id_mapping.get('type') == 'keyword'
-                else 'metadata.id.keyword'
-            )
+
+            cardinality = {'field': _keyword_field(fields, 'id')}
+            if 'source_id' in fields:
+                cardinality = {
+                    'script': {
+                        'source': """
+                        if (doc.containsKey(params.source) && doc[params.source].size() > 0) {
+                            String source = doc[params.source].value;
+                            if (!source.isEmpty()) return source;
+                        }
+                        return doc.containsKey(params.id) && doc[params.id].size() > 0
+                            ? doc[params.id].value : null;
+                    """,
+                        'params': {
+                            'source': _keyword_field(fields, 'source_id'),
+                            'id': _keyword_field(fields, 'id'),
+                        },
+                    }
+                }
             response = client.search(
                 index=name,
                 body={
                     'size': 1,
                     'track_total_hits': True,
-                    'aggs': {'documents': {'cardinality': {'field': id_field}}},
+                    'aggs': {'documents': {'cardinality': cardinality}},
                 },
             )
             hits = response['hits']
